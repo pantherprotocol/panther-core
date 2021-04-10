@@ -36,8 +36,8 @@ describe('BasicToken', () => {
 
     it('Can not transfer from empty account', async () => {
         const tokenFromOtherWallet = token.connect(walletTo);
-        await expect(tokenFromOtherWallet.transfer(wallet.address, 1))
-            .to.be.reverted;
+        await expect(tokenFromOtherWallet.transfer(wallet.address, 1)).to.be
+            .reverted;
     });
 
     it('Calls totalSupply on BasicToken contract', async () => {

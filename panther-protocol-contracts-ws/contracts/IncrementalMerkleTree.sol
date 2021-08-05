@@ -55,7 +55,7 @@ contract IncrementalMerkleTree is Ownable, Hasher, MerkleZeros {
     string constant ERROR_INVALID_LEVELS = "E03";
     string constant ERROR_INVALID_ZERO = "E04";
 
-    constructor(uint8 _treeLevels, uint256 _zeroValue, bool _isPreCalc) public {
+    constructor(uint8 _treeLevels, uint256 _zeroValue, bool _isPreCalc) {
         // Limit the Merkle tree to MAX_DEPTH levels
         require(
             _treeLevels > 0 && _treeLevels <= MAX_DEPTH,

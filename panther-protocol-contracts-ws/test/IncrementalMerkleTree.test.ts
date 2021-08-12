@@ -12,7 +12,6 @@ import {
 
 import { JSONRPCDeployer } from '../deploy'
 const PoseidonT3 = require('@maci-contracts/compiled/PoseidonT3.json')
-const PoseidonT6 = require('@maci-contracts/compiled/PoseidonT6.json')
 
 import { loadAB, linkPoseidonContracts } from '../'
 
@@ -20,7 +19,7 @@ const accounts = genTestAccounts(1)
 let deployer
 let mtContract
 let crContract
-let PoseidonT3Contract, PoseidonT6Contract
+let PoseidonT3Contract
 
 const DEPTH = 32
 
@@ -37,9 +36,6 @@ describe('IncrementalMerkleTree', () => {
 
         console.log('Deploying PoseidonT3Contract')
         PoseidonT3Contract = await deployer.deploy(PoseidonT3.abi, PoseidonT3.bytecode, {})
-
-        console.log('Deploying PoseidonT6Contract')
-        PoseidonT6Contract = await deployer.deploy(PoseidonT6.abi, PoseidonT6.bytecode, {})
 
         // Link Poseidon contracts
         linkPoseidonContracts(

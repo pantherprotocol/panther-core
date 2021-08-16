@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 
 require('module-alias/register')
-jest.setTimeout(120000)
+
+import { expect } from "chai";
+
 import { genTestAccounts } from '../accounts'
 import { config } from 'maci-config'
 import {

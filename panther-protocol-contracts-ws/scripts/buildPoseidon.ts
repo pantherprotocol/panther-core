@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-import * as Artifactor from 'truffle-artifactor'
+const Artifactor = require('@truffle/artifactor')
 
 const poseidonGenContract = require('circomlib/src/poseidon_gencontract.js')
 const artifactor = new Artifactor('compiled/')

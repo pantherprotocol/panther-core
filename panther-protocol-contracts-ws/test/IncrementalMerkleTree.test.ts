@@ -12,6 +12,7 @@ import {
     NOTHING_UP_MY_SLEEVE,
     IncrementalQuinTree,
 } from 'maci-crypto'
+import { loadAB, linkPoseidonContracts } from "../lib/deploy"
 
 let PoseidonT3 = require('../compiled/PoseidonT3.json')
 

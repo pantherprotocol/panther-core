@@ -72,7 +72,10 @@ describe('IncrementalMerkleTree', () => {
     })
 
     it('the on-chain root should match an off-chain root after various insertions', async () => {
-        expect.assertions(8)
+        // FIXME: Looks like this needs to be replaced with
+        // https://github.com/ingshtrom/chai-counter
+        // expect.assertions(8)
+
         for (let i = 0; i < 8; i++) {
             const leaf = genRandomSalt()
 

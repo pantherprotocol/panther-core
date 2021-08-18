@@ -37,8 +37,7 @@ describe('IncrementalMerkleTree', () => {
         // Link Poseidon contracts
         linkPoseidonContracts(
             ['IncrementalMerkleTree.sol', 'ComputeRoot.sol'],
-            PoseidonT3Contract.address,
-            PoseidonT6Contract.address,
+            PoseidonT3Contract.address
         )
 
         const [ IncrementalMerkleTreeAbi, IncrementalMerkleTreeBin ] = loadAB('IncrementalMerkleTree')

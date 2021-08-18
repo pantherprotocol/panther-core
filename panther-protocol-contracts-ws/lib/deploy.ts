@@ -44,8 +44,7 @@ const initialVoiceCreditProxyAbi = InitialVoiceCreditProxyAbi
 
 const linkPoseidonContracts = (
     solFilesToLink: string[],
-    poseidonT3Address,
-    poseidonT6Address,
+    poseidonT3Address
 ) => {
     let inputFiles = ''
     for (const f of solFilesToLink) {
@@ -63,7 +62,6 @@ const linkPoseidonContracts = (
         + ` -o ${abiDir} ${inputFiles} --overwrite --bin`
         + ` --allow-paths ${maciSolPath}/,${ozSolPath}`
         + ` --libraries ${poseidonPath}:PoseidonT3:${poseidonT3Address}`
-        + ` --libraries ${poseidonPath}:PoseidonT6:${poseidonT6Address}`
 
     shell.exec(linkCmd)
 }

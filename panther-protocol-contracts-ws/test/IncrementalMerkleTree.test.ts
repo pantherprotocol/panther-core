@@ -63,12 +63,12 @@ describe('IncrementalMerkleTree', () => {
 
     it('an empty tree should have the correct root', async () => {
         const root1 = await mtContract.root()
-        expect(tree.root.toString()).toEqual(root1.toString())
+        expect(tree.root.toString()).to.equal(root1.toString())
     })
 
     it('computeEmptyRoot() should generate the correct root', async () => {
         const emptyRoot = await crContract.computeEmptyRoot(DEPTH, NOTHING_UP_MY_SLEEVE.toString())
-        expect(tree.root.toString()).toEqual(emptyRoot.toString())
+        expect(tree.root.toString()).to.equal(emptyRoot.toString())
     })
 
     it('the on-chain root should match an off-chain root after various insertions', async () => {
@@ -82,7 +82,7 @@ describe('IncrementalMerkleTree', () => {
 
             tree.insert(leaf)
 
-            expect(tree.root.toString()).toEqual(root1.toString())
+            expect(tree.root.toString()).to.equal(root1.toString())
         }
     })
 })

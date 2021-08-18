@@ -1,40 +1,34 @@
 // SPDX-License-Identifier: MIT
 
-require('module-alias/register')
+const hre = require("hardhat")
+const { waffle } = hre
+// const { deployContract } = waffle
 
-import { expect } from "chai";
+import ethers from "ethers"
+import { expect } from "chai"
 
-import { genTestAccounts } from '../accounts'
-import { config } from 'maci-config'
 import {
     genRandomSalt,
     NOTHING_UP_MY_SLEEVE,
     IncrementalQuinTree,
 } from 'maci-crypto'
 
-import { JSONRPCDeployer } from '../deploy'
-const PoseidonT3 = require('@maci-contracts/compiled/PoseidonT3.json')
+let PoseidonT3 = require('../compiled/PoseidonT3.json')
 
-import { loadAB, linkPoseidonContracts } from '../'
-
-const accounts = genTestAccounts(1)
+let accounts
 let deployer
-let mtContract
-let crContract
+let mtContract: ethers.Contract
+let crContract: ethers.Contract
 let PoseidonT3Contract
 
 const DEPTH = 32
 
-let tree
+let tree: IncrementalQuinTree
+
 describe('IncrementalMerkleTree', () => {
     beforeAll(async () => {
-        deployer = new JSONRPCDeployer(
-            accounts[0].privateKey,
-            config.get('chain.url'),
-            {
-                gasLimit: 8800000,
-            },
-        )
+        accounts = await hre.ethers.getSigners()
+        deployer = await ethers.getContractFactory("PoseidonT3")
 
         console.log('Deploying PoseidonT3Contract')
         PoseidonT3Contract = await deployer.deploy(PoseidonT3.abi, PoseidonT3.bytecode, {})

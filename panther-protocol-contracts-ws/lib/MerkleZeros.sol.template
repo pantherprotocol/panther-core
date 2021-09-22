@@ -22,8 +22,8 @@ abstract contract MerkleZeros {
     uint256 internal constant ZERO_ROOT = <% ROOT %>;
 
     function populateZeros(uint256[TREE_DEPTH] memory zeros) internal pure {
-    	// The code that calls this function ignores `zeros[0]` and `zeros[1]`
-    	// zeros[0] = ZERO_VALUE;
+        // The code that calls this function ignores `zeros[0]` and `zeros[1]`
+        // zeros[0] = ZERO_VALUE;
 <% ZEROS %>
     }
 }

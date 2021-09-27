@@ -11,7 +11,7 @@ contract Register {
     {
         require(isWellformedPubKeys(pubKeys), ERR_INVALID_PUBKEYS);
         require(isValidExpiry(expiryTime), ERR_INVALID_PUBKEYS);
-        emit PublicKey(msg.sender, pubKeys, expiryTime);
+        emit PublicKeys(msg.sender, pubKeys, expiryTime);
     }
 
     function isWellformedPubKeys(bytes calldata _pubKeys)

@@ -6,6 +6,7 @@ import "./CommitmentsTrees.sol";
 import "./verifier/Verifier.sol";
 import { IN_UTXOs, MAX_EXT_AMOUNT, MAX_TIMESTAMP, OUT_UTXOs } from "./Constants.sol";
 import { PluginData, SnarkProof } from "./Types.sol";
+import "./ErrorMsgs.sol";
 
 /**
  * @title PantherPool

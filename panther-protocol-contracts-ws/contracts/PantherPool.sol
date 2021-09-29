@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { PoseidonT4 } from "./Poseidon.sol";
 import "./CommitmentsTrees.sol";
 import "./verifier/Verifier.sol";

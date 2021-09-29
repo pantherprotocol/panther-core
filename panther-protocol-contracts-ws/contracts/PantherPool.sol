@@ -280,5 +280,6 @@ contract PantherPool is CommitmentsTrees, Verifier {
     {
         // TODO: implement plugin call
         success = true;
+        return success;
     }
 }

@@ -103,7 +103,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
     */
 
     function transaction(
-        Period timeLimit,
+        Period calldata timeLimit,
         address feeToken, // ignored in zk-proof
         address feePayer, //  ignored in zk-proof
         address token, // for deposit ar withdrawal

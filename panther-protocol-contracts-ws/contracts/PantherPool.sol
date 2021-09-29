@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { PoseidonT4 } from "./Poseidon.sol";
 import "./CommitmentsTrees.sol";
 import "./verifier/Verifier.sol";
 import { IN_UTXOs, MAX_EXT_AMOUNT, MAX_TIMESTAMP, OUT_UTXOs } from "./Constants.sol";
 import { PluginData, SnarkProof } from "./Types.sol";
+import "./ErrorMsgs.sol";
 
 /**
  * @title PantherPool
@@ -24,7 +26,9 @@ contract PantherPool is CommitmentsTrees, Verifier {
     // - does not implement the "collecting" tx (with 8 input UTXOs)
     // These issues will be addressed later
 
-    address public constant rewardToken = 3333;
+    // Use fake address for now, just to get contracts compiling
+    address public constant rewardToken =
+        0xe26ba5114ced309722097deaf32c845cfead2403;
 
     struct Period {
         uint256 from;
@@ -99,7 +103,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
     */
 
     function transaction(
-        Period timeLimit,
+        Period calldata timeLimit,
         address feeToken, // ignored in zk-proof
         address feePayer, //  ignored in zk-proof
         address token, // for deposit ar withdrawal
@@ -276,5 +280,6 @@ contract PantherPool is CommitmentsTrees, Verifier {
     {
         // TODO: implement plugin call
         success = true;
+        return success;
     }
 }

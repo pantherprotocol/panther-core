@@ -26,7 +26,9 @@ contract PantherPool is CommitmentsTrees, Verifier {
     // - does not implement the "collecting" tx (with 8 input UTXOs)
     // These issues will be addressed later
 
-    address public constant rewardToken = 3333;
+    // Use fake address for now, just to get contracts compiling
+    address public constant rewardToken =
+        0xe26ba5114ced309722097deaf32c845cfead2403;
 
     struct Period {
         uint256 from;

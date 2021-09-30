@@ -29,5 +29,5 @@ struct SnarkProof {
 
 struct PluginData {
     address contractAddress;
-    bytes32 callData;
+    bytes callData;
 }

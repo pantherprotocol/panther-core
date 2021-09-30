@@ -24,25 +24,25 @@ contract QuadIncrementalMerkleTrees is MerkleZeros {
     uint256 public curTree;
 
     // @dev The Merkle root of the current tree
-    uint256 public curRoot;
+    bytes32 public curRoot;
 
     // Right-most elements in the current tree per level
     // level index => hash
-    mapping(uint256 => uint256) private filledSubtrees;
+    mapping(uint256 => bytes32) private filledSubtrees;
 
     // ("Flagged") timestamps of already seen Merkle tree roots
     // Timestamps are rounded down (i.e. "flagged" is set in the lowest bit) to:
     // - odd number (flag == 1) for roots of fully populated trees
     // - even number (flag == 0) for roots of partially populated trees
     // root => flagged timestamp
-    mapping(uint256 => uint256) private rootHistory;
+    mapping(bytes32 => uint256) private rootHistory;
 
     // @dev Root of partially populated tree (temporarily) added to `rootHistory`
-    event InterimRoot(uint256 root);
+    event InterimRoot(bytes32 root);
     // @dev Root of partially populated tree removed from `rootHistory`
-    event DeletedRoot(uint256 root);
+    event DeletedRoot(bytes32 root);
     // @dev Root of fully populated tree (permanently) added to `rootHistory`
-    event FinalRoot(uint256 root, uint256 indexed treeId);
+    event FinalRoot(bytes32 root, uint256 indexed treeId);
 
     // Minimal time a root must be kept in `rootHistory` within
     uint256 internal constant HISTORY_EXPIRE_SECONDS = 3600 * 24;
@@ -54,7 +54,7 @@ contract QuadIncrementalMerkleTrees is MerkleZeros {
      * @param root The root queried
      * @return True if the root is known
      */
-    function isKnownRoot(uint256 root) public view returns (bool) {
+    function isKnownRoot(bytes32 root) public view returns (bool) {
         require(root != 0, ERR_ZERO_ROOT);
         return rootHistory[root] != 0 || root == curRoot;
     }
@@ -65,7 +65,7 @@ contract QuadIncrementalMerkleTrees is MerkleZeros {
      * @return treeId The ID of a tree the laves have been inserted into
      * @return fromIndex The index of the first inserted leaf
      */
-    function insertBatch(uint256[BATCH_SIZE] memory leaves)
+    function insertBatch(bytes32[BATCH_SIZE] memory leaves)
         internal
         returns (uint256 treeId, uint256 fromIndex)
     {
@@ -93,21 +93,21 @@ contract QuadIncrementalMerkleTrees is MerkleZeros {
         bool isFullTree;
         (treeId, fromIndex, isFullTree) = prepareBatchInsertion();
 
-        uint256 nodeHash;
+        bytes32 nodeHash;
         // Hash of the subtree from four leaves being inserted ...
         {
-            uint256 _left = poseidon(leaves[0], leaves[1]);
-            uint256 _right = poseidon(leaves[2], leaves[3]);
+            bytes32 _left = poseidon(leaves[0], leaves[1]);
+            bytes32 _right = poseidon(leaves[2], leaves[3]);
             nodeHash = poseidon(_left, _right);
         }
         // ... to be placed on the level #2 under this index
         uint256 nodeIndex = fromIndex % BATCH_SIZE;
 
-        uint256[TREE_DEPTH] memory zeros;
+        bytes32[TREE_DEPTH] memory zeros;
         populateZeros(zeros);
 
-        uint256 left;
-        uint256 right;
+        bytes32 left;
+        bytes32 right;
         for (uint256 level = 2; level < TREE_DEPTH; level++) {
             // if `nodeIndex` is 25, for instance, over the iterations it will
             // look like this: 25, 12, 6, 3, 1, 0, 0 ...
@@ -148,7 +148,7 @@ contract QuadIncrementalMerkleTrees is MerkleZeros {
      * Expired roots of partially populated trees only may be deleted
      * @param roots List of roots to delete
      */
-    function deleteInterimRoots(uint256[] memory roots) internal {
+    function deleteInterimRoots(bytes32[] memory roots) internal {
         for (uint256 i = 0; i < roots.length; i++) {
             uint256 flaggedTime = rootHistory[roots[i]];
 
@@ -189,12 +189,12 @@ contract QuadIncrementalMerkleTrees is MerkleZeros {
         isFullTree = (MAX_LEAVES_NUM - fromIndex) <= BATCH_SIZE;
     }
 
-    function poseidon(uint256 _left, uint256 _right)
+    function poseidon(bytes32 _left, bytes32 _right)
         private
         pure
-        returns (uint256)
+        returns (bytes32)
     {
-        uint256[2] memory input;
+        bytes32[2] memory input;
         input[0] = _left;
         input[1] = _right;
         return PoseidonT3.poseidon(input);

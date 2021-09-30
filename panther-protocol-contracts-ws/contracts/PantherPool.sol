@@ -28,7 +28,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
 
     // Use fake address for now, just to get contracts compiling
     address public constant rewardToken =
-        0xe26ba5114ced309722097deaf32c845cfead2403;
+        0x21479eB8CB1a27861c902F07A952b72b10Fd53EF;
 
     struct Period {
         uint256 from;
@@ -41,9 +41,9 @@ contract PantherPool is CommitmentsTrees, Verifier {
     }
 
     struct Rewards {
-        uint24 forTx;
-        uint24 forUtxo;
-        uint24 forDeposit;
+        uint24 forTxReward;
+        uint24 forUtxoReward;
+        uint24 forDepositReward;
     }
 
     struct Fees {
@@ -114,7 +114,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
         bytes32[IN_UTXOs] calldata inputMerkleRoots,
         bytes32[IN_UTXOs] calldata inputNullifiers,
         // Commitments to "output" UTXOs - both zAssets and PRP (reward points)
-        uint256[OUT_UTXOs] calldata commitments,
+        bytes32[OUT_UTXOs] calldata commitments,
         uint256[UTXO_SECRETS][OUT_UTXOs] calldata secrets,
         SnarkProof calldata proof
     ) external payable {
@@ -165,8 +165,8 @@ contract PantherPool is CommitmentsTrees, Verifier {
                 );
                 feeAmount += rates.withdrawal;
                 IERC20(token).safeTransfer(
-                    withdrawal.amount,
-                    withdrawal.account
+                    withdrawal.account,
+                    withdrawal.amount
                 );
             }
             if (feeAmount != 0) {
@@ -179,8 +179,8 @@ contract PantherPool is CommitmentsTrees, Verifier {
             ERR_INVALID_JOIN_INPUT
         );
         for (uint256 i = 0; i < inputNullifiers.length; i++) {
-            uint256 nullifier = inputNullifiers[i];
-            require(nullifier < FIELD_SIZE, ERR_TOO_LARGE_NULLIFIER);
+            bytes32 nullifier = inputNullifiers[i];
+            require(uint256(nullifier) < FIELD_SIZE, ERR_TOO_LARGE_NULLIFIER);
             require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);
 
             require(isKnownRoot(inputMerkleRoots[i]), ERR_UNKNOWN_MERKLE_ROOT);
@@ -195,7 +195,8 @@ contract PantherPool is CommitmentsTrees, Verifier {
                     // Input params which are not used in arithmetic circuits
                     deposit.account,
                     withdrawal.account,
-                    plugin,
+                    plugin.contractAddress,
+                    plugin.callData,
                     secrets
                 )
             )
@@ -208,13 +209,13 @@ contract PantherPool is CommitmentsTrees, Verifier {
                 uint256(
                     sha256(
                         abi.encodePacked(
-                            uint256(token),
+                            token,
                             deposit.amount,
                             withdrawal.amount,
-                            uint256(rewardToken),
-                            uint256(rewards.forTx),
-                            uint256(rewards.forUtxo),
-                            uint256(rewards.forDeposit),
+                            rewardToken,
+                            uint256(rewards.forTxReward),
+                            uint256(rewards.forUtxoReward),
+                            uint256(rewards.forDepositReward),
                             extraInputsHash,
                             timeLimit.from,
                             timeLimit.to,
@@ -232,7 +233,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
 
         addAndEmitCommitments(commitments, secrets, timeLimit.to);
 
-        if (plugin.contractAddress != bytes32(0)) {
+        if (plugin.contractAddress != address(0)) {
             require(
                 callPlugin(plugin.contractAddress, plugin.callData),
                 ERR_PLUGIN_FAILURE

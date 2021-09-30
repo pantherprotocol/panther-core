@@ -20,7 +20,7 @@ contract CommitmentsTrees is QuadIncrementalMerkleTrees {
      */
     event NewCommitment(
         uint256 indexed id,
-        uint256 hash,
+        bytes32 hash,
         uint256 time,
         uint256[UTXO_SECRETS] secrets
     );
@@ -36,14 +36,17 @@ contract CommitmentsTrees is QuadIncrementalMerkleTrees {
      * @param commitments Commitments (leaves hashes) to be inserted into merkle tree(s)
      */
     function addAndEmitCommitments(
-        uint256[BATCH_SIZE] calldata commitments,
+        bytes32[BATCH_SIZE] calldata commitments,
         uint256[UTXO_SECRETS][BATCH_SIZE] calldata secrets,
         uint256 timestamp
     ) internal {
         // Prepare hashes to insert
-        uint256[BATCH_SIZE] memory hashes;
+        // uint256[BATCH_SIZE] memory hashes;
         for (uint256 i = 0; i < BATCH_SIZE; i++) {
-            require(commitments[i] < FIELD_SIZE, ERR_TOO_LARGE_COMMITMENTS);
+            require(
+                uint256(commitments[i]) < FIELD_SIZE,
+                ERR_TOO_LARGE_COMMITMENTS
+            );
         }
 
         // Insert hashes into commitments Merkle trees

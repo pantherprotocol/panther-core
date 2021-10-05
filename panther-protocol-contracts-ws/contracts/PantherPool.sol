@@ -75,6 +75,18 @@ contract PantherPool is CommitmentsTrees, Verifier {
 
     // constructor: require(BATCH_SIZE == OUT_UTXOs)
 
+    function checkValidTimeLimits(Period calldata timeLimit) internal {
+        uint256 currentTime = block.timestamp;
+        require(
+            timeLimit.from >= currentTime && timeLimit.to <= currentTime,
+            ERR_EXPIRED_TX_TIME
+        );
+        require(
+            timeLimit.from < MAX_TIMESTAMP && timeLimit.to < MAX_TIMESTAMP,
+            ERR_TOO_LARGE_TIME
+        );
+    }
+
     /* TODO: remove these in-line dev notes
         // recipient generates
         spendRootPrivKey: = fn(seed)
@@ -118,18 +130,8 @@ contract PantherPool is CommitmentsTrees, Verifier {
         uint256[UTXO_SECRETS][OUT_UTXOs] calldata secrets,
         SnarkProof calldata proof
     ) external payable {
+        checkValidTimeLimits(timeLimit);
         // FIXME: add Non-reentrant
-        {
-            uint256 currentTime = block.timestamp;
-            require(
-                timeLimit.from >= currentTime && timeLimit.to <= currentTime,
-                ERR_EXPIRED_TX_TIME
-            );
-            require(
-                timeLimit.from < MAX_TIMESTAMP && timeLimit.to < MAX_TIMESTAMP,
-                ERR_TOO_LARGE_TIME
-            );
-        }
 
         if (deposit.amount == 0 && withdrawal.amount == 0) {
             require(token == address(0), ERR_ZERO_TOKEN_EXPECTED);

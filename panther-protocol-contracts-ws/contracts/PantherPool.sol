@@ -126,6 +126,22 @@ contract PantherPool is CommitmentsTrees, Verifier {
         }
     }
 
+    function processNullifiers(
+        bytes32[IN_UTXOs] calldata inputMerkleRoots,
+        bytes32[IN_UTXOs] calldata inputNullifiers
+    ) internal {
+        for (uint256 i = 0; i < inputNullifiers.length; i++) {
+            bytes32 nullifier = inputNullifiers[i];
+            require(uint256(nullifier) < FIELD_SIZE, ERR_TOO_LARGE_NULLIFIER);
+            require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);
+
+            require(isKnownRoot(inputMerkleRoots[i]), ERR_UNKNOWN_MERKLE_ROOT);
+
+            isSpent[nullifier] = true;
+            emit Nullifier(nullifier);
+        }
+    }
+
     /* TODO: remove these in-line dev notes
         // recipient generates
         spendRootPrivKey: = fn(seed)
@@ -190,16 +206,8 @@ contract PantherPool is CommitmentsTrees, Verifier {
             inputNullifiers.length == inputMerkleRoots.length,
             ERR_INVALID_JOIN_INPUT
         );
-        for (uint256 i = 0; i < inputNullifiers.length; i++) {
-            bytes32 nullifier = inputNullifiers[i];
-            require(uint256(nullifier) < FIELD_SIZE, ERR_TOO_LARGE_NULLIFIER);
-            require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);
 
-            require(isKnownRoot(inputMerkleRoots[i]), ERR_UNKNOWN_MERKLE_ROOT);
-
-            isSpent[nullifier] = true;
-            emit Nullifier(nullifier);
-        }
+        processNullifiers(inputMerkleRoots, inputNullifiers);
 
         uint256 extraInputsHash = uint256(
             keccak256(

@@ -6,6 +6,6 @@ interface IPlugin {
     function callPlugin(
         address plugin,
         uint256 value,
-        bytes calldata calldata
-    ) public returns (bool success);
+        bytes calldata callData
+    ) external returns (bool success);
 }

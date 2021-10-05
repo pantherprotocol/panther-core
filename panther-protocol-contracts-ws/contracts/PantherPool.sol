@@ -87,6 +87,45 @@ contract PantherPool is CommitmentsTrees, Verifier {
         );
     }
 
+    function processDepositWithdraw(
+        address feeToken, // ignored in zk-proof
+        address feePayer, //  ignored in zk-proof
+        address token, // for deposit ar withdrawal
+        ExtPay calldata deposit,
+        ExtPay calldata withdrawal
+    ) internal {
+        uint256 feeAmount;
+        Fees memory rates = feeRates;
+        if (deposit.amount != 0) {
+            require(deposit.amount < MAX_EXT_AMOUNT, ERR_DEPOSIT_OVER_LIMIT);
+            require(
+                deposit.account != address(0),
+                ERR_DEPOSIT_FROM_ZERO_ADDRESS
+            );
+            feeAmount += rates.deposit;
+            IERC20(token).safeTransferFrom(
+                deposit.account,
+                address(this),
+                deposit.amount
+            );
+        }
+        if (withdrawal.amount != 0) {
+            require(
+                withdrawal.amount < MAX_EXT_AMOUNT,
+                ERR_WITHDRAW_OVER_LIMIT
+            );
+            require(
+                withdrawal.account != address(0),
+                ERR_WITHDRAW_TO_ZERO_ADDRESS
+            );
+            feeAmount += rates.withdrawal;
+            IERC20(token).safeTransfer(withdrawal.account, withdrawal.amount);
+        }
+        if (feeAmount != 0) {
+            processFees(feeToken, feePayer, feeAmount);
+        }
+    }
+
     /* TODO: remove these in-line dev notes
         // recipient generates
         spendRootPrivKey: = fn(seed)
@@ -138,42 +177,13 @@ contract PantherPool is CommitmentsTrees, Verifier {
         } else {
             require(token == address(0), ERR_ZERO_TOKEN_UNEXPECTED);
 
-            uint256 feeAmount;
-            Fees memory rates = feeRates;
-            if (deposit.amount != 0) {
-                require(
-                    deposit.amount < MAX_EXT_AMOUNT,
-                    ERR_DEPOSIT_OVER_LIMIT
-                );
-                require(
-                    deposit.account != address(0),
-                    ERR_DEPOSIT_FROM_ZERO_ADDRESS
-                );
-                feeAmount += rates.deposit;
-                IERC20(token).safeTransferFrom(
-                    deposit.account,
-                    address(this),
-                    deposit.amount
-                );
-            }
-            if (withdrawal.amount != 0) {
-                require(
-                    withdrawal.amount < MAX_EXT_AMOUNT,
-                    ERR_WITHDRAW_OVER_LIMIT
-                );
-                require(
-                    withdrawal.account != address(0),
-                    ERR_WITHDRAW_TO_ZERO_ADDRESS
-                );
-                feeAmount += rates.withdrawal;
-                IERC20(token).safeTransfer(
-                    withdrawal.account,
-                    withdrawal.amount
-                );
-            }
-            if (feeAmount != 0) {
-                processFees(feeToken, feePayer, feeAmount);
-            }
+            processDepositWithdraw(
+                feeToken,
+                feePayer,
+                token,
+                deposit,
+                withdrawal
+            );
         }
 
         require(

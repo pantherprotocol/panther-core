@@ -6,6 +6,9 @@ import { PoseidonT4 } from "./Poseidon.sol";
 import "./CommitmentsTrees.sol";
 import "./verifier/Verifier.sol";
 import { IN_UTXOs, MAX_EXT_AMOUNT, MAX_TIMESTAMP, OUT_UTXOs } from "./Constants.sol";
+uint256 constant NUM_PACKED_BYTES32_PROOF_INPUTS = IN_UTXOs * 2 + OUT_UTXOs;
+uint256 constant NUM_PACKED_UINT256_PROOF_INPUTS = 5;
+uint256 constant NUM_PACKED_ADDRESS_PROOF_INPUTS = 4;
 import { PluginData, SnarkProof } from "./Types.sol";
 import "./ErrorMsgs.sol";
 
@@ -75,6 +78,77 @@ contract PantherPool is CommitmentsTrees, Verifier {
 
     // constructor: require(BATCH_SIZE == OUT_UTXOs)
 
+    function checkValidTimeLimits(Period calldata timeLimit) internal view {
+        uint256 currentTime = block.timestamp;
+        require(
+            timeLimit.from >= currentTime && timeLimit.to <= currentTime,
+            ERR_EXPIRED_TX_TIME
+        );
+        require(
+            timeLimit.from < MAX_TIMESTAMP && timeLimit.to < MAX_TIMESTAMP,
+            ERR_TOO_LARGE_TIME
+        );
+    }
+
+    function processDepositWithdraw(
+        address, // feeToken, // ignored in zk-proof
+        address feePayer, //  ignored in zk-proof
+        address token, // for deposit ar withdrawal
+        ExtPay calldata deposit,
+        ExtPay calldata withdrawal
+    ) internal {
+        uint256 feeAmount;
+        Fees memory rates = feeRates;
+        if (deposit.amount != 0) {
+            require(deposit.amount < MAX_EXT_AMOUNT, ERR_DEPOSIT_OVER_LIMIT);
+            require(
+                deposit.account != address(0),
+                ERR_DEPOSIT_FROM_ZERO_ADDRESS
+            );
+            feeAmount += rates.deposit;
+            IERC20(token).safeTransferFrom(
+                deposit.account,
+                address(this),
+                deposit.amount
+            );
+        }
+        if (withdrawal.amount != 0) {
+            require(
+                withdrawal.amount < MAX_EXT_AMOUNT,
+                ERR_WITHDRAW_OVER_LIMIT
+            );
+            require(
+                withdrawal.account != address(0),
+                ERR_WITHDRAW_TO_ZERO_ADDRESS
+            );
+            feeAmount += rates.withdrawal;
+            IERC20(token).safeTransfer(withdrawal.account, withdrawal.amount);
+        }
+        if (feeAmount != 0) {
+            processFees(
+                // feeToken,
+                feePayer,
+                feeAmount
+            );
+        }
+    }
+
+    function processNullifiers(
+        bytes32[IN_UTXOs] calldata inputMerkleRoots,
+        bytes32[IN_UTXOs] calldata inputNullifiers
+    ) internal {
+        for (uint256 i = 0; i < inputNullifiers.length; i++) {
+            bytes32 nullifier = inputNullifiers[i];
+            require(uint256(nullifier) < FIELD_SIZE, ERR_TOO_LARGE_NULLIFIER);
+            require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);
+
+            require(isKnownRoot(inputMerkleRoots[i]), ERR_UNKNOWN_MERKLE_ROOT);
+
+            isSpent[nullifier] = true;
+            emit Nullifier(nullifier);
+        }
+    }
+
     /* TODO: remove these in-line dev notes
         // recipient generates
         spendRootPrivKey: = fn(seed)
@@ -102,11 +176,107 @@ contract PantherPool is CommitmentsTrees, Verifier {
         Nullifier := Poseidon(spendPrivKey, leafId)
     */
 
+    function getExtraInputsHash(
+        address deposit,
+        address withdrawal,
+        PluginData memory plugin,
+        uint256[UTXO_SECRETS][OUT_UTXOs] memory secrets
+    ) internal pure returns (uint256) {
+        return
+            uint256(
+                keccak256(
+                    abi.encodePacked(
+                        // Input params which are not used in arithmetic circuits
+                        deposit,
+                        withdrawal,
+                        plugin.contractAddress,
+                        plugin.callData,
+                        secrets
+                    )
+                )
+            ) % FIELD_SIZE;
+    }
+
+    function packBytes32ProofInputs(
+        bytes32[IN_UTXOs] calldata inputMerkleRoots,
+        bytes32[IN_UTXOs] calldata inputNullifiers,
+        bytes32[OUT_UTXOs] calldata commitments
+    ) internal pure returns (bytes32[NUM_PACKED_BYTES32_PROOF_INPUTS] memory) {
+        bytes32[NUM_PACKED_BYTES32_PROOF_INPUTS] memory packed;
+        for (uint256 i = 0; i < IN_UTXOs; i++) {
+            packed[i] = inputMerkleRoots[i];
+            packed[i + IN_UTXOs] = inputNullifiers[i];
+        }
+        for (uint256 i = 0; i < IN_UTXOs; i++) {
+            packed[i + 2 * IN_UTXOs] = commitments[i];
+        }
+        return packed;
+    }
+
+    function packUint256ProofInputs(Period memory timeLimit)
+        internal
+        view
+        returns (uint256[NUM_PACKED_UINT256_PROOF_INPUTS] memory)
+    {
+        uint256[NUM_PACKED_UINT256_PROOF_INPUTS] memory packed;
+        packed[0] = timeLimit.from;
+        packed[1] = timeLimit.to;
+        packed[2] = uint256(rewardRates.forTxReward);
+        packed[3] = uint256(rewardRates.forUtxoReward);
+        packed[4] = uint256(rewardRates.forDepositReward);
+        return packed;
+    }
+
+    function packAddressProofInputs(
+        address token,
+        address deposit,
+        address withdrawal,
+        address plugin
+    ) internal pure returns (address[NUM_PACKED_ADDRESS_PROOF_INPUTS] memory) {
+        address[NUM_PACKED_ADDRESS_PROOF_INPUTS] memory packed;
+        packed[0] = token;
+        packed[1] = deposit;
+        packed[2] = withdrawal;
+        packed[3] = plugin;
+        return packed;
+    }
+
+    function verifyTransactionProof(
+        PluginData memory plugin,
+        // "Input" zAsset UTXOs to spend
+        bytes32[NUM_PACKED_BYTES32_PROOF_INPUTS] memory bytes32ProofInputs,
+        uint256[NUM_PACKED_UINT256_PROOF_INPUTS] memory uint256ProofInputs,
+        address[NUM_PACKED_ADDRESS_PROOF_INPUTS] memory addressProofInputs,
+        uint256[UTXO_SECRETS][OUT_UTXOs] memory secrets,
+        SnarkProof calldata proof
+    ) internal pure {
+        uint256 extraInputsHash = getExtraInputsHash(
+            addressProofInputs[1],
+            addressProofInputs[2],
+            plugin,
+            secrets
+        );
+
+        uint256 inputsHash = uint256(
+            sha256(
+                abi.encodePacked(
+                    rewardToken,
+                    bytes32ProofInputs,
+                    uint256ProofInputs,
+                    addressProofInputs,
+                    extraInputsHash
+                )
+            )
+        ) % FIELD_SIZE;
+        bool validProof = verifyProof(proof, inputsHash);
+        require(validProof, ERR_INVALID_PROOF);
+    }
+
     function transaction(
         Period calldata timeLimit,
         address feeToken, // ignored in zk-proof
         address feePayer, //  ignored in zk-proof
-        address token, // for deposit ar withdrawal
+        address token, // for deposit or withdrawal
         ExtPay calldata deposit,
         ExtPay calldata withdrawal,
         PluginData calldata plugin,
@@ -118,134 +288,72 @@ contract PantherPool is CommitmentsTrees, Verifier {
         uint256[UTXO_SECRETS][OUT_UTXOs] calldata secrets,
         SnarkProof calldata proof
     ) external payable {
+        checkValidTimeLimits(timeLimit);
         // FIXME: add Non-reentrant
-        {
-            uint256 currentTime = block.timestamp;
-            require(
-                timeLimit.from >= currentTime && timeLimit.to <= currentTime,
-                ERR_EXPIRED_TX_TIME
-            );
-            require(
-                timeLimit.from < MAX_TIMESTAMP && timeLimit.to < MAX_TIMESTAMP,
-                ERR_TOO_LARGE_TIME
-            );
-        }
 
         if (deposit.amount == 0 && withdrawal.amount == 0) {
             require(token == address(0), ERR_ZERO_TOKEN_EXPECTED);
         } else {
             require(token == address(0), ERR_ZERO_TOKEN_UNEXPECTED);
 
-            uint256 feeAmount;
-            Fees memory rates = feeRates;
-            if (deposit.amount != 0) {
-                require(
-                    deposit.amount < MAX_EXT_AMOUNT,
-                    ERR_DEPOSIT_OVER_LIMIT
-                );
-                require(
-                    deposit.account != address(0),
-                    ERR_DEPOSIT_FROM_ZERO_ADDRESS
-                );
-                feeAmount += rates.deposit;
-                IERC20(token).safeTransferFrom(
-                    deposit.account,
-                    address(this),
-                    deposit.amount
-                );
-            }
-            if (withdrawal.amount != 0) {
-                require(
-                    withdrawal.amount < MAX_EXT_AMOUNT,
-                    ERR_WITHDRAW_OVER_LIMIT
-                );
-                require(
-                    withdrawal.account != address(0),
-                    ERR_WITHDRAW_TO_ZERO_ADDRESS
-                );
-                feeAmount += rates.withdrawal;
-                IERC20(token).safeTransfer(
-                    withdrawal.account,
-                    withdrawal.amount
-                );
-            }
-            if (feeAmount != 0) {
-                processFees(feeToken, feePayer, feeAmount);
-            }
+            processDepositWithdraw(
+                feeToken,
+                feePayer,
+                token,
+                deposit,
+                withdrawal
+            );
         }
 
         require(
             inputNullifiers.length == inputMerkleRoots.length,
             ERR_INVALID_JOIN_INPUT
         );
-        for (uint256 i = 0; i < inputNullifiers.length; i++) {
-            bytes32 nullifier = inputNullifiers[i];
-            require(uint256(nullifier) < FIELD_SIZE, ERR_TOO_LARGE_NULLIFIER);
-            require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);
 
-            require(isKnownRoot(inputMerkleRoots[i]), ERR_UNKNOWN_MERKLE_ROOT);
+        processNullifiers(inputMerkleRoots, inputNullifiers);
 
-            isSpent[nullifier] = true;
-            emit Nullifier(nullifier);
-        }
+        // Horrible hack to avoid "Stack too deep" errors
+        {
+            bytes32[NUM_PACKED_BYTES32_PROOF_INPUTS]
+                memory bytes32ProofInputs = packBytes32ProofInputs(
+                    inputMerkleRoots,
+                    inputNullifiers,
+                    commitments
+                );
 
-        uint256 extraInputsHash = uint256(
-            keccak256(
-                abi.encodePacked(
-                    // Input params which are not used in arithmetic circuits
+            uint256[NUM_PACKED_UINT256_PROOF_INPUTS]
+                memory uint256ProofInputs = packUint256ProofInputs(timeLimit);
+
+            address[NUM_PACKED_ADDRESS_PROOF_INPUTS]
+                memory addressProofInputs = packAddressProofInputs(
+                    token,
                     deposit.account,
                     withdrawal.account,
-                    plugin.contractAddress,
-                    plugin.callData,
-                    secrets
-                )
-            )
-        ) % FIELD_SIZE;
+                    plugin.contractAddress
+                );
 
-        uint256 inputsHash;
-        {
-            Rewards memory rewards = rewardRates;
-            inputsHash =
-                uint256(
-                    sha256(
-                        abi.encodePacked(
-                            token,
-                            deposit.amount,
-                            withdrawal.amount,
-                            rewardToken,
-                            uint256(rewards.forTxReward),
-                            uint256(rewards.forUtxoReward),
-                            uint256(rewards.forDepositReward),
-                            extraInputsHash,
-                            timeLimit.from,
-                            timeLimit.to,
-                            // TODO: check if `bytes32[..]` to be converted to `uint256, uint256, ...`
-                            inputMerkleRoots,
-                            inputNullifiers,
-                            // TODO: check if `uint256[..]` to be converted to `uint256, uint256, ...`
-                            commitments
-                        )
-                    )
-                ) %
-                FIELD_SIZE;
+            verifyTransactionProof(
+                plugin,
+                bytes32ProofInputs,
+                uint256ProofInputs,
+                addressProofInputs,
+                secrets,
+                proof
+            );
         }
-        require(verify(proof, inputsHash), ERR_INVALID_PROOF);
 
         addAndEmitCommitments(commitments, secrets, timeLimit.to);
 
         if (plugin.contractAddress != address(0)) {
-            require(
-                callPlugin(plugin.contractAddress, plugin.callData),
-                ERR_PLUGIN_FAILURE
-            );
+            require(callPlugin(plugin), ERR_PLUGIN_FAILURE);
         }
     }
 
     function processFees(
-        address feeToken,
+        // address feeToken,
         address feePayer,
-        uint256 feeAmount
-    ) internal {
+        uint256 // feeAmount
+    ) internal pure {
         // TODO: check if `require` is not doubled by the code called
         require(feePayer != address(0), ERR_ZERO_FEE_PAYER);
         require(feePayer != address(0), ERR_ZERO_FEE_PAYER);
@@ -275,10 +383,9 @@ contract PantherPool is CommitmentsTrees, Verifier {
         emit TokenWeightsRoot(newRoot);
     }
 
-    function callPlugin(address pluginAddress, bytes calldata callData)
-        internal
-        returns (bool success)
-    {
+    function callPlugin(
+        PluginData memory // plugin
+    ) internal pure returns (bool success) {
         // TODO: implement plugin call
         success = true;
         return success;

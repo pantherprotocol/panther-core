@@ -10,7 +10,7 @@ zeroSeed="Pantherprotocol"
 # Also defined in Constants.sol
 treeDepth="15"
 
-node_modules/.bin/ts-node lib/generateMerkleZerosContract.ts \
+node_modules/.bin/ts-node lib/generateTriadMerkleZerosContract.ts \
   ${zeroSeed} \
   ${treeDepth} \
-  > contracts/MerkleZeros.sol
+  > contracts/TriadMerkleZeros.sol

@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 import Web3 from 'web3'
-import { poseidon } from 'circomlib'
+import { poseidon } from 'circomlibjs'
 
 const { keccak256, toBN } = Web3.utils
 
@@ -14,22 +14,27 @@ const genZerosContract = (zeroSeed: string, treeDepth: number): string => {
     const template = fs.readFileSync(
         path.join(
             __dirname,
-            'MerkleZeros.sol.template',
+            'TriadMerkleZeros.sol.template',
         ),
     ).toString()
 
     const zeroVal: string = toBN(keccak256(zeroSeed)).mod(toBN(SCALAR_FIELD)).toString()
 
     const zeros: BigInt[] = [BigInt(zeroVal)]
-    for (let i = 1; i <= treeDepth; i ++) {
+
+    // First level is modified (it has 3 child nodes)
+    zeros[1] = poseidon([zeroVal, zeroVal, zeroVal])
+
+    // Other levels are "binary"
+    for (let i = 2; i <= treeDepth; i ++) {
         const z = zeros[i - 1]
         const hashed = poseidon([z, z])
         zeros.push(hashed)
     }
 
     let z = ''
-    for (let i = 2; i < zeros.length - 1; i ++) {
-        z += `        zeros[${i}] = uint256(${zeros[i]});\n`
+    for (let i = 0; i < zeros.length - 1; i ++) {
+        z += `        zeros[${i}] = bytes32(uint256(${zeros[i]}));\n`
     }
 
     return template

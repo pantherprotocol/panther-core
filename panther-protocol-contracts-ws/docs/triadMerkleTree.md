@@ -63,10 +63,10 @@ t |bH  bL| Subtree
 3 | 1  1 | Not allowed
 --|------|------------
 
-(III):
-                       |bH+bL     !bH-bL  0  |
-|n1,n2,n3| = |L,R,C| * |0         bH      !bH|
-                       |!(bH|bL)  bL      bH |
+(III):                      
+n1 = C + (bl+bh)*(L - C)
+n2 = L + bl*(C - L) + bh*(R - L)
+n3 = R + bh*(C - R)
 </pre>
 
 ## Modified (or "triad") leaf index

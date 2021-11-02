@@ -40,7 +40,7 @@ describe("Rewards circuit", async () => {
       forTxReward: F.e(2),
       forUtxoReward: F.e(3),
       forDepositReward: F.e(4),
-      relayerTips: F.e(2),
+      rAmountTips: F.e(2),
       amountsIn: [F.e(2), F.e(4)],
       createTimes: [F.e(10), F.e(15)],
       spendTime: F.e(20),
@@ -56,12 +56,12 @@ describe("Rewards circuit", async () => {
     let S5 = (S4 + S2) * input.assetWeight;
     let R = S1 + S5;
 
-    const Rr = input.relayerTips;
+    const Rr = input.rAmountTips;
     const Ru = R - Rr;
 
     const w = await circuitRewards.calculateWitness(input, true);
 
-    await circuitRewards.assertOut(w, { userRewards: Ru })
+    await circuitRewards.assertOut(w, { rPoints: Ru })
   });
 });
 

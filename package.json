@@ -9,7 +9,7 @@
     "url": "git+https://github.com/pantherprotocol/panther-protocol.git"
   },
   "scripts": {
-    "test": "mocha --max-old-space-size=4000"
+    "test": "mocha --max-old-space-size=4000 --timeout 10000"
   },
   "devDependencies": {
     "chai": "^4.3.4",

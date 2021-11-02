@@ -1,14 +1,12 @@
 {
-  "name": "circuits",
+  "name": "panther-circuits",
   "version": "1.0.0",
   "description": "Panther Protocol Circuits",
   "license": "MIT",
   "private": true,
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pantherprotocol/panther-protocol.git"
-  },
+  "repository": "git+https://github.com/pantherprotocol/panther-circuits.git",
   "scripts": {
+    "compile:docker": "./scripts/docker-compile.sh circuits/mainTransaction.circom",
     "test": "mocha --max-old-space-size=4000 --timeout 10000"
   },
   "devDependencies": {
@@ -19,5 +17,7 @@
   },
   "dependencies": {
     "circomlib": "^2.0.2"
-  }
+  },
+  "main": "index.js",
+  "author": "Pantherprotocol team"
 }

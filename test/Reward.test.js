@@ -2,38 +2,37 @@ const chai = require("chai");
 const path = require("path");
 const wasm_tester = require("circom_tester").wasm;
 const F = require("circomlibjs").babyjub.F;
+const { getOptions } = require("./helpers/circomTester");
 
-const assert = chai.assert;
-let circuitRewards;
 describe("Rewards circuit", async () => {
-  beforeEach(async () => {
-    circuitRewards = await wasm_tester(
-      path.join(__dirname, "circuits", "rewards.circom")
-    );
+  let circuitRewards;
+
+  before(async () => {
+    const opts = getOptions();
+    const input = path.join(opts.basedir, "./test/circuits/rewards.circom");
+    circuitRewards = await wasm_tester(input, opts);
   });
+
   it("Should compute valid rewards", async () => {
-    circuitRewards = await wasm_tester(
-      path.join(__dirname, "circuits", "rewards.circom")
-    );
-
     /*
-    R := forTxReward + forBaseReward + forUtxoReward * sum[over i](UTXO_period_i * UTXO_amount_i) * asset_weight  + forDepositReward * deposit_amount * asset_weight
-    `C1` - "base" reward to a user “for transaction"
-    `C2` - factor to reward a user for “shielded UTXO”
-    `C4` - factor to reward a user “for deposit”
-    `C3` - “base” reward to a relayer “for transaction"
+    // Total reward (i.e. user reward plus relayer reward)
+    R= forTxReward + (
+      forUtxoReward * sum[over i](UTXO_period_i * UTXO_amount_i) +
+      forDepositReward * deposit_amount
+    ) * asset_weight
 
-    Ru = R -  Relayer_tips
-    Rr = Relayer_tips
-
-    R= forTxReward + forBaseReward + (forUtxoReward * sum[over i](UTXO_period_i * UTXO_amount_i) + forDepositReward * deposit_amount) * asset_weight;
     S1 = forTxReward
     S2 = forDepositReward * deposit_amount
     S3 = sum[over i](UTXO_period_i * UTXO_amount_i)
     S4 = forUtxoReward * S3
     S5 = (S4 + S2)*assetWeight
     R = S1 + S5
-*/
+
+    // User reward
+    rAmount = R -  rAmountTips
+    // Relayer reward
+    rAmountTips
+    */
 
     const input = {
       extAmountIn: F.e(10),
@@ -56,12 +55,11 @@ describe("Rewards circuit", async () => {
     let S5 = (S4 + S2) * input.assetWeight;
     let R = S1 + S5;
 
-    const Rr = input.rAmountTips;
-    const Ru = R - Rr;
+    const rAmountTips = input.rAmountTips;
+    const rAmount = R - rAmountTips;
 
     const w = await circuitRewards.calculateWitness(input, true);
 
-    await circuitRewards.assertOut(w, { rPoints: Ru })
+    await circuitRewards.assertOut(w, { rAmount: rAmount })
   });
 });
-

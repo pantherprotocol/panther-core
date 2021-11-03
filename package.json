@@ -6,12 +6,14 @@
   "private": true,
   "repository": "git+https://github.com/pantherprotocol/panther-circuits.git",
   "scripts": {
-    "compile:docker": "./scripts/docker-compile.sh circuits/mainTransaction.circom",
-    "test": "mocha --max-old-space-size=4000 --timeout 10000"
+    "compile": "circom --r1cs --wasm --sym -o compiled/ circuits/mainTransaction.circom",
+    "compile:docker": "scripts/circom-docker.sh --r1cs --wasm --sym -o compiled/ circuits/mainTransaction.circom",
+    "test": "mocha --max-old-space-size=4000 --timeout 10000",
+    "test:docker": "export CIRCOM_DOCKER=yes && mocha --timeout 15000"
   },
   "devDependencies": {
     "chai": "^4.3.4",
-    "circom_tester": "0.0.7",
+    "circom_tester": "https://github.com/vkonst/circom_tester.git",
     "circomlibjs": "^0.0.8",
     "mocha": "^9.1.3"
   },

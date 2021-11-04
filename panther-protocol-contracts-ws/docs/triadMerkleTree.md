@@ -19,33 +19,42 @@ The **"triad binary tree"** is a modified Merkle binary tree, such that:
 Example:
 
 <pre>
-- Number in a root/node/leaf position is the "node/leaf index"
-  It starts from 0 for the leftmost node/leaf of every level
-- Number in [] is the "level index" that starts from 0 for the leaves level
+- Number in [] is the "level index" that starts from 0 for the leaves level.
+- Numbers in node/leaf positions are "node/leaf indices" which starts from 0
+  for the leftmost node/leaf of every level.
+- Numbers bellow leaves are IDs of leaves.
 - TREE_DEPTH = 4
-[4]                              0
-                                 |
-[3]               0-------------------------------1
-                  |                               |
-[2]       0---------------1                2--------------3
-          |               |                |              |
-[1]   0-------1       2-------3       4-------5       6-------7
-     /|\     /|\     /|\     /|\     /|\     /|\     /|\     /|\
-[0]  0..2    3..5    6..8    9..11  12..14  15..17  18..20  21..24
+[4]                                       0
+                                          |
+[3]                        0--------------------------------1
+                           |                                |
+[2]                0---------------1                 2--------------3
+                   |               |                 |              |
+[1]            0-------1       2-------3        4-------5       6-------7
+              /|\     /|\     /|\     /|\      /|\     /|\     /|\     /|\
+[0] index:   0..2    3..5    6..8    9...11  12..14  15..17  18..20  21..24
+
+  leaf ID:   0..2    4..6    8..10   12..14  16..18  20..23  24..27  28..30
+
+Arithmetic operations with multiples of 2 (i.e. shifting) is "cheaper" than
+operations with multiples of 3 (both on-chain and in zk-circuits).
+Therefore, IDs of leaves (but NOT hashes of nodes) are calculated as if the
+tree would have 4 (not 3) leaves in branches, with every 4th leaf skipped.
+In other words, there are no leaves with IDs 3, 7, 11, 15, 19...
 </pre>
 
 _Let's assume:_
 
-`C` - leaf being inserted;
-`L` - leaf, a neighbour of `C` and `R` in the triad, to the left from the `R`;
+`C` - leaf being inserted;\
+`L` - leaf, a neighbour of `C` and `R` in the triad, to the left from the `R`;\
 `R` - leaf, a neighbour of `C` and `L` in the triad, to the right from the `L`;
 
-`l` - level index (0 for leaves);
-`i` - leaf index (0 for the leftmost leaf);
+`l` - level index (0 for leaves);\
+`i` - leaf index (0 for the leftmost leaf);\
 `t` - position of `C` in the triad:
 
-> t=0, if `C` is the leftmost leaf
-> t=1, if `C` is the middle leaf
+> t=0, if `C` is the leftmost leaf\
+> t=1, if `C` is the middle leaf\
 > t=2, if `C` is the rightmost leaf
 
 `bH` and `bL` - bit representation of `t` (`bL` is the lower bit, `bH` is the higher);
@@ -67,18 +76,18 @@ t |bH  bL| Subtree
 3 | 1  1 | Not allowed
 --|------|------------
 
-(III):                      
+(III):
 n1 = C + (bl+bh)*(L - C)
 n2 = L + bl*(C - L) + bh*(R - L)
 n3 = R + bh*(C - R)
 </pre>
 
-## Modified (or "triad") leaf index
+## Leaf ID: Modified (or "triad") leaf index
 
 It is the leaf index in an imaginary binary full tree, where every forth leaf
 skipped (as if a quad with one skipped leaf is inserted instead of a triad).
 
-> Max leaf index for the `TREE_DEPTH` of 15 is 49151;
+> Max leaf index for the `TREE_DEPTH` of 15 is 49151;\
 > Max triad leaf index for the `TREE_DEPTH` of 15 is 65534 (16 bits).
 
 <pre>
@@ -117,7 +126,7 @@ For every input UTXO, we pass the Merkle proof being:
 -   triad leaf index, `i'`, and ...
 -   ... triad path elements, `P'`
 
-> `i'` is an integer of 0..65534
+> `i'` is an integer of 0..65534\
 > `P'` consists of 16 elements
 
 ## Merkle proof verification in the circuit

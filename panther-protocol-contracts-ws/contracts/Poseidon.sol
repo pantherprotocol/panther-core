@@ -5,9 +5,17 @@ pragma solidity ^0.8.4;
 // using poseidon_gencontract.js from circomlib.
 
 library PoseidonT3 {
-    function poseidon(bytes32[2] memory input) public pure returns (bytes32) {}
+    function poseidon(bytes32[2] memory input)
+        external
+        pure
+        returns (bytes32)
+    {}
 }
 
 library PoseidonT4 {
-    function poseidon(bytes32[3] memory input) public pure returns (bytes32) {}
+    function poseidon(bytes32[3] memory input)
+        external
+        pure
+        returns (bytes32)
+    {}
 }

@@ -76,7 +76,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
 
     event Nullifier(bytes32 nullifier);
 
-    // constructor: require(BATCH_SIZE == OUT_UTXOs)
+    // constructor: require(TRIAD_SIZE == OUT_UTXOs)
 
     function checkValidTimeLimits(Period calldata timeLimit) internal view {
         uint256 currentTime = block.timestamp;
@@ -150,30 +150,49 @@ contract PantherPool is CommitmentsTrees, Verifier {
     }
 
     /* TODO: remove these in-line dev notes
+       Recipient reading key V = vB
+       Recipient master spending key S = sB
+
+       Sender's ephemeral key  R = rB
+       Sender derives a shared key K=ECDH(V, r)  = rV = rvB
+       Sender derives new spending key for recipient as S' = rS
+       Sender uses K to encrypt the tx opening values M= (r, amount, token, ...)
+       Ciphertext C = Enc(M, K).
+       The sender publishes R and C
+
+       The recipient derives shared key K = vR= vrB
+       The recipient decrypts ciphertext M = Dec(C, K)
+
         // recipient generates
         spendRootPrivKey: = fn(seed)
         readPrivKey: = fn(seed)
-        // recipient calculates and emits, sender reads
         spendRootPubKey := BabyPubKey(spendRootPrivKey)
         readPubKey: = BabyPubKey(readPrivKey)
+        // recipient emits, sender reads
+        spendRootPubKey, readPubKey
 
         // for output UTXOs, sender generates
         random
-        // for output UTXOs, smart contract encrypts emits
         encodedMessage := fn((token, amount, random), readPubKey)
-        // for output UTXOs, sender calculates
-        spendPubKey := spendRootPubKey + BabyPubKey(random)
+        spendPubKey := fn(spendRootPubKey,random)
         // for output UTXOs, circuit verifies
-        !!! REMOVED: spendPubKey := spendRootPubKey + BabyPubKey(random)
-        Leaf := Poseidon(spendPubKey.Ax, spendPubKey.Ay, value, token, timestamp)
+        spendPubKey := BabyPubKey(spendPrivKey)
+        Leaf := Poseidon(spendPubKey.Ax, spendPubKey.Ay, amount, token, createTime)
+        // for output UTXOs, smart contract emits
+        encodedMessage, leafId, createTime
 
-        // for input UTXOs, recipient reads and decrypts
-        (token, amount, random) = decrypt(encodedMessage, readPrivKey)
-        // for input UTXOs, recipient calculates
-        spendPrivKey := spendRootPrivKey + random
+        // for new UTXOs, recipient reads and decrypts
+        - 1x (1 or 1/8) words - leftLeafId
+        - 1x (1 or 1/8) words - createTime
+        - (3 or 2)x (2 or 1) words - Sender's ephemeral key  R
+        - (3 or 2)x (1 or 1/2) words - iv
+        - (3 or 2)x (2 or 3) words - (token, amount, random) = decrypt(encodedMessage, readPrivKey)
+        // to spend UTXOs, recipient calculates
+        spendPrivKey := fn(random, spendRootPrivKey)
         // for input UTXOs, circuit verifies
         spendPubKey := BabyPubKey(spendPrivKey)
         Nullifier := Poseidon(spendPrivKey, leafId)
+        .. and tokenWeightLeaf
     */
 
     function getExtraInputsHash(

@@ -2,6 +2,8 @@
 pragma solidity ^0.8.4;
 import "./Types.sol";
 
+// solhint-disable no-inline-assembly
+
 library BabyJubJub {
     // Curve parameters
     // E: 168700x^2 + y^2 = 1 + 168696x^2y^2

@@ -1,5 +1,5 @@
 {
-  "name": "preZKP-crypto",
+  "name": "@preZKP/crypto",
   "version": "0.1.0",
   "main": "lib/index.js",
   "types": "dist/**/*.d.ts",

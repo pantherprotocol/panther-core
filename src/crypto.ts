@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import * as crypto from 'src/crypto';
+import * as crypto from 'crypto';
 import {babyjub, eddsa, mimc7} from 'circomlibjs';
 import * as ff from 'ffjavascript';
 import * as createBlakeHash from 'blake-hash';

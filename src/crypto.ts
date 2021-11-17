@@ -1,4 +1,4 @@
-import * as assert from 'assert';
+import assert from 'assert';
 import * as crypto from 'crypto';
 import {babyjub, eddsa, mimc7} from 'circomlibjs';
 import * as ff from 'ffjavascript';

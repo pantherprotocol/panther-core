@@ -8,7 +8,6 @@
     "build:types": "./scripts/gen-types.sh",
     "build": "yarn build:types && tsc -p tsconfig.json",
     "watch": "tsc -p tsconfig.json --watch",
-    "uml": "./scripts/uml.sh",
     "test": "yarn build:types && jest",
     "lint": "yarn run lint:ts && yarn run prettier:list-different",
     "lint:ts": "eslint --ext .js,.ts .",
@@ -20,10 +19,6 @@
     "lib/**/*.js",
     "lib/**/*.d.ts"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://github.com/pantherprotocol/panther-pool-client"
-  },
   "dependencies": {
     "@types/browserify": "^12.0.37",
     "assert": "^2.0.0",

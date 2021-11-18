@@ -3,8 +3,9 @@
 /* ========================================================================== */
 
 /*
-A Triad tree is a binary Merkle tree in where the outer nodes have 3 leaves and
+A Triad tree is a binary Merkle tree in which the outer nodes have 3 leaves and
 inner nodes have 2 leaves.
+
 This code is modified version of incrementalquintree:
 https://github.com/appliedzkp/incrementalquintree
 */

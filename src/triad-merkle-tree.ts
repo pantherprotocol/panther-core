@@ -1,10 +1,10 @@
 /* ========================================================================== */
-/*                                  TriadTree                                 */
+/*                               TriadMerkleTree                              */
 /* ========================================================================== */
 
 /*
-A Triad tree is a binary Merkle tree in which the outer nodes have 3 leaves and
-inner nodes have 2 leaves.
+A Triad Merkle tree is a binary Merkle tree in which the outer nodes have
+3 leaves and inner nodes have 2 leaves.
 
 This code is modified version of incrementalquintree:
 https://github.com/appliedzkp/incrementalquintree
@@ -31,7 +31,7 @@ const calcInitialVals = (
 ) => {
     const zeros: bigint[] = [zeroValue];
     const filledSubtrees: bigint[][] = [[zeroValue, zeroValue, zeroValue]];
-    const filledPaths: any = {0: []};
+    const filledPaths: any = { 0: [] };
 
     let currentLevelHash = hashFunc(filledSubtrees[0]);
     for (let i = 1; i < depth; i++) {
@@ -51,7 +51,7 @@ const calcInitialVals = (
 
     const root = hashFunc(filledSubtrees[depth - 1]);
 
-    return {zeros, filledSubtrees, filledPaths, root};
+    return { zeros, filledSubtrees, filledPaths, root };
 };
 
 const _insertBatch = (
@@ -231,7 +231,7 @@ const _verifyMerklePath = (
 /*
  * An Triad Merkle tree is binary Merkle tree with 3 leaves at the outer node.
  */
-class TriadTree {
+class  TriadMerkleTree {
     // this is the size of the internal node of the tree at depth != 0
     public internalNodeSize: number;
 
@@ -308,7 +308,7 @@ class TriadTree {
     public insertBatch(_leaves: bigint[]) {
         // A node is one level above the leaf
         // m is the leaf's relative position within its node
-        let m = this.nextIndex % this.internalNodeSize;
+        const m = this.nextIndex % this.internalNodeSize;
 
         if (m === 0) {
             // Zero out the level in filledSubtrees
@@ -372,4 +372,4 @@ class TriadTree {
     }
 }
 
-export {TriadTree};
+export { TriadMerkleTree };

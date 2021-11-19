@@ -1,11 +1,11 @@
 // @ts-ignore
-import {firstTree, secondTree, thirdTree} from './data/trees.js';
+import { firstTree, secondTree, thirdTree } from './data/trees.js';
 
-import {TriadTree} from '../triad-tree';
+import { TriadMerkleTree } from '../triad-merkle-tree';
 import _ from 'lodash';
 import assert from 'assert';
 // @ts-ignore
-import {poseidon} from 'circomlibjs';
+import { poseidon } from 'circomlibjs';
 
 const ZERO_VALUE = BigInt(0);
 const LEAF_NODE_SIZE = 3;
@@ -27,9 +27,9 @@ const sum23 = (inputs: bigint[]): bigint => {
 
 describe('Testing Triad Tree with provided examples', () => {
     describe('first tree', () => {
-        let tree: TriadTree;
+        let tree: TriadMerkleTree;
         beforeAll(() => {
-            tree = new TriadTree(5, ZERO_VALUE, hash23);
+            tree = new TriadMerkleTree(5, ZERO_VALUE, hash23);
             _.chunk(firstTree[0], LEAF_NODE_SIZE).forEach(
                 (leaves: bigint[]) => {
                     tree.insertBatch(leaves);
@@ -49,22 +49,22 @@ describe('Testing Triad Tree with provided examples', () => {
             const path = tree.genMerklePath(
                 Math.floor(Math.random() * (tree.leaves.length + 1)),
             );
-            expect(TriadTree.verifyMerklePath(path, hash23)).toBeTruthy();
+            expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeTruthy();
         });
 
         it('should fail if proof incorrect', () => {
             const path = tree.genMerklePath(
-                Math.floor(Math.random() * (tree.leaves.length + 1)),
+                Math.floor(Math.random() * (tree.leaves.length)),
             );
             path.leaf = BigInt(1000000000000000);
-            expect(TriadTree.verifyMerklePath(path, hash23)).toBeFalsy();
+            expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeFalsy();
         });
     });
 
     describe('second tree', () => {
-        let tree: TriadTree;
+        let tree: TriadMerkleTree;
         beforeAll(() => {
-            tree = new TriadTree(5, ZERO_VALUE, hash23);
+            tree = new TriadMerkleTree(5, ZERO_VALUE, hash23);
             _.chunk(secondTree[0], LEAF_NODE_SIZE).forEach(
                 (leaves: bigint[]) => {
                     tree.insertBatch(leaves);
@@ -84,7 +84,7 @@ describe('Testing Triad Tree with provided examples', () => {
             const path = tree.genMerklePath(
                 Math.floor(Math.random() * (tree.leaves.length + 1)),
             );
-            expect(TriadTree.verifyMerklePath(path, hash23)).toBeTruthy();
+            expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeTruthy();
         });
 
         it('should fail if proof incorrect', () => {
@@ -92,14 +92,14 @@ describe('Testing Triad Tree with provided examples', () => {
                 Math.floor(Math.random() * (tree.leaves.length + 1)),
             );
             path.leaf = BigInt(100000000000000000000000);
-            expect(TriadTree.verifyMerklePath(path, hash23)).toBeFalsy();
+            expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeFalsy();
         });
     });
 
     describe('tree with zero leaves only', () => {
-        let tree: TriadTree;
+        let tree: TriadMerkleTree;
         beforeAll(() => {
-            tree = new TriadTree(10, BigInt(thirdTree.zeroValue), hash23);
+            tree = new TriadMerkleTree(10, BigInt(thirdTree.zeroValue), hash23);
         });
 
         it('should have correct root with flled values', () => {
@@ -123,9 +123,9 @@ describe('Testing Triad Tree with provided examples', () => {
     });
 
     describe('Merkle proofs benchmarks', () => {
-        let tree: TriadTree;
+        let tree: TriadMerkleTree;
         beforeAll(() => {
-            tree = new TriadTree(10, BigInt(thirdTree.zeroValue), hash23);
+            tree = new TriadMerkleTree(10, BigInt(thirdTree.zeroValue), hash23);
             for (let index = 0; index < 512; index++) {
                 tree.insertBatch([
                     BigInt(thirdTree.zeroValue),
@@ -138,14 +138,14 @@ describe('Testing Triad Tree with provided examples', () => {
             const path = tree.genMerklePath(
                 Math.floor(Math.random() * (tree.leaves.length + 1)),
             );
-            expect(TriadTree.verifyMerklePath(path, hash23)).toBeTruthy();
+            expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeTruthy();
         });
     });
 
     describe('general tests', () => {
         it('should have size 2**(depth-1)*3 ', () => {
             const depth = 4;
-            const tree = new TriadTree(depth, BigInt(1), sum23);
+            const tree = new TriadMerkleTree(depth, BigInt(1), sum23);
             assert(tree.root === BigInt(2 ** (depth - 1) * 3));
 
             for (let index = 0; index < 2 ** 3; index++) {

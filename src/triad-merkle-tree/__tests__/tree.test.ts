@@ -1,20 +1,12 @@
+import { TriadMerkleTree, hash23 } from '../../triad-merkle-tree';
 // @ts-ignore
 import { firstTree, secondTree, thirdTree } from './data/trees.js';
 
-import { TriadMerkleTree } from '../triad-merkle-tree';
 import _ from 'lodash';
 import assert from 'assert';
-// @ts-ignore
-import { poseidon } from 'circomlibjs';
 
 const ZERO_VALUE = BigInt(0);
 const LEAF_NODE_SIZE = 3;
-
-// Hash 2 or 3 elements
-const hash23 = (inputs: bigint[]): bigint => {
-    assert(inputs.length === 3 || inputs.length === 2);
-    return poseidon(inputs);
-};
 
 // Hash represented as a sum of 2 or 3 elements (for debugging purposes)
 const sum23 = (inputs: bigint[]): bigint => {
@@ -89,7 +81,7 @@ describe('Testing Triad Tree with provided examples', () => {
 
         it('should fail if proof incorrect', () => {
             const path = tree.genMerklePath(
-                Math.floor(Math.random() * (tree.leaves.length + 1)),
+                Math.floor(Math.random() * tree.leaves.length),
             );
             path.leaf = BigInt(100000000000000000000000);
             expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeFalsy();

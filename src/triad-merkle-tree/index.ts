@@ -11,6 +11,8 @@ https://github.com/appliedzkp/incrementalquintree
 */
 
 import assert from 'assert';
+// @ts-ignore
+import { poseidon } from 'circomlibjs';
 
 type PathElements = bigint[][];
 type Indices = number[];
@@ -52,6 +54,11 @@ const calcInitialVals = (
     const root = hashFunc(filledSubtrees[depth - 1]);
 
     return { zeros, filledSubtrees, filledPaths, root };
+};
+
+const hash23 = (inputs: bigint[]): bigint => {
+    assert(inputs.length === 3 || inputs.length === 2);
+    return poseidon(inputs);
 };
 
 const _insertBatch = (
@@ -231,7 +238,7 @@ const _verifyMerklePath = (
 /*
  * An Triad Merkle tree is binary Merkle tree with 3 leaves at the outer node.
  */
-class  TriadMerkleTree {
+class TriadMerkleTree {
     // this is the size of the internal node of the tree at depth != 0
     public internalNodeSize: number;
 
@@ -372,4 +379,7 @@ class  TriadMerkleTree {
     }
 }
 
-export { TriadMerkleTree };
+export {
+    hash23,
+    TriadMerkleTree
+};

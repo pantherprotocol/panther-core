@@ -194,6 +194,10 @@ module.exports = {
             '0x667764c376602b72ef22218e1673c2cc8546201f9a77807570b3e5de137680d',
         root: '0x17b31de43ba4c687cf950ad00dfbe33df40047e79245b50bd1d9f87e622bf2af',
     },
+    fourthTree: {
+        // tree with leaves with bigInt values from 0 to 1535
+        root: '0x103f515cb4b2349989c54df175f43ccc7909497e605c24f748dcc1f27e2f6110',
+    },
 };
 
 /**

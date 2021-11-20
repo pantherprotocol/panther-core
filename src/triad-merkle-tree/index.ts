@@ -12,7 +12,7 @@ https://github.com/appliedzkp/incrementalquintree
 
 import assert from 'assert';
 // @ts-ignore
-import { poseidon } from 'circomlibjs';
+import {poseidon} from 'circomlibjs';
 
 type PathElements = bigint[][];
 type Indices = number[];
@@ -33,7 +33,7 @@ const calcInitialVals = (
 ) => {
     const zeros: bigint[] = [zeroValue];
     const filledSubtrees: bigint[][] = [[zeroValue, zeroValue, zeroValue]];
-    const filledPaths: any = { 0: [] };
+    const filledPaths: any = {0: []};
 
     let currentLevelHash = hashFunc(filledSubtrees[0]);
     for (let i = 1; i < depth; i++) {
@@ -53,7 +53,7 @@ const calcInitialVals = (
 
     const root = hashFunc(filledSubtrees[depth - 1]);
 
-    return { zeros, filledSubtrees, filledPaths, root };
+    return {zeros, filledSubtrees, filledPaths, root};
 };
 
 const hash23 = (inputs: bigint[]): bigint => {
@@ -63,7 +63,7 @@ const hash23 = (inputs: bigint[]): bigint => {
 
 const _convertBnToHex = (bn: bigint): string => {
     return '0x' + bn.toString(16);
-}
+};
 
 const _insertBatch = (
     depth: number,
@@ -347,8 +347,8 @@ class TriadMerkleTree {
     }
 
     /*
-    *  Generates a Merkle proof from a leaf to the root.
-    */
+     *  Generates a Merkle proof from a leaf to the root.
+     */
     public genMerklePath(_index: number): MerkleProof {
         return _genMerklePath(
             _index,
@@ -383,17 +383,19 @@ class TriadMerkleTree {
 
     /*
      * Serializes the tree into a string
-    */
+     */
     public serialize(): string {
-        const filledPaths: any = {}
+        const filledPaths: any = {};
         Object.keys(this.filledPaths).forEach((key: any) => {
-            filledPaths[key] = this.filledPaths[key].map(_convertBnToHex)
+            filledPaths[key] = this.filledPaths[key].map(_convertBnToHex);
         });
 
         return JSON.stringify({
             depth: this.depth,
             filledPaths: filledPaths,
-            filledSubtrees: this.filledSubtrees.map(v => v.map(_convertBnToHex)),
+            filledSubtrees: this.filledSubtrees.map(v =>
+                v.map(_convertBnToHex),
+            ),
             leafNodeSize: this.leafNodeSize,
             leaves: this.leaves.map(_convertBnToHex),
             nextIndex: this.nextIndex,
@@ -405,28 +407,27 @@ class TriadMerkleTree {
 
     /*
      * Deserializes the string into the tree
-    */
+     */
     public static deserialize(_json: string): TriadMerkleTree {
-        const t = Object.assign(new TriadMerkleTree(1, BigInt(0), hash23), JSON.parse(_json));
+        const t = Object.assign(
+            new TriadMerkleTree(1, BigInt(0), hash23),
+            JSON.parse(_json),
+        );
 
-        t.leaves = t.leaves.map(BigInt)
-        t.zeros = t.zeros.map(BigInt)
-        t.filledSubtrees = t.filledSubtrees.map((v: string[]) => v.map(BigInt))
-        t.root = BigInt(t.root)
-        t.zeroValue = BigInt(t.zeroValue)
+        t.leaves = t.leaves.map(BigInt);
+        t.zeros = t.zeros.map(BigInt);
+        t.filledSubtrees = t.filledSubtrees.map((v: string[]) => v.map(BigInt));
+        t.root = BigInt(t.root);
+        t.zeroValue = BigInt(t.zeroValue);
 
-        const filledPaths: any = {}
+        const filledPaths: any = {};
         Object.keys(t.filledPaths).forEach((key: any) => {
-            filledPaths[key] = t.filledPaths[key].map(BigInt)
+            filledPaths[key] = t.filledPaths[key].map(BigInt);
         });
-        t.filledPaths = filledPaths
+        t.filledPaths = filledPaths;
 
         return t;
     }
 }
 
-export {
-    hash23,
-    TriadMerkleTree,
-    MerkleProof
-};
+export {hash23, TriadMerkleTree, MerkleProof};

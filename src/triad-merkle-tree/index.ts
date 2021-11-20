@@ -61,6 +61,10 @@ const hash23 = (inputs: bigint[]): bigint => {
     return poseidon(inputs);
 };
 
+const _convertBnToHex = (bn: bigint): string => {
+    return '0x' + bn.toString(16);
+}
+
 const _insertBatch = (
     depth: number,
     internalNodeSize: number,
@@ -276,7 +280,7 @@ class TriadMerkleTree {
     public filledPaths: any = {};
 
     // The hash function to use
-    public hashFunc: (leaves: bigint[]) => bigint;
+    private hashFunc: (leaves: bigint[]) => bigint;
 
     constructor(
         _depth: number,
@@ -343,9 +347,8 @@ class TriadMerkleTree {
     }
 
     /*
-
-  /*  Generates a Merkle proof from a leaf to the root.
-   */
+    *  Generates a Merkle proof from a leaf to the root.
+    */
     public genMerklePath(_index: number): MerkleProof {
         return _genMerklePath(
             _index,
@@ -377,9 +380,53 @@ class TriadMerkleTree {
         }
         return this.hashFunc(_leaves);
     }
+
+    /*
+     * Serializes the tree into a string
+    */
+    public serialize(): string {
+        const filledPaths: any = {}
+        Object.keys(this.filledPaths).forEach((key: any) => {
+            filledPaths[key] = this.filledPaths[key].map(_convertBnToHex)
+        });
+
+        return JSON.stringify({
+            depth: this.depth,
+            filledPaths: filledPaths,
+            filledSubtrees: this.filledSubtrees.map(v => v.map(_convertBnToHex)),
+            leafNodeSize: this.leafNodeSize,
+            leaves: this.leaves.map(_convertBnToHex),
+            nextIndex: this.nextIndex,
+            root: _convertBnToHex(this.root),
+            zeroValue: _convertBnToHex(this.zeroValue),
+            zeros: this.zeros.map(_convertBnToHex),
+        });
+    }
+
+    /*
+     * Deserializes the string into the tree
+    */
+    public static deserialize(_json: string): TriadMerkleTree {
+        const t = Object.assign(new TriadMerkleTree(1, BigInt(0), hash23), JSON.parse(_json));
+
+        t.leaves = t.leaves.map(BigInt)
+        t.zeros = t.zeros.map(BigInt)
+        t.filledSubtrees = t.filledSubtrees.map((v: string[]) => v.map(BigInt))
+        t.root = BigInt(t.root)
+        t.zeroValue = BigInt(t.zeroValue)
+
+        const filledPaths: any = {}
+        Object.keys(t.filledPaths).forEach((key: any) => {
+            filledPaths[key] = t.filledPaths[key].map(BigInt)
+        });
+        t.filledPaths = filledPaths
+
+        return t;
+    }
 }
 
 export {
     hash23,
-    TriadMerkleTree
+    TriadMerkleTree,
+    MerkleProof
 };

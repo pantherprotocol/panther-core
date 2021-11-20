@@ -1,4 +1,4 @@
-import { TriadMerkleTree, hash23 } from '../../triad-merkle-tree';
+import { MerkleProof, TriadMerkleTree, hash23 } from '../../triad-merkle-tree';
 // @ts-ignore
 import { firstTree, secondTree, thirdTree } from './data/trees.js';
 
@@ -16,6 +16,19 @@ const sum23 = (inputs: bigint[]): bigint => {
         BigInt(0),
     );
 };
+
+// helper function to compare two arrays
+const _arraysAreEqual = (a: any[], b: any[]) => {
+    if (a.length !== b.length) {
+        return false;
+    }
+    for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) {
+            return false;
+        }
+    }
+    return true;
+}
 
 describe('Testing Triad Tree with provided examples', () => {
     describe('first tree', () => {
@@ -39,7 +52,7 @@ describe('Testing Triad Tree with provided examples', () => {
 
         it('should have correct proof', () => {
             const path = tree.genMerklePath(
-                Math.floor(Math.random() * (tree.leaves.length + 1)),
+                Math.floor(Math.random() * tree.leaves.length),
             );
             expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeTruthy();
         });
@@ -74,7 +87,7 @@ describe('Testing Triad Tree with provided examples', () => {
 
         it('should have correct proof', () => {
             const path = tree.genMerklePath(
-                Math.floor(Math.random() * (tree.leaves.length + 1)),
+                Math.floor(Math.random() * tree.leaves.length),
             );
             expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeTruthy();
         });
@@ -128,7 +141,7 @@ describe('Testing Triad Tree with provided examples', () => {
         });
         it('should have correct proof', () => {
             const path = tree.genMerklePath(
-                Math.floor(Math.random() * (tree.leaves.length + 1)),
+                Math.floor(Math.random() * tree.leaves.length),
             );
             expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeTruthy();
         });
@@ -143,7 +156,69 @@ describe('Testing Triad Tree with provided examples', () => {
             for (let index = 0; index < 2 ** 3; index++) {
                 tree.insertBatch([BigInt(1), BigInt(1), BigInt(1)]);
             }
-            assert(tree.root === BigInt(2 ** (depth - 1) * 3));
+            expect(tree.root).toBe(BigInt(2 ** (depth - 1) * 3));
         });
     });
+
+    describe('serialization of the tree to json and back', () => {
+        let firstTree: TriadMerkleTree;
+        let secondTree: TriadMerkleTree;
+        let firstProof: MerkleProof;
+        let secondProof: MerkleProof;
+        let firstIncorrectProof: MerkleProof;
+        let secondIncorrectProof: MerkleProof;
+
+        beforeAll(() => {
+            const depth = 4;
+            firstTree = new TriadMerkleTree(depth, BigInt(1), hash23);
+            for (let index = 0; index < 2 ** 3; index++) {
+                firstTree.insertBatch([BigInt(1), BigInt(1), BigInt(1)]);
+            }
+            secondTree = TriadMerkleTree.deserialize(firstTree.serialize());
+
+            const randomLeafIndex = Math.floor(Math.random() * firstTree.leaves.length);
+            firstProof = firstTree.genMerklePath(randomLeafIndex);
+            secondProof = secondTree.genMerklePath(randomLeafIndex);
+
+            firstIncorrectProof = firstTree.genMerklePath(randomLeafIndex);
+            firstIncorrectProof.leaf = BigInt(100000000000000000000000);
+            secondIncorrectProof = secondTree.genMerklePath(randomLeafIndex);
+            secondIncorrectProof.leaf = BigInt(100000000000000000000000);
+        })
+
+        it('should be deep equal', () => {
+            expect(
+                secondTree.depth === firstTree.depth &&
+                secondTree.root === firstTree.root &&
+                secondTree.zeroValue === firstTree.zeroValue &&
+                secondTree.leafNodeSize === firstTree.leafNodeSize &&
+                secondTree.nextIndex === firstTree.nextIndex &&
+                _arraysAreEqual(secondTree.zeros, firstTree.zeros) &&
+                _arraysAreEqual(secondTree.leaves, firstTree.leaves) &&
+                firstTree.filledSubtrees.every((a, index) => _arraysAreEqual(a, secondTree.filledSubtrees[index])) &&
+                Object.keys(firstTree.filledPaths).every(key => _arraysAreEqual(firstTree.filledPaths[key], secondTree.filledPaths[key]))
+            ).toBeTruthy();
+        })
+
+        it('should generate the same proof', () => {
+            expect(
+                firstProof.leaf === secondProof.leaf &&
+                firstProof.depth === secondProof.depth &&
+                firstProof.root === secondProof.root &&
+                firstProof.pathElements.every((a, index) => _arraysAreEqual(a, secondProof.pathElements[index])) &&
+                _arraysAreEqual(firstProof.indices, secondProof.indices)
+            ).toBeTruthy();
+        })
+
+        it('should have correct proof', () => {
+            expect(TriadMerkleTree.verifyMerklePath(firstProof, hash23)).toBeTruthy();
+            expect(TriadMerkleTree.verifyMerklePath(secondProof, hash23)).toBeTruthy();
+        })
+
+        it('incorrect proof should be declined', () => {
+            expect(TriadMerkleTree.verifyMerklePath(firstIncorrectProof, hash23)).toBeFalsy();
+            expect(TriadMerkleTree.verifyMerklePath(secondIncorrectProof, hash23)).toBeFalsy();
+        })
+    });
+
 });

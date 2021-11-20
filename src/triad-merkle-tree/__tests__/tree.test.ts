@@ -165,8 +165,7 @@ describe('Testing Triad Tree with provided examples', () => {
         let secondTree: TriadMerkleTree;
         let firstProof: MerkleProof;
         let secondProof: MerkleProof;
-        let firstIncorrectProof: MerkleProof;
-        let secondIncorrectProof: MerkleProof;
+        let randomLeafIndex: number;
 
         beforeAll(() => {
             const depth = 4;
@@ -176,14 +175,9 @@ describe('Testing Triad Tree with provided examples', () => {
             }
             secondTree = TriadMerkleTree.deserialize(firstTree.serialize());
 
-            const randomLeafIndex = Math.floor(Math.random() * firstTree.leaves.length);
+            randomLeafIndex = Math.floor(Math.random() * firstTree.leaves.length);
             firstProof = firstTree.genMerklePath(randomLeafIndex);
             secondProof = secondTree.genMerklePath(randomLeafIndex);
-
-            firstIncorrectProof = firstTree.genMerklePath(randomLeafIndex);
-            firstIncorrectProof.leaf = BigInt(100000000000000000000000);
-            secondIncorrectProof = secondTree.genMerklePath(randomLeafIndex);
-            secondIncorrectProof.leaf = BigInt(100000000000000000000000);
         })
 
         it('should be deep equal', () => {
@@ -216,6 +210,11 @@ describe('Testing Triad Tree with provided examples', () => {
         })
 
         it('incorrect proof should be declined', () => {
+            const firstIncorrectProof = firstTree.genMerklePath(randomLeafIndex);
+            firstIncorrectProof.leaf = BigInt(100000000000000000000000);
+            const secondIncorrectProof = secondTree.genMerklePath(randomLeafIndex);
+            secondIncorrectProof.leaf = BigInt(100000000000000000000000);
+
             expect(TriadMerkleTree.verifyMerklePath(firstIncorrectProof, hash23)).toBeFalsy();
             expect(TriadMerkleTree.verifyMerklePath(secondIncorrectProof, hash23)).toBeFalsy();
         })

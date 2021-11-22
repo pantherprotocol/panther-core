@@ -49,7 +49,6 @@ const generatePrivateKeyBabyJubJubFromSeed = (seed: bigint): PrivateKey => {
 const generatePublicKey = (privateKey: PrivateKey): PublicKey => {
     privateKey = BigInt(privateKey.toString());
     assert(privateKey < FIELD_SIZE);
-    console.log('Private key: ', {privateKey});
     return babyjub.mulPointEscalar(
         babyjub.Base8,
         formatPrivateKeyForBabyJub(privateKey),

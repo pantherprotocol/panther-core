@@ -1,21 +1,19 @@
-import {TriadMerkleTree, hash23} from '../triad-merkle-tree';
+import { TriadMerkleTree, hash23 } from '.';
 
+import CONSTANTS from './constants';
 import LZString from 'lz-string';
 import _ from 'lodash';
 import assert from 'assert';
 
-const LEAF_NODE_SIZE = 3;
-const TREE_SIZE = 1536;
-
 // returns a new triad merkle tree constructed of passed 1536! commitments
-const createTriadMerkleTree = (commitments: string[]): TriadMerkleTree => {
+const createTriadMerkleTree = (commitments: string[], zeroValue: bigint): TriadMerkleTree => {
     assert(
-        commitments.length === TREE_SIZE,
+        commitments.length === CONSTANTS.TREE_SIZE,
         'Commitments must be of length 1536',
     );
 
-    const triadMerkleTree = new TriadMerkleTree(10, BigInt(0), hash23);
-    _.chunk(commitments, LEAF_NODE_SIZE).forEach((leaves: string[]) => {
+    const triadMerkleTree = new TriadMerkleTree(10, zeroValue, hash23);
+    _.chunk(commitments, CONSTANTS.LEAF_NODE_SIZE).forEach((leaves: string[]) => {
         triadMerkleTree.insertBatch(leaves.map(c => BigInt(c)));
     });
     return triadMerkleTree;

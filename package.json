@@ -29,6 +29,7 @@
     "browserify": "^17.0.0",
     "circomlibjs": "^0.0.8",
     "crypto": "^1.0.1",
+    "ethers": "^5.5.1",
     "ffjavascript": "^0.2.38",
     "jest": "^27.3.1",
     "lz-string": "^1.4.4",

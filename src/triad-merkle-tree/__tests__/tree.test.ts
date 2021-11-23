@@ -2,11 +2,11 @@ import {MerkleProof, TriadMerkleTree, hash23} from '../../triad-merkle-tree';
 // @ts-ignore
 import {firstTree, secondTree, thirdTree} from './data/trees.js';
 
+import CONSTANTS from '../constants';
 import _ from 'lodash';
 import assert from 'assert';
 
 const ZERO_VALUE = BigInt(0);
-const LEAF_NODE_SIZE = 3;
 
 // Hash represented as a sum of 2 or 3 elements (for debugging purposes)
 const sum23 = (inputs: bigint[]): bigint => {
@@ -35,7 +35,7 @@ describe('Testing Triad Tree with provided examples', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
             tree = new TriadMerkleTree(5, ZERO_VALUE, hash23);
-            _.chunk(firstTree[0], LEAF_NODE_SIZE).forEach(
+            _.chunk(firstTree[0], CONSTANTS.LEAF_NODE_SIZE).forEach(
                 (leaves: bigint[]) => {
                     tree.insertBatch(leaves);
                 },
@@ -70,7 +70,7 @@ describe('Testing Triad Tree with provided examples', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
             tree = new TriadMerkleTree(5, ZERO_VALUE, hash23);
-            _.chunk(secondTree[0], LEAF_NODE_SIZE).forEach(
+            _.chunk(secondTree[0], CONSTANTS.LEAF_NODE_SIZE).forEach(
                 (leaves: bigint[]) => {
                     tree.insertBatch(leaves);
                 },

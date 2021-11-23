@@ -1,9 +1,9 @@
-import { describe, expect } from '@jest/globals';
+import {describe, expect} from '@jest/globals';
 
 import CONSTANTS from '../constants';
-import { TriadMerkleTree } from '..';
+import {TriadMerkleTree} from '..';
 import Utils from '../utils';
-import { fourthTree } from './data/trees';
+import {fourthTree} from './data/trees';
 import fs from 'fs';
 
 describe('Generation, loading and compression of the Triad Merkle tree', () => {
@@ -14,7 +14,11 @@ describe('Generation, loading and compression of the Triad Merkle tree', () => {
             commitments[i] = '0x' + BigInt(i).toString(16);
         }
 
-        tree = Utils.createTriadMerkleTree(CONSTANTS.TREE_DEPTH, commitments, BigInt(0));
+        tree = Utils.createTriadMerkleTree(
+            CONSTANTS.TREE_DEPTH,
+            commitments,
+            BigInt(0),
+        );
     });
 
     it('should generate correct tree from 1536 commitments of 32 bytes hashes', () => {
@@ -22,14 +26,14 @@ describe('Generation, loading and compression of the Triad Merkle tree', () => {
     });
 
     it('shoud be saved and loaded without compression', () => {
-        const path = 'src/triad-merkle-tree/__tests__/data/tree_zip.txt'
+        const path = 'src/triad-merkle-tree/__tests__/data/tree_zip.txt';
         tree.save(path, false);
         const t = TriadMerkleTree.load(path, false);
         expect('0x' + BigInt(t.root).toString(16)).toBe(fourthTree.root);
     });
 
     it('should be saved and loaded with compression', () => {
-        const path = 'src/triad-merkle-tree/__tests__/data/tree_zip.txt'
+        const path = 'src/triad-merkle-tree/__tests__/data/tree_zip.txt';
         tree.save(path, true);
         const t = TriadMerkleTree.load(path, true);
         expect('0x' + BigInt(t.root).toString(16)).toBe(fourthTree.root);

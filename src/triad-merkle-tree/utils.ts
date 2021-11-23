@@ -1,10 +1,10 @@
-import { TriadMerkleTree, hash23 } from '.';
+import {TriadMerkleTree, hash23} from '.';
 
 import CONSTANTS from './constants';
 import LZString from 'lz-string';
 import _ from 'lodash';
 import assert from 'assert';
-import { ethers } from 'ethers'
+import {ethers} from 'ethers';
 
 // returns a new triad merkle tree constructed of passed 1536! commitments
 const createTriadMerkleTree = (
@@ -43,7 +43,7 @@ const toBytes32 = (n: number | string): string => {
             .replace('0x', '')
             .padStart(64, '0')
     );
-}
+};
 
 export default {
     createTriadMerkleTree,

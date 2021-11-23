@@ -14,7 +14,7 @@ import Utils from './utils';
 import assert from 'assert';
 import fs from 'fs';
 // @ts-ignore
-import { poseidon } from 'circomlibjs';
+import {poseidon} from 'circomlibjs';
 
 type PathElements = bigint[][];
 type Indices = number[];
@@ -35,7 +35,7 @@ const calcInitialVals = (
 ) => {
     const zeros: bigint[] = [zeroValue];
     const filledSubtrees: bigint[][] = [[zeroValue, zeroValue, zeroValue]];
-    const filledPaths: any = { 0: [] };
+    const filledPaths: any = {0: []};
 
     let currentLevelHash = hashFunc(filledSubtrees[0]);
     for (let i = 1; i < depth; i++) {
@@ -55,7 +55,7 @@ const calcInitialVals = (
 
     const root = hashFunc(filledSubtrees[depth - 1]);
 
-    return { zeros, filledSubtrees, filledPaths, root };
+    return {zeros, filledSubtrees, filledPaths, root};
 };
 
 const hash23 = (inputs: bigint[]): bigint => {
@@ -446,9 +446,11 @@ class TriadMerkleTree {
     }
 
     public save(path: string, compression: boolean): void {
-        const s = compression ? Utils.compressString(this._serialize()) : this._serialize();
+        const s = compression
+            ? Utils.compressString(this._serialize())
+            : this._serialize();
         fs.writeFileSync(path, s, 'ucs2');
     }
 }
 
-export { hash23, TriadMerkleTree, MerkleProof };
+export {hash23, TriadMerkleTree, MerkleProof};

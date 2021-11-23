@@ -25,7 +25,7 @@
 import CONSTANTS from '../constants';
 import Utils from '../utils';
 import _ from 'lodash';
-import { ethers } from 'ethers';
+import {ethers} from 'ethers';
 import fs from 'fs';
 import yargs from 'yargs/yargs';
 
@@ -65,8 +65,7 @@ const argv = yargs(process.argv.slice(2))
         require: false,
     })
     .help('h')
-    .alias('h', 'help')
-    .argv;
+    .alias('h', 'help').argv;
 
 /* ---------------------------- helper functions ---------------------------- */
 
@@ -95,12 +94,11 @@ const _fetchNewIdentityCommitments = async (
 // saves the tree to the file
 const _saveTree = (commitments: string[], treeIdx: number): void => {
     const tree = Utils.createTriadMerkleTree(10, commitments, BigInt(0));
-    const p = argv.path ? argv.path : './'
+    const p = argv.path ? argv.path : './';
     const fn = `${p}/${treeIdx}_tmt_compressed`.replace('//', '/');
     if (argv.verbose) console.log(`Saving tree to ${fn}`);
     tree.save(fn, true);
 };
-
 
 /* ------------------------------ main function ----------------------------- */
 
@@ -109,9 +107,7 @@ const _saveTree = (commitments: string[], treeIdx: number): void => {
         argv.network,
         argv.contract,
     );
-    _.chunk(commitments, CONSTANTS.TREE_SIZE).forEach(
-        (chunk, treeIdx) => {
-            _saveTree(chunk, treeIdx);
-        },
-    );
+    _.chunk(commitments, CONSTANTS.TREE_SIZE).forEach((chunk, treeIdx) => {
+        _saveTree(chunk, treeIdx);
+    });
 })();

@@ -5,18 +5,19 @@
 /* ========================================================================== */
 
 /*
-    This script generates and saves in the specified folder compressed Triad
-    Merkle Tree. Script reads NewIdentity events in provided smart contract.
+    This script generates and saves in the specified folder Triad Merkle Tree
+    in json format . Script reads NewIdentity events in provided smart contract.
 
     Arguments:
     1. --network or -n address of the RPC
     2. --contract or -c address of the NewIdentityEmitter contract
     3. --path or -p path to the folder where the compressed tree will be saved
+    4. --verbose or -v prints the progress
 
     Output:
-    - compressed tree in the specified folder:
-        0_tree_compressed
-        1_tree_compressed
+    - json file with the tree in the specified folder:
+        identities-tree-0.json
+        identities-tree-1.json
 
     Example:
     ts-node ./src/triad-merkle-tree/scripts/tmt.ts generate -c 0x47576518f3Fbd15aFc4abbE35e699DdA477B9E17 -n http://127.0.0.1:8545 -p src/ -v

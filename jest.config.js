@@ -4,4 +4,5 @@ module.exports = {
     testEnvironment: 'node',
     collectCoverage: true,
     testMatch: ['**/__tests__/**/*.[t]s?(x)', '**/?(*.)+(spec|test).[t]s?(x)'],
+    watchPathIgnorePatterns: ['<rootDir>/src/triad-merkle-tree/__tests__/data'],
 };

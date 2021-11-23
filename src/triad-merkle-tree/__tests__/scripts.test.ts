@@ -41,7 +41,10 @@ describe('CLI Triad Merkle Tree generation', () => {
         );
         _.chunk(commitments, CONSTANTS.TREE_SIZE).forEach((chunk, index) => {
             scriptTrees.push(
-                TriadMerkleTree.load(PATH + `/${index}_tmt_compressed`, true),
+                TriadMerkleTree.load(
+                    PATH + `/identities-tree-${index}.json`,
+                    false,
+                ),
             );
             trees.push(Utils.createTriadMerkleTree(10, chunk, BigInt(100)));
         });

@@ -26,7 +26,6 @@ import CONSTANTS from '../constants';
 import Utils from '../utils';
 import _ from 'lodash';
 import {ethers} from 'ethers';
-import fs from 'fs';
 import yargs from 'yargs/yargs';
 
 /* ------------------ specifies that arguments are expected ----------------- */
@@ -95,9 +94,9 @@ const _fetchNewIdentityCommitments = async (
 const _saveTree = (commitments: string[], treeIdx: number): void => {
     const tree = Utils.createTriadMerkleTree(10, commitments, BigInt(0));
     const p = argv.path ? argv.path : './';
-    const fn = `${p}/${treeIdx}_tmt_compressed`.replace('//', '/');
+    const fn = `${p}/identities-tree-${treeIdx}.json`.replace('//', '/');
     if (argv.verbose) console.log(`Saving tree to ${fn}`);
-    tree.save(fn, true);
+    tree.save(fn, false);
 };
 
 /* ------------------------------ main function ----------------------------- */

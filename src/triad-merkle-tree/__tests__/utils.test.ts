@@ -14,7 +14,7 @@ describe('Generation, loading and compression of the Triad Merkle tree', () => {
             commitments[i] = '0x' + BigInt(i).toString(16);
         }
 
-        tree = Utils.createTriadMerkleTree(commitments, BigInt(0));
+        tree = Utils.createTriadMerkleTree(10, commitments, BigInt(0));
     });
 
     it('should generate correct tree from 1536 commitments of 32 bytes hashes', () => {

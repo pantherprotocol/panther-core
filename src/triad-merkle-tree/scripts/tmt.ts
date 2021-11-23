@@ -5,8 +5,8 @@
 /* ========================================================================== */
 
 /*
-    This script generates and saves in the root project folder the compressed
-    Triad Merkle Tree. Script reads NewIdentity events in provided smart contract.
+    This script generates and saves in the specified folder compressed Triad
+    Merkle Tree. Script reads NewIdentity events in provided smart contract.
 
     Arguments:
     1. --network or -n address of the RPC
@@ -14,7 +14,7 @@
     3. --path or -p path to the folder where the compressed tree will be saved
 
     Output:
-    1. compressed tree in the specified folder:
+    - compressed tree in the specified folder:
         0_tree_compressed
         1_tree_compressed
 
@@ -22,56 +22,66 @@
 
 import CONSTANTS from '../constants';
 import Utils from '../utils';
-import { ethers } from "ethers";
+import {ethers} from 'ethers';
 import fs from 'fs';
-import yargs from 'yargs/yargs'
+import yargs from 'yargs/yargs';
 
 /* ------------------ specifies that arguments are expected ----------------- */
 const argv = yargs(process.argv.slice(2))
     .usage('Usage: $0 <command> [options]')
-    .command('generate', 'Generation of the Triad Merkle Tree based on the events from the specified contract address')
-    .example('$0 generate -c 0xadas112 -n 127.0.0.1:8089', 'generates Triad Merkle Trees based on the events from this contract')
+    .command(
+        'generate',
+        'This script generates and saves in the specified folder compressed Triad Merkle Tree. Script reads NewIdentity events in provided smart contract.',
+    )
+    .example(
+        '$0 generate -c 0x47576518f3Fbd15aFc4abbE35e699DdA477B9E17 -n http://127.0.0.1:8545 -p src/',
+        'generates Triad Merkle Trees based on the events from this contract',
+    )
     .option('network', {
         alias: 'n',
         type: 'string',
         description: 'specify network address',
-        require: true
+        require: true,
     })
     .option('contract', {
         alias: 'c',
         type: 'string',
         description: 'specify contract address',
-        require: true
+        require: true,
     })
     .option('path', {
         alias: 'p',
         type: 'string',
-        description: 'specify location where to save the generated triad merkle trees',
-        require: false
+        description: 'specify location where to save the trees',
+        require: false,
     })
     .help('h')
     .alias('h', 'help')
-    .alias('v', 'version')
-    .argv;
-
+    .alias('v', 'version').argv;
 
 /* ---------------------------- helper functions ---------------------------- */
 
 // getting NewIdentity events and sorting in ascending order of leafId
-const _fetchNewIdentityCommitments = async (network: string, contractAddress: string) => {
+const _fetchNewIdentityCommitments = async (
+    network: string,
+    contractAddress: string,
+) => {
     const provider = new ethers.providers.JsonRpcProvider(network);
     const contract = new ethers.Contract(
         contractAddress,
         CONSTANTS.ABI,
-        provider.getSigner(0)
+        provider.getSigner(0),
     );
 
-    const eventFilter = contract.filters.NewIdentity()
-    const events = await contract.queryFilter(eventFilter)
-    return events.filter(event => event.event = 'NewIdentity')
-        .sort((a, b) => BigInt(a.args?.leafId) > BigInt(b.args?.leafId) ? 1 : -1)
+    const eventFilter = contract.filters.NewIdentity();
+    const events = await contract.queryFilter(eventFilter);
+    return events
+        .filter(event => (event.event = 'NewIdentity'))
+        .sort((a, b) =>
+            BigInt(a.args?.leafId) > BigInt(b.args?.leafId) ? 1 : -1,
+        )
         .map(event => event.args?.identityCommitment);
-}
+};
 
 // saves the tree to the file
 const _saveTree = (commitments: string[], treeIdx: number): void => {
@@ -83,31 +93,33 @@ const _saveTree = (commitments: string[], treeIdx: number): void => {
     } else {
         p = './';
     }
-    fs.writeFileSync(
-        `${p}/${treeIdx}_tmt_compressed`,
-        w,
-        'ucs2',
-    );
-}
+    fs.writeFileSync(`${p}/${treeIdx}_tmt_compressed`, w, 'ucs2');
+};
 
 // splits array into the chunks of the given size
-const _splitArrayIntoChunksOfLen = (arr: Array<string>, len: number): Array<Array<string>> => {
-    const chunks = [], n = arr.length;
+const _splitArrayIntoChunksOfLen = (
+    arr: Array<string>,
+    len: number,
+): Array<Array<string>> => {
+    const chunks = [],
+        n = arr.length;
     let i = 0;
     while (i < n) {
-        chunks.push(arr.slice(i, i += len));
+        chunks.push(arr.slice(i, (i += len)));
     }
     return chunks;
-}
-
+};
 
 /* ------------------------------ main function ----------------------------- */
 
 (async () => {
-    const commitments = await _fetchNewIdentityCommitments(argv.network, argv.contract)
-    _splitArrayIntoChunksOfLen(commitments, CONSTANTS.TREE_SIZE).forEach((chunk, treeIdx) => {
-        _saveTree(chunk, treeIdx)
-    })
-})()
-
-
+    const commitments = await _fetchNewIdentityCommitments(
+        argv.network,
+        argv.contract,
+    );
+    _splitArrayIntoChunksOfLen(commitments, CONSTANTS.TREE_SIZE).forEach(
+        (chunk, treeIdx) => {
+            _saveTree(chunk, treeIdx);
+        },
+    );
+})();

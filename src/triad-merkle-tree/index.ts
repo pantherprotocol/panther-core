@@ -319,6 +319,11 @@ class TriadMerkleTree {
     public insertBatch(_leaves: bigint[]) {
         // A node is one level above the leaf
         // m is the leaf's relative position within its node
+        assert(
+            _leaves.length === this.leafNodeSize,
+            `Commitments must be of length ${this.leafNodeSize}`,
+        );
+
         const m = this.nextIndex % this.internalNodeSize;
 
         if (m === 0) {

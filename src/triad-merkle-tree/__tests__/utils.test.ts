@@ -1,9 +1,9 @@
-import {describe, expect} from '@jest/globals';
+import { describe, expect } from '@jest/globals';
 
 import CONSTANTS from '../constants';
-import {TriadMerkleTree} from '..';
+import { TriadMerkleTree } from '..';
 import Utils from '../utils';
-import {fourthTree} from './data/trees';
+import { fourthTree } from './data/trees';
 import fs from 'fs';
 
 describe('Generation, loading and compression of the Triad Merkle tree', () => {
@@ -14,7 +14,7 @@ describe('Generation, loading and compression of the Triad Merkle tree', () => {
             commitments[i] = '0x' + BigInt(i).toString(16);
         }
 
-        tree = Utils.createTriadMerkleTree(10, commitments, BigInt(0));
+        tree = Utils.createTriadMerkleTree(CONSTANTS.TREE_DEPTH, commitments, BigInt(0));
     });
 
     it('should generate correct tree from 1536 commitments of 32 bytes hashes', () => {
@@ -22,41 +22,21 @@ describe('Generation, loading and compression of the Triad Merkle tree', () => {
     });
 
     it('shoud be saved and loaded without compression', () => {
-        const w = Utils.stringifyTree(tree, false);
-        fs.writeFileSync(
-            'src/triad-merkle-tree/__tests__/data/tree.txt',
-            w,
-            'ucs2',
-        );
-
-        const r = fs.readFileSync(
-            'src/triad-merkle-tree/__tests__/data/tree.txt',
-            'ucs2',
-        );
-        const t = Utils.loadTree(r, false);
-
+        const path = 'src/triad-merkle-tree/__tests__/data/tree_zip.txt'
+        tree.save(path, false);
+        const t = TriadMerkleTree.load(path, false);
         expect('0x' + BigInt(t.root).toString(16)).toBe(fourthTree.root);
     });
 
-    it('shoud be saved and loaded with compression', () => {
-        const w = Utils.stringifyTree(tree, true);
-        fs.writeFileSync(
-            'src/triad-merkle-tree/__tests__/data/tree_zip.txt',
-            w,
-            'ucs2',
-        );
-
-        const r = fs.readFileSync(
-            'src/triad-merkle-tree/__tests__/data/tree_zip.txt',
-            'ucs2',
-        );
-        const t = Utils.loadTree(r, true);
-
+    it('should be saved and loaded with compression', () => {
+        const path = 'src/triad-merkle-tree/__tests__/data/tree_zip.txt'
+        tree.save(path, true);
+        const t = TriadMerkleTree.load(path, true);
         expect('0x' + BigInt(t.root).toString(16)).toBe(fourthTree.root);
     });
 
     it('compression and decompression should give the same result', () => {
-        const w = tree.serialize();
+        const w = Math.random().toString(16).slice(2, 10);
         const c = Utils.compressString(w);
         const r = Utils.decompressString(c);
         expect(r).toBe(w);

@@ -10,9 +10,11 @@ This code is modified version of incrementalquintree:
 https://github.com/appliedzkp/incrementalquintree
 */
 
+import Utils from './utils';
 import assert from 'assert';
+import fs from 'fs';
 // @ts-ignore
-import {poseidon} from 'circomlibjs';
+import { poseidon } from 'circomlibjs';
 
 type PathElements = bigint[][];
 type Indices = number[];
@@ -33,7 +35,7 @@ const calcInitialVals = (
 ) => {
     const zeros: bigint[] = [zeroValue];
     const filledSubtrees: bigint[][] = [[zeroValue, zeroValue, zeroValue]];
-    const filledPaths: any = {0: []};
+    const filledPaths: any = { 0: [] };
 
     let currentLevelHash = hashFunc(filledSubtrees[0]);
     for (let i = 1; i < depth; i++) {
@@ -53,7 +55,7 @@ const calcInitialVals = (
 
     const root = hashFunc(filledSubtrees[depth - 1]);
 
-    return {zeros, filledSubtrees, filledPaths, root};
+    return { zeros, filledSubtrees, filledPaths, root };
 };
 
 const hash23 = (inputs: bigint[]): bigint => {
@@ -389,7 +391,7 @@ class TriadMerkleTree {
     /*
      * Serializes the tree into a string
      */
-    public serialize(): string {
+    private _serialize(): string {
         const filledPaths: any = {};
         Object.keys(this.filledPaths).forEach((key: any) => {
             filledPaths[key] = this.filledPaths[key].map(_convertBnToHex);
@@ -413,7 +415,7 @@ class TriadMerkleTree {
     /*
      * Deserializes the string into the tree
      */
-    public static deserialize(_json: string): TriadMerkleTree {
+    private static _deserialize(_json: string): TriadMerkleTree {
         const t = Object.assign(
             new TriadMerkleTree(1, BigInt(0), hash23),
             JSON.parse(_json),
@@ -433,6 +435,20 @@ class TriadMerkleTree {
 
         return t;
     }
+
+    public static load(path: string, compression: boolean): TriadMerkleTree {
+        const s = fs.readFileSync(path, 'ucs2');
+        const treeString = compression ? Utils.decompressString(s) : s;
+        if (treeString === null) {
+            throw new Error('Could not decompress tree string');
+        }
+        return TriadMerkleTree._deserialize(treeString);
+    }
+
+    public save(path: string, compression: boolean): void {
+        const s = compression ? Utils.compressString(this._serialize()) : this._serialize();
+        fs.writeFileSync(path, s, 'ucs2');
+    }
 }
 
-export {hash23, TriadMerkleTree, MerkleProof};
+export { hash23, TriadMerkleTree, MerkleProof };

@@ -18,11 +18,14 @@
         0_tree_compressed
         1_tree_compressed
 
+    Example:
+    ts-node ./src/triad-merkle-tree/scripts/tmt.ts generate -c 0x47576518f3Fbd15aFc4abbE35e699DdA477B9E17 -n http://127.0.0.1:8545 -p src/ -v
 */
 
 import CONSTANTS from '../constants';
 import Utils from '../utils';
-import {ethers} from 'ethers';
+import _ from 'lodash';
+import { ethers } from 'ethers';
 import fs from 'fs';
 import yargs from 'yargs/yargs';
 
@@ -55,9 +58,15 @@ const argv = yargs(process.argv.slice(2))
         description: 'specify location where to save the trees',
         require: false,
     })
+    .option('verbose', {
+        alias: 'v',
+        type: 'boolean',
+        description: 'detailed output',
+        require: false,
+    })
     .help('h')
     .alias('h', 'help')
-    .alias('v', 'version').argv;
+    .argv;
 
 /* ---------------------------- helper functions ---------------------------- */
 
@@ -85,30 +94,13 @@ const _fetchNewIdentityCommitments = async (
 
 // saves the tree to the file
 const _saveTree = (commitments: string[], treeIdx: number): void => {
-    const tree = Utils.createTriadMerkleTree(commitments, BigInt(0));
-    const w = Utils.stringifyTree(tree, true);
-    let p: string;
-    if (argv.path) {
-        p = argv.path;
-    } else {
-        p = './';
-    }
-    fs.writeFileSync(`${p}/${treeIdx}_tmt_compressed`, w, 'ucs2');
+    const tree = Utils.createTriadMerkleTree(10, commitments, BigInt(0));
+    const p = argv.path ? argv.path : './'
+    const fn = `${p}/${treeIdx}_tmt_compressed`.replace('//', '/');
+    if (argv.verbose) console.log(`Saving tree to ${fn}`);
+    tree.save(fn, true);
 };
 
-// splits array into the chunks of the given size
-const _splitArrayIntoChunksOfLen = (
-    arr: Array<string>,
-    len: number,
-): Array<Array<string>> => {
-    const chunks = [],
-        n = arr.length;
-    let i = 0;
-    while (i < n) {
-        chunks.push(arr.slice(i, (i += len)));
-    }
-    return chunks;
-};
 
 /* ------------------------------ main function ----------------------------- */
 
@@ -117,7 +109,7 @@ const _splitArrayIntoChunksOfLen = (
         argv.network,
         argv.contract,
     );
-    _splitArrayIntoChunksOfLen(commitments, CONSTANTS.TREE_SIZE).forEach(
+    _.chunk(commitments, CONSTANTS.TREE_SIZE).forEach(
         (chunk, treeIdx) => {
             _saveTree(chunk, treeIdx);
         },

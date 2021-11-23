@@ -1,6 +1,6 @@
-import {MerkleProof, TriadMerkleTree, hash23} from '../../triad-merkle-tree';
+import { MerkleProof, TriadMerkleTree, hash23 } from '../../triad-merkle-tree';
 // @ts-ignore
-import {firstTree, secondTree, thirdTree} from './data/trees.js';
+import { firstTree, secondTree, thirdTree } from './data/trees.js';
 
 import CONSTANTS from '../constants';
 import _ from 'lodash';
@@ -104,7 +104,7 @@ describe('Testing Triad Tree with provided examples', () => {
     describe('tree with zero leaves only', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
-            tree = new TriadMerkleTree(10, BigInt(thirdTree.zeroValue), hash23);
+            tree = new TriadMerkleTree(CONSTANTS.TREE_DEPTH, BigInt(thirdTree.zeroValue), hash23);
         });
 
         it('should have correct root with flled values', () => {
@@ -130,7 +130,7 @@ describe('Testing Triad Tree with provided examples', () => {
     describe('Merkle proofs benchmarks', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
-            tree = new TriadMerkleTree(10, BigInt(thirdTree.zeroValue), hash23);
+            tree = new TriadMerkleTree(CONSTANTS.TREE_DEPTH, BigInt(thirdTree.zeroValue), hash23);
             for (let index = 0; index < 512; index++) {
                 tree.insertBatch([
                     BigInt(thirdTree.zeroValue),
@@ -173,7 +173,10 @@ describe('Testing Triad Tree with provided examples', () => {
             for (let index = 0; index < 2 ** 3; index++) {
                 firstTree.insertBatch([BigInt(1), BigInt(1), BigInt(1)]);
             }
-            secondTree = TriadMerkleTree.deserialize(firstTree.serialize());
+            const path = 'src/triad-merkle-tree/__tests__/data/tree_zip'
+
+            firstTree.save(path, true);
+            secondTree = TriadMerkleTree.load(path, true);
 
             randomLeafIndex = Math.floor(
                 Math.random() * firstTree.leaves.length,
@@ -185,33 +188,33 @@ describe('Testing Triad Tree with provided examples', () => {
         it('should be deep equal', () => {
             expect(
                 secondTree.depth === firstTree.depth &&
-                    secondTree.root === firstTree.root &&
-                    secondTree.zeroValue === firstTree.zeroValue &&
-                    secondTree.leafNodeSize === firstTree.leafNodeSize &&
-                    secondTree.nextIndex === firstTree.nextIndex &&
-                    _arraysAreEqual(secondTree.zeros, firstTree.zeros) &&
-                    _arraysAreEqual(secondTree.leaves, firstTree.leaves) &&
-                    firstTree.filledSubtrees.every((a, index) =>
-                        _arraysAreEqual(a, secondTree.filledSubtrees[index]),
-                    ) &&
-                    Object.keys(firstTree.filledPaths).every(key =>
-                        _arraysAreEqual(
-                            firstTree.filledPaths[key],
-                            secondTree.filledPaths[key],
-                        ),
+                secondTree.root === firstTree.root &&
+                secondTree.zeroValue === firstTree.zeroValue &&
+                secondTree.leafNodeSize === firstTree.leafNodeSize &&
+                secondTree.nextIndex === firstTree.nextIndex &&
+                _arraysAreEqual(secondTree.zeros, firstTree.zeros) &&
+                _arraysAreEqual(secondTree.leaves, firstTree.leaves) &&
+                firstTree.filledSubtrees.every((a, index) =>
+                    _arraysAreEqual(a, secondTree.filledSubtrees[index]),
+                ) &&
+                Object.keys(firstTree.filledPaths).every(key =>
+                    _arraysAreEqual(
+                        firstTree.filledPaths[key],
+                        secondTree.filledPaths[key],
                     ),
+                ),
             ).toBeTruthy();
         });
 
         it('should generate the same proof', () => {
             expect(
                 firstProof.leaf === secondProof.leaf &&
-                    firstProof.depth === secondProof.depth &&
-                    firstProof.root === secondProof.root &&
-                    firstProof.pathElements.every((a, index) =>
-                        _arraysAreEqual(a, secondProof.pathElements[index]),
-                    ) &&
-                    _arraysAreEqual(firstProof.indices, secondProof.indices),
+                firstProof.depth === secondProof.depth &&
+                firstProof.root === secondProof.root &&
+                firstProof.pathElements.every((a, index) =>
+                    _arraysAreEqual(a, secondProof.pathElements[index]),
+                ) &&
+                _arraysAreEqual(firstProof.indices, secondProof.indices),
             ).toBeTruthy();
         });
 

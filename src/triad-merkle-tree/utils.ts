@@ -34,24 +34,8 @@ const decompressString = (s: string): string | null => {
     return LZString.decompressFromUTF16(s);
 };
 
-// produces a string that can be stored on local drive
-const stringifyTree = (tree: TriadMerkleTree, compression: boolean): string => {
-    return compression ? compressString(tree.serialize()) : tree.serialize();
-};
-
-// loads triad merkle tree from string (compressed or not)
-const loadTree = (s: string, compression: boolean): TriadMerkleTree => {
-    const treeString = compression ? decompressString(s) : s;
-    if (treeString === null) {
-        throw new Error('Could not decompress tree string');
-    }
-    return TriadMerkleTree.deserialize(treeString);
-};
-
 export default {
     createTriadMerkleTree,
-    stringifyTree,
-    loadTree,
     compressString,
     decompressString,
 };

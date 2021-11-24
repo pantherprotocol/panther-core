@@ -24,7 +24,7 @@
     ts-node build.ts -f newIdentity.events.sample.json -v
 */
 
-import CONSTANTS from '../constants'
+import CONSTANTS from '../constants';
 import Utils from '../utils';
 import _ from 'lodash';
 import fs from 'fs';
@@ -46,7 +46,8 @@ const argv = yargs(process.argv.slice(2))
     .option('file', {
         alias: 'f',
         type: 'string',
-        description: 'specify location where json file with commitments is located',
+        description:
+            'specify location where json file with commitments is located',
         require: true,
     })
     .option('verbose', {
@@ -69,16 +70,16 @@ const _saveTree = (commitments: string[], treeIdx: number): void => {
 };
 
 /* ------------------------------ main function ----------------------------- */
-const fn = `${argv.file}`
-if (argv.verbose) console.log(`reading file ${fn}...`)
+const fn = `${argv.file}`;
+if (argv.verbose) console.log(`reading file ${fn}...`);
 let commitments = JSON.parse(fs.readFileSync(fn, 'utf-8'));
-if (argv.verbose) console.log(`found ${commitments.length} commitments...`)
+if (argv.verbose) console.log(`found ${commitments.length} commitments...`);
 
-commitments = commitments.
-    sort((a: any, b: any) => BigInt(a.leafId) > BigInt(b.leafId) ? 1 : -1).
-    map((c: any) => c.identityCommitment);
+commitments = commitments
+    .sort((a: any, b: any) => (BigInt(a.leafId) > BigInt(b.leafId) ? 1 : -1))
+    .map((c: any) => c.identityCommitment);
 
 _.chunk(commitments, CONSTANTS.TREE_SIZE).forEach((chunk: any, i: number) => {
     _saveTree(chunk, i);
-})
-if (argv.verbose) console.log(`Done!`)
+});
+if (argv.verbose) console.log(`Done!`);

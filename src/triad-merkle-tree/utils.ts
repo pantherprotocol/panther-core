@@ -14,7 +14,7 @@ const createTriadMerkleTree = (
 ): TriadMerkleTree => {
     assert(
         commitments.length <= 2 ** (depth - 1) * 3,
-        'Commitments length must be equal or less than 1536',
+        `Commitments length must be equal or less than ${2 ** (depth - 1) * 3}`,
     );
 
     const triadMerkleTree = new TriadMerkleTree(depth, zeroValue, hash23);

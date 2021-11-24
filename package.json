@@ -11,7 +11,7 @@
     "watch": "yarn build:ts --watch",
     "test": "yarn build:types && jest",
     "test:watch": "jest --clearCache && jest --watch",
-    "tmt": "ts-node ./src/triad-merkle-tree/scripts/tmt.ts",
+    "tmt:build": "ts-node ./src/triad-merkle-tree/scripts/build.ts",
     "lint": "yarn run lint:ts && yarn run prettier:list-different",
     "lint:ts": "eslint --ext .js,.ts .",
     "prettier:check": "cd .. && yarn prettier:check",

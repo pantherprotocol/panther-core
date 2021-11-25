@@ -13,9 +13,9 @@
     "test:watch": "jest --watch",
     "lint": "yarn run lint:ts && yarn run prettier:list-different",
     "lint:ts": "eslint --ext .js,.ts .",
-    "prettier:fix": "prettier --write .",
-    "prettier:check": "prettier --check .",
-    "prettier:list-different": "prettier --list-different ."
+    "prettier:check": "cd .. && yarn prettier:check",
+    "prettier:fix": "cd .. && yarn prettier:fix",
+    "prettier:list-different": "cd .. && yarn prettier:list-different"
   },
   "files": [
     "lib/**/*.js",

@@ -4,7 +4,6 @@ import CONSTANTS from '../constants';
 import {TriadMerkleTree} from '..';
 import Utils from '../utils';
 import {fourthTree} from './data/trees';
-import fs from 'fs';
 
 describe('Generation, loading and compression of the Triad Merkle tree', () => {
     let tree: TriadMerkleTree;

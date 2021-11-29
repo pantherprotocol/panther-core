@@ -14,9 +14,9 @@
     "tmt:build": "ts-node ./src/triad-merkle-tree/scripts/build.ts",
     "lint": "yarn run lint:ts && yarn run prettier:list-different",
     "lint:ts": "eslint --ext .js,.ts .",
-    "prettier:check": "cd .. && yarn prettier:check",
-    "prettier:fix": "cd .. && yarn prettier:fix",
-    "prettier:list-different": "cd .. && yarn prettier:list-different"
+    "prettier:check": "cd .. && yarn prettier --check crypto",
+    "prettier:fix": "cd .. && yarn prettier --write crypto",
+    "prettier:list-different": "cd .. && yarn prettier --list-different crypto"
   },
   "files": [
     "lib/**/*.js",

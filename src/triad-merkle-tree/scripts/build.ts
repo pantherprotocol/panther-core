@@ -34,7 +34,7 @@ import yargs from 'yargs/yargs';
 const argv = yargs(process.argv.slice(2))
     .usage('Usage: $0 [options]')
     .example(
-        '$0 -f committments.json -p ./',
+        '$0 -f commitments.json -p ./',
         'fetches NewIdentity commitment events from the contract',
     )
     .option('path', {

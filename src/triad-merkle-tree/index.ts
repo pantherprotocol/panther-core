@@ -58,7 +58,7 @@ const calcInitialVals = (
     return {zeros, filledSubtrees, filledPaths, root};
 };
 
-const hash23 = (inputs: bigint[]): bigint => {
+const poseidon2or3 = (inputs: bigint[]): bigint => {
     assert(inputs.length === 3 || inputs.length === 2);
     return poseidon(inputs);
 };
@@ -417,7 +417,7 @@ class TriadMerkleTree {
      */
     private static _deserialize(_json: string): TriadMerkleTree {
         const t = Object.assign(
-            new TriadMerkleTree(1, BigInt(0), hash23),
+            new TriadMerkleTree(1, BigInt(0), poseidon2or3),
             JSON.parse(_json),
         );
 
@@ -457,4 +457,4 @@ class TriadMerkleTree {
     }
 }
 
-export {hash23, TriadMerkleTree, MerkleProof};
+export {poseidon2or3, TriadMerkleTree, MerkleProof};

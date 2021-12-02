@@ -1,4 +1,4 @@
-import {TriadMerkleTree, hash23} from '.';
+import {TriadMerkleTree, poseidon2or3} from '.';
 
 import CONSTANTS from './constants';
 import LZString from 'lz-string';
@@ -17,7 +17,7 @@ const createTriadMerkleTree = (
         `Commitments length must be equal or less than ${2 ** (depth - 1) * 3}`,
     );
 
-    const triadMerkleTree = new TriadMerkleTree(depth, zeroValue, hash23);
+    const triadMerkleTree = new TriadMerkleTree(depth, zeroValue, poseidon2or3);
     _.chunk(commitments, CONSTANTS.LEAF_NODE_SIZE).forEach(
         (leaves: string[]) => {
             triadMerkleTree.insertBatch(leaves.map(c => BigInt(c)));

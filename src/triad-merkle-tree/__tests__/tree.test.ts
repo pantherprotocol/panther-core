@@ -1,4 +1,8 @@
-import {MerkleProof, TriadMerkleTree, hash23} from '../../triad-merkle-tree';
+import {
+    MerkleProof,
+    TriadMerkleTree,
+    poseidon2or3,
+} from '../../triad-merkle-tree';
 // @ts-ignore
 import {firstTree, secondTree, thirdTree} from './data/trees.js';
 
@@ -34,7 +38,7 @@ describe('Testing Triad Tree with provided examples', () => {
     describe('first tree', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
-            tree = new TriadMerkleTree(5, ZERO_VALUE, hash23);
+            tree = new TriadMerkleTree(5, ZERO_VALUE, poseidon2or3);
             _.chunk(firstTree[0], CONSTANTS.LEAF_NODE_SIZE).forEach(
                 (leaves: bigint[]) => {
                     tree.insertBatch(leaves);
@@ -54,7 +58,9 @@ describe('Testing Triad Tree with provided examples', () => {
             const path = tree.genMerklePath(
                 Math.floor(Math.random() * tree.leaves.length),
             );
-            expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeTruthy();
+            expect(
+                TriadMerkleTree.verifyMerklePath(path, poseidon2or3),
+            ).toBeTruthy();
         });
 
         it('should fail if proof incorrect', () => {
@@ -62,14 +68,16 @@ describe('Testing Triad Tree with provided examples', () => {
                 Math.floor(Math.random() * tree.leaves.length),
             );
             path.leaf = BigInt(1000000000000000);
-            expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeFalsy();
+            expect(
+                TriadMerkleTree.verifyMerklePath(path, poseidon2or3),
+            ).toBeFalsy();
         });
     });
 
     describe('second tree', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
-            tree = new TriadMerkleTree(5, ZERO_VALUE, hash23);
+            tree = new TriadMerkleTree(5, ZERO_VALUE, poseidon2or3);
             _.chunk(secondTree[0], CONSTANTS.LEAF_NODE_SIZE).forEach(
                 (leaves: bigint[]) => {
                     tree.insertBatch(leaves);
@@ -89,7 +97,9 @@ describe('Testing Triad Tree with provided examples', () => {
             const path = tree.genMerklePath(
                 Math.floor(Math.random() * tree.leaves.length),
             );
-            expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeTruthy();
+            expect(
+                TriadMerkleTree.verifyMerklePath(path, poseidon2or3),
+            ).toBeTruthy();
         });
 
         it('should fail if proof incorrect', () => {
@@ -97,7 +107,9 @@ describe('Testing Triad Tree with provided examples', () => {
                 Math.floor(Math.random() * tree.leaves.length),
             );
             path.leaf = BigInt(100000000000000000000000);
-            expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeFalsy();
+            expect(
+                TriadMerkleTree.verifyMerklePath(path, poseidon2or3),
+            ).toBeFalsy();
         });
     });
 
@@ -107,7 +119,7 @@ describe('Testing Triad Tree with provided examples', () => {
             tree = new TriadMerkleTree(
                 CONSTANTS.TREE_DEPTH,
                 BigInt(thirdTree.zeroValue),
-                hash23,
+                poseidon2or3,
             );
         });
 
@@ -137,7 +149,7 @@ describe('Testing Triad Tree with provided examples', () => {
             tree = new TriadMerkleTree(
                 CONSTANTS.TREE_DEPTH,
                 BigInt(thirdTree.zeroValue),
-                hash23,
+                poseidon2or3,
             );
             for (let index = 0; index < 512; index++) {
                 tree.insertBatch([
@@ -151,7 +163,9 @@ describe('Testing Triad Tree with provided examples', () => {
             const path = tree.genMerklePath(
                 Math.floor(Math.random() * tree.leaves.length),
             );
-            expect(TriadMerkleTree.verifyMerklePath(path, hash23)).toBeTruthy();
+            expect(
+                TriadMerkleTree.verifyMerklePath(path, poseidon2or3),
+            ).toBeTruthy();
         });
     });
 
@@ -177,7 +191,7 @@ describe('Testing Triad Tree with provided examples', () => {
 
         beforeAll(() => {
             const depth = 4;
-            firstTree = new TriadMerkleTree(depth, BigInt(1), hash23);
+            firstTree = new TriadMerkleTree(depth, BigInt(1), poseidon2or3);
             for (let index = 0; index < 2 ** 3; index++) {
                 firstTree.insertBatch([BigInt(1), BigInt(1), BigInt(1)]);
             }
@@ -228,10 +242,10 @@ describe('Testing Triad Tree with provided examples', () => {
 
         it('should have correct proof', () => {
             expect(
-                TriadMerkleTree.verifyMerklePath(firstProof, hash23),
+                TriadMerkleTree.verifyMerklePath(firstProof, poseidon2or3),
             ).toBeTruthy();
             expect(
-                TriadMerkleTree.verifyMerklePath(secondProof, hash23),
+                TriadMerkleTree.verifyMerklePath(secondProof, poseidon2or3),
             ).toBeTruthy();
         });
 
@@ -244,10 +258,16 @@ describe('Testing Triad Tree with provided examples', () => {
             secondIncorrectProof.leaf = BigInt(100000000000000000000000);
 
             expect(
-                TriadMerkleTree.verifyMerklePath(firstIncorrectProof, hash23),
+                TriadMerkleTree.verifyMerklePath(
+                    firstIncorrectProof,
+                    poseidon2or3,
+                ),
             ).toBeFalsy();
             expect(
-                TriadMerkleTree.verifyMerklePath(secondIncorrectProof, hash23),
+                TriadMerkleTree.verifyMerklePath(
+                    secondIncorrectProof,
+                    poseidon2or3,
+                ),
             ).toBeFalsy();
         });
     });

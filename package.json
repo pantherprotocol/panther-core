@@ -5,6 +5,11 @@
   "main": "lib/index.js",
   "types": "dist/**/*.d.ts",
   "license": "MIT",
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
   "scripts": {
     "build:types": "./scripts/gen-types.sh",
     "build:ts": "tsc -p tsconfig.json",

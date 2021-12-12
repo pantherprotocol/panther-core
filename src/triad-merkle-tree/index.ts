@@ -415,10 +415,10 @@ class TriadMerkleTree {
     /*
      * Deserializes the string into the tree
      */
-    public static deserialize(_json: string): TriadMerkleTree {
+    public static deserialize(_tree: any): TriadMerkleTree {
         const t = Object.assign(
             new TriadMerkleTree(1, BigInt(0), poseidon2or3),
-            JSON.parse(_json),
+            _tree,
         );
 
         t.leaves = t.leaves.map(BigInt);
@@ -444,7 +444,7 @@ class TriadMerkleTree {
         if (treeString === null) {
             throw new Error('Could not decompress tree string');
         }
-        return TriadMerkleTree.deserialize(treeString);
+        return TriadMerkleTree.deserialize(JSON.parse(treeString));
     }
 
     public save(path: string, compression: boolean): void {

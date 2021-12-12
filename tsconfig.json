@@ -12,11 +12,11 @@
     "baseUrl": ".",
     "skipLibCheck": true,
     "paths": {
-      "*": ["node_modules/*", "../node_modules/*", "typing/*"]
+      "*": ["src/*", "node_modules/*", "../node_modules/*", "typing/*"]
     },
     "sourceMap": true,
     "declaration": true
   },
-  "include": ["src", "jest.config.js"],
-  "exclude": ["node_modules"]
+  "include": ["src"],
+  "exclude": ["node_modules", "jest.config.js"]
 }

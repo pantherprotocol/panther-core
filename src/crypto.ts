@@ -2,10 +2,19 @@ import assert from 'assert';
 import {poseidon} from 'circomlibjs';
 import crypto from 'crypto';
 import {MerkleProof} from './triad-merkle-tree';
+import fs from 'fs';
+import {builder} from './witness_calculator';
+import {ZqField} from 'ffjavascript';
+import {groth16} from 'snarkjs';
 
+export {groth16} from 'snarkjs';
+export type PackedProof = {a: any; b: any; c: any; inputs: any};
+export type FullProof = {proof: any; publicSignals: any};
 export const SNARK_FIELD_SIZE = BigInt(
     '21888242871839275222246405745257275088548364400416034343698204186575808495617',
 );
+export const Fq = new ZqField(SNARK_FIELD_SIZE);
+
 export type Groth16Input = {
     publicInputsHash: bigint;
     data: bigint; // [message, treeID, externalNullifier]
@@ -87,6 +96,11 @@ export function triadTreeMerkleProofToPathIndices({
     );
 }
 
+export const verifyProof = (vKey: string, fullProof: any) => {
+    const {proof, publicSignals} = fullProof;
+    return groth16.verify(vKey, publicSignals, proof);
+};
+
 export function triadTreeMerkleProofToPathElements({
     pathElements: input,
 }: MerkleProof): bigint[] {
@@ -95,3 +109,53 @@ export function triadTreeMerkleProofToPathElements({
     // it must be converted in two output elements.
     return input.flat(1);
 }
+
+export const genProof = async (
+    grothInput: Groth16Input,
+    wasmFilePath: string,
+    finalZkeyPath: string,
+): Promise<FullProof> => {
+    await genWnts(grothInput, wasmFilePath, 'witness.wtns');
+    const {proof, publicSignals} = await groth16.prove(
+        finalZkeyPath,
+        'witness.wtns',
+        null,
+    );
+    const exists = fs.existsSync('witness.wtns');
+    if (exists) fs.unlinkSync('witness.wtns');
+    return {proof, publicSignals};
+};
+
+const genWnts = async (
+    input: Groth16Input,
+    wasmFilePath: string,
+    witnessFileName: string,
+) => {
+    const buffer = fs.readFileSync(wasmFilePath);
+
+    return new Promise((resolve, reject) => {
+        builder(buffer)
+            .then(async witnessCalculator => {
+                const buff = await witnessCalculator.calculateWTNSBin(input, 0);
+                fs.writeFileSync(witnessFileName, buff);
+                resolve(witnessFileName);
+            })
+            .catch(error => {
+                reject(error);
+            });
+    });
+};
+
+export const packToSolidityProof = (fullProof: any): PackedProof => {
+    const {proof, publicSignals} = fullProof;
+
+    return {
+        a: proof.pi_a.slice(0, 2),
+        b: proof.pi_b.map((x: any) => x.reverse()).slice(0, 2),
+        c: proof.pi_c.slice(0, 2),
+        inputs: publicSignals.map((x: any) => {
+            x = BigInt(x);
+            return (x % SNARK_FIELD_SIZE).toString();
+        }),
+    };
+};

@@ -7,10 +7,9 @@
     "lib": ["dom", "es2018"],
     "strict": true,
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": false,
     "outDir": "lib",
     "baseUrl": ".",
-    "skipLibCheck": true,
     "paths": {
       "*": ["src/*", "node_modules/*", "../node_modules/*", "typing/*"]
     },

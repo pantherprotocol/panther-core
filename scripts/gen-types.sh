@@ -52,6 +52,7 @@ main() {
         force_rebuild=yes
     fi
 
+    emit_types snarkjs
     emit_types circomlibjs
     emit_types blake-hash
     emit_types ffjavascript

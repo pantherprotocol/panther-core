@@ -16,6 +16,7 @@ emit_types() {
         --emitDeclarationOnly \
         --esModuleInterop \
         --allowJs \
+        --skipLibCheck \
         --outdir $outdir \
         ../node_modules/$module/{,**/}*.js
 

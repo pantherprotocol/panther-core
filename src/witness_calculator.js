@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-export const builder = async (code, options = options || {}) => {
+export const builder = async (code, options = {}) => {
     const wasmModule = await WebAssembly.compile(code);
 
     let wc;

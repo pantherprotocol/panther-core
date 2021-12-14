@@ -96,9 +96,9 @@ export function triadTreeMerkleProofToPathIndices({
     );
 }
 
-export const verifyProof = (vKey: string, fullProof: any) => {
+export const verifyProof = (vKey: string, fullProof: any, logger?: null) => {
     const {proof, publicSignals} = fullProof;
-    return groth16.verify(vKey, publicSignals, proof);
+    return groth16.verify(vKey, publicSignals, proof, logger);
 };
 
 export function triadTreeMerkleProofToPathElements({

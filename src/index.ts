@@ -1,11 +1,11 @@
-import assert from 'assert';
-import {poseidon} from 'circomlibjs';
-import crypto from 'crypto';
 import {MerkleProof} from './triad-merkle-tree';
-import fs from 'fs';
-import {builder} from './witness_calculator';
 import {ZqField} from 'ffjavascript';
+import assert from 'assert';
+import {builder} from './witness_calculator';
+import crypto from 'crypto';
+import fs from 'fs';
 import {groth16} from 'snarkjs';
+import {poseidon} from 'circomlibjs';
 
 export {groth16} from 'snarkjs';
 export type PackedProof = {a: any; b: any; c: any; inputs: any};
@@ -158,4 +158,12 @@ export const packToSolidityProof = (fullProof: any): PackedProof => {
             return (x % SNARK_FIELD_SIZE).toString();
         }),
     };
+};
+
+// converts the Quad Leaf ID to Tree ID and Triad Leaf ID
+export const leafIdToTreeIdAndTriadId = (leafId: BigInt): [number, number] => {
+    const nLeafId = Number(leafId);
+    const treeId = Math.floor(nLeafId / 2048);
+    const triadId = (nLeafId % 2048) - Math.floor((nLeafId % 2048) / 4);
+    return [treeId, triadId];
 };

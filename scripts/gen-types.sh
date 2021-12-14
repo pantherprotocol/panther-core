@@ -54,12 +54,18 @@ main() {
     fi
 
     emit_types snarkjs
+
     emit_types circomlibjs
+    # This is needed to avoid errors unless we have --skipLibCheck:
+    # rm $TYPEDIR/circomlibjs/src/smt.d.ts
+
     emit_types blake-hash
+
+    # FIXME: remove this monkey-patch when this PR is merged:
+    # https://github.com/iden3/ffjavascript/pull/25
+    perl -pi -e 's/(^class ThreadManager \{)/export $1/' ../node_modules/ffjavascript/src/threadman.js
     emit_types ffjavascript
     tweak_ffjavascript
-
-    echo "^^^^ If you see an error relating to WasmField1 above; it can be ignored ^^^^"
 }
 
 main "$@"

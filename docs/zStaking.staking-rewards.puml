@@ -1,0 +1,59 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title **zStaking: Staking**
+
+'autonumber
+
+hide footbox
+actor "Anybody\n(DAO)" as anybody
+actor "Staker" as staker
+
+box "Smart Contracts on Mainet" #LightBlue
+  database "RewardPool\n(w/ proxy)" as rPool
+  database "Vesting\n" as vest
+  database "$ZKP\nToken" as zkp
+  database "Bridge\n(PoS)" as mBridge
+end box
+
+actor "Bridge Stakers\n(PoS)" as staker
+
+box "Smart Contracts on Polygon" #LightBlue
+  database "Bridge\n(PoS)" as pBridge
+  database "p$ZKP\nToken" as pZkp
+  database "RewardBroker\n(w/ proxy)" as broker
+end box
+
+anybody --> rPool: vestRewards()
+activate rPool
+  rPool -> vest: release()
+  activate vest
+    vest -> zkp: mint(\n  to: RewardPool)
+  deactivate vest
+    |||
+    rPool -> zkp: getBalance(RewardPool)
+    activate zkp
+      zkp --> rPool: response: zkpAmount
+    deactivate zkp
+    |||
+    rPool -> mBridge: depositFor(\n  to: RewardBroker,\n  data: zkpAmount)
+  activate mBridge
+    mBridge -> zkp: trasferFrom(\n  from: RewardPool,\n  to: Bridge,  \n amount: zkpAmount)
+    note left: ZKP gets locked\nwith the Bridge\non mainnet
+  deactivate rPool
+
+  mBridge --> staker: new deposit
+  deactivate mBridge
+  |||
+activate staker
+    staker --> pBridge:
+deactivate staker
+
+activate pBridge
+  pBridge -> pZkp: deposit(\n  to: RewardBroker, \n  data: zkpAmount)
+  note left: p$ZKP on Polygon\nminted to RewardBroker
+activate pZkp
+  pZkp -> broker: ??? onTokenTransfer(\n from: RewardPool,\n  value: zkpAmount, ...)
+deactivate pBridge
+
+@enduml

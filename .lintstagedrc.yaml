@@ -1,0 +1,12 @@
+'*':
+  - 'prettier --write'
+api/**/*.{js,ts}:
+  - 'yarn workspace @preZKP/api eslint'
+contracts/**/*.sol:
+  - 'yarn workspace @preZKP/contracts lint:solhint'
+contracts/**/*.{js,ts}:
+  - 'yarn workspace @preZKP/contracts lint:eslint'
+crypto/**/*.{js,ts}:
+  - 'yarn workspace @preZKP/crypto lint:eslint'
+dapp/**/*.{js,jsx,ts,tsx}:
+  - 'yarn workspace @preZKP/dapp lint:eslint'

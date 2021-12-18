@@ -65,6 +65,13 @@ export const extractSecretsPair = (secrets: string) => {
     return [r, s];
 };
 
+export function convertToSecretPair(s: string): SecretPair {
+    return [
+        BigInt('0x' + s.slice(2, 66)) % SNARK_FIELD_SIZE,
+        BigInt('0x' + s.slice(66, 130)) % SNARK_FIELD_SIZE,
+    ];
+}
+
 export const preparePublicInput = (
     secrets: SecretPair,
     root: bigint,

@@ -1,7 +1,6 @@
 // @ts-ignore
 import {bigIntToBuffer, bufferToBigInt, sha256} from './utils';
 
-import {MerkleProof} from './triad-merkle-tree';
 // @ts-ignore
 import {ZqField} from 'ffjavascript';
 import assert from 'assert';
@@ -237,25 +236,6 @@ export const packToSolidityProof = (fullProof: any): PackedProof => {
     };
 };
 
-// converts the Quad Leaf ID to Tree ID and Triad Leaf ID
-export const leafIdToTreeIdAndTriadId = (leafId: BigInt): [number, number] => {
-    const nLeafId = Number(leafId);
-    const treeId = Math.floor(nLeafId / 2048);
-    const triadId = (nLeafId % 2048) - Math.floor((nLeafId % 2048) / 4);
-    return [treeId, triadId];
-};
-
-export function triadTreeMerkleProofToPathIndices({
-    indices: input,
-}: MerkleProof): number[] {
-    // every output index must be one-bit signal (0 or 1 in the lower bit)
-    // leaf level index in the `input` has two bits, ...
-    // ... and it must be converted in two output signals
-    return [input[0] % 2, input[0] >> 1].concat(
-        input.slice(1), // for inner levels, inputs do not need conversion
-    );
-}
-
 export const verifyProof = async (
     vKey: string,
     fullProof: any,
@@ -264,12 +244,3 @@ export const verifyProof = async (
     const {proof, publicSignals} = fullProof;
     return groth16.verify(vKey, publicSignals, proof, logger);
 };
-
-export function triadTreeMerkleProofToPathElements({
-    pathElements: input,
-}: MerkleProof): bigint[] {
-    // Output for every level must be a single element.
-    // Leaf level input is an array of two elements,
-    // it must be converted in two output elements.
-    return input.flat(1);
-}

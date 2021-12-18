@@ -198,7 +198,7 @@ describe('Testing Triad Tree with provided examples', () => {
             const path = 'src/triad-merkle-tree/__tests__/data/tree_zip';
 
             firstTree.save(path, true);
-            secondTree = TriadMerkleTree.load(path, true);
+            secondTree = TriadMerkleTree.loadFromFile(path, true);
 
             randomLeafIndex = Math.floor(
                 Math.random() * firstTree.leaves.length,

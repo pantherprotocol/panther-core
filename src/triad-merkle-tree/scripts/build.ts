@@ -25,8 +25,8 @@
 */
 
 import CONSTANTS from '../constants';
-import Utils from '../utils';
 import _ from 'lodash';
+import {createTriadMerkleTree} from '../utils';
 import fs from 'fs';
 import yargs from 'yargs/yargs';
 
@@ -62,7 +62,7 @@ const argv = yargs(process.argv.slice(2))
 /* ---------------------------- helper functions ---------------------------- */
 // saves the tree to the file
 const _saveTree = (commitments: string[], treeIdx: number): void => {
-    const tree = Utils.createTriadMerkleTree(10, commitments, BigInt(0));
+    const tree = createTriadMerkleTree(10, commitments, BigInt(0));
     const p = argv.path ? argv.path : './';
     const fn = `${p}/identities-tree-${treeIdx}.json`.replace('//', '/');
     if (argv.verbose) console.log(`Saving ${treeIdx} tree to ${fn}`);

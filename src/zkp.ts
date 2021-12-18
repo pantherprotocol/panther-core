@@ -104,11 +104,12 @@ const genWnts = async (
 
 export const packToSolidityProof = (fullProof: any): PackedProof => {
     const {proof, publicSignals} = fullProof;
+    const replica = JSON.parse(JSON.stringify(proof)); // deep copy
 
     return {
-        a: proof.pi_a.slice(0, 2),
-        b: proof.pi_b.map((x: any) => x.reverse()).slice(0, 2),
-        c: proof.pi_c.slice(0, 2),
+        a: replica.pi_a.slice(0, 2),
+        b: replica.pi_b.map((x: any) => x.reverse()).slice(0, 2),
+        c: replica.pi_c.slice(0, 2),
         inputs: publicSignals.map((x: any) => {
             x = BigInt(x);
             return (x % SNARK_FIELD_SIZE).toString();
@@ -135,7 +136,11 @@ export function triadTreeMerkleProofToPathIndices({
     );
 }
 
-export const verifyProof = (vKey: string, fullProof: any, logger?: null) => {
+export const verifyProof = async (
+    vKey: string,
+    fullProof: any,
+    logger?: null,
+) => {
     const {proof, publicSignals} = fullProof;
     return groth16.verify(vKey, publicSignals, proof, logger);
 };

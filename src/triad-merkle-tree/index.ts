@@ -226,13 +226,13 @@ const _verifyMerklePath = (
     }
 
     // Hash the first level
-    const firstLevel: bigint[] = pathElements[0];
+    const firstLevel: bigint[] = [...pathElements[0]];
     firstLevel.splice(Number(_proof.indices[0]), 0, _proof.leaf);
     let currentLevelHash: bigint = _hashFunc(firstLevel);
 
     // Verify the proof
     for (let i = 1; i < pathElements.length; i++) {
-        const level: bigint[] = pathElements[i];
+        const level: bigint[] = [...pathElements[i]];
         level.splice(Number(_proof.indices[i]), 0, currentLevelHash);
 
         currentLevelHash = _hashFunc(level);

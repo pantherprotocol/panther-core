@@ -41,7 +41,9 @@ export type Groth16Input = {
 };
 
 export type SecretPair = [bigint, bigint];
-export const extractSecretsPair = (secrets: string) => {
+export const extractSecretsPair = (
+    secrets: string,
+): [r: string, s: string] | null => {
     if (!secrets) {
         return null;
     }

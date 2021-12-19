@@ -24,7 +24,31 @@ export type Groth16Input = {
     pathElements: bigint[];
     pathIndices: any[];
 };
+
 export type SecretPair = [bigint, bigint];
+export const extractSecretsPair = (secrets: string) => {
+    if (!secrets) {
+        return null;
+    }
+    if (secrets.length !== 132) {
+        console.error(
+            `Tried to create identity commitment from secrets of length '${secrets.length}'`,
+        );
+        return null;
+    }
+    if (secrets.slice(0, 2) !== '0x') {
+        console.error(
+            `Tried to create identity commitment from secrets without 0x prefix`,
+        );
+        return null;
+    }
+    // We will never verify this signature; we're only using it as a
+    // deterministic source of entropy which can be used in a ZK proof.
+    // So we can discard the LSB v which has the least entropy.
+    const r = secrets.slice(2, 66);
+    const s = secrets.slice(66, 130);
+    return [r, s];
+};
 
 export const preparePublicInput = (
     secrets: SecretPair,

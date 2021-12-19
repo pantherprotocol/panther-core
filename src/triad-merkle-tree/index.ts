@@ -436,11 +436,18 @@ class TriadMerkleTree {
         return t;
     }
 
-    public static load(path: string, compression: boolean): TriadMerkleTree {
+    public static loadFromFile(
+        path: string,
+        compression: boolean,
+    ): TriadMerkleTree {
         const s = compression
             ? fs.readFileSync(path, 'ucs2')
             : fs.readFileSync(path, 'utf-8');
-        const treeString = compression ? Utils.decompressString(s) : s;
+        return this.load(s, compression);
+    }
+
+    public static load(data: string, compression: boolean): TriadMerkleTree {
+        const treeString = compression ? Utils.decompressString(data) : data;
         if (treeString === null) {
             throw new Error('Could not decompress tree string');
         }
@@ -448,12 +455,16 @@ class TriadMerkleTree {
     }
 
     public save(path: string, compression: boolean): void {
-        const s = compression
+        const data = this.serialize(compression);
+        compression
+            ? fs.writeFileSync(path, data, 'ucs2')
+            : fs.writeFileSync(path, data, 'utf-8');
+    }
+
+    public serialize(compression: boolean): string {
+        return compression
             ? Utils.compressString(this._serialize())
             : this._serialize();
-        compression
-            ? fs.writeFileSync(path, s, 'ucs2')
-            : fs.writeFileSync(path, s, 'utf-8');
     }
 }
 

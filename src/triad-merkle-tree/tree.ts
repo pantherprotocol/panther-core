@@ -441,27 +441,22 @@ class TriadMerkleTree {
      * Checks if JSON has required data for deserialization
      */
     public static isJsonDeserializable(_tree: any): [boolean, string] {
-        const baseMessage = 'Downloaded tree is not deserializable: ';
-        if (!_tree.nextIndex)
-            return [false, baseMessage + 'nextIndex must be present'];
-        if (!_tree.root) return [false, baseMessage + 'root must be present'];
-        if (!_tree.zeroValue)
-            return [false, baseMessage + 'zeroValue must be present'];
-        if (!_tree.depth) return [false, baseMessage + 'depth must be present'];
+        if (!_tree.nextIndex) return [false, 'nextIndex must be present'];
+        if (!_tree.root) return [false, 'root must be present'];
+        if (!_tree.zeroValue) return [false, 'zeroValue must be present'];
+        if (!_tree.depth) return [false, 'depth must be present'];
         if (!_tree.filledSubtrees)
-            return [false, baseMessage + 'filledSubtrees must be present'];
-        if (!_tree.leafNodeSize)
-            return [false, baseMessage + 'leafNodeSize must be present'];
-        if (!_tree.leaves)
-            return [false, baseMessage + 'leaves must be present'];
+            return [false, 'filledSubtrees must be present'];
+        if (!_tree.leafNodeSize) return [false, 'leafNodeSize must be present'];
+        if (!_tree.leaves) return [false, 'leaves must be present'];
         if (!(_tree.leaves.length > 0))
-            return [false, baseMessage + 'leaves must be not empty'];
+            return [false, 'leaves must be not empty'];
         if (!(_tree.zeros.length > 0))
-            return [false, baseMessage + 'zeros must be not empty'];
+            return [false, 'zeros must be not empty'];
         if (!(_tree.filledSubtrees.length > 0))
-            return [false, baseMessage + 'filledSubtrees must be not empty'];
+            return [false, 'filledSubtrees must be not empty'];
         if (!(Object.keys(_tree.filledPaths).length > 0))
-            return [false, baseMessage + 'filledPaths must be not empty'];
+            return [false, 'filledPaths must be not empty'];
 
         return [true, ''];
     }

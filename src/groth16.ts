@@ -116,10 +116,10 @@ export const preparePublicInput = (
 
 export async function generateProofWithWitnessBuffer(
     witnessBuffer: ArrayBuffer,
-    zkeyUrl: string,
+    zkey: any,
 ): Promise<FullProof> {
     const {proof, publicSignals} = await groth16.prove(
-        zkeyUrl,
+        zkey,
         witnessBuffer,
         null,
     );
@@ -129,7 +129,7 @@ export async function generateProofWithWitnessBuffer(
 
 export async function calculateWitnessBuffer(
     input: Groth16Input,
-    wasmBuffer: ArrayBuffer,
+    wasmBuffer: any,
 ): Promise<ArrayBuffer> {
     const witnessCalculator = await builder(wasmBuffer);
     const buffer = await witnessCalculator.calculateWTNSBin(input, 0);
@@ -183,12 +183,9 @@ export async function generateSignature(
 
 export async function generateProofWithBuffer(
     witnessBuffer: ArrayBuffer,
-    zkeyUrl: string,
+    zkey: any,
 ) {
-    const fullProof = await generateProofWithWitnessBuffer(
-        witnessBuffer,
-        zkeyUrl,
-    );
+    const fullProof = await generateProofWithWitnessBuffer(witnessBuffer, zkey);
 
     const proof = ethers.utils.defaultAbiCoder.encode(
         ['tuple(uint256[2] a,uint256[2][2] b,uint256[2] c,uint256[1] inputs)'],

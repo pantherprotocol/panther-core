@@ -2,13 +2,12 @@
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.0;
 
-import "./interfaces/IErc20Min.sol";
-import "./interfaces/IVotingPower.sol";
-import "./utils/Utils.sol";
+import "../interfaces/IErc20Min.sol";
+import "../interfaces/IVotingPower.sol";
+import "../utils/Utils.sol";
 
 /// @title Staking
 contract Staking is Utils, IVotingPower {
-
     /// @notice Staking token
     IErc20Min public immutable TOKEN;
 
@@ -46,14 +45,10 @@ contract Staking is Utils, IVotingPower {
     mapping(address => Snapshot[]) private snapshots;
 
     /// @dev New stake created
-    event Stake(
-        address indexed account,
-        uint256 indexed stakeID,
-        uint256 amount
-    );
+    event StakeCreated(address indexed account, uint256 indexed stakeID, uint256 amount);
 
     /// @dev Stake claimed (i.e. "unstaked")
-    event Claim(address indexed account, uint256 indexed stakeID);
+    event StakeClaimed(address indexed account, uint256 indexed stakeID);
 
     /// @dev Voting power delegated
     event Delegation(
@@ -73,10 +68,7 @@ contract Staking is Utils, IVotingPower {
      * @param _owner - Address of the owner account
      */
     constructor(address _stakingToken, address _owner) {
-        require(
-            _stakingToken != address(0) && _owner != address(0),
-            "Staking:C1"
-        );
+        require(_stakingToken != address(0) && _owner != address(0), "Staking:C1");
         TOKEN = IErc20Min(_stakingToken);
         OWNER = _owner;
         START_BLOCK = blockNow();
@@ -109,9 +101,9 @@ contract Staking is Utils, IVotingPower {
         uint8 v,
         bytes32 r,
         bytes32 s
-    ) external {
+    ) external returns (uint256) {
         TOKEN.permit(_staker, address(this), _amount, deadline, v, r, s);
-        _stake(_staker, _amount);
+        return _stake(_staker, _amount);
     }
 
     /**
@@ -119,28 +111,25 @@ contract Staking is Utils, IVotingPower {
      * @param _stakeID - Stake to claim
      */
     function unstake(uint256 _stakeID) external {
-        Stake memory stake = stakes[msg.sender][_stakeID];
+        Stake memory stakeInfo = stakes[msg.sender][_stakeID];
 
-        require(stake.stakeAt != 0, "Staking: Stake doesn't exist");
-        require(stake.lockedTill < safe32TimeNow(), "Staking: Stake locked");
-        require(stale.claimedAt == 0, "Staking: Stake claimed");
+        require(stakeInfo.stakeAt != 0, "Staking: Stake doesn't exist");
+        require(stakeInfo.lockedTill < safe32TimeNow(), "Staking: Stake locked");
+        require(stakeInfo.claimedAt == 0, "Staking: Stake claimed");
 
-        if (stake.delegatee != address(0)) {
-            _undelegatePower(stake.delegatee, msg.sender, stake.amount);
+        if (stakeInfo.delegatee != address(0)) {
+            _undelegatePower(stakeInfo.delegatee, msg.sender, stakeInfo.amount);
         }
-        _removePower(msg.sender, stake.amount);
+        _removePower(msg.sender, stakeInfo.amount);
 
         stakes[msg.sender][_stakeID].claimedAt = safe32TimeNow();
 
-        totalStaked = safe96(uint256(totalStaked) - uint256(stake.amount));
+        totalStaked = safe96(uint256(totalStaked) - uint256(stakeInfo.amount));
 
-        emit Claim(msg.sender, _stakeID);
+        emit StakeClaimed(msg.sender, _stakeID);
 
         // known contract - reentrancy guard and `safeTransfer` unneeded
-        require(
-            TOKEN.transfer(msg.sender, stake.amount),
-            "Staking: transfer failed"
-        );
+        require(TOKEN.transfer(msg.sender, stakeInfo.amount), "Staking: transfer failed");
     }
 
     /**
@@ -151,28 +140,22 @@ contract Staking is Utils, IVotingPower {
     function delegate(uint256 _stakeID, address _to) public {
         require(_to != GLOBAL_ACCOUNT, "Staking: Can't delegate to GLOBAL_ACCOUNT");
 
-        Stake memory stake = stakes[msg.sender][_stakeID];
-        require(stake.stakeAt != 0, "Staking: Stake doesn't exist");
-        require(stake.claimedAt == 0, "Staking: Stake claimed");
-        require(stake.delegatee != _to, "Staking: Already delegated");
+        Stake memory stakeInfo = stakes[msg.sender][_stakeID];
+        require(stakeInfo.stakeAt != 0, "Staking: Stake doesn't exist");
+        require(stakeInfo.claimedAt == 0, "Staking: Stake claimed");
+        require(stakeInfo.delegatee != _to, "Staking: Already delegated");
 
-        if (stake.delegatee == address(0)) {
-            _delegatePower(msg.sender, _to, _stake.amount);
+        if (stakeInfo.delegatee == address(0)) {
+            _delegatePower(msg.sender, _to, stakeInfo.amount);
         } else {
             if (_to == msg.sender) {
-                _undelegatePower(_stake.delegatee, msg.sender, _stake.amount);
+                _undelegatePower(stakeInfo.delegatee, msg.sender, stakeInfo.amount);
             } else {
-                _reDelegatePower(_stake.delegatee, _to, _stake.amount);
+                _reDelegatePower(stakeInfo.delegatee, _to, stakeInfo.amount);
             }
         }
 
-        emit Delegation(
-            msg.sender,
-            _stake.delegatee,
-            _to,
-            _stakeID,
-            _stake.amount
-        );
+        emit Delegation(msg.sender, stakeInfo.delegatee, _to, _stakeID, stakeInfo.amount);
 
         stakes[msg.sender][_stakeID].delegatee = _to;
     }
@@ -197,44 +180,34 @@ contract Staking is Utils, IVotingPower {
     }
 
     /// @inheritdoc IVotingPower
-    function totalPower() external view returns (Power memory) {
+    function totalPower() external view override returns (Power memory) {
         return power[GLOBAL_ACCOUNT];
     }
 
     /// @inheritdoc IVotingPower
-    function latestGlobalsSnapshotBlock() public view returns (uint256) {
-        return latestAccountSnapshotBlockNum(GLOBAL_ACCOUNT);
+    function latestGlobalsSnapshotBlock() public view override returns (uint256) {
+        return latestSnapshotBlock(GLOBAL_ACCOUNT);
     }
 
     /// @inheritdoc IVotingPower
-    function latestSnapshotBlock(address _account)
-        public
-        view
-        returns (uint256)
-    {
+    function latestSnapshotBlock(address _account) public view override returns (uint256) {
         if (snapshots[_account].length == 0) return 0;
 
-        return snapshots[_account][
-                    snapshots[_account].length - 1
-                ].beforeBlock;
+        return snapshots[_account][snapshots[_account].length - 1].beforeBlock;
     }
 
     /// @inheritdoc IVotingPower
-    function globalsSnapshotLength() external view returns (uint256) {
+    function globalsSnapshotLength() external view override returns (uint256) {
         return snapshots[GLOBAL_ACCOUNT].length;
     }
 
     /// @inheritdoc IVotingPower
-    function snapshotLength(address _account) external view returns (uint256) {
+    function snapshotLength(address _account) external view override returns (uint256) {
         return snapshots[_account].length;
     }
 
     /// @inheritdoc IVotingPower
-    function globalsSnapshot(uint256 _index)
-        external
-        view
-        returns (Snapshot memory)
-    {
+    function globalsSnapshot(uint256 _index) external view override returns (Snapshot memory) {
         return snapshots[GLOBAL_ACCOUNT][_index];
     }
 
@@ -242,13 +215,14 @@ contract Staking is Utils, IVotingPower {
     function snapshot(address _account, uint256 _index)
         external
         view
+        override
         returns (Snapshot memory)
     {
         return snapshots[_account][_index];
     }
 
     /// @inheritdoc IVotingPower
-    function globalsSnapshotAt(uint256 _blockNum, uint256 _hint)
+    function globalSnapshotAt(uint256 _blockNum, uint256 _hint)
         external
         view
         override
@@ -270,7 +244,7 @@ contract Staking is Utils, IVotingPower {
      * @notice Updates the stake lock time with the given value
      * @dev May be only called by the {DELEGATOR_CONTRACT}
      */
-    function updateMinStakingTime(uint32 _minStakingTime) external override {
+    function updateMinStakingTime(uint32 _minStakingTime) external {
         require(msg.sender == OWNER, "Staking: Unauthorized");
         minStakingTime = _minStakingTime;
         emit MinStakingTimeUpdated(_minStakingTime);
@@ -303,29 +277,23 @@ contract Staking is Utils, IVotingPower {
 
         totalStaked = uint96(_totalStake);
         _addPower(_account, _amount);
-        emit Stake(_account, stakeID, _amount);
+        emit StakeCreated(_account, stakeID, _amount);
 
         return stakeID;
     }
 
-    function _addPower(
-        address _to,
-        uint256 _amount
-    ) private {
+    function _addPower(address _to, uint256 _amount) private {
         _takeSnapshot(GLOBAL_ACCOUNT);
         _takeSnapshot(_to);
-        power[GLOBAL_ACCOUNT].own += _amount;
-        power[_to].own += _amount;
+        power[GLOBAL_ACCOUNT].own += uint96(_amount);
+        power[_to].own += uint96(_amount);
     }
 
-    function _removePower(
-        address _from,
-        uint256 _amount
-    ) private {
+    function _removePower(address _from, uint256 _amount) private {
         _takeSnapshot(GLOBAL_ACCOUNT);
         _takeSnapshot(_from);
-        power[GLOBAL_ACCOUNT].own -= _amount;
-        power[_from].own -= _amount;
+        power[GLOBAL_ACCOUNT].own -= uint96(_amount);
+        power[_from].own -= uint96(_amount);
     }
 
     function _delegatePower(
@@ -336,10 +304,10 @@ contract Staking is Utils, IVotingPower {
         _takeSnapshot(GLOBAL_ACCOUNT);
         _takeSnapshot(_to);
         _takeSnapshot(_from);
-        power[GLOBAL_ACCOUNT].own -= _amount;
-        power[_from].own -= _amount;
-        power[GLOBAL_ACCOUNT].delegated += _amount;
-        power[_to].delegated += _amount;
+        power[GLOBAL_ACCOUNT].own -= uint96(_amount);
+        power[_from].own -= uint96(_amount);
+        power[GLOBAL_ACCOUNT].delegated += uint96(_amount);
+        power[_to].delegated += uint96(_amount);
     }
 
     function _reDelegatePower(
@@ -349,8 +317,8 @@ contract Staking is Utils, IVotingPower {
     ) private {
         _takeSnapshot(_to);
         _takeSnapshot(_from);
-        power[_from].delegated -= _amount;
-        power[_to].delegated += _amount;
+        power[_from].delegated -= uint96(_amount);
+        power[_to].delegated += uint96(_amount);
     }
 
     function _undelegatePower(
@@ -358,24 +326,18 @@ contract Staking is Utils, IVotingPower {
         address _to,
         uint256 _amount
     ) private {
-        power[GLOBAL_ACCOUNT].delegated -= _amount;
-        power[_from].delegated -= _amount;
-        power[GLOBAL_ACCOUNT].own += _amount;
-        power[_to].own += _amount;
+        power[GLOBAL_ACCOUNT].delegated -= uint96(_amount);
+        power[_from].delegated -= uint96(_amount);
+        power[GLOBAL_ACCOUNT].own += uint96(_amount);
+        power[_to].own += uint96(_amount);
     }
 
     function _takeSnapshot(address _account) internal {
-        uint32 curBlockNum = safe32blockNow();
-        if (
-            latestAccountSnapshotBlockNum(_account) < curBlockNum
-        ) {
+        uint32 curBlockNum = safe32BlockNow();
+        if (latestSnapshotBlock(_account) < curBlockNum) {
             // make new snapshot as the latest one taken before current block
             snapshots[_account].push(
-                Snapshot(
-                    curBlockNum,
-                    power[_account].own,
-                    power[_account].delegated
-                )
+                Snapshot(curBlockNum, power[_account].own, power[_account].delegated)
             );
         }
     }
@@ -387,26 +349,24 @@ contract Staking is Utils, IVotingPower {
     ) internal view returns (Snapshot memory) {
         _sanitizeBlockNum(_blockNum);
 
-        Snapshot[] storage snapshots = snapshots[_account];
-        blockNum = int32(_blockNum);
+        Snapshot[] storage snapshotsInfo = snapshots[_account];
+        uint256 blockNum = _blockNum;
 
-        if ( // hint is correct?
-            _hint <= snapshots.length &&
-            (_hint == 0 || snapshots[_hint - 1].beforeBlock < blockNum) &&
-            (_hint == snapshots.length ||
-            snapshots[_hint].beforeBlock >= blockNum)
+        if (
+            // hint is correct?
+            _hint <= snapshotsInfo.length &&
+            (_hint == 0 || snapshotsInfo[_hint - 1].beforeBlock < blockNum) &&
+            (_hint == snapshotsInfo.length || snapshotsInfo[_hint].beforeBlock >= blockNum)
         ) {
             // yes, return the hinted snapshot
-            if (_hint < snapshots.length) return snapshots[_hint];
-            else
-                return Snapshot(
-                    blockNum,
-                    power[_account].own,
-                    power[_account].delegated
-                );
-        } else
-            // no, fall back to binary search
-            return _snapshotAt(_account, blockNum);
+            if (_hint < snapshotsInfo.length) {
+                return snapshotsInfo[_hint];
+            } else {
+                return Snapshot(uint32(blockNum), power[_account].own, power[_account].delegated);
+            }
+        }
+        // no, fall back to binary search
+        else return _snapshotAt(_account, blockNum);
     }
 
     function _snapshotAt(address _account, uint256 _blockNum)
@@ -417,15 +377,15 @@ contract Staking is Utils, IVotingPower {
         _sanitizeBlockNum(_blockNum);
 
         // https://en.wikipedia.org/wiki/Binary_search_algorithm
-        Snapshot[] storage snapshots = snapshots[_account];
+        Snapshot[] storage snapshotsInfo = snapshots[_account];
         uint256 index;
         uint256 low = 0;
-        uint256 high = snapshots.length;
+        uint256 high = snapshotsInfo.length;
 
         while (low < high) {
             uint256 mid = (low + high) / 2;
 
-            if (snapshots[mid].beforeBlock > _blockNum) {
+            if (snapshotsInfo[mid].beforeBlock > _blockNum) {
                 high = mid;
             } else {
                 low = mid + 1;
@@ -433,15 +393,15 @@ contract Staking is Utils, IVotingPower {
         }
 
         // `low` is the exclusive upper bound. Find the inclusive upper bounds and set to index
-        if (low > 0 && snapshots[low - 1].beforeBlock == _blockNum) {
-            return snapshots[low - 1];
+        if (low > 0 && snapshotsInfo[low - 1].beforeBlock == _blockNum) {
+            return snapshotsInfo[low - 1];
         } else {
             index = low;
         }
 
         // If index is equal to snapshot array length, then no update made after the requested blockNum.
         // This means the latest value is the right one.
-        if (index == snapshots.length) {
+        if (index == snapshotsInfo.length) {
             return
                 Snapshot(
                     uint32(_blockNum),
@@ -449,14 +409,11 @@ contract Staking is Utils, IVotingPower {
                     uint96(power[_account].delegated)
                 );
         } else {
-            return snapshots[index];
+            return snapshotsInfo[index];
         }
     }
 
     function _sanitizeBlockNum(uint256 _blockNum) private view {
-        require(
-            _blockNum <= safe32blockNow(),
-            "Staking: Too big block number"
-        );
+        require(_blockNum <= safe32BlockNow(), "Staking: Too big block number");
     }
 }

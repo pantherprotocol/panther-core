@@ -144,6 +144,8 @@ export async function generateSignature(
     proof: string,
     deadline: number,
     signer: any,
+    chainId: number,
+    minterAddress: string,
 ) {
     const mintMessage = {
         to,
@@ -157,8 +159,8 @@ export async function generateSignature(
     const Eip712Domain = {
         name: 'PreZKP minter',
         version: '1',
-        chainId: process.env.CHAIN_ID,
-        verifyingContract: process.env.MINTER_ADDRESS,
+        chainId,
+        verifyingContract: minterAddress,
     };
 
     const signature = await signer._signTypedData(

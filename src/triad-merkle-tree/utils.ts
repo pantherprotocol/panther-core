@@ -35,15 +35,12 @@ export const decompressString = (s: string): string | null => {
     return LZString.decompressFromUTF16(s);
 };
 
-export const toBytes32 = (n: number | string): string => {
-    return (
-        '0x' +
-        ethers.utils
-            .hexlify(ethers.BigNumber.from(n))
-            .replace('0x', '')
-            .padStart(64, '0')
+export function toBytes32(n: number | string | bigint) {
+    return ethers.utils.hexZeroPad(
+        ethers.utils.hexlify(ethers.BigNumber.from(n)),
+        32,
     );
-};
+}
 
 // converts the Quad Leaf ID to Tree ID and Triad Leaf ID
 export const leafIdToTreeIdAndTriadId = (leafId: BigInt): [number, number] => {

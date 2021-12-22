@@ -10,7 +10,7 @@ This code is modified version of incrementalquintree:
 https://github.com/appliedzkp/incrementalquintree
 */
 
-import {compressString, decompressString} from './utils';
+import {compressString, decompressString, toBytes32} from './utils';
 
 import assert from 'assert';
 import fs from 'fs';
@@ -65,7 +65,7 @@ const poseidon2or3 = (inputs: bigint[]): bigint => {
 };
 
 const _convertBnToHex = (bn: bigint): string => {
-    return '0x' + bn.toString(16);
+    return toBytes32(bn);
 };
 
 const _insertBatch = (

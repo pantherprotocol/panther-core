@@ -2,17 +2,21 @@
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.0;
 
-import "../interfaces/IErc20Min.sol";
-import "../interfaces/IVotingPower.sol";
-import "../utils/Utils.sol";
+import "./interfaces/IErc20Min.sol";
+import "./interfaces/IStakesRewards.sol";
+import "./interfaces/IVotingPower.sol";
+import "./utils/Utils.sol";
 
 /// @title Staking
 contract Staking is Utils, IVotingPower {
     /// @notice Staking token
     IErc20Min public immutable TOKEN;
 
-    /// @notice {Delegator} contract
+    /// @notice The owner who can update {minStakingTime}
     address public immutable OWNER;
+
+    /// @notice StakesRewards contract
+    address public immutable STAKES_REWARDS;
 
     /// @notice Block the contract deployed in
     uint256 public immutable START_BLOCK;
@@ -45,7 +49,7 @@ contract Staking is Utils, IVotingPower {
     mapping(address => Snapshot[]) private snapshots;
 
     /// @dev New stake created
-    event StakeCreated(address indexed account, uint256 indexed stakeID, uint256 amount);
+    event StakeCreated(address indexed account, uint256 indexed stakeID, uint256 amount, bool isJourney);
 
     /// @dev Stake claimed (i.e. "unstaked")
     event StakeClaimed(address indexed account, uint256 indexed stakeID);
@@ -67,10 +71,11 @@ contract Staking is Utils, IVotingPower {
      * @param _stakingToken - Address of the {ZKPToken} contract
      * @param _owner - Address of the owner account
      */
-    constructor(address _stakingToken, address _owner) {
-        require(_stakingToken != address(0) && _owner != address(0), "Staking:C1");
+    constructor(address _stakingToken, address _owner, address _stakesRewards) {
+        require(_stakingToken != address(0) && _owner != address(0) && _stakesRewards != address(0) , "Staking:C1");
         TOKEN = IErc20Min(_stakingToken);
         OWNER = _owner;
+        STAKES_REWARDS = _stakesRewards;
         START_BLOCK = blockNow();
     }
 
@@ -78,14 +83,16 @@ contract Staking is Utils, IVotingPower {
      * @notice Stakes tokens
      * @dev This contract should be approve()'d for _amount
      * @param _amount - Amount to stake
+     * @param isJourney - true for the "Journey" stake
      * @return stake ID
      */
-    function stake(uint256 _amount) public returns (uint256) {
-        return _stake(msg.sender, _amount);
+    function stake(uint256 _amount, bool isJourney) public returns (uint256) {
+        return _stake(msg.sender, _amount, isJourney);
     }
 
     /**
-     * @notice Approves this contract to transfer _amount from _staker and stakes tokens
+     * @notice Approves this contract to transfer _amount tokens from _staker
+     * and stakes these tokens on the "journey" stake
      * @dev This contract does not need to be approve()'d in advance - see EIP-2612
      * @param _staker - Address of the staker account
      * @param _amount - Amount to stake
@@ -94,7 +101,7 @@ contract Staking is Utils, IVotingPower {
      * @param s - signature from `staker`
      * @return stake ID
      */
-    function permitAndStake(
+    function permitAndStakeOnJourney(
         address _staker,
         uint256 _amount,
         uint256 deadline,
@@ -103,14 +110,14 @@ contract Staking is Utils, IVotingPower {
         bytes32 s
     ) external returns (uint256) {
         TOKEN.permit(_staker, address(this), _amount, deadline, v, r, s);
-        return _stake(_staker, _amount);
+        return _stake(_staker, _amount, true);
     }
 
     /**
      * @notice Claims staked token
      * @param _stakeID - Stake to claim
      */
-    function unstake(uint256 _stakeID) external {
+    function unstake(uint256 _stakeID, bool _isForced) external {
         Stake memory stakeInfo = stakes[msg.sender][_stakeID];
 
         require(stakeInfo.stakeAt != 0, "Staking: Stake doesn't exist");
@@ -130,6 +137,7 @@ contract Staking is Utils, IVotingPower {
 
         // known contract - reentrancy guard and `safeTransfer` unneeded
         require(TOKEN.transfer(msg.sender, stakeInfo.amount), "Staking: transfer failed");
+        _callOnUnstaked(msg.sender, _stakeId, _isForced);
     }
 
     /**
@@ -252,7 +260,7 @@ contract Staking is Utils, IVotingPower {
 
     /// Internal and private functions follow
 
-    function _stake(address _account, uint256 _amount) internal returns (uint256) {
+    function _stake(address _account, uint256 _amount, bool isJourney) internal returns (uint256) {
         require(_amount > 0, "Staking: Amount not set");
 
         uint256 _totalStake = _amount + uint256(totalStaked);
@@ -265,21 +273,44 @@ contract Staking is Utils, IVotingPower {
         );
 
         uint256 stakeID = stakes[_account].length;
-        stakes[_account].push(
-            Stake(
-                address(0), // no delegatee
-                uint96(_amount),
-                safe32TimeNow(),
-                safe32(timeNow() + minStakingTime),
-                0
-            )
-        );
+        uint256 unlockTime = safe32(timeNow() + minStakingTime);
+
+        if (isJourney) {
+            require(journeyCancellationDeadline > unlockTime, "Staking: journey booking closed");
+            unlockTime = journeyCancellationDeadline;
+        }
 
         totalStaked = uint96(_totalStake);
         _addPower(_account, _amount);
-        emit StakeCreated(_account, stakeID, _amount);
+        _callOnStaked(_account, stakeID, _amount, isJourney);
+
+        emit StakeCreated(_account, stakeID, _amount, isJourney);
 
         return stakeID;
+    }
+
+    function _callOnStaked(address _account, uint256 stakeId, uint256 _amount, bool isJourney) internal {
+        IStakesRewards _stakesRewards = IStakesRewards(_stakesRewards);
+        if (_stakesRewards != address(0)) {
+            // known contract - reentrancy guard unneeded
+            try _stakesRewards.onStaked(_account, stakeID, _amount, isJourney) returns (bool success) {
+                require(success, "Staking: onStaked failed");
+            } catch { // Failure in `stakesRewards` MUST not revert execution
+                emit Log("onStaked reverted");
+            }
+        }
+    }
+
+    function _callOnUnstaked(address _account, uint256 stakeId, bool _isForced) internal {
+        IStakesRewards _stakesRewards = IStakesRewards(_stakesRewards);
+        if (_stakesRewards != address(0)) {
+            // known contract - reentrancy guard unneeded
+            try _stakesRewards.onUnstaked(_account, stakeID, _amount, isJourney) returns (bool success) {
+                require(_isForced || success, "Staking: onUnstaked failed");
+            } catch { // Failure in `stakesRewards` MUST not revert execution
+                emit Log("onUnstaked reverted");
+            }
+        }
     }
 
     function _addPower(address _to, uint256 _amount) private {

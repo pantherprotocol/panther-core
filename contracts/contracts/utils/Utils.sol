@@ -2,6 +2,9 @@
 pragma solidity ^0.8.0;
 
 contract Utils {
+    event Log(string message);
+    event Log(bytes data);
+
     function safe32(uint256 n) internal pure returns (uint32) {
         require(n < 2**32, "UNSAFE32");
         return uint32(n);

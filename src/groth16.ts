@@ -11,6 +11,13 @@ import fs from 'fs';
 import {groth16} from 'snarkjs';
 // @ts-ignore
 import {poseidon} from 'circomlibjs';
+import {
+    TriadMerkleTree,
+    triadTreeMerkleProofToPathElements,
+    triadTreeMerkleProofToPathIndices,
+} from './triad-merkle-tree';
+import {leafIdToTreeIdAndTriadId, MerkleProof, poseidon2or3} from './index';
+import {toBytes32} from './triad-merkle-tree/utils';
 
 // @ts-ignore
 export {groth16} from 'snarkjs';
@@ -39,6 +46,9 @@ export type Groth16Input = {
     pathElements: bigint[];
     pathIndices: any[];
 };
+
+// bytes4(keccak256('PreZkp'))
+const EXTERNAL_NULLIFIER = BigInt('0x4da08cc7');
 
 export type SecretPair = [bigint, bigint];
 export const extractSecretsPair = (
@@ -194,7 +204,7 @@ export async function generateProofWithBuffer(
     return {fullProof, proof};
 }
 
-export const genProof = async (
+export const generateProofWithFiles = async (
     grothInput: Groth16Input,
     wasmFilePath: string,
     finalZkeyPath: string,
@@ -245,10 +255,90 @@ export const packToSolidityProof = (fullProof: any): PackedProof => {
 };
 
 export const verifyProof = async (
-    vKey: string,
-    fullProof: any,
+    vKey: any,
+    fullProof: FullProof,
     logger?: null,
 ) => {
     const {proof, publicSignals} = fullProof;
+    console.debug(
+        '[verifyProof] VKey: ',
+        vKey,
+        ' PublicSignals: ',
+        publicSignals,
+        ' proof: ',
+        proof,
+    );
     return groth16.verify(vKey, publicSignals, proof, logger);
 };
+
+export async function generateProofFromBrowser(
+    address: string,
+    secrets: string,
+    leafId: BigInt,
+    tree: TriadMerkleTree,
+    wasmBuffer: any,
+    zKeyBuffer: any,
+): Promise<any> {
+    console.debug(tree);
+
+    if (!wasmBuffer) {
+        return Promise.reject(new Error('WASM buffer is not provided'));
+    }
+
+    if (!zKeyBuffer) {
+        return Promise.reject(new Error('Zkey buffer is not provided'));
+    }
+
+    const message = BigInt(address);
+    const [merkleProof, treeId] = await generateMerkleProof(leafId, tree);
+    const secretPair = convertToSecretPair(secrets);
+
+    const {nullifier, publicInputsHash, packedPubData} = preparePublicInput(
+        secretPair,
+        merkleProof.root,
+        treeId,
+        message,
+        EXTERNAL_NULLIFIER,
+    );
+
+    const witnessBuffer = await calculateWitnessBuffer(
+        {
+            publicInputsHash,
+            data: packedPubData,
+            nullifier,
+            root: merkleProof.root,
+            secrets: secretPair,
+            pathElements: triadTreeMerkleProofToPathElements(merkleProof),
+            pathIndices: triadTreeMerkleProofToPathIndices(merkleProof),
+        },
+        wasmBuffer,
+    );
+
+    const {fullProof, proof} = await generateProofWithBuffer(
+        witnessBuffer,
+        zKeyBuffer,
+    );
+
+    return {
+        fullProof,
+        proof,
+        nullifier,
+        root: merkleProof.root,
+        treeId,
+    };
+}
+
+export async function generateMerkleProof(
+    leafId: BigInt,
+    tree: TriadMerkleTree,
+): Promise<[MerkleProof, number]> {
+    const [treeId, triadLeafIndex] = leafIdToTreeIdAndTriadId(leafId);
+    const root = tree.root ? toBytes32(tree.root) : 'null';
+    console.debug(
+        `Generating Merkle proof for leafId=${leafId} treeId=${treeId} ` +
+            `triadLeafIndex=${triadLeafIndex} root=${root}`,
+    );
+    const path = tree.genMerklePath(triadLeafIndex);
+    assert(TriadMerkleTree.verifyMerklePath(path, poseidon2or3));
+    return [path, treeId];
+}

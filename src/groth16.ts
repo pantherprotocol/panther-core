@@ -261,11 +261,11 @@ export const verifyProof = async (
 ) => {
     const {proof, publicSignals} = fullProof;
     console.debug(
-        '[verifyProof] VKey: ',
+        '[verifyProof] vKey:',
         vKey,
-        ' PublicSignals: ',
+        '/ PublicSignals:',
         publicSignals,
-        ' proof: ',
+        '/ proof:',
         proof,
     );
     return groth16.verify(vKey, publicSignals, proof, logger);

@@ -172,10 +172,15 @@ export async function generateSignature(
         chainId,
         verifyingContract: minterAddress,
     };
+    console.debug('Eip712Domain:', Eip712Domain);
+
+    const types = {Mint: MINT_MSG_TYPE};
+    console.debug('EIP712 types:', types);
+    console.debug('signing mint message:', mintMessage);
 
     const signature = await signer._signTypedData(
         Eip712Domain,
-        {Mint: MINT_MSG_TYPE},
+        types,
         mintMessage,
     );
 

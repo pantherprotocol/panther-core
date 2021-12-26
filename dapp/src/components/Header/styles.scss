@@ -1,0 +1,80 @@
+@import '../../variables';
+
+.app-bar {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: white;
+    padding-top: 16px;
+}
+
+.nav-item {
+    padding: 0px 25px;
+    color: rgba(255, 255, 255, 0.62);
+    cursor: pointer;
+}
+.nav-item.active {
+    color: #fff;
+    font-size: 1.2rem;
+    text-decoration: underline;
+}
+
+.more-item {
+    width: 45px;
+    height: 45px;
+    margin: 0px 5px;
+    background: rgba(107, 155, 183, 0.2);
+    mix-blend-mode: normal;
+    backdrop-filter: blur(40px);
+
+    border-radius: 8px;
+}
+
+.addresses-box {
+    display: flex;
+    justify-content: space-between;
+    width: 279px;
+    height: 45px;
+    margin: 0px 5px;
+    padding: 8px;
+    background: rgba(107, 155, 183, 0.2);
+
+    border-radius: 8px;
+}
+
+.addresses-box .MuiTypography-subtitle2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #404a53;
+
+    width: 75px;
+    border-radius: 8px;
+}
+.addresses-box .MuiInput-root {
+    margin-top: 0;
+}
+.addresses-box .MuiInputLabel-root {
+    top: -12px;
+    color: #fff;
+}
+
+.addresses-box .MuiFilledInput-root {
+    background-color: transparent !important;
+}
+.addresses-box .MuiFilledInput-root:before,
+.addresses-box .MuiFilledInput-root:after {
+    display: none;
+}
+.MuiSelect-select {
+    padding: 4px !important;
+    color: #fff !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+.MuiSvgIcon-root {
+    color: #fff !important;
+}
+.account-avatar {
+    padding: 0 25px;
+}

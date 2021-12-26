@@ -1,0 +1,24 @@
+@import '../../variables';
+
+.footer-holder {
+    width: 100%;
+    display: flex;
+    z-index: 2;
+
+    .footer-container {
+        display: flex;
+        justify-content: left;
+        width: 100%;
+        padding: 20px;
+
+        .socials {
+            a {
+                padding: 0 15px;
+
+                img {
+                    width: 22px;
+                }
+            }
+        }
+    }
+}

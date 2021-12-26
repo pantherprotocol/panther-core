@@ -1,0 +1,115 @@
+{
+  "name": "Staking-UI",
+  "description": "dApp frontend for Panther Protocol LaunchDAO",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "webpack-cli serve --mode=development --env development --hot",
+    "start:prod": "webpack-cli serve --mode=production --env production --hot",
+    "build": "webpack --mode=development --env development --progress",
+    "build:prod": "webpack --mode=production --env production --progress",
+    "lint": "yarn lint:ts && yarn run prettier:list-different",
+    "lint:eslint": "eslint --max-warnings 0",
+    "lint:ts": "yarn lint:eslint .",
+    "lint:fix": "eslint --fix .",
+    "prettier:check": "cd .. && yarn prettier --check dapp",
+    "prettier:fix": "cd .. && yarn prettier --write dapp",
+    "prettier:list-different": "cd .. && yarn prettier --list-different dapp",
+    "test": "DOTENV_CONFIG_PATH=.env.test jest",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.6.0",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.2.1",
+    "@mui/material": "^5.1.0",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "antd": "^4.17.2",
+    "axios": "^0.24.0",
+    "dotenv-webpack": "^7.0.3",
+    "easy-peasy": "^5.0.3",
+    "node-polyfill-webpack-plugin": "^1.1.4",
+    "query-string": "^7.0.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-icons": "^4.3.1",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "web-vitals": "^1.0.1"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.15.0",
+    "@babel/preset-react": "^7.14.5",
+    "@react-icons/all-files": "^4.1.0",
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.4.12",
+    "@types/react": "^17.0.15",
+    "@types/react-dom": "^17.0.9",
+    "@types/react-router-dom": "^5.1.9",
+    "@types/webpack": "^5.28.0",
+    "@types/webpack-dev-server": "^3.11.5",
+    "@typescript-eslint/eslint-plugin": "^5.3.1",
+    "@typescript-eslint/parser": "^5.3.1",
+    "babel-jest": "^27.1.0",
+    "css-loader": "^6.2.0",
+    "easy-peasy": "^5.0.3",
+    "eslint": "^8.2.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.1",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "html-webpack-plugin": "^5.3.2",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^27.1.0",
+    "jest-mock-console": "^1.2.3",
+    "lightweight-charts": "^3.5.0",
+    "node-sass": "^6.0.1",
+    "prettier": "^2.3.2",
+    "react-hot-loader": "^4.13.0",
+    "sass": "^1.37.5",
+    "sass-loader": "^12.1.0",
+    "style-loader": "^3.2.1",
+    "svg-url-loader": "^7.1.1",
+    "ts-jest": "^27.0.5",
+    "ts-loader": "^9.2.5",
+    "ts-node": "^10.1.0",
+    "tsconfig-paths-webpack-plugin": "^3.5.1",
+    "typescript": "^4.4.4",
+    "webpack": "^5.48.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^4.1.0",
+    "webpack-pwa-manifest": "^4.3.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "setupFiles": [
+      "dotenv/config"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
+    ],
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    },
+    "testEnvironment": "jsdom",
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
+      "\\.(css|scss)$": "<rootDir>/__mocks__/styleMock.js"
+    }
+  }
+}

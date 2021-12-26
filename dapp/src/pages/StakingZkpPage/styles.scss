@@ -1,0 +1,12 @@
+@import '../../variables';
+
+.main-app {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    width: 100%;
+    flex: 1 1 auto;
+    // background: linear-gradient(115.92deg, #0c0c0c 29.73%, #322d2d 97.02%);
+}
+img {
+    max-width: 100%;
+}

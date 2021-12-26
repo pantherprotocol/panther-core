@@ -1,0 +1,177 @@
+@import '../../variables';
+.MuiCard-root {
+    padding: 16px;
+    // border-radius: 16px !important;
+    // background-color: rgba(99, 114, 136, 0.2) !important;
+    color: #fff !important;
+}
+.balance-card {
+    margin: auto;
+    border-radius: 16px;
+    min-height: 135px;
+    background: rgba(43, 51, 65, 0.25);
+
+    color: #fff;
+    text-align: start;
+}
+.subtitle {
+    font-family: Inter;
+    font-size: 18px !important;
+    font-style: normal;
+    font-weight: 800;
+    line-height: 42px;
+    letter-spacing: 0em;
+    text-align: left;
+}
+.balance-value {
+    font-style: bold !important;
+}
+.big-number {
+    font-weight: 800 !important;
+    font-size: 31px !important;
+    margin-inline-end: 8px !important;
+}
+.subtitle-light {
+    color: #e7e7e7;
+    font-size: 14px !important;
+    margin-inline-end: 16px !important;
+    line-height: 30px !important;
+}
+.secondary-dark {
+    color: #fff;
+    opacity: 0.5;
+    font-weight: 700;
+}
+.full-width-btn {
+    width: 100%;
+    color: #fff !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.36) !important;
+    text-transform: capitalize !important;
+    border-radius: 8px !important;
+    height: 43.5px;
+    padding: 4px 8px !important;
+}
+
+.subtitle-summary {
+    color: #fff;
+    font-weight: 700;
+}
+.MuiToggleButtonGroup-root button.Mui-selected {
+    opacity: 1;
+    color: #fff;
+    background-color: rgba(100, 107, 125, 0.5);
+    border-radius: 8px !important;
+}
+.MuiToggleButtonGroup-root button {
+    padding: 8px;
+    border: none !important;
+    font-size: 14px;
+    width: 100px;
+    text-transform: capitalize;
+    color: #fff;
+    opacity: 0.5;
+}
+.MuiToggleButtonGroup-root {
+    padding: 12px;
+    background-color: #373b46;
+    border-radius: 10px !important;
+    margin-top: 12px;
+}
+
+.warning-box {
+    text-align: start;
+    margin-top: 32px;
+    margin-bottom: 0;
+    border: 1px solid rgb(0 0 0 / 38%);
+    height: auto;
+
+    background-image: linear-gradient(216deg, #0000007a, transparent);
+    padding: 16px;
+    border-radius: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.card-container {
+    align-items: flex-start;
+    margin-top: 32px !important;
+}
+
+.warning-box .MuiSvgIcon-root {
+    fill: yellow;
+    margin-inline-end: 8px;
+    margin-bottom: 20px;
+}
+
+.error-outline {
+    margin-left: 4px;
+    margin-bottom: -5px;
+}
+
+#price-unit {
+    color: azure !important;
+    font-size: 14px;
+}
+
+/*Unstaking Table*/
+.MuiTable-root {
+    border-collapse: separate !important;
+    border-spacing: 0 8px !important;
+}
+.MuiTable-root,
+.MuiTableContainer-root {
+    background-color: transparent !important;
+}
+.MuiTableRow-head th {
+    font-family: 'Inter' !important;
+    font-weight: 500;
+    font-size: 14px;
+
+    color: #ffffff;
+    opacity: 0.5;
+}
+.MuiTableCell-root {
+    border-bottom: none !important;
+    color: #ffffff !important;
+    font-family: 'Inter' !important;
+
+    font-weight: 500;
+    font-size: 16px;
+}
+.MuiTableBody-root .MuiTableRow-root {
+    background: linear-gradient(
+        0deg,
+        rgba(146, 159, 183, 0.35),
+        rgba(146, 159, 183, 0.35)
+    );
+    /* Note: backdrop-filter has minimal browser support */
+
+    border-radius: 8px;
+}
+.MuiTableBody-root .MuiTableRow-root .MuiTableCell-root:first-child {
+    border-radius: 8px 0 0 8px;
+}
+.MuiTableBody-root .MuiTableRow-root .MuiTableCell-root:last-child {
+    border-radius: 0px 8px 8px 0px;
+}
+.MuiTable-root .btn {
+    color: #fff;
+    background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.12) 0%,
+            rgba(255, 255, 255, 0) 100%
+        ),
+        #205bea;
+    border-radius: 6px;
+    text-transform: capitalize;
+    width: 116px;
+    height: 35px;
+    font-size: 12px !important;
+}
+.MuiTable-root .disable.btn {
+    color: #fff;
+    background: linear-gradient(
+        0deg,
+        rgba(146, 159, 183, 0.35),
+        rgba(146, 159, 183, 0.35)
+    );
+}

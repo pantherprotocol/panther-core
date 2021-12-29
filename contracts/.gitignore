@@ -9,6 +9,7 @@ node_modules/
 .openzeppelin/
 tmp/
 typechain/
+types/
 typing/
 zkFiles/
 

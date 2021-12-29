@@ -116,31 +116,31 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
     }
 
     /**
-     * @notice Approves this contract to transfer `amount` tokens from `staker`
-     * and stakes these tokens on the "journey" stake
+     * @notice Approves this contract to transfer `amount` tokens from the `msg.sender`
+     * and stakes these tokens. Only the owner of tokens (i.e. the staker) may call.
      * @dev This contract does not need to be approve()'d in advance - see EIP-2612
-     * @param staker - Address of the staker account
+     * @param owner - The owner of tokens being staked (i.e. the `msg.sender`)
      * @param amount - Amount to stake
-     * @param v - signature from `staker`
-     * @param r - signature from `staker`
-     * @param s - signature from `staker`
+     * @param v - "v" param of the signature from `owner` for "permit"
+     * @param r - "r" param of the signature from `owner` for "permit"
+     * @param s - "s" param of the signature from `owner` for "permit"
+     * @param stakeType - Type of the stake
+     * @param data - Arbitrary data for "RewardMaster" (zero, if inapplicable)
      * @return stake ID
      */
-    function permitAndStakeOnJourney(
-        address staker,
+    function permitAndStake(
+        address owner,
         uint256 amount,
         uint256 deadline,
-        bytes calldata data,
         uint8 v,
         bytes32 r,
-        bytes32 s
+        bytes32 s,
+        bytes4 stakeType,
+        bytes calldata data
     ) external returns (uint256) {
-        require(data.length == 0, "Staking: data param ignored");
-        TOKEN.permit(staker, address(this), amount, deadline, v, r, s);
-        // bytes4(keccak('journey'))
-        bytes4 stakeType = bytes4(0x0ba8b0fb);
-        // unused for this stake type
-        return _createStake(staker, amount, stakeType, data);
+        require(owner == msg.sender, "Staking: owner must be msg.sender");
+        TOKEN.permit(owner, address(this), amount, deadline, v, r, s);
+        return _createStake(owner, amount, stakeType, data);
     }
 
     /**
@@ -218,6 +218,12 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
     /// @notice Returns number of stakes of given _account
     function stakesNum(address _account) external view returns (uint256) {
         return stakes[_account].length;
+    }
+
+    /// @notice Returns stakes of given account
+    function accountStakes(address _account) external view returns (Stake[] memory) {
+        Stake[] memory _stakes = stakes[_account];
+        return _stakes;
     }
 
     /// @inheritdoc IVotingPower

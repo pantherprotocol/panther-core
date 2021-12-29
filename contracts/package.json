@@ -1,5 +1,5 @@
 {
-  "name": "@pre-zkp/contracts",
+  "name": "@zkp-staking/contracts",
   "version": "0.0.1",
   "author": "Panther Protocol Team (see contributors.md)",
   "description": "Panther Protocol initial staking contracts",
@@ -24,7 +24,6 @@
     "storage": "FAKE_MNEMONIC=yes yarn hardhat storage | grep -v '/node_modules/\\.bin/hardhat storage' > docs/docgen/storage.layout.txt",
     "test": "FAKE_MNEMONIC=yes hardhat test",
     "test:gas": "export REPORT_GAS=yes && yarn test:long",
-    "ganache": "yarn ganache-cli -e 1000000000000 -a 100 --networkId 999 -p 8545",
     "typechain": "FAKE_MNEMONIC=yes hardhat typechain",
     "verify:network": "FAKE_MNEMONIC=yes hardhat verify --network"
   },

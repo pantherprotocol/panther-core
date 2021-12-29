@@ -4,10 +4,11 @@
     width: 100%;
     display: flex;
     z-index: 2;
+    flex: 1;
 
     .footer-container {
         display: flex;
-        justify-content: left;
+        justify-content: center;
         width: 100%;
         padding: 20px;
 

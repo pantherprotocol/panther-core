@@ -9,15 +9,20 @@ import Dotenv from 'dotenv-webpack';
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 const webpackConfig = (): Configuration | any => ({
-    entry: './src/index.tsx',
-    ...(process.env.production || !process.env.development
+    entry: ['babel-polyfill', './src/index.tsx'],
+    ...(true || process.env.NODE_ENV === 'production'
         ? {}
-        : {devtool: 'eval-cheap-source-map'}),
+        : {
+              devtool: 'source-map', // 'eval-cheap-source-map'
+          }),
 
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.jsx'],
         // @ts-ignore
         plugins: [new TsconfigPathsPlugin({configFile: './tsconfig.json'})],
+        alias: {fs: false, os: false},
+        // Doesn't work, despite https://webpack.js.org/configuration/resolve/#resolvealiasfields
+        // aliasFields: ['browser'],
     },
     output: {
         path: path.join(__dirname, './build'),
@@ -27,10 +32,31 @@ const webpackConfig = (): Configuration | any => ({
         rules: [
             {
                 test: /\.ts|\.tsx?$/,
-                loader: 'ts-loader',
-                options: {
-                    transpileOnly: true,
-                },
+                use: [
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            transpileOnly: true,
+                        },
+                    },
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['@babel/preset-env'],
+                            plugins: [
+                                '@babel/plugin-proposal-object-rest-spread',
+                                [
+                                    '@simbathesailor/babel-plugin-use-what-changed',
+                                    {
+                                        active:
+                                            process.env.NODE_ENV !==
+                                            'production', // boolean
+                                    },
+                                ],
+                            ],
+                        },
+                    },
+                ],
                 include: [
                     path.resolve(__dirname, './src'),
                     path.resolve(__dirname, './tests'),
@@ -106,8 +132,8 @@ const webpackConfig = (): Configuration | any => ({
             },
         }),
         new WebpackPwaManifest({
-            short_name: 'Panther wallet',
-            name: 'Panther wallet',
+            short_name: 'Panther Staking',
+            name: 'Panther Protocol Staking dApp',
             icons: [
                 {
                     src: path.resolve('./public/logo.png'),

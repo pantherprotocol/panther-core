@@ -1,0 +1,22 @@
+@import '../../variables';
+
+.logout-button-holder {
+    // width: 45px;
+    height: 100%;
+
+    .logout-button {
+        color: $white;
+
+        height: 100%;
+        // max-width: 45px;
+        // width: 100%;
+        padding-left: 20px;
+        padding-right: 15px;
+        display: inline-block;
+        line-height: normal;
+        vertical-align: middle;
+        background: $grey-btn;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+}

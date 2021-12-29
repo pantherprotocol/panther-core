@@ -1,0 +1,21 @@
+@import '../../variables';
+
+.wallet-btn-holder {
+    max-width: 220px;
+    width: 100%;
+    text-align: center;
+
+    .wallet-btn {
+        max-width: 220px;
+        height: 45px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 8px;
+        color: $white;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 18px;
+    }
+}

@@ -57,8 +57,6 @@ export default function UnstakeTable() {
                             </TableCell>
                         </TableRow>
                     ))}
-
-
                 </TableBody>
             </Table>
         </TableContainer>

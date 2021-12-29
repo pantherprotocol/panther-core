@@ -1,8 +1,7 @@
 @import '../../variables';
+
 .MuiCard-root {
     padding: 16px;
-    // border-radius: 16px !important;
-    // background-color: rgba(99, 114, 136, 0.2) !important;
     color: #fff !important;
 }
 .balance-card {
@@ -144,14 +143,13 @@
         rgba(146, 159, 183, 0.35)
     );
     /* Note: backdrop-filter has minimal browser support */
-
     border-radius: 8px;
 }
 .MuiTableBody-root .MuiTableRow-root .MuiTableCell-root:first-child {
     border-radius: 8px 0 0 8px;
 }
 .MuiTableBody-root .MuiTableRow-root .MuiTableCell-root:last-child {
-    border-radius: 0px 8px 8px 0px;
+    border-radius: 0 8px 8px 0;
 }
 .MuiTable-root .btn {
     color: #fff;

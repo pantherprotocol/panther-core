@@ -13,9 +13,7 @@ import UnstakeTable from './UnstakeTable';
 import InputAdornment from '@mui/material/InputAdornment';
 import logo from '../../images/panther-logo.svg';
 import Input from '@mui/material/Input';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 import './styles.scss';

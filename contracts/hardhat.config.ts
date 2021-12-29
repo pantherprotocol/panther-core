@@ -1,93 +1,118 @@
 import { resolve } from "path";
-require("dotenv").config();
-
-import { HardhatUserConfig } from "hardhat/config";
-import { NetworkUserConfig } from "hardhat/types";
-
+import { config as dotenvConfig } from "dotenv";
 import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-truffle5";
 import "@openzeppelin/hardhat-upgrades";
-import "hardhat-typechain";
+// import "hardhat-typechain";
 import "solidity-coverage";
 import "hardhat-contract-sizer";
 
-//if (!process.env.MNEMONICS) throw new Error("MNEMONICS missing from .env file");
-if (!process.env.RINKEBY_PRIVKEY)
-  throw new Error("RINKEBY_PRIVKEY missing from .env file");
-if (!process.env.MAINNET_PRIVKEY)
-  throw new Error("MAINNET_PRIVKEY missing from .env file");
+import { HardhatUserConfig } from "hardhat/config";
 
-//const mnemonics = process.env.MNEMONICS;
+dotenvConfig({ path: resolve(__dirname, "./.env") });
 
-const config = {
-  defaultNetwork: "hardhat",
-  networks: {
-    hardhat: {
-      forking: {
-        url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_KEY}`,
-        blockNumber: 11589707,
-      },
+const config: HardhatUserConfig = {
+    defaultNetwork: "hardhat",
+    networks: {
+        hardhat: {
+            forking: {
+                url: `https://eth-mainnet.alchemyapi.io/v2/${getAlchemyKey()}`,
+                blockNumber: 11589707,
+                enabled: !!process.env.HARDHAT_FORKING_ENABLED,
+            },
+        },
+        mainnet: {
+            url: `https://eth-mainnet.alchemyapi.io/v2/${getAlchemyKey()}`,
+            accounts: getAccounts(process.env.MAINNET_PRIVKEY),
+        },
+        matic: {
+            chainId: 137,
+            url: `https://polygon-mainnet.g.alchemy.com/v2/${getAlchemyKey()}`,
+            accounts: getAccounts(process.env.MAINNET_PRIVKEY),
+        },
+        mumbai: {
+            chainId: 80001,
+            url: `https://polygon-mumbai.g.alchemy.com/v2/${getAlchemyKey()}`,
+            accounts: getAccounts(process.env.MUMBAI_PRIVKEY),
+        },
+        rinkeby: {
+            url: `https://eth-rinkeby.alchemyapi.io/v2/${getAlchemyKey()}`,
+            accounts: getAccounts(process.env.RINKEBY_PRIVKEY),
+        },
+        polygon: {
+            chainId: 137,
+            url: `https://polygon-mainnet.g.alchemy.com/v2/${getAlchemyKey()}`,
+            accounts: getAccounts(process.env.MAINNET_PRIVKEY),
+        },
     },
-    rinkeby: {
-      url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_KEY}`,
-      accounts: [process.env.RINKEBY_PRIVKEY],
+    etherscan: {
+        apiKey: process.env.ETHERSCAN_API_KEY || process.env.POLYSCAN_API,
     },
-    live: {
-      url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_KEY}`,
-      accounts: [process.env.MAINNET_PRIVKEY],
+    // @ts-ignore
+    gasReporter: {
+        currency: "USD",
+        enabled: !!process.env.REPORT_GAS,
+        excludeContracts: [],
+        src: "./contracts",
     },
-    matic: {
-      chainId: 137,
-      url: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`,
-      accounts: [process.env.MAINNET_PRIVKEY],
+    mocha: {
+        timeout: 2000000000,
     },
-    mumbai: {
-      chainId: 80001,
-      url: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`,
-      accounts: [process.env.MUMBAI_PRIVKEY],
+    paths: {
+        artifacts: "./artifacts",
+        cache: "./cache",
+        sources: "./contracts",
+        tests: "./tests",
     },
-  },
-  etherscan: {
-    apiKey: process.env.POLYSCAN_API,
-  },
-  paths: {
-    artifacts: "./artifacts",
-    cache: "./cache",
-    sources: "./contracts",
-    tests: "./tests",
-  },
-  solidity: {
-    compilers: [
-      {
-        version: "0.6.6",
-      },
-      {
-        version: "0.6.12",
-      },
-      {
-        version: "0.7.4",
-        settings: {},
-      },
-      {
-        version: "0.8.0",
-        settings: {},
-      },
-    ],
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
-      },
+    solidity: {
+        compilers: [
+            {
+                version: "0.8.4",
+                settings: {
+                    metadata: {
+                        // Not including the metadata hash
+                        // https://github.com/paulrberg/solidity-template/issues/31
+                        bytecodeHash: "none",
+                    },
+                    // You should disable the optimizer when debugging
+                    // https://hardhat.org/hardhat-network/#solidity-optimizer-support
+                    optimizer: {
+                        enabled: true,
+                        runs: 800,
+                    },
+                    outputSelection: {
+                        "*": {
+                            "*": ["storageLayout"],
+                        },
+                    },
+                },
+            },
+        ],
     },
-  },
-  mocha: {
-    timeout: 2000000000,
-  },
-  typechain: {
-    outDir: "types/contracts",
-    target: "truffle-v5",
-  },
+    typechain: {
+        outDir: "types/contracts",
+        target: "truffle-v5",
+    },
 };
+
+function getAccounts(privKey: string | undefined = process.env.PRIVATE_KEY) {
+    if (process.env.FAKE_MNEMONIC)
+        return {
+            count: 5,
+            initialIndex: 0,
+            // fake mnemonic
+            mnemonic: "any pig at zoo eat toy now ten men see job run",
+            path: "m/44'/60'/0'/0",
+        };
+
+    return [privKey || ""];
+}
+
+function getAlchemyKey() {
+    if (!process.env.ALCHEMY_KEY && !process.env.FAKE_MNEMONIC)
+        throw new Error("Please set your ALCHEMY_KEY");
+    return process.env.ALCHEMY_KEY || "";
+}
 
 export default config;

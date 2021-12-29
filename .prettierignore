@@ -5,6 +5,7 @@ contracts/coverage/
 contracts/coverage.json
 contracts/typechain/
 contracts/typing/
+dapp/public/preparation/
 .husky/_/
 node_modules/
 tmp/

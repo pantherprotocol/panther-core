@@ -1,13 +1,10 @@
-# folders
 artifacts/
 build/
 cache/
 compiled/
 coverage/
-dist/
-docs/
-.husky/
 node_modules/
-typechain/
+tmp/
+typing/
 types/
 .yarn/

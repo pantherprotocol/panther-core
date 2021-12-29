@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.0;
 
 import "./interfaces/IVestingPools.sol";
@@ -13,14 +14,13 @@ import "./utils/Utils.sol";
  * This contract assumes to have a "pool wallet" role with the VestingPools,
  * and therefore has a privilege of vesting $ZKPs from the Reward Pool.
  * It requests the VestingPools to vest a share of the pool to the "recipient".
- * The "Stakes" contract, that distributes tokens to stakers as rewards,
+ * The "RewardMaster" contract, that distributes tokens to users as rewards,
  * is assumed to be the "recipient".
  *
- * This contract runs behind an upgradable proxy, and shall be upgraded with
- * the deployment of the "core" Panther Protocol smart contracts.
+ * This contract runs behind an upgradable proxy, and is deemed to be
+ * upgraded on deployment of the "core" Panther Protocol smart contracts.
  */
 contract RewardPool is Utils, IRewardPool {
-
     /// @notice Address of the owner
     address public immutable OWNER;
 
@@ -48,7 +48,7 @@ contract RewardPool is Utils, IRewardPool {
     }
 
     /// @inheritdoc IRewardPool
-    function releasableAmount() external override view returns(uint256) {
+    function releasableAmount() external view override returns (uint256) {
         if (recipient == address(0)) return 0;
         if (timeNow() >= endTime) return 0;
 
@@ -72,7 +72,12 @@ contract RewardPool is Utils, IRewardPool {
     /// @notice Sets the {poolId}, the {recipient} and the {allocation} to given values
     /// @dev Owner only may call, once only
     /// This contract address must be set in the VestingPools as the wallet for the pool
-    function initialize(uint8 _poolId, address _recipient, uint8 _allocation, uint32 _endTime) external {
+    function initialize(
+        uint8 _poolId,
+        address _recipient,
+        uint8 _allocation,
+        uint32 _endTime
+    ) external {
         // OWNER may call only
         require(msg.sender == OWNER, "RP:E4");
         // once only
@@ -96,6 +101,6 @@ contract RewardPool is Utils, IRewardPool {
         uint256 shareable = IVestingPools(VESTING_POOLS).releasableAmount(poolId);
         if (shareable == 0) return 0;
 
-        return shareable * allocation / 100;
+        return (shareable * allocation) / 100;
     }
 }

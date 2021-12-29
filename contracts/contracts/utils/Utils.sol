@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-contract Utils {
+abstract contract Utils {
     event Log(string message);
     event Log(bytes data);
 
@@ -13,6 +13,11 @@ contract Utils {
     function safe96(uint256 n) internal pure returns (uint96) {
         require(n < 2**96, "UNSAFE96");
         return uint96(n);
+    }
+
+    function safe128(uint256 n) internal pure returns (uint128) {
+        require(n < 2**128, "UNSAFE128");
+        return uint128(n);
     }
 
     function safe32TimeNow() internal view returns (uint32) {
@@ -29,7 +34,7 @@ contract Utils {
     }
 
     /// @dev Returns the current block number (added to ease testing)
-    function blockNow() internal virtual view returns (uint32) {
-        return safe32(block.number);
+    function blockNow() internal view virtual returns (uint256) {
+        return block.number;
     }
 }

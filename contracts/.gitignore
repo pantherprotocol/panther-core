@@ -3,6 +3,7 @@ build/
 cache/
 coverage/
 coverage.json
+deployments/
 dist/
 node_modules/
 .openzeppelin/

@@ -92,7 +92,7 @@ const config: HardhatUserConfig = {
     },
     typechain: {
         outDir: "types/contracts",
-        target: "truffle-v5",
+        target: "ethers-v5",
     },
 };
 

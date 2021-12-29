@@ -1,0 +1,22 @@
+@import '../../variables';
+
+.spinner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    // width: 90px;
+    height: 90px;
+    margin: 0 auto;
+
+    svg {
+        path {
+            stroke: $main-brown;
+        }
+    }
+
+    p {
+        color: $white;
+        margin-left: 10px;
+    }
+}

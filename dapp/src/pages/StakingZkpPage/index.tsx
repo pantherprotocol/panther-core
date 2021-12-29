@@ -105,7 +105,6 @@ function StakingZkpPage() {
                             spacing={2}
                             md={10}
                             xs={12}
-
                         >
                             <Grid
                                 item

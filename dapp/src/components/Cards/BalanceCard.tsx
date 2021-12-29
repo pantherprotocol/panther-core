@@ -13,10 +13,8 @@ const BalanceCard = () => (
             // borderRadius: '4px',
             marginBottom: '20px',
             border: '1px solid #485267',
-
             backgroundColor: '#2B334140',
             borderRadius: '8px',
-
         }}
     >
         <Box display="flex" alignItems="baseline">
@@ -47,7 +45,6 @@ const BalanceCard = () => (
             >
                 42,458
             </Typography>
-
             <Typography
                 sx={{
                     fontFamily: 'inner',
@@ -82,7 +79,6 @@ const BalanceCard = () => (
                 backgroundColor: '#485267',
             }}
         />
-
         <Box display="flex" alignItems="baseline">
             <Typography
                 sx={{
@@ -94,7 +90,6 @@ const BalanceCard = () => (
                     opacity: 0.5,
                     marginRight: '18px',
                 }}
-
             >
                 Staked Balance
             </Typography>
@@ -102,12 +97,10 @@ const BalanceCard = () => (
                 <ErrorOutlineIcon fontSize="small" className="error-outline"
                     sx={{
                         opacity: 0.5,
-
                     }}
                 />
             </Typography>
         </Box>
-
         <Box display="flex" alignItems="baseline">
             <Typography
                 component="div"
@@ -121,7 +114,6 @@ const BalanceCard = () => (
             >
                 25,000
             </Typography>
-
             <Typography
                 sx={{
                     fontFamily: 'inner',
@@ -135,7 +127,6 @@ const BalanceCard = () => (
                 ZKP
             </Typography>
         </Box>
-
         <Box display="flex" alignItems="baseline">
             <Typography
                 sx={{
@@ -146,22 +137,18 @@ const BalanceCard = () => (
                     lineHeight: '42px',
                     marginRight: '18px',
                     opacity: 0.5,
-
                 }}
             >
                 Unclaim Reward balance
             </Typography>
             <Typography>
                 <ErrorOutlineIcon fontSize="small" className="error-outline"
-
                     sx={{
                         opacity: 0.5,
-
                     }}
                 />
             </Typography>
         </Box>
-
         <Box display="flex" alignItems="baseline">
             <Typography
                 component="div"
@@ -175,7 +162,6 @@ const BalanceCard = () => (
             >
                 870.90
             </Typography>
-
             <Typography
                 sx={{
                     fontFamily: 'inner',
@@ -215,7 +201,6 @@ const PrivateStakingComingSoonCard = () => (
                 Private Staking Coming Soon
             </Typography>
         </Box>
-
         <Box display="flex" alignItems="baseline">
             <Typography
                 sx={{
@@ -238,9 +223,6 @@ const PrivateStakingComingSoonCard = () => (
 export default function OutlinedCard() {
     return (
         <Box width={'100%'} margin={'0 5'}
-            sx={{
-                //    justifyContent:'space-between'
-            }}
         >
             {/* <Card variant="outlined"> */}
             <BalanceCard />

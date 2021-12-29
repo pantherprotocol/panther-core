@@ -98,7 +98,6 @@ export default function Staking() {
                     </Typography>
                 </Box>
             </Box>
-
             <Card
                 variant="outlined"
                 sx={{
@@ -121,7 +120,6 @@ export default function Staking() {
                     {toggle == 'stake' && (
                         <>
                             <StakingInfoMSG />
-
                             <Box display="flex" justifyContent="space-between">
                                 <Typography
                                     sx={{
@@ -166,7 +164,6 @@ export default function Staking() {
                                     </Typography>
                                 </span>
                             </Box>
-
                             <Box
                                 height={'70px'}
                                 display={'flex'}
@@ -175,7 +172,6 @@ export default function Staking() {
                                 padding={'16px'}
                                 borderRadius={'8px'}
                                 bgcolor={'#929FB759'}
-
                             >
                                 <Input
                                     sx={{
@@ -188,8 +184,6 @@ export default function Staking() {
                                         marginInlineEnd: '16px',
                                         width: '200px'
                                     }}
-
-                                    // type="number"
                                     value={amountToStake}
                                     onChange={e => {
                                         setAmountToStake(
@@ -307,7 +301,6 @@ const StakingMethod = () => (
             >
                 Staking Method:
             </Typography>
-
             <Select
                 labelId="addresses-select-standard-label"
                 id="addresses-select-standard"
@@ -375,7 +368,6 @@ const StakingInfoMSG = () => (
                     marginBottom: '20px',
                 }}
             />
-
             <Typography variant="subtitle2" mb={3}>
                 Staking will lock your tokens for 7+ days
             </Typography>
@@ -425,7 +417,6 @@ const TotalUnclaimedRewards = () => (
             sx={{ opacity: 0.5 }}
         >
             <Typography variant="caption">Total Unclaimed Rewards:</Typography>
-
             <Typography variant="caption">870.38 ZKP</Typography>
         </Box>
     </Box>

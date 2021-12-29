@@ -33,7 +33,7 @@ abstract contract StakingMsgProcessor {
             );
     }
 
-    function _unpackStakingActionMsg(bytes memory message)
+    function _unpackStakingActionMsg(bytes memory)
         internal
         pure
         returns (

@@ -1,0 +1,128 @@
+@import '../../variables';
+
+.staking-header {
+    font-size: 1rem;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    width: 100%;
+
+    @media (max-width: 680px) {
+        flex-direction: column;
+    }
+
+    .staking-main-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+
+        @media (max-width: 680px) {
+            flex-direction: column;
+        }
+    }
+
+    .pre-zkp-main-subheader {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        width: 100%;
+        position: relative;
+    }
+
+    .logo-holder {
+        z-index: 1;
+        margin-top: 2rem;
+        margin-left: 2rem;
+
+        .logo {
+            width: 10rem;
+        }
+    }
+
+    .header-right {
+        box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
+        background: linear-gradient(0deg, #2b63eb, #2b63eb);
+        mix-blend-mode: normal;
+        border-radius: 8px;
+        backdrop-filter: blur(5px);
+        padding: 0 40px;
+        margin-top: 2rem;
+        margin-right: 2rem;
+        display: flex;
+        z-index: 1;
+
+        @media (max-width: 680px) {
+            margin-top: 20px;
+            margin-right: 0;
+        }
+
+        &.active {
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+        }
+
+        &.error {
+            background: $report;
+        }
+
+        .address-btn {
+            .currency-navi-holder {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+
+                .currency-logo {
+                    display: none;
+                }
+
+                .navi-btn-text-hold {
+                    display: inline-block;
+                    align-items: center;
+
+                    .front-text {
+                        background: $grey-btn;
+                        font-weight: 800;
+                        border-radius: 8px;
+                        display: inline-block;
+                        margin: 0 15px 4px 0;
+                        padding-left: 15px;
+                        padding-right: 15px;
+                        vertical-align: middle;
+                    }
+
+                    .main-text {
+                        font-size: 14px;
+                        font-weight: 800;
+                        color: $white;
+                        opacity: 1;
+                        display: inline-block;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        vertical-align: middle;
+                    }
+                }
+            }
+        }
+
+        .header-settings {
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            .settings-button {
+                background: linear-gradient(
+                    0deg,
+                    rgba(71, 82, 103, 0.1),
+                    rgba(71, 82, 103, 0.1)
+                );
+                border: 1px solid $grey-btn-border;
+            }
+        }
+    }
+}

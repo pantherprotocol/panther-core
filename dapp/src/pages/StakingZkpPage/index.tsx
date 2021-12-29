@@ -7,14 +7,14 @@ import './styles.scss';
 import BalanceCard from '../../components/Cards/BalanceCard';
 import StakingCard from '../../components/Cards/StakingCard';
 import background from '../../images/app-background.png';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import { Footer } from '../../components/Footer';
 import {switchNetwork} from '../../services/wallet';
 import {useLocation} from 'react-router-dom';
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
 import {injected} from '../../services/connectors';
 import {useWeb3React} from '@web3-react/core';
 import {Web3Provider} from '@ethersproject/providers';
+import StakingHeader from '../../components/StakingHeader';
 
 const localStorage = window.localStorage;
 
@@ -68,9 +68,6 @@ function StakingZkpPage() {
         }
     }, [active, chainId, deactivate]);
 
-    useEffect(() => {
-    }, []);
-
     return (
         <Box
             className="main-app"
@@ -82,7 +79,7 @@ function StakingZkpPage() {
         >
             <CssBaseline/>
 
-            <Header
+            <StakingHeader
                 onConnect={() => {
                     onConnect();
                 }}

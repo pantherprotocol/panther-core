@@ -14,7 +14,7 @@ import "./utils/Utils.sol";
  * This contract assumes to have a "pool wallet" role with the VestingPools,
  * and therefore has a privilege of vesting $ZKPs from the Reward Pool.
  * It requests the VestingPools to vest a share of the pool to the "recipient".
- * The "Stakes" contract, that distributes tokens to stakers as rewards,
+ * The "RewardMaster" contract, that distributes tokens to users as rewards,
  * is assumed to be the "recipient".
  *
  * This contract runs behind an upgradable proxy, and is deemed to be

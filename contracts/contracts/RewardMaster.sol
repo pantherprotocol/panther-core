@@ -13,9 +13,9 @@ import "./utils/Utils.sol";
 
 /***
  * @title RewardMaster
- * @notice It accounts rewards and distributes reward tokens to entitled users.
- * It withdraws the reward token from (or via) the "REWARD_POOL" contract, and
- * keeps tokens, aka "Treasury", on its balance until distribution.
+ * @notice It accounts rewards and distributes reward tokens to users.
+ * @dev It withdraws the reward token from (or via) the "REWARD_POOL" contract,
+ * and keeps tokens, aka "Treasury", on its balance until distribution.
  * It issues to users "shares" in the Treasury, or redeems shares, paying out
  * tokens from the Treasury to users, or on behalf of users, as follows.
  * It receives messages (calls) on "actions" to be rewarded from authorized

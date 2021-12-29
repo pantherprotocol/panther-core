@@ -12,14 +12,14 @@ import "./utils/Utils.sol";
 
 /**
  * @title Staking
- * @note It lets users stake $ZKP token (ERC-20) in order to have a say in
- * voting on Panther Protocol governance proposals and be rewarded.
- * At request of other smart contracts and off-chain requesters, it computes
- * user "voting power", based upon the amount of tokens on stakes.
- * If stake terms presume rewarding, it sends "messages" on stakes made and
- * stakes claimed to the "RewardMaster" contract, which rewards stakers.
+ * @note It lets users stake $ZKP token for governance voting and rewards.
+ * @dev At request of smart contracts and off-chain requesters, it computes
+ * user "voting power" on the basis of tokens users stake.
+ * It acts as the "ActionOracle" for the "RewardMaster": if stake terms presume
+ * rewarding, it sends "messages" on stakes made and stakes claimed to the
+ * "RewardMaster" contract, that rewards stakers.
  * It supports multiple types of stakes (terms), which the owner may add or
- * remove without contract code upgrade.
+ * remove without contract code upgrades.
  */
 contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes, IVotingPower {
     /// @notice Staking token

@@ -7,8 +7,8 @@ import "./interfaces/IRewardAdviser.sol";
 /**
  * @title StakeRewardAdviser
  * @notice It "advices" to the "RewardMaster" on staking rewards ("shares").
- * It is called by the the "RewardMaster" to process messages on staking which
- * the latest receives from the "Staking" contract.
+ * @dev It acts as the "RewardAdviser" for the "RewardMaster": the latest calls
+ * this contract to process messages from the "Staking" contract.
  */
 contract StakeRewardAdviser is StakingMsgProcessor, IRewardAdviser {
     byte4 private immutable STAKED;

@@ -16,6 +16,8 @@ import {injected} from '../../services/connectors';
 import {useWeb3React} from '@web3-react/core';
 import {Web3Provider} from '@ethersproject/providers';
 
+const localStorage = window.localStorage;
+
 function StakingZkpPage() {
     const context = useWeb3React<Web3Provider>();
 

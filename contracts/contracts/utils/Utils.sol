@@ -21,6 +21,11 @@ abstract contract Utils {
         return uint128(n);
     }
 
+    function safe160(uint256 n) internal pure returns (uint160) {
+        require(n < 2**160, "UNSAFE160");
+        return uint160(n);
+    }
+
     function safe32TimeNow() internal view returns (uint32) {
         return safe32(timeNow());
     }

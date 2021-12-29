@@ -80,7 +80,7 @@ contract RewardMaster is
     // see comments above for explanation
     struct UserRecord {
         uint96 shares;
-        uint96 offset;
+        uint160 offset;
     }
 
     // Mapping from user address to UserRecord data
@@ -141,8 +141,13 @@ contract RewardMaster is
 
     /* ========== ONLY FOR OWNER FUNCTIONS ========== */
 
-    /// @notice Adds a given "RewardAdviser" for given ActionOracle and action type
-    /// @dev May be only called by the {OWNER}
+    /**
+     * @notice Adds a given "RewardAdviser" for given ActionOracle and action type
+     * @dev May be only called by the {OWNER}
+     * !!!!! Before adding a new "adviser", ensure "shares" it returns in the "advices"
+     * do not overflow `UserRecord.shares`, `UserRecord.offset`, `totalShares` and
+     * `accumRewardPerShare`.
+     */
     function addRewardAdviser(
         address oracle,
         bytes4 action,
@@ -179,10 +184,7 @@ contract RewardMaster is
         returns (uint256)
     {
         if (rec.shares == 0 || _accumRewardPerShare == 0) return 0;
-        return
-            rec.shares == 0
-                ? 0
-                : (uint256(rec.shares) * _accumRewardPerShare) / SCALE - uint256(rec.offset);
+        return (uint256(rec.shares) * _accumRewardPerShare) / SCALE - uint256(rec.offset);
     }
 
     function _grantShares(address to, uint256 shares)
@@ -196,7 +198,7 @@ contract RewardMaster is
         uint256 newOffset = uint256(rec.offset) + (shares * uint256(_accumRewardPerShare)) / SCALE;
         uint256 newShares = uint256(rec.shares) + shares;
 
-        records[to] = UserRecord(safe96(newShares), safe96(newOffset));
+        records[to] = UserRecord(safe96(newShares), safe160(newOffset));
         totalShares = safe96(uint256(totalShares) + shares);
 
         emit SharesGranted(to, shares);
@@ -219,7 +221,7 @@ contract RewardMaster is
             newOffset = (uint256(rec.offset) * shares) / uint256(rec.shares);
         }
 
-        records[to] = UserRecord(safe96(newShares), safe96(newOffset));
+        records[to] = UserRecord(safe96(newShares), safe160(newOffset));
         totalShares = safe96(uint256(totalShares) - shares);
 
         if (reward != 0) {

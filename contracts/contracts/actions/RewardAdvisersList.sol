@@ -29,7 +29,7 @@ abstract contract RewardAdvisersList {
     }
 
     function _removeRewardAdviser(address oracle, bytes4 action) internal {
-        require(rewardAdvisers[oracle][action] != address(0), "ACM:E2");
+        require(rewardAdvisers[oracle][action] != address(0), "ACM:E3");
         rewardAdvisers[oracle][action] = address(0);
         emit AdviserUpdated(oracle, action, address(0));
     }
@@ -40,7 +40,7 @@ abstract contract RewardAdvisersList {
         returns (IRewardAdviser)
     {
         address adviser = rewardAdvisers[oracle][action];
-        require(adviser != address(0), "ACM:E3");
+        require(adviser != address(0), "ACM:E4");
         return IRewardAdviser(adviser);
     }
 }

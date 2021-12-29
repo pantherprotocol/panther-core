@@ -1,0 +1,49 @@
+@import '../../variables';
+
+.select-navi {
+    height: 45px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    color: $white;
+    text-decoration: none;
+    font-weight: 500;
+    border: 1px solid $grey-btn-border;
+    font-size: 18px;
+    background: linear-gradient(
+        0deg,
+        rgba(71, 82, 103, 0.1),
+        rgba(71, 82, 103, 0.1)
+    );
+    padding: 0 20px 0 10px;
+    cursor: pointer;
+
+    .currency-navi-holder {
+        display: flex;
+        align-items: center;
+
+        .currency-logo {
+            padding-right: 12px;
+            padding-left: 10px;
+            width: 19px;
+        }
+
+        .navi-btn-text-hold {
+            display: flex;
+            align-items: center;
+
+            .main-text {
+                margin: 0;
+                font-size: 18px;
+                color: $white;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .arrow-down {
+        margin-left: 10px;
+    }
+}

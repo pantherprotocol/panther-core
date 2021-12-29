@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >0.8.0;
+// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
+pragma solidity ^0.8.0;
 
 /**
  * @title Claimable

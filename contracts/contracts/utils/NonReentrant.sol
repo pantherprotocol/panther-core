@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >0.8.0;
+// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
+pragma solidity ^0.8.0;
 
 /**
  * @title NonReentrant
@@ -8,9 +9,6 @@ pragma solidity >0.8.0;
  * Unlike original, this version requires neither `constructor` no `init` call.
  */
 abstract contract NonReentrant {
-    bytes4 private constant SELECTOR_TRANSFER =
-        bytes4(keccak256(bytes("transfer(address,uint256)")));
-
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
 

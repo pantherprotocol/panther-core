@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 /// @title IStaking
@@ -33,8 +33,8 @@ interface IVotingPower {
 
     /// @notice Returns snapshot on given block for given account
     /// @param _account - account to get snapshot for
-    /// @param _blockNum - block number to get state at
-    /// @param _hint - off-chain computed index of the required snapshot
+    /// @param blockNum - block number to get state at
+    /// @param hint - off-chain computed index of the required snapshot
     function snapshotAt(
         address _account,
         uint256 blockNum,

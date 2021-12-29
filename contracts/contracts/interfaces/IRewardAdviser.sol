@@ -13,5 +13,5 @@ interface IRewardAdviser {
         address sendRewardTo;
     }
 
-    function adviceReward(byte4 action, bytes memory message) external returns (Advice memory);
+    function adviceReward(bytes4 action, bytes memory message) external returns (Advice memory);
 }

@@ -12,7 +12,7 @@ import "./utils/Utils.sol";
 
 /**
  * @title Staking
- * @note It lets users stake $ZKP token for governance voting and rewards.
+ * @notice It lets users stake $ZKP token for governance voting and rewards.
  * @dev At request of smart contracts and off-chain requesters, it computes
  * user "voting power" on the basis of tokens users stake.
  * It acts as the "ActionOracle" for the "RewardMaster": if stake terms presume
@@ -39,7 +39,7 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
     uint96 public totalStaked = 0;
 
     /// @dev Mapping from stake type to terms
-    mapping(byte4 => Terms) public terms;
+    mapping(bytes4 => Terms) public terms;
 
     /// @dev Mapping from the staker address to stakes of the staker
     mapping(address => Stake[]) public stakes;
@@ -77,15 +77,15 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
     );
 
     /// @dev New terms (for the given stake type) added
-    event TermsAdded(byte4 stakeType);
+    event TermsAdded(bytes4 stakeType);
 
     /// @dev Terms (for the given stake type) are disabled
-    event TermsDisabled(byte4 stakeType);
+    event TermsDisabled(bytes4 stakeType);
 
     /**
      * @notice Sets staking token, owner and
      * @param stakingToken - Address of the {ZKPToken} contract
-     * @param _rewardMaster - Address of the {RewardMaster} contract
+     * @param rewardMaster - Address of the {RewardMaster} contract
      * @param owner - Address of the owner account
      */
     constructor(
@@ -93,9 +93,9 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         address rewardMaster,
         address owner
     ) ImmutableOwnable(owner) {
-        require(stakingToken != address(0), rewardMaster != address(0), "Staking:C1");
+        require(stakingToken != address(0) && rewardMaster != address(0), "Staking:C1");
         TOKEN = IErc20Min(stakingToken);
-        REWARD_MASTER = rewardMaster;
+        REWARD_MASTER = IActionMsgReceiver(rewardMaster);
         START_BLOCK = blockNow();
     }
 
@@ -109,10 +109,10 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
      */
     function stake(
         uint256 amount,
-        byte4 stakeType,
+        bytes4 stakeType,
         bytes calldata data
     ) public returns (uint256) {
-        return _stake(msg.sender, amount, stakeType, data);
+        return _createStake(msg.sender, amount, stakeType, data);
     }
 
     /**
@@ -130,15 +130,17 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         address staker,
         uint256 amount,
         uint256 deadline,
+        bytes calldata data,
         uint8 v,
         bytes32 r,
         bytes32 s
     ) external returns (uint256) {
+        require(data.length == 0, "Staking: data param ignored");
         TOKEN.permit(staker, address(this), amount, deadline, v, r, s);
-        byte4 stakeType = uint32(0x0ba8b0fb);
         // bytes4(keccak('journey'))
-        bytes memory data = bytes(0);
-        return _stake(staker, amount, stakeType, data);
+        bytes4 stakeType = bytes4(0x0ba8b0fb);
+        // unused for this stake type
+        return _createStake(staker, amount, stakeType, data);
     }
 
     /**
@@ -152,29 +154,29 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         bytes calldata data,
         bool _isForced
     ) external {
-        Stake memory stake = stakes[msg.sender][stakeID];
+        Stake memory _stake = stakes[msg.sender][stakeID];
 
-        require(stake.amount != 0, "Staking: Stake doesn't exist");
-        require(stake.claimedAt == 0, "Staking: Stake claimed");
-        require(stake.lockedTill < safe32TimeNow(), "Staking: Stake locked");
+        require(_stake.amount != 0, "Staking: Stake doesn't exist");
+        require(_stake.claimedAt == 0, "Staking: Stake claimed");
+        require(_stake.lockedTill < safe32TimeNow(), "Staking: Stake locked");
 
-        if (stake.delegatee != address(0)) {
-            _undelegatePower(stake.delegatee, msg.sender, stake.amount);
+        if (_stake.delegatee != address(0)) {
+            _undelegatePower(_stake.delegatee, msg.sender, _stake.amount);
         }
-        _removePower(msg.sender, stake.amount);
+        _removePower(msg.sender, _stake.amount);
 
         stakes[msg.sender][stakeID].claimedAt = safe32TimeNow();
 
-        totalStaked = safe96(uint256(totalStaked) - uint256(stake.amount));
+        totalStaked = safe96(uint256(totalStaked) - uint256(_stake.amount));
 
         emit StakeClaimed(msg.sender, stakeID);
 
         // known contract - reentrancy guard and `safeTransfer` unneeded
-        require(TOKEN.transfer(msg.sender, stake.amount), "Staking: transfer failed");
+        require(TOKEN.transfer(msg.sender, _stake.amount), "Staking: transfer failed");
 
-        Terms memory _terms = terms[stake.stakeType];
+        Terms memory _terms = terms[_stake.stakeType];
         if (!_terms.isRewarded) return;
-        _sendUnstakedMsg(msg.sender, stake, _isForced);
+        _sendUnstakedMsg(msg.sender, _stake, data, _isForced);
     }
 
     /**
@@ -289,12 +291,13 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
 
     /// @notice Adds a new stake type with given terms
     /// @dev May be only called by the {OWNER}
-    function addTerms(byte4 stakeType, Terms memory _terms)
+    function addTerms(bytes4 stakeType, Terms memory _terms)
         external
         onlyOwner
         nonZeroStakeType(stakeType)
     {
-        require(!_isDefinedTerms(terms[stakeType]), "E?");
+        Terms memory existingTerms = terms[stakeType];
+        require(!_isDefinedTerms(existingTerms), "E?");
         require(_terms.isEnabled, "E?");
 
         uint256 _now = timeNow();
@@ -315,9 +318,11 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
             require(_terms.exactLockPeriod == 0 && _terms.minLockPeriod == 0, "E?");
             require(_terms.lockedTill > _now && _terms.lockedTill >= _terms.allowedTill, "E?");
         } else {
+            bool isFirtsZero = _terms.exactLockPeriod == 0;
+            bool isSecondZero = _terms.minLockPeriod == 0;
             require(
                 // one of two params must be non-zero
-                (uint8(_terms.exactLockPeriod == 0) ^ uint8(_terms.minLockPeriod == 0)) == 1,
+                (!isFirtsZero && isSecondZero) || (isFirtsZero && !isSecondZero),
                 "E?"
             );
         }
@@ -326,8 +331,8 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         emit TermsAdded(stakeType);
     }
 
-    function disableTerms(byte4 stakeType) external onlyOwner validType(stakeType) {
-        Terms _terms = terms[stakeType];
+    function disableTerms(bytes4 stakeType) external onlyOwner nonZeroStakeType(stakeType) {
+        Terms memory _terms = terms[stakeType];
         require(_isDefinedTerms(terms[stakeType]), "E?");
         require(_terms.isEnabled, "E?");
 
@@ -337,10 +342,10 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
 
     /// Internal and private functions follow
 
-    function _stake(
+    function _createStake(
         address staker,
         uint256 amount,
-        byte4 stakeType,
+        bytes4 stakeType,
         bytes calldata data
     ) internal nonZeroStakeType(stakeType) returns (uint256) {
         Terms memory _terms = terms[stakeType];
@@ -370,16 +375,16 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
             lockedTill = safe32(period + _now);
         }
 
-        Stake stake = Stake(
+        Stake memory _stake = Stake(
             uint32(stakeID), // overflow risk ignored
-            address(0), // no delegatee
-            uint96(amount),
             stakeType,
-            _now,
+            _now, // stakedAt
             lockedTill,
-            0 // not claimed
+            0, // claimedAt
+            uint96(amount),
+            address(0) // no delegatee
         );
-        stakes[staker].push(stake);
+        stakes[staker].push(_stake);
 
         totalStaked = uint96(_totalStake);
         _addPower(staker, amount);
@@ -387,7 +392,7 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         emit StakeCreated(staker, stakeID, amount, stakeType, lockedTill);
 
         if (_terms.isRewarded) {
-            _sendStakedMsg(staker, stake, data);
+            _sendStakedMsg(staker, _stake, data);
         }
         return stakeID;
     }
@@ -460,7 +465,6 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         _sanitizeBlockNum(blockNum);
 
         Snapshot[] storage snapshotsInfo = snapshots[_account];
-        uint256 blockNum = blockNum;
 
         if (
             // hint is correct?
@@ -527,7 +531,7 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         require(blockNum <= safe32BlockNow(), "Staking: Too big block number");
     }
 
-    function _isDefinedTerms(Stake memory _terms) internal pure returns (bool) {
+    function _isDefinedTerms(Terms memory _terms) internal pure returns (bool) {
         return
             (_terms.minLockPeriod != 0) ||
             (_terms.exactLockPeriod != 0) ||
@@ -536,23 +540,23 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
 
     function _sendStakedMsg(
         address staker,
-        Stake memory stake,
+        Stake memory _stake,
         bytes calldata data
     ) internal {
-        byte4 action = bytes4(keccak256(STAKE_ACTION, stake.stakeType));
-        bytes memory message = _packStakingActionMsg(staker, stake, data);
+        bytes4 action = _encodeStakeActionType(_stake.stakeType);
+        bytes memory message = _packStakingActionMsg(staker, _stake, data);
         // known contract - reentrancy guard unneeded
         require(REWARD_MASTER.onAction(action, message), "E?");
     }
 
     function _sendUnstakedMsg(
         address staker,
-        Stake memory stake,
+        Stake memory _stake,
         bytes calldata data,
         bool _isForced
     ) internal {
-        byte4 action = bytes4(keccak256(UNSTAKE_ACTION, stake.stakeType));
-        bytes memory message = _packStakingActionMsg(staker, stake, data);
+        bytes4 action = _encodeUnstakeActionType(_stake.stakeType);
+        bytes memory message = _packStakingActionMsg(staker, _stake, data);
         // known contract - reentrancy guard unneeded
         try REWARD_MASTER.onAction(action, message) returns (bool success) {
             require(_isForced || success, "E?");
@@ -562,8 +566,8 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         }
     }
 
-    modifier nonZeroStakeType(byte4 stakeType) {
-        require(stakeType != byte4(0), "E?");
+    modifier nonZeroStakeType(bytes4 stakeType) {
+        require(stakeType != bytes4(0), "E?");
         _;
     }
 }

@@ -1,9 +1,10 @@
-// SPDX-License-Identifier: MIT
-/* solhint-disable not-rely-on-time */
-pragma solidity 0.8.9;
+// SPDX-License-Identifier: UNLICENSED
+// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
+pragma solidity ^0.8.0;
 
 import "./actions/RewardAdvisersList.sol";
 import "./interfaces/IActionMsgReceiver.sol";
+import "./interfaces/IErc20Min.sol";
 import "./interfaces/IRewardAdviser.sol";
 import "./interfaces/IRewardPool.sol";
 import "./utils/ImmutableOwnable.sol";
@@ -122,9 +123,13 @@ contract RewardMaster is
         return _getRewardEntitled(rec, _accumRewardPerShare);
     }
 
-    function onAction(byte4 action, bytes memory message) external override returns (bool success) {
+    function onAction(bytes4 action, bytes memory message)
+        external
+        override
+        returns (bool success)
+    {
         IRewardAdviser adviser = _getRewardAdviserOrRevert(msg.sender, action);
-        IRewardAdviser.Advice advice = adviser.adviceReward(action, message);
+        IRewardAdviser.Advice memory advice = adviser.adviceReward(action, message);
         if (advice.sharesToCreate > 0) {
             _grantShares(advice.createSharesFor, advice.sharesToCreate);
         }
@@ -191,10 +196,10 @@ contract RewardMaster is
         uint256 newOffset = uint256(rec.offset) + (shares * uint256(_accumRewardPerShare)) / SCALE;
         uint256 newShares = uint256(rec.shares) + shares;
 
-        records[to] = UserRecord(safe96(newShares), safe96(offset));
+        records[to] = UserRecord(safe96(newShares), safe96(newOffset));
         totalShares = safe96(uint256(totalShares) + shares);
 
-        emit Minted(to, shares);
+        emit SharesGranted(to, shares);
     }
 
     function _redeemShares(
@@ -214,7 +219,7 @@ contract RewardMaster is
             newOffset = (uint256(rec.offset) * shares) / uint256(rec.shares);
         }
 
-        records[to] = UserRecord(safe96(newShares), safe96(offset));
+        records[to] = UserRecord(safe96(newShares), safe96(newOffset));
         totalShares = safe96(uint256(totalShares) - shares);
 
         if (reward != 0) {
@@ -226,20 +231,17 @@ contract RewardMaster is
     }
 
     function _triggerVesting() internal returns (uint256 newAccumRewardPerShare) {
-        uint32 _blockNow = safe32BlockNow();
-        if (lastVestedBlock >= _blockNow) return;
-
         uint256 _totalShares = totalShares;
         require(_totalShares != 0, "RM: no shares to vest for");
 
+        newAccumRewardPerShare = uint256(accumRewardPerShare);
+        uint32 _blockNow = safe32BlockNow();
+        if (lastVestedBlock >= _blockNow) return newAccumRewardPerShare;
+
         // known contract, no reentrancy guard needed
         uint256 newlyVested = IRewardPool(REWARD_POOL).vestRewards();
-        newAccumRewardPerShare = 0;
         if (newlyVested != 0) {
-            newAccumRewardPerShare =
-                uint256(accumRewardPerShare) +
-                (newlyVested * SCALE) /
-                totalShares;
+            newAccumRewardPerShare += (newlyVested * SCALE) / _totalShares;
             accumRewardPerShare = safe128(newAccumRewardPerShare);
             emit RewardAdded(newlyVested);
         }

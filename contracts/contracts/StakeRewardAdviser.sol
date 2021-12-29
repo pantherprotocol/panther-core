@@ -1,8 +1,10 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
+// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.0;
 
 import "./actions/StakingMsgProcessor.sol";
 import "./interfaces/IRewardAdviser.sol";
+import "./utils/Utils.sol";
 
 /**
  * @title StakeRewardAdviser
@@ -10,20 +12,26 @@ import "./interfaces/IRewardAdviser.sol";
  * @dev It acts as the "RewardAdviser" for the "RewardMaster": the latest calls
  * this contract to process messages from the "Staking" contract.
  */
-contract StakeRewardAdviser is StakingMsgProcessor, IRewardAdviser {
-    byte4 private immutable STAKED;
-    byte4 private immutable UNSTAKED;
+contract StakeRewardAdviser is StakingMsgProcessor, Utils, IRewardAdviser {
+    bytes4 private immutable STAKED;
+    bytes4 private immutable UNSTAKED;
     uint256 public immutable FACTOR;
     uint256 private constant SCALE = 1e3;
 
-    constructor(byte4 stakeType, uint256 stakeAmountToSharesScaledFactor) {
-        STAKED = bytes4(keccak256(STAKE_ACTION, stakeType));
-        UNSTAKED = bytes4(keccak256(UNSTAKE_ACTION, stakeType));
+    constructor(bytes4 stakeType, uint256 stakeAmountToSharesScaledFactor) {
+        require(stakeType != bytes4(0) && stakeAmountToSharesScaledFactor != 0, "PSA:E1");
+        STAKED = _encodeStakeActionType(stakeType);
+        UNSTAKED = _encodeUnstakeActionType(stakeType);
         FACTOR = stakeAmountToSharesScaledFactor;
     }
 
-    function adviceReward(bytes4 action, bytes memory message) external returns (Advice memory) {
-        (address staker, uint96 Otamount) = _unpackStakingActionMsg(message);
+    function adviceReward(bytes4 action, bytes memory message)
+        external
+        view
+        override
+        returns (Advice memory)
+    {
+        (address staker, uint96 amount, , , , ) = _unpackStakingActionMsg(message);
         require(staker != address(0), "PSA: unexpected zero staker");
         require(amount != 0, "PSA: unexpected zero amount");
 

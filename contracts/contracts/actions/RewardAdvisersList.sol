@@ -12,17 +12,17 @@ import "../interfaces/IRewardAdviser.sol";
  */
 abstract contract RewardAdvisersList {
     /// @dev Emitted when RewardAdviser added, updated, or removed
-    event AdviserUpdated(address indexed oracle, byte4 indexed action, address adviser);
+    event AdviserUpdated(address indexed oracle, bytes4 indexed action, address adviser);
 
     /// @dev mapping from ActionOracle and (type of) action to ActionController
-    mapping(address => mapping(byte4 => address)) public rewardAdvisers;
+    mapping(address => mapping(bytes4 => address)) public rewardAdvisers;
 
     function _addRewardAdviser(
         address oracle,
         bytes4 action,
         address adviser
     ) internal {
-        require(oracle != address(0) && adviser == address(0) && action != byte4(0), "ACM:E1");
+        require(oracle != address(0) && adviser == address(0) && action != bytes4(0), "ACM:E1");
         require(rewardAdvisers[oracle][action] == address(0), "ACM:E2");
         rewardAdvisers[oracle][action] = adviser;
         emit AdviserUpdated(oracle, action, adviser);
@@ -31,7 +31,7 @@ abstract contract RewardAdvisersList {
     function _removeRewardAdviser(address oracle, bytes4 action) internal {
         require(rewardAdvisers[oracle][action] != address(0), "ACM:E2");
         rewardAdvisers[oracle][action] = address(0);
-        emit ControllerChanged(oracle, action, address(0));
+        emit AdviserUpdated(oracle, action, address(0));
     }
 
     function _getRewardAdviserOrRevert(address oracle, bytes4 action)

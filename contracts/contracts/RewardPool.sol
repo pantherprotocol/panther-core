@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.0;
 
@@ -42,7 +42,7 @@ contract RewardPool is Utils, IRewardPool {
     address public recipient;
 
     constructor(address _vestingPools, address _owner) {
-        require(_vestingPools != address(0), _owner != address(0), "RP:E1");
+        require(_vestingPools != address(0) && _owner != address(0), "RP:E1");
         OWNER = _owner;
         VESTING_POOLS = _vestingPools;
     }
@@ -97,7 +97,7 @@ contract RewardPool is Utils, IRewardPool {
         emit Initialized(_poolId, _recipient, _allocation, _endTime);
     }
 
-    function _releasableAmount() internal returns (uint256) {
+    function _releasableAmount() internal view returns (uint256) {
         uint256 shareable = IVestingPools(VESTING_POOLS).releasableAmount(poolId);
         if (shareable == 0) return 0;
 

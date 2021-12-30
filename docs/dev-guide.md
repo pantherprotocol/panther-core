@@ -32,22 +32,30 @@ be shown on a line like this:
 
 ### Deploying staking contracts
 
-Set an environment variable pointing to that ZKP token contract above,
-e.g.:
+In `zkp-staking`, set up the environment variables:
 
-    export STAKING_TOKEN=0x5FbDB2315678afecb367f032d93F642f64180aa3
+    cd ontracts
+    cp .env.example .env
+
+Ensure the `STAKING_TOKEN` variable is pointing to that ZKP token
+contract above, e.g.:
+
+    STAKING_TOKEN=0x5FbDB2315678afecb367f032d93F642f64180aa3
 
 and set the owner of the staking contract to the default first Hardhat
 signer:
 
-    export STAKING_OWNER=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+    STAKING_OWNER=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
 
-In `zkp-staking`, run:
+Now run:
 
     cd contracts
-    yarn deploy --network localhost
+    yarn deploy:chain
 
-Make a note of the address of the newly deployed `Staking.sol` contract.
+There is no need to take notes of the addresses of the newly deployed
+contracts, because they are automatically stored in
+`contracts/deployments` via `hardhat-deploy`, which also makes them
+easily accessible via extra API methods.
 
 ## Setting up the frontend
 
@@ -55,3 +63,11 @@ Make a note of the address of the newly deployed `Staking.sol` contract.
 
 - Make sure that `STAKING_CONTRACT` is set to the address of the newly
   deployed `Staking.sol` contract from above.
+
+## Interacting with the chain from the console
+
+    yarn console
+
+Now you can easily retrieve the deployed contracts, e.g.:
+
+    master = await ethers.getContract('RewardMaster'); master.address

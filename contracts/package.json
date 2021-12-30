@@ -4,6 +4,7 @@
   "author": "Panther Protocol Team (see contributors.md)",
   "description": "Panther Protocol initial staking contracts",
   "scripts": {
+    "build": "waffle",
     "build:types": "./scripts/gen-types.sh",
     "chain": "FAKE_MNEMONIC=yes hardhat node",
     "compile": "FAKE_MNEMONIC=yes hardhat compile",
@@ -13,9 +14,9 @@
     "deploy:chain": "FAKE_MNEMONIC=yes hardhat deploy --network localhost",
     "flatten": "FAKE_MNEMONIC=yes hardhat flatten",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:list-different",
+    "lint:eslint": "eslint --max-warnings 0",
     "lint:sol": "yarn lint:solhint \"contracts/**/*.sol\"",
     "lint:solhint": "solhint --config ./.solhint.json --max-warnings 0",
-    "lint:eslint": "eslint --max-warnings 0",
     "lint:ts": "yarn lint:eslint .",
     "prettier:check": "cd .. && yarn prettier --check contracts",
     "prettier:fix": "cd .. && yarn prettier --write contracts",

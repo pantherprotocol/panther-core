@@ -35,7 +35,7 @@ be shown on a line like this:
 
 In `zkp-staking`, set up the environment variables:
 
-    cd ontracts
+    cd contracts
     cp .env.example .env
 
 Ensure the `STAKING_TOKEN` variable is pointing to that ZKP token

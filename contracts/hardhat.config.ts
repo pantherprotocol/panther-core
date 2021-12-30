@@ -47,6 +47,9 @@ const config: HardhatUserConfig = {
             accounts: getAccounts(process.env.MAINNET_PRIVKEY),
         },
     },
+    namedAccounts: {
+        deployer: 0,
+    },
     etherscan: {
         apiKey: process.env.ETHERSCAN_API_KEY || process.env.POLYSCAN_API,
     },

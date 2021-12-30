@@ -28,7 +28,7 @@ export const formatTokenBalance = (
 
 export async function getTokenBalance(
     contract: ethers.Contract,
-    address: string,
+    address: string | null | undefined,
 ): Promise<number | null> {
     if (!contract) {
         return null;

@@ -23,6 +23,8 @@ const config: HardhatUserConfig = {
                 enabled: !!process.env.HARDHAT_FORKING_ENABLED,
             },
         },
+        pchain: { url: "http://127.0.0.1:8545" },
+
         mainnet: {
             url: `https://eth-mainnet.alchemyapi.io/v2/${getAlchemyKey()}`,
             accounts: getAccounts(process.env.MAINNET_PRIVKEY),

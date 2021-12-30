@@ -9,7 +9,7 @@ abstract contract ImmutableOwnable {
 
     /// @dev Throws if called by any account other than the {OWNER}.
     modifier onlyOwner() {
-        require(OWNER == msg.sender, "Staking: unauthorized");
+        require(OWNER == msg.sender, "ImmOwn: unauthorized");
         _;
     }
 

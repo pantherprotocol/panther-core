@@ -44,6 +44,12 @@ interface IVestingPools {
         uint256 amount
     ) external returns (uint256 released);
 
+    /**
+     * @notice Updates the wallet for the given pool.
+     * @dev Only address with the 'wallet' role may call.
+     */
+    function updatePoolWallet(uint256 poolId, address newWallet) external;
+
     /// @notice Emitted on an amount vesting.
     event Released(uint256 indexed poolId, address to, uint256 amount);
 }

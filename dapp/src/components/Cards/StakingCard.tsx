@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import WarningIcon from '@mui/icons-material/Warning';
-import {Link} from '@mui/material';
+import { Link } from '@mui/material';
 import UnstakeTable from './UnstakeTable';
 import InputAdornment from '@mui/material/InputAdornment';
 import logo from '../../images/panther-logo.svg';
@@ -131,7 +131,7 @@ export default function Staking() {
                                     variant="subtitle2"
                                     component="span"
                                 >
-                                    Amount
+                                    Amount to stake
                                 </Typography>
                                 <span>
                                     <Typography
@@ -162,6 +162,15 @@ export default function Staking() {
                                     >
                                         ZKP
                                     </Typography>
+                                    <Typography
+                                        variant="caption"
+                                        component="span"
+                                        color='#ffdfbd'
+                                        marginLeft={'1rem'}
+
+                                    >
+                                        Max
+                                    </Typography>
                                 </span>
                             </Box>
                             <Box
@@ -182,7 +191,7 @@ export default function Staking() {
                                         fontSize: '24px',
                                         color: '#ffdfbd',
                                         marginInlineEnd: '16px',
-                                        width: '200px',
+                                        width: '150px',
                                     }}
                                     value={amountToStake}
                                     onChange={e => {
@@ -208,7 +217,7 @@ export default function Staking() {
                                     aria-describedby="staking-value-helper-text"
                                 />
                                 <Box display={'flex'} alignItems={'center'}>
-                                    <Button
+                                    {/* <Button
                                         sx={{
                                             width: '62.43px',
                                             height: '28.15px',
@@ -224,7 +233,7 @@ export default function Staking() {
                                         }}
                                     >
                                         MAX
-                                    </Button>
+                                    </Button> */}
                                     <Box width={'57px'} height={'57px'}>
                                         <img src={logo} />
                                     </Box>
@@ -248,7 +257,7 @@ export default function Staking() {
                                 justifyContent={'center'}
                                 borderRadius={'10px'}
                                 minHeight={'60px'}
-                                sx={{backgroundColor: '#1e4eb4'}}
+                                sx={{ backgroundColor: '#1e4eb4' }}
                             >
                                 <Button
                                     sx={{
@@ -290,7 +299,7 @@ const StakingMethod = () => (
         <Box display="flex" justifyContent={'space-between'}>
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 500,
                     fontStyle: 'normal',
                     fontSize: '16px',
@@ -306,7 +315,7 @@ const StakingMethod = () => (
                 id="addresses-select-standard"
                 variant="filled"
                 value={'Standard'}
-                sx={{m: 0, minWidth: 155}}
+                sx={{ m: 0, minWidth: 155, color: '#fff' }}
             >
                 <MenuItem selected value={'Standard'}>
                     Standard
@@ -317,7 +326,7 @@ const StakingMethod = () => (
         <Box display="flex" justifyContent={'space-between'}>
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 500,
                     fontStyle: 'normal',
                     fontSize: '16px',
@@ -330,7 +339,7 @@ const StakingMethod = () => (
             </Typography>
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 500,
                     fontStyle: 'normal',
                     fontSize: '16px',
@@ -394,7 +403,7 @@ const UnstakingInfoMSG = () => (
         borderRadius={'8px'}
         marginBottom={'30px'}
         bgcolor={'#6372882E'}
-        sx={{opacity: 0.5}}
+        sx={{ opacity: 0.5 }}
     >
         <Typography variant="caption">
             Stake transactions must be staking for 7+ day to be eligible to
@@ -414,7 +423,7 @@ const TotalUnclaimedRewards = () => (
             borderRadius={'8px'}
             marginBottom={'30px'}
             bgcolor={'#6372882E'}
-            sx={{opacity: 0.5}}
+            sx={{ opacity: 0.5 }}
         >
             <Typography variant="caption">Total Unclaimed Rewards:</Typography>
             <Typography variant="caption">870.38 ZKP</Typography>

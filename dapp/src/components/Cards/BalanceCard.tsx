@@ -20,7 +20,7 @@ const BalanceCard = () => (
         <Box display="flex" alignItems="baseline">
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 800,
                     fontStyle: 'normal',
                     fontSize: '18px',
@@ -36,7 +36,7 @@ const BalanceCard = () => (
             <Typography
                 component="div"
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 800,
                     fontStyle: 'bold',
                     fontSize: '32px',
@@ -47,7 +47,7 @@ const BalanceCard = () => (
             </Typography>
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 400,
                     fontStyle: 'normal',
                     fontSize: '12px',
@@ -61,7 +61,7 @@ const BalanceCard = () => (
         <Box display="flex" alignItems="baseline">
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 400,
                     fontStyle: 'normal',
                     fontSize: '12px',
@@ -82,7 +82,7 @@ const BalanceCard = () => (
         <Box display="flex" alignItems="baseline">
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 400,
                     fontStyle: 'normal',
                     fontSize: '14px',
@@ -107,7 +107,7 @@ const BalanceCard = () => (
             <Typography
                 component="div"
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 800,
                     fontStyle: 'bold',
                     fontSize: '22px',
@@ -118,7 +118,7 @@ const BalanceCard = () => (
             </Typography>
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 400,
                     fontStyle: 'normal',
                     fontSize: '12px',
@@ -132,7 +132,7 @@ const BalanceCard = () => (
         <Box display="flex" alignItems="baseline">
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 700,
                     fontStyle: 'normal',
                     fontSize: '16px',
@@ -157,7 +157,7 @@ const BalanceCard = () => (
             <Typography
                 component="div"
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 800,
                     fontStyle: 'bold',
                     fontSize: '22px',
@@ -168,7 +168,7 @@ const BalanceCard = () => (
             </Typography>
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 400,
                     fontStyle: 'normal',
                     fontSize: '12px',
@@ -194,7 +194,7 @@ const PrivateStakingComingSoonCard = () => (
         <Box display="flex" alignItems="baseline">
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 800,
                     fontStyle: 'normal',
                     fontSize: '18px',
@@ -208,7 +208,7 @@ const PrivateStakingComingSoonCard = () => (
         <Box display="flex" alignItems="baseline">
             <Typography
                 sx={{
-                    fontFamily: 'inner',
+                    fontFamily: 'inter',
                     fontWeight: 400,
                     fontStyle: 'normal',
                     fontSize: '14px',

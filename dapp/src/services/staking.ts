@@ -62,3 +62,36 @@ export async function getStakedEventFromBlock(
     }
     return logs[0];
 }
+
+export async function stake(
+    contract: ethers.Contract,
+    amount: number,
+    stakeType: string,
+    data?: string,
+): Promise<number | null> {
+    if (!contract) {
+        return null;
+    }
+    const stakeId: number = await contract.stake(
+        amount,
+        stakeType,
+        data,
+    );
+    return stakeId;
+}
+
+export async function unstake(
+    contract: ethers.Contract,
+    stakeID: number,
+    data?: string,
+    isForced = false,
+): Promise<void | null> {
+    if (!contract) {
+        return null;
+    }
+    await contract.unstake(
+        stakeID,
+        data,
+        isForced,
+    );
+}

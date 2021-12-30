@@ -5,9 +5,10 @@ staking and rewards.
 
 ## Prerequisites
 
-- Check out
-  [`zkp-staking`](https://github.com/pantherprotocol/zkp-staking) and
-  [`zkp-token`](https://github.com/pantherprotocol/zkp-token) repositories.
+- Clone `zkp-staking` from [GitLab](https://gitlab.com/pantherprotocol/zkp-staking).
+
+- Clone `zkp-token` from [GitHub](https://github.com/pantherprotocol/zkp-token)
+  or [GitLab](https://gitlab.com/pantherprotocol/zkp-token).
 
 - Run `yarn` in both.
 

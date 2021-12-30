@@ -60,10 +60,16 @@ easily accessible via extra API methods.
 
 ## Setting up the frontend
 
+- `cd ../dapp`
+
 - `cp .env.example .env` if you don't already have a suitable `.env`.
 
 - Make sure that `STAKING_CONTRACT` is set to the address of the newly
-  deployed `Staking.sol` contract from above.
+  deployed `Staking.sol` contract from above, and similarly for
+  `REWARDS_MASTER_CONTRACT`.
+
+- `yarn start` to start the dApp in development mode, then visit
+  http://localhost:3000.
 
 ## Interacting with the chain from the console
 

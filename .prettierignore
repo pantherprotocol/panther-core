@@ -3,7 +3,9 @@ contracts/artifacts/
 contracts/cache/
 contracts/coverage/
 contracts/coverage.json
+contracts/deployments/
 contracts/typechain/
+contracts/types/
 contracts/typing/
 dapp/public/preparation/
 .husky/_/

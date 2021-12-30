@@ -72,11 +72,7 @@ export async function stake(
     if (!contract) {
         return null;
     }
-    const stakeId: number = await contract.stake(
-        amount,
-        stakeType,
-        data,
-    );
+    const stakeId: number = await contract.stake(amount, stakeType, data);
     return stakeId;
 }
 
@@ -89,9 +85,5 @@ export async function unstake(
     if (!contract) {
         return null;
     }
-    await contract.unstake(
-        stakeID,
-        data,
-        isForced,
-    );
+    await contract.unstake(stakeID, data, isForced);
 }

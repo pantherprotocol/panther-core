@@ -33,8 +33,6 @@ export async function getTokenBalance(
     if (!contract) {
         return null;
     }
-    const balance: number = await contract.balanceOf(
-        address,
-    );
+    const balance: number = await contract.balanceOf(address);
     return formatTokenBalance(balance);
 }

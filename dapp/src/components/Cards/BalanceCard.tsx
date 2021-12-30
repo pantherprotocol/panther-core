@@ -205,7 +205,7 @@ export const BalanceCard = () => {
     );
 };
 
-export const PrivateStakingComingSoonCard = (props) => {
+export const PrivateStakingComingSoonCard = () => {
     return (
         <Card
             variant="outlined"

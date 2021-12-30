@@ -1,13 +1,13 @@
 import React, {ReactElement, useCallback, useEffect, useState} from 'react';
-import { Container } from '@mui/material';
+import {Container} from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { Box } from '@mui/system';
+import {Box} from '@mui/system';
 import CssBaseline from '@mui/material/CssBaseline';
 import './styles.scss';
 import BalanceCard from '../../components/Cards/BalanceCard';
 import StakingCard from '../../components/Cards/StakingCard';
 import background from '../../images/app-background.png';
-import { Footer } from '../../components/Footer';
+import {Footer} from '../../components/Footer';
 import {switchNetwork} from '../../services/wallet';
 import {useLocation} from 'react-router-dom';
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
@@ -77,7 +77,7 @@ function StakingZkpPage() {
                 backgroundSize: 'cover',
             }}
         >
-            <CssBaseline/>
+            <CssBaseline />
 
             <StakingHeader
                 onConnect={() => {
@@ -99,13 +99,7 @@ function StakingZkpPage() {
                 <Container maxWidth="lg">
                     <Grid container>
                         <Grid item md={1} xs={12}></Grid>
-                        <Grid
-                            item
-                            container
-                            spacing={2}
-                            md={10}
-                            xs={12}
-                        >
+                        <Grid item container spacing={2} md={10} xs={12}>
                             <Grid
                                 item
                                 xs={12}
@@ -114,7 +108,7 @@ function StakingZkpPage() {
                                 justifyContent={'center'}
                                 alignItems={'start'}
                             >
-                                <BalanceCard/>
+                                <BalanceCard />
                             </Grid>
                             <Grid
                                 item
@@ -124,7 +118,7 @@ function StakingZkpPage() {
                                 justifyContent={'center'}
                                 alignItems={'center'}
                             >
-                                <StakingCard/>
+                                <StakingCard />
                             </Grid>
                         </Grid>
                         <Grid item md={1} xs={12}></Grid>
@@ -132,7 +126,7 @@ function StakingZkpPage() {
                 </Container>
             </Box>
 
-            <Footer/>
+            <Footer />
         </Box>
     );
 }

@@ -8,11 +8,19 @@ abstract contract StakingMsgProcessor {
     bytes4 internal constant STAKE_ACTION = bytes4(keccak256("staked"));
     bytes4 internal constant UNSTAKE_ACTION = bytes4(keccak256("unstaked"));
 
-    function _encodeStakeActionType(bytes4 stakeType) internal pure returns (bytes4) {
+    function _encodeStakeActionType(bytes4 stakeType)
+        internal
+        pure
+        returns (bytes4)
+    {
         return bytes4(keccak256(abi.encodePacked(STAKE_ACTION, stakeType)));
     }
 
-    function _encodeUnstakeActionType(bytes4 stakeType) internal pure returns (bytes4) {
+    function _encodeUnstakeActionType(bytes4 stakeType)
+        internal
+        pure
+        returns (bytes4)
+    {
         return bytes4(keccak256(abi.encodePacked(UNSTAKE_ACTION, stakeType)));
     }
 

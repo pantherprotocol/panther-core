@@ -1,3 +1,1 @@
-export const abi = [
-
-];
+export const abi = [];

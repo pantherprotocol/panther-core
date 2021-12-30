@@ -13,5 +13,10 @@ interface IRewardPool {
     event Vested(uint256 amount);
 
     /// @notice Emitted on parameters initialized.
-    event Initialized(uint256 _poolId, address _recipient, uint256 _allocation, uint256 _endTime);
+    event Initialized(
+        uint256 _poolId,
+        address _recipient,
+        uint256 _allocation,
+        uint256 _endTime
+    );
 }

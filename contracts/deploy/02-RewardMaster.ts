@@ -1,14 +1,14 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {DeployFunction} from 'hardhat-deploy/types';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    const { deployments, getNamedAccounts } = hre;
-    const { deploy } = deployments;
-    const { deployer } = await getNamedAccounts();
+    const {deployments, getNamedAccounts} = hre;
+    const {deploy} = deployments;
+    const {deployer} = await getNamedAccounts();
 
-    const pool = await hre.ethers.getContract("RewardPool");
+    const pool = await hre.ethers.getContract('RewardPool');
 
-    await deploy("RewardMaster", {
+    await deploy('RewardMaster', {
         from: deployer,
         args: [process.env.STAKING_TOKEN, pool.address, deployer],
         log: true,
@@ -17,4 +17,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ["RewardMaster"];
+func.tags = ['RewardMaster'];

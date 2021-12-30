@@ -25,7 +25,7 @@ In another window, `cd` to the `zkp-token` repository, and run:
     yarn deploy --network localhost
 
 In the output, you will see a list of addresses of deployed smart
-contracts.  Make a note of the token contract address, which will
+contracts. Make a note of the token contract address, which will
 be shown on a line like this:
 
     Token instance deployed (0x5FbDB2315678afecb367f032d93F642f64180aa3)...

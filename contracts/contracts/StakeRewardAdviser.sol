@@ -19,7 +19,10 @@ contract StakeRewardAdviser is StakingMsgProcessor, Utils, IRewardAdviser {
     uint256 private constant SCALE = 1e3;
 
     constructor(bytes4 stakeType, uint256 stakeAmountToSharesScaledFactor) {
-        require(stakeType != bytes4(0) && stakeAmountToSharesScaledFactor != 0, "PSA:E1");
+        require(
+            stakeType != bytes4(0) && stakeAmountToSharesScaledFactor != 0,
+            "PSA:E1"
+        );
         STAKED = _encodeStakeActionType(stakeType);
         UNSTAKED = _encodeUnstakeActionType(stakeType);
         FACTOR = stakeAmountToSharesScaledFactor;
@@ -31,7 +34,9 @@ contract StakeRewardAdviser is StakingMsgProcessor, Utils, IRewardAdviser {
         override
         returns (Advice memory)
     {
-        (address staker, uint96 amount, , , , ) = _unpackStakingActionMsg(message);
+        (address staker, uint96 amount, , , , ) = _unpackStakingActionMsg(
+            message
+        );
         require(staker != address(0), "PSA: unexpected zero staker");
         require(amount != 0, "PSA: unexpected zero amount");
 

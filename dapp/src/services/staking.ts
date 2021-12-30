@@ -6,7 +6,9 @@ import {abi as STAKING_ABI} from '../abi/Staking';
 export const STAKING_CONTRACT = process.env.STAKING_CONTRACT;
 export const REWARDS_MASTER_CONTRACT = process.env.REWARDS_MASTER_CONTRACT;
 
-export async function getRewardsMasterContract(library): Promise<ethers.Contract> {
+export async function getRewardsMasterContract(
+    library,
+): Promise<ethers.Contract> {
     return new ethers.Contract(
         // Guaranteed to be non-null due to check in src/index.tsx
         REWARDS_MASTER_CONTRACT!,
@@ -15,9 +17,7 @@ export async function getRewardsMasterContract(library): Promise<ethers.Contract
     );
 }
 
-export async function getStakingContract(
-    library,
-): Promise<ethers.Contract> {
+export async function getStakingContract(library): Promise<ethers.Contract> {
     return new ethers.Contract(
         // Guaranteed to be non-null due to check in src/index.tsx
         STAKING_CONTRACT!,
@@ -58,10 +58,7 @@ export async function getStakedEventFromBlock(
             logs,
         );
     } else {
-        console.debug(
-            `getStakedEventFromBlock: got ${eventName} log`,
-            logs[0],
-        );
+        console.debug(`getStakedEventFromBlock: got ${eventName} log`, logs[0]);
     }
     return logs[0];
 }

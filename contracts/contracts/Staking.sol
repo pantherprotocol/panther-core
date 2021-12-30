@@ -21,7 +21,13 @@ import "./utils/Utils.sol";
  * It supports multiple types of stakes (terms), which the owner may add or
  * remove without contract code upgrades.
  */
-contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes, IVotingPower {
+contract Staking is
+    ImmutableOwnable,
+    Utils,
+    StakingMsgProcessor,
+    IStakingTypes,
+    IVotingPower
+{
     /// @notice Staking token
     IErc20Min public immutable TOKEN;
 
@@ -93,7 +99,10 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         address rewardMaster,
         address owner
     ) ImmutableOwnable(owner) {
-        require(stakingToken != address(0) && rewardMaster != address(0), "Staking:C1");
+        require(
+            stakingToken != address(0) && rewardMaster != address(0),
+            "Staking:C1"
+        );
         TOKEN = IErc20Min(stakingToken);
         REWARD_MASTER = IActionMsgReceiver(rewardMaster);
         START_BLOCK = blockNow();
@@ -172,7 +181,10 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         emit StakeClaimed(msg.sender, stakeID);
 
         // known contract - reentrancy guard and `safeTransfer` unneeded
-        require(TOKEN.transfer(msg.sender, _stake.amount), "Staking: transfer failed");
+        require(
+            TOKEN.transfer(msg.sender, _stake.amount),
+            "Staking: transfer failed"
+        );
 
         Terms memory _terms = terms[_stake.stakeType];
         if (!_terms.isRewarded) return;
@@ -185,7 +197,10 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
      * @param to - address to delegate to
      */
     function delegate(uint256 stakeID, address to) public {
-        require(to != GLOBAL_ACCOUNT, "Staking: Can't delegate to GLOBAL_ACCOUNT");
+        require(
+            to != GLOBAL_ACCOUNT,
+            "Staking: Can't delegate to GLOBAL_ACCOUNT"
+        );
 
         Stake memory s = stakes[msg.sender][stakeID];
         require(s.stakedAt != 0, "Staking: Stake doesn't exist");
@@ -221,7 +236,11 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
     }
 
     /// @notice Returns stakes of given account
-    function accountStakes(address _account) external view returns (Stake[] memory) {
+    function accountStakes(address _account)
+        external
+        view
+        returns (Stake[] memory)
+    {
         Stake[] memory _stakes = stakes[_account];
         return _stakes;
     }
@@ -238,12 +257,22 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
     }
 
     /// @inheritdoc IVotingPower
-    function latestGlobalsSnapshotBlock() public view override returns (uint256) {
+    function latestGlobalsSnapshotBlock()
+        public
+        view
+        override
+        returns (uint256)
+    {
         return latestSnapshotBlock(GLOBAL_ACCOUNT);
     }
 
     /// @inheritdoc IVotingPower
-    function latestSnapshotBlock(address _account) public view override returns (uint256) {
+    function latestSnapshotBlock(address _account)
+        public
+        view
+        override
+        returns (uint256)
+    {
         if (snapshots[_account].length == 0) return 0;
 
         return snapshots[_account][snapshots[_account].length - 1].beforeBlock;
@@ -255,12 +284,22 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
     }
 
     /// @inheritdoc IVotingPower
-    function snapshotLength(address _account) external view override returns (uint256) {
+    function snapshotLength(address _account)
+        external
+        view
+        override
+        returns (uint256)
+    {
         return snapshots[_account].length;
     }
 
     /// @inheritdoc IVotingPower
-    function globalsSnapshot(uint256 _index) external view override returns (Snapshot memory) {
+    function globalsSnapshot(uint256 _index)
+        external
+        view
+        override
+        returns (Snapshot memory)
+    {
         return snapshots[GLOBAL_ACCOUNT][_index];
     }
 
@@ -312,7 +351,11 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
             require(_terms.allowedSince > _now, "E?");
         }
         if (_terms.allowedTill != 0) {
-            require(_terms.allowedTill > _now && _terms.allowedSince > _terms.allowedSince, "E?");
+            require(
+                _terms.allowedTill > _now &&
+                    _terms.allowedSince > _terms.allowedSince,
+                "E?"
+            );
         }
 
         if (_terms.maxAmountScaled != 0) {
@@ -321,14 +364,22 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
 
         // only one of three "lock time" parameters must be non-zero
         if (_terms.lockedTill != 0) {
-            require(_terms.exactLockPeriod == 0 && _terms.minLockPeriod == 0, "E?");
-            require(_terms.lockedTill > _now && _terms.lockedTill >= _terms.allowedTill, "E?");
+            require(
+                _terms.exactLockPeriod == 0 && _terms.minLockPeriod == 0,
+                "E?"
+            );
+            require(
+                _terms.lockedTill > _now &&
+                    _terms.lockedTill >= _terms.allowedTill,
+                "E?"
+            );
         } else {
             bool isFirtsZero = _terms.exactLockPeriod == 0;
             bool isSecondZero = _terms.minLockPeriod == 0;
             require(
                 // one of two params must be non-zero
-                (!isFirtsZero && isSecondZero) || (isFirtsZero && !isSecondZero),
+                (!isFirtsZero && isSecondZero) ||
+                    (isFirtsZero && !isSecondZero),
                 "E?"
             );
         }
@@ -337,7 +388,11 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         emit TermsAdded(stakeType);
     }
 
-    function disableTerms(bytes4 stakeType) external onlyOwner nonZeroStakeType(stakeType) {
+    function disableTerms(bytes4 stakeType)
+        external
+        onlyOwner
+        nonZeroStakeType(stakeType)
+    {
         Terms memory _terms = terms[stakeType];
         require(_isDefinedTerms(terms[stakeType]), "E?");
         require(_terms.isEnabled, "E?");
@@ -361,15 +416,26 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         uint256 _totalStake = amount + uint256(totalStaked);
         require(_totalStake < 2**96, "Staking: Too big amount");
 
-        require(_terms.minAmountScaled == 0 || amount >= SCALE * _terms.minAmountScaled, "E?");
-        require(_terms.maxAmountScaled == 0 || amount <= SCALE * _terms.maxAmountScaled, "E?");
+        require(
+            _terms.minAmountScaled == 0 ||
+                amount >= SCALE * _terms.minAmountScaled,
+            "E?"
+        );
+        require(
+            _terms.maxAmountScaled == 0 ||
+                amount <= SCALE * _terms.maxAmountScaled,
+            "E?"
+        );
 
         uint32 _now = safe32TimeNow();
         require(_terms.allowedSince == 0 || _terms.allowedSince > _now);
         require(_terms.allowedTill == 0 || _terms.allowedTill > _now);
 
         // known contract - reentrancy guard and `safeTransferFrom` unneeded
-        require(TOKEN.transferFrom(staker, address(this), amount), "Staking: transferFrom failed");
+        require(
+            TOKEN.transferFrom(staker, address(this), amount),
+            "Staking: transferFrom failed"
+        );
 
         uint256 stakeID = stakes[staker].length;
 
@@ -458,7 +524,11 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
         if (latestSnapshotBlock(_account) < curBlockNum) {
             // make new snapshot as the latest one taken before current block
             snapshots[_account].push(
-                Snapshot(curBlockNum, power[_account].own, power[_account].delegated)
+                Snapshot(
+                    curBlockNum,
+                    power[_account].own,
+                    power[_account].delegated
+                )
             );
         }
     }
@@ -476,13 +546,19 @@ contract Staking is ImmutableOwnable, Utils, StakingMsgProcessor, IStakingTypes,
             // hint is correct?
             hint <= snapshotsInfo.length &&
             (hint == 0 || snapshotsInfo[hint - 1].beforeBlock < blockNum) &&
-            (hint == snapshotsInfo.length || snapshotsInfo[hint].beforeBlock >= blockNum)
+            (hint == snapshotsInfo.length ||
+                snapshotsInfo[hint].beforeBlock >= blockNum)
         ) {
             // yes, return the hinted snapshot
             if (hint < snapshotsInfo.length) {
                 return snapshotsInfo[hint];
             } else {
-                return Snapshot(uint32(blockNum), power[_account].own, power[_account].delegated);
+                return
+                    Snapshot(
+                        uint32(blockNum),
+                        power[_account].own,
+                        power[_account].delegated
+                    );
             }
         }
         // no, fall back to binary search

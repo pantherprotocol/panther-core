@@ -45,7 +45,10 @@ interface IVotingPower {
     function latestGlobalsSnapshotBlock() external view returns (uint256);
 
     /// @dev Returns block number of the given account latest snapshot
-    function latestSnapshotBlock(address _account) external view returns (uint256);
+    function latestSnapshotBlock(address _account)
+        external
+        view
+        returns (uint256);
 
     /// @dev Returns number of global snapshots
     function globalsSnapshotLength() external view returns (uint256);
@@ -54,8 +57,14 @@ interface IVotingPower {
     function snapshotLength(address _account) external view returns (uint256);
 
     /// @dev Returns global snapshot at given index
-    function globalsSnapshot(uint256 _index) external view returns (Snapshot memory);
+    function globalsSnapshot(uint256 _index)
+        external
+        view
+        returns (Snapshot memory);
 
     /// @dev Returns snapshot at given index for given account
-    function snapshot(address _account, uint256 _index) external view returns (Snapshot memory);
+    function snapshot(address _account, uint256 _index)
+        external
+        view
+        returns (Snapshot memory);
 }

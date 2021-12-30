@@ -100,7 +100,10 @@ contract RewardMaster is
         address _rewardPool,
         address _owner
     ) ImmutableOwnable(_owner) {
-        require(_rewardToken != address(0) && _rewardPool != address(0), "RM:E1");
+        require(
+            _rewardToken != address(0) && _rewardPool != address(0),
+            "RM:E1"
+        );
 
         REWARD_TOKEN = _rewardToken;
         REWARD_POOL = _rewardPool;
@@ -129,12 +132,19 @@ contract RewardMaster is
         returns (bool success)
     {
         IRewardAdviser adviser = _getRewardAdviserOrRevert(msg.sender, action);
-        IRewardAdviser.Advice memory advice = adviser.adviceReward(action, message);
+        IRewardAdviser.Advice memory advice = adviser.adviceReward(
+            action,
+            message
+        );
         if (advice.sharesToCreate > 0) {
             _grantShares(advice.createSharesFor, advice.sharesToCreate);
         }
         if (advice.sharesToRedeem > 0) {
-            _redeemShares(advice.redeemSharesFrom, advice.sharesToRedeem, advice.sendRewardTo);
+            _redeemShares(
+                advice.redeemSharesFrom,
+                advice.sharesToRedeem,
+                advice.sendRewardTo
+            );
         }
         return true;
     }
@@ -158,7 +168,10 @@ contract RewardMaster is
 
     /// @notice Remove "RewardAdviser" for given ActionOracle and action type
     /// @dev May be only called by the {OWNER}
-    function removeRewardAdviser(address oracle, bytes4 action) external onlyOwner {
+    function removeRewardAdviser(address oracle, bytes4 action)
+        external
+        onlyOwner
+    {
         _removeRewardAdviser(oracle, action);
     }
 
@@ -178,13 +191,15 @@ contract RewardMaster is
 
     /* ========== INTERNAL & PRIVATE FUNCTIONS ========== */
 
-    function _getRewardEntitled(UserRecord memory rec, uint256 _accumRewardPerShare)
-        internal
-        pure
-        returns (uint256)
-    {
+    function _getRewardEntitled(
+        UserRecord memory rec,
+        uint256 _accumRewardPerShare
+    ) internal pure returns (uint256) {
         if (rec.shares == 0 || _accumRewardPerShare == 0) return 0;
-        return (uint256(rec.shares) * _accumRewardPerShare) / SCALE - uint256(rec.offset);
+        return
+            (uint256(rec.shares) * _accumRewardPerShare) /
+            SCALE -
+            uint256(rec.offset);
     }
 
     function _grantShares(address to, uint256 shares)
@@ -195,7 +210,9 @@ contract RewardMaster is
         uint256 _accumRewardPerShare = _triggerVesting();
 
         UserRecord memory rec = records[to];
-        uint256 newOffset = uint256(rec.offset) + (shares * uint256(_accumRewardPerShare)) / SCALE;
+        uint256 newOffset = uint256(rec.offset) +
+            (shares * uint256(_accumRewardPerShare)) /
+            SCALE;
         uint256 newShares = uint256(rec.shares) + shares;
 
         records[to] = UserRecord(safe96(newShares), safe160(newOffset));
@@ -232,7 +249,10 @@ contract RewardMaster is
         emit SharesRedeemed(from, shares);
     }
 
-    function _triggerVesting() internal returns (uint256 newAccumRewardPerShare) {
+    function _triggerVesting()
+        internal
+        returns (uint256 newAccumRewardPerShare)
+    {
         uint256 _totalShares = totalShares;
         require(_totalShares != 0, "RM: no shares to vest for");
 

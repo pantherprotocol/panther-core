@@ -87,7 +87,10 @@ contract RewardPool is Utils, IRewardPool {
         // _endTime can't be in the past
         require(_endTime > timeNow(), "RP:E7");
         // this contract must be registered with the VestingPools
-        require(IVestingPools(VESTING_POOLS).getWallet(_poolId) == address(this), "RP:E8");
+        require(
+            IVestingPools(VESTING_POOLS).getWallet(_poolId) == address(this),
+            "RP:E8"
+        );
 
         poolId = _poolId;
         recipient = _recipient;
@@ -98,7 +101,9 @@ contract RewardPool is Utils, IRewardPool {
     }
 
     function _releasableAmount() internal view returns (uint256) {
-        uint256 shareable = IVestingPools(VESTING_POOLS).releasableAmount(poolId);
+        uint256 shareable = IVestingPools(VESTING_POOLS).releasableAmount(
+            poolId
+        );
         if (shareable == 0) return 0;
 
         return (shareable * allocation) / 100;

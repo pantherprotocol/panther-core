@@ -94,7 +94,9 @@ const BalanceCard = () => (
                 Staked Balance
             </Typography>
             <Typography>
-                <ErrorOutlineIcon fontSize="small" className="error-outline"
+                <ErrorOutlineIcon
+                    fontSize="small"
+                    className="error-outline"
                     sx={{
                         opacity: 0.5,
                     }}
@@ -142,7 +144,9 @@ const BalanceCard = () => (
                 Unclaim Reward balance
             </Typography>
             <Typography>
-                <ErrorOutlineIcon fontSize="small" className="error-outline"
+                <ErrorOutlineIcon
+                    fontSize="small"
+                    className="error-outline"
                     sx={{
                         opacity: 0.5,
                     }}
@@ -211,7 +215,7 @@ const PrivateStakingComingSoonCard = () => (
                     lineHeight: '22px',
                     opacity: 0.5,
                     marginBottom: '18px',
-                    textAlign: 'left'
+                    textAlign: 'left',
                 }}
             >
                 Advance incetivized ZKP private staking is coming in March.
@@ -222,8 +226,7 @@ const PrivateStakingComingSoonCard = () => (
 
 export default function OutlinedCard() {
     return (
-        <Box width={'100%'} margin={'0 5'}
-        >
+        <Box width={'100%'} margin={'0 5'}>
             {/* <Card variant="outlined"> */}
             <BalanceCard />
             <PrivateStakingComingSoonCard />

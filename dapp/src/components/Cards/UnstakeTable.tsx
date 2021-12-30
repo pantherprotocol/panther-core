@@ -6,11 +6,17 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Button } from '@mui/material';
+import {Button} from '@mui/material';
 import './styles.scss';
 
-function createData(id: string, date: string, amount: string, earned: string, unstakable: boolean) {
-    return { id, date, amount, earned, unstakable };
+function createData(
+    id: string,
+    date: string,
+    amount: string,
+    earned: string,
+    unstakable: boolean,
+) {
+    return {id, date, amount, earned, unstakable};
 }
 
 const rows = [
@@ -24,7 +30,7 @@ export default function UnstakeTable() {
     return (
         <TableContainer component={Paper}>
             <Table
-                sx={{ minWidth: 400 }}
+                sx={{minWidth: 400}}
                 size="small"
                 aria-label="unstaking table"
             >
@@ -51,9 +57,14 @@ export default function UnstakeTable() {
                             <TableCell align="right">{row.amount}</TableCell>
                             <TableCell align="right">{row.earned}</TableCell>
                             <TableCell align="right">
-                                <Button className={`btn ${row.unstakable ? '' : 'disable'}`}
+                                <Button
+                                    className={`btn ${
+                                        row.unstakable ? '' : 'disable'
+                                    }`}
                                     disabled={!row.unstakable}
-                                >Unstake</Button>
+                                >
+                                    Unstake
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}

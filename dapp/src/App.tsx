@@ -1,7 +1,7 @@
 import React from 'react';
 import './styles.scss';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { Route } from 'react-router';
+import {BrowserRouter as Router} from 'react-router-dom';
+import {Route} from 'react-router';
 import StakingZkpPage from './pages/StakingZkpPage';
 
 function getMissingEnvVars() {
@@ -34,7 +34,8 @@ function App() {
                 </p>
                 <p>
                     Please configure <code>.env</code> correctly (use{' '}
-                    <code>.env.example</code> as a base) and then restart the app.
+                    <code>.env.example</code> as a base) and then restart the
+                    app.
                 </p>
             </div>
         );
@@ -43,7 +44,7 @@ function App() {
     return (
         <div className="App">
             <Router>
-                <Route path={'/'} exact={true} component={StakingZkpPage}/>
+                <Route path={'/'} exact={true} component={StakingZkpPage} />
             </Router>
         </div>
     );

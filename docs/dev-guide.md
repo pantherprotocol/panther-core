@@ -58,6 +58,16 @@ contracts, because they are automatically stored in
 `contracts/deployments` via `hardhat-deploy`, which also makes them
 easily accessible via extra API methods.
 
+## Seeding smart contracts with data
+
+In `zkp-token`, create a new vesting pool with a given recipient
+by runnign:
+
+    yarn hardhat vest $RECIPIENT $STAKING_TOKEN $VESTING_POOLS
+
+where the variables are set or substituted appropriately for the
+corresponding addresses.
+
 ## Setting up the frontend
 
 - `cd ../dapp`

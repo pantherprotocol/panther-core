@@ -2,9 +2,21 @@ import * as ethers from 'ethers';
 
 import {abi as REWARDS_MASTER_ABI} from '../abi/RewardsMaster';
 import {abi as STAKING_ABI} from '../abi/Staking';
+import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
+import {formatTokenBalance} from './account';
 
 export const STAKING_CONTRACT = process.env.STAKING_CONTRACT;
 export const REWARDS_MASTER_CONTRACT = process.env.REWARDS_MASTER_CONTRACT;
+export const VESTING_POOLS_CONTRACT = process.env.VESTING_POOLS_CONTRACT;
+
+export async function getStakingContract(library): Promise<ethers.Contract> {
+    return new ethers.Contract(
+        // Guaranteed to be non-null due to check in src/index.tsx
+        STAKING_CONTRACT!,
+        STAKING_ABI,
+        library,
+    );
+}
 
 export async function getRewardsMasterContract(
     library,
@@ -17,11 +29,11 @@ export async function getRewardsMasterContract(
     );
 }
 
-export async function getStakingContract(library): Promise<ethers.Contract> {
+export async function getVestingPoolsContract(library): Promise<ethers.Contract> {
     return new ethers.Contract(
         // Guaranteed to be non-null due to check in src/index.tsx
-        STAKING_CONTRACT!,
-        STAKING_ABI,
+        VESTING_POOLS_CONTRACT!,
+        VESTING_POOLS_ABI,
         library,
     );
 }
@@ -86,4 +98,26 @@ export async function unstake(
         return null;
     }
     await contract.unstake(stakeID, data, isForced);
+}
+
+export async function getTotalStaked(
+    contract: ethers.Contract,
+    address: string | null | undefined,
+): Promise<number | null> {
+    if (!contract) {
+        return null;
+    }
+    const totalStaked: any = await contract.accountStakes(address);
+    return totalStaked;
+}
+
+export async function getRewardsBalance(
+    contract: ethers.Contract,
+    address: string | null | undefined,
+): Promise<number | null> {
+    if (!contract) {
+        return null;
+    }
+    const rewards: number = await contract.entitled(address);
+    return formatTokenBalance(rewards);
 }

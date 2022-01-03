@@ -9,6 +9,8 @@ import '@openzeppelin/hardhat-upgrades';
 import 'solidity-coverage';
 import 'hardhat-contract-sizer';
 
+import './tasks/add-terms';
+
 import {HardhatUserConfig} from 'hardhat/config';
 
 dotenvConfig({path: resolve(__dirname, './.env')});

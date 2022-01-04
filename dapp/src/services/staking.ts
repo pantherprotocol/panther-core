@@ -92,7 +92,7 @@ export async function getStakedEventFromBlock(
 
 export async function stake(
     contract: ethers.Contract,
-    amount: number,
+    amount: string,
     stakeType: string,
     signer: any, //@TODO: Make signer type to be accepted here
     data?: any,
@@ -102,7 +102,7 @@ export async function stake(
     }
     const stakingSigner = contract.connect(signer);
     const stakeId: number = await stakingSigner.stake(
-        amount,
+        Number(amount),
         stakeType,
         data ? data : {},
     );
@@ -136,13 +136,14 @@ export async function getTotalStaked(
 
 export async function getRewardsBalance(
     contract: ethers.Contract,
+    tokenContract: ethers.Contract,
     address: string | null | undefined,
 ): Promise<string | null> {
     if (!contract) {
         return null;
     }
     const rewards: number = await contract.entitled(address);
-    const decimal = await contract.decimals();
+    const decimal = await tokenContract.decimals();
     return formatTokenBalance(rewards, decimal);
 }
 

@@ -1,5 +1,5 @@
-import {formatEther, formatUnits} from '@ethersproject/units';
-import {BigNumberish, ethers} from 'ethers';
+import {formatEther} from '@ethersproject/units';
+import {BigNumberish, ethers, utils} from 'ethers';
 
 export const formatAccountAddress = (
     account: string | undefined | null,
@@ -24,7 +24,8 @@ export const formatTokenBalance = (
     decimal: BigNumberish,
 ): string | null => {
     if (!balance) return null;
-    return formatUnits(balance, decimal);
+    const formattedBalance = utils.formatUnits(balance, decimal);
+    return (+formattedBalance).toFixed(2);
 };
 
 export async function getTokenBalance(

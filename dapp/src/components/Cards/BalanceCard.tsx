@@ -7,6 +7,7 @@ import './styles.scss';
 import Divider from '@mui/material/Divider';
 import {useEffect, useState} from 'react';
 import {useWeb3React} from '@web3-react/core';
+import {BigNumber, utils} from 'ethers';
 import * as stakingService from '../../services/staking';
 import * as accountService from '../../services/account';
 
@@ -14,6 +15,8 @@ export const BalanceCard = () => {
     const context = useWeb3React();
     const {account, library} = context;
     const [tokenBalance, setTokenBalance] = useState<string | null>(null);
+    const [stakedBalance, setStakedBalance] = useState<any>(null);
+    const [rewardsBalance, setRewardsBalance] = useState<string | null>(null);
 
     const setZkpTokenBalance = async () => {
         const stakingTokenContract =
@@ -25,8 +28,40 @@ export const BalanceCard = () => {
         setTokenBalance(balance);
     };
 
+    const getStakedZkpBalance = async () => {
+        const stakingContract = await stakingService.getStakingContract(
+            library,
+        );
+        const stakingTokenContract =
+            await stakingService.getStakingTokenContract(library);
+        const stakedBalance = await stakingService.getTotalStaked(
+            stakingContract,
+            account,
+        );
+        const totalStaked = BigNumber.from(0);
+        stakedBalance.map(item => totalStaked.add(item.amount));
+        const decimals = await stakingTokenContract.decimals();
+        const totalStakedValue = utils.formatUnits(totalStaked, decimals);
+        setStakedBalance((+totalStakedValue).toFixed(2));
+    };
+
+    const getUnclaimedRewardsBalance = async () => {
+        const rewardsMasterContract =
+            await stakingService.getRewardsMasterContract(library);
+        const stakingTokenContract =
+            await stakingService.getStakingTokenContract(library);
+        const rewards = await stakingService.getRewardsBalance(
+            rewardsMasterContract,
+            stakingTokenContract,
+            account,
+        );
+        setRewardsBalance(rewards);
+    };
+
     useEffect(() => {
         setZkpTokenBalance();
+        getStakedZkpBalance();
+        getUnclaimedRewardsBalance();
     });
 
     return (
@@ -129,7 +164,7 @@ export const BalanceCard = () => {
                         lineHeight: '42px',
                     }}
                 >
-                    25,000
+                    {stakedBalance}
                 </Typography>
                 <Typography
                     sx={{
@@ -176,7 +211,7 @@ export const BalanceCard = () => {
                         lineHeight: '42px',
                     }}
                 >
-                    870.90
+                    {rewardsBalance}
                 </Typography>
                 <Typography
                     sx={{

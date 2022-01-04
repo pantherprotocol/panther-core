@@ -20,7 +20,9 @@ export async function getStakingContract(library): Promise<ethers.Contract> {
     );
 }
 
-export async function getStakingTokenContract(library): Promise<ethers.Contract> {
+export async function getStakingTokenContract(
+    library,
+): Promise<ethers.Contract> {
     return new ethers.Contract(
         // Guaranteed to be non-null due to check in src/index.tsx
         STAKING_TOKEN_CONTRACT!,
@@ -92,14 +94,18 @@ export async function stake(
     contract: ethers.Contract,
     amount: number,
     stakeType: string,
-    signer: any,    //@TODO: Make signer type to be accepted here
+    signer: any, //@TODO: Make signer type to be accepted here
     data?: any,
 ): Promise<number | null> {
     if (!contract) {
         return null;
     }
     const stakingSigner = contract.connect(signer);
-    const stakeId: number = await stakingSigner.stake(amount, stakeType, data?data:{});
+    const stakeId: number = await stakingSigner.stake(
+        amount,
+        stakeType,
+        data ? data : {},
+    );
     return stakeId;
 }
 
@@ -114,7 +120,7 @@ export async function unstake(
         return null;
     }
     const stakingSigner = contract.connect(signer);
-    await stakingSigner.unstake(stakeID, data?data:{}, isForced);
+    await stakingSigner.unstake(stakeID, data ? data : {}, isForced);
 }
 
 export async function getTotalStaked(
@@ -131,12 +137,13 @@ export async function getTotalStaked(
 export async function getRewardsBalance(
     contract: ethers.Contract,
     address: string | null | undefined,
-): Promise<number | null> {
+): Promise<string | null> {
     if (!contract) {
         return null;
     }
     const rewards: number = await contract.entitled(address);
-    return formatTokenBalance(rewards);
+    const decimal = await contract.decimals();
+    return formatTokenBalance(rewards, decimal);
 }
 
 export async function getStakingTransactionsNumber(

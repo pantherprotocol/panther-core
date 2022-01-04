@@ -16,9 +16,8 @@ export const BalanceCard = () => {
     const [tokenBalance, setTokenBalance] = useState<string | null>(null);
 
     const setZkpTokenBalance = async () => {
-        const stakingTokenContract = await stakingService.getStakingTokenContract(
-            library,
-        );
+        const stakingTokenContract =
+            await stakingService.getStakingTokenContract(library);
         const balance = await accountService.getTokenBalance(
             stakingTokenContract,
             account,

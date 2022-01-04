@@ -32,9 +32,8 @@ export default function Staking() {
     const [, setStakedId] = useState<number | null>(null);
 
     const setZkpTokenBalance = async () => {
-        const stakingTokenContract = await stakingService.getStakingTokenContract(
-            library,
-        );
+        const stakingTokenContract =
+            await stakingService.getStakingTokenContract(library);
         const balance = await accountService.getTokenBalance(
             stakingTokenContract,
             account,

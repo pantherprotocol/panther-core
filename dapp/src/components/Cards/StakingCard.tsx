@@ -13,13 +13,56 @@ import UnstakeTable from './UnstakeTable';
 import InputAdornment from '@mui/material/InputAdornment';
 import logo from '../../images/panther-logo.svg';
 import Input from '@mui/material/Input';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-
+// import MenuItem from '@mui/material/MenuItem';
+// import Select from '@mui/material/Select';
 import './styles.scss';
+import * as stakingService from '../../services/staking';
+import {useWeb3React} from '@web3-react/core';
+import {useState} from 'react';
+import * as accountService from '../../services/account';
+import {useEffect} from 'react';
+
+const localStorage = window.localStorage;
 
 export default function Staking() {
-    const [toggle, setToggle] = React.useState('stake');
+    const context = useWeb3React();
+    const {account, library} = context;
+    const [tokenBalance, setTokenBalance] = useState<number | null>(null);
+    const [toggle, setToggle] = useState('stake');
+    const [, setStakedId] = useState<number | null>(null);
+
+    const setZkpTokenBalance = async () => {
+        const stakingContract = await stakingService.getStakingContract(
+            library,
+        );
+        const balance = await accountService.getTokenBalance(
+            stakingContract,
+            account,
+        );
+        setTokenBalance(balance);
+    };
+
+    useEffect(() => {
+        setZkpTokenBalance();
+    });
+
+    const stake = async (amount: number) => {
+        const stakingContract = await stakingService.getStakingContract(
+            library,
+        );
+        const stakeType = '';
+        const data = '';
+        const stakeId = await stakingService.stake(
+            stakingContract,
+            amount,
+            stakeType,
+            data,
+        );
+        if (stakeId) {
+            setStakedId(stakeId);
+            localStorage.setItem('stakeId', stakeId.toString());
+        }
+    };
 
     const handleChange = (
         event: React.MouseEvent<HTMLElement>,
@@ -42,7 +85,7 @@ export default function Staking() {
         onChange: handleChange,
         exclusive: true,
     };
-    const [amountToStake, setAmountToStake] = React.useState(10000);
+    const [amountToStake, setAmountToStake] = useState(10000);
 
     return (
         <Box width={'100%'} margin={'0 5'}>
@@ -60,7 +103,7 @@ export default function Staking() {
             >
                 <Box>
                     <Typography color={'#FFF'} fontWeight={700}>
-                        42.458 <span>ZKP</span>
+                        {tokenBalance} <span>ZKP</span>
                     </Typography>
                     <Typography
                         variant="caption"
@@ -250,7 +293,7 @@ export default function Staking() {
                                         width: '100%',
                                     }}
                                     onClick={() => {
-                                        alert(12520);
+                                        stake(amountToStake);
                                     }}
                                 >
                                     Stake {amountToStake.toString()} ZKP
@@ -281,7 +324,7 @@ const StakingMethod = () => (
             width: '80%',
         }}
     >
-        <Box display="flex" justifyContent={'space-between'}>
+        {/*<Box display="flex" justifyContent={'space-between'}>
             <Typography
                 sx={{
                     fontWeight: 500,
@@ -306,7 +349,7 @@ const StakingMethod = () => (
                 </MenuItem>
                 <MenuItem value={'Option2'}>Option2</MenuItem>
             </Select>
-        </Box>
+        </Box>*/}
         <Box display="flex" justifyContent={'space-between'}>
             <Typography
                 sx={{

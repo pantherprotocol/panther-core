@@ -105,7 +105,7 @@ export async function unstake(
 export async function getTotalStaked(
     contract: ethers.Contract,
     address: string | null | undefined,
-): Promise<number | null> {
+): Promise<any> {
     if (!contract) {
         return null;
     }

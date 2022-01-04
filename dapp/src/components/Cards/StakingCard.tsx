@@ -29,7 +29,7 @@ export default function Staking() {
     const {account, library} = context;
     const [tokenBalance, setTokenBalance] = useState<number | null>(null);
     const [toggle, setToggle] = useState('stake');
-    const [, setStakedId] = useState<number | null>(null);
+    const [, setStakedId] = useState<string | null>(null);
 
     const setZkpTokenBalance = async () => {
         const stakingTokenContract =

@@ -121,3 +121,14 @@ export async function getRewardsBalance(
     const rewards: number = await contract.entitled(address);
     return formatTokenBalance(rewards);
 }
+
+export async function getStakingTransactionsNumber(
+    contract: ethers.Contract,
+    address: string | null | undefined,
+): Promise<number | null> {
+    if (!contract) {
+        return null;
+    }
+    const stakesNumber: number = await contract.stakesNum(address);
+    return stakesNumber;
+}

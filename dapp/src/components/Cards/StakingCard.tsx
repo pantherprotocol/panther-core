@@ -131,7 +131,7 @@ export default function Staking() {
                                     variant="subtitle2"
                                     component="span"
                                 >
-                                    Amount
+                                    Amount to stake
                                 </Typography>
                                 <span>
                                     <Typography
@@ -162,6 +162,17 @@ export default function Staking() {
                                     >
                                         ZKP
                                     </Typography>
+                                    <Typography
+                                        variant="caption"
+                                        component="span"
+                                        color='#ffdfbd'
+                                        marginLeft={'1rem'}
+                                        onClick={() => {
+                                            setAmountToStake(12520);
+                                        }}
+                                    >
+                                        MAX
+                                    </Typography>
                                 </span>
                             </Box>
                             <Box
@@ -182,7 +193,7 @@ export default function Staking() {
                                         fontSize: '24px',
                                         color: '#ffdfbd',
                                         marginInlineEnd: '16px',
-                                        width: '200px',
+                                        width: '150px',
                                     }}
                                     value={amountToStake}
                                     onChange={e => {
@@ -208,23 +219,6 @@ export default function Staking() {
                                     aria-describedby="staking-value-helper-text"
                                 />
                                 <Box display={'flex'} alignItems={'center'}>
-                                    <Button
-                                        sx={{
-                                            width: '62.43px',
-                                            height: '28.15px',
-                                            color: '#fff !important',
-                                            background:
-                                                'linear-gradient(0deg, rgba(43, 51, 65, 0.25), rgba(43, 51, 65, 0.25))',
-                                            border: '1px solid #485267',
-                                            marginInlineEnd: '16px !important',
-                                            borderRadius: '16px !important',
-                                        }}
-                                        onClick={() => {
-                                            setAmountToStake(12520);
-                                        }}
-                                    >
-                                        MAX
-                                    </Button>
                                     <Box width={'57px'} height={'57px'}>
                                         <img src={logo} />
                                     </Box>
@@ -290,7 +284,6 @@ const StakingMethod = () => (
         <Box display="flex" justifyContent={'space-between'}>
             <Typography
                 sx={{
-                    fontFamily: 'inner',
                     fontWeight: 500,
                     fontStyle: 'normal',
                     fontSize: '16px',
@@ -306,7 +299,7 @@ const StakingMethod = () => (
                 id="addresses-select-standard"
                 variant="filled"
                 value={'Standard'}
-                sx={{m: 0, minWidth: 155}}
+                sx={{m: 0, minWidth: 155, color: '#fff' }}
             >
                 <MenuItem selected value={'Standard'}>
                     Standard
@@ -317,7 +310,6 @@ const StakingMethod = () => (
         <Box display="flex" justifyContent={'space-between'}>
             <Typography
                 sx={{
-                    fontFamily: 'inner',
                     fontWeight: 500,
                     fontStyle: 'normal',
                     fontSize: '16px',
@@ -330,7 +322,6 @@ const StakingMethod = () => (
             </Typography>
             <Typography
                 sx={{
-                    fontFamily: 'inner',
                     fontWeight: 500,
                     fontStyle: 'normal',
                     fontSize: '16px',

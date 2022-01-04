@@ -42,7 +42,6 @@ export const BalanceCard = () => {
             <Box display="flex" alignItems="baseline">
                 <Typography
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 800,
                         fontStyle: 'normal',
                         fontSize: '18px',
@@ -58,7 +57,6 @@ export const BalanceCard = () => {
                 <Typography
                     component="div"
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 800,
                         fontStyle: 'bold',
                         fontSize: '32px',
@@ -69,7 +67,6 @@ export const BalanceCard = () => {
                 </Typography>
                 <Typography
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 400,
                         fontStyle: 'normal',
                         fontSize: '12px',
@@ -83,7 +80,6 @@ export const BalanceCard = () => {
             <Box display="flex" alignItems="baseline">
                 <Typography
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 400,
                         fontStyle: 'normal',
                         fontSize: '12px',
@@ -104,7 +100,6 @@ export const BalanceCard = () => {
             <Box display="flex" alignItems="baseline">
                 <Typography
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 400,
                         fontStyle: 'normal',
                         fontSize: '14px',
@@ -129,7 +124,6 @@ export const BalanceCard = () => {
                 <Typography
                     component="div"
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 800,
                         fontStyle: 'bold',
                         fontSize: '22px',
@@ -140,7 +134,6 @@ export const BalanceCard = () => {
                 </Typography>
                 <Typography
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 400,
                         fontStyle: 'normal',
                         fontSize: '12px',
@@ -154,7 +147,6 @@ export const BalanceCard = () => {
             <Box display="flex" alignItems="baseline">
                 <Typography
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 700,
                         fontStyle: 'normal',
                         fontSize: '16px',
@@ -179,7 +171,6 @@ export const BalanceCard = () => {
                 <Typography
                     component="div"
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 800,
                         fontStyle: 'bold',
                         fontSize: '22px',
@@ -190,7 +181,6 @@ export const BalanceCard = () => {
                 </Typography>
                 <Typography
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 400,
                         fontStyle: 'normal',
                         fontSize: '12px',
@@ -218,7 +208,6 @@ export const PrivateStakingComingSoonCard = () => {
             <Box display="flex" alignItems="baseline">
                 <Typography
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 800,
                         fontStyle: 'normal',
                         fontSize: '18px',
@@ -232,7 +221,6 @@ export const PrivateStakingComingSoonCard = () => {
             <Box display="flex" alignItems="baseline">
                 <Typography
                     sx={{
-                        fontFamily: 'inner',
                         fontWeight: 400,
                         fontStyle: 'normal',
                         fontSize: '14px',

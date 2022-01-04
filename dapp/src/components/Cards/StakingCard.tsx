@@ -27,9 +27,9 @@ const localStorage = window.localStorage;
 export default function Staking() {
     const context = useWeb3React();
     const {account, library} = context;
-    const [tokenBalance, setTokenBalance] = useState<number | null>(null);
+    const [tokenBalance, setTokenBalance] = useState<string | null>(null);
     const [toggle, setToggle] = useState('stake');
-    const [, setStakedId] = useState<string | null>(null);
+    const [, setStakedId] = useState<number | null>(null);
 
     const setZkpTokenBalance = async () => {
         const stakingTokenContract =

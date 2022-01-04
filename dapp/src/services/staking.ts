@@ -29,7 +29,9 @@ export async function getRewardsMasterContract(
     );
 }
 
-export async function getVestingPoolsContract(library): Promise<ethers.Contract> {
+export async function getVestingPoolsContract(
+    library,
+): Promise<ethers.Contract> {
     return new ethers.Contract(
         // Guaranteed to be non-null due to check in src/index.tsx
         VESTING_POOLS_CONTRACT!,

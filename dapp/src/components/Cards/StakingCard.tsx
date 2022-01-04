@@ -165,7 +165,7 @@ export default function Staking() {
                                     <Typography
                                         variant="caption"
                                         component="span"
-                                        color='#ffdfbd'
+                                        color="#ffdfbd"
                                         marginLeft={'1rem'}
                                         onClick={() => {
                                             setAmountToStake(12520);
@@ -299,7 +299,7 @@ const StakingMethod = () => (
                 id="addresses-select-standard"
                 variant="filled"
                 value={'Standard'}
-                sx={{m: 0, minWidth: 155, color: '#fff' }}
+                sx={{m: 0, minWidth: 155, color: '#fff'}}
             >
                 <MenuItem selected value={'Standard'}>
                     Standard

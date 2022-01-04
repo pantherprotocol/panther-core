@@ -2,18 +2,29 @@ import * as ethers from 'ethers';
 
 import {abi as REWARDS_MASTER_ABI} from '../abi/RewardsMaster';
 import {abi as STAKING_ABI} from '../abi/Staking';
+import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
 import {formatTokenBalance} from './account';
 
 export const STAKING_CONTRACT = process.env.STAKING_CONTRACT;
 export const REWARDS_MASTER_CONTRACT = process.env.REWARDS_MASTER_CONTRACT;
 export const VESTING_POOLS_CONTRACT = process.env.VESTING_POOLS_CONTRACT;
+export const STAKING_TOKEN_CONTRACT = process.env.STAKING_TOKEN_CONTRACT;
 
 export async function getStakingContract(library): Promise<ethers.Contract> {
     return new ethers.Contract(
         // Guaranteed to be non-null due to check in src/index.tsx
         STAKING_CONTRACT!,
         STAKING_ABI,
+        library,
+    );
+}
+
+export async function getStakingTokenContract(library): Promise<ethers.Contract> {
+    return new ethers.Contract(
+        // Guaranteed to be non-null due to check in src/index.tsx
+        STAKING_TOKEN_CONTRACT!,
+        STAKING_TOKEN_ABI,
         library,
     );
 }
@@ -81,25 +92,29 @@ export async function stake(
     contract: ethers.Contract,
     amount: number,
     stakeType: string,
-    data?: string,
+    signer: any,    //@TODO: Make signer type to be accepted here
+    data?: any,
 ): Promise<number | null> {
     if (!contract) {
         return null;
     }
-    const stakeId: number = await contract.stake(amount, stakeType, data);
+    const stakingSigner = contract.connect(signer);
+    const stakeId: number = await stakingSigner.stake(amount, stakeType, data?data:{});
     return stakeId;
 }
 
 export async function unstake(
     contract: ethers.Contract,
     stakeID: number,
+    signer: any,
     data?: string,
     isForced = false,
 ): Promise<void | null> {
     if (!contract) {
         return null;
     }
-    await contract.unstake(stakeID, data, isForced);
+    const stakingSigner = contract.connect(signer);
+    await stakingSigner.unstake(stakeID, data?data:{}, isForced);
 }
 
 export async function getTotalStaked(

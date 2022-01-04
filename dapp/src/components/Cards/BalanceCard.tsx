@@ -13,14 +13,14 @@ import * as accountService from '../../services/account';
 export const BalanceCard = () => {
     const context = useWeb3React();
     const {account, library} = context;
-    const [tokenBalance, setTokenBalance] = useState<number | null>(null);
+    const [tokenBalance, setTokenBalance] = useState<string | null>(null);
 
     const setZkpTokenBalance = async () => {
-        const stakingContract = await stakingService.getStakingContract(
+        const stakingTokenContract = await stakingService.getStakingTokenContract(
             library,
         );
         const balance = await accountService.getTokenBalance(
-            stakingContract,
+            stakingTokenContract,
             account,
         );
         setTokenBalance(balance);

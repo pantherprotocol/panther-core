@@ -5,11 +5,15 @@ import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
 import {formatTokenBalance} from './account';
+import CoinGecko from 'coingecko-api';
+
+const CoinGeckoClient = new CoinGecko();
 
 export const STAKING_CONTRACT = process.env.STAKING_CONTRACT;
 export const REWARDS_MASTER_CONTRACT = process.env.REWARDS_MASTER_CONTRACT;
 export const VESTING_POOLS_CONTRACT = process.env.VESTING_POOLS_CONTRACT;
 export const STAKING_TOKEN_CONTRACT = process.env.STAKING_TOKEN_CONTRACT;
+export const TOKEN_SYMBOL = process.env.TOKEN_SYMBOL;
 
 export async function getStakingContract(library): Promise<ethers.Contract> {
     return new ethers.Contract(
@@ -156,4 +160,12 @@ export async function getStakingTransactionsNumber(
     }
     const stakesNumber: number = await contract.stakesNum(address);
     return stakesNumber;
+}
+
+export async function getZKPMarketPrice(): Promise<number> {
+    const priceData = await CoinGeckoClient.simple.price({
+        ids: [TOKEN_SYMBOL],
+        vs_currencies: ['usd'],
+    });
+    return priceData.data[TOKEN_SYMBOL]['usd'];
 }

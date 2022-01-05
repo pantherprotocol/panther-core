@@ -17,6 +17,9 @@ export const BalanceCard = () => {
     const [tokenBalance, setTokenBalance] = useState<string | null>(null);
     const [stakedBalance, setStakedBalance] = useState<any>(null);
     const [rewardsBalance, setRewardsBalance] = useState<string | null>(null);
+    const [tokenMarketPrice, setTokenMarketPrice] = useState<number | null>(
+        null,
+    );
 
     const setZkpTokenBalance = async () => {
         const stakingTokenContract =
@@ -58,10 +61,16 @@ export const BalanceCard = () => {
         setRewardsBalance(rewards);
     };
 
+    const getTokenMarketPrice = async () => {
+        const price = await stakingService.getZKPMarketPrice();
+        setTokenMarketPrice(price);
+    };
+
     useEffect(() => {
         setZkpTokenBalance();
         getStakedZkpBalance();
         getUnclaimedRewardsBalance();
+        getTokenMarketPrice();
     });
 
     return (
@@ -111,20 +120,22 @@ export const BalanceCard = () => {
                     ZKP
                 </Typography>
             </Box>
-            <Box display="flex" alignItems="baseline">
-                <Typography
-                    sx={{
-                        fontWeight: 400,
-                        fontStyle: 'normal',
-                        fontSize: '12px',
-                        lineHeight: '42px',
-                        opacity: 0.5,
-                        marginBottom: '18px',
-                    }}
-                >
-                    Approximately $73,070.21
-                </Typography>
-            </Box>
+            {tokenMarketPrice && (
+                <Box display="flex" alignItems="baseline">
+                    <Typography
+                        sx={{
+                            fontWeight: 400,
+                            fontStyle: 'normal',
+                            fontSize: '12px',
+                            lineHeight: '42px',
+                            opacity: 0.5,
+                            marginBottom: '18px',
+                        }}
+                    >
+                        Approximately ${tokenMarketPrice}
+                    </Typography>
+                </Box>
+            )}
             <Divider
                 sx={{
                     margin: '18px 0',

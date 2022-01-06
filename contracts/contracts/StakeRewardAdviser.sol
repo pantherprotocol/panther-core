@@ -13,9 +13,12 @@ import "./utils/Utils.sol";
  * this contract to process messages from the "Staking" contract.
  */
 contract StakeRewardAdviser is StakingMsgProcessor, Utils, IRewardAdviser {
+    // solhint-disable var-name-mixedcase
     bytes4 private immutable STAKED;
     bytes4 private immutable UNSTAKED;
     uint256 public immutable FACTOR;
+    // solhint-enable var-name-mixedcase
+
     uint256 private constant SCALE = 1e3;
 
     constructor(bytes4 stakeType, uint256 stakeAmountToSharesScaledFactor) {

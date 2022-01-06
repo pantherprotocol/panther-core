@@ -28,6 +28,7 @@ contract Staking is
     IStakingTypes,
     IVotingPower
 {
+    // solhint-disable var-name-mixedcase
     /// @notice Staking token
     IErc20Min public immutable TOKEN;
 
@@ -36,6 +37,8 @@ contract Staking is
 
     /// @notice RewardMaster contract instance
     IActionMsgReceiver public immutable REWARD_MASTER;
+
+    // solhint-enable var-name-mixedcase
 
     // Scale for min/max limits
     uint256 private constant SCALE = 1e18;

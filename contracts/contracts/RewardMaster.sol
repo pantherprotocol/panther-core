@@ -35,6 +35,8 @@ contract RewardMaster is
     RewardAdvisersList,
     IActionMsgReceiver
 {
+    // solhint-disable var-name-mixedcase
+
     /// @notice Token rewards are given in
     address public immutable REWARD_TOKEN;
 
@@ -43,6 +45,8 @@ contract RewardMaster is
 
     /// @dev Block the contract deployed in
     uint256 public immutable START_BLOCK;
+
+    // solhint-enable var-name-mixedcase
 
     /**
      * At any time, the amount of the reward token a user is entitled to is:

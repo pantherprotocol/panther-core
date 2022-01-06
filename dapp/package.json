@@ -1,5 +1,5 @@
 {
-  "name": "staking-dapp",
+  "name": "@zkp-staking/dapp",
   "description": "dApp frontend for Panther Protocol LaunchDAO",
   "version": "0.1.0",
   "license": "MIT",

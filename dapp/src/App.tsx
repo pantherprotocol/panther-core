@@ -13,6 +13,7 @@ function getMissingEnvVars() {
         REWARDS_MASTER_CONTRACT: process.env.REWARDS_MASTER_CONTRACT,
         VESTING_POOLS_CONTRACT: process.env.VESTING_POOLS_CONTRACT,
         STAKING_TOKEN_CONTRACT: process.env.STAKING_TOKEN_CONTRACT,
+        TOKEN_SYMBOL: process.env.TOKEN_SYMBOL,
         CHAIN_ID: process.env.CHAIN_ID,
     };
     const missing = [] as Array<string>;
@@ -28,7 +29,7 @@ function App() {
     const missing = getMissingEnvVars();
     if (missing.length > 0) {
         return (
-            <div className="App">
+            <div>
                 <h1>Configuration Error</h1>
                 <p>
                     Server is missing environment variable

@@ -162,10 +162,32 @@ export async function getStakingTransactionsNumber(
     return stakesNumber;
 }
 
-export async function getZKPMarketPrice(): Promise<number> {
-    const priceData = await CoinGeckoClient.simple.price({
-        ids: [TOKEN_SYMBOL],
-        vs_currencies: ['usd'],
-    });
-    return priceData.data[TOKEN_SYMBOL]['usd'];
+export async function getZKPMarketPrice(): Promise<number | null> {
+    const symbol = process.env.TOKEN_SYMBOL;
+    if (!symbol) {
+        console.warn('TOKEN_SYMBOL not defined');
+        return null;
+    }
+
+    let priceData;
+    try {
+        priceData = await CoinGeckoClient.simple.price({
+            ids: [symbol],
+            vs_currencies: ['usd'],
+        });
+    } catch (err) {
+        console.warn(`Failed to fetch ${symbol} from coingecko`, err);
+        return null;
+    }
+
+    if (!priceData.data) {
+        console.warn('Coingecko price response was missing data');
+        return null;
+    }
+
+    if (!priceData.data[symbol]) {
+        console.warn(`Coingecko price response was missing ${symbol}`);
+        return null;
+    }
+    return priceData.data[symbol]['usd'];
 }

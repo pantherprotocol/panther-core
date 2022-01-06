@@ -38,7 +38,10 @@
   ],
   "license": "Unlicense",
   "dependencies": {
-    "@openzeppelin/hardhat-upgrades": "^1.8.2"
+    "@defi-wonderland/smock": "^2.0.7",
+    "@openzeppelin/hardhat-upgrades": "^1.8.2",
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "chai": "^4.3.4"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",

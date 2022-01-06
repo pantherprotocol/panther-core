@@ -184,6 +184,6 @@ export function useContractCallData(contract, methodName, args) {
         }
         loadData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [blockNumber]);
+    }, [blockNumber, args, contract, methodName]);
     return result;
 }

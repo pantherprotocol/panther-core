@@ -7,7 +7,7 @@ export const switchNetwork = async (errorHandler?: (msg: string) => void) => {
             method: 'wallet_switchEthereumChain',
             params: [{chainId: CHAIN_HEX_ID}],
         });
-    } catch (switchError: any) {
+    } catch (switchError) {
         // This error code indicates that the chain has not been added to MetaMask.
         if (switchError.code === 4902) {
             try {
@@ -27,7 +27,7 @@ export const switchNetwork = async (errorHandler?: (msg: string) => void) => {
                         },
                     ],
                 });
-            } catch (addError: any) {
+            } catch (addError) {
                 console.error(addError);
                 if (errorHandler) errorHandler(addError.message);
             }

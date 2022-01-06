@@ -51,7 +51,7 @@ signer:
 Now run:
 
     cd contracts
-    yarn deploy:chain
+    yarn deploy --network localhost
 
 There is no need to take notes of the addresses of the newly deployed
 contracts, because they are automatically stored in

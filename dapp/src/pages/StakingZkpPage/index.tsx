@@ -1,4 +1,4 @@
-import React, {ReactElement, useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Container} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {Box} from '@mui/system';
@@ -9,14 +9,14 @@ import StakingCard from '../../components/Cards/StakingCard';
 import background from '../../images/app-background.png';
 import {Footer} from '../../components/Footer';
 import {switchNetwork} from '../../services/wallet';
-import {useLocation} from 'react-router-dom';
+// import {useLocation} from 'react-router-dom';
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
 import {injected} from '../../services/connectors';
 import {useWeb3React} from '@web3-react/core';
 import {Web3Provider} from '@ethersproject/providers';
 import StakingHeader from '../../components/StakingHeader';
 
-const localStorage = window.localStorage;
+// const localStorage = window.localStorage;
 
 function StakingZkpPage() {
     const context = useWeb3React<Web3Provider>();
@@ -25,8 +25,8 @@ function StakingZkpPage() {
 
     // Logic to recognize the connector currently being activated
     const [activatingConnector, setActivatingConnector] = useState<any>();
-    const {search: locationQueryString} = useLocation();
-    const [chainError, setChainError] = useState('');
+    // const {search: locationQueryString} = useLocation();
+    const [, setChainError] = useState('');
 
     // Handle logic to eagerly connect to the injected ethereum provider, if it
     // exists and has granted access already

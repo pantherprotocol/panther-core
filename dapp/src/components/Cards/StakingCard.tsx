@@ -13,13 +13,77 @@ import UnstakeTable from './UnstakeTable';
 import InputAdornment from '@mui/material/InputAdornment';
 import logo from '../../images/panther-logo.svg';
 import Input from '@mui/material/Input';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-
+// import MenuItem from '@mui/material/MenuItem';
+// import Select from '@mui/material/Select';
 import './styles.scss';
+import * as stakingService from '../../services/staking';
+import {useWeb3React} from '@web3-react/core';
+import {useState} from 'react';
+import * as accountService from '../../services/account';
+import {useEffect} from 'react';
+import {BigNumber} from '@ethersproject/bignumber';
+import {utils} from 'ethers';
+
+const localStorage = window.localStorage;
 
 export default function Staking() {
-    const [toggle, setToggle] = React.useState('stake');
+    const context = useWeb3React();
+    const {account, library} = context;
+    const [tokenBalance, setTokenBalance] = useState<string | null>(null);
+    const [stakedBalance, setStakedBalance] = useState<any>(null);
+    const [amountToStake, setAmountToStake] = useState<string | null>('');
+    const [toggle, setToggle] = useState('stake');
+    const [, setStakedId] = useState<number | null>(null);
+
+    const setZkpTokenBalance = async () => {
+        const stakingTokenContract =
+            await stakingService.getStakingTokenContract(library);
+        const balance = await accountService.getTokenBalance(
+            stakingTokenContract,
+            account,
+        );
+        setTokenBalance(balance);
+    };
+
+    const getStakedZkpBalance = async () => {
+        const stakingContract = await stakingService.getStakingContract(
+            library,
+        );
+        const stakingTokenContract =
+            await stakingService.getStakingTokenContract(library);
+        const stakedBalance = await stakingService.getTotalStaked(
+            stakingContract,
+            account,
+        );
+        const totalStaked = BigNumber.from(0);
+        stakedBalance.map(item => totalStaked.add(item.amount));
+        const decimals = await stakingTokenContract.decimals();
+        const totalStakedValue = utils.formatUnits(totalStaked, decimals);
+        setStakedBalance((+totalStakedValue).toFixed(2));
+    };
+
+    useEffect(() => {
+        setZkpTokenBalance();
+        getStakedZkpBalance();
+    });
+
+    const stake = async (amount: string) => {
+        const stakingContract = await stakingService.getStakingContract(
+            library,
+        );
+        const stakeType = '0x4ab0941a';
+        const signer = library.getSigner(account).connectUnchecked();
+        const stakeId = await stakingService.stake(
+            stakingContract,
+            amount,
+            stakeType,
+            signer,
+        );
+        if (stakeId) {
+            setStakedId(stakeId);
+            localStorage.setItem('stakeId', stakeId.toString());
+        }
+    };
 
     const handleChange = (
         event: React.MouseEvent<HTMLElement>,
@@ -42,7 +106,6 @@ export default function Staking() {
         onChange: handleChange,
         exclusive: true,
     };
-    const [amountToStake, setAmountToStake] = React.useState(10000);
 
     return (
         <Box width={'100%'} margin={'0 5'}>
@@ -60,7 +123,7 @@ export default function Staking() {
             >
                 <Box>
                     <Typography color={'#FFF'} fontWeight={700}>
-                        42.458 <span>ZKP</span>
+                        {tokenBalance} <span>ZKP</span>
                     </Typography>
                     <Typography
                         variant="caption"
@@ -73,7 +136,7 @@ export default function Staking() {
                 </Box>
                 <Box>
                     <Typography color={'#FFF'} fontWeight={700}>
-                        25,000 <span>ZKP</span>
+                        {stakedBalance} <span>ZKP</span>
                     </Typography>
                     <Typography
                         variant="caption"
@@ -120,7 +183,11 @@ export default function Staking() {
                     {toggle == 'stake' && (
                         <>
                             <StakingInfoMSG />
-                            <Box display="flex" justifyContent="space-between">
+                            <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                alignItems={'center'}
+                            >
                                 <Typography
                                     sx={{
                                         opacity: 0.5,
@@ -154,7 +221,7 @@ export default function Staking() {
                                             color: '#ffdfbd',
                                         }}
                                     >
-                                        12,520
+                                        {tokenBalance}
                                     </Typography>
                                     <Typography
                                         variant="caption"
@@ -165,11 +232,16 @@ export default function Staking() {
                                     <Typography
                                         variant="caption"
                                         component="span"
-                                        color='#ffdfbd'
+                                        color="#ffdfbd"
                                         marginLeft={'1rem'}
-
+                                        sx={{
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() => {
+                                            setAmountToStake(tokenBalance);
+                                        }}
                                     >
-                                        Max
+                                        MAX
                                     </Typography>
                                 </span>
                             </Box>
@@ -191,17 +263,19 @@ export default function Staking() {
                                         fontSize: '24px',
                                         color: '#ffdfbd',
                                         marginInlineEnd: '16px',
-                                        width: '150px',
+                                        width: '180px',
                                     }}
                                     value={amountToStake}
                                     onChange={e => {
                                         setAmountToStake(
-                                            Number(e.target.value) || 0,
+                                            e.target.value.toString() || '0',
                                         );
                                     }}
                                     autoComplete="off"
                                     autoFocus={true}
-                                    placeholder={amountToStake.toString()}
+                                    placeholder={
+                                        amountToStake ? amountToStake : ''
+                                    }
                                     disableUnderline={true}
                                     endAdornment={
                                         <InputAdornment
@@ -217,23 +291,6 @@ export default function Staking() {
                                     aria-describedby="staking-value-helper-text"
                                 />
                                 <Box display={'flex'} alignItems={'center'}>
-                                    {/* <Button
-                                        sx={{
-                                            width: '62.43px',
-                                            height: '28.15px',
-                                            color: '#fff !important',
-                                            background:
-                                                'linear-gradient(0deg, rgba(43, 51, 65, 0.25), rgba(43, 51, 65, 0.25))',
-                                            border: '1px solid #485267',
-                                            marginInlineEnd: '16px !important',
-                                            borderRadius: '16px !important',
-                                        }}
-                                        onClick={() => {
-                                            setAmountToStake(12520);
-                                        }}
-                                    >
-                                        MAX
-                                    </Button> */}
                                     <Box width={'57px'} height={'57px'}>
                                         <img src={logo} />
                                     </Box>
@@ -265,10 +322,16 @@ export default function Staking() {
                                         width: '100%',
                                     }}
                                     onClick={() => {
-                                        alert(12520);
+                                        if (
+                                            amountToStake &&
+                                            Number(amountToStake) > 0
+                                        ) {
+                                            stake(amountToStake);
+                                        }
                                     }}
                                 >
-                                    Stake {amountToStake.toString()} ZKP
+                                    Stake {amountToStake ? amountToStake : ''}{' '}
+                                    ZKP
                                 </Button>
                             </Box>
                         </CardActions>
@@ -296,10 +359,9 @@ const StakingMethod = () => (
             width: '80%',
         }}
     >
-        <Box display="flex" justifyContent={'space-between'}>
+        {/*<Box display="flex" justifyContent={'space-between'}>
             <Typography
                 sx={{
-                    fontFamily: 'inter',
                     fontWeight: 500,
                     fontStyle: 'normal',
                     fontSize: '16px',
@@ -315,18 +377,17 @@ const StakingMethod = () => (
                 id="addresses-select-standard"
                 variant="filled"
                 value={'Standard'}
-                sx={{ m: 0, minWidth: 155, color: '#fff' }}
+                sx={{m: 0, minWidth: 155, color: '#fff'}}
             >
                 <MenuItem selected value={'Standard'}>
                     Standard
                 </MenuItem>
                 <MenuItem value={'Option2'}>Option2</MenuItem>
             </Select>
-        </Box>
+        </Box>*/}
         <Box display="flex" justifyContent={'space-between'}>
             <Typography
                 sx={{
-                    fontFamily: 'inter',
                     fontWeight: 500,
                     fontStyle: 'normal',
                     fontSize: '16px',
@@ -339,7 +400,6 @@ const StakingMethod = () => (
             </Typography>
             <Typography
                 sx={{
-                    fontFamily: 'inter',
                     fontWeight: 500,
                     fontStyle: 'normal',
                     fontSize: '16px',
@@ -388,7 +448,7 @@ const StakingInfoMSG = () => (
             fontWeight={400}
         >
             You will need to unstake in order for your staked assets to be
-            liquid again. This process will take 7 days to complete.
+            liquid again. This process will take 7 days to complete.&nbsp;
             <Link href="#" underline="always" color="inherit">
                 Learn more
             </Link>

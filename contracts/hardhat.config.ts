@@ -51,6 +51,7 @@ const config: HardhatUserConfig = {
             accounts: getAccounts(process.env.MAINNET_PRIVKEY),
         },
     },
+    // @ts-ignore
     namedAccounts: {
         deployer: 0,
     },

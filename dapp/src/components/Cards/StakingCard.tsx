@@ -94,7 +94,7 @@ export default function Staking() {
 
     const children = [
         <ToggleButton value="stake" key="1">
-            Stake ZKP
+            Stake
         </ToggleButton>,
         <ToggleButton value="unstake" key="2">
             Unstake

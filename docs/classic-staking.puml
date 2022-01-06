@@ -1,0 +1,41 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title **Classic staking**
+
+'autonumber
+
+hide footbox
+actor "Staker" as staker
+
+box "Smart Contracts on Mainet" #LightBlue
+  database "Staking\n" as Staking
+  'database "StakingMsgProcessor\n" as SMP
+  database "RewardMaster\n" as rMaster
+  database "StakeRewardAdviser\n" as adviser
+  database "RewardPool\n" as rPool
+  database "VestingPools\n" as vPools
+  database "$ZKP\nToken" as ZKP
+end box
+
+staker -> Staking ++ : ""stake()""
+  Staking -> Staking ++ : ""_createStake()""
+    Staking -> ZKP ++ : ""transferFrom()""
+    deactivate
+    Staking -> Staking ++ : ""_sendStakedMsg()""
+    note right: ""if (_terms.isRewarded)""
+      'Staking -> SMP: _encodeStakeActionType()
+      'return
+      Staking -> rMaster ++ : ""onAction()""
+        rMaster -> adviser ++ : ""adviceReward()""
+        return ""Advice""
+        rMaster -> rMaster ++ : ""_grantShares()""
+          rMaster -> rMaster ++ : ""_triggerVesting()""
+            rMaster -> rPool ++ : ""vestRewards()""
+              rPool -> rPool ++ : ""_releasableAmount()""
+                rPool -> vPools ++ : ""releasableAmount(poolId)""
+                return ""amount""
+              return ""amount""
+              rPool -> vPools ++ : ""releaseTo()""
+                vPools -> ZKP ++ : ""transfer()""\n""or mint()""
+@enduml

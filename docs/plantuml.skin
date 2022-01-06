@@ -1,0 +1,97 @@
+root {
+  FontName Chivo
+  HyperLinkColor blue
+  FontColor white
+  FontSize 14
+  FontStyle plain
+  RoundCorner 0
+  DiagonalCorner 0
+  LineThickness 1.0
+  LineColor #A80036
+  Shadowing 0.0
+  BackGroundColor white
+}
+
+document {
+  Margin 10
+}
+
+group {
+  BackGroundColor #ffffffff
+}
+
+groupHeader {
+  Padding 15
+  Margin 15
+}
+
+group {
+  Padding 50
+  Margin 100
+}
+
+sequenceDiagram {
+  BackGroundColor #11121e
+  LineColor #eee
+  RoundCorner 20
+  FontMargin 50
+
+  box {
+    BackGroundColor #282f3a
+    LineThickness 1.0
+    LineColor #cccccc
+    ' Padding and Margin don't work here
+    BorderColor black
+    RoundCorner 30
+    FontStyle bold
+  }
+
+  database {
+    'BackGroundColor #205bea
+  }
+
+  arrow {
+    LineThickness 1.5
+    RoundCorner 10
+  }
+
+  groupheader {
+    BackGroundColor #205bea
+    FontStyle bold
+  }
+
+  group {
+    BackGroundColor #424f5c
+    FontStyle bold
+  }
+
+  .blockchain {
+    BackGroundColor #424f5c
+  }
+
+  lifeline {
+    LineColor #eee
+    LineThickness 1.0
+    RoundCorner 20
+    BackGroundColor #8b91a0
+  }
+}
+
+database {
+  HorizontalAlignment center
+}
+
+note {
+  FontSize 13
+  BackGroundColor #fbfb77
+}
+
+title {
+  HorizontalAlignment center
+  FontSize 28
+  FontStyle bold
+  Padding 5
+  Margin 5
+  LineColor none
+  BackGroundColor none
+}

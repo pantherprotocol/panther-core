@@ -275,7 +275,8 @@ export const PrivateStakingComingSoonCard = () => {
                         textAlign: 'left',
                     }}
                 >
-                    Advanced incentivized ZKP private staking is coming soon.
+                    Advanced incentivized ZKP private staking with a higher APY
+                    is coming soon!
                 </Typography>
             </Box>
         </Card>

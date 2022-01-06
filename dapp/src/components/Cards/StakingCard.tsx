@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import WarningIcon from '@mui/icons-material/Warning';
-import { Link } from '@mui/material';
+import {Link} from '@mui/material';
 import UnstakeTable from './UnstakeTable';
 import InputAdornment from '@mui/material/InputAdornment';
 import logo from '../../images/panther-logo.svg';
@@ -314,7 +314,7 @@ export default function Staking() {
                                 justifyContent={'center'}
                                 borderRadius={'10px'}
                                 minHeight={'60px'}
-                                sx={{ backgroundColor: '#1e4eb4' }}
+                                sx={{backgroundColor: '#1e4eb4'}}
                             >
                                 <Button
                                     sx={{
@@ -463,7 +463,7 @@ const UnstakingInfoMSG = () => (
         borderRadius={'8px'}
         marginBottom={'30px'}
         bgcolor={'#6372882E'}
-        sx={{ opacity: 0.5 }}
+        sx={{opacity: 0.5}}
     >
         <Typography variant="caption">
             Stake transactions must be staking for 7+ day to be eligible to
@@ -483,7 +483,7 @@ const TotalUnclaimedRewards = () => (
             borderRadius={'8px'}
             marginBottom={'30px'}
             bgcolor={'#6372882E'}
-            sx={{ opacity: 0.5 }}
+            sx={{opacity: 0.5}}
         >
             <Typography variant="caption">Total Unclaimed Rewards:</Typography>
             <Typography variant="caption">870.38 ZKP</Typography>

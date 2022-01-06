@@ -78,7 +78,10 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
         // _endTime can't be in the past
         require(_endTime > timeNow(), "RP: expired");
         // this contract must be registered with the VestingPools
-        require(IVestingPools(VESTING_POOLS).getWallet(_poolId) == address(this), "RP:E7");
+        require(
+            IVestingPools(VESTING_POOLS).getWallet(_poolId) == address(this),
+            "RP:E7"
+        );
 
         poolId = _poolId;
         recipient = _recipient;

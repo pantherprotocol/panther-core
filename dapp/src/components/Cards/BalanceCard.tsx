@@ -260,7 +260,7 @@ export const PrivateStakingComingSoonCard = () => {
                         alignItems: 'left',
                     }}
                 >
-                    Private Staking Coming Soon
+                    Advanced Staking Coming Soon
                 </Typography>
             </Box>
             <Box display="flex" alignItems="baseline">
@@ -275,7 +275,7 @@ export const PrivateStakingComingSoonCard = () => {
                         textAlign: 'left',
                     }}
                 >
-                    Advance incetivized ZKP private staking is coming in March.
+                    Advanced incentivized ZKP private staking is coming soon.
                 </Typography>
             </Box>
         </Card>

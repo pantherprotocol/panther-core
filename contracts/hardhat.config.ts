@@ -5,6 +5,7 @@ import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-ethers';
 import '@typechain/hardhat';
 import 'hardhat-deploy';
+import 'hardhat-gas-reporter';
 import '@openzeppelin/hardhat-upgrades';
 import 'solidity-coverage';
 import 'hardhat-contract-sizer';
@@ -61,6 +62,10 @@ const config: HardhatUserConfig = {
     // @ts-ignore
     gasReporter: {
         currency: 'USD',
+        ...(process.env.CMC_API_KEY
+            ? {coinmarketcap: process.env.CMC_API_KEY}
+            : {}),
+
         enabled: !!process.env.REPORT_GAS,
         excludeContracts: [],
         src: './contracts',

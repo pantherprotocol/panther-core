@@ -23,7 +23,7 @@
     "uml": "yarn sol2uml -i utils contracts -o ../docs/contracts.svg",
     "storage": "FAKE_MNEMONIC=yes yarn hardhat storage | grep -v '/node_modules/\\.bin/hardhat storage' > docs/docgen/storage.layout.txt",
     "test": "FAKE_MNEMONIC=yes hardhat test",
-    "test:gas": "export REPORT_GAS=yes && yarn test:long",
+    "test:gas": "REPORT_GAS=yes yarn test",
     "typechain": "FAKE_MNEMONIC=yes hardhat typechain",
     "verify:network": "FAKE_MNEMONIC=yes hardhat verify --network"
   },

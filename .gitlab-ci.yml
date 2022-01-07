@@ -13,11 +13,13 @@
 #
 # For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
 
-stages:          # List of stages for jobs, and their order of execution
+default:
+  image: node:14
+
+stages: # List of stages for jobs, and their order of execution
   - test
 
-lint-job:
-  stage: test
+.yarn_cache_template: &yarn_cache_template
   cache:
     - key:
         files:
@@ -25,21 +27,22 @@ lint-job:
           - yarn.lock
       paths:
         - .yarn-cache/
-        
-  script:
+        - node_modules/
+        - '**/node_modules/'
+  before_script:
     - yarn install --cache-folder .yarn-cache
+
+# These jobs are run in parallel within the test stage:
+
+lint-job:
+  stage: test
+  <<: *yarn_cache_template
+  script:
     - yarn lint
 
 unit-test-job:
   stage: test
-  cache:
-    - key:
-        files:
-          - package.json
-          - yarn.lock
-      paths:
-        - .yarn-cache/
-        
+  <<: *yarn_cache_template
+
   script:
-    - yarn install --cache-folder .yarn-cache
     - yarn test

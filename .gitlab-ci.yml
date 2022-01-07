@@ -27,6 +27,8 @@ stages: # List of stages for jobs, and their order of execution
           - yarn.lock
       paths:
         - .yarn-cache/
+        - node_modules/
+        - '**/node_modules/'
   before_script:
     - yarn install --cache-folder .yarn-cache
 

@@ -60,13 +60,16 @@ easily accessible via extra API methods.
 
 ## Seeding smart contracts with data
 
-In `zkp-token`, create a new vesting pool with a given recipient
-by runnign:
+In `zkp-token`, create a new vesting pool with a given recipient, and
+release some tokens to that recipient, by running:
 
-    yarn hardhat vest $RECIPIENT $STAKING_TOKEN $VESTING_POOLS
+    yarn hardhat vest 0 $STAKING_TOKEN $VESTING_POOLS
 
 where the variables are set or substituted appropriately for the
-corresponding addresses.
+corresponding addresses. Note that here `0` specifies the recipient as
+the first signer in the array of Hardhat-provided signers obtained via
+`hre.ethers.getSigners()`. However instead of passing an index to that
+array, you can also pass a normal wallet address.
 
 ## Setting up the frontend
 

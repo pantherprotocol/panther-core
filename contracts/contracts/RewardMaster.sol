@@ -71,18 +71,24 @@ contract RewardMaster is
 
     /// @dev Block when reward tokens were last time were vested in
     uint32 public lastVestedBlock;
+    /// @dev Reward token balance (aka Treasury) after last vesting
+    /// (token total supply is supposed to not exceed 2**96)
+    uint96 public lastBalance;
 
     /// @notice Total number of unredeemed shares
-    /// (it is supposed to not exceed 2**96)
-    uint96 public totalShares;
+    /// (it is supposed to not exceed 2**128)
+    uint128 public totalShares;
+    /// @dev Min number of unredeemed shares being rewarded
+    uint256 private constant MIN_SHARES_REWARDED = 1000;
 
     // see comments above for explanation
-    uint128 public accumRewardPerShare;
+    uint256 public accumRewardPerShare;
     // `accumRewardPerShare` is scaled (up) with this factor
     uint256 private constant SCALE = 1e9;
 
     // see comments above for explanation
     struct UserRecord {
+        // (limited to 2**96)
         uint96 shares;
         uint160 offset;
     }
@@ -98,6 +104,10 @@ contract RewardMaster is
     event RewardAdded(uint256 reward);
     /// @dev Emitted when reward token amount paid to/for a user
     event RewardPaid(address indexed user, uint256 reward);
+    /// @dev Emitted when the Treasury counts for "extra" reward tokens.
+    /// "Extra" tokens are ones sent to this contract directly (rather than
+    /// vested via the REWARD_POOL).
+    event BalanceAdjusted(uint256 adjustment);
 
     constructor(
         address _rewardToken,
@@ -106,7 +116,7 @@ contract RewardMaster is
     ) ImmutableOwnable(_owner) {
         require(
             _rewardToken != address(0) && _rewardPool != address(0),
-            "RM:E1"
+            "RM:C1"
         );
 
         REWARD_TOKEN = _rewardToken;
@@ -123,8 +133,9 @@ contract RewardMaster is
         // known contract, no reentrancy guard needed
         uint256 releasable = IRewardPool(REWARD_POOL).releasableAmount();
         uint256 _accumRewardPerShare = accumRewardPerShare;
-        if (releasable != 0) {
-            _accumRewardPerShare += (releasable * SCALE) / totalShares;
+        uint256 _totalShares = uint256(totalShares);
+        if (releasable != 0 && _totalShares >= MIN_SHARES_REWARDED) {
+            _accumRewardPerShare += (releasable * SCALE) / _totalShares;
         }
 
         return _getRewardEntitled(rec, _accumRewardPerShare);
@@ -156,11 +167,10 @@ contract RewardMaster is
     /* ========== ONLY FOR OWNER FUNCTIONS ========== */
 
     /**
-     * @notice Adds a given "RewardAdviser" for given ActionOracle and action type
+     * @notice Adds the "RewardAdviser" for given ActionOracle and action type
      * @dev May be only called by the {OWNER}
-     * !!!!! Before adding a new "adviser", ensure "shares" it returns in the "advices"
-     * do not overflow `UserRecord.shares`, `UserRecord.offset`, `totalShares` and
-     * `accumRewardPerShare`.
+     * !!!!! Before adding a new "adviser", ensure "shares" it "advices" can not
+     * overflow `UserRecord.shares`, `UserRecord.offset` and `totalShares`.
      */
     function addRewardAdviser(
         address oracle,
@@ -188,7 +198,7 @@ contract RewardMaster is
     ) external onlyOwner nonReentrant {
         if (claimedToken == address(REWARD_TOKEN)) {
             // Not allowed if unclaimed shares remain
-            require(totalShares == 0, "RM:E?");
+            require(totalShares == 0, "RM: Failed to claim");
         }
         _claimErc20(claimedToken, to, amount);
     }
@@ -211,16 +221,22 @@ contract RewardMaster is
         nonZeroAmount(shares)
         nonZeroAddress(to)
     {
-        uint256 _accumRewardPerShare = _triggerVesting();
+        (
+            uint256 _accumRewardPerShare,
+            uint256 newBalance,
+            uint256 oldBalance
+        ) = _triggerVesting();
+
+        if (oldBalance != newBalance) lastBalance = safe96(newBalance);
 
         UserRecord memory rec = records[to];
         uint256 newOffset = uint256(rec.offset) +
-            (shares * uint256(_accumRewardPerShare)) /
+            (shares * _accumRewardPerShare) /
             SCALE;
         uint256 newShares = uint256(rec.shares) + shares;
 
         records[to] = UserRecord(safe96(newShares), safe160(newOffset));
-        totalShares = safe96(uint256(totalShares) + shares);
+        totalShares = safe128(uint256(totalShares) + shares);
 
         emit SharesGranted(to, shares);
     }
@@ -231,44 +247,75 @@ contract RewardMaster is
         address to
     ) internal nonZeroAmount(shares) nonZeroAddress(from) nonZeroAddress(to) {
         UserRecord memory rec = records[from];
-        require(rec.shares >= shares, "RM:E?");
+        require(rec.shares >= shares, "RM: Not enough shares to redeem");
 
-        uint256 _accumRewardPerShare = _triggerVesting();
+        (
+            uint256 _accumRewardPerShare,
+            uint256 newBalance,
+            uint256 oldBalance
+        ) = _triggerVesting();
+
         uint256 reward = _getRewardEntitled(rec, _accumRewardPerShare);
 
         uint256 newShares = uint256(rec.shares) - shares;
         uint256 newOffset = 0;
         if (newShares != 0) {
-            newOffset = (uint256(rec.offset) * shares) / uint256(rec.shares);
+            newOffset = uint256(rec.offset) * shares / uint256(rec.shares);
         }
 
         records[to] = UserRecord(safe96(newShares), safe160(newOffset));
-        totalShares = safe96(uint256(totalShares) - shares);
+        totalShares = safe128(uint256(totalShares) - shares);
+
+        uint256 _lastBalance = newBalance - reward;
+        if (oldBalance != _lastBalance) {
+            lastBalance = safe96(_lastBalance);
+        }
 
         if (reward != 0) {
             // known contract - nether reentrancy guard nor safeTransfer required
-            require(IErc20Min(REWARD_TOKEN).transfer(to, reward), "RM:E?");
+            require(
+                IErc20Min(REWARD_TOKEN).transfer(to, reward),
+                "RM: Internal transfer failed"
+            );
             emit RewardPaid(to, reward);
         }
+
         emit SharesRedeemed(from, shares);
     }
 
     function _triggerVesting()
         internal
-        returns (uint256 newAccumRewardPerShare)
+        returns (
+            uint256 newAccumRewardPerShare,
+            uint256 newBalance,
+            uint256 oldBalance
+        )
     {
-        uint256 _totalShares = totalShares;
-        require(_totalShares != 0, "RM: no shares to vest for");
-
-        newAccumRewardPerShare = uint256(accumRewardPerShare);
         uint32 _blockNow = safe32BlockNow();
-        if (lastVestedBlock >= _blockNow) return newAccumRewardPerShare;
+        newAccumRewardPerShare = uint256(accumRewardPerShare);
+        oldBalance = uint256(lastBalance);
+        uint256 _totalShares = totalShares;
 
-        // known contract, no reentrancy guard needed
+        if (
+            lastVestedBlock >= _blockNow || _totalShares < MIN_SHARES_REWARDED
+        ) {
+            return (newAccumRewardPerShare, oldBalance, oldBalance);
+        }
+
+        // known contracts, no reentrancy guard needed
+        newBalance = IErc20Min(REWARD_TOKEN).balanceOf(address(this));
         uint256 newlyVested = IRewardPool(REWARD_POOL).vestRewards();
+
+        uint256 expectedBalance = oldBalance + newlyVested;
+        if (newBalance > expectedBalance) {
+            // somebody transferred tokens to this contract directly
+            uint256 adjustment = newBalance - expectedBalance;
+            newlyVested += adjustment;
+            emit BalanceAdjusted(adjustment);
+        }
         if (newlyVested != 0) {
             newAccumRewardPerShare += (newlyVested * SCALE) / _totalShares;
-            accumRewardPerShare = safe128(newAccumRewardPerShare);
+            accumRewardPerShare = newAccumRewardPerShare;
             emit RewardAdded(newlyVested);
         }
         lastVestedBlock = _blockNow;
@@ -277,12 +324,12 @@ contract RewardMaster is
     /* ========== MODIFIERS ========== */
 
     modifier nonZeroAmount(uint256 amount) {
-        require(amount > 0, "RM: zero amount provided");
+        require(amount > 0, "RM: Zero amount provided");
         _;
     }
 
     modifier nonZeroAddress(address account) {
-        require(account != address(0), "RM: zero address provided");
+        require(account != address(0), "RM: Zero address provided");
         _;
     }
 }

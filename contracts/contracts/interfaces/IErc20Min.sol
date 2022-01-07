@@ -2,12 +2,15 @@
 pragma solidity ^0.8.0;
 
 interface IErc20Min {
-    /// ERC-20 `transfer`
+    /// @dev ERC-20 `balanceOf`
+    function balanceOf(address account) external view returns (uint256);
+
+    /// @dev ERC-20 `transfer`
     function transfer(address recipient, uint256 amount)
         external
         returns (bool);
 
-    /// ERC-20 `transferFrom`
+    /// @dev ERC-20 `transferFrom`
     function transferFrom(
         address sender,
         address recipient,

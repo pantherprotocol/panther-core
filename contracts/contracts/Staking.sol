@@ -345,36 +345,39 @@ contract Staking is
         nonZeroStakeType(stakeType)
     {
         Terms memory existingTerms = terms[stakeType];
-        require(!_isDefinedTerms(existingTerms), "E?");
-        require(_terms.isEnabled, "E?");
+        require(!_isDefinedTerms(existingTerms), "Staking:E1");
+        require(_terms.isEnabled, "Staking:E2");
 
         uint256 _now = timeNow();
 
         if (_terms.allowedSince != 0) {
-            require(_terms.allowedSince > _now, "E?");
+            require(_terms.allowedSince > _now, "Staking:E3");
         }
         if (_terms.allowedTill != 0) {
             require(
                 _terms.allowedTill > _now &&
                     _terms.allowedSince > _terms.allowedSince,
-                "E?"
+                "Staking:E4"
             );
         }
 
         if (_terms.maxAmountScaled != 0) {
-            require(_terms.maxAmountScaled > _terms.minAmountScaled);
+            require(
+                _terms.maxAmountScaled > _terms.minAmountScaled,
+                "Staking:E5"
+            );
         }
 
         // only one of three "lock time" parameters must be non-zero
         if (_terms.lockedTill != 0) {
             require(
                 _terms.exactLockPeriod == 0 && _terms.minLockPeriod == 0,
-                "E?"
+                "Staking:E6"
             );
             require(
                 _terms.lockedTill > _now &&
                     _terms.lockedTill >= _terms.allowedTill,
-                "E?"
+                "Staking:E7"
             );
         } else {
             bool isFirtsZero = _terms.exactLockPeriod == 0;
@@ -383,7 +386,7 @@ contract Staking is
                 // one of two params must be non-zero
                 (!isFirtsZero && isSecondZero) ||
                     (isFirtsZero && !isSecondZero),
-                "E?"
+                "Staking:E8"
             );
         }
 
@@ -397,8 +400,8 @@ contract Staking is
         nonZeroStakeType(stakeType)
     {
         Terms memory _terms = terms[stakeType];
-        require(_isDefinedTerms(terms[stakeType]), "E?");
-        require(_terms.isEnabled, "E?");
+        require(_isDefinedTerms(terms[stakeType]), "Staking:E9");
+        require(_terms.isEnabled, "Staking:EA");
 
         terms[stakeType].isEnabled = false;
         emit TermsDisabled(stakeType);
@@ -413,7 +416,7 @@ contract Staking is
         bytes calldata data
     ) internal nonZeroStakeType(stakeType) returns (uint256) {
         Terms memory _terms = terms[stakeType];
-        require(_terms.isEnabled, "E?");
+        require(_terms.isEnabled, "Staking: Terms unknown or disabled");
 
         require(amount > 0, "Staking: Amount not set");
         uint256 _totalStake = amount + uint256(totalStaked);
@@ -422,17 +425,23 @@ contract Staking is
         require(
             _terms.minAmountScaled == 0 ||
                 amount >= SCALE * _terms.minAmountScaled,
-            "E?"
+            "Staking: Too small amount"
         );
         require(
             _terms.maxAmountScaled == 0 ||
                 amount <= SCALE * _terms.maxAmountScaled,
-            "E?"
+            "Staking: Too large amount"
         );
 
         uint32 _now = safe32TimeNow();
-        require(_terms.allowedSince == 0 || _terms.allowedSince > _now);
-        require(_terms.allowedTill == 0 || _terms.allowedTill > _now);
+        require(
+            _terms.allowedSince == 0 || _terms.allowedSince >= _now,
+            "Staking: Not yet allowed"
+        );
+        require(
+            _terms.allowedTill == 0 || _terms.allowedTill > _now,
+            "Staking: Not allowed already"
+        );
 
         // known contract - reentrancy guard and `safeTransferFrom` unneeded
         require(
@@ -631,7 +640,10 @@ contract Staking is
         bytes4 action = _encodeStakeActionType(_stake.stakeType);
         bytes memory message = _packStakingActionMsg(staker, _stake, data);
         // known contract - reentrancy guard unneeded
-        require(REWARD_MASTER.onAction(action, message), "E?");
+        require(
+            REWARD_MASTER.onAction(action, message),
+            "Staking: onStake msg failed"
+        );
     }
 
     function _sendUnstakedMsg(
@@ -644,15 +656,15 @@ contract Staking is
         bytes memory message = _packStakingActionMsg(staker, _stake, data);
         // known contract - reentrancy guard unneeded
         try REWARD_MASTER.onAction(action, message) returns (bool success) {
-            require(_isForced || success, "E?");
+            require(_isForced || success, "Staking: REWARD_MASTER rejects");
         } catch {
             // REWARD_MASTER must be unable to revert forced calls
-            require(_isForced, "E?");
+            require(_isForced, "Staking: REWARD_MASTER reverts");
         }
     }
 
     modifier nonZeroStakeType(bytes4 stakeType) {
-        require(stakeType != bytes4(0), "E?");
+        require(stakeType != bytes4(0), "Staking: Invalid stake type 0");
         _;
     }
 }

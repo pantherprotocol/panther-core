@@ -93,3 +93,5 @@ Now you can easily retrieve the deployed contracts, e.g.:
 
     cd ../contracts
     yarn coverage
+
+Then open `coverage/index.html` in your browser.

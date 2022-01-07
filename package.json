@@ -8,7 +8,7 @@
     "console": "yarn workspace @zkp-staking/contracts console",
     "deploy:chain": "yarn workspace @zkp-staking/contracts deploy:chain",
     "hardhat": "yarn workspace @zkp-staking/contracts hardhat",
-    "lint": "yarn prettier:check && yarn workspace @zkp-staking/contracts lint:sol && yarn workspace @zkp-staking/contracts lint:js && yarn workspace @zkp-staking/contracts lint:ts && yarn workspace @zkp-staking/dapp lint:ts",
+    "lint": "yarn prettier:check && yarn workspace @zkp-staking/contracts lint:sol && yarn workspace @zkp-staking/contracts lint:ts && yarn workspace @zkp-staking/contracts lint:ts && yarn workspace @zkp-staking/dapp lint:ts",
     "test": "yarn test:contracts && yarn test:dapp",
     "build:contracts": "yarn workspace @zkp-staking/contracts compile",
     "test:contracts": "yarn workspace @zkp-staking/contracts test",

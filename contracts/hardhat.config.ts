@@ -2,10 +2,10 @@ import {resolve} from 'path';
 import {config as dotenvConfig} from 'dotenv';
 import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-etherscan';
-import 'hardhat-deploy';
 import '@nomiclabs/hardhat-ethers';
+import '@typechain/hardhat';
+import 'hardhat-deploy';
 import '@openzeppelin/hardhat-upgrades';
-// import "hardhat-typechain";
 import 'solidity-coverage';
 import 'hardhat-contract-sizer';
 

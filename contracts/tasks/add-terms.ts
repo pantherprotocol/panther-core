@@ -1,8 +1,7 @@
 import {task} from 'hardhat/config';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
-import {BigNumber, utils} from 'ethers';
-const toBN = (n: number): BigNumber => BigNumber.from(n);
+import {utils} from 'ethers';
 
 import {TASK_ADD_TERMS} from './task-names';
 

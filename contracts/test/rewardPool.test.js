@@ -1,9 +1,9 @@
-const chai = require('chai');
+import {chai} from 'chai';
 const expect = chai.expect;
-const {expectRevert, expectEvent} = require('@openzeppelin/test-helpers');
-const {ethers, web3} = require('hardhat');
-const {smock} = require('@defi-wonderland/smock');
+import {expectRevert} from '@openzeppelin/test-helpers';
+import {ethers} from 'hardhat';
 const {BigNumber} = ethers;
+import {smock} from '@defi-wonderland/smock';
 
 chai.should(); // if you like should syntax
 chai.use(smock.matchers);
@@ -81,11 +81,7 @@ describe('RewardPool releasable amount', async () => {
     it('return 0 releasable amount of tokens when tokens are not vested', async () => {
         vestingPoolFactory.getWallet.returns(rewardPool.address);
         const expiryTime = Math.round(+new Date() / 1000) + 100;
-        const initialize = await rewardPool.initialize(
-            0,
-            alice.address,
-            expiryTime,
-        );
+        await rewardPool.initialize(0, alice.address, expiryTime);
         const releasableAmount = await rewardPool.releasableAmount();
         expect(releasableAmount).to.eql(toBN(0));
     });

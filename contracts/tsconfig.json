@@ -19,8 +19,7 @@
     "deploy/**/*",
     "tasks/**/*",
     "test/**/*",
-    "typechain/**/*",
-    "types/**/*"
+    "typechain/**/*"
   ],
   "files": ["./hardhat.config.ts"]
 }

@@ -88,3 +88,8 @@ corresponding addresses.
 Now you can easily retrieve the deployed contracts, e.g.:
 
     master = await ethers.getContract('RewardMaster'); master.address
+
+## Checking smart contract test coverage
+
+    cd ../contracts
+    yarn coverage

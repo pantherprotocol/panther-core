@@ -10,8 +10,5 @@ module.exports = {
         shell.rm('-rf', './artifacts');
         shell.rm('-rf', './typechain');
     },
-    providerOptions: {
-        mnemonic,
-    },
     skipFiles: ['mocks', 'test'],
 };

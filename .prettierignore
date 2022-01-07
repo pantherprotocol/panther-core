@@ -13,6 +13,7 @@ node_modules/
 tmp/
 package-lock.json
 yarn.lock
+.yarn-cache
 *.orig
 *.png
 *.svg

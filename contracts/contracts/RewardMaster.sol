@@ -260,7 +260,7 @@ contract RewardMaster is
         uint256 newShares = uint256(rec.shares) - shares;
         uint256 newOffset = 0;
         if (newShares != 0) {
-            newOffset = uint256(rec.offset) * shares / uint256(rec.shares);
+            newOffset = (uint256(rec.offset) * shares) / uint256(rec.shares);
         }
 
         records[to] = UserRecord(safe96(newShares), safe160(newOffset));

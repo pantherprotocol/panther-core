@@ -1,19 +1,27 @@
-import {chai} from 'chai';
+import chai from 'chai';
 const expect = chai.expect;
 import {expectRevert} from '@openzeppelin/test-helpers';
-import {ethers} from 'hardhat';
-const {BigNumber} = ethers;
-import {smock} from '@defi-wonderland/smock';
+import hre from 'hardhat';
+const {getSigners} = hre.ethers;
+import {BigNumber, BaseContract} from 'ethers';
+import {smock, MockContract, FakeContract} from '@defi-wonderland/smock';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
 chai.should(); // if you like should syntax
 chai.use(smock.matchers);
-const toBN = n => BigNumber.from(n);
+
+function toBN(n: number) {
+    return BigNumber.from(n);
+}
+
+let rewardPool: MockContract<BaseContract>;
+let vestingPoolFactory: FakeContract<BaseContract>;
+let deployer: SignerWithAddress;
+let alice: SignerWithAddress;
 
 describe('RewardPool Contract initialisation', async () => {
-    let rewardPool;
-    let vestingPoolFactory;
     before(async function () {
-        [deployer, alice, wallet1, wallet2] = await ethers.getSigners();
+        [deployer, alice] = await getSigners();
     });
     beforeEach(async () => {
         const rewardPoolFactory = await smock.mock('RewardPool');
@@ -67,7 +75,7 @@ describe('RewardPool releasable amount', async () => {
     let rewardPool;
     let vestingPoolFactory;
     before(async function () {
-        [deployer, alice, wallet1, wallet2] = await ethers.getSigners();
+        [deployer, alice] = await getSigners();
     });
     beforeEach(async () => {
         const rewardPoolFactory = await smock.mock('RewardPool');
@@ -100,7 +108,7 @@ describe('RewardPool vest rewards', async () => {
     let rewardPool;
     let vestingPoolFactory;
     before(async function () {
-        [deployer, alice, wallet1, wallet2] = await ethers.getSigners();
+        [deployer, alice] = await getSigners();
     });
     beforeEach(async () => {
         const rewardPoolFactory = await smock.mock('RewardPool');
@@ -145,10 +153,11 @@ describe('RewardPool vest rewards', async () => {
 });
 
 describe('RewardPool transfer wallet role', async () => {
-    let rewardPool;
-    let vestingPoolFactory;
+    let wallet1: SignerWithAddress;
+    let wallet2: SignerWithAddress;
+
     before(async function () {
-        [deployer, alice, wallet1, wallet2] = await ethers.getSigners();
+        [deployer, alice, wallet1, wallet2] = await getSigners();
     });
     beforeEach(async () => {
         const rewardPoolFactory = await smock.mock('RewardPool');

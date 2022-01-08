@@ -319,6 +319,7 @@ contract RewardMaster is
             emit RewardAdded(newlyVested);
         }
         lastVestedBlock = _blockNow;
+        lastBalance = safe96(newBalance);
     }
 
     /* ========== MODIFIERS ========== */

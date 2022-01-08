@@ -28,7 +28,7 @@ abstract contract RewardAdvisersList {
     ) internal {
         require(
             oracle != address(0) &&
-                adviser == address(0) &&
+                adviser != address(0) &&
                 action != bytes4(0),
             "ACM:E1"
         );

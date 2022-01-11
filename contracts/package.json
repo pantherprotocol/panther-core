@@ -44,6 +44,7 @@
     "chai": "^4.3.4"
   },
   "devDependencies": {
+    "@openzeppelin/contracts": "^4.1.0",
     "@openzeppelin/test-helpers": "^0.5.15",
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",
     "@nomiclabs/hardhat-etherscan": "^2.1.2",

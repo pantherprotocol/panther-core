@@ -45,4 +45,4 @@ unit-test-job:
   <<: *yarn_cache_template
 
   script:
-    - yarn test
+    - yarn run build:contracts && yarn test

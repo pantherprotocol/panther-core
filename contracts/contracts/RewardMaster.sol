@@ -138,7 +138,12 @@ contract RewardMaster is
             _accumRewardPerShare += (releasable * SCALE) / _totalShares;
         }
 
-        return _getRewardEntitled(rec, _accumRewardPerShare);
+        return
+            _getRewardEntitled(
+                uint256(rec.shares),
+                uint256(rec.offset),
+                _accumRewardPerShare
+            );
     }
 
     function onAction(bytes4 action, bytes memory message)
@@ -206,14 +211,18 @@ contract RewardMaster is
     /* ========== INTERNAL & PRIVATE FUNCTIONS ========== */
 
     function _getRewardEntitled(
-        UserRecord memory rec,
+        uint256 sharesToRedeem,
+        uint256 offset,
         uint256 _accumRewardPerShare
     ) internal pure returns (uint256) {
-        if (rec.shares == 0 || _accumRewardPerShare == 0) return 0;
-        return
-            (uint256(rec.shares) * _accumRewardPerShare) /
-            SCALE -
-            uint256(rec.offset);
+        // rec.shares is non-zero, but _accumRewardPerShare may be zero
+        if (_accumRewardPerShare == 0) return 0;
+
+        uint256 _totalUserShares = (sharesToRedeem * _accumRewardPerShare) /
+            SCALE;
+
+        if (_totalUserShares >= offset) return _totalUserShares - offset;
+        else return _totalUserShares;
     }
 
     function _grantShares(address to, uint256 shares)
@@ -247,6 +256,7 @@ contract RewardMaster is
         address to
     ) internal nonZeroAmount(shares) nonZeroAddress(from) nonZeroAddress(to) {
         UserRecord memory rec = records[from];
+        // shares is non-zero and rec.shares should be greater than or equal to shares
         require(rec.shares >= shares, "RM: Not enough shares to redeem");
 
         (
@@ -255,7 +265,11 @@ contract RewardMaster is
             uint256 oldBalance
         ) = _triggerVesting();
 
-        uint256 reward = _getRewardEntitled(rec, _accumRewardPerShare);
+        uint256 reward = _getRewardEntitled(
+            shares,
+            uint256(rec.offset),
+            _accumRewardPerShare
+        );
 
         uint256 newShares = uint256(rec.shares) - shares;
         uint256 newOffset = 0;
@@ -319,6 +333,7 @@ contract RewardMaster is
             emit RewardAdded(newlyVested);
         }
         lastVestedBlock = _blockNow;
+        lastBalance = safe96(newBalance);
     }
 
     /* ========== MODIFIERS ========== */

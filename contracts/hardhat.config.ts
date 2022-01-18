@@ -1,5 +1,3 @@
-import {resolve} from 'path';
-import {config as dotenvConfig} from 'dotenv';
 import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-ethers';
@@ -9,10 +7,12 @@ import 'hardhat-gas-reporter';
 import '@openzeppelin/hardhat-upgrades';
 import 'solidity-coverage';
 import 'hardhat-contract-sizer';
-
-import './tasks/add-terms';
+import './tasks/terms-add';
+import './tasks/reward-adviser-add';
 
 import {HardhatUserConfig} from 'hardhat/config';
+import {config as dotenvConfig} from 'dotenv';
+import {resolve} from 'path';
 
 dotenvConfig({path: resolve(__dirname, './.env')});
 

@@ -1,12 +1,11 @@
-import {task} from 'hardhat/config';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
-
+import {task} from 'hardhat/config';
 import {utils} from 'ethers';
 
-import {TASK_ADD_TERMS} from './task-names';
+const TASK_TERMS_ADD = 'terms:add';
 
 task(
-    TASK_ADD_TERMS,
+    TASK_TERMS_ADD,
     'Adds terms to staking contract for classic staking',
 ).setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
     const staking = await hre.ethers.getContract('Staking');

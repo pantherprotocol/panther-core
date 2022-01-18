@@ -188,3 +188,14 @@
         rgba(146, 159, 183, 0.35)
     );
 }
+
+@media (max-width: 680px) {
+    .css-1umk77v {
+        flex-direction: column;
+        height: auto !important;
+    }
+
+    .css-69i1ev {
+        flex-direction: column;
+    }
+}

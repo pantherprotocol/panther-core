@@ -9,18 +9,61 @@
     flex-direction: column;
     width: 100%;
 
-    @media (max-width: 680px) {
-        flex-direction: column;
-    }
-
     .staking-main-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         width: 100%;
 
-        @media (max-width: 680px) {
+        @media (max-width: 1400px) {
             flex-direction: column;
+        }
+
+        .logo-navbar-holder {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 2rem;
+
+            @media (max-width: 1400px) {
+                align-items: center;
+                justify-content: space-around;
+                width: 100%;
+
+                .MuiGrid-root.MuiGrid-container {
+                    justify-content: space-around;
+                }
+            }
+
+            @media (max-width: 768px) {
+                flex-direction: column;
+
+                .MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-md-6 {
+                    flex-direction: column;
+
+                    .nav-item {
+                        padding: 10px 25px;
+                    }
+                }
+            }
+
+            .nav-item {
+                padding: 0 25px;
+                font-size: 1.2rem;
+                cursor: pointer;
+
+                a {
+                    color: rgba(255, 255, 255, 0.62);
+                }
+            }
+
+            .nav-item.active {
+                text-decoration: underline;
+
+                a {
+                    color: $white;
+                }
+            }
         }
     }
 
@@ -34,7 +77,6 @@
 
     .logo-holder {
         z-index: 1;
-        margin-top: 2rem;
         margin-left: 2rem;
 
         .logo {
@@ -57,6 +99,10 @@
         @media (max-width: 680px) {
             margin-top: 20px;
             margin-right: 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            height: 120px;
         }
 
         &.active {
@@ -88,7 +134,7 @@
                         font-weight: 800;
                         border-radius: 8px;
                         display: inline-block;
-                        margin: 0 15px 4px 0;
+                        margin: 0 15px 0 0;
                         padding-left: 15px;
                         padding-right: 15px;
                         vertical-align: middle;
@@ -114,6 +160,10 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+
+            @media (max-width: 680px) {
+                padding-left: 0;
+            }
 
             .settings-button {
                 background: linear-gradient(

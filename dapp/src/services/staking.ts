@@ -5,6 +5,7 @@ import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
 import {formatTokenBalance} from './account';
+import {JsonRpcSigner} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
 
 const CoinGeckoClient = new CoinGecko();
@@ -95,22 +96,33 @@ export async function getStakedEventFromBlock(
 }
 
 export async function stake(
+    library: any,
     contract: ethers.Contract,
     amount: string,
     stakeType: string,
-    signer: any, //@TODO: Make signer type to be accepted here
+    signer: JsonRpcSigner,
     data?: any,
 ): Promise<number | null> {
     if (!contract) {
         return null;
     }
-    const stakingSigner = contract.connect(signer);
-    const stakeId: number = await stakingSigner.stake(
-        Number(amount),
-        stakeType,
-        data ? data : {},
-    );
-    return stakeId;
+
+    const stakingTokenContract = await getStakingTokenContract(library);
+    const stakingTokenSigner = stakingTokenContract.connect(signer);
+    const approvedStatus = await stakingTokenSigner.approve(STAKING_CONTRACT, Number(amount));
+
+    if (approvedStatus) {
+        const stakingSigner = contract.connect(signer);
+
+        const stakeId: number = await stakingSigner.stake(
+            Number(amount),
+            stakeType,
+            data ? data : "0x00",
+        );
+        return stakeId;
+    }
+
+    return null;
 }
 
 export async function unstake(
@@ -163,7 +175,7 @@ export async function getStakingTransactionsNumber(
 }
 
 export async function getZKPMarketPrice(): Promise<number | null> {
-    const symbol = process.env.TOKEN_SYMBOL;
+    const symbol = TOKEN_SYMBOL;
     if (!symbol) {
         console.warn('TOKEN_SYMBOL not defined');
         return null;

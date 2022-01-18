@@ -109,7 +109,10 @@ export async function stake(
 
     const stakingTokenContract = await getStakingTokenContract(library);
     const stakingTokenSigner = stakingTokenContract.connect(signer);
-    const approvedStatus = await stakingTokenSigner.approve(STAKING_CONTRACT, Number(amount));
+    const approvedStatus = await stakingTokenSigner.approve(
+        STAKING_CONTRACT,
+        Number(amount),
+    );
 
     if (approvedStatus) {
         const stakingSigner = contract.connect(signer);
@@ -117,7 +120,7 @@ export async function stake(
         const stakeId: number = await stakingSigner.stake(
             Number(amount),
             stakeType,
-            data ? data : "0x00",
+            data ? data : '0x00',
         );
         return stakeId;
     }

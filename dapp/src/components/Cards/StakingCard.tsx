@@ -282,7 +282,7 @@ export default function Staking() {
                                                 e.target.value.toString() || '',
                                             );
                                         } else {
-                                            setAmountToStake( '');
+                                            setAmountToStake('');
                                         }
                                     }}
                                     autoComplete="off"
@@ -454,7 +454,12 @@ const StakingInfoMSG = () => (
                     marginBottom: '20px',
                 }}
             />
-            <Typography variant="subtitle2" mb={3} fontSize={'14px'} fontWeight={'700'}>
+            <Typography
+                variant="subtitle2"
+                mb={3}
+                fontSize={'14px'}
+                fontWeight={'700'}
+            >
                 Staking will lock your tokens for 7+ days
             </Typography>
         </Box>

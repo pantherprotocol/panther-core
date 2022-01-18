@@ -87,7 +87,7 @@ describe('Reward Master', () => {
 
         before(async () => await deployRewardMaster());
 
-        it('should only let owner to add reward advisor ', async () => {
+        it('should only let owner to add reward adviser', async () => {
             await expect(
                 rewardMaster
                     .connect(owner)

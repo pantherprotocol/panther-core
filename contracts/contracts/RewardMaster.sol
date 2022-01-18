@@ -53,12 +53,15 @@ contract RewardMaster is
      *   tokenAmountEntitled = accumRewardPerShare * user.shares - user.offset
      *
      * This formula works since we update parameters as follows ...
+     *
      * - when a new reward token amount added to the Treasury:
      *   accumRewardPerShare += tokenAmountAdded / totalShares
+     *
      * - when new shares granted to a user:
      *   user.offset += sharesToCreate * accumRewardPerShare
      *   user.shares += sharesToCreate
      *   totalShares += sharesToCreate
+     *
      * - when shares redeemed to a user:
      *   redemptionRate = accumRewardPerShare - user.offset/user.shares
      *   user.offset -= user.offset/user.shares * sharesToRedeem

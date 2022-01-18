@@ -8,8 +8,8 @@ import "./utils/Utils.sol";
 
 /**
  * @title StakeRewardAdviser
- * @notice It "advices" to the "RewardMaster" on staking rewards ("shares").
- * @dev It acts as the "RewardAdviser" for the "RewardMaster": the latest calls
+ * @notice It "advises" the "RewardMaster" on staking rewards ("shares").
+ * @dev It acts as the "RewardAdviser" for the "RewardMaster": the latter calls
  * this contract to process messages from the "Staking" contract.
  */
 contract StakeRewardAdviser is StakingMsgProcessor, Utils, IRewardAdviser {

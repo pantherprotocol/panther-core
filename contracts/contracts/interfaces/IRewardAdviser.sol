@@ -13,7 +13,7 @@ interface IRewardAdviser {
         address sendRewardTo;
     }
 
-    function adviceReward(bytes4 action, bytes memory message)
+    function getRewardAdvice(bytes4 action, bytes memory message)
         external
         returns (Advice memory);
 }

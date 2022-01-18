@@ -152,7 +152,7 @@ contract RewardMaster is
         returns (bool success)
     {
         IRewardAdviser adviser = _getRewardAdviserOrRevert(msg.sender, action);
-        IRewardAdviser.Advice memory advice = adviser.adviceReward(
+        IRewardAdviser.Advice memory advice = adviser.getRewardAdvice(
             action,
             message
         );

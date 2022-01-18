@@ -117,7 +117,7 @@
 <text text-anchor="middle" x="2849.8335" y="-1468.5" font-family="Times,serif" font-size="14.00" fill="#000000"> </text>
 <polyline fill="none" stroke="#000000" points="2679.7233,-1460.3 3019.9437,-1460.3 "/>
 <text text-anchor="start" x="2687.7233" y="-1443.7" font-family="Times,serif" font-size="14.00" fill="#000000">External:</text>
-<text text-anchor="start" x="2687.7233" y="-1426.9" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;adviceReward(action: bytes4, message: bytes): Advice</text>
+<text text-anchor="start" x="2687.7233" y="-1426.9" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;getRewardAdvice(action: bytes4, message: bytes): Advice</text>
 </g>
 <!-- 0&#45;&gt;8 -->
 <g id="edge10" class="edge">
@@ -232,7 +232,7 @@
 <text text-anchor="start" x="1586.062" y="-582.1" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;&#160;FACTOR: uint256</text>
 <polyline fill="none" stroke="#000000" points="1578.062,-573.9 2039.605,-573.9 "/>
 <text text-anchor="start" x="1586.062" y="-557.3" font-family="Times,serif" font-size="14.00" fill="#000000">External:</text>
-<text text-anchor="start" x="1586.062" y="-540.5" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;&#160;&#160;adviceReward(action: bytes4, message: bytes): Advice</text>
+<text text-anchor="start" x="1586.062" y="-540.5" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;&#160;&#160;getRewardAdvice(action: bytes4, message: bytes): Advice</text>
 <text text-anchor="start" x="1586.062" y="-523.7" font-family="Times,serif" font-size="14.00" fill="#000000">Public:</text>
 <text text-anchor="start" x="1586.062" y="-506.9" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;&#160;&#160;constructor(stakeType: bytes4, stakeAmountToSharesScaledFactor: uint256)</text>
 </g>

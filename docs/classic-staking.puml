@@ -27,7 +27,7 @@ staker -> Staking ++ : ""stake()""
       'Staking -> SMP: _encodeStakeActionType()
       'return
       Staking -> rMaster ++ : ""onAction()""
-        rMaster -> adviser ++ : ""adviceReward()""
+        rMaster -> adviser ++ : ""getRewardAdvice()""
         return ""Advice""
         rMaster -> rMaster ++ : ""_grantShares()""
           rMaster -> rMaster ++ : ""_triggerVesting()""

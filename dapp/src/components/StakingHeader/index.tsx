@@ -11,6 +11,9 @@ import {
     formatAccountAddress,
     formatAccountBalance,
 } from '../../services/account';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Toolbar from '@mui/material/Toolbar';
 
 const StakingHeader = props => {
     const context = useWeb3React();
@@ -69,10 +72,56 @@ const StakingHeader = props => {
     return (
         <div className="staking-header">
             <div className="staking-main-header">
-                <div className="logo-holder">
-                    <a href="https://pantherprotocol.io">
-                        <img src={logo} alt="Logo" className="logo" />
-                    </a>
+                <div className="logo-navbar-holder">
+                    <div className="logo-holder">
+                        <a href="https://pantherprotocol.io">
+                            <img src={logo} alt="Logo" className="logo" />
+                        </a>
+                    </div>
+                    <Toolbar>
+                        <Grid container>
+                            <Grid
+                                item
+                                md={6}
+                                xs={12}
+                                display={'flex'}
+                                alignItems={'center'}
+                            >
+                                <Typography
+                                    className="nav-item active"
+                                    variant="subtitle2"
+                                >
+                                    <a href="https://pantherprotocol.io">
+                                        Staking
+                                    </a>
+                                </Typography>
+                                <Typography
+                                    className="nav-item"
+                                    variant="subtitle2"
+                                >
+                                    <a href="https://pantherprotocol.io">
+                                        Docs
+                                    </a>
+                                </Typography>
+                                <Typography
+                                    className="nav-item"
+                                    variant="subtitle2"
+                                >
+                                    <a href="https://pantherprotocol.io">
+                                        Governance
+                                    </a>
+                                </Typography>
+                                <Typography
+                                    className="nav-item"
+                                    variant="subtitle2"
+                                >
+                                    <a href="https://pantherprotocol.io">
+                                        Analytics
+                                    </a>
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    </Toolbar>
                 </div>
                 <div className={`header-right ${buttonActiveClass}`}>
                     {/* account details */}
@@ -104,6 +153,7 @@ const StakingHeader = props => {
                             />
                         </div>
                     )}
+
                     {wrongNetwork && (
                         <div className="address-btn">
                             <ConnectButton

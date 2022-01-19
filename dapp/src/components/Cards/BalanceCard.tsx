@@ -14,12 +14,13 @@ import * as accountService from '../../services/account';
 export const BalanceCard = () => {
     const context = useWeb3React();
     const {account, library} = context;
-    const [tokenBalance, setTokenBalance] = useState<string | null>(null);
-    const [stakedBalance, setStakedBalance] = useState<any>(null);
-    const [rewardsBalance, setRewardsBalance] = useState<string | null>(null);
+    const [tokenBalance, setTokenBalance] = useState<string | null>('0');
+    const [stakedBalance, setStakedBalance] = useState<any>('0');
+    const [rewardsBalance, setRewardsBalance] = useState<string | null>('0');
     const [tokenMarketPrice, setTokenMarketPrice] = useState<number | null>(
         null,
     );
+    const [tokenUSDValue, setTokenUSDValue] = useState<number | null>(null);
 
     const setZkpTokenBalance = async () => {
         const stakingTokenContract =
@@ -63,7 +64,11 @@ export const BalanceCard = () => {
 
     const getTokenMarketPrice = async () => {
         const price = await stakingService.getZKPMarketPrice();
-        setTokenMarketPrice(price);
+        if (price && tokenBalance && Number(tokenBalance) > 0) {
+            setTokenMarketPrice(price);
+            const tokenUSDValue: number = price * Number(tokenBalance);
+            setTokenUSDValue(tokenUSDValue);
+        }
     };
 
     useEffect(() => {
@@ -110,9 +115,8 @@ export const BalanceCard = () => {
                 </Typography>
                 <Typography
                     sx={{
-                        fontWeight: 400,
-                        fontStyle: 'normal',
-                        fontSize: '12px',
+                        fontWeight: 700,
+                        fontSize: '16px',
                         lineHeight: '42px',
                         marginLeft: '8px',
                     }}
@@ -120,7 +124,7 @@ export const BalanceCard = () => {
                     ZKP
                 </Typography>
             </Box>
-            {tokenMarketPrice && (
+            {tokenMarketPrice && tokenUSDValue && (
                 <Box display="flex" alignItems="baseline">
                     <Typography
                         sx={{
@@ -132,7 +136,7 @@ export const BalanceCard = () => {
                             marginBottom: '18px',
                         }}
                     >
-                        Approximately ${tokenMarketPrice}
+                        Approximately ${tokenUSDValue}
                     </Typography>
                 </Box>
             )}
@@ -145,12 +149,12 @@ export const BalanceCard = () => {
             <Box display="flex" alignItems="baseline">
                 <Typography
                     sx={{
-                        fontWeight: 400,
+                        fontWeight: 700,
                         fontStyle: 'normal',
-                        fontSize: '14px',
+                        fontSize: '16px',
                         lineHeight: '42px',
+                        marginRight: '4px',
                         opacity: 0.5,
-                        marginRight: '18px',
                     }}
                 >
                     Staked Balance
@@ -171,7 +175,7 @@ export const BalanceCard = () => {
                     sx={{
                         fontWeight: 800,
                         fontStyle: 'bold',
-                        fontSize: '22px',
+                        fontSize: '32px',
                         lineHeight: '42px',
                     }}
                 >
@@ -179,9 +183,8 @@ export const BalanceCard = () => {
                 </Typography>
                 <Typography
                     sx={{
-                        fontWeight: 400,
-                        fontStyle: 'normal',
-                        fontSize: '12px',
+                        fontWeight: 700,
+                        fontSize: '16px',
                         lineHeight: '42px',
                         marginLeft: '8px',
                     }}
@@ -196,11 +199,11 @@ export const BalanceCard = () => {
                         fontStyle: 'normal',
                         fontSize: '16px',
                         lineHeight: '42px',
-                        marginRight: '18px',
+                        marginRight: '4px',
                         opacity: 0.5,
                     }}
                 >
-                    Unclaim Reward balance
+                    Unclaimed Reward balance
                 </Typography>
                 <Typography>
                     <ErrorOutlineIcon
@@ -218,7 +221,7 @@ export const BalanceCard = () => {
                     sx={{
                         fontWeight: 800,
                         fontStyle: 'bold',
-                        fontSize: '22px',
+                        fontSize: '32px',
                         lineHeight: '42px',
                     }}
                 >
@@ -226,9 +229,8 @@ export const BalanceCard = () => {
                 </Typography>
                 <Typography
                     sx={{
-                        fontWeight: 400,
-                        fontStyle: 'normal',
-                        fontSize: '12px',
+                        fontWeight: 700,
+                        fontSize: '16px',
                         lineHeight: '42px',
                         marginLeft: '8px',
                     }}

@@ -13,8 +13,6 @@ import UnstakeTable from './UnstakeTable';
 import InputAdornment from '@mui/material/InputAdornment';
 import logo from '../../images/panther-logo.svg';
 import Input from '@mui/material/Input';
-// import MenuItem from '@mui/material/MenuItem';
-// import Select from '@mui/material/Select';
 import './styles.scss';
 import * as stakingService from '../../services/staking';
 import {useWeb3React} from '@web3-react/core';
@@ -29,9 +27,9 @@ const localStorage = window.localStorage;
 export default function Staking() {
     const context = useWeb3React();
     const {account, library} = context;
-    const [tokenBalance, setTokenBalance] = useState<string | null>(null);
-    const [stakedBalance, setStakedBalance] = useState<any>(null);
-    const [amountToStake, setAmountToStake] = useState<string | null>('');
+    const [tokenBalance, setTokenBalance] = useState<string | null>('0');
+    const [stakedBalance, setStakedBalance] = useState<any>('0');
+    const [amountToStake, setAmountToStake] = useState<string | null>('0');
     const [toggle, setToggle] = useState('stake');
     const [, setStakedId] = useState<number | null>(null);
 
@@ -74,6 +72,7 @@ export default function Staking() {
         const stakeType = '0x4ab0941a';
         const signer = library.getSigner(account).connectUnchecked();
         const stakeId = await stakingService.stake(
+            library,
             stakingContract,
             amount,
             stakeType,
@@ -267,9 +266,22 @@ export default function Staking() {
                                     }}
                                     value={amountToStake}
                                     onChange={e => {
-                                        setAmountToStake(
-                                            e.target.value.toString() || '0',
-                                        );
+                                        const regex = /^[0-9\b]+$/;
+                                        if (
+                                            tokenBalance &&
+                                            Number(tokenBalance) &&
+                                            Number(e.target.value) >
+                                                Number(tokenBalance) &&
+                                            regex.test(e.target.value)
+                                        ) {
+                                            setAmountToStake(tokenBalance);
+                                        } else if (regex.test(e.target.value)) {
+                                            setAmountToStake(
+                                                e.target.value.toString() || '',
+                                            );
+                                        } else {
+                                            setAmountToStake('');
+                                        }
                                     }}
                                     autoComplete="off"
                                     autoFocus={true}
@@ -330,7 +342,10 @@ export default function Staking() {
                                         }
                                     }}
                                 >
-                                    Stake {amountToStake ? amountToStake : ''}{' '}
+                                    Stake{' '}
+                                    {amountToStake && Number(amountToStake) > 0
+                                        ? amountToStake
+                                        : ''}{' '}
                                     ZKP
                                 </Button>
                             </Box>
@@ -437,14 +452,19 @@ const StakingInfoMSG = () => (
                     marginBottom: '20px',
                 }}
             />
-            <Typography variant="subtitle2" mb={3}>
+            <Typography
+                variant="subtitle2"
+                mb={3}
+                fontSize={'14px'}
+                fontWeight={'700'}
+            >
                 Staking will lock your tokens for 7+ days
             </Typography>
         </Box>
         <Typography
             variant="caption"
             color={'#73829e'}
-            fontSize={'13px'}
+            fontSize={'14px'}
             fontWeight={400}
         >
             You will need to unstake in order for your staked assets to be

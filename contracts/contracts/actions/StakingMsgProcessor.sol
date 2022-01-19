@@ -5,8 +5,8 @@ pragma solidity ^0.8.0;
 import "../interfaces/IStakingTypes.sol";
 
 abstract contract StakingMsgProcessor {
-    bytes4 internal constant STAKE_ACTION = bytes4(keccak256("staked"));
-    bytes4 internal constant UNSTAKE_ACTION = bytes4(keccak256("unstaked"));
+    bytes4 internal constant STAKE_ACTION = bytes4(keccak256("stake"));
+    bytes4 internal constant UNSTAKE_ACTION = bytes4(keccak256("unstake"));
 
     function _encodeStakeActionType(bytes4 stakeType)
         internal

@@ -63,7 +63,7 @@ easily accessible via extra API methods.
 In `zkp-token`, create a new vesting pool with a given recipient, and
 release some tokens to that recipient, by running:
 
-    yarn hardhat vest 0 $STAKING_TOKEN $VESTING_POOLS
+    yarn hardhat vest 0 $STAKING_TOKEN $VESTING_POOLS --network localhost
 
 where the variables are set or substituted appropriately for the
 corresponding addresses. Note that here `0` specifies the recipient as

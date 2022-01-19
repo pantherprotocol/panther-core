@@ -5,7 +5,12 @@ import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
 import {formatTokenBalance} from './account';
+import {JsonRpcSigner} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
+
+const toBN = (n: number): ethers.BigNumber => ethers.BigNumber.from(n);
+const e18 = toBN(10).pow(toBN(18)); //18 decimal places after floating point
+const CONFIRMATIONS_NUM = 1;
 
 const CoinGeckoClient = new CoinGecko();
 
@@ -95,22 +100,44 @@ export async function getStakedEventFromBlock(
 }
 
 export async function stake(
+    library: any,
     contract: ethers.Contract,
     amount: string,
     stakeType: string,
-    signer: any, //@TODO: Make signer type to be accepted here
+    signer: JsonRpcSigner,
     data?: any,
 ): Promise<number | null> {
     if (!contract) {
         return null;
     }
-    const stakingSigner = contract.connect(signer);
-    const stakeId: number = await stakingSigner.stake(
-        Number(amount),
-        stakeType,
-        data ? data : {},
+    const scaledAmount = toBN(Number(amount)).mul(e18);
+
+    const stakingTokenContract = await getStakingTokenContract(library);
+    const stakingTokenSigner = stakingTokenContract.connect(signer);
+
+    const approvedStatus = await stakingTokenSigner.approve(
+        STAKING_CONTRACT,
+        scaledAmount,
     );
-    return stakeId;
+    await approvedStatus.wait(CONFIRMATIONS_NUM);
+    if (approvedStatus) {
+        const stakingSigner = contract.connect(signer);
+        console.log(
+            'Scaled amount: ',
+            scaledAmount.toString(),
+            'amount: ',
+            amount,
+        );
+
+        const stakeId: number = await stakingSigner.stake(
+            scaledAmount,
+            stakeType,
+            data ? data : '0x00',
+        );
+        return stakeId;
+    }
+
+    return null;
 }
 
 export async function unstake(
@@ -163,7 +190,7 @@ export async function getStakingTransactionsNumber(
 }
 
 export async function getZKPMarketPrice(): Promise<number | null> {
-    const symbol = process.env.TOKEN_SYMBOL;
+    const symbol = TOKEN_SYMBOL;
     if (!symbol) {
         console.warn('TOKEN_SYMBOL not defined');
         return null;

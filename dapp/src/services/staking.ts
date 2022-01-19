@@ -8,6 +8,10 @@ import {formatTokenBalance} from './account';
 import {JsonRpcSigner} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
 
+const toBN = (n: number): ethers.BigNumber => ethers.BigNumber.from(n);
+const e18 = toBN(10).pow(toBN(18)); //18 decimal places after floating point
+const CONFIRMATIONS_NUM = 1;
+
 const CoinGeckoClient = new CoinGecko();
 
 export const STAKING_CONTRACT = process.env.STAKING_CONTRACT;
@@ -106,19 +110,27 @@ export async function stake(
     if (!contract) {
         return null;
     }
+    const scaledAmount = toBN(Number(amount)).mul(e18);
 
     const stakingTokenContract = await getStakingTokenContract(library);
     const stakingTokenSigner = stakingTokenContract.connect(signer);
+
     const approvedStatus = await stakingTokenSigner.approve(
         STAKING_CONTRACT,
-        Number(amount),
+        scaledAmount,
     );
-
+    await approvedStatus.wait(CONFIRMATIONS_NUM);
     if (approvedStatus) {
         const stakingSigner = contract.connect(signer);
+        console.log(
+            'Scaled amount: ',
+            scaledAmount.toString(),
+            'amount: ',
+            amount,
+        );
 
         const stakeId: number = await stakingSigner.stake(
-            Number(amount),
+            scaledAmount,
             stakeType,
             data ? data : '0x00',
         );

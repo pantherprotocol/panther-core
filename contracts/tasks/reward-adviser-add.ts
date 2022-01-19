@@ -13,11 +13,18 @@ task(
     );
     const staking = await hre.ethers.getContract('Staking');
     const rewardMaster = await hre.ethers.getContract('RewardMaster');
-    const hash4bytes = (s: string) => utils.id(s).slice(2, 10);
+    const hash4bytes = (s: string) => utils.arrayify(utils.id(s)).slice(0, 4);
+    const stakeType = hash4bytes('classic');
 
     for await (const action of ['stake', 'unstake']) {
-        const actionType =
-            '0x' + hash4bytes(hash4bytes(action) + hash4bytes('classic'));
+        const actionHash = hash4bytes(action);
+        console.log('Action hash:', utils.hexlify(actionHash));
+        console.log('Classic: ', utils.hexlify(stakeType));
+
+        const actionType = utils
+            .keccak256(utils.concat([actionHash, stakeType]))
+            .slice(0, 10);
+        console.log('Action type: ', actionType);
 
         const tx = await rewardMaster.addRewardAdviser(
             staking.address,

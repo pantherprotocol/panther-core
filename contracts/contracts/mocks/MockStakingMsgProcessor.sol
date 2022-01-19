@@ -26,7 +26,7 @@ contract MockStakingMsgProcessor is StakingMsgProcessor {
         address staker,
         IStakingTypes.Stake memory stake,
         bytes calldata data
-    ) internal pure returns (bytes memory) {
+    ) external pure returns (bytes memory) {
         return _packStakingActionMsg(staker, stake, data);
     }
 

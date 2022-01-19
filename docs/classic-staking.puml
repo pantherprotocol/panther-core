@@ -5,10 +5,13 @@ title **Classic staking**
 
 'autonumber
 
+<style>
+</style>
+
 hide footbox
 actor "Staker" as staker
 
-box "Smart Contracts on Mainet" #LightBlue
+box "Smart Contracts on Mainet"
   database "Staking\n" as Staking
   'database "StakingMsgProcessor\n" as SMP
   database "RewardMaster\n" as rMaster
@@ -22,20 +25,28 @@ staker -> Staking ++ : ""stake()""
   Staking -> Staking ++ : ""_createStake()""
     Staking -> ZKP ++ : ""transferFrom()""
     deactivate
-    Staking -> Staking ++ : ""_sendStakedMsg()""
-    note right: ""if (_terms.isRewarded)""
-      'Staking -> SMP: _encodeStakeActionType()
-      'return
-      Staking -> rMaster ++ : ""onAction()""
-        rMaster -> adviser ++ : ""getRewardAdvice()""
-        return ""Advice""
-        rMaster -> rMaster ++ : ""_grantShares()""
-          rMaster -> rMaster ++ : ""_triggerVesting()""
-            rMaster -> rPool ++ : ""vestRewards()""
-              rPool -> rPool ++ : ""_releasableAmount()""
-                rPool -> vPools ++ : ""releasableAmount(poolId)""
+    opt ""if (_terms.isRewarded)""
+      Staking -> Staking ++ : ""_sendStakedMsg()""
+        'Staking -> SMP: _encodeStakeActionType()
+        'return
+        Staking -> rMaster ++ : ""onAction()""
+          rMaster -> adviser ++ : ""getRewardAdvice()""
+          return ""Advice""
+          rMaster -> rMaster ++ : ""_grantShares()""
+            rMaster -> rMaster ++ : ""_triggerVesting()""
+              rMaster -> rPool ++ : ""vestRewards()""
+                rPool -> rPool ++ : ""_releasableAmount()""
+                  rPool -> vPools ++ : ""releasableAmount(poolId)""
+                  return ""amount""
                 return ""amount""
-              return ""amount""
-              rPool -> vPools ++ : ""releaseTo()""
-                vPools -> ZKP ++ : ""transfer()""\n""or mint()""
+                rPool -> vPools ++ : ""releaseTo()""
+                  vPools -> ZKP ++ : ""transfer()""\n""or mint()""
+                  deactivate
+                deactivate
+              deactivate
+            deactivate
+          deactivate
+        deactivate
+      deactivate
+    end
 @enduml

@@ -36,6 +36,10 @@ sequenceDiagram {
   RoundCorner 20
   FontMargin 50
 
+  actor {
+    FontColor white
+  }
+
   box {
     BackGroundColor #282f3a
     LineThickness 1.0
@@ -48,6 +52,7 @@ sequenceDiagram {
 
   database {
     'BackGroundColor #205bea
+    FontColor white
   }
 
   arrow {

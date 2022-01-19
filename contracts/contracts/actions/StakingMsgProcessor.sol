@@ -41,7 +41,9 @@ abstract contract StakingMsgProcessor {
             );
     }
 
-    function _unpackStakingActionMsg(bytes memory)
+    // For efficiency we use "packed" (rather than "ABI") encoding.
+    // It results in shorter data, but requires custom unpack function.
+    function _unpackStakingActionMsg(bytes memory message)
         internal
         pure
         returns (
@@ -50,15 +52,37 @@ abstract contract StakingMsgProcessor {
             uint32 id,
             uint32 stakedAt,
             uint32 lockedTill,
-            uint32 claimedAt
+            uint32 claimedAt,
+            bytes memory data
         )
     {
-        // FIXME: replace mock code
-        staker = address(0);
-        amount = 0;
-        id = 0;
-        stakedAt = 0;
-        lockedTill = 0;
-        claimedAt = 0;
+        // staker, amount, id and 3 timestamps occupy exactly 48 bytes
+        // (`data` may be of zero length)
+        require(message.length >= 48, "SMP: unexpected msg length");
+
+        uint256 stakerAndAmount;
+        uint256 idAndStamps;
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            // the 1st word (32 bytes) contains the `message.length`
+            // we need the (entire) 2nd word ..
+            stakerAndAmount := mload(add(message, 0x20))
+            // .. and (16 bytes of) the 3rd word
+            idAndStamps := mload(add(message, 0x40))
+        }
+
+        staker = address(uint160(stakerAndAmount >> 96));
+        amount = uint96(stakerAndAmount & 0xFFFFFFFFFFFFFFFFFFFFFFFF);
+
+        id = uint32((idAndStamps >> 224) & 0xFFFFFFFF);
+        stakedAt = uint32((idAndStamps >> 192) & 0xFFFFFFFF);
+        lockedTill = uint32((idAndStamps >> 160) & 0xFFFFFFFF);
+        claimedAt = uint32((idAndStamps >> 128) & 0xFFFFFFFF);
+
+        uint256 dataLength = message.length - 48;
+        data = new bytes(dataLength);
+        for (uint256 i = 0; i < dataLength; i++) {
+            data[i] = message[i + 48];
+        }
     }
 }

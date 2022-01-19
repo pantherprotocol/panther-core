@@ -13,8 +13,6 @@ import UnstakeTable from './UnstakeTable';
 import InputAdornment from '@mui/material/InputAdornment';
 import logo from '../../images/panther-logo.svg';
 import Input from '@mui/material/Input';
-// import MenuItem from '@mui/material/MenuItem';
-// import Select from '@mui/material/Select';
 import './styles.scss';
 import * as stakingService from '../../services/staking';
 import {useWeb3React} from '@web3-react/core';

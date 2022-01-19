@@ -78,13 +78,6 @@ export const BalanceCard = () => {
         getTokenMarketPrice();
     });
 
-    useEffect(() => {
-        setZkpTokenBalance();
-        getStakedZkpBalance();
-        getUnclaimedRewardsBalance();
-        getTokenMarketPrice();
-    }, [tokenBalance, stakedBalance, rewardsBalance, tokenMarketPrice]);
-
     return (
         <Card
             sx={{

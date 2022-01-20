@@ -2,6 +2,14 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task} from 'hardhat/config';
 import {utils} from 'ethers';
 
+import {
+    hash4bytesArray,
+    classicActionHash,
+    CLASSIC,
+    STAKE,
+    UNSTAKE,
+} from '../lib/hash';
+
 const TASK_ADVISER_ADD = 'adviser:add';
 
 task(
@@ -13,17 +21,14 @@ task(
     );
     const staking = await hre.ethers.getContract('Staking');
     const rewardMaster = await hre.ethers.getContract('RewardMaster');
-    const hash4bytes = (s: string) => utils.arrayify(utils.id(s)).slice(0, 4);
-    const stakeType = hash4bytes('classic');
+    const stakeType = hash4bytesArray(CLASSIC);
 
-    for await (const action of ['stake', 'unstake']) {
-        const actionHash = hash4bytes(action);
+    for await (const action of [STAKE, UNSTAKE]) {
+        const actionHash = hash4bytesArray(action);
         console.log('Action hash:', utils.hexlify(actionHash));
         console.log('Classic: ', utils.hexlify(stakeType));
 
-        const actionType = utils
-            .keccak256(utils.concat([actionHash, stakeType]))
-            .slice(0, 10);
+        const actionType = classicActionHash(action);
         console.log('Action type: ', actionType);
 
         const tx = await rewardMaster.addRewardAdviser(

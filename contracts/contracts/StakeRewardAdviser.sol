@@ -37,7 +37,7 @@ contract StakeRewardAdviser is StakingMsgProcessor, Utils, IRewardAdviser {
         override
         returns (Advice memory)
     {
-        (address staker, uint96 amount, , , , ) = _unpackStakingActionMsg(
+        (address staker, uint96 amount, , , , , ) = _unpackStakingActionMsg(
             message
         );
         require(staker != address(0), "PSA: unexpected zero staker");

@@ -82,7 +82,7 @@ describe('Reward Master', () => {
         });
     });
 
-    describe('Add/Remove advisor', () => {
+    describe('Add/Remove adviser', () => {
         const action = ethers.utils.id('STAKE').slice(0, 10); // bytes4
 
         before(async () => await deployRewardMaster());
@@ -118,7 +118,7 @@ describe('Reward Master', () => {
             ).revertedWith('ImmOwn: unauthorized');
         });
 
-        it('should only let owner to remove reward advisor', async () => {
+        it('should only let owner to remove reward adviser', async () => {
             await expect(
                 rewardMaster
                     .connect(owner)
@@ -171,7 +171,7 @@ describe('Reward Master', () => {
                 rewardPool.vestRewards.returns(vestedRewards);
                 rewardToken.balanceOf.returns(vestedRewards);
 
-                // add reward advisor
+                // add reward adviser
                 await rewardMaster
                     .connect(owner)
                     .addRewardAdviser(
@@ -379,7 +379,7 @@ describe('Reward Master', () => {
                 rewardPool.vestRewards.returns(vestedRewards);
                 rewardToken.transfer.returns(true);
 
-                // add reward advisor
+                // add reward adviser
                 await rewardMaster
                     .connect(owner)
                     .addRewardAdviser(
@@ -571,7 +571,7 @@ describe('Reward Master', () => {
             await deployRewardMaster();
             rewardPool.releasableAmount.returns(releasableAmount);
 
-            // add reward advisor
+            // add reward adviser
             await rewardMaster
                 .connect(owner)
                 .addRewardAdviser(

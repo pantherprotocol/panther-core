@@ -1,6 +1,13 @@
 import {ethers} from 'hardhat';
 import {expect} from 'chai';
 import {MockStakingMsgProcessor} from '../types/contracts';
+import {
+    hash4bytes,
+    classicActionHash,
+    CLASSIC,
+    STAKE,
+    UNSTAKE,
+} from '../lib/hash';
 
 const sampleStaker = '0xc0fec0fec0fec0fec0fec0fec0fec0fec0fec0fe';
 const sampleStake = {
@@ -38,8 +45,10 @@ describe('StakingMsgProcessor', () => {
     describe('internal _encodeStakeActionType function', () => {
         it('should return expected encoded action type for given input', async () => {
             expect(
-                await mockProcessor.internalEncodeStakeActionType('0x4ab0941a'),
-            ).to.equal('0x132be268');
+                await mockProcessor.internalEncodeStakeActionType(
+                    hash4bytes(CLASSIC),
+                ),
+            ).to.equal(classicActionHash(STAKE));
         });
     });
 
@@ -47,9 +56,9 @@ describe('StakingMsgProcessor', () => {
         it('should return expected encoded action type for given input', async () => {
             expect(
                 await mockProcessor.internalEncodeUnstakeActionType(
-                    '0x4ab0941a',
+                    hash4bytes(CLASSIC),
                 ),
-            ).to.equal('0x16cdda67');
+            ).to.equal(classicActionHash(UNSTAKE));
         });
     });
 

@@ -1,14 +1,13 @@
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
-import {smock, MockContract, FakeContract} from '@defi-wonderland/smock';
-import {BaseContract} from 'ethers';
+import {smock, FakeContract} from '@defi-wonderland/smock';
+import {BaseContract, Contract, utils} from 'ethers';
 import chai from 'chai';
-import {expectRevert, time} from '@openzeppelin/test-helpers';
+import {time} from '@openzeppelin/test-helpers';
 import {ethers} from 'hardhat';
 
 import {hash4bytes, classicActionHash, CLASSIC, STAKE} from '../lib/hash';
 
 const expect = chai.expect;
-const {utils} = ethers;
 
 chai.should(); // if you like should syntax
 chai.use(smock.matchers);
@@ -18,11 +17,11 @@ const stakeType = hash4bytes(CLASSIC);
 describe('Staking Contract', async () => {
     let provider: any;
     let rewardPool: FakeContract<BaseContract>;
-    let rewardToken: MockContract<BaseContract>;
+    let rewardToken: Contract;
     let rewardAdviser: FakeContract<BaseContract>;
-    let stakingToken: MockContract<BaseContract>;
-    let ctRewardMaster: MockContract<BaseContract>;
-    let ctStaking: MockContract<BaseContract>;
+    let stakingToken: Contract;
+    let ctRewardMaster: Contract;
+    let ctStaking: Contract;
     let startBlock: number;
     let owner: SignerWithAddress,
         alice: SignerWithAddress,
@@ -135,10 +134,9 @@ describe('Staking Contract', async () => {
         });
 
         it('reverts when stakeType is invalid', async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.stake(0, '0x00000001', 0x0),
-                'Staking: Terms unknown or disabled',
-            );
+            ).to.be.revertedWith('Staking: Terms unknown or disabled');
         });
 
         it('amount allocation should be equal', async () => {
@@ -184,20 +182,18 @@ describe('Staking Contract', async () => {
         });
 
         it('reverts when no stake was claimed', async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.delegate(0, wallet2.address),
-                'Staking: Stake claimed',
-            );
+            ).to.be.revertedWith('Staking: Stake claimed');
         });
 
         it('reverts when it is delegated to global account', async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.delegate(
                     0,
                     '0x0000000000000000000000000000000000000000',
                 ),
-                "Staking: Can't delegate to GLOBAL_ACCOUNT",
-            );
+            ).to.be.revertedWith("Staking: Can't delegate to GLOBAL_ACCOUNT");
         });
 
         it('delegation to empty account', async () => {
@@ -371,87 +367,78 @@ describe('Staking Contract', async () => {
         const stakeType1 = '0x4ab0941b';
 
         it("reverts if it's called by not owner", async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.connect(wallet1).addTerms(stakeType1, term1),
-                'ImmOwn: unauthorized',
-            );
+            ).to.be.revertedWith('ImmOwn: unauthorized');
         });
 
         it("reverts if it's trying to add existing terms", async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.addTerms(stakeType, term1),
-                'Staking:E1',
-            );
+            ).to.be.revertedWith('Staking:E1');
         });
 
         it('reverts if isEnabled is false', async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.addTerms(stakeType1, {...term1, isEnabled: false}),
-                'Staking:E2',
-            );
+            ).to.be.revertedWith('Staking:E2');
         });
 
         it('reverts if allowedSince is less than current timestamp', async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.addTerms(stakeType1, {
                     ...term1,
                     allowedSince: utils.hexZeroPad('0x01', 32),
                 }),
-                'Staking:E3',
-            );
+            ).to.be.revertedWith('Staking:E3');
         });
 
         it('reverts if allowedTill is less than current timestamp', async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.addTerms(stakeType1, {
                     ...term1,
                     allowedTill: utils.hexZeroPad('0x01', 32),
                 }),
-                'Staking:E4',
-            );
+            ).to.be.revertedWith('Staking:E4');
         });
 
         it('reverts if maxAmountScaled is less than minAmountScaled', async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.addTerms(stakeType1, {
                     ...term1,
                     maxAmountScaled: utils.hexZeroPad('0x11', 32),
                     minAmountScaled: utils.hexZeroPad('0x22', 32),
                 }),
-                'Staking:E5',
-            );
+            ).to.be.revertedWith('Staking:E5');
         });
 
         it('reverts if two lock time parameters are non-zero', async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.addTerms(stakeType1, {
                     ...term1,
                     minLockPeriod: utils.hexZeroPad('0x00', 32),
                     lockedTill: utils.hexZeroPad('0x1E', 32),
                     exactLockPeriod: utils.hexZeroPad('0x1E', 32),
                 }),
-                'Staking:E6',
-            );
+            ).to.be.revertedWith('Staking:E6');
 
-            await expectRevert(
+            await expect(
                 ctStaking.addTerms(stakeType1, {
                     ...term1,
                     minLockPeriod: utils.hexZeroPad('0x00', 32),
                     lockedTill: utils.hexZeroPad('0x1E', 32),
                     exactLockPeriod: utils.hexZeroPad('0x00', 32),
                 }),
-                'Staking:E7',
-            );
+            ).to.be.revertedWith('Staking:E7');
 
-            await expectRevert(
+            await expect(
                 ctStaking.addTerms(stakeType1, {
                     ...term1,
                     minLockPeriod: utils.hexZeroPad('0x1E', 32),
                     lockedTill: utils.hexZeroPad('0x00', 32),
                     exactLockPeriod: utils.hexZeroPad('0x1E', 32),
                 }),
-                'Staking:E8',
-            );
+            ).to.be.revertedWith('Staking:E8');
         });
 
         it('terms should be added properly', async () => {
@@ -473,29 +460,25 @@ describe('Staking Contract', async () => {
         const stakeType1 = '0x4ab0941b';
 
         it("reverts if it's called by not owner", async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.connect(wallet1).disableTerms(stakeType1),
-                'ImmOwn: unauthorized',
-            );
+            ).to.be.revertedWith('ImmOwn: unauthorized');
         });
 
         it('reverts if it try to disable non-existing terms', async () => {
-            await expectRevert(
+            await expect(
                 ctStaking.disableTerms('0x4ab0941c'),
-                'Staking:E9',
-            );
+            ).to.be.revertedWith('Staking:E9');
         });
 
         it('disable terms should set isEnabled to false', async () => {
             await ctStaking.disableTerms(stakeType1);
-            await expect((await ctStaking.terms(stakeType1)).isEnabled).to.eq(
-                false,
-            );
+            const terms = await ctStaking.terms(stakeType1);
+            expect(terms.isEnabled).to.eq(false);
         });
 
         it('reverts if it try to disable disabled term', async () => {
-            await expectRevert(
-                ctStaking.disableTerms(stakeType1),
+            await expect(ctStaking.disableTerms(stakeType1)).to.be.revertedWith(
                 'Staking:EA',
             );
         });

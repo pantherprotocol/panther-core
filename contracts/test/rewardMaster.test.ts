@@ -82,7 +82,7 @@ describe('Reward Master', () => {
         });
     });
 
-    describe('Add/Remove advisor', () => {
+    describe('Add/Remove adviser', () => {
         const action = ethers.utils.id('STAKE').slice(0, 10); // bytes4
 
         before(async () => await deployRewardMaster());
@@ -118,7 +118,7 @@ describe('Reward Master', () => {
             ).revertedWith('ImmOwn: unauthorized');
         });
 
-        it('should only let owner to remove reward advisor', async () => {
+        it('should only let owner to remove reward adviser', async () => {
             await expect(
                 rewardMaster
                     .connect(owner)
@@ -171,7 +171,7 @@ describe('Reward Master', () => {
                 rewardPool.vestRewards.returns(vestedRewards);
                 rewardToken.balanceOf.returns(vestedRewards);
 
-                // add reward advisor
+                // add reward adviser
                 await rewardMaster
                     .connect(owner)
                     .addRewardAdviser(
@@ -190,7 +190,7 @@ describe('Reward Master', () => {
             it('should grant shares to the first user (user_1)', async () => {
                 stakeAdvice.createSharesFor = user_1.address;
 
-                rewardAdviser.adviceReward.returns(stakeAdvice);
+                rewardAdviser.getRewardAdvice.returns(stakeAdvice);
 
                 await expect(
                     rewardMaster.connect(oracle).onAction(action, message),
@@ -217,7 +217,7 @@ describe('Reward Master', () => {
             it('should grant shares to the second user (user_2) and vest tokens to contract', async () => {
                 stakeAdvice.createSharesFor = user_2.address;
 
-                rewardAdviser.adviceReward.returns(stakeAdvice);
+                rewardAdviser.getRewardAdvice.returns(stakeAdvice);
 
                 const initialTotalShares = await rewardMaster.totalShares();
 
@@ -262,7 +262,7 @@ describe('Reward Master', () => {
 
                 stakeAdvice.createSharesFor = user_3.address;
 
-                rewardAdviser.adviceReward.returns(stakeAdvice);
+                rewardAdviser.getRewardAdvice.returns(stakeAdvice);
 
                 const initialTotalShares = await rewardMaster.totalShares();
 
@@ -296,7 +296,7 @@ describe('Reward Master', () => {
 
                 stakeAdvice.createSharesFor = user_4.address;
 
-                rewardAdviser.adviceReward.returns(stakeAdvice);
+                rewardAdviser.getRewardAdvice.returns(stakeAdvice);
 
                 const initialTotalShares = await rewardMaster.totalShares();
 
@@ -339,7 +339,7 @@ describe('Reward Master', () => {
                     sharesToRedeem: BigNumber.from(0),
                     sendRewardTo: ethers.constants.AddressZero,
                 };
-                rewardAdviser.adviceReward.returns(advice);
+                rewardAdviser.getRewardAdvice.returns(advice);
 
                 const {shares: oldShares, offset: oldOffset} =
                     await rewardMaster.records(advice.createSharesFor);
@@ -379,7 +379,7 @@ describe('Reward Master', () => {
                 rewardPool.vestRewards.returns(vestedRewards);
                 rewardToken.transfer.returns(true);
 
-                // add reward advisor
+                // add reward adviser
                 await rewardMaster
                     .connect(owner)
                     .addRewardAdviser(
@@ -402,7 +402,7 @@ describe('Reward Master', () => {
                 const users = [user_1, user_2, user_3, user_4];
                 for (let i = 0; i < users.length; i++) {
                     stakedAdvice.createSharesFor = users[i].address;
-                    rewardAdviser.adviceReward.returns(stakedAdvice);
+                    rewardAdviser.getRewardAdvice.returns(stakedAdvice);
 
                     rewardToken.balanceOf.returns(vestedRewards.mul(i));
 
@@ -418,7 +418,7 @@ describe('Reward Master', () => {
                 unstakedAdvice.redeemSharesFrom = user_1.address;
                 unstakedAdvice.sendRewardTo = user_1.address;
 
-                rewardAdviser.adviceReward.returns(unstakedAdvice);
+                rewardAdviser.getRewardAdvice.returns(unstakedAdvice);
 
                 const accumRewardPerShare =
                     await rewardMaster.accumRewardPerShare();
@@ -468,7 +468,7 @@ describe('Reward Master', () => {
                     .mul(9)
                     .div(10); // 0.9 of the shares
 
-                rewardAdviser.adviceReward.returns(unstakedAdvice);
+                rewardAdviser.getRewardAdvice.returns(unstakedAdvice);
 
                 const accumRewardPerShare =
                     await rewardMaster.accumRewardPerShare();
@@ -517,7 +517,7 @@ describe('Reward Master', () => {
                 unstakedAdvice.sendRewardTo = user_2.address;
                 unstakedAdvice.sharesToRedeem = shares;
 
-                rewardAdviser.adviceReward.returns(unstakedAdvice);
+                rewardAdviser.getRewardAdvice.returns(unstakedAdvice);
 
                 const accumRewardPerShare =
                     await rewardMaster.accumRewardPerShare();
@@ -571,7 +571,7 @@ describe('Reward Master', () => {
             await deployRewardMaster();
             rewardPool.releasableAmount.returns(releasableAmount);
 
-            // add reward advisor
+            // add reward adviser
             await rewardMaster
                 .connect(owner)
                 .addRewardAdviser(
@@ -594,7 +594,7 @@ describe('Reward Master', () => {
             const users = [user_1, user_2, user_3, user_4];
             for (let i = 0; i < users.length; i++) {
                 stakedAdvice.createSharesFor = users[i].address;
-                rewardAdviser.adviceReward.returns(stakedAdvice);
+                rewardAdviser.getRewardAdvice.returns(stakedAdvice);
 
                 rewardToken.balanceOf.returns(vestedRewards.mul(i));
 
@@ -667,7 +667,7 @@ describe('Reward Master', () => {
                 );
 
             // create shares for users
-            rewardAdviser.adviceReward.returns({
+            rewardAdviser.getRewardAdvice.returns({
                 createSharesFor: user_1.address,
                 sharesToCreate: BigNumber.from(1000),
                 redeemSharesFrom: ethers.constants.AddressZero,

@@ -8,8 +8,8 @@ import "./utils/Utils.sol";
 
 /**
  * @title StakeRewardAdviser
- * @notice It "advices" to the "RewardMaster" on staking rewards ("shares").
- * @dev It acts as the "RewardAdviser" for the "RewardMaster": the latest calls
+ * @notice It "advises" the "RewardMaster" on staking rewards ("shares").
+ * @dev It acts as the "RewardAdviser" for the "RewardMaster": the latter calls
  * this contract to process messages from the "Staking" contract.
  */
 contract StakeRewardAdviser is StakingMsgProcessor, Utils, IRewardAdviser {
@@ -31,7 +31,7 @@ contract StakeRewardAdviser is StakingMsgProcessor, Utils, IRewardAdviser {
         FACTOR = stakeAmountToSharesScaledFactor;
     }
 
-    function adviceReward(bytes4 action, bytes memory message)
+    function getRewardAdvice(bytes4 action, bytes memory message)
         external
         view
         override

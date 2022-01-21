@@ -16,6 +16,8 @@ yarn.lock
 .yarn-cache
 *.orig
 *.png
+*.puml
+plantuml.skin
 *.svg
 .env
 .env.*

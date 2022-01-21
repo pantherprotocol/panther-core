@@ -60,6 +60,11 @@ easily accessible via extra API methods.
 
 ## Seeding smart contracts with data
 
+### Vesting and releasing ZKP for staking
+
+In order to test staking, we need an account which has $ZKP tokens
+available for staking.
+
 In `zkp-token`, create a new vesting pool with a given recipient, and
 release some tokens to that recipient, by running:
 
@@ -70,6 +75,28 @@ corresponding addresses. Note that here `0` specifies the recipient as
 the first signer in the array of Hardhat-provided signers obtained via
 `hre.ethers.getSigners()`. However instead of passing an index to that
 array, you can also pass a normal wallet address.
+
+### Register the classic staking type
+
+We need to call `addTerms()` on the `Staking` contract to register
+the `classic` type of staking with appropriate terms. There is a Hardhat
+task which makes this easy:
+
+    yarn hardhat terms:add --network localhost
+
+### Register the reward adviser for staking and unstaking
+
+Next we need to register the `StakeRewardAdviser` contract as the reward
+adviser for the `stake` and `unstake` actions of `classic` staking. Again
+there is a Hardhat task for this:
+
+    yarn hardhat adviser:add --network localhost
+
+If this is not done, when attempting to stake you will get an `ACM:E4`
+error. If it is done incorrectly, when attempting to stake the
+transaction will revert with no error, as a result of trying to call
+`getRewardAdvice()` on an address which does not implement the
+`IRewardAdviser` interface.
 
 ## Setting up the frontend
 

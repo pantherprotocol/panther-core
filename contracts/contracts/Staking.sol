@@ -17,7 +17,7 @@ import "./utils/Utils.sol";
  * user "voting power" on the basis of tokens users stake.
  * It acts as the "ActionOracle" for the "RewardMaster": if stake terms presume
  * rewarding, it sends "messages" on stakes made and stakes claimed to the
- * "RewardMaster" contract, that rewards stakers.
+ * "RewardMaster" contract which rewards stakers.
  * It supports multiple types of stakes (terms), which the owner may add or
  * remove without contract code upgrades.
  */

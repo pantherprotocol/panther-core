@@ -2,9 +2,9 @@ import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {smock, FakeContract} from '@defi-wonderland/smock';
 import {BaseContract, Contract, utils} from 'ethers';
 import chai from 'chai';
-import {time} from '@openzeppelin/test-helpers';
 import {ethers} from 'hardhat';
 
+import {increaseTime} from './helpers/hardhatHelpers';
 import {hash4bytes, classicActionHash, CLASSIC, STAKE} from '../lib/hash';
 
 const expect = chai.expect;
@@ -154,7 +154,7 @@ describe('Staking Contract', async () => {
 
     describe('unstake()', function () {
         before(async function () {
-            await time.increase(3600);
+            await increaseTime(3600);
             await ctStaking.unstake(0, 0x0, true);
         });
 
@@ -283,7 +283,7 @@ describe('Staking Contract', async () => {
             await ctStaking.connect(wallet3).stake(400, stakeType, 0x0);
             // stake 4
             await ctStaking.connect(wallet3).stake(500, stakeType, 0x0);
-            await time.increase(3600);
+            await increaseTime(3600);
             await expect(await ctStaking.snapshotLength(wallet3.address)).to.eq(
                 5,
             );

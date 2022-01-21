@@ -71,11 +71,6 @@ describe('Reward Master', () => {
             expect(ownerAddress).to.equal(owner.address);
         });
 
-        it('should get timestamp of start block', async () => {
-            const startBlockLocal = await rewardMaster.START_BLOCK();
-            expect(startBlockLocal).to.equal(startBlock);
-        });
-
         it('should get the block that contract deployed in', async () => {
             const startBlockLocal = await rewardMaster.START_BLOCK();
             expect(startBlockLocal).to.equal(startBlock);
@@ -362,15 +357,20 @@ describe('Reward Master', () => {
                 BigNumber.from(10).pow(18),
             ); // 20e18: 20 ZKP tokens
 
-            const unstakedAdvice = {
+            const convertAmountToShares = (amount: BigNumber) =>
+                amount.mul(amountToShareScaledFactor).div(shareScale);
+
+            const getUnstakedAdvice = (
+                redeemSharesFrom: string,
+                sendRewardTo: string,
+                sharesToRedeem: BigNumber,
+            ) => ({
                 createSharesFor: ethers.constants.AddressZero,
                 sharesToCreate: BigNumber.from(0),
-                redeemSharesFrom: 'replace_recipient_address_here',
-                sharesToRedeem: amountToStake
-                    .mul(amountToShareScaledFactor)
-                    .div(shareScale),
-                sendRewardTo: 'replace_recipient_address_here',
-            };
+                redeemSharesFrom,
+                sharesToRedeem,
+                sendRewardTo,
+            });
 
             before(async () => {
                 await deployRewardMaster();
@@ -415,8 +415,11 @@ describe('Reward Master', () => {
             });
 
             it('should redeem shares of the user who has been granted shares', async () => {
-                unstakedAdvice.redeemSharesFrom = user_1.address;
-                unstakedAdvice.sendRewardTo = user_1.address;
+                const unstakedAdvice = getUnstakedAdvice(
+                    user_1.address,
+                    user_1.address,
+                    convertAmountToShares(amountToStake),
+                );
 
                 rewardAdviser.getRewardAdvice.returns(unstakedAdvice);
 
@@ -444,12 +447,19 @@ describe('Reward Master', () => {
                     await rewardMaster.records(user_1.address);
                 const lastBalance = await rewardMaster.lastBalance();
 
-                expect(await rewardMaster.totalShares()).to.be.eq(
-                    totalShares.sub(shares),
+                expect(
+                    await rewardMaster.totalShares(),
+                    'totalShares',
+                ).to.be.eq(totalShares.sub(shares));
+                expect(updatedShares, 'updatedShares').to.be.eq(
+                    BigNumber.from(0),
                 );
-                expect(updatedShares).to.be.eq(BigNumber.from(0));
-                expect(updatedOffset).to.be.eq(BigNumber.from(0));
-                expect(lastBalance).to.be.eq(oldLastBalance.sub(reward));
+                expect(updatedOffset, 'updatedOffset').to.be.eq(
+                    BigNumber.from(0),
+                );
+                expect(lastBalance, 'lastBalance').to.be.eq(
+                    oldLastBalance.sub(reward),
+                );
 
                 // nobody is sent tokens to contract directly
                 rewardToken.balanceOf.returns(lastBalance);
@@ -462,20 +472,84 @@ describe('Reward Master', () => {
             });
 
             it('should redeem part of shares of the user_2 who has been granted shares', async () => {
-                unstakedAdvice.redeemSharesFrom = user_2.address;
-                unstakedAdvice.sendRewardTo = user_2.address;
-                unstakedAdvice.sharesToRedeem = unstakedAdvice.sharesToRedeem
-                    .mul(9)
-                    .div(10); // 0.9 of the shares
+                const {shares, offset} = await rewardMaster.records(
+                    user_2.address,
+                );
+                expect(shares, 'shares').to.be.eq(
+                    convertAmountToShares(amountToStake),
+                );
+
+                const unstakedAdvice = getUnstakedAdvice(
+                    user_2.address,
+                    user_2.address,
+                    convertAmountToShares(
+                        amountToStake.mul(9).div(10), // 90%
+                    ),
+                );
 
                 rewardAdviser.getRewardAdvice.returns(unstakedAdvice);
 
                 const accumRewardPerShare =
                     await rewardMaster.accumRewardPerShare();
 
+                const totalShares = await rewardMaster.totalShares();
+                const lastBalance = await rewardMaster.lastBalance();
+
+                const reward = unstakedAdvice.sharesToRedeem
+                    .mul(accumRewardPerShare)
+                    .div(accumRewardPerShareScale)
+                    .sub(offset.mul(9).div(10));
+
+                await expect(
+                    rewardMaster.connect(oracle).onAction(action, message),
+                )
+                    .to.emit(rewardMaster, 'RewardPaid')
+                    .withArgs(user_2.address, reward);
+
+                const {shares: updatedShares, offset: updatedOffset} =
+                    await rewardMaster.records(user_2.address);
+
+                const updatedLastBalance = await rewardMaster.lastBalance();
+
+                expect(
+                    await rewardMaster.totalShares(),
+                    'totalShares',
+                ).to.be.eq(totalShares.sub(unstakedAdvice.sharesToRedeem));
+                expect(updatedLastBalance, 'updatedLastBalance').to.be.eq(
+                    lastBalance.sub(reward),
+                );
+                expect(updatedShares, 'updatedShares').to.be.eq(
+                    shares.sub(unstakedAdvice.sharesToRedeem),
+                );
+                expect(updatedOffset, 'updatedOffset').to.be.eq(
+                    offset.mul(1).div(10),
+                );
+
+                // nobody is sent tokens to contract directly
+                rewardToken.balanceOf.returns(updatedLastBalance);
+            });
+
+            it('should redeem the rest of shares of the user_2', async () => {
                 const {shares, offset} = await rewardMaster.records(
                     user_2.address,
                 );
+                expect(shares, 'shares').to.be.eq(
+                    convertAmountToShares(
+                        amountToStake.mul(1).div(10), // remaining 10%
+                    ),
+                );
+
+                const unstakedAdvice = getUnstakedAdvice(
+                    user_2.address,
+                    user_2.address,
+                    shares,
+                );
+
+                rewardAdviser.getRewardAdvice.returns(unstakedAdvice);
+
+                const accumRewardPerShare =
+                    await rewardMaster.accumRewardPerShare();
+
                 const totalShares = await rewardMaster.totalShares();
                 const lastBalance = await rewardMaster.lastBalance();
 
@@ -495,59 +569,15 @@ describe('Reward Master', () => {
 
                 const updatedLastBalance = await rewardMaster.lastBalance();
 
-                expect(await rewardMaster.totalShares()).to.be.eq(
-                    totalShares.sub(unstakedAdvice.sharesToRedeem),
+                expect(
+                    await rewardMaster.totalShares(),
+                    'totalShares',
+                ).to.be.eq(totalShares.sub(unstakedAdvice.sharesToRedeem));
+                expect(updatedLastBalance, 'updatedLastBalance').to.be.eq(
+                    lastBalance.sub(reward),
                 );
-                expect(updatedLastBalance).to.be.eq(lastBalance.sub(reward));
-                expect(updatedShares).to.be.eq(
-                    shares.sub(unstakedAdvice.sharesToRedeem),
-                );
-                expect(updatedOffset).to.be.eq(
-                    offset.mul(unstakedAdvice.sharesToRedeem).div(shares),
-                );
-
-                // nobody is sent tokens to contract directly
-                rewardToken.balanceOf.returns(updatedLastBalance);
-            });
-
-            it('should redeem the rest of shares of the user_2', async () => {
-                const {shares} = await rewardMaster.records(user_2.address);
-
-                unstakedAdvice.redeemSharesFrom = user_2.address;
-                unstakedAdvice.sendRewardTo = user_2.address;
-                unstakedAdvice.sharesToRedeem = shares;
-
-                rewardAdviser.getRewardAdvice.returns(unstakedAdvice);
-
-                const accumRewardPerShare =
-                    await rewardMaster.accumRewardPerShare();
-
-                const totalShares = await rewardMaster.totalShares();
-                const lastBalance = await rewardMaster.lastBalance();
-
-                const reward = unstakedAdvice.sharesToRedeem
-                    .mul(accumRewardPerShare)
-                    .div(accumRewardPerShareScale);
-
-                await expect(
-                    rewardMaster.connect(oracle).onAction(action, message),
-                )
-                    .to.emit(rewardMaster, 'RewardPaid')
-                    .withArgs(user_2.address, reward);
-
-                const {shares: updatedShares, offset: updatedOffset} =
-                    await rewardMaster.records(user_2.address);
-
-                const updatedLastBalance = await rewardMaster.lastBalance();
-
-                expect(await rewardMaster.totalShares()).to.be.eq(
-                    totalShares.sub(unstakedAdvice.sharesToRedeem),
-                );
-                expect(updatedLastBalance).to.be.eq(lastBalance.sub(reward));
-                expect(updatedShares).to.be.eq(
-                    shares.sub(unstakedAdvice.sharesToRedeem),
-                );
-                expect(updatedOffset).to.be.eq(0);
+                expect(updatedShares, 'updatedShares').to.be.eq(0);
+                expect(updatedOffset, 'updatedOffset').to.be.eq(0);
 
                 // nobody is sent tokens to contract directly
                 rewardToken.balanceOf.returns(updatedLastBalance);

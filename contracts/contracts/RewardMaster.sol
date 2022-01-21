@@ -129,11 +129,11 @@ contract RewardMaster is
 
     /// @notice Returns reward token amount entitled to the given user/account
     // This amount the account would get if shares would be redeemed now
-    function entitled(address account) public view returns (uint256) {
+    function entitled(address account) public view returns (uint256 reward) {
         UserRecord memory rec = records[account];
         if (rec.shares == 0) return 0;
 
-        // known contract, no reentrancy guard needed
+        // no reentrancy guard needed for the known contract call
         uint256 releasable = IRewardPool(REWARD_POOL).releasableAmount();
         uint256 _accumRewardPerShare = accumRewardPerShare;
         uint256 _totalShares = uint256(totalShares);
@@ -141,12 +141,11 @@ contract RewardMaster is
             _accumRewardPerShare += (releasable * SCALE) / _totalShares;
         }
 
-        return
-            _getRewardEntitled(
-                uint256(rec.shares),
-                uint256(rec.offset),
-                _accumRewardPerShare
-            );
+        (reward, , ) = _computeRedemption(
+            uint256(rec.shares),
+            rec,
+            _accumRewardPerShare
+        );
     }
 
     function onAction(bytes4 action, bytes memory message)
@@ -213,19 +212,34 @@ contract RewardMaster is
 
     /* ========== INTERNAL & PRIVATE FUNCTIONS ========== */
 
-    function _getRewardEntitled(
+    function _computeRedemption(
         uint256 sharesToRedeem,
-        uint256 offset,
+        UserRecord memory rec,
         uint256 _accumRewardPerShare
-    ) internal pure returns (uint256) {
-        // rec.shares is non-zero, but _accumRewardPerShare may be zero
-        if (_accumRewardPerShare == 0) return 0;
+    )
+        internal
+        pure
+        returns (
+            uint256 reward,
+            uint256 newShares,
+            uint256 newOffset
+        )
+    {
+        // `rec.shares` and `sharesToRedeem` are assumed to be non-zero here,
+        // and `sharesToRedeem` does not exceed `rec.shares`
+        newShares = uint256(rec.shares) - sharesToRedeem;
 
-        uint256 _totalUserShares = (sharesToRedeem * _accumRewardPerShare) /
-            SCALE;
+        uint256 offsetRedeemed = newShares == 0
+            ? uint256(rec.offset)
+            : (uint256(rec.offset) * sharesToRedeem) / uint256(rec.shares);
+        newOffset = uint256(rec.offset) - offsetRedeemed;
 
-        if (_totalUserShares >= offset) return _totalUserShares - offset;
-        else return _totalUserShares;
+        reward = 0;
+        if (_accumRewardPerShare != 0) {
+            reward = (sharesToRedeem * _accumRewardPerShare) / SCALE;
+            // avoid eventual overflow resulted from rounding
+            reward -= reward >= offsetRedeemed ? offsetRedeemed : reward;
+        }
     }
 
     function _grantShares(address to, uint256 shares)
@@ -255,11 +269,11 @@ contract RewardMaster is
 
     function _redeemShares(
         address from,
+        // `shares` assumed to be non-zero
         uint256 shares,
         address to
     ) internal nonZeroAmount(shares) nonZeroAddress(from) nonZeroAddress(to) {
         UserRecord memory rec = records[from];
-        // shares is non-zero and rec.shares should be greater than or equal to shares
         require(rec.shares >= shares, "RM: Not enough shares to redeem");
 
         (
@@ -268,17 +282,11 @@ contract RewardMaster is
             uint256 oldBalance
         ) = _triggerVesting();
 
-        uint256 reward = _getRewardEntitled(
-            shares,
-            uint256(rec.offset),
-            _accumRewardPerShare
-        );
-
-        uint256 newShares = uint256(rec.shares) - shares;
-        uint256 newOffset = 0;
-        if (newShares != 0) {
-            newOffset = (uint256(rec.offset) * shares) / uint256(rec.shares);
-        }
+        (
+            uint256 reward,
+            uint256 newShares,
+            uint256 newOffset
+        ) = _computeRedemption(shares, rec, _accumRewardPerShare);
 
         records[to] = UserRecord(safe96(newShares), safe160(newOffset));
         totalShares = safe128(uint256(totalShares) - shares);

@@ -41,11 +41,10 @@
   "license": "Unlicense",
   "dependencies": {
     "@defi-wonderland/smock": "^2.0.7",
-    "@openzeppelin/hardhat-upgrades": "^1.8.2",
-    "@openzeppelin/test-helpers": "^0.5.15",
     "chai": "^4.3.4"
   },
   "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.15",
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",
     "@nomiclabs/hardhat-etherscan": "^2.1.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",

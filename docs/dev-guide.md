@@ -98,6 +98,14 @@ transaction will revert with no error, as a result of trying to call
 `getRewardAdvice()` on an address which does not implement the
 `IRewardAdviser` interface.
 
+### Initialize RewardPool
+
+    yarn hardhat rewardpool:init $POOL_ID $DURATION --network localhost
+
+where `$POOL_ID` is the index of the vesting pool created above, and
+`$DURATION` is the period (in seconds) after initialization during
+which vesting should be allowed.
+
 ## Setting up the frontend
 
 - `cd ../dapp`

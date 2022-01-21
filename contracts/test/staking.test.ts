@@ -295,28 +295,28 @@ describe('Staking Contract', async () => {
         });
 
         it('snapshot1 should have correct params', async () => {
-            await expect(snapshot1.beforeBlock).to.eq(snapshotBlockNum + 1);
-            await expect(snapshot1.ownPower).to.eq(0);
+            expect(snapshot1.beforeBlock).to.eq(snapshotBlockNum + 1);
+            expect(snapshot1.ownPower).to.eq(0);
         });
 
         it('snapshot2 should have correct params', async () => {
-            await expect(snapshot2.beforeBlock).to.eq(snapshotBlockNum + 2);
-            await expect(snapshot2.ownPower).to.eq(100);
+            expect(snapshot2.beforeBlock).to.eq(snapshotBlockNum + 2);
+            expect(snapshot2.ownPower).to.eq(100);
         });
 
         it('snapshot3 should have correct params', async () => {
-            await expect(snapshot3.beforeBlock).to.eq(snapshotBlockNum + 3);
-            await expect(snapshot3.ownPower).to.eq(300);
+            expect(snapshot3.beforeBlock).to.eq(snapshotBlockNum + 3);
+            expect(snapshot3.ownPower).to.eq(300);
         });
 
         it('snapshot4 should have correct params', async () => {
-            await expect(snapshot4.beforeBlock).to.eq(snapshotBlockNum + 4);
-            await expect(snapshot4.ownPower).to.eq(600);
+            expect(snapshot4.beforeBlock).to.eq(snapshotBlockNum + 4);
+            expect(snapshot4.ownPower).to.eq(600);
         });
 
         it('snapshot5 should have correct params', async () => {
-            await expect(snapshot5.beforeBlock).to.eq(snapshotBlockNum + 5);
-            await expect(snapshot5.ownPower).to.eq(1000);
+            expect(snapshot5.beforeBlock).to.eq(snapshotBlockNum + 5);
+            expect(snapshot5.ownPower).to.eq(1000);
         });
 
         it('stakesNum() should return correct lengh', async () => {

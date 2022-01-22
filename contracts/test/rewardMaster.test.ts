@@ -3,7 +3,8 @@ import {BigNumber} from 'ethers';
 import {Provider} from '@ethersproject/providers';
 import {expect} from 'chai';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
-import {FakeContract, smock} from '@defi-wonderland/smock';
+import {FakeContract} from '@defi-wonderland/smock';
+import {RewardMasterFixture} from './shared';
 import {
     RewardPool,
     IErc20Min,
@@ -12,6 +13,7 @@ import {
 } from '../types/contracts';
 
 describe('Reward Master', () => {
+    let fixture: RewardMasterFixture;
     let rewardPool: FakeContract<RewardPool>;
     let rewardToken: FakeContract<IErc20Min>;
     let rewardAdviser: FakeContract<IRewardAdviser>;
@@ -22,39 +24,38 @@ describe('Reward Master', () => {
     let user_2: SignerWithAddress;
     let user_3: SignerWithAddress;
     let user_4: SignerWithAddress;
-    let startBlock: number;
     let provider: Provider;
-
-    const getBlockInfo = async (): Promise<{number: number; time: number}> => {
-        const blockNumber = (await provider.getBlock('latest')).number;
-        const blockTime = (await provider.getBlock('latest')).timestamp;
-        return {number: blockNumber, time: blockTime};
-    };
+    let startBlock: number;
+    let action: string;
+    const accumRewardPerShareScale = BigNumber.from(1e9); // hardcoded in RewardMaster
 
     before(async () => {
-        [owner, oracle, user_1, user_2, user_3, user_4] =
-            await ethers.getSigners();
-
-        rewardPool = await smock.fake('RewardPool');
-        rewardToken = await smock.fake('IErc20Min');
-        rewardAdviser = await smock.fake('IRewardAdviser');
-
+        fixture = new RewardMasterFixture();
         provider = ethers.provider;
     });
 
-    const deployRewardMaster = async () => {
-        const RewardMaster = await ethers.getContractFactory('RewardMaster');
-        rewardMaster = (await RewardMaster.deploy(
-            rewardToken.address,
-            rewardPool.address,
-            owner.address,
-        )) as RewardMaster;
+    const initFixture = async () => {
+        fixture = new RewardMasterFixture();
+        await fixture.initFixture();
 
-        startBlock = (await getBlockInfo()).number;
+        owner = fixture.signers.owner;
+        oracle = fixture.signers.oracle;
+        user_1 = fixture.signers.user_1;
+        user_2 = fixture.signers.user_2;
+        user_3 = fixture.signers.user_3;
+        user_4 = fixture.signers.user_4;
+        action = fixture.action;
+
+        rewardMaster = fixture.contracts.rewardMaster;
+        rewardPool = fixture.contracts.rewardPool;
+        rewardToken = fixture.contracts.rewardToken;
+        rewardAdviser = fixture.contracts.rewardAdviser;
+
+        startBlock = fixture.startBlock;
     };
 
     describe('public variables', () => {
-        before(async () => await deployRewardMaster());
+        before(async () => await initFixture());
 
         it('should get the reward pool address', async () => {
             const rewardPoolAddress = await rewardMaster.REWARD_POOL();
@@ -78,9 +79,7 @@ describe('Reward Master', () => {
     });
 
     describe('Add/Remove adviser', () => {
-        const action = ethers.utils.id('STAKE').slice(0, 10); // bytes4
-
-        before(async () => await deployRewardMaster());
+        before(async () => await initFixture());
 
         it('should only let owner to add reward adviser', async () => {
             await expect(
@@ -98,13 +97,12 @@ describe('Reward Master', () => {
             expect(
                 await rewardMaster.rewardAdvisers(oracle.address, action),
             ).to.be.eq(rewardAdviser.address);
+        });
 
-            // not-owner
-            const nonOwner = (await ethers.getSigners())[1];
-
+        it('should not let non-owner add reward adviser', async () => {
             await expect(
                 rewardMaster
-                    .connect(nonOwner)
+                    .connect(user_1)
                     .addRewardAdviser(
                         oracle.address,
                         action,
@@ -117,7 +115,7 @@ describe('Reward Master', () => {
             await expect(
                 rewardMaster
                     .connect(owner)
-                    .removeRewardAdviser(oracle.address, action),
+                    .removeRewardAdviser(oracle.address, fixture.action),
             )
                 .to.emit(rewardMaster, 'AdviserUpdated')
                 .withArgs(oracle.address, action, ethers.constants.AddressZero);
@@ -125,55 +123,31 @@ describe('Reward Master', () => {
             expect(
                 await rewardMaster.rewardAdvisers(oracle.address, action),
             ).to.be.eq(ethers.constants.AddressZero);
+        });
 
-            // not-owner
-            const nonOwner = (await ethers.getSigners())[1];
-
+        it('should not let non-owner to remove reward adviser', async () => {
             await expect(
                 rewardMaster
-                    .connect(nonOwner)
+                    .connect(user_1)
                     .removeRewardAdviser(oracle.address, action),
             ).revertedWith('ImmOwn: unauthorized');
         });
     });
 
     describe('#onAction()', () => {
-        const action = ethers.utils.id('STAKED_OR_UNSTAKED').slice(0, 10); // bytes4
-        const message = ethers.utils.id('AN_ENCODED_MESSAGE');
         const vestedRewards = BigNumber.from(10).pow(24); // 1000000e18
-        const amountToShareScaledFactor = BigNumber.from(10);
-        const shareScale = BigNumber.from(1e3);
-        const accumRewardPerShareScale = BigNumber.from(1e9); // hardcoded in RewardMaster
+        const amountToStake = BigNumber.from(20).mul(
+            BigNumber.from(10).pow(18),
+        ); // 20e18: 20 ZKP tokens
 
         describe('create shares', () => {
-            const amountToStake = BigNumber.from(20).mul(
-                BigNumber.from(10).pow(18),
-            ); // 20e18: 20 ZKP tokens
-
-            const stakeAdvice = {
-                createSharesFor: 'replace_recipient_address_here',
-                sharesToCreate: amountToStake
-                    .mul(amountToShareScaledFactor)
-                    .div(shareScale),
-                redeemSharesFrom: ethers.constants.AddressZero,
-                sharesToRedeem: BigNumber.from(0),
-                sendRewardTo: ethers.constants.AddressZero,
-            };
-
             before(async () => {
-                await deployRewardMaster();
+                await initFixture();
                 // release rewards to reward master contract
                 rewardPool.vestRewards.returns(vestedRewards);
                 rewardToken.balanceOf.returns(vestedRewards);
 
-                // add reward adviser
-                await rewardMaster
-                    .connect(owner)
-                    .addRewardAdviser(
-                        oracle.address,
-                        action,
-                        rewardAdviser.address,
-                    );
+                await fixture.addRewardAdviser();
             });
 
             after(async () => {
@@ -183,49 +157,48 @@ describe('Reward Master', () => {
             });
 
             it('should grant shares to the first user (user_1)', async () => {
-                stakeAdvice.createSharesFor = user_1.address;
+                const entitledShares =
+                    fixture.convertAmountToShares(amountToStake);
 
-                rewardAdviser.getRewardAdvice.returns(stakeAdvice);
+                const {stakeAdvice} = fixture.getAdvice(
+                    user_1.address,
+                    entitledShares,
+                );
 
-                await expect(
-                    rewardMaster.connect(oracle).onAction(action, message),
-                )
+                await expect(fixture.onAction(stakeAdvice))
                     .to.emit(rewardMaster, 'SharesGranted')
-                    .withArgs(
-                        stakeAdvice.createSharesFor,
-                        stakeAdvice.sharesToCreate,
-                    );
+                    .withArgs(user_1.address, entitledShares);
 
                 const {shares, offset} = await rewardMaster.records(
                     stakeAdvice.createSharesFor,
                 );
 
-                expect(shares).to.be.eq(stakeAdvice.sharesToCreate);
+                expect(shares).to.be.eq(entitledShares);
                 expect(offset).to.be.eq(BigNumber.from(0));
                 expect(await rewardMaster.totalShares()).to.be.eq(
-                    stakeAdvice.sharesToCreate,
+                    entitledShares,
                 );
                 expect(await rewardMaster.lastVestedBlock()).to.be.eq(0);
                 expect(await rewardMaster.lastBalance()).to.be.eq(0);
             });
 
             it('should grant shares to the second user (user_2) and vest tokens to contract', async () => {
-                stakeAdvice.createSharesFor = user_2.address;
+                const entitledShares =
+                    fixture.convertAmountToShares(amountToStake);
 
-                rewardAdviser.getRewardAdvice.returns(stakeAdvice);
+                const {stakeAdvice} = fixture.getAdvice(
+                    user_2.address,
+                    entitledShares,
+                );
 
                 const initialTotalShares = await rewardMaster.totalShares();
 
-                await expect(
-                    rewardMaster.connect(oracle).onAction(action, message),
-                )
+                await expect(fixture.onAction(stakeAdvice))
                     .to.emit(rewardMaster, 'SharesGranted')
-                    .withArgs(
-                        stakeAdvice.createSharesFor,
-                        stakeAdvice.sharesToCreate,
-                    );
+                    .withArgs(user_2.address, entitledShares);
 
-                const lastVestedBlock = (await getBlockInfo()).number;
+                const lastVestedBlock = (await provider.getBlock('latest'))
+                    .number;
 
                 const {shares, offset} = await rewardMaster.records(
                     stakeAdvice.createSharesFor,
@@ -235,13 +208,13 @@ describe('Reward Master', () => {
                     .mul(accumRewardPerShareScale)
                     .div(initialTotalShares);
 
-                expect(shares).to.be.eq(stakeAdvice.sharesToCreate);
+                expect(shares).to.be.eq(entitledShares);
                 expect(offset).to.be.eq(vestedRewards);
                 expect(await rewardMaster.accumRewardPerShare()).to.be.eq(
                     accumRewardPerShare,
                 );
                 expect(await rewardMaster.totalShares()).to.be.eq(
-                    stakeAdvice.sharesToCreate.add(initialTotalShares),
+                    entitledShares.add(initialTotalShares),
                 );
                 expect(await rewardMaster.lastVestedBlock()).to.be.eq(
                     lastVestedBlock,
@@ -255,30 +228,29 @@ describe('Reward Master', () => {
                 // resets mock behavior (we do not release token for second time in this test case)
                 rewardPool.vestRewards.reset();
 
-                stakeAdvice.createSharesFor = user_3.address;
+                const entitledShares =
+                    fixture.convertAmountToShares(amountToStake);
 
-                rewardAdviser.getRewardAdvice.returns(stakeAdvice);
+                const {stakeAdvice} = fixture.getAdvice(
+                    user_3.address,
+                    entitledShares,
+                );
 
                 const initialTotalShares = await rewardMaster.totalShares();
 
-                await expect(
-                    rewardMaster.connect(oracle).onAction(action, message),
-                )
+                await expect(fixture.onAction(stakeAdvice))
                     .to.emit(rewardMaster, 'SharesGranted')
-                    .withArgs(
-                        stakeAdvice.createSharesFor,
-                        stakeAdvice.sharesToCreate,
-                    );
+                    .withArgs(user_3.address, entitledShares);
 
                 const {shares, offset} = await rewardMaster.records(
                     stakeAdvice.createSharesFor,
                 );
 
-                expect(shares).to.be.eq(stakeAdvice.sharesToCreate);
+                expect(shares).to.be.eq(entitledShares);
                 expect(offset).to.be.eq(vestedRewards);
 
                 expect(await rewardMaster.totalShares()).to.be.eq(
-                    stakeAdvice.sharesToCreate.add(initialTotalShares),
+                    entitledShares.add(initialTotalShares),
                 );
                 expect(await rewardMaster.lastBalance()).to.be.eq(
                     vestedRewards,
@@ -289,20 +261,19 @@ describe('Reward Master', () => {
                 rewardPool.vestRewards.returns(vestedRewards);
                 rewardToken.balanceOf.returns(vestedRewards.mul(2));
 
-                stakeAdvice.createSharesFor = user_4.address;
+                const entitledShares =
+                    fixture.convertAmountToShares(amountToStake);
 
-                rewardAdviser.getRewardAdvice.returns(stakeAdvice);
+                const {stakeAdvice} = fixture.getAdvice(
+                    user_4.address,
+                    entitledShares,
+                );
 
                 const initialTotalShares = await rewardMaster.totalShares();
 
-                await expect(
-                    rewardMaster.connect(oracle).onAction(action, message),
-                )
+                await expect(fixture.onAction(stakeAdvice))
                     .to.emit(rewardMaster, 'SharesGranted')
-                    .withArgs(
-                        stakeAdvice.createSharesFor,
-                        stakeAdvice.sharesToCreate,
-                    );
+                    .withArgs(user_4.address, entitledShares);
 
                 const {shares, offset} = await rewardMaster.records(
                     stakeAdvice.createSharesFor,
@@ -311,15 +282,15 @@ describe('Reward Master', () => {
                 const accumRewardPerShare =
                     await rewardMaster.accumRewardPerShare();
 
-                expect(shares).to.be.eq(stakeAdvice.sharesToCreate);
+                expect(shares).to.be.eq(entitledShares);
                 expect(offset).to.be.eq(
-                    stakeAdvice.sharesToCreate
+                    entitledShares
                         .mul(accumRewardPerShare)
                         .div(accumRewardPerShareScale),
                 );
 
                 expect(await rewardMaster.totalShares()).to.be.eq(
-                    stakeAdvice.sharesToCreate.add(initialTotalShares),
+                    entitledShares.add(initialTotalShares),
                 );
                 expect(await rewardMaster.lastBalance()).to.be.eq(
                     vestedRewards.mul(2),
@@ -327,23 +298,19 @@ describe('Reward Master', () => {
             });
 
             it('should not grant shares if sharesToCreate is 0', async () => {
-                const advice = {
-                    createSharesFor: user_1.address,
-                    sharesToCreate: BigNumber.from(0),
-                    redeemSharesFrom: ethers.constants.AddressZero,
-                    sharesToRedeem: BigNumber.from(0),
-                    sendRewardTo: ethers.constants.AddressZero,
-                };
-                rewardAdviser.getRewardAdvice.returns(advice);
+                const {stakeAdvice} = fixture.getAdvice(
+                    user_1.address,
+                    BigNumber.from(0),
+                );
 
                 const {shares: oldShares, offset: oldOffset} =
-                    await rewardMaster.records(advice.createSharesFor);
+                    await rewardMaster.records(stakeAdvice.createSharesFor);
                 const oldTotalShares = await rewardMaster.totalShares();
 
-                await rewardMaster.connect(oracle).onAction(action, message);
+                await fixture.onAction(stakeAdvice);
 
                 const {shares: newShares, offset: newOffset} =
-                    await rewardMaster.records(advice.createSharesFor);
+                    await rewardMaster.records(stakeAdvice.createSharesFor);
                 const newTotalShares = await rewardMaster.totalShares();
 
                 expect(oldShares).to.be.eq(newShares);
@@ -353,75 +320,38 @@ describe('Reward Master', () => {
         });
 
         describe('redeem shares', () => {
-            const amountToStake = BigNumber.from(20).mul(
-                BigNumber.from(10).pow(18),
-            ); // 20e18: 20 ZKP tokens
-
-            const convertAmountToShares = (amount: BigNumber) =>
-                amount.mul(amountToShareScaledFactor).div(shareScale);
-
-            const getUnstakedAdvice = (
-                redeemSharesFrom: string,
-                sendRewardTo: string,
-                sharesToRedeem: BigNumber,
-            ) => ({
-                createSharesFor: ethers.constants.AddressZero,
-                sharesToCreate: BigNumber.from(0),
-                redeemSharesFrom,
-                sharesToRedeem,
-                sendRewardTo,
-            });
-
             before(async () => {
-                await deployRewardMaster();
+                await initFixture();
 
                 // release rewards to reward master contract
                 rewardPool.vestRewards.returns(vestedRewards);
                 rewardToken.transfer.returns(true);
 
-                // add reward adviser
-                await rewardMaster
-                    .connect(owner)
-                    .addRewardAdviser(
-                        oracle.address,
-                        action,
-                        rewardAdviser.address,
-                    );
-
-                const stakedAdvice = {
-                    createSharesFor: 'replace_recipient_address_here',
-                    sharesToCreate: amountToStake
-                        .mul(amountToShareScaledFactor)
-                        .div(shareScale),
-                    redeemSharesFrom: ethers.constants.AddressZero,
-                    sharesToRedeem: BigNumber.from(0),
-                    sendRewardTo: ethers.constants.AddressZero,
-                };
+                await fixture.addRewardAdviser();
 
                 // create shares for users
-                const users = [user_1, user_2, user_3, user_4];
-                for (let i = 0; i < users.length; i++) {
-                    stakedAdvice.createSharesFor = users[i].address;
-                    rewardAdviser.getRewardAdvice.returns(stakedAdvice);
-
-                    rewardToken.balanceOf.returns(vestedRewards.mul(i));
-
-                    await rewardMaster
-                        .connect(oracle)
-                        .onAction(action, message);
-                }
+                await fixture.createSharesForSigners(
+                    fixture.convertAmountToShares(amountToStake),
+                    vestedRewards,
+                );
 
                 rewardPool.vestRewards.reset();
             });
 
-            it('should redeem shares of the user who has been granted shares', async () => {
-                const unstakedAdvice = getUnstakedAdvice(
-                    user_1.address,
-                    user_1.address,
-                    convertAmountToShares(amountToStake),
-                );
+            after(async () => {
+                // reset mock
+                rewardPool.vestRewards.reset();
+                rewardToken.balanceOf.reset();
+            });
 
-                rewardAdviser.getRewardAdvice.returns(unstakedAdvice);
+            it('should redeem shares of the user who has been granted shares', async () => {
+                const entitledShares =
+                    fixture.convertAmountToShares(amountToStake);
+
+                const {unstakeAdvice} = fixture.getAdvice(
+                    user_1.address,
+                    entitledShares,
+                );
 
                 const accumRewardPerShare =
                     await rewardMaster.accumRewardPerShare();
@@ -437,57 +367,53 @@ describe('Reward Master', () => {
                     .div(accumRewardPerShareScale)
                     .sub(offset);
 
-                await expect(
-                    rewardMaster.connect(oracle).onAction(action, message),
-                )
-                    .to.emit(rewardMaster, 'RewardPaid')
-                    .withArgs(user_1.address, reward);
+                await expect(fixture.onAction(unstakeAdvice))
+                    .to.emit(rewardMaster, 'SharesRedeemed')
+                    .withArgs(user_1.address, entitledShares);
 
                 const {shares: updatedShares, offset: updatedOffset} =
                     await rewardMaster.records(user_1.address);
                 const lastBalance = await rewardMaster.lastBalance();
 
-                expect(
-                    await rewardMaster.totalShares(),
-                    'totalShares',
-                ).to.be.eq(totalShares.sub(shares));
-                expect(updatedShares, 'updatedShares').to.be.eq(
-                    BigNumber.from(0),
+                expect(await rewardMaster.totalShares()).to.be.eq(
+                    totalShares.sub(shares),
                 );
-                expect(updatedOffset, 'updatedOffset').to.be.eq(
-                    BigNumber.from(0),
-                );
-                expect(lastBalance, 'lastBalance').to.be.eq(
-                    oldLastBalance.sub(reward),
-                );
+                expect(updatedShares).to.be.eq(BigNumber.from(0));
+                expect(updatedOffset).to.be.eq(BigNumber.from(0));
+                expect(lastBalance).to.be.eq(oldLastBalance.sub(reward));
 
                 // nobody is sent tokens to contract directly
                 rewardToken.balanceOf.returns(lastBalance);
             });
 
             it('should not redeem shares of the user who has not enough shares', async () => {
+                const randomUser = ethers.Wallet.createRandom().address;
+
+                const {unstakeAdvice} = fixture.getAdvice(
+                    randomUser,
+                    BigNumber.from(1),
+                );
                 await expect(
-                    rewardMaster.connect(oracle).onAction(action, message),
+                    fixture.onAction(unstakeAdvice),
                 ).to.be.revertedWith('RM: Not enough shares to redeem');
             });
 
             it('should redeem part of shares of the user_2 who has been granted shares', async () => {
+                const partOfEntitledShares = fixture.convertAmountToShares(
+                    amountToStake.mul(9).div(10),
+                );
+
+                const {unstakeAdvice} = fixture.getAdvice(
+                    user_2.address,
+                    partOfEntitledShares, // 90% of the shares
+                );
+
                 const {shares, offset} = await rewardMaster.records(
                     user_2.address,
                 );
-                expect(shares, 'shares').to.be.eq(
-                    convertAmountToShares(amountToStake),
+                expect(shares).to.be.eq(
+                    fixture.convertAmountToShares(amountToStake),
                 );
-
-                const unstakedAdvice = getUnstakedAdvice(
-                    user_2.address,
-                    user_2.address,
-                    convertAmountToShares(
-                        amountToStake.mul(9).div(10), // 90%
-                    ),
-                );
-
-                rewardAdviser.getRewardAdvice.returns(unstakedAdvice);
 
                 const accumRewardPerShare =
                     await rewardMaster.accumRewardPerShare();
@@ -495,35 +421,28 @@ describe('Reward Master', () => {
                 const totalShares = await rewardMaster.totalShares();
                 const lastBalance = await rewardMaster.lastBalance();
 
-                const reward = unstakedAdvice.sharesToRedeem
+                const reward = unstakeAdvice.sharesToRedeem
                     .mul(accumRewardPerShare)
                     .div(accumRewardPerShareScale)
                     .sub(offset.mul(9).div(10));
 
-                await expect(
-                    rewardMaster.connect(oracle).onAction(action, message),
-                )
-                    .to.emit(rewardMaster, 'RewardPaid')
-                    .withArgs(user_2.address, reward);
+                await expect(fixture.onAction(unstakeAdvice))
+                    .to.emit(rewardMaster, 'SharesRedeemed')
+                    .withArgs(user_2.address, partOfEntitledShares);
 
                 const {shares: updatedShares, offset: updatedOffset} =
                     await rewardMaster.records(user_2.address);
 
                 const updatedLastBalance = await rewardMaster.lastBalance();
 
-                expect(
-                    await rewardMaster.totalShares(),
-                    'totalShares',
-                ).to.be.eq(totalShares.sub(unstakedAdvice.sharesToRedeem));
-                expect(updatedLastBalance, 'updatedLastBalance').to.be.eq(
-                    lastBalance.sub(reward),
+                expect(await rewardMaster.totalShares()).to.be.eq(
+                    totalShares.sub(partOfEntitledShares),
                 );
-                expect(updatedShares, 'updatedShares').to.be.eq(
-                    shares.sub(unstakedAdvice.sharesToRedeem),
+                expect(updatedLastBalance).to.be.eq(lastBalance.sub(reward));
+                expect(updatedShares).to.be.eq(
+                    shares.sub(partOfEntitledShares),
                 );
-                expect(updatedOffset, 'updatedOffset').to.be.eq(
-                    offset.mul(1).div(10),
-                );
+                expect(updatedOffset).to.be.eq(offset.mul(1).div(10)); // 10%
 
                 // nobody is sent tokens to contract directly
                 rewardToken.balanceOf.returns(updatedLastBalance);
@@ -533,19 +452,11 @@ describe('Reward Master', () => {
                 const {shares, offset} = await rewardMaster.records(
                     user_2.address,
                 );
-                expect(shares, 'shares').to.be.eq(
-                    convertAmountToShares(
-                        amountToStake.mul(1).div(10), // remaining 10%
-                    ),
-                );
 
-                const unstakedAdvice = getUnstakedAdvice(
-                    user_2.address,
+                const {unstakeAdvice} = fixture.getAdvice(
                     user_2.address,
                     shares,
                 );
-
-                rewardAdviser.getRewardAdvice.returns(unstakedAdvice);
 
                 const accumRewardPerShare =
                     await rewardMaster.accumRewardPerShare();
@@ -553,31 +464,26 @@ describe('Reward Master', () => {
                 const totalShares = await rewardMaster.totalShares();
                 const lastBalance = await rewardMaster.lastBalance();
 
-                const reward = unstakedAdvice.sharesToRedeem
+                const reward = unstakeAdvice.sharesToRedeem
                     .mul(accumRewardPerShare)
                     .div(accumRewardPerShareScale)
                     .sub(offset);
 
-                await expect(
-                    rewardMaster.connect(oracle).onAction(action, message),
-                )
-                    .to.emit(rewardMaster, 'RewardPaid')
-                    .withArgs(user_2.address, reward);
+                await expect(fixture.onAction(unstakeAdvice))
+                    .to.emit(rewardMaster, 'SharesRedeemed')
+                    .withArgs(user_2.address, shares);
 
                 const {shares: updatedShares, offset: updatedOffset} =
                     await rewardMaster.records(user_2.address);
 
                 const updatedLastBalance = await rewardMaster.lastBalance();
 
-                expect(
-                    await rewardMaster.totalShares(),
-                    'totalShares',
-                ).to.be.eq(totalShares.sub(unstakedAdvice.sharesToRedeem));
-                expect(updatedLastBalance, 'updatedLastBalance').to.be.eq(
-                    lastBalance.sub(reward),
+                expect(await rewardMaster.totalShares()).to.be.eq(
+                    totalShares.sub(shares),
                 );
-                expect(updatedShares, 'updatedShares').to.be.eq(0);
-                expect(updatedOffset, 'updatedOffset').to.be.eq(0);
+                expect(updatedLastBalance).to.be.eq(lastBalance.sub(reward));
+                expect(updatedShares).to.be.eq(shares.sub(shares));
+                expect(updatedOffset).to.be.eq(0);
 
                 // nobody is sent tokens to contract directly
                 rewardToken.balanceOf.returns(updatedLastBalance);
@@ -586,50 +492,24 @@ describe('Reward Master', () => {
     });
 
     describe('#entitled()', async () => {
-        const action = ethers.utils.id('STAKED_OR_UNSTAKED').slice(0, 10); // bytes4
-        const message = ethers.utils.id('AN_ENCODED_MESSAGE');
         const releasableAmount = BigNumber.from(10).pow(24); // 1000000e18
         const vestedRewards = releasableAmount;
         const amountToStake = BigNumber.from(20).mul(
             BigNumber.from(10).pow(18),
         ); // 20e18: 20 ZKP tokens
-        const amountToShareScaledFactor = BigNumber.from(10);
-        const shareScale = BigNumber.from(1e3);
-        const accumRewardPerShareScale = BigNumber.from(1e9); // hardcoded in RewardMaster
 
         before(async () => {
-            await deployRewardMaster();
+            await initFixture();
             rewardPool.releasableAmount.returns(releasableAmount);
 
             // add reward adviser
-            await rewardMaster
-                .connect(owner)
-                .addRewardAdviser(
-                    oracle.address,
-                    action,
-                    rewardAdviser.address,
-                );
-
-            const stakedAdvice = {
-                createSharesFor: 'replace_recipient_address_here',
-                sharesToCreate: amountToStake
-                    .mul(amountToShareScaledFactor)
-                    .div(shareScale),
-                redeemSharesFrom: ethers.constants.AddressZero,
-                sharesToRedeem: BigNumber.from(0),
-                sendRewardTo: ethers.constants.AddressZero,
-            };
+            await fixture.addRewardAdviser();
 
             // create shares for users
-            const users = [user_1, user_2, user_3, user_4];
-            for (let i = 0; i < users.length; i++) {
-                stakedAdvice.createSharesFor = users[i].address;
-                rewardAdviser.getRewardAdvice.returns(stakedAdvice);
-
-                rewardToken.balanceOf.returns(vestedRewards.mul(i));
-
-                await rewardMaster.connect(oracle).onAction(action, message);
-            }
+            await fixture.createSharesForSigners(
+                fixture.convertAmountToShares(amountToStake),
+                vestedRewards,
+            );
 
             rewardPool.vestRewards.reset();
         });
@@ -674,38 +554,24 @@ describe('Reward Master', () => {
         });
 
         it('should returns 0 if user does not have shares', async () => {
-            const entitled = await rewardMaster.entitled(owner.address);
+            const randomUser = ethers.Wallet.createRandom().address;
+
+            const entitled = await rewardMaster.entitled(randomUser);
 
             expect(entitled).to.be.eq(0);
         });
     });
 
     describe('#claimErc20()', async () => {
-        const action = ethers.utils.id('STAKED_OR_UNSTAKED').slice(0, 10); // bytes4
-        const message = ethers.utils.id('AN_ENCODED_MESSAGE');
-
-        before(async () => await deployRewardMaster());
+        before(async () => await initFixture());
 
         it('should not let admin withdraw reward tokens from contract when there are some shares', async () => {
-            // create shares for users
-            await rewardMaster
-                .connect(owner)
-                .addRewardAdviser(
-                    oracle.address,
-                    action,
-                    rewardAdviser.address,
-                );
+            await fixture.addRewardAdviser();
 
-            // create shares for users
-            rewardAdviser.getRewardAdvice.returns({
-                createSharesFor: user_1.address,
-                sharesToCreate: BigNumber.from(1000),
-                redeemSharesFrom: ethers.constants.AddressZero,
-                sharesToRedeem: BigNumber.from(0),
-                sendRewardTo: ethers.constants.AddressZero,
-            });
-
-            await rewardMaster.connect(oracle).onAction(action, message);
+            await fixture.createSharesForSigners(
+                fixture.convertAmountToShares(BigNumber.from(999)),
+                BigNumber.from(999999),
+            );
 
             await expect(
                 rewardMaster

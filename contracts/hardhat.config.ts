@@ -4,7 +4,6 @@ import '@nomiclabs/hardhat-ethers';
 import '@typechain/hardhat';
 import 'hardhat-deploy';
 import 'hardhat-gas-reporter';
-import '@openzeppelin/hardhat-upgrades';
 import 'solidity-coverage';
 import 'hardhat-contract-sizer';
 

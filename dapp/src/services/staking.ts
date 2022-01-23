@@ -20,21 +20,33 @@ export const VESTING_POOLS_CONTRACT = process.env.VESTING_POOLS_CONTRACT;
 export const STAKING_TOKEN_CONTRACT = process.env.STAKING_TOKEN_CONTRACT;
 export const TOKEN_SYMBOL = process.env.TOKEN_SYMBOL;
 
-export async function getStakingContract(library): Promise<ethers.Contract> {
-    return new ethers.Contract(
-        // Guaranteed to be non-null due to check in src/index.tsx
-        STAKING_CONTRACT!,
-        STAKING_ABI,
-        library,
-    );
+export async function getStakingContract(
+    library,
+): Promise<ethers.Contract | undefined> {
+    if (!STAKING_CONTRACT) {
+        console.error(`STAKING_CONTRACT not defined`);
+        return;
+    }
+    if (!STAKING_ABI) {
+        console.error(`STAKING_ABI not defined`);
+        return;
+    }
+    return new ethers.Contract(STAKING_CONTRACT, STAKING_ABI, library);
 }
 
 export async function getStakingTokenContract(
     library,
-): Promise<ethers.Contract> {
+): Promise<ethers.Contract | undefined> {
+    if (!STAKING_TOKEN_CONTRACT) {
+        console.error(`STAKING_TOKEN_CONTRACT not defined`);
+        return;
+    }
+    if (!STAKING_TOKEN_ABI) {
+        console.error(`STAKING_TOKEN_ABI not defined`);
+        return;
+    }
     return new ethers.Contract(
-        // Guaranteed to be non-null due to check in src/index.tsx
-        STAKING_TOKEN_CONTRACT!,
+        STAKING_TOKEN_CONTRACT,
         STAKING_TOKEN_ABI,
         library,
     );
@@ -42,10 +54,17 @@ export async function getStakingTokenContract(
 
 export async function getRewardsMasterContract(
     library,
-): Promise<ethers.Contract> {
+): Promise<ethers.Contract | undefined> {
+    if (!REWARD_MASTER_CONTRACT) {
+        console.error(`REWARD_MASTER_CONTRACT not defined`);
+        return;
+    }
+    if (!STAKING_TOKEN_ABI) {
+        console.error(`STAKING_TOKEN_ABI not defined`);
+        return;
+    }
     return new ethers.Contract(
-        // Guaranteed to be non-null due to check in src/index.tsx
-        REWARD_MASTER_CONTRACT!,
+        REWARD_MASTER_CONTRACT,
         REWARDS_MASTER_ABI,
         library,
     );
@@ -53,10 +72,17 @@ export async function getRewardsMasterContract(
 
 export async function getVestingPoolsContract(
     library,
-): Promise<ethers.Contract> {
+): Promise<ethers.Contract | undefined> {
+    if (!VESTING_POOLS_CONTRACT) {
+        console.error(`VESTING_POOLS_CONTRACT not defined`);
+        return;
+    }
+    if (!VESTING_POOLS_ABI) {
+        console.error(`VESTING_POOLS_ABI not defined`);
+        return;
+    }
     return new ethers.Contract(
-        // Guaranteed to be non-null due to check in src/index.tsx
-        VESTING_POOLS_CONTRACT!,
+        VESTING_POOLS_CONTRACT,
         VESTING_POOLS_ABI,
         library,
     );
@@ -113,6 +139,9 @@ export async function stake(
     const scaledAmount = toBN(Number(amount)).mul(e18);
 
     const stakingTokenContract = await getStakingTokenContract(library);
+    if (!stakingTokenContract) {
+        return null;
+    }
     const stakingTokenSigner = stakingTokenContract.connect(signer);
 
     const approvedStatus = await stakingTokenSigner.approve(

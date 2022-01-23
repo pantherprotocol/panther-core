@@ -33,6 +33,11 @@ export async function getTokenBalance(
     address: string | null | undefined,
 ): Promise<string | null> {
     if (!contract) {
+        console.error('getTokenBalance called with null contract');
+        return null;
+    }
+    if (!address) {
+        console.error('getTokenBalance called with null address');
         return null;
     }
     const balance: number = await contract.balanceOf(address);

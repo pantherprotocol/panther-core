@@ -25,6 +25,9 @@ export const BalanceCard = () => {
     const setZkpTokenBalance = async () => {
         const stakingTokenContract =
             await stakingService.getStakingTokenContract(library);
+        if (!stakingTokenContract) {
+            return;
+        }
         const balance = await accountService.getTokenBalance(
             stakingTokenContract,
             account,
@@ -38,6 +41,9 @@ export const BalanceCard = () => {
         );
         const stakingTokenContract =
             await stakingService.getStakingTokenContract(library);
+        if (!stakingContract || !stakingTokenContract) {
+            return;
+        }
         const stakedBalance = await stakingService.getTotalStaked(
             stakingContract,
             account,
@@ -52,8 +58,14 @@ export const BalanceCard = () => {
     const getUnclaimedRewardsBalance = async () => {
         const rewardsMasterContract =
             await stakingService.getRewardsMasterContract(library);
+        if (!rewardsMasterContract) {
+            return;
+        }
         const stakingTokenContract =
             await stakingService.getStakingTokenContract(library);
+        if (!stakingTokenContract) {
+            return;
+        }
         const rewards = await stakingService.getRewardsBalance(
             rewardsMasterContract,
             stakingTokenContract,
@@ -72,6 +84,10 @@ export const BalanceCard = () => {
     };
 
     useEffect(() => {
+        if (!account) {
+            return;
+        }
+
         setZkpTokenBalance();
         getStakedZkpBalance();
         getUnclaimedRewardsBalance();

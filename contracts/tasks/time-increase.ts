@@ -3,6 +3,13 @@ import {task} from 'hardhat/config';
 
 const TASK_TIME_TRAVEL = 'time:increase';
 
+async function getFutureBlockTimestamp(hre: HardhatRuntimeEnvironment) {
+    const futureBlockNumber = await hre.ethers.provider.getBlockNumber();
+    const futureBlock = await hre.ethers.provider.getBlock(futureBlockNumber);
+    const futureTimestamp = futureBlock.timestamp;
+    return futureTimestamp;
+}
+
 task(TASK_TIME_TRAVEL, 'time:increase on the blockchain')
     .addParam(
         'time',
@@ -14,21 +21,11 @@ task(TASK_TIME_TRAVEL, 'time:increase on the blockchain')
             const increaseTime = input.split('+')[1];
             await hre.ethers.provider.send('evm_increaseTime', [+increaseTime]);
             await hre.ethers.provider.send('evm_mine', []);
-            const futureBlockNumber =
-                await hre.ethers.provider.getBlockNumber();
-            const futureBlock = await hre.ethers.provider.getBlock(
-                futureBlockNumber,
-            );
-            const futureTimestamp = futureBlock.timestamp;
+            const futureTimestamp = await getFutureBlockTimestamp(hre);
             console.log(`Future block timestamp ${futureTimestamp}`);
         } else {
             await hre.ethers.provider.send('evm_mine', [+input]);
-            const futureBlockNumber =
-                await hre.ethers.provider.getBlockNumber();
-            const futureBlock = await hre.ethers.provider.getBlock(
-                futureBlockNumber,
-            );
-            const futureTimestamp = futureBlock.timestamp;
+            const futureTimestamp = await getFutureBlockTimestamp(hre);
             console.log(`Future block timestamp ${futureTimestamp}`);
         }
     });

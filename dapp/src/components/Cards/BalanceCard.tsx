@@ -10,17 +10,19 @@ import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 import * as stakingService from '../../services/staking';
 import * as accountService from '../../services/account';
+import {formatUSDPrice} from '../../services/account';
+import {Tooltip} from '@mui/material';
 
 export const BalanceCard = () => {
     const context = useWeb3React();
     const {account, library} = context;
-    const [tokenBalance, setTokenBalance] = useState<string | null>('0');
-    const [stakedBalance, setStakedBalance] = useState<any>('0');
-    const [rewardsBalance, setRewardsBalance] = useState<string | null>('0');
+    const [tokenBalance, setTokenBalance] = useState<string | null>('0.00');
+    const [stakedBalance, setStakedBalance] = useState<any>('0.00');
+    const [rewardsBalance, setRewardsBalance] = useState<string | null>('0.00');
     const [tokenMarketPrice, setTokenMarketPrice] = useState<number | null>(
         null,
     );
-    const [tokenUSDValue, setTokenUSDValue] = useState<number | null>(null);
+    const [tokenUSDValue, setTokenUSDValue] = useState<string | null>(null);
 
     const setZkpTokenBalance = async () => {
         const stakingTokenContract =
@@ -79,12 +81,13 @@ export const BalanceCard = () => {
         if (price && tokenBalance && Number(tokenBalance) > 0) {
             setTokenMarketPrice(price);
             const tokenUSDValue: number = price * Number(tokenBalance);
-            setTokenUSDValue(tokenUSDValue);
+            const formattedUSDValue = formatUSDPrice(tokenUSDValue.toString());
+            setTokenUSDValue(formattedUSDValue);
         }
     };
 
     useEffect(() => {
-        if (!account) {
+        if (!library || !account) {
             return;
         }
 
@@ -149,7 +152,6 @@ export const BalanceCard = () => {
                             fontSize: '12px',
                             lineHeight: '42px',
                             opacity: 0.5,
-                            marginBottom: '18px',
                         }}
                     >
                         Approximately ${tokenUSDValue}
@@ -176,13 +178,15 @@ export const BalanceCard = () => {
                     Staked Balance
                 </Typography>
                 <Typography>
-                    <ErrorOutlineIcon
-                        fontSize="small"
-                        className="error-outline"
-                        sx={{
-                            opacity: 0.5,
-                        }}
-                    />
+                    <Tooltip title="Staked ZKP Token Balance" placement="top">
+                        <ErrorOutlineIcon
+                            fontSize="small"
+                            className="error-outline"
+                            sx={{
+                                opacity: 0.5,
+                            }}
+                        />
+                    </Tooltip>
                 </Typography>
             </Box>
             <Box display="flex" alignItems="baseline">
@@ -219,16 +223,21 @@ export const BalanceCard = () => {
                         opacity: 0.5,
                     }}
                 >
-                    Unclaimed Reward balance
+                    Unclaimed Reward Balance
                 </Typography>
                 <Typography>
-                    <ErrorOutlineIcon
-                        fontSize="small"
-                        className="error-outline"
-                        sx={{
-                            opacity: 0.5,
-                        }}
-                    />
+                    <Tooltip
+                        title="Unclaimed Reward ZKP Token Balance"
+                        placement="top"
+                    >
+                        <ErrorOutlineIcon
+                            fontSize="small"
+                            className="error-outline"
+                            sx={{
+                                opacity: 0.5,
+                            }}
+                        />
+                    </Tooltip>
                 </Typography>
             </Box>
             <Box display="flex" alignItems="baseline">

@@ -91,9 +91,7 @@ const StakingHeader = props => {
                                     className="nav-item active"
                                     variant="subtitle2"
                                 >
-                                    <a href="https://pantherprotocol.io">
-                                        Staking
-                                    </a>
+                                    <a href="/">Staking</a>
                                 </Typography>
                                 <Typography
                                     className="nav-item"
@@ -107,7 +105,7 @@ const StakingHeader = props => {
                                     className="nav-item"
                                     variant="subtitle2"
                                 >
-                                    <a href="https://pantherprotocol.io">
+                                    <a href="https://snapshot.org/#/launchdao.eth">
                                         Governance
                                     </a>
                                 </Typography>

@@ -167,17 +167,15 @@
 
 .MuiTable-root .btn {
     color: $white;
-    background: linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.12) 0%,
-            rgba(255, 255, 255, 0) 100%
-        ),
-        #205bea;
+    background: #1e4eb4;
     border-radius: 6px;
-    text-transform: capitalize;
     width: 116px;
     height: 35px;
     font-size: 12px !important;
+
+    &:hover {
+        background: #1e4eb4;
+    }
 }
 
 .MuiTable-root .disable.btn {

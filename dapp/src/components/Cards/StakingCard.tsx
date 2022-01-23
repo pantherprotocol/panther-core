@@ -27,9 +27,10 @@ const localStorage = window.localStorage;
 export default function Staking() {
     const context = useWeb3React();
     const {account, library} = context;
-    const [tokenBalance, setTokenBalance] = useState<string | null>('0');
-    const [stakedBalance, setStakedBalance] = useState<any>('0');
-    const [amountToStake, setAmountToStake] = useState<string | null>('0');
+    const [tokenBalance, setTokenBalance] = useState<string | null>('0.00');
+    const [stakedBalance, setStakedBalance] = useState<any>('0.00');
+    const [amountToStake, setAmountToStake] = useState<string | null>('0.00');
+    const [rewardsBalance, setRewardsBalance] = useState<string | null>('0.00');
     const [toggle, setToggle] = useState('stake');
     const [, setStakedId] = useState<number | null>(null);
 
@@ -66,12 +67,26 @@ export default function Staking() {
         setStakedBalance((+totalStakedValue).toFixed(2));
     };
 
+    const getUnclaimedRewardsBalance = async () => {
+        const rewardsMasterContract =
+            await stakingService.getRewardsMasterContract(library);
+        const stakingTokenContract =
+            await stakingService.getStakingTokenContract(library);
+        const rewards = await stakingService.getRewardsBalance(
+            rewardsMasterContract,
+            stakingTokenContract,
+            account,
+        );
+        setRewardsBalance(rewards);
+    };
+
     useEffect(() => {
-        if (!account) {
+        if (!library || !account) {
             return;
         }
         setZkpTokenBalance();
         getStakedZkpBalance();
+        getUnclaimedRewardsBalance();
     });
 
     const stake = async (amount: string) => {
@@ -80,16 +95,18 @@ export default function Staking() {
         );
         const stakeType = '0x4ab0941a';
         const signer = library.getSigner(account).connectUnchecked();
-        const stakeId = await stakingService.stake(
+        const stakingResponse = await stakingService.stake(
             library,
             stakingContract,
             amount,
             stakeType,
             signer,
         );
-        if (stakeId) {
-            setStakedId(stakeId);
-            localStorage.setItem('stakeId', stakeId.toString());
+        if (stakingResponse) {
+            setStakedId(stakingResponse);
+            localStorage.setItem('stakeId', stakingResponse);
+            setZkpTokenBalance();
+            getStakedZkpBalance();
         }
     };
 
@@ -283,7 +300,7 @@ export default function Staking() {
                                                 Number(tokenBalance) &&
                                             regex.test(e.target.value)
                                         ) {
-                                            setAmountToStake(tokenBalance);
+                                            return null;
                                         } else if (regex.test(e.target.value)) {
                                             setAmountToStake(
                                                 e.target.value.toString() || '',
@@ -365,7 +382,9 @@ export default function Staking() {
                     <>
                         <UnstakingInfoMSG />
                         <UnstakeTable />
-                        <TotalUnclaimedRewards />
+                        <TotalUnclaimedRewards
+                            rewardsBalance={rewardsBalance}
+                        />
                     </>
                 )}
             </Card>
@@ -383,32 +402,6 @@ const StakingMethod = () => (
             width: '80%',
         }}
     >
-        {/*<Box display="flex" justifyContent={'space-between'}>
-            <Typography
-                sx={{
-                    fontWeight: 500,
-                    fontStyle: 'normal',
-                    fontSize: '16px',
-                    lineHeight: '42px',
-                    marginRight: '18px',
-                    color: '#fff',
-                }}
-            >
-                Staking Method:
-            </Typography>
-            <Select
-                labelId="addresses-select-standard-label"
-                id="addresses-select-standard"
-                variant="filled"
-                value={'Standard'}
-                sx={{m: 0, minWidth: 155, color: '#fff'}}
-            >
-                <MenuItem selected value={'Standard'}>
-                    Standard
-                </MenuItem>
-                <MenuItem value={'Option2'}>Option2</MenuItem>
-            </Select>
-        </Box>*/}
         <Box display="flex" justifyContent={'space-between'}>
             <Typography
                 sx={{
@@ -501,7 +494,7 @@ const UnstakingInfoMSG = () => (
     </Box>
 );
 
-const TotalUnclaimedRewards = () => (
+const TotalUnclaimedRewards = props => (
     <Box display={'flex'} justifyContent={'center'} textAlign={'start'}>
         <Box
             width={'55%'}
@@ -514,8 +507,16 @@ const TotalUnclaimedRewards = () => (
             bgcolor={'#6372882E'}
             sx={{opacity: 0.5}}
         >
-            <Typography variant="caption">Total Unclaimed Rewards:</Typography>
-            <Typography variant="caption">870.38 ZKP</Typography>
+            {props.rewardsBalance && (
+                <>
+                    <Typography variant="caption">
+                        Total Unclaimed Rewards:
+                    </Typography>
+                    <Typography variant="caption">
+                        {props.rewardsBalance}
+                    </Typography>
+                </>
+            )}
         </Box>
     </Box>
 );

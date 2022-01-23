@@ -15,8 +15,8 @@ export const formatAccountBalance = (
     currency: string,
 ): string | null => {
     if (!balance) return null;
-    const amount = formatEther(balance).substring(0, 6);
-    return `${amount} ${currency}`;
+    const amount = formatEther(balance);
+    return `${(+amount).toFixed(2)} ${currency}`;
 };
 
 export const formatTokenBalance = (
@@ -26,6 +26,11 @@ export const formatTokenBalance = (
     if (!balance) return null;
     const formattedBalance = utils.formatUnits(balance, decimal);
     return (+formattedBalance).toFixed(2);
+};
+
+export const formatUSDPrice = (balance: string | null): string | null => {
+    if (!balance) return null;
+    return (+balance).toFixed(2);
 };
 
 export async function getTokenBalance(
@@ -40,7 +45,7 @@ export async function getTokenBalance(
         console.error('getTokenBalance called with null address');
         return null;
     }
-    const balance: number = await contract.balanceOf(address);
+    const balance: BigNumberish = await contract.balanceOf(address);
     const decimal = await contract.decimals();
     return formatTokenBalance(balance, decimal);
 }

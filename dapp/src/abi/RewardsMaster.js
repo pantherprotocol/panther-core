@@ -51,6 +51,19 @@ export const abi = [
             {
                 indexed: false,
                 internalType: 'uint256',
+                name: 'adjustment',
+                type: 'uint256',
+            },
+        ],
+        name: 'BalanceAdjusted',
+        type: 'event',
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: 'uint256',
                 name: 'reward',
                 type: 'uint256',
             },
@@ -172,9 +185,9 @@ export const abi = [
         name: 'accumRewardPerShare',
         outputs: [
             {
-                internalType: 'uint128',
+                internalType: 'uint256',
                 name: '',
-                type: 'uint128',
+                type: 'uint256',
             },
         ],
         stateMutability: 'view',
@@ -238,8 +251,21 @@ export const abi = [
         outputs: [
             {
                 internalType: 'uint256',
-                name: '',
+                name: 'reward',
                 type: 'uint256',
+            },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+    },
+    {
+        inputs: [],
+        name: 'lastBalance',
+        outputs: [
+            {
+                internalType: 'uint96',
+                name: '',
+                type: 'uint96',
             },
         ],
         stateMutability: 'view',
@@ -353,9 +379,9 @@ export const abi = [
         name: 'totalShares',
         outputs: [
             {
-                internalType: 'uint96',
+                internalType: 'uint128',
                 name: '',
-                type: 'uint96',
+                type: 'uint128',
             },
         ],
         stateMutability: 'view',

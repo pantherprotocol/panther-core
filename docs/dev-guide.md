@@ -26,10 +26,20 @@ In another window, `cd` to the `zkp-token` repository, and run:
     yarn deploy --network localhost
 
 In the output, you will see a list of addresses of deployed smart
-contracts. Make a note of the token contract address, which will
-be shown on a line like this:
+contracts. Make sure your `.env` contains variable definitions which
+match these addresses. The simplest way to achieve this is to perform
+a fresh deployment on a newly started Hardhat Network node. In this
+case the addresses will always be the same, so you can just copy the
+definitions directly from `.env.example` without requiring further
+modifications.
+
+Otherwise you will have to make a note of the `ZKPToken` and
+`VestingPools` contract addresses, which will be shown on lines like
+this:
 
     Token instance deployed (0x5FbDB2315678afecb367f032d93F642f64180aa3)...
+
+and then edit `.env` to point to the correct addresses.
 
 ### Deploying staking contracts
 
@@ -38,8 +48,8 @@ In `zkp-staking`, set up the environment variables:
     cd contracts
     cp .env.example .env
 
-Ensure the `STAKING_TOKEN` variable is pointing to that ZKP token
-contract above, e.g.:
+Ensure the `STAKING_TOKEN` variable is pointing to that same ZKP token
+contract defined as `TOKEN_ADDRESS` in `zkp-token/.env` above, e.g.:
 
     STAKING_TOKEN=0x5FbDB2315678afecb367f032d93F642f64180aa3
 
@@ -53,28 +63,82 @@ Now run:
     cd contracts
     yarn deploy --network localhost
 
-There is no need to take notes of the addresses of the newly deployed
-contracts, because they are automatically stored in
-`contracts/deployments` via `hardhat-deploy`, which also makes them
-easily accessible via extra API methods.
+There is no need to take notes of the addresses of these newly
+deployed contracts, because unlike with the `zkp-token` deployment,
+they are automatically stored in `contracts/deployments` via
+`hardhat-deploy`, which also makes them easily retrievable via extra
+API methods.
+
+For convenient reference, you can also list the contracts and their
+deployed addresses via:
+
+    yarn contracts
+
+However, you will need the address of `RewardPool` in the next step.
 
 ## Seeding smart contracts with data
 
-### Vesting and releasing ZKP for staking
+### Creating a vesting pool for `RewardPool` contract
+
+Run the following command in the `zkp-token` repository, ensuring that
+`$REWARD_POOL` refers to the address of the `RewardPool` contract,
+either by setting the `REWARD_POOL` variable, or simply substituting
+the address into the command:
+
+    yarn hardhat pool:add $REWARD_POOL --network localhost
+
+This will create a new pool with the `RewardPool` contract as its
+owner.
+
+Make a note of the pool id generated here. If you are starting from
+scratch, it should be pool id 0 - the first pool (or "zeroth", to be
+more precise).
+
+### Creating vesting pools for staking users
 
 In order to test staking, we need an account which has $ZKP tokens
 available for staking.
 
-In `zkp-token`, create a new vesting pool with a given recipient, and
-release some tokens to that recipient, by running:
+Still in `zkp-token`, create a new vesting pool with the deployer
+account as the owner, by running:
 
-    yarn hardhat vest 0 $STAKING_TOKEN $VESTING_POOLS --network localhost
+    yarn hardhat pool:add 0 --network localhost
 
-where the variables are set or substituted appropriately for the
-corresponding addresses. Note that here `0` specifies the recipient as
-the first signer in the array of Hardhat-provided signers obtained via
-`hre.ethers.getSigners()`. However instead of passing an index to that
-array, you can also pass a normal wallet address.
+Here the `0` refers to the first of 20 signers which Hardhat
+automatically makes available via `hre.ethers.getSigners()`.
+
+Since by default Hardhat tasks use the first of these 20 signers, for
+simplicity you can use `0` as the value for `$OWNER` here, which will
+result in the new pool being owned by the same account which deployed
+all the contracts.
+
+However if you want to test staking with multiple accounts, you can
+also create pools for any of the other 19 Hardhat signers, by using an
+integer from `0` to `19`, and then import the private keys into
+Metamask for testing. (These private keys are shown when starting up
+the node via `yarn chain`.)
+
+For each pool that you generate here, make a note of the pool id and
+which account owns it. If you started from scratch, it should be pool
+id 1 (the second pool after the one created above for the `RewardPool`
+contract), owned by the zeroth Hardhat signer.
+
+Notice how in the previous `pool:add` command, we used a normal wallet
+address as the parameter to specify the pool owner, but here we are
+using an integer from `0` to `19`, which specifies the owner as one of
+the signers in the array returned by `hre.ethers.getSigners()`.
+
+### Releasing ZKP for staking
+
+Now you can release some tokens from one of these vesting pools to its
+owner via the `pool:release` Hardhat task, for example:
+
+    yarn hardhat pool:release 1 1000 --network localhost
+
+will release 1000 ZKP tokens from pool 1.
+
+Currently this only works for pools owned by the Hardhat deployer
+account (i.e. zeroth signer).
 
 ### Register the classic staking type
 

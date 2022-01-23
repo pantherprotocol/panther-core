@@ -27,8 +27,8 @@ describe('StakeRewardAdviser', () => {
     const generateMessage = (address: string, amount: string) => {
         return (
             '0x' +
-            `${address.replace('0x', '')}` + // staker
-            `${amount.replace('0x', '')}` + // amount
+            address.replace('0x', '') + // staker
+            amount.replace('0x', '') + // amount
             '0000002e' + // id
             '01324647' + // stakedAt
             '01324648' + // lockedTill
@@ -47,6 +47,11 @@ describe('StakeRewardAdviser', () => {
         )) as StakeRewardAdviser;
 
         message = generateMessage(staker, stakeAmount);
+    });
+
+    it('should get the FACTOR from contract', async () => {
+        const factor = await stakeRewardAdviser.FACTOR();
+        expect(factor).to.be.equal(stakeAmountToSharesScaledFactor);
     });
 
     it('should return the advice of granting shares', async () => {

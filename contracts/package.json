@@ -9,6 +9,7 @@
     "chain": "FAKE_MNEMONIC=yes hardhat node",
     "compile": "FAKE_MNEMONIC=yes hardhat compile",
     "console": "FAKE_MNEMONIC=yes hardhat console --network localhost",
+    "contracts": "hardhat export --export >(cat) --network localhost | jq '.contracts | with_entries(.value = .value.address)'",
     "coverage": "FAKE_MNEMONIC=yes hardhat coverage",
     "deploy": "hardhat deploy",
     "deploy:chain": "FAKE_MNEMONIC=yes hardhat deploy --network localhost",

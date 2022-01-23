@@ -10,7 +10,7 @@ function getMissingEnvVars() {
     // https://github.com/mrsteele/dotenv-webpack/issues/70#issuecomment-392525509
     const _envCheck = {
         STAKING_CONTRACT: process.env.STAKING_CONTRACT,
-        REWARDS_MASTER_CONTRACT: process.env.REWARDS_MASTER_CONTRACT,
+        REWARD_MASTER_CONTRACT: process.env.REWARD_MASTER_CONTRACT,
         VESTING_POOLS_CONTRACT: process.env.VESTING_POOLS_CONTRACT,
         STAKING_TOKEN_CONTRACT: process.env.STAKING_TOKEN_CONTRACT,
         TOKEN_SYMBOL: process.env.TOKEN_SYMBOL,

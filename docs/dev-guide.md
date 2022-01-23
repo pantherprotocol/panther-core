@@ -178,7 +178,7 @@ which vesting should be allowed.
 
 - Make sure that `STAKING_CONTRACT` is set to the address of the newly
   deployed `Staking.sol` contract from above, and similarly for
-  `REWARDS_MASTER_CONTRACT`.
+  `REWARD_MASTER_CONTRACT`.
 
 - `yarn start` to start the dApp in development mode, then visit
   http://localhost:3000.

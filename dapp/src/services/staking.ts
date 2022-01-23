@@ -15,7 +15,7 @@ const CONFIRMATIONS_NUM = 1;
 const CoinGeckoClient = new CoinGecko();
 
 export const STAKING_CONTRACT = process.env.STAKING_CONTRACT;
-export const REWARDS_MASTER_CONTRACT = process.env.REWARDS_MASTER_CONTRACT;
+export const REWARD_MASTER_CONTRACT = process.env.REWARD_MASTER_CONTRACT;
 export const VESTING_POOLS_CONTRACT = process.env.VESTING_POOLS_CONTRACT;
 export const STAKING_TOKEN_CONTRACT = process.env.STAKING_TOKEN_CONTRACT;
 export const TOKEN_SYMBOL = process.env.TOKEN_SYMBOL;
@@ -45,7 +45,7 @@ export async function getRewardsMasterContract(
 ): Promise<ethers.Contract> {
     return new ethers.Contract(
         // Guaranteed to be non-null due to check in src/index.tsx
-        REWARDS_MASTER_CONTRACT!,
+        REWARD_MASTER_CONTRACT!,
         REWARDS_MASTER_ABI,
         library,
     );

@@ -84,6 +84,10 @@ export default function UnstakeTable() {
     };
 
     useEffect(() => {
+        if (!library || !account) {
+            return;
+        }
+
         setTotalStaked();
     });
 

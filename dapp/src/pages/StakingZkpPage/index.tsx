@@ -141,12 +141,14 @@ function StakingZkpPage() {
     };
 
     useEffect(() => {
-        if (library) {
-            setZkpTokenBalance();
-            getTokenMarketPrice();
-            getStakedZkpBalance();
-            getUnclaimedRewardsBalance();
+        if (!library || !account) {
+            return;
         }
+
+        setZkpTokenBalance();
+        getTokenMarketPrice();
+        getStakedZkpBalance();
+        getUnclaimedRewardsBalance();
     });
 
     return (

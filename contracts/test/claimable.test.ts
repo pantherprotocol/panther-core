@@ -30,7 +30,7 @@ describe('Claimable', () => {
         expect(await token.balanceOf(receiver)).to.eq('1000');
     });
 
-    it('should revert is the transfer is not successful', async () => {
+    it('should revert if the transfer is not successful', async () => {
         await expect(
             claimable.internalClaimErc20(
                 token.address,

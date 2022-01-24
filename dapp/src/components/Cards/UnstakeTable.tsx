@@ -65,6 +65,9 @@ export default function UnstakeTable() {
         const stakingContract = await stakingService.getStakingContract(
             library,
         );
+        if (!stakingContract) {
+            return;
+        }
 
         const signer = library.getSigner(account).connectUnchecked();
 

@@ -37,6 +37,9 @@ export default function Staking(props: {
         const stakingContract = await stakingService.getStakingContract(
             library,
         );
+        if (!stakingContract) {
+            return;
+        }
         const stakeType = '0x4ab0941a';
         const signer = library.getSigner(account).connectUnchecked();
         const stakingResponse = await stakingService.stake(

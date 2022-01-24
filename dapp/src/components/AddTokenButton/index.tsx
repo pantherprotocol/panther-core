@@ -19,6 +19,9 @@ export const AddTokenButton = (props: {
         const tokenContract = await stakingService.getStakingTokenContract(
             library,
         );
+        if (!tokenContract) {
+            return;
+        }
         const tokenSymbol = await tokenContract.symbol();
         const tokenDecimals = await tokenContract.decimals();
 

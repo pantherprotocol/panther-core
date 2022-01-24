@@ -43,6 +43,9 @@ export default function UnstakeTable() {
         const stakingContract = await stakingService.getStakingContract(
             library,
         );
+        if (!stakingContract) {
+            return;
+        }
         const stakedData = await stakingService.getTotalStaked(
             stakingContract,
             account,

@@ -6,20 +6,26 @@ $black: #191c1f;
 $main-brown: #ffdfbd;
 $grey-btn: #475267;
 $grey-btn-border: #485267;
+$dark-gray: #404a53;
 $modal-back: #151c2a;
 $switch-back: #111420;
 $input-border: #acacc2;
 $btn-blue: #205bea;
+$second-blue: #1e4eb4;
+$link-color: #61dafb;
 $btn-main: #02acd1;
+$dark-blue: #282c34;
 $wallet-options: #363c4b;
 $button-group: #373b46;
 $wallet-options-hover: #798192;
 $cube: #29303e;
 $asset-balance: rgba(150, 172, 214, 0.4);
 $selected-item-color: rgba(100, 107, 125, 0.5);
+$card-background: rgba(43, 51, 65, 0.25);
 $asset-growth: #0eae00;
 $asset-fall: #d01111;
 $table-header-grey: #6c757e;
+$header-item: rgba(255, 255, 255, 0.1);
 $nav-grey: #394047;
 $nav-border: #191c1f;
 $report: #fa3c30;
@@ -27,10 +33,25 @@ $progress: #fddcbc;
 $main-background: #0c121e;
 $main-text: #bbbbbb;
 $grey-text: rgba(255, 255, 255, 0.5);
+$button-holder: rgba(107, 155, 183, 0.2);
+$border-button: rgba(255, 255, 255, 0.36);
+$warning-box: rgb(0 0 0 / 38%);
+$header-box-shadow: rgba(0, 0, 0, 0.2);
 $main-heading-span: #ffdfbd;
+$third-blue: linear-gradient(0deg, #2b63eb, #2b63eb);
 $blue-linear: linear-gradient(
         180deg,
         rgba(255, 255, 255, 0.12) 0%,
         rgba(255, 255, 255, 0) 100%
     ),
     #205bea;
+$table-background: linear-gradient(
+    0deg,
+    rgba(146, 159, 183, 0.35),
+    rgba(146, 159, 183, 0.35)
+);
+$navigation-background: linear-gradient(
+    0deg,
+    rgba(71, 82, 103, 0.1),
+    rgba(71, 82, 103, 0.1)
+);

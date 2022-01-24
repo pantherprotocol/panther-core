@@ -22,7 +22,7 @@ interface IStakingTypes {
         uint32 lockedTill;
         // ignored if non-zero `lockedTill` defined, overrides `minLockPeriod`
         uint32 exactLockPeriod;
-        // has effect only if both `lockedTill` and `lockedTill` are zero
+        // has effect only if both `lockedTill` and `exactLockPeriod` are zero
         uint32 minLockPeriod;
     }
 

@@ -165,10 +165,9 @@ contract Staking is
         uint256 stakeID,
         bytes calldata data,
         bool _isForced
-    ) external {
+    ) external stakeExist(msg.sender, stakeID) {
         Stake memory _stake = stakes[msg.sender][stakeID];
 
-        require(_stake.amount != 0, "Staking: Stake doesn't exist");
         require(_stake.claimedAt == 0, "Staking: Stake claimed");
         require(_stake.lockedTill < safe32TimeNow(), "Staking: Stake locked");
 
@@ -199,14 +198,16 @@ contract Staking is
      * @param stakeID - ID of the stake to delegate votes uber
      * @param to - address to delegate to
      */
-    function delegate(uint256 stakeID, address to) public {
+    function delegate(uint256 stakeID, address to)
+        public
+        stakeExist(msg.sender, stakeID)
+    {
         require(
             to != GLOBAL_ACCOUNT,
             "Staking: Can't delegate to GLOBAL_ACCOUNT"
         );
 
         Stake memory s = stakes[msg.sender][stakeID];
-        require(s.stakedAt != 0, "Staking: Stake doesn't exist");
         require(s.claimedAt == 0, "Staking: Stake claimed");
         require(s.delegatee != to, "Staking: Already delegated");
 
@@ -661,6 +662,14 @@ contract Staking is
             // REWARD_MASTER must be unable to revert forced calls
             require(_isForced, "Staking: REWARD_MASTER reverts");
         }
+    }
+
+    modifier stakeExist(address staker, uint256 stakeID) {
+        require(
+            stakes[staker].length > stakeID,
+            "Staking: Stake doesn't exist"
+        );
+        _;
     }
 
     modifier nonZeroStakeType(bytes4 stakeType) {

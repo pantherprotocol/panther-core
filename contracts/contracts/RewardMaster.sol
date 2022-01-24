@@ -328,8 +328,8 @@ contract RewardMaster is
         }
 
         // known contracts, no reentrancy guard needed
-        newBalance = IErc20Min(REWARD_TOKEN).balanceOf(address(this));
         uint256 newlyVested = IRewardPool(REWARD_POOL).vestRewards();
+        newBalance = IErc20Min(REWARD_TOKEN).balanceOf(address(this));
 
         uint256 expectedBalance = oldBalance + newlyVested;
         if (newBalance > expectedBalance) {

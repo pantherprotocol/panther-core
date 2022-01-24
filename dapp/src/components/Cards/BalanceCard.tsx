@@ -5,95 +5,14 @@ import Typography from '@mui/material/Typography';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import './styles.scss';
 import Divider from '@mui/material/Divider';
-import {useEffect, useState} from 'react';
-import {useWeb3React} from '@web3-react/core';
-import {BigNumber, utils} from 'ethers';
-import * as stakingService from '../../services/staking';
-import * as accountService from '../../services/account';
+import {Tooltip} from '@mui/material';
 
-export const BalanceCard = () => {
-    const context = useWeb3React();
-    const {account, library} = context;
-    const [tokenBalance, setTokenBalance] = useState<string | null>('0');
-    const [stakedBalance, setStakedBalance] = useState<any>('0');
-    const [rewardsBalance, setRewardsBalance] = useState<string | null>('0');
-    const [tokenMarketPrice, setTokenMarketPrice] = useState<number | null>(
-        null,
-    );
-    const [tokenUSDValue, setTokenUSDValue] = useState<number | null>(null);
-
-    const setZkpTokenBalance = async () => {
-        const stakingTokenContract =
-            await stakingService.getStakingTokenContract(library);
-        if (!stakingTokenContract) {
-            return;
-        }
-        const balance = await accountService.getTokenBalance(
-            stakingTokenContract,
-            account,
-        );
-        setTokenBalance(balance);
-    };
-
-    const getStakedZkpBalance = async () => {
-        const stakingContract = await stakingService.getStakingContract(
-            library,
-        );
-        const stakingTokenContract =
-            await stakingService.getStakingTokenContract(library);
-        if (!stakingContract || !stakingTokenContract) {
-            return;
-        }
-        const stakedBalance = await stakingService.getTotalStaked(
-            stakingContract,
-            account,
-        );
-        const totalStaked = BigNumber.from(0);
-        stakedBalance.map(item => totalStaked.add(item.amount));
-        const decimals = await stakingTokenContract.decimals();
-        const totalStakedValue = utils.formatUnits(totalStaked, decimals);
-        setStakedBalance((+totalStakedValue).toFixed(2));
-    };
-
-    const getUnclaimedRewardsBalance = async () => {
-        const rewardsMasterContract =
-            await stakingService.getRewardsMasterContract(library);
-        if (!rewardsMasterContract) {
-            return;
-        }
-        const stakingTokenContract =
-            await stakingService.getStakingTokenContract(library);
-        if (!stakingTokenContract) {
-            return;
-        }
-        const rewards = await stakingService.getRewardsBalance(
-            rewardsMasterContract,
-            stakingTokenContract,
-            account,
-        );
-        setRewardsBalance(rewards);
-    };
-
-    const getTokenMarketPrice = async () => {
-        const price = await stakingService.getZKPMarketPrice();
-        if (price && tokenBalance && Number(tokenBalance) > 0) {
-            setTokenMarketPrice(price);
-            const tokenUSDValue: number = price * Number(tokenBalance);
-            setTokenUSDValue(tokenUSDValue);
-        }
-    };
-
-    useEffect(() => {
-        if (!account) {
-            return;
-        }
-
-        setZkpTokenBalance();
-        getStakedZkpBalance();
-        getUnclaimedRewardsBalance();
-        getTokenMarketPrice();
-    });
-
+export const BalanceCard = (props: {
+    rewardsBalance: string | null;
+    tokenBalance: string | null;
+    stakedBalance: string | null;
+    tokenUSDValue: string | null;
+}) => {
     return (
         <Card
             sx={{
@@ -127,7 +46,7 @@ export const BalanceCard = () => {
                         lineHeight: '42px',
                     }}
                 >
-                    {tokenBalance}
+                    {props.tokenBalance}
                 </Typography>
                 <Typography
                     sx={{
@@ -140,7 +59,7 @@ export const BalanceCard = () => {
                     ZKP
                 </Typography>
             </Box>
-            {tokenMarketPrice && tokenUSDValue && (
+            {props.tokenUSDValue && (
                 <Box display="flex" alignItems="baseline">
                     <Typography
                         sx={{
@@ -149,10 +68,9 @@ export const BalanceCard = () => {
                             fontSize: '12px',
                             lineHeight: '42px',
                             opacity: 0.5,
-                            marginBottom: '18px',
                         }}
                     >
-                        Approximately ${tokenUSDValue}
+                        Approximately ${props.tokenUSDValue}
                     </Typography>
                 </Box>
             )}
@@ -176,13 +94,15 @@ export const BalanceCard = () => {
                     Staked Balance
                 </Typography>
                 <Typography>
-                    <ErrorOutlineIcon
-                        fontSize="small"
-                        className="error-outline"
-                        sx={{
-                            opacity: 0.5,
-                        }}
-                    />
+                    <Tooltip title="Staked ZKP Token Balance" placement="top">
+                        <ErrorOutlineIcon
+                            fontSize="small"
+                            className="error-outline"
+                            sx={{
+                                opacity: 0.5,
+                            }}
+                        />
+                    </Tooltip>
                 </Typography>
             </Box>
             <Box display="flex" alignItems="baseline">
@@ -195,7 +115,7 @@ export const BalanceCard = () => {
                         lineHeight: '42px',
                     }}
                 >
-                    {stakedBalance}
+                    {props.stakedBalance}
                 </Typography>
                 <Typography
                     sx={{
@@ -219,16 +139,21 @@ export const BalanceCard = () => {
                         opacity: 0.5,
                     }}
                 >
-                    Unclaimed Reward balance
+                    Unclaimed Reward Balance
                 </Typography>
                 <Typography>
-                    <ErrorOutlineIcon
-                        fontSize="small"
-                        className="error-outline"
-                        sx={{
-                            opacity: 0.5,
-                        }}
-                    />
+                    <Tooltip
+                        title="Unclaimed Reward ZKP Token Balance"
+                        placement="top"
+                    >
+                        <ErrorOutlineIcon
+                            fontSize="small"
+                            className="error-outline"
+                            sx={{
+                                opacity: 0.5,
+                            }}
+                        />
+                    </Tooltip>
                 </Typography>
             </Box>
             <Box display="flex" alignItems="baseline">
@@ -241,7 +166,7 @@ export const BalanceCard = () => {
                         lineHeight: '42px',
                     }}
                 >
-                    {rewardsBalance}
+                    {props.rewardsBalance}
                 </Typography>
                 <Typography
                     sx={{
@@ -301,10 +226,20 @@ export const PrivateStakingComingSoonCard = () => {
     );
 };
 
-export default function OutlinedCard() {
+export default function OutlinedCard(props: {
+    rewardsBalance: string | null;
+    tokenBalance: string | null;
+    stakedBalance: string | null;
+    tokenUSDValue: string | null;
+}) {
     return (
         <Box width={'100%'} margin={'0 5'}>
-            <BalanceCard />
+            <BalanceCard
+                tokenBalance={props.tokenBalance}
+                tokenUSDValue={props.tokenUSDValue}
+                stakedBalance={props.stakedBalance}
+                rewardsBalance={props.rewardsBalance}
+            />
             <PrivateStakingComingSoonCard />
         </Box>
     );

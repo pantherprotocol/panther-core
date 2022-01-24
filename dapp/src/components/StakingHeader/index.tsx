@@ -6,6 +6,7 @@ import {useWeb3React, UnsupportedChainIdError} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import {ConnectButton} from '../ConnectButton';
 import {NavigationBtn} from '../NavigationButton';
+import {AddTokenButton} from '../AddTokenButton';
 import {onWrongNetwork, requiredNetwork} from '../../services/connectors';
 import {
     formatAccountAddress,
@@ -20,6 +21,9 @@ const StakingHeader = props => {
     const {account, library, chainId, active, error} = context;
     const [balance, setBalance] = useState(null);
     const [wrongNetwork, setWrongNetwork] = useState(false);
+    const [tokenAdded, setTokenAdded] = useState<boolean>(
+        !!localStorage.getItem('ZKP-Staking:tokenAdded'),
+    );
 
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
 
@@ -91,9 +95,7 @@ const StakingHeader = props => {
                                     className="nav-item active"
                                     variant="subtitle2"
                                 >
-                                    <a href="https://pantherprotocol.io">
-                                        Staking
-                                    </a>
+                                    <a href="/">Staking</a>
                                 </Typography>
                                 <Typography
                                     className="nav-item"
@@ -107,7 +109,7 @@ const StakingHeader = props => {
                                     className="nav-item"
                                     variant="subtitle2"
                                 >
-                                    <a href="https://pantherprotocol.io">
+                                    <a href="https://snapshot.org/#/launchdao.eth">
                                         Governance
                                     </a>
                                 </Typography>
@@ -126,12 +128,17 @@ const StakingHeader = props => {
                 <div className={`header-right ${buttonActiveClass}`}>
                     {/* account details */}
                     {active && !wrongNetwork && (
-                        <div className="address-btn">
-                            <NavigationBtn
-                                balance={accountBalance}
-                                address={accountAddress}
-                            />
-                        </div>
+                        <>
+                            {!tokenAdded && (
+                                <AddTokenButton setTokenAdded={setTokenAdded} />
+                            )}
+                            <div className="address-btn">
+                                <NavigationBtn
+                                    balance={accountBalance}
+                                    address={accountAddress}
+                                />
+                            </div>
+                        </>
                     )}
 
                     {/* connection button */}

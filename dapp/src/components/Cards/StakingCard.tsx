@@ -17,79 +17,43 @@ import './styles.scss';
 import * as stakingService from '../../services/staking';
 import {useWeb3React} from '@web3-react/core';
 import {useState} from 'react';
-import * as accountService from '../../services/account';
-import {useEffect} from 'react';
-import {BigNumber} from '@ethersproject/bignumber';
-import {utils} from 'ethers';
 
 const localStorage = window.localStorage;
 
-export default function Staking() {
+export default function Staking(props: {
+    rewardsBalance: string | null;
+    tokenBalance: string | null;
+    stakedBalance: string | null;
+    setZkpTokenBalance: any;
+    getStakedZkpBalance: any;
+}) {
     const context = useWeb3React();
     const {account, library} = context;
-    const [tokenBalance, setTokenBalance] = useState<string | null>('0');
-    const [stakedBalance, setStakedBalance] = useState<any>('0');
-    const [amountToStake, setAmountToStake] = useState<string | null>('0');
+    const [amountToStake, setAmountToStake] = useState<string | null>('0.00');
     const [toggle, setToggle] = useState('stake');
     const [, setStakedId] = useState<number | null>(null);
-
-    const setZkpTokenBalance = async () => {
-        const stakingTokenContract =
-            await stakingService.getStakingTokenContract(library);
-        if (!stakingTokenContract) {
-            return;
-        }
-        const balance = await accountService.getTokenBalance(
-            stakingTokenContract,
-            account,
-        );
-        setTokenBalance(balance);
-    };
-
-    const getStakedZkpBalance = async () => {
-        const stakingContract = await stakingService.getStakingContract(
-            library,
-        );
-        const stakingTokenContract =
-            await stakingService.getStakingTokenContract(library);
-        if (!stakingContract || !stakingTokenContract) {
-            return;
-        }
-        const stakedBalance = await stakingService.getTotalStaked(
-            stakingContract,
-            account,
-        );
-        const totalStaked = BigNumber.from(0);
-        stakedBalance.map(item => totalStaked.add(item.amount));
-        const decimals = await stakingTokenContract.decimals();
-        const totalStakedValue = utils.formatUnits(totalStaked, decimals);
-        setStakedBalance((+totalStakedValue).toFixed(2));
-    };
-
-    useEffect(() => {
-        if (!account) {
-            return;
-        }
-        setZkpTokenBalance();
-        getStakedZkpBalance();
-    });
 
     const stake = async (amount: string) => {
         const stakingContract = await stakingService.getStakingContract(
             library,
         );
+        if (!stakingContract) {
+            return;
+        }
         const stakeType = '0x4ab0941a';
         const signer = library.getSigner(account).connectUnchecked();
-        const stakeId = await stakingService.stake(
+        const stakingResponse = await stakingService.stake(
             library,
             stakingContract,
             amount,
             stakeType,
             signer,
         );
-        if (stakeId) {
-            setStakedId(stakeId);
-            localStorage.setItem('stakeId', stakeId.toString());
+        if (stakingResponse) {
+            setStakedId(stakingResponse);
+            localStorage.setItem('stakeId', stakingResponse);
+            props.setZkpTokenBalance();
+            props.getStakedZkpBalance();
         }
     };
 
@@ -131,7 +95,7 @@ export default function Staking() {
             >
                 <Box>
                     <Typography color={'#FFF'} fontWeight={700}>
-                        {tokenBalance} <span>ZKP</span>
+                        {props.tokenBalance} <span>ZKP</span>
                     </Typography>
                     <Typography
                         variant="caption"
@@ -144,7 +108,7 @@ export default function Staking() {
                 </Box>
                 <Box>
                     <Typography color={'#FFF'} fontWeight={700}>
-                        {stakedBalance} <span>ZKP</span>
+                        {props.stakedBalance} <span>ZKP</span>
                     </Typography>
                     <Typography
                         variant="caption"
@@ -229,7 +193,7 @@ export default function Staking() {
                                             color: '#ffdfbd',
                                         }}
                                     >
-                                        {tokenBalance}
+                                        {props.tokenBalance}
                                     </Typography>
                                     <Typography
                                         variant="caption"
@@ -246,7 +210,9 @@ export default function Staking() {
                                             cursor: 'pointer',
                                         }}
                                         onClick={() => {
-                                            setAmountToStake(tokenBalance);
+                                            setAmountToStake(
+                                                props.tokenBalance,
+                                            );
                                         }}
                                     >
                                         MAX
@@ -277,13 +243,13 @@ export default function Staking() {
                                     onChange={e => {
                                         const regex = /^[0-9\b]+$/;
                                         if (
-                                            tokenBalance &&
-                                            Number(tokenBalance) &&
+                                            props.tokenBalance &&
+                                            Number(props.tokenBalance) &&
                                             Number(e.target.value) >
-                                                Number(tokenBalance) &&
+                                                Number(props.tokenBalance) &&
                                             regex.test(e.target.value)
                                         ) {
-                                            setAmountToStake(tokenBalance);
+                                            return null;
                                         } else if (regex.test(e.target.value)) {
                                             setAmountToStake(
                                                 e.target.value.toString() || '',
@@ -365,7 +331,9 @@ export default function Staking() {
                     <>
                         <UnstakingInfoMSG />
                         <UnstakeTable />
-                        <TotalUnclaimedRewards />
+                        <TotalUnclaimedRewards
+                            rewardsBalance={props.rewardsBalance}
+                        />
                     </>
                 )}
             </Card>
@@ -383,32 +351,6 @@ const StakingMethod = () => (
             width: '80%',
         }}
     >
-        {/*<Box display="flex" justifyContent={'space-between'}>
-            <Typography
-                sx={{
-                    fontWeight: 500,
-                    fontStyle: 'normal',
-                    fontSize: '16px',
-                    lineHeight: '42px',
-                    marginRight: '18px',
-                    color: '#fff',
-                }}
-            >
-                Staking Method:
-            </Typography>
-            <Select
-                labelId="addresses-select-standard-label"
-                id="addresses-select-standard"
-                variant="filled"
-                value={'Standard'}
-                sx={{m: 0, minWidth: 155, color: '#fff'}}
-            >
-                <MenuItem selected value={'Standard'}>
-                    Standard
-                </MenuItem>
-                <MenuItem value={'Option2'}>Option2</MenuItem>
-            </Select>
-        </Box>*/}
         <Box display="flex" justifyContent={'space-between'}>
             <Typography
                 sx={{
@@ -501,7 +443,7 @@ const UnstakingInfoMSG = () => (
     </Box>
 );
 
-const TotalUnclaimedRewards = () => (
+const TotalUnclaimedRewards = (props: {rewardsBalance: string | null}) => (
     <Box display={'flex'} justifyContent={'center'} textAlign={'start'}>
         <Box
             width={'55%'}
@@ -514,8 +456,16 @@ const TotalUnclaimedRewards = () => (
             bgcolor={'#6372882E'}
             sx={{opacity: 0.5}}
         >
-            <Typography variant="caption">Total Unclaimed Rewards:</Typography>
-            <Typography variant="caption">870.38 ZKP</Typography>
+            {props.rewardsBalance && (
+                <>
+                    <Typography variant="caption">
+                        Total Unclaimed Rewards:
+                    </Typography>
+                    <Typography variant="caption">
+                        {props.rewardsBalance}
+                    </Typography>
+                </>
+            )}
         </Box>
     </Box>
 );

@@ -54,7 +54,6 @@ export default function HeaderBar() {
                                 Analytics
                             </Typography>
                         </Grid>
-
                         <Grid
                             item
                             md={6}
@@ -67,7 +66,6 @@ export default function HeaderBar() {
                                 <Typography variant="subtitle2">
                                     2.51 ETH
                                 </Typography>
-
                                 <FormControl
                                     variant="standard"
                                     sx={{m: 0, minWidth: 155}}

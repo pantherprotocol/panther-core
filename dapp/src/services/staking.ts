@@ -132,7 +132,7 @@ export async function stake(
     stakeType: string,
     signer: JsonRpcSigner,
     data?: any,
-): Promise<number | null> {
+): Promise<any | null> {
     if (!contract) {
         return null;
     }
@@ -148,8 +148,13 @@ export async function stake(
         STAKING_CONTRACT,
         scaledAmount,
     );
-    await approvedStatus.wait(CONFIRMATIONS_NUM);
-    if (approvedStatus) {
+
+    const approveTransactionResponse = await approvedStatus.wait(
+        CONFIRMATIONS_NUM,
+    );
+    const approveConfirmed =
+        approveTransactionResponse.confirmations >= CONFIRMATIONS_NUM;
+    if (approveConfirmed) {
         const stakingSigner = contract.connect(signer);
         console.log(
             'Scaled amount: ',
@@ -158,29 +163,54 @@ export async function stake(
             amount,
         );
 
-        const stakeId: number = await stakingSigner.stake(
+        const stakingResponse: any = await stakingSigner.stake(
             scaledAmount,
             stakeType,
             data ? data : '0x00',
         );
-        return stakeId;
+
+        const stakeTransactionResponse = await stakingResponse.wait(
+            CONFIRMATIONS_NUM,
+        );
+        const stakeConfirmed =
+            stakeTransactionResponse.confirmations >= CONFIRMATIONS_NUM;
+        if (stakeConfirmed) {
+            return stakeTransactionResponse.events[0].args.value;
+        }
     }
 
     return null;
 }
 
 export async function unstake(
+    library: any,
     contract: ethers.Contract,
-    stakeID: number,
-    signer: any,
+    stakeId: number,
+    signer: JsonRpcSigner,
     data?: string,
     isForced = false,
-): Promise<void | null> {
+): Promise<boolean | null> {
     if (!contract) {
         return null;
     }
+
     const stakingSigner = contract.connect(signer);
-    await stakingSigner.unstake(stakeID, data ? data : {}, isForced);
+
+    const unstakingResponse: any = await stakingSigner.unstake(
+        stakeId,
+        data ? data : '0x00',
+        isForced,
+    );
+
+    const unstakeTransactionResponse = await unstakingResponse.wait(
+        CONFIRMATIONS_NUM,
+    );
+    const unstakeConfirmed =
+        unstakeTransactionResponse.confirmations >= CONFIRMATIONS_NUM;
+    if (unstakeConfirmed) {
+        return true;
+    }
+    return null;
 }
 
 export async function getTotalStaked(

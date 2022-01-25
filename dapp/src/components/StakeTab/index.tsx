@@ -47,12 +47,14 @@ export default function StakeTab(props: {
             stakeType,
             signer,
         );
-        if (stakingResponse) {
-            setStakedId(stakingResponse);
-            localStorage.setItem('stakeId', stakingResponse);
-            props.setZkpTokenBalance();
-            props.getStakedZkpBalance();
+        if (stakingResponse instanceof Error) {
+            //TODO: Popup notification and return data
+            console.error(stakingResponse);
         }
+        setStakedId(Number(stakingResponse));
+        localStorage.setItem('stakeId', stakingResponse.toString());
+        props.setZkpTokenBalance();
+        props.getStakedZkpBalance();
     };
 
     return (

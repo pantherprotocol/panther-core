@@ -7,7 +7,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {Button} from '@mui/material';
-import './styles.scss';
 import {useWeb3React} from '@web3-react/core';
 import {useState} from 'react';
 import * as stakingService from '../../services/staking';
@@ -16,6 +15,7 @@ import {BigNumber} from 'ethers';
 import {formatAccountBalance, formatTokenBalance} from '../../services/account';
 import {formatTime} from '../../utils';
 import {getRewardsBalanceForCalculations} from '../../services/staking';
+import './styles.scss';
 
 export default function UnstakeTable() {
     const context = useWeb3React();

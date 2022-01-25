@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import {Link, Tooltip} from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import React from 'react';
-import './style.scss';
+import './styles.scss';
 
 const CurrentStakeAPY = (props: {currentAPY: string}) => {
     return (

@@ -48,7 +48,7 @@ function StakingZkpPage() {
     const [tokenUSDValue, setTokenUSDValue] = useState<string | null>(null);
     const [stakedBalance, setStakedBalance] = useState<any>('0.00');
     const [rewardsBalance, setRewardsBalance] = useState<string | null>('0.00');
-    const [currentAPY] = useState<string>('');
+    const [currentAPY, ] = useState<string>('');
 
     // Handle logic to eagerly connect to the injected ethereum provider, if it
     // exists and has granted access already

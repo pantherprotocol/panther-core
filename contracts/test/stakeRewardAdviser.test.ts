@@ -18,8 +18,8 @@ describe('StakeRewardAdviser', () => {
     const STAKED = classicActionHash(STAKE);
     const UNSTAKED = classicActionHash(UNSTAKE);
 
-    const stakeAmountToSharesScaledFactor = BigNumber.from(2);
-    const scale = BigNumber.from(1000); // hardcoded in the contract
+    const stakeAmountToSharesScaledFactor = BigNumber.from(1e3);
+    const scale = BigNumber.from(1e9); // hardcoded in the contract
 
     const stakeAmount = '0x0a0b0c0d0e0f000000ffffff';
     const staker = '0xc0fec0fec0fec0fec0fec0fec0fec0fec0fec0fe';

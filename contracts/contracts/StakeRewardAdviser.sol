@@ -19,7 +19,7 @@ contract StakeRewardAdviser is StakingMsgProcessor, Utils, IRewardAdviser {
     uint256 public immutable FACTOR;
     // solhint-enable var-name-mixedcase
 
-    uint256 private constant SCALE = 1e3;
+    uint256 private constant SCALE = 1e9;
 
     constructor(bytes4 stakeType, uint256 stakeAmountToSharesScaledFactor) {
         require(

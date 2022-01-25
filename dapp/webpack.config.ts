@@ -8,6 +8,40 @@ import Dotenv from 'dotenv-webpack';
 
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
+// Set BABEL_UWC to get easy access to use-what-changed React hook debugging.
+// When enabled, this allows monitoring of when React hooks change simply by
+// putting a comment line:
+//
+//     // uwc-debug
+//
+// in front of any hooks you want to debug, as per the instructions:
+//
+//     https://github.com/simbathesailor/use-what-changed#usage-with-babel-plugin-recommended
+//
+// However it's not enabled by default because for some reason this config
+// breaks source maps, meaning that debugging in the browser results in having
+// to wade through annoyingly transpiled Javascript, which makes it a lot harder
+// to debug.
+const babelConfig = process.env.BABEL_UWC
+    ? [
+          {
+              loader: 'babel-loader',
+              options: {
+                  presets: ['@babel/preset-env'],
+                  plugins: [
+                      '@babel/plugin-proposal-object-rest-spread',
+                      [
+                          '@simbathesailor/babel-plugin-use-what-changed',
+                          {
+                              active: process.env.NODE_ENV !== 'production', // boolean
+                          },
+                      ],
+                  ],
+              },
+          },
+      ]
+    : [];
+
 const webpackConfig = (): Configuration | any => ({
     entry: ['babel-polyfill', './src/index.tsx'],
     ...(true || process.env.NODE_ENV === 'production'
@@ -33,27 +67,11 @@ const webpackConfig = (): Configuration | any => ({
             {
                 test: /\.ts|\.tsx?$/,
                 use: [
+                    ...babelConfig,
                     {
                         loader: 'ts-loader',
                         options: {
                             transpileOnly: true,
-                        },
-                    },
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: ['@babel/preset-env'],
-                            plugins: [
-                                '@babel/plugin-proposal-object-rest-spread',
-                                [
-                                    '@simbathesailor/babel-plugin-use-what-changed',
-                                    {
-                                        active:
-                                            process.env.NODE_ENV !==
-                                            'production', // boolean
-                                    },
-                                ],
-                            ],
                         },
                     },
                 ],

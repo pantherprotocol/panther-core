@@ -34,15 +34,10 @@ stages: # List of stages for jobs, and their order of execution
 
 # These jobs are run in parallel within the test stage:
 
-lint-job:
+combined-job:
   stage: test
   <<: *yarn_cache_template
   script:
     - yarn lint
-
-unit-test-job:
-  stage: test
-  <<: *yarn_cache_template
-
-  script:
     - yarn run build:contracts && yarn test
+    - yarn run build:dapp

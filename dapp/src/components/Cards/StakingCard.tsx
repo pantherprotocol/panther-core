@@ -329,10 +329,7 @@ export default function Staking(props: {
                 {toggle == 'unstake' && (
                     <>
                         <UnstakingInfoMSG />
-                        <UnstakeTable
-                            rewardsBalance={props.rewardsBalance}
-                            stakedBalance={props.stakedBalance}
-                        />
+                        <UnstakeTable />
                         <TotalUnclaimedRewards
                             rewardsBalance={props.rewardsBalance}
                         />

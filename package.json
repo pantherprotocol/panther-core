@@ -12,6 +12,7 @@
     "lint": "yarn prettier:check && yarn workspace @zkp-staking/contracts lint:sol && yarn workspace @zkp-staking/contracts lint:ts && yarn workspace @zkp-staking/contracts lint:ts && yarn workspace @zkp-staking/dapp lint:ts",
     "test": "yarn test:contracts && yarn test:dapp",
     "build:contracts": "yarn workspace @zkp-staking/contracts compile",
+    "build:dapp": "yarn workspace @zkp-staking/dapp build",
     "test:contracts": "yarn workspace @zkp-staking/contracts test",
     "test:dapp": "yarn workspace @zkp-staking/dapp test",
     "postinstall": "husky install",

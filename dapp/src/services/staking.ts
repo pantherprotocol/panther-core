@@ -7,6 +7,7 @@ import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
 import {formatTokenBalance} from './account';
 import {JsonRpcSigner} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
+import {BigNumber} from 'ethers';
 
 const toBN = (n: number): ethers.BigNumber => ethers.BigNumber.from(n);
 const e18 = toBN(10).pow(toBN(18)); //18 decimal places after floating point
@@ -92,39 +93,6 @@ export function toBytes32(data): string {
     return ethers.utils.hexZeroPad(data, 32);
 }
 
-export async function getStakedEventFromBlock(
-    contract: ethers.Contract,
-    eventName: string,
-    stakeId: string,
-    block: number,
-) {
-    // https://docs.ethers.io/v5/api/utils/abi/fragments/#fragments--output-formats
-    const eventFilter = contract.filters[eventName](null, stakeId);
-    const provider = contract.provider;
-    const connection = (provider as ethers.providers.JsonRpcProvider)
-        .connection;
-    console.debug(
-        `Searching ${
-            connection ? connection.url + ' ' : ''
-        }for ${eventName} logs ` + `in block ${block}; eventFilter:`,
-        eventFilter,
-    );
-    const logs = await contract.queryFilter(eventFilter, block, block);
-    if (!logs || logs.length === 0) {
-        console.debug(`getStakedEventFromBlock: no ${eventName} logs found`);
-        return;
-    }
-    if (logs.length > 1) {
-        console.error(
-            `getStakedEventFromBlock: got ${logs.length} ${eventName} logs`,
-            logs,
-        );
-    } else {
-        console.debug(`getStakedEventFromBlock: got ${eventName} log`, logs[0]);
-    }
-    return logs[0];
-}
-
 export async function stake(
     library: any,
     contract: ethers.Contract,
@@ -132,15 +100,15 @@ export async function stake(
     stakeType: string,
     signer: JsonRpcSigner,
     data?: any,
-): Promise<any | null> {
+): Promise<BigNumber | Error> {
     if (!contract) {
-        return null;
+        return new Error('Missing contract parameter');
     }
     const scaledAmount = toBN(Number(amount)).mul(e18);
 
     const stakingTokenContract = await getStakingTokenContract(library);
     if (!stakingTokenContract) {
-        return null;
+        return new Error('Could not initialize staking contract');
     }
     const stakingTokenSigner = stakingTokenContract.connect(signer);
 
@@ -148,80 +116,95 @@ export async function stake(
         STAKING_CONTRACT,
         scaledAmount,
     );
-
-    const approveTransactionResponse = await approvedStatus.wait(
-        CONFIRMATIONS_NUM,
-    );
-    const approveConfirmed =
-        approveTransactionResponse.confirmations >= CONFIRMATIONS_NUM;
-    if (approveConfirmed) {
-        const stakingSigner = contract.connect(signer);
-        console.log(
-            'Scaled amount: ',
-            scaledAmount.toString(),
-            'amount: ',
-            amount,
+    let approveTransactionResponse;
+    try {
+        approveTransactionResponse = await approvedStatus.wait(
+            CONFIRMATIONS_NUM,
         );
+    } catch (e) {
+        console.error(
+            'Approval transaction gone wrong:',
+            approveTransactionResponse,
+        );
+        return e;
+    }
 
-        const stakingResponse: any = await stakingSigner.stake(
+    const stakingSigner = contract.connect(signer);
+
+    console.debug(
+        'Scaled amount: ',
+        scaledAmount.toString(),
+        'amount: ',
+        amount,
+    );
+
+    let stakingResponse: any;
+
+    try {
+        stakingResponse = await stakingSigner.stake(
             scaledAmount,
             stakeType,
             data ? data : '0x00',
         );
-
-        const stakeTransactionResponse = await stakingResponse.wait(
-            CONFIRMATIONS_NUM,
+    } catch (e) {
+        console.error(
+            'Staking transaction gone wrong:',
+            approveTransactionResponse,
         );
-        const stakeConfirmed =
-            stakeTransactionResponse.confirmations >= CONFIRMATIONS_NUM;
-        if (stakeConfirmed) {
-            return stakeTransactionResponse.events[0].args.value;
-        }
+        return e;
     }
 
-    return null;
+    const stakeTransactionResponse = await stakingResponse.wait(
+        CONFIRMATIONS_NUM,
+    );
+    console.debug(stakeTransactionResponse.events);
+    const event = stakeTransactionResponse.events.find(
+        ({event}) => event === 'StakeCreated',
+    );
+    console.debug(event);
+    if (!event)
+        console.error('No StakeCreated event found for this transaction.');
+    return event?.args.stakeID;
 }
 
 export async function unstake(
     library: any,
     contract: ethers.Contract,
-    stakeId: number,
+    stakeID: BigNumber,
     signer: JsonRpcSigner,
     data?: string,
     isForced = false,
-): Promise<boolean | null> {
+): Promise<boolean | Error> {
     if (!contract) {
-        return null;
+        return new Error('Missing contract parameter');
     }
 
     const stakingSigner = contract.connect(signer);
 
     const unstakingResponse: any = await stakingSigner.unstake(
-        stakeId,
+        stakeID,
         data ? data : '0x00',
         isForced,
     );
 
-    const unstakeTransactionResponse = await unstakingResponse.wait(
-        CONFIRMATIONS_NUM,
-    );
-    const unstakeConfirmed =
-        unstakeTransactionResponse.confirmations >= CONFIRMATIONS_NUM;
-    if (unstakeConfirmed) {
-        return true;
+    try {
+        await unstakingResponse.wait(CONFIRMATIONS_NUM);
+    } catch (e) {
+        return e;
     }
-    return null;
+
+    return true;
 }
 
-export async function getTotalStaked(
+export async function getAccountStakes(
     contract: ethers.Contract,
     address: string | null | undefined,
 ): Promise<any> {
     if (!contract) {
         return null;
     }
-    const totalStaked: any = await contract.accountStakes(address);
-    return totalStaked;
+    const stakes: any = await contract.accountStakes(address);
+    return stakes;
 }
 
 export async function getRewardsBalance(
@@ -232,9 +215,21 @@ export async function getRewardsBalance(
     if (!contract) {
         return null;
     }
-    const rewards: number = await contract.entitled(address);
+    const rewards: BigNumber = await contract.entitled(address);
     const decimal = await tokenContract.decimals();
     return formatTokenBalance(rewards, decimal);
+}
+
+export async function getRewardsBalanceForCalculations(
+    contract: ethers.Contract,
+    tokenContract: ethers.Contract,
+    address: string | null | undefined,
+): Promise<BigNumber | null> {
+    if (!contract) {
+        return null;
+    }
+    const rewards: BigNumber = await contract.entitled(address);
+    return rewards;
 }
 
 export async function getStakingTransactionsNumber(

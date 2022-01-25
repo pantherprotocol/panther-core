@@ -18,7 +18,11 @@ import * as stakingService from '../../services/staking';
 import * as accountService from '../../services/account';
 import {BigNumber} from '@ethersproject/bignumber';
 import {utils} from 'ethers';
-import {formatUSDPrice} from '../../services/account';
+import {formatTokenBalance, formatUSDPrice} from '../../services/account';
+import {
+    getAccountStakes,
+    getRewardsBalanceForCalculations,
+} from '../../services/staking';
 
 function StakingZkpPage() {
     const context = useWeb3React<Web3Provider>();
@@ -113,31 +117,72 @@ function StakingZkpPage() {
         if (!stakingContract || !stakingTokenContract) {
             return;
         }
-        const stakedBalance = await stakingService.getTotalStaked(
+        const stakedBalance = await stakingService.getAccountStakes(
             stakingContract,
             account,
         );
-        const totalStaked = BigNumber.from(0);
-        stakedBalance.map(item => totalStaked.add(item.amount));
+        let totalStaked = BigNumber.from(0);
+        stakedBalance.map(item => {
+            if (item.claimedAt == 0) {
+                totalStaked = totalStaked.add(item.amount);
+                return totalStaked;
+            }
+        });
         const decimals = await stakingTokenContract.decimals();
         const totalStakedValue = utils.formatUnits(totalStaked, decimals);
         setStakedBalance((+totalStakedValue).toFixed(2));
     };
 
     const getUnclaimedRewardsBalance = async () => {
-        const rewardsMasterContract =
-            await stakingService.getRewardsMasterContract(library);
-        const stakingTokenContract =
-            await stakingService.getStakingTokenContract(library);
-        if (!rewardsMasterContract || !stakingTokenContract) {
+        const stakingContract = await stakingService.getStakingContract(
+            library,
+        );
+        if (!stakingContract) {
             return;
         }
-        const rewards = await stakingService.getRewardsBalance(
+
+        const stakingTokenContract =
+            await stakingService.getStakingTokenContract(library);
+        if (!stakingTokenContract) {
+            return;
+        }
+
+        const rewardsMasterContract =
+            await stakingService.getRewardsMasterContract(library);
+        if (!rewardsMasterContract) {
+            return;
+        }
+
+        const rewardsBalanceNumber = await getRewardsBalanceForCalculations(
             rewardsMasterContract,
             stakingTokenContract,
             account,
         );
-        setRewardsBalance(rewards);
+        if (!rewardsBalanceNumber) return;
+
+        const decimals = await stakingTokenContract.decimals();
+
+        const stakedData = await getAccountStakes(stakingContract, account);
+
+        let totalStaked = BigNumber.from(0);
+        stakedData.map(item => {
+            totalStaked = totalStaked.add(item.amount);
+            return totalStaked;
+        });
+
+        let totalRewards = BigNumber.from(0);
+        stakedData.map(item => {
+            if (item.claimedAt == 0) {
+                const calculatedReward = rewardsBalanceNumber
+                    .mul(item.amount)
+                    .div(totalStaked);
+                if (!calculatedReward) return;
+                totalRewards = totalRewards.add(calculatedReward);
+                return totalRewards;
+            }
+        });
+
+        setRewardsBalance(formatTokenBalance(totalRewards, decimals));
     };
 
     useEffect(() => {

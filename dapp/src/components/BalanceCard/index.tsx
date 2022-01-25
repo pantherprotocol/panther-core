@@ -82,11 +82,13 @@ const AddressWithSetting = (props: {
                 alignItems="center"
                 justifyContent="end"
             >
-                <SettingsIcon
-                    sx={{
-                        opacity: 0.5,
-                    }}
-                />
+                <Tooltip title="Settings" placement="top">
+                    <SettingsIcon
+                        sx={{
+                            opacity: 0.5,
+                        }}
+                    />
+                </Tooltip>
             </Box>
         </Box>
     );
@@ -109,21 +111,23 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
             >
                 <Typography
                     sx={{
-                        fontWeight: 400,
+                        fontWeight: 800,
                         fontStyle: 'normal',
-                        fontSize: '14px',
+                        fontSize: '18px',
                         lineHeight: '42px',
-                        marginRight: '18px',
+                        alignItems: 'left',
                     }}
                 >
                     {title}
                 </Typography>
-                <RefreshIcon
-                    sx={{
-                        opacity: 0.5,
-                        transform: 'rotate(180deg)',
-                    }}
-                />
+                <Tooltip title="Settings" placement="top">
+                    <RefreshIcon
+                        sx={{
+                            opacity: 0.5,
+                            transform: 'rotate(180deg)',
+                        }}
+                    />
+                </Tooltip>
             </Box>
 
             <Box display="flex" alignItems="baseline">

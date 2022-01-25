@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import './styles.scss';
+import {Tooltip} from '@mui/material';
 
 const Address = (props: {
     accountAvatar: string;
@@ -27,11 +28,13 @@ const Address = (props: {
             >
                 {props.accountAddress}
             </Typography>
-            <ContentCopyIcon
-                sx={{
-                    opacity: 0.5,
-                }}
-            />
+            <Tooltip title="Copy Wallet Address" placement="top">
+                <ContentCopyIcon
+                    sx={{
+                        opacity: 0.5,
+                    }}
+                />
+            </Tooltip>
         </Box>
     );
 };

@@ -9,7 +9,7 @@
     margin: auto;
     border-radius: 16px;
     min-height: 135px;
-    background: rgba(43, 51, 65, 0.25);
+    background: $card-background;
     color: $white;
     text-align: start;
 }
@@ -49,7 +49,7 @@
 .full-width-btn {
     width: 100%;
     color: $white !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.36) !important;
+    border: 1.5px solid $border-button !important;
     text-transform: capitalize !important;
     border-radius: 8px !important;
     height: 43.5px;
@@ -64,7 +64,7 @@
 .MuiToggleButtonGroup-root button.Mui-selected {
     // opacity: 1;
     color: $white;
-    background-color: $selected-group;
+    background-color: $selected-item-color;
     border-radius: 8px !important;
 }
 
@@ -76,6 +76,7 @@
     height: 45px;
     text-transform: capitalize;
     color: $white;
+    // opacity: 0.5;
     background-color: $button-group-item;
     border-radius: 8px !important;
 }
@@ -91,7 +92,7 @@
     text-align: start;
     margin-top: 32px;
     margin-bottom: 0;
-    border: 1px solid rgb(0 0 0 / 38%);
+    border: 1px solid $warning-box;
     height: auto;
     background-image: linear-gradient(216deg, #0000007a, transparent);
     padding: 16px;
@@ -150,12 +151,7 @@
 }
 
 .MuiTableBody-root .MuiTableRow-root {
-    background: linear-gradient(
-        0deg,
-        rgba(146, 159, 183, 0.35),
-        rgba(146, 159, 183, 0.35)
-    );
-    /* Note: backdrop-filter has minimal browser support */
+    background: $table-background;
     border-radius: 8px;
 }
 
@@ -169,24 +165,30 @@
 
 .MuiTable-root .btn {
     color: $white;
-    background: linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.12) 0%,
-            rgba(255, 255, 255, 0) 100%
-        ),
-        #205bea;
+    background: $second-blue;
     border-radius: 6px;
     text-transform: capitalize;
     width: 116px;
     height: 35px;
     font-size: 12px !important;
+
+    &:hover {
+        background: $second-blue;
+    }
 }
 
 .MuiTable-root .disable.btn {
     color: $white;
-    background: linear-gradient(
-        0deg,
-        rgba(146, 159, 183, 0.35),
-        rgba(146, 159, 183, 0.35)
-    );
+    background: $table-background;
+}
+
+@media (max-width: 680px) {
+    .css-1umk77v {
+        flex-direction: column;
+        height: auto !important;
+    }
+
+    .css-69i1ev {
+        flex-direction: column;
+    }
 }

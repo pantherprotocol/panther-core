@@ -4,16 +4,19 @@ import Grid from '@mui/material/Grid';
 import {Box} from '@mui/system';
 import CssBaseline from '@mui/material/CssBaseline';
 import './styles.scss';
-import BalanceCard from '../../components/Cards/BalanceCard';
-import StakingCard from '../../components/Cards/StakingCard';
-import background from '../../images/app-background.png';
+import BalanceCard from '../../components/BalanceCard';
+import AdvancedStakingComingSoon from '../../components/AdvancedStakingComingSoon';
+import StakingUnstakingCard from '../../components/StakingUnstakingCard';
+import CurrentStakeAPY from '../../components/CurrentStakeAPY';
+import background from '../../images/background.png';
 import {Footer} from '../../components/Footer';
 import {switchNetwork} from '../../services/wallet';
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
 import {injected} from '../../services/connectors';
 import {useWeb3React} from '@web3-react/core';
 import {Web3Provider} from '@ethersproject/providers';
-import StakingHeader from '../../components/StakingHeader';
+// import StakingHeader from '../../components/StakingHeader';
+import Header from '../../components/Header';
 import * as stakingService from '../../services/staking';
 import * as accountService from '../../services/account';
 import {BigNumber} from '@ethersproject/bignumber';
@@ -45,6 +48,7 @@ function StakingZkpPage() {
     const [tokenUSDValue, setTokenUSDValue] = useState<string | null>(null);
     const [stakedBalance, setStakedBalance] = useState<any>('0.00');
     const [rewardsBalance, setRewardsBalance] = useState<string | null>('0.00');
+    const [currentAPY] = useState<string>('');
 
     // Handle logic to eagerly connect to the injected ethereum provider, if it
     // exists and has granted access already
@@ -207,7 +211,18 @@ function StakingZkpPage() {
         >
             <CssBaseline />
 
-            <StakingHeader
+            {/* <StakingHeader
+                onConnect={() => {
+                    onConnect();
+                }}
+                switchNetwork={() => {
+                    switchNetwork(setChainError);
+                }}
+                disconnect={() => {
+                    disconnect();
+                }}
+            /> */}
+            <Header
                 onConnect={() => {
                     onConnect();
                 }}
@@ -233,15 +248,20 @@ function StakingZkpPage() {
                                 xs={12}
                                 md={5}
                                 display={'flex'}
-                                justifyContent={'center'}
-                                alignItems={'start'}
+                                flexDirection={'column'}
+                                justifyContent={'start'}
+                                alignItems={'center'}
                             >
-                                <BalanceCard
-                                    tokenBalance={tokenBalance}
-                                    tokenUSDValue={tokenUSDValue}
-                                    stakedBalance={stakedBalance}
-                                    rewardsBalance={rewardsBalance}
-                                />
+                                <Box width={'100%'}>
+                                    <BalanceCard
+                                        tokenBalance={tokenBalance}
+                                        tokenUSDValue={tokenUSDValue}
+                                        stakedBalance={stakedBalance}
+                                        rewardsBalance={rewardsBalance}
+                                        accountAddress={account || null}
+                                    />
+                                    <AdvancedStakingComingSoon />
+                                </Box>
                             </Grid>
                             <Grid
                                 item
@@ -251,20 +271,25 @@ function StakingZkpPage() {
                                 justifyContent={'center'}
                                 alignItems={'center'}
                             >
-                                <StakingCard
-                                    tokenBalance={tokenBalance}
-                                    stakedBalance={stakedBalance}
-                                    rewardsBalance={rewardsBalance}
-                                    setZkpTokenBalance={setZkpTokenBalance}
-                                    getStakedZkpBalance={getStakedZkpBalance}
-                                />
+                                <Box width={'100%'}>
+                                    <CurrentStakeAPY currentAPY={currentAPY} />
+                                    <StakingUnstakingCard
+                                        tokenBalance={tokenBalance}
+                                        stakedBalance={stakedBalance}
+                                        rewardsBalance={rewardsBalance}
+                                        setZkpTokenBalance={setZkpTokenBalance}
+                                        getStakedZkpBalance={
+                                            getStakedZkpBalance
+                                        }
+                                    />
+                                    <Footer />
+                                </Box>
                             </Grid>
                         </Grid>
                         <Grid item md={1} xs={12} />
                     </Grid>
                 </Container>
             </Box>
-            <Footer />
         </Box>
     );
 }

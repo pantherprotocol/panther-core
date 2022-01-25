@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import './styles.scss';
 
-const Address = ({accountAvatar}) => {
+const Address = (props: {accountAvatar: string; accountAddress: string;}) => {
     return (
         <Box
             display="flex"
@@ -12,7 +12,7 @@ const Address = ({accountAvatar}) => {
             justifyContent="space-around"
             width={'100%'}
         >
-            <img src={accountAvatar} alt={'User avatar'} />
+            <img src={props.accountAvatar} alt={'User avatar'} />
             <Typography
                 sx={{
                     fontWeight: 400,
@@ -22,7 +22,7 @@ const Address = ({accountAvatar}) => {
                     marginRight: '18px',
                 }}
             >
-                0xd9e...1zA9
+                {props.accountAddress}
             </Typography>
             <ContentCopyIcon
                 sx={{

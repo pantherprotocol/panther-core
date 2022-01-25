@@ -8,14 +8,17 @@
 }
 
 .nav-item {
-    padding: 0 25px;
+    font-size: 18px;
+    font-weight: 400;
+    // padding: 0 25px;
     color: $grey-text;
     cursor: pointer;
 }
 
 .nav-item.active {
     color: $white;
-    font-size: 1.2rem;
+    font-size: 18px;
+    font-weight: 800;
     text-decoration: underline;
 }
 
@@ -82,4 +85,58 @@
 
 .account-avatar {
     padding: 0 25px;
+}
+
+.main-navigation {
+    border-bottom-style: solid;
+    border-bottom-color: rgb(177, 62, 62);
+    border-bottom-width: 8px;
+}
+
+.header-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 5px;
+}
+
+.address-btn {
+    .currency-navi-holder {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .currency-logo {
+            display: none;
+        }
+
+        .navi-btn-text-hold {
+            display: inline-block;
+            align-items: center;
+
+            .front-text {
+                background: $grey-btn;
+                font-weight: 800;
+                border-radius: 8px;
+                display: inline-block;
+                margin: 0 15px 0 0;
+                padding-left: 15px;
+                padding-right: 15px;
+                vertical-align: middle;
+            }
+
+            .main-text {
+                font-size: 14px;
+                font-weight: 800;
+                color: $white;
+                opacity: 1;
+                display: inline-block;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                vertical-align: middle;
+            }
+        }
+    }
 }

@@ -4,7 +4,10 @@ import Typography from '@mui/material/Typography';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import './styles.scss';
 
-const Address = (props: {accountAvatar: string; accountAddress: string;}) => {
+const Address = (props: {
+    accountAvatar: string;
+    accountAddress: string | null;
+}) => {
     return (
         <Box
             display="flex"

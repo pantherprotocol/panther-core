@@ -18,8 +18,6 @@ import * as stakingService from '../../services/staking';
 import {useWeb3React} from '@web3-react/core';
 import {useState} from 'react';
 
-const localStorage = window.localStorage;
-
 export default function Staking(props: {
     rewardsBalance: string | null;
     tokenBalance: string | null;
@@ -54,7 +52,6 @@ export default function Staking(props: {
             console.error(stakingResponse);
         }
         setStakedId(Number(stakingResponse));
-        localStorage.setItem('stakeId', stakingResponse.toString());
         props.setZkpTokenBalance();
         props.getStakedZkpBalance();
     };

@@ -18,12 +18,15 @@ import {useState} from 'react';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import {useEffect} from 'react';
 import {onWrongNetwork, requiredNetwork} from '../../services/connectors';
-import {formatAccountAddress, formatAccountBalance} from '../../services/account';
+import {
+    formatAccountAddress,
+    formatAccountBalance,
+} from '../../services/account';
 import {ConnectButton} from '../ConnectButton';
-import './styles.scss';
 import {AddTokenButton} from '../AddTokenButton';
+import './styles.scss';
 
-const Header = (props) => {
+const Header = props => {
     const context = useWeb3React();
     const {account, library, chainId, active, error} = context;
     const [balance, setBalance] = useState(null);
@@ -78,7 +81,7 @@ const Header = (props) => {
     const accountBalance =
         formatAccountBalance(balance, requiredNetwork.symbol) || 'Error';
 
-    const buttonActiveClass = active ? 'active' : '';
+    // const buttonActiveClass = active ? 'active' : '';
 
     return (
         <Box sx={{flexGrow: 1}}>
@@ -126,9 +129,7 @@ const Header = (props) => {
                                     className="nav-item"
                                     variant="subtitle2"
                                 >
-                                    <a href="/">
-                                        Analytics
-                                    </a>
+                                    <a href="/">Analytics</a>
                                 </Typography>
                             </Box>
                             <Box
@@ -143,9 +144,7 @@ const Header = (props) => {
                                     className="nav-item"
                                     variant="subtitle2"
                                 >
-                                    <a href="/">
-                                        Docs
-                                    </a>
+                                    <a href="/">Docs</a>
                                 </Typography>
                             </Box>
                             <Box
@@ -161,9 +160,7 @@ const Header = (props) => {
                                     className="nav-item"
                                     variant="subtitle2"
                                 >
-                                    <a href="/">
-                                        Governance
-                                    </a>
+                                    <a href="/">Governance</a>
                                 </Typography>
                             </Box>
                         </Grid>
@@ -186,7 +183,9 @@ const Header = (props) => {
                                         }
                                         onClick={() => {
                                             if (isNoEthereumProviderError) {
-                                                window.open('https://metamask.io');
+                                                window.open(
+                                                    'https://metamask.io',
+                                                );
                                             } else {
                                                 props.onConnect();
                                             }
@@ -210,7 +209,9 @@ const Header = (props) => {
                             {active && !wrongNetwork && (
                                 <>
                                     {!tokenAdded && (
-                                        <AddTokenButton setTokenAdded={setTokenAdded} />
+                                        <AddTokenButton
+                                            setTokenAdded={setTokenAdded}
+                                        />
                                     )}
                                     <Box
                                         display={'flex'}
@@ -255,11 +256,11 @@ const Header = (props) => {
                                         borderRadius: '8px',
                                         height: '50px',
                                     }}
-                                    onClick = {() => {
+                                    onClick={() => {
                                         props.disconnect();
                                     }}
                                 >
-                                    <LogoutButton/>
+                                    <LogoutButton />
                                 </Box>
                             )}
                         </Grid>

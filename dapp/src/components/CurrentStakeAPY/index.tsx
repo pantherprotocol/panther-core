@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {Link} from '@mui/material';
+import {Link, Tooltip} from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import React from 'react';
 import './style.scss';
@@ -36,14 +36,16 @@ const CurrentStakeAPY = (props: {currentAPY: string}) => {
                     alignItems={'center'}
                     width={'100%'}
                 >
-                    <ErrorOutlineIcon
-                        fontSize="small"
-                        sx={{
-                            marginTop: '5px',
-                            marginRight: '10px',
-                            color: '#687692',
-                        }}
-                    />
+                    <Tooltip title={'Current APY'} placement="top">
+                        <ErrorOutlineIcon
+                            fontSize="small"
+                            sx={{
+                                marginTop: '5px',
+                                marginRight: '10px',
+                                color: '#687692',
+                            }}
+                        />
+                    </Tooltip>
                 </Box>
                 <Typography
                     variant="caption"

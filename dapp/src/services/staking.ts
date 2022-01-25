@@ -162,7 +162,6 @@ export async function stake(
         ({event}) => event === 'StakeCreated',
     );
     console.debug(event);
-    debugger;
     if (!event)
         console.error('No StakeCreated event found for this transaction.');
     return event?.args.stakeID;
@@ -216,9 +215,21 @@ export async function getRewardsBalance(
     if (!contract) {
         return null;
     }
-    const rewards: number = await contract.entitled(address);
+    const rewards: BigNumber = await contract.entitled(address);
     const decimal = await tokenContract.decimals();
     return formatTokenBalance(rewards, decimal);
+}
+
+export async function getRewardsBalanceForCalculations(
+    contract: ethers.Contract,
+    tokenContract: ethers.Contract,
+    address: string | null | undefined,
+): Promise<BigNumber | null> {
+    if (!contract) {
+        return null;
+    }
+    const rewards: BigNumber = await contract.entitled(address);
+    return rewards;
 }
 
 export async function getStakingTransactionsNumber(

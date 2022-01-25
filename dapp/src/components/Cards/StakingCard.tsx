@@ -49,7 +49,6 @@ export default function Staking(props: {
             stakeType,
             signer,
         );
-        debugger;
         if (stakingResponse instanceof Error) {
             //TODO: Popup notification and return data
             console.error(stakingResponse);
@@ -333,7 +332,10 @@ export default function Staking(props: {
                 {toggle == 'unstake' && (
                     <>
                         <UnstakingInfoMSG />
-                        <UnstakeTable />
+                        <UnstakeTable
+                            rewardsBalance={props.rewardsBalance}
+                            stakedBalance={props.stakedBalance}
+                        />
                         <TotalUnclaimedRewards
                             rewardsBalance={props.rewardsBalance}
                         />

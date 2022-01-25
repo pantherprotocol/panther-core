@@ -13,10 +13,9 @@ import {useState} from 'react';
 import * as stakingService from '../../services/staking';
 import {useEffect} from 'react';
 import {BigNumber} from 'ethers';
-import {formatAccountBalance} from '../../services/account';
-import {formatDate} from '../../utils';
-
-const localStorage = window.localStorage;
+import {formatAccountBalance, formatTokenBalance} from '../../services/account';
+import {formatTime} from '../../utils';
+import {getRewardsBalanceForCalculations} from '../../services/staking';
 
 export default function UnstakeTable() {
     const context = useWeb3React();
@@ -27,15 +26,19 @@ export default function UnstakeTable() {
         id: number,
         stakedAt: number,
         amount: BigNumber,
+        calculatedReward: string,
         lockedTill: number,
+        claimedAt: number,
     ) => {
-        const unstakable = lockedTill * 1000 < new Date().getTime();
+        const unstakable = lockedTill * 1000 > new Date().getTime();
         return {
             id,
             stakedAt: stakedAt * 1000,
             amount,
+            calculatedReward,
             lockedTill: lockedTill * 1000,
             unstakable,
+            claimedAt,
         };
     };
 
@@ -46,22 +49,54 @@ export default function UnstakeTable() {
         if (!stakingContract) {
             return;
         }
+        const stakingTokenContract =
+            await stakingService.getStakingTokenContract(library);
+        if (!stakingTokenContract) {
+            return;
+        }
+        const rewardsMasterContract =
+            await stakingService.getRewardsMasterContract(library);
+        if (!rewardsMasterContract) {
+            return;
+        }
         const stakedData = await stakingService.getAccountStakes(
             stakingContract,
             account,
         );
-        const stakeData = stakedData.map(item =>
-            createStakedDataRow(
+
+        let totalStaked = BigNumber.from(0);
+        stakedData.map(item => {
+            totalStaked = totalStaked.add(item.amount);
+            return totalStaked;
+        });
+        const rewardsBalanceNumber = await getRewardsBalanceForCalculations(
+            rewardsMasterContract,
+            stakingTokenContract,
+            account,
+        );
+        if (!rewardsBalanceNumber) return;
+
+        const decimals = await stakingTokenContract.decimals();
+
+        const stakeData = stakedData.map(item => {
+            const calculatedReward = formatTokenBalance(
+                rewardsBalanceNumber.mul(item.amount).div(totalStaked),
+                decimals,
+            );
+            if (!calculatedReward) return;
+            return createStakedDataRow(
                 item.id,
                 item.stakedAt,
                 item.amount,
+                calculatedReward,
                 item.lockedTill,
-            ),
-        );
+                item.claimedAt,
+            );
+        });
         setStakedData(stakeData);
     };
 
-    const unstake = async () => {
+    const unstake = async id => {
         const stakingContract = await stakingService.getStakingContract(
             library,
         );
@@ -71,12 +106,12 @@ export default function UnstakeTable() {
 
         const signer = library.getSigner(account).connectUnchecked();
 
-        const stakeId = BigNumber.from(localStorage.getItem('stakeId'));
-        const data = '';
+        const stakeID = BigNumber.from(id);
+        const data = '0x00';
         const unstakeResponse = await stakingService.unstake(
             library,
             stakingContract,
-            stakeId,
+            stakeID,
             signer,
             data,
             false,
@@ -106,43 +141,53 @@ export default function UnstakeTable() {
                     <TableRow>
                         <TableCell align="left">Staked Date</TableCell>
                         <TableCell align="center">Amount Staked</TableCell>
-                        <TableCell align="center">Locked Until</TableCell>
+                        <TableCell align="center">Rewards</TableCell>
+                        <TableCell align="center">Locked Till</TableCell>
                         <TableCell align="center">Action</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {stakedData.map(row => (
-                        <TableRow
-                            key={row.stakedAt}
-                            sx={{
-                                '&:last-child td, &:last-child th': {
-                                    border: 0,
-                                },
-                            }}
-                        >
-                            <TableCell align="center">
-                                {formatDate(row.stakedAt)}
-                            </TableCell>
-                            <TableCell align="center">
-                                {formatAccountBalance(row.amount, 'ZKP')}
-                            </TableCell>
-                            <TableCell align="center">
-                                {formatDate(row.lockedTill)}
-                            </TableCell>
-                            <TableCell align="center">
-                                <Button
-                                    className={`btn ${
-                                        row.unstakable ? '' : 'disable'
-                                    }`}
-                                    disabled={!row.unstakable}
-                                    onClick={() => {
-                                        unstake();
+                        <React.Fragment key={row.stakedAt}>
+                            {row.claimedAt == 0 && (
+                                <TableRow
+                                    sx={{
+                                        '&:last-child td, &:last-child th': {
+                                            border: 0,
+                                        },
                                     }}
                                 >
-                                    Unstake
-                                </Button>
-                            </TableCell>
-                        </TableRow>
+                                    <TableCell align="center">
+                                        {formatTime(row.stakedAt)}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        {formatAccountBalance(
+                                            row.amount,
+                                            'ZKP',
+                                        )}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        {row.calculatedReward} ZKP
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        {formatTime(row.lockedTill)}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        <Button
+                                            className={`btn ${
+                                                !row.unstakable ? '' : 'disable'
+                                            }`}
+                                            disabled={row.unstakable}
+                                            onClick={() => {
+                                                unstake(row.id);
+                                            }}
+                                        >
+                                            Unstake
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </React.Fragment>
                     ))}
                 </TableBody>
             </Table>

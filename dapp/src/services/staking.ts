@@ -8,18 +8,16 @@ import {formatTokenBalance} from './account';
 import {JsonRpcSigner} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
 import {BigNumber} from 'ethers';
-
-const toBN = (n: number): ethers.BigNumber => ethers.BigNumber.from(n);
-const e18 = toBN(10).pow(toBN(18)); //18 decimal places after floating point
-const CONFIRMATIONS_NUM = 1;
+import {
+    REWARD_MASTER_CONTRACT,
+    STAKING_CONTRACT,
+    STAKING_TOKEN_CONTRACT,
+    TOKEN_SYMBOL,
+    VESTING_POOLS_CONTRACT,
+} from './contracts';
+import {CONFIRMATIONS_NUM, e18, toBN} from '../utils';
 
 const CoinGeckoClient = new CoinGecko();
-
-export const STAKING_CONTRACT = process.env.STAKING_CONTRACT;
-export const REWARD_MASTER_CONTRACT = process.env.REWARD_MASTER_CONTRACT;
-export const VESTING_POOLS_CONTRACT = process.env.VESTING_POOLS_CONTRACT;
-export const STAKING_TOKEN_CONTRACT = process.env.STAKING_TOKEN_CONTRACT;
-export const TOKEN_SYMBOL = process.env.TOKEN_SYMBOL;
 
 export async function getStakingContract(
     library,

@@ -1,0 +1,23 @@
+.MuiTable-root .btn {
+    color: $white;
+    background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.12) 0%,
+            rgba(255, 255, 255, 0) 100%
+        ),
+        #205bea;
+    border-radius: 6px;
+    text-transform: capitalize;
+    width: 116px;
+    height: 35px;
+    font-size: 12px !important;
+}
+
+.MuiTable-root .disable.btn {
+    color: $white;
+    background: linear-gradient(
+        0deg,
+        rgba(146, 159, 183, 0.35),
+        rgba(146, 159, 183, 0.35)
+    );
+}

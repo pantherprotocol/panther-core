@@ -17,8 +17,6 @@ import {useWeb3React} from '@web3-react/core';
 import {useState} from 'react';
 import './styles.scss';
 
-const localStorage = window.localStorage;
-
 export default function StakeTab(props: {
     rewardsBalance: string | null;
     tokenBalance: string | null;
@@ -52,7 +50,6 @@ export default function StakeTab(props: {
             console.error(stakingResponse);
         }
         setStakedId(Number(stakingResponse));
-        localStorage.setItem('stakeId', stakingResponse.toString());
         props.setZkpTokenBalance();
         props.getStakedZkpBalance();
     };

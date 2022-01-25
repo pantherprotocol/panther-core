@@ -141,7 +141,6 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                     }}
                 >
                     {tokenBalance || '41,458.'}
-                    <span style={{fontSize: '24px'}}>45</span>
                 </Typography>
                 <Typography
                     sx={{

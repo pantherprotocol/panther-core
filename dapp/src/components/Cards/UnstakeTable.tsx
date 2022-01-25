@@ -46,7 +46,7 @@ export default function UnstakeTable() {
         if (!stakingContract) {
             return;
         }
-        const stakedData = await stakingService.getTotalStaked(
+        const stakedData = await stakingService.getAccountStakes(
             stakingContract,
             account,
         );
@@ -71,7 +71,7 @@ export default function UnstakeTable() {
 
         const signer = library.getSigner(account).connectUnchecked();
 
-        const stakeId = Number(localStorage.getItem('stakeId'));
+        const stakeId = BigNumber.from(localStorage.getItem('stakeId'));
         const data = '';
         const unstakeResponse = await stakingService.unstake(
             library,
@@ -79,6 +79,7 @@ export default function UnstakeTable() {
             stakeId,
             signer,
             data,
+            false,
         );
 
         if (unstakeResponse) {

@@ -113,7 +113,7 @@ function StakingZkpPage() {
         if (!stakingContract || !stakingTokenContract) {
             return;
         }
-        const stakedBalance = await stakingService.getTotalStaked(
+        const stakedBalance = await stakingService.getAccountStakes(
             stakingContract,
             account,
         );

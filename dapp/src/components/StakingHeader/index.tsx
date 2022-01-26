@@ -67,7 +67,7 @@ const StakingHeader = props => {
         }
     }, [context, active, account, library, chainId, error]); // ensures refresh if referential identity of library doesn't change across chainIds
 
-    const accountAddress = formatAccountAddress(account) || '-';
+    const accountAddress = formatAccountAddress(account) || '';
     const accountBalance =
         formatAccountBalance(balance, requiredNetwork.symbol) || 'Error';
 

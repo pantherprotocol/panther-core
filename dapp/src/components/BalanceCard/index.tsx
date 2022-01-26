@@ -27,10 +27,12 @@ const BalanceCard = (props: {
                     borderRadius: '8px',
                 }}
             >
-                <AddressWithSetting
-                    accountAvatar={accountAvatar}
-                    accountAddress={props.accountAddress}
-                />
+                {props.accountAddress && (
+                    <AddressWithSetting
+                        accountAvatar={accountAvatar}
+                        accountAddress={props.accountAddress}
+                    />
+                )}
 
                 <TotalBalance
                     title={'Total Balance'}

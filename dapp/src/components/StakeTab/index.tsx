@@ -181,7 +181,7 @@ const StakingInput = props => {
             >
                 <Box display={'flex'} alignItems={'center'} width={'70%'}>
                     <Box display={'flex'}>
-                        <img src={logo} height={'40px'} width={'40px'}/>
+                        <img src={logo} height={'40px'} width={'40px'} />
                     </Box>
 
                     <Input
@@ -269,7 +269,11 @@ const StakingMethod = () => (
             borderRadius: '10px',
         }}
     >
-        <Box display="flex" justifyContent={'space-between'} alignItems={'center'}>
+        <Box
+            display="flex"
+            justifyContent={'space-between'}
+            alignItems={'center'}
+        >
             <Typography
                 sx={{
                     fontWeight: 500,

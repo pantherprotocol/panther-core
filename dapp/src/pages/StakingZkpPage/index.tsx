@@ -12,7 +12,7 @@ import background from '../../images/background.png';
 import {Footer} from '../../components/Footer';
 import {switchNetwork} from '../../services/wallet';
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
-import {injected, requiredNetwork} from '../../services/connectors';
+import {injected} from '../../services/connectors';
 import {useWeb3React} from '@web3-react/core';
 import {Web3Provider} from '@ethersproject/providers';
 // import StakingHeader from '../../components/StakingHeader';
@@ -27,7 +27,6 @@ import {
     getRewardsBalanceForCalculations,
 } from '../../services/staking';
 import {formatAccountAddress} from '../../services/account';
-import {formatAccountBalance} from '../../services/account';
 
 function StakingZkpPage() {
     const context = useWeb3React<Web3Provider>();
@@ -198,7 +197,7 @@ function StakingZkpPage() {
         getUnclaimedRewardsBalance();
     });
 
-    const accountAddress = formatAccountAddress(account) || '-';
+    const accountAddress = formatAccountAddress(account) || null;
 
     return (
         <Box

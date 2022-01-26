@@ -76,7 +76,7 @@ const Header = props => {
         }
     }, [context, active, account, library, chainId, error]); // ensures refresh if referential identity of library doesn't change across chainIds
 
-    const accountAddress = formatAccountAddress(account) || '-';
+    const accountAddress = formatAccountAddress(account) || null;
     const accountBalance =
         formatAccountBalance(balance, requiredNetwork.symbol) || 'Error';
 
@@ -209,10 +209,12 @@ const Header = props => {
                                             height: '50px',
                                         }}
                                     >
-                                        <Address
-                                            accountAvatar={accountAvatar}
-                                            accountAddress={accountAddress}
-                                        />
+                                        {accountAddress && (
+                                            <Address
+                                                accountAvatar={accountAvatar}
+                                                accountAddress={accountAddress}
+                                            />
+                                        )}
                                         <Typography
                                             variant="subtitle2"
                                             width={'50%'}

@@ -60,6 +60,7 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
         amount = _releasableAmount();
 
         if (amount != 0) {
+            // here and after, no reentrancy guard needed for calls to VESTING_POOLS
             IVestingPools(VESTING_POOLS).releaseTo(poolId, recipient, amount);
             emit Vested(amount);
         }

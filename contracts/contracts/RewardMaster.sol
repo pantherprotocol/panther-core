@@ -148,12 +148,9 @@ contract RewardMaster is
         );
     }
 
-    function onAction(bytes4 action, bytes memory message)
-        external
-        override
-        returns (bool success)
-    {
+    function onAction(bytes4 action, bytes memory message) external override {
         IRewardAdviser adviser = _getRewardAdviserOrRevert(msg.sender, action);
+        // no reentrancy guard needed for the known contract call
         IRewardAdviser.Advice memory advice = adviser.getRewardAdvice(
             action,
             message
@@ -168,7 +165,6 @@ contract RewardMaster is
                 advice.sendRewardTo
             );
         }
-        return true;
     }
 
     /* ========== ONLY FOR OWNER FUNCTIONS ========== */
@@ -288,7 +284,7 @@ contract RewardMaster is
             uint256 newOffset
         ) = _computeRedemption(shares, rec, _accumRewardPerShare);
 
-        records[to] = UserRecord(safe96(newShares), safe160(newOffset));
+        records[from] = UserRecord(safe96(newShares), safe160(newOffset));
         totalShares = safe128(uint256(totalShares) - shares);
 
         uint256 _lastBalance = newBalance - reward;
@@ -317,7 +313,7 @@ contract RewardMaster is
         )
     {
         uint32 _blockNow = safe32BlockNow();
-        newAccumRewardPerShare = uint256(accumRewardPerShare);
+        newAccumRewardPerShare = accumRewardPerShare;
         oldBalance = uint256(lastBalance);
         uint256 _totalShares = totalShares;
 

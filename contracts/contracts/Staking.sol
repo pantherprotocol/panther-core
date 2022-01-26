@@ -91,6 +91,9 @@ contract Staking is
     /// @dev Terms (for the given stake type) are disabled
     event TermsDisabled(bytes4 stakeType);
 
+    /// @dev Call to REWARD_MASTER reverted
+    event RewardMasterRevert(address staker, uint256 stakeID);
+
     /**
      * @notice Sets staking token, owner and
      * @param stakingToken - Address of the {ZKPToken} contract
@@ -189,8 +192,9 @@ contract Staking is
         );
 
         Terms memory _terms = terms[_stake.stakeType];
-        if (!_terms.isRewarded) return;
-        _sendUnstakedMsg(msg.sender, _stake, data, _isForced);
+        if (_terms.isRewarded) {
+            _sendUnstakedMsg(msg.sender, _stake, data, _isForced);
+        }
     }
 
     /**
@@ -351,13 +355,10 @@ contract Staking is
 
         uint256 _now = timeNow();
 
-        if (_terms.allowedSince != 0) {
-            require(_terms.allowedSince > _now, "Staking:E3");
-        }
         if (_terms.allowedTill != 0) {
             require(
                 _terms.allowedTill > _now &&
-                    _terms.allowedSince > _terms.allowedSince,
+                    _terms.allowedTill > _terms.allowedSince,
                 "Staking:E4"
             );
         }
@@ -381,12 +382,9 @@ contract Staking is
                 "Staking:E7"
             );
         } else {
-            bool isFirtsZero = _terms.exactLockPeriod == 0;
-            bool isSecondZero = _terms.minLockPeriod == 0;
             require(
                 // one of two params must be non-zero
-                (!isFirtsZero && isSecondZero) ||
-                    (isFirtsZero && !isSecondZero),
+                (_terms.exactLockPeriod == 0) != (_terms.minLockPeriod == 0),
                 "Staking:E8"
             );
         }
@@ -436,12 +434,12 @@ contract Staking is
 
         uint32 _now = safe32TimeNow();
         require(
-            _terms.allowedSince == 0 || _terms.allowedSince >= _now,
+            _terms.allowedSince == 0 || _now >= _terms.allowedSince,
             "Staking: Not yet allowed"
         );
         require(
             _terms.allowedTill == 0 || _terms.allowedTill > _now,
-            "Staking: Not allowed already"
+            "Staking: Not allowed anymore"
         );
 
         // known contract - reentrancy guard and `safeTransferFrom` unneeded
@@ -641,10 +639,10 @@ contract Staking is
         bytes4 action = _encodeStakeActionType(_stake.stakeType);
         bytes memory message = _packStakingActionMsg(staker, _stake, data);
         // known contract - reentrancy guard unneeded
-        require(
-            REWARD_MASTER.onAction(action, message),
-            "Staking: onStake msg failed"
-        );
+        // solhint-disable-next-line no-empty-blocks
+        try REWARD_MASTER.onAction(action, message) {} catch {
+            revert("Staking: onStake msg failed");
+        }
     }
 
     function _sendUnstakedMsg(
@@ -656,9 +654,9 @@ contract Staking is
         bytes4 action = _encodeUnstakeActionType(_stake.stakeType);
         bytes memory message = _packStakingActionMsg(staker, _stake, data);
         // known contract - reentrancy guard unneeded
-        try REWARD_MASTER.onAction(action, message) returns (bool success) {
-            require(_isForced || success, "Staking: REWARD_MASTER rejects");
-        } catch {
+        // solhint-disable-next-line no-empty-blocks
+        try REWARD_MASTER.onAction(action, message) {} catch {
+            emit RewardMasterRevert(staker, _stake.id);
             // REWARD_MASTER must be unable to revert forced calls
             require(_isForced, "Staking: REWARD_MASTER reverts");
         }

@@ -384,15 +384,6 @@ describe('Staking Contract', async () => {
             ).to.be.revertedWith('Staking:E2');
         });
 
-        it('reverts if allowedSince is less than current timestamp', async () => {
-            await expect(
-                ctStaking.addTerms(stakeType1, {
-                    ...term1,
-                    allowedSince: utils.hexZeroPad('0x01', 32),
-                }),
-            ).to.be.revertedWith('Staking:E3');
-        });
-
         it('reverts if allowedTill is less than current timestamp', async () => {
             await expect(
                 ctStaking.addTerms(stakeType1, {

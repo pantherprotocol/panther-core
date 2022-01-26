@@ -83,6 +83,8 @@ contract RewardMaster is
     uint128 public totalShares;
     /// @dev Min number of unredeemed shares being rewarded
     uint256 private constant MIN_SHARES_REWARDED = 1000;
+    /// @dev Min number of blocks between vesting in the Treasury
+    uint256 private constant MIN_VESTING_BLOCKS = 50;
 
     // see comments above for explanation
     uint256 public accumRewardPerShare;
@@ -167,6 +169,10 @@ contract RewardMaster is
         }
     }
 
+    function triggerVesting() external {
+        _triggerVesting(true, false);
+    }
+
     /* ========== ONLY FOR OWNER FUNCTIONS ========== */
 
     /**
@@ -243,13 +249,7 @@ contract RewardMaster is
         nonZeroAmount(shares)
         nonZeroAddress(to)
     {
-        (
-            uint256 _accumRewardPerShare,
-            uint256 newBalance,
-            uint256 oldBalance
-        ) = _triggerVesting();
-
-        if (oldBalance != newBalance) lastBalance = safe96(newBalance);
+        (uint256 _accumRewardPerShare, , ) = _triggerVesting(true, true);
 
         UserRecord memory rec = records[to];
         uint256 newOffset = uint256(rec.offset) +
@@ -276,7 +276,7 @@ contract RewardMaster is
             uint256 _accumRewardPerShare,
             uint256 newBalance,
             uint256 oldBalance
-        ) = _triggerVesting();
+        ) = _triggerVesting(false, true);
 
         (
             uint256 reward,
@@ -304,7 +304,10 @@ contract RewardMaster is
         emit SharesRedeemed(from, shares);
     }
 
-    function _triggerVesting()
+    function _triggerVesting(
+        bool isLastBalanceToBeUpdated,
+        bool isMinVestingBlocksApplied
+    )
         internal
         returns (
             uint256 newAccumRewardPerShare,
@@ -317,9 +320,13 @@ contract RewardMaster is
         oldBalance = uint256(lastBalance);
         uint256 _totalShares = totalShares;
 
+        uint32 blocksPast = _blockNow - lastVestedBlock;
         if (
-            lastVestedBlock >= _blockNow || _totalShares < MIN_SHARES_REWARDED
+            (blocksPast == 0) ||
+            (isMinVestingBlocksApplied && blocksPast < MIN_VESTING_BLOCKS) ||
+            _totalShares < MIN_SHARES_REWARDED
         ) {
+            // Do not request vesting from the REWARD_POOL
             return (newAccumRewardPerShare, oldBalance, oldBalance);
         }
 
@@ -340,7 +347,9 @@ contract RewardMaster is
             emit RewardAdded(newlyVested);
         }
         lastVestedBlock = _blockNow;
-        lastBalance = safe96(newBalance);
+        if (isLastBalanceToBeUpdated && (oldBalance != newBalance)) {
+            lastBalance = safe96(newBalance);
+        }
     }
 
     /* ========== MODIFIERS ========== */

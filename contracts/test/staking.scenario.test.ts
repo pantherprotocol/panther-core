@@ -158,15 +158,15 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
             .increaseAllowance(staking.address, scenario.totals.tokenStaked[3]);
     });
 
-    playPointAndCheckResult(0);
-    playPointAndCheckResult(1);
-    playPointAndCheckResult(2);
-    playPointAndCheckResult(3);
-    playPointAndCheckResult(4);
-    playPointAndCheckResult(5);
-    // playPointAndCheckResult(6);
-    playPointAndCheckResult(7);
-    playPointAndCheckResult(8);
+    playPointAndCheckResult(0, 0);
+    playPointAndCheckResult(1, 50);
+    playPointAndCheckResult(2, 50);
+    playPointAndCheckResult(3, 50);
+    playPointAndCheckResult(4, 50);
+    playPointAndCheckResult(5, 50);
+    playPointAndCheckResult(6, 50);
+    playPointAndCheckResult(7, 50);
+    playPointAndCheckResult(8, 50);
 
     checkFinalUserTokenBalance(0);
     checkFinalUserTokenBalance(1);
@@ -177,15 +177,28 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
         return (await provider.getBlock('latest')).timestamp;
     }
 
-    function playPointAndCheckResult(pInd: number) {
+    function playPointAndCheckResult(pInd: number, blocksToPreMine: number = 0) {
         it(`shall play scenario step #${pInd}`, async () => {
             const {timestamp, stakesStaked, stakesUnstaked} =
                 scenario.points[pInd];
 
-            await mineBlock(timestamp - 10);
+            // First, pre-mine required number of blocks
+            const blocksToMine = blocksToPreMine > 1 ? blocksToPreMine : 1;
+            for (let i = 0; i < blocksToMine - 1; i++) {
+                const blockTime = timestamp - 5 * (blocksToMine - i);
+                await mineBlock(blockTime);
+            }
+            await mineBlock(timestamp - 5);
+
             // All txs must get in the same block with the expected timestamp
             // therefore we temporarily disable "auto-mine"
             await provider.send('evm_setAutomine', [false]);
+
+            if (!stakesStaked && !stakesUnstaked) {
+                // No stake/unstake txs which trigger vesting "under the hood"
+                // Let's trigger it explicitly
+                await rewardMaster.triggerVesting();
+            }
 
             if (stakesStaked) {
                 for (const i of stakesStaked) {

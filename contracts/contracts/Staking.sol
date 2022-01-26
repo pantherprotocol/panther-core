@@ -356,11 +356,8 @@ contract Staking is
         uint256 _now = timeNow();
 
         if (_terms.allowedTill != 0) {
-            require(
-                _terms.allowedTill > _now &&
-                    _terms.allowedTill > _terms.allowedSince,
-                "Staking:E4"
-            );
+            require(_terms.allowedTill > _now, "Staking:E3");
+            require(_terms.allowedTill > _terms.allowedSince, "Staking:E4");
         }
 
         if (_terms.maxAmountScaled != 0) {

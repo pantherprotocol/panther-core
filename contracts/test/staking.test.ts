@@ -14,6 +14,17 @@ chai.use(smock.matchers);
 
 const stakeType = hash4bytes(CLASSIC);
 
+function toBytes32(n: number | string | bigint) {
+    return ethers.utils.hexZeroPad(
+        ethers.utils.hexlify(ethers.BigNumber.from(n)),
+        32,
+    );
+}
+
+async function getBlockTimestamp() {
+    return (await ethers.provider.getBlock('latest')).timestamp;
+}
+
 describe('Staking Contract', async () => {
     let provider: any;
     let rewardPool: FakeContract<BaseContract>;
@@ -29,6 +40,19 @@ describe('Staking Contract', async () => {
         wallet1: SignerWithAddress,
         wallet2: SignerWithAddress,
         wallet3: SignerWithAddress;
+
+    const validTerms = {
+        isEnabled: true,
+        isRewarded: true,
+        minAmountScaled: utils.hexZeroPad('0x00', 32),
+        maxAmountScaled: utils.hexZeroPad('0x00', 32),
+        allowedSince: utils.hexZeroPad('0x00', 32),
+        allowedTill: utils.hexZeroPad('0x00', 32),
+        lockedTill: utils.hexZeroPad('0x00', 32),
+        exactLockPeriod: utils.hexZeroPad('0x00', 32),
+        minLockPeriod: utils.hexZeroPad('0x1E', 32),
+    };
+    const stakeType1 = '0x4ab0941b';
 
     before(async function () {
         [owner, alice, bob, wallet1, wallet2, wallet3] =
@@ -353,42 +377,43 @@ describe('Staking Contract', async () => {
     });
 
     describe('addTerms()', function () {
-        const term1 = {
-            isEnabled: true,
-            isRewarded: true,
-            minAmountScaled: utils.hexZeroPad('0x00', 32),
-            maxAmountScaled: utils.hexZeroPad('0x00', 32),
-            allowedSince: utils.hexZeroPad('0x00', 32),
-            allowedTill: utils.hexZeroPad('0x00', 32),
-            lockedTill: utils.hexZeroPad('0x00', 32),
-            exactLockPeriod: utils.hexZeroPad('0x00', 32),
-            minLockPeriod: utils.hexZeroPad('0x1E', 32),
-        };
-        const stakeType1 = '0x4ab0941b';
-
         it("reverts if it's called by not owner", async () => {
             await expect(
-                ctStaking.connect(wallet1).addTerms(stakeType1, term1),
+                ctStaking.connect(wallet1).addTerms(stakeType1, validTerms),
             ).to.be.revertedWith('ImmOwn: unauthorized');
         });
 
         it("reverts if it's trying to add existing terms", async () => {
             await expect(
-                ctStaking.addTerms(stakeType, term1),
+                ctStaking.addTerms(stakeType, validTerms),
             ).to.be.revertedWith('Staking:E1');
         });
 
         it('reverts if isEnabled is false', async () => {
             await expect(
-                ctStaking.addTerms(stakeType1, {...term1, isEnabled: false}),
+                ctStaking.addTerms(stakeType1, {
+                    ...validTerms,
+                    isEnabled: false,
+                }),
             ).to.be.revertedWith('Staking:E2');
         });
 
         it('reverts if allowedTill is less than current timestamp', async () => {
             await expect(
                 ctStaking.addTerms(stakeType1, {
-                    ...term1,
+                    ...validTerms,
                     allowedTill: utils.hexZeroPad('0x01', 32),
+                }),
+            ).to.be.revertedWith('Staking:E3');
+        });
+
+        it('reverts if allowedSince is greater than allowedTill', async () => {
+            const now = await getBlockTimestamp();
+            await expect(
+                ctStaking.addTerms(stakeType1, {
+                    ...validTerms,
+                    allowedSince: toBytes32(Math.floor(now + 2000)),
+                    allowedTill: toBytes32(Math.floor(now + 1000)),
                 }),
             ).to.be.revertedWith('Staking:E4');
         });
@@ -396,7 +421,7 @@ describe('Staking Contract', async () => {
         it('reverts if maxAmountScaled is less than minAmountScaled', async () => {
             await expect(
                 ctStaking.addTerms(stakeType1, {
-                    ...term1,
+                    ...validTerms,
                     maxAmountScaled: utils.hexZeroPad('0x11', 32),
                     minAmountScaled: utils.hexZeroPad('0x22', 32),
                 }),
@@ -406,7 +431,7 @@ describe('Staking Contract', async () => {
         it('reverts if two lock time parameters are non-zero', async () => {
             await expect(
                 ctStaking.addTerms(stakeType1, {
-                    ...term1,
+                    ...validTerms,
                     minLockPeriod: utils.hexZeroPad('0x00', 32),
                     lockedTill: utils.hexZeroPad('0x1E', 32),
                     exactLockPeriod: utils.hexZeroPad('0x1E', 32),
@@ -415,7 +440,7 @@ describe('Staking Contract', async () => {
 
             await expect(
                 ctStaking.addTerms(stakeType1, {
-                    ...term1,
+                    ...validTerms,
                     minLockPeriod: utils.hexZeroPad('0x00', 32),
                     lockedTill: utils.hexZeroPad('0x1E', 32),
                     exactLockPeriod: utils.hexZeroPad('0x00', 32),
@@ -424,7 +449,7 @@ describe('Staking Contract', async () => {
 
             await expect(
                 ctStaking.addTerms(stakeType1, {
-                    ...term1,
+                    ...validTerms,
                     minLockPeriod: utils.hexZeroPad('0x1E', 32),
                     lockedTill: utils.hexZeroPad('0x00', 32),
                     exactLockPeriod: utils.hexZeroPad('0x1E', 32),
@@ -432,46 +457,99 @@ describe('Staking Contract', async () => {
             ).to.be.revertedWith('Staking:E8');
         });
 
-        it('terms should be added properly', async () => {
-            await ctStaking.addTerms(stakeType1, term1);
-            const termRes = await ctStaking.terms(stakeType1);
-            await expect(termRes.isEnabled).to.eq(true);
-            await expect(termRes.isRewarded).to.eq(true);
-            await expect(termRes.minAmountScaled).to.eq(0);
-            await expect(termRes.maxAmountScaled).to.eq(0);
-            await expect(termRes.allowedSince).to.eq(0);
-            await expect(termRes.allowedTill).to.eq(0);
-            await expect(termRes.lockedTill).to.eq(0);
-            await expect(termRes.exactLockPeriod).to.eq(0);
-            await expect(termRes.minLockPeriod).to.eq(30);
+        describe('with valid terms', async () => {
+            let _snapshot: any;
+
+            beforeEach(async () => {
+                _snapshot = await ethers.provider.send('evm_snapshot', []);
+            });
+
+            afterEach(async () => {
+                await ethers.provider.send('evm_revert', [_snapshot]);
+            });
+
+            it('succeeds if allowedSince is less than allowedTill', async () => {
+                const now = await getBlockTimestamp();
+
+                const since = Math.floor(now + 1000);
+                const till = Math.floor(now + 2000);
+                await ctStaking.addTerms(stakeType1, {
+                    ...validTerms,
+                    allowedSince: toBytes32(since),
+                    allowedTill: toBytes32(till),
+                });
+                const termRes = await ctStaking.terms(stakeType1);
+                await expect(termRes.allowedSince).to.eq(since);
+                await expect(termRes.allowedTill).to.eq(till);
+            });
+
+            it('succeeds', async () => {
+                await ctStaking.addTerms(stakeType1, validTerms);
+                const termRes = await ctStaking.terms(stakeType1);
+                await expect(termRes.isEnabled).to.eq(true);
+                await expect(termRes.isRewarded).to.eq(true);
+                await expect(termRes.minAmountScaled).to.eq(0);
+                await expect(termRes.maxAmountScaled).to.eq(0);
+                await expect(termRes.allowedSince).to.eq(0);
+                await expect(termRes.allowedTill).to.eq(0);
+                await expect(termRes.lockedTill).to.eq(0);
+                await expect(termRes.exactLockPeriod).to.eq(0);
+                await expect(termRes.minLockPeriod).to.eq(30);
+            });
+
+            it('succeeds with lockedTill', async () => {
+                const now = await getBlockTimestamp();
+                const till = Math.floor(now + 10000);
+                await ctStaking.addTerms(stakeType1, {
+                    ...validTerms,
+                    lockedTill: toBytes32(till),
+                    minLockPeriod: utils.hexZeroPad('0x00', 32),
+                });
+                const termRes = await ctStaking.terms(stakeType1);
+                await expect(termRes.allowedTill).to.eq(0);
+                await expect(termRes.lockedTill).to.eq(till);
+                await expect(termRes.exactLockPeriod).to.eq(0);
+                await expect(termRes.minLockPeriod).to.eq(0);
+            });
         });
     });
 
     describe('disableTerms()', function () {
-        const stakeType1 = '0x4ab0941b';
-
         it("reverts if it's called by not owner", async () => {
             await expect(
                 ctStaking.connect(wallet1).disableTerms(stakeType1),
             ).to.be.revertedWith('ImmOwn: unauthorized');
         });
 
-        it('reverts if it try to disable non-existing terms', async () => {
+        it('reverts if it tries to disable non-existing terms', async () => {
             await expect(
                 ctStaking.disableTerms('0x4ab0941c'),
             ).to.be.revertedWith('Staking:E9');
         });
 
-        it('disable terms should set isEnabled to false', async () => {
-            await ctStaking.disableTerms(stakeType1);
-            const terms = await ctStaking.terms(stakeType1);
-            expect(terms.isEnabled).to.eq(false);
-        });
+        describe('with terms added', async () => {
+            let _snapshot: any;
 
-        it('reverts if it try to disable disabled term', async () => {
-            await expect(ctStaking.disableTerms(stakeType1)).to.be.revertedWith(
-                'Staking:EA',
-            );
+            beforeEach(async () => {
+                _snapshot = await ethers.provider.send('evm_snapshot', []);
+                await ctStaking.addTerms(stakeType1, validTerms);
+                await ctStaking.disableTerms(stakeType1);
+            });
+
+            afterEach(async () => {
+                await ethers.provider.send('evm_revert', [_snapshot]);
+            });
+
+            it('should set isEnabled to false', async () => {
+                const terms = await ctStaking.terms(stakeType1);
+                expect(terms.isEnabled).to.eq(false);
+            });
+
+            it('reverts if it tries to disable disabled term', async () => {
+                await expect(
+                    ctStaking.disableTerms(stakeType1),
+                ).to.be.revertedWith('Staking:EA');
+            });
         });
     });
 });

@@ -496,6 +496,21 @@ describe('Staking Contract', async () => {
                 await expect(termRes.exactLockPeriod).to.eq(0);
                 await expect(termRes.minLockPeriod).to.eq(30);
             });
+
+            it('succeeds with lockedTill', async () => {
+                const now = await getBlockTimestamp();
+                const till = Math.floor(now + 10000);
+                await ctStaking.addTerms(stakeType1, {
+                    ...validTerms,
+                    lockedTill: toBytes32(till),
+                    minLockPeriod: utils.hexZeroPad('0x00', 32),
+                });
+                const termRes = await ctStaking.terms(stakeType1);
+                await expect(termRes.allowedTill).to.eq(0);
+                await expect(termRes.lockedTill).to.eq(till);
+                await expect(termRes.exactLockPeriod).to.eq(0);
+                await expect(termRes.minLockPeriod).to.eq(0);
+            });
         });
     });
 

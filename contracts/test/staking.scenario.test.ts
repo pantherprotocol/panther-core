@@ -159,14 +159,14 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
     });
 
     playPointAndCheckResult(0, 0);
-    playPointAndCheckResult(1, 50);
-    playPointAndCheckResult(2, 50);
-    playPointAndCheckResult(3, 50);
-    playPointAndCheckResult(4, 50);
-    playPointAndCheckResult(5, 50);
-    playPointAndCheckResult(6, 50);
-    playPointAndCheckResult(7, 50);
-    playPointAndCheckResult(8, 50);
+    playPointAndCheckResult(1, 300);
+    playPointAndCheckResult(2, 300);
+    playPointAndCheckResult(3, 300);
+    playPointAndCheckResult(4, 300);
+    playPointAndCheckResult(5, 300);
+    playPointAndCheckResult(6, 300);
+    playPointAndCheckResult(7, 300);
+    playPointAndCheckResult(8, 300);
 
     checkFinalUserTokenBalance(0);
     checkFinalUserTokenBalance(1);
@@ -177,7 +177,7 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
         return (await provider.getBlock('latest')).timestamp;
     }
 
-    function playPointAndCheckResult(pInd: number, blocksToPreMine: number = 0) {
+    function playPointAndCheckResult(pInd: number, blocksToPreMine = 0) {
         it(`shall play scenario step #${pInd}`, async () => {
             const {timestamp, stakesStaked, stakesUnstaked} =
                 scenario.points[pInd];

@@ -5,7 +5,7 @@ import {expect} from 'chai';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {FakeContract} from '@defi-wonderland/smock';
 import {RewardMasterFixture} from './shared';
-import {mineBlock} from "./helpers/hardhatHelpers";
+import {mineBlock} from './helpers/hardhatHelpers';
 import {
     RewardPool,
     IErc20Min,
@@ -151,10 +151,10 @@ describe('Reward Master', () => {
                 await fixture.addRewardAdviser();
             });
 
-            beforeEach(async() => {
+            beforeEach(async () => {
                 // Simulate blocks mined between vesting request
-                const {timestamp} = (await provider.getBlock('latest'));
-                for (let i = 1; i <= 50; i++) {
+                const {timestamp} = await provider.getBlock('latest');
+                for (let i = 1; i <= 300; i++) {
                     await mineBlock(timestamp + i);
                 }
             });

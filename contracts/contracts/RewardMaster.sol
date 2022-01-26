@@ -84,7 +84,7 @@ contract RewardMaster is
     /// @dev Min number of unredeemed shares being rewarded
     uint256 private constant MIN_SHARES_REWARDED = 1000;
     /// @dev Min number of blocks between vesting in the Treasury
-    uint256 private constant MIN_VESTING_BLOCKS = 50;
+    uint256 private constant MIN_VESTING_BLOCKS = 300;
 
     // see comments above for explanation
     uint256 public accumRewardPerShare;

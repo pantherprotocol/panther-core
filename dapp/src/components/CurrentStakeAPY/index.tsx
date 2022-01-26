@@ -47,22 +47,24 @@ const CurrentStakeAPY = (props: {currentAPY: string}) => {
                         />
                     </Tooltip>
                 </Box>
-                <Typography
-                    variant="caption"
-                    color={'#FFDFBD'}
-                    fontSize={'32px'}
-                    fontWeight={800}
-                >
-                    {props.currentAPY || '47.9%'}
-                </Typography>
-                <Typography
-                    variant="caption"
-                    color={'#FFFFFF'}
-                    fontSize={'16px'}
-                    fontWeight={500}
-                >
-                    Current Staking APY
-                </Typography>
+                <Box>
+                    <Typography
+                        variant="body1"
+                        color={'#FFDFBD'}
+                        fontSize={'32px'}
+                        fontWeight={800}
+                    >
+                        {props.currentAPY || '47.9%'}
+                    </Typography>
+                    <Typography
+                        variant="body1"
+                        color={'#FFFFFF'}
+                        fontSize={'16px'}
+                        fontWeight={500}
+                    >
+                        Current Staking APY
+                    </Typography>
+                </Box>
             </Box>
             <Box
                 display={'flex'}
@@ -89,7 +91,7 @@ const CurrentStakeAPY = (props: {currentAPY: string}) => {
                     }}
                 >
                     Along with earning rewards, staking also allows you to vote
-                    on Panther DAO proposals.
+                    on Panther DAO proposals.{' '}
                     <Link href="#" underline="always" color="inherit">
                         Learn more.
                     </Link>

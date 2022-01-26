@@ -8,7 +8,6 @@ import logo from '../../images/panther-logo.svg';
 import analytics from '../../images/analytics.svg';
 import stakingIcon from '../../images/Icon_circle.svg';
 import docs from '../../images/docs.png';
-import governance from '../../images/governance.png';
 import Address from '../Address';
 import accountAvatar from '../../images/metamask.png';
 import {LogoutButton} from '../LogoutButton';
@@ -81,8 +80,6 @@ const Header = props => {
     const accountBalance =
         formatAccountBalance(balance, requiredNetwork.symbol) || 'Error';
 
-    // const buttonActiveClass = active ? 'active' : '';
-
     return (
         <Box sx={{flexGrow: 1}}>
             <AppBar position="static" className="app-bar">
@@ -104,13 +101,14 @@ const Header = props => {
                                 display={'flex'}
                                 justifyContent={'center'}
                                 alignItems={'center'}
+                                margin={'0 10px'}
                             >
                                 <Box className="header-icons">
                                     <img src={stakingIcon} />
                                 </Box>
 
                                 <Typography
-                                    className="nav-item  main-navigation"
+                                    className="nav-item main-navigation"
                                     variant="subtitle2"
                                     lineHeight={3}
                                 >
@@ -121,6 +119,7 @@ const Header = props => {
                                 display={'flex'}
                                 justifyContent={'center'}
                                 alignItems={'center'}
+                                margin={'0 10px'}
                             >
                                 <Box className="header-icons">
                                     <img src={analytics} />
@@ -136,6 +135,7 @@ const Header = props => {
                                 display={'flex'}
                                 justifyContent={'center'}
                                 alignItems={'center'}
+                                margin={'0 10px'}
                             >
                                 <Box className="header-icons">
                                     <img src={docs} />
@@ -145,22 +145,6 @@ const Header = props => {
                                     variant="subtitle2"
                                 >
                                     <a href="/">Docs</a>
-                                </Typography>
-                            </Box>
-                            <Box
-                                display={'flex'}
-                                justifyContent={'center'}
-                                alignItems={'center'}
-                            >
-                                <Box className="header-icons">
-                                    {' '}
-                                    <img src={governance} />
-                                </Box>
-                                <Typography
-                                    className="nav-item"
-                                    variant="subtitle2"
-                                >
-                                    <a href="/">Governance</a>
                                 </Typography>
                             </Box>
                         </Grid>
@@ -217,7 +201,6 @@ const Header = props => {
                                         display={'flex'}
                                         justifyContent={'space-between'}
                                         alignItems={'center'}
-                                        width={'280px'}
                                         margin={'0 5px'}
                                         padding={'8px'}
                                         sx={{
@@ -242,7 +225,7 @@ const Header = props => {
                                                 height: '35px',
                                             }}
                                         >
-                                            {accountBalance} ETH
+                                            {accountBalance}
                                         </Typography>
                                     </Box>
                                 </>

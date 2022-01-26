@@ -4,7 +4,7 @@ import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import SettingsIcon from '@mui/icons-material/Settings';
+// import SettingsIcon from '@mui/icons-material/Settings';
 import {Tooltip} from '@mui/material';
 import Address from '../Address';
 import accountAvatar from '../../images/account-avatar.png';
@@ -62,7 +62,7 @@ const AddressWithSetting = (props: {
         <Box
             display="flex"
             alignItems="center"
-            justifyContent="center"
+            justifyContent="flex-start"
             marginBottom={'10px'}
         >
             <Box
@@ -76,7 +76,7 @@ const AddressWithSetting = (props: {
                     accountAddress={props.accountAddress}
                 />
             </Box>
-            <Box
+            {/* <Box
                 width={'50%'}
                 display="flex"
                 alignItems="center"
@@ -89,12 +89,16 @@ const AddressWithSetting = (props: {
                         }}
                     />
                 </Tooltip>
-            </Box>
+            </Box> */}
         </Box>
     );
 };
 
 const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
+    const refreshPage = () => {
+        window.location.reload();
+    };
+
     return (
         <Box
             sx={{
@@ -120,12 +124,14 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                 >
                     {title}
                 </Typography>
-                <Tooltip title="Settings" placement="top">
+                <Tooltip title="Reload" placement="top">
                     <RefreshIcon
                         sx={{
                             opacity: 0.5,
                             transform: 'rotate(180deg)',
+                            cursor: 'pointer',
                         }}
+                        onClick={refreshPage}
                     />
                 </Tooltip>
             </Box>
@@ -138,9 +144,10 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                         fontStyle: 'bold',
                         fontSize: '32px',
                         lineHeight: '42px',
+                        marginBottom: '-10px',
                     }}
                 >
-                    {tokenBalance || '41,458.'}
+                    {tokenBalance}
                 </Typography>
                 <Typography
                     sx={{

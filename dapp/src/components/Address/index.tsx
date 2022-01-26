@@ -16,13 +16,18 @@ const Address = (props: {
             justifyContent="space-around"
             width={'100%'}
         >
-            <img src={props.accountAvatar} alt={'User avatar'} />
+            <img
+                src={props.accountAvatar}
+                alt={'User avatar'}
+                className="user-avatar-img"
+            />
             <Typography
                 sx={{
                     fontWeight: 400,
                     fontStyle: 'normal',
                     fontSize: '14px',
                     lineHeight: '42px',
+                    marginLeft: '18px',
                     marginRight: '18px',
                 }}
             >
@@ -32,6 +37,9 @@ const Address = (props: {
                 <ContentCopyIcon
                     sx={{
                         opacity: 0.5,
+                        width: '0.8em',
+                        height: '0.8em',
+                        marginRight: '18px',
                     }}
                 />
             </Tooltip>

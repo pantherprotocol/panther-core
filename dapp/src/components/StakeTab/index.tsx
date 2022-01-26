@@ -180,8 +180,8 @@ const StakingInput = props => {
                 border={'1px solid #FFDFBD'}
             >
                 <Box display={'flex'} alignItems={'center'} width={'70%'}>
-                    <Box width={'57px'} height={'57px'}>
-                        <img src={logo} />
+                    <Box display={'flex'}>
+                        <img src={logo} height={'40px'} width={'40px'}/>
                     </Box>
 
                     <Input
@@ -193,6 +193,7 @@ const StakingInput = props => {
                             fontSize: '24px',
                             color: '#ffdfbd',
                             marginInlineEnd: '16px',
+                            marginTop: '16px',
                             width: '180px',
                         }}
                         value={amountToStake}
@@ -239,7 +240,6 @@ const StakingInput = props => {
                     fontWeight={800}
                     fontSize={16}
                     width={'20%'}
-                    // marginLeft={'1rem'}
                     sx={{
                         cursor: 'pointer',
                     }}
@@ -269,7 +269,7 @@ const StakingMethod = () => (
             borderRadius: '10px',
         }}
     >
-        <Box display="flex" justifyContent={'space-between'}>
+        <Box display="flex" justifyContent={'space-between'} alignItems={'center'}>
             <Typography
                 sx={{
                     fontWeight: 500,
@@ -340,7 +340,7 @@ const StakingInfoMSG = () => (
         textAlign={'start'}
         sx={{
             textAlign: 'start',
-            padding: ' 5px 16px',
+            padding: ' 5px 4px',
         }}
     >
         <Box display={'flex'} justifyContent={'start'} alignItems={'center'}>
@@ -362,7 +362,7 @@ const StakingInfoMSG = () => (
             fontWeight={400}
         >
             You will need to unstake in order for your staked assets to be
-            liquid again. This process will take 7 days to complete.&nbsp;
+            liquid again. This process will take 7 days to complete.{' '}
             <Link href="#" underline="always" color="inherit">
                 Learn more
             </Link>

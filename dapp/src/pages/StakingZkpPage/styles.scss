@@ -10,3 +10,13 @@
 img {
     max-width: 100%;
 }
+
+@media (min-width: 1200px) {
+    .main-container {
+        max-width: 1400px !important;
+    }
+}
+
+.css-a26fzd-MuiInputBase-root-MuiInput-root:before {
+    border-bottom: none !important;
+}

@@ -7,15 +7,14 @@
     padding-top: 16px;
 }
 
-.nav-item {
+.nav-item a {
     font-size: 18px;
     font-weight: 400;
-    // padding: 0 25px;
     color: $grey-text;
     cursor: pointer;
 }
 
-.nav-item.active {
+.nav-item.main-navigation a {
     color: $white;
     font-size: 18px;
     font-weight: 800;
@@ -85,12 +84,6 @@
 
 .account-avatar {
     padding: 0 25px;
-}
-
-.main-navigation {
-    border-bottom-style: solid;
-    border-bottom-color: rgb(177, 62, 62);
-    border-bottom-width: 8px;
 }
 
 .header-icons {

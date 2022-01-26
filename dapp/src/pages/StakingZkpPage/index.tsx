@@ -12,7 +12,7 @@ import background from '../../images/background.png';
 import {Footer} from '../../components/Footer';
 import {switchNetwork} from '../../services/wallet';
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
-import {injected} from '../../services/connectors';
+import {injected, requiredNetwork} from '../../services/connectors';
 import {useWeb3React} from '@web3-react/core';
 import {Web3Provider} from '@ethersproject/providers';
 // import StakingHeader from '../../components/StakingHeader';
@@ -26,6 +26,8 @@ import {
     getAccountStakes,
     getRewardsBalanceForCalculations,
 } from '../../services/staking';
+import {formatAccountAddress} from '../../services/account';
+import {formatAccountBalance} from '../../services/account';
 
 function StakingZkpPage() {
     const context = useWeb3React<Web3Provider>();
@@ -62,10 +64,6 @@ function StakingZkpPage() {
 
     // Set up listeners for events on the injected ethereum provider, if it exists
     // and is not in the process of activating.
-    // console.debug('triedEager', triedEager);
-    // console.debug('activatingConnector', activatingConnector);
-    // const connected = injected === connector;
-    // const suppressInactiveListeners = activatingConnector || error;
     const suppressInactiveListeners =
         !triedEager || activatingConnector || error;
     useInactiveListener(suppressInactiveListeners);
@@ -200,6 +198,8 @@ function StakingZkpPage() {
         getUnclaimedRewardsBalance();
     });
 
+    const accountAddress = formatAccountAddress(account) || '-';
+
     return (
         <Box
             className="main-app"
@@ -239,7 +239,7 @@ function StakingZkpPage() {
                     marginTop: '100px',
                 }}
             >
-                <Container maxWidth="lg">
+                <Container className="main-container">
                     <Grid container>
                         <Grid item md={1} xs={12} />
                         <Grid item container spacing={2} md={10} xs={12}>
@@ -258,7 +258,7 @@ function StakingZkpPage() {
                                         tokenUSDValue={tokenUSDValue}
                                         stakedBalance={stakedBalance}
                                         rewardsBalance={rewardsBalance}
-                                        accountAddress={account || null}
+                                        accountAddress={accountAddress}
                                     />
                                     <AdvancedStakingComingSoon />
                                 </Box>

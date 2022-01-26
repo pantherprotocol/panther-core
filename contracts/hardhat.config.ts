@@ -11,6 +11,7 @@ import './tasks/terms-add';
 import './tasks/reward-adviser-add';
 import './tasks/reward-pool-init';
 import './tasks/time-increase';
+import './tasks/proposal-gen';
 
 import {HardhatUserConfig} from 'hardhat/config';
 import {config as dotenvConfig} from 'dotenv';

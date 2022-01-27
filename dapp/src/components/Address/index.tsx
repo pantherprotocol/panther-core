@@ -2,13 +2,18 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import './styles.scss';
+import {useWeb3React} from '@web3-react/core';
 import {Tooltip} from '@mui/material';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+import './styles.scss';
 
 const Address = (props: {
     accountAvatar: string;
     accountAddress: string | null;
 }) => {
+    const context = useWeb3React();
+    const {account} = context;
+
     return (
         <Box
             display="flex"
@@ -34,14 +39,19 @@ const Address = (props: {
                 {props.accountAddress}
             </Typography>
             <Tooltip title="Copy Wallet Address" placement="top">
-                <ContentCopyIcon
-                    sx={{
-                        opacity: 0.5,
-                        width: '0.8em',
-                        height: '0.8em',
-                        marginRight: '18px',
-                    }}
-                />
+                <span>
+                    <CopyToClipboard text={account}>
+                            <ContentCopyIcon
+                                sx={{
+                                    opacity: 0.5,
+                                    width: '0.8em',
+                                    height: '0.8em',
+                                    marginRight: '18px',
+                                    cursor: 'pointer',
+                                }}
+                            />
+                    </CopyToClipboard>
+                </span>
             </Tooltip>
         </Box>
     );

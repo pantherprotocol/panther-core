@@ -5,7 +5,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import logo from '../../images/panther-logo.svg';
-import analytics from '../../images/analytics.svg';
 import stakingIcon from '../../images/Icon_circle.svg';
 import docs from '../../images/docs.png';
 import Address from '../Address';
@@ -122,29 +121,13 @@ const Header = props => {
                                 margin={'0 10px'}
                             >
                                 <Box className="header-icons">
-                                    <img src={analytics} />
-                                </Box>
-                                <Typography
-                                    className="nav-item"
-                                    variant="subtitle2"
-                                >
-                                    <a href="/">Analytics</a>
-                                </Typography>
-                            </Box>
-                            <Box
-                                display={'flex'}
-                                justifyContent={'center'}
-                                alignItems={'center'}
-                                margin={'0 10px'}
-                            >
-                                <Box className="header-icons">
                                     <img src={docs} />
                                 </Box>
                                 <Typography
                                     className="nav-item"
                                     variant="subtitle2"
                                 >
-                                    <a href="/">Docs</a>
+                                    <a href="https://docs.pantherprotocol.io/">Docs</a>
                                 </Typography>
                             </Box>
                         </Grid>

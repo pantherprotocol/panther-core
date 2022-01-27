@@ -133,3 +133,11 @@
         }
     }
 }
+
+@media (max-width: 600px) {
+    .header-right-container {
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        height: 200px;
+    }
+}

@@ -71,6 +71,7 @@ const AddressWithSetting = (props: {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
+                className="address-container"
             >
                 <Address
                     accountAvatar={props.accountAvatar}

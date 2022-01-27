@@ -140,6 +140,7 @@ const Header = props => {
                             display={'flex'}
                             justifyContent={'end'}
                             alignItems={'center'}
+                            className="header-right-container"
                         >
                             {/* connection button */}
                             {!active && !wrongNetwork && (

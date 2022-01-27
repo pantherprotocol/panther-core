@@ -127,7 +127,9 @@ const Header = props => {
                                     className="nav-item"
                                     variant="subtitle2"
                                 >
-                                    <a href="https://docs.pantherprotocol.io/">Docs</a>
+                                    <a href="https://docs.pantherprotocol.io/">
+                                        Docs
+                                    </a>
                                 </Typography>
                             </Box>
                         </Grid>

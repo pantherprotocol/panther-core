@@ -184,9 +184,11 @@ const Header = props => {
                             {active && !wrongNetwork && (
                                 <>
                                     {!tokenAdded && (
-                                        <AddTokenButton
-                                            setTokenAdded={setTokenAdded}
-                                        />
+                                        <Box>
+                                            <AddTokenButton
+                                                setTokenAdded={setTokenAdded}
+                                            />
+                                        </Box>
                                     )}
                                     <Box
                                         display={'flex'}
@@ -228,11 +230,6 @@ const Header = props => {
                             {/* disconnection button */}
                             {active && !wrongNetwork && (
                                 <Box
-                                    sx={{
-                                        background: '#63728820',
-                                        borderRadius: '8px',
-                                        height: '50px',
-                                    }}
                                     onClick={() => {
                                         props.disconnect();
                                     }}

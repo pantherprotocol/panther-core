@@ -6,7 +6,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {Tooltip} from '@mui/material';
 import Address from '../Address';
-import accountAvatar from '../../images/account-avatar.png';
+import accountAvatar from '../../images/wallet-icon.svg';
 import './styles.scss';
 import {useWeb3React} from '@web3-react/core';
 import {Web3Provider} from '@ethersproject/providers';

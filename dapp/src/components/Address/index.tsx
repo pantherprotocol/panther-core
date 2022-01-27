@@ -21,11 +21,19 @@ const Address = (props: {
             justifyContent="space-around"
             width={'100%'}
         >
-            <img
-                src={props.accountAvatar}
-                alt={'User avatar'}
-                className="user-avatar-img"
-            />
+            <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                width={'24px'}
+                marginLeft={'18px'}
+            >
+                <img
+                    src={props.accountAvatar}
+                    alt={'User avatar'}
+                    // className="user-avatar-img"
+                />
+            </Box>
             <Typography
                 sx={{
                     fontWeight: 400,

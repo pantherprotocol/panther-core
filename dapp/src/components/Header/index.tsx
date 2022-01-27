@@ -5,10 +5,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import logo from '../../images/panther-logo.svg';
-import stakingIcon from '../../images/Icon_circle.svg';
-import docs from '../../images/docs.png';
+import analytics from '../../images/analytics.svg';
+import stakingIcon from '../../images/staking.svg';
+import docs from '../../images/docs.svg';
 import Address from '../Address';
-import accountAvatar from '../../images/metamask.png';
+import accountAvatar from '../../images/meta-mask-icon.svg';
 import {LogoutButton} from '../LogoutButton';
 import {SafeLink} from '../../services/links';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
@@ -91,7 +92,11 @@ const Header = props => {
                             display={'flex'}
                             alignItems={'center'}
                         >
-                            <Box className="logo" marginRight={'30px'}>
+                            <Box
+                                className="logo"
+                                marginRight={'10px'}
+                                width={'10%'}
+                            >
                                 <SafeLink href="/">
                                     <img src={logo} alt="Logo" />
                                 </SafeLink>

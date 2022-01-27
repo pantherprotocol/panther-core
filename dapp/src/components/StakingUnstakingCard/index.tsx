@@ -22,7 +22,10 @@ export default function StakingUnstakingCard(props: {
         event: React.MouseEvent<HTMLElement>,
         newState: string,
     ) => {
-        setToggle(newState);
+        if (newState !== null) {
+            setToggle(newState);
+            console.log(newState, 'is the new state');
+        }
     };
 
     const children = [

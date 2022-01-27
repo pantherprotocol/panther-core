@@ -3,7 +3,7 @@ import {smock, FakeContract} from '@defi-wonderland/smock';
 import {BaseContract, Contract, utils} from 'ethers';
 import chai from 'chai';
 import {ethers} from 'hardhat';
-
+import {Staking} from '../types/contracts';
 import {increaseTime} from './helpers/hardhatHelpers';
 import {hash4bytes, classicActionHash, CLASSIC, STAKE} from '../lib/hash';
 
@@ -25,14 +25,14 @@ async function getBlockTimestamp() {
     return (await ethers.provider.getBlock('latest')).timestamp;
 }
 
-describe('Staking Contract', async () => {
+describe.only('Staking Contract', async () => {
     let provider: any;
     let rewardPool: FakeContract<BaseContract>;
     let rewardToken: Contract;
     let rewardAdviser: FakeContract<BaseContract>;
     let stakingToken: Contract;
     let ctRewardMaster: Contract;
-    let ctStaking: Contract;
+    let ctStaking: Staking;
     let startBlock: number;
     let owner: SignerWithAddress,
         alice: SignerWithAddress,
@@ -79,11 +79,11 @@ describe('Staking Contract', async () => {
 
         // Deploy Staking contrac
         const Staking = await ethers.getContractFactory('Staking');
-        ctStaking = await Staking.deploy(
+        ctStaking = (await Staking.deploy(
             stakingToken.address,
             ctRewardMaster.address,
             owner.address,
-        );
+        )) as Staking;
 
         startBlock = (await provider.getBlock('latest')).number;
 
@@ -151,7 +151,7 @@ describe('Staking Contract', async () => {
         let powerInfo: any;
         before(async function () {
             await stakingToken.approve(ctStaking.address, 1000000);
-            await ctStaking.stake(100, stakeType, 0x0);
+            await ctStaking.stake(100, stakeType, '0x00');
 
             stakeInfo = await ctStaking.stakes(owner.address, 0);
             powerInfo = await ctStaking.power(owner.address);
@@ -159,7 +159,7 @@ describe('Staking Contract', async () => {
 
         it('reverts when stakeType is invalid', async () => {
             await expect(
-                ctStaking.stake(0, '0x00000001', 0x0),
+                ctStaking.stake(0, '0x00000001', '0x00'),
             ).to.be.revertedWith('Staking: Terms unknown or disabled');
         });
 
@@ -179,7 +179,7 @@ describe('Staking Contract', async () => {
     describe('unstake()', function () {
         before(async function () {
             await increaseTime(3600);
-            await ctStaking.unstake(0, 0x0, true);
+            await ctStaking.unstake(0, '0x00', true);
         });
 
         it('amount allocation should be zero', async () => {
@@ -198,11 +198,11 @@ describe('Staking Contract', async () => {
     describe('delegate()', function () {
         before(async function () {
             // stake 1
-            await ctStaking.stake(100, stakeType, 0x0);
+            await ctStaking.stake(100, stakeType, '0x00');
             // stake 2
-            await ctStaking.stake(1000, stakeType, 0x0);
+            await ctStaking.stake(1000, stakeType, '0x00');
             // stake 3
-            await ctStaking.stake(10000, stakeType, 0x0);
+            await ctStaking.stake(10000, stakeType, '0x00');
         });
 
         it('reverts when no stake was claimed', async () => {
@@ -264,7 +264,7 @@ describe('Staking Contract', async () => {
     describe('undelegate()', function () {
         before(async function () {
             // stake 4
-            await ctStaking.stake(200, stakeType, 0x0);
+            await ctStaking.stake(200, stakeType, '0x00');
         });
 
         it('undelegate after delegation', async () => {
@@ -298,15 +298,15 @@ describe('Staking Contract', async () => {
                 .approve(ctStaking.address, 10000);
             // stake 0
             snapshotBlockNum = (await provider.getBlock('latest')).number;
-            await ctStaking.connect(wallet3).stake(100, stakeType, 0x0);
+            await ctStaking.connect(wallet3).stake(100, stakeType, '0x00');
             // stake 1
-            await ctStaking.connect(wallet3).stake(200, stakeType, 0x0);
+            await ctStaking.connect(wallet3).stake(200, stakeType, '0x00');
             // stake 2
-            await ctStaking.connect(wallet3).stake(300, stakeType, 0x0);
+            await ctStaking.connect(wallet3).stake(300, stakeType, '0x00');
             // stake 3
-            await ctStaking.connect(wallet3).stake(400, stakeType, 0x0);
+            await ctStaking.connect(wallet3).stake(400, stakeType, '0x00');
             // stake 4
-            await ctStaking.connect(wallet3).stake(500, stakeType, 0x0);
+            await ctStaking.connect(wallet3).stake(500, stakeType, '0x00');
             await increaseTime(3600);
             await expect(await ctStaking.snapshotLength(wallet3.address)).to.eq(
                 5,

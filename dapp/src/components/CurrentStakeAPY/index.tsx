@@ -92,7 +92,11 @@ const CurrentStakeAPY = (props: {currentAPY: string}) => {
                 >
                     Along with earning rewards, staking also allows you to vote
                     on Panther DAO proposals.{' '}
-                    <Link href="#" underline="always" color="inherit">
+                    <Link
+                        href="https://docs.pantherprotocol.io/"
+                        underline="always"
+                        color="inherit"
+                    >
                         Learn more.
                     </Link>
                 </Typography>

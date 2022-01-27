@@ -367,7 +367,11 @@ const StakingInfoMSG = () => (
         >
             You will need to unstake in order for your staked assets to be
             liquid again. This process will take 7 days to complete.{' '}
-            <Link href="#" underline="always" color="inherit">
+            <Link
+                href="https://docs.pantherprotocol.io/"
+                underline="always"
+                color="inherit"
+            >
                 Learn more
             </Link>
         </Typography>

@@ -41,15 +41,15 @@ const Address = (props: {
             <Tooltip title="Copy Wallet Address" placement="top">
                 <span>
                     <CopyToClipboard text={account}>
-                            <ContentCopyIcon
-                                sx={{
-                                    opacity: 0.5,
-                                    width: '0.8em',
-                                    height: '0.8em',
-                                    marginRight: '18px',
-                                    cursor: 'pointer',
-                                }}
-                            />
+                        <ContentCopyIcon
+                            sx={{
+                                opacity: 0.5,
+                                width: '0.8em',
+                                height: '0.8em',
+                                marginRight: '18px',
+                                cursor: 'pointer',
+                            }}
+                        />
                     </CopyToClipboard>
                 </span>
             </Tooltip>

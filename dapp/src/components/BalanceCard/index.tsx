@@ -4,7 +4,6 @@ import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
-// import SettingsIcon from '@mui/icons-material/Settings';
 import {Tooltip} from '@mui/material';
 import Address from '../Address';
 import accountAvatar from '../../images/account-avatar.png';
@@ -78,20 +77,6 @@ const AddressWithSetting = (props: {
                     accountAddress={props.accountAddress}
                 />
             </Box>
-            {/* <Box
-                width={'50%'}
-                display="flex"
-                alignItems="center"
-                justifyContent="end"
-            >
-                <Tooltip title="Settings" placement="top">
-                    <SettingsIcon
-                        sx={{
-                            opacity: 0.5,
-                        }}
-                    />
-                </Tooltip>
-            </Box> */}
         </Box>
     );
 };
@@ -130,7 +115,6 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                     <RefreshIcon
                         sx={{
                             opacity: 0.5,
-                            transform: 'rotate(180deg)',
                             cursor: 'pointer',
                         }}
                         onClick={refreshPage}
@@ -163,27 +147,13 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                     ZKP
                 </Typography>
             </Box>
-            <Box display="flex" alignItems="baseline">
-                <Typography
-                    sx={{
-                        fontWeight: 400,
-                        fontStyle: 'normal',
-                        fontSize: '14px',
-                        lineHeight: '42px',
-                        opacity: 0.5,
-                        marginRight: '18px',
-                    }}
-                >
-                    {'~$73.070 USD'}
-                </Typography>
-            </Box>
             {tokenMarketPrice && (
                 <Box display="flex" alignItems="baseline">
                     <Typography
                         sx={{
                             fontWeight: 400,
                             fontStyle: 'normal',
-                            fontSize: '12px',
+                            fontSize: '14px',
                             lineHeight: '42px',
                             opacity: 0.5,
                             marginBottom: '18px',

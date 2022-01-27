@@ -1,14 +1,12 @@
 @import '../../variables';
 
 .add-token-button-holder {
-    height: 100%;
-
     .add-token-button {
         color: $white;
-        height: 45px;
+        height: 50px;
         padding-left: 15px;
         padding-right: 15px;
-        margin-right: 20px;
+        margin-right: 5px;
         display: flex;
         align-items: center;
         justify-content: center;

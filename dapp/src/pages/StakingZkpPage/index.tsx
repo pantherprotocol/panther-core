@@ -15,7 +15,6 @@ import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
 import {injected} from '../../services/connectors';
 import {useWeb3React} from '@web3-react/core';
 import {Web3Provider} from '@ethersproject/providers';
-// import StakingHeader from '../../components/StakingHeader';
 import Header from '../../components/Header';
 import * as stakingService from '../../services/staking';
 import * as accountService from '../../services/account';
@@ -102,7 +101,7 @@ function StakingZkpPage() {
 
     const getTokenMarketPrice = async () => {
         const price = await stakingService.getZKPMarketPrice();
-        if (price && tokenBalance && Number(tokenBalance) > 0) {
+        if (price && tokenBalance && Number(tokenBalance) >= 0) {
             const tokenUSDValue: number = price * Number(tokenBalance);
             const formattedUSDValue = formatUSDPrice(tokenUSDValue.toString());
             setTokenUSDValue(formattedUSDValue);
@@ -210,17 +209,6 @@ function StakingZkpPage() {
         >
             <CssBaseline />
 
-            {/* <StakingHeader
-                onConnect={() => {
-                    onConnect();
-                }}
-                switchNetwork={() => {
-                    switchNetwork(setChainError);
-                }}
-                disconnect={() => {
-                    disconnect();
-                }}
-            /> */}
             <Header
                 onConnect={() => {
                     onConnect();
@@ -253,6 +241,7 @@ function StakingZkpPage() {
                             >
                                 <Box width={'100%'}>
                                     <BalanceCard
+                                        key={tokenUSDValue}
                                         tokenBalance={tokenBalance}
                                         tokenUSDValue={tokenUSDValue}
                                         stakedBalance={stakedBalance}

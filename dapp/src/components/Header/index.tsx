@@ -217,7 +217,7 @@ const Header = props => {
                                         )}
                                         <Typography
                                             variant="subtitle2"
-                                            width={'50%'}
+                                            width={'100%'}
                                             display={'flex'}
                                             justifyContent={'center'}
                                             alignItems={'center'}

@@ -4,6 +4,12 @@
     max-width: 220px;
     width: 100%;
     text-align: center;
+    box-shadow: 0 0 1rem 0 $header-box-shadow;
+    background: $second-blue;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
 
     .wallet-btn {
         max-width: 220px;
@@ -17,5 +23,6 @@
         text-decoration: none;
         font-weight: 800;
         font-size: 18px;
+        text-transform: initial;
     }
 }

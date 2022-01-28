@@ -53,16 +53,12 @@ export default function StakingUnstakingCard(props: {
                     padding: '0',
                 }}
             >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                    }}
-                >
+                <Box>
                     <ToggleButtonGroup size="large" {...control}>
                         {children}
                     </ToggleButtonGroup>
                 </Box>
+
                 <CardContent>
                     {toggle == 'stake' || toggle == null ? (
                         <StakeTab

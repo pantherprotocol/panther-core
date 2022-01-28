@@ -53,10 +53,7 @@ contract defined as `TOKEN_ADDRESS` in `zkp-token/.env` above, e.g.:
 
     STAKING_TOKEN=0x5FbDB2315678afecb367f032d93F642f64180aa3
 
-and set the owner of the staking contract to the default first Hardhat
-signer:
-
-    STAKING_OWNER=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+and similarly for `VESTING_POOLS`.
 
 Now run:
 

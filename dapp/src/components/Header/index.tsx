@@ -213,8 +213,15 @@ const Header = props => {
                                             display={'flex'}
                                             justifyContent={'center'}
                                             alignItems={'center'}
+                                            textAlign={'center'}
+                                            fontWeight={'bold'}
+                                            fontStyle={'normal'}
+                                            lineHeight={42}
+                                            fontSize={'14px'}
+                                            padding={'8px 8px'}
                                             sx={{
-                                                background: '#14161935',
+                                                backgroundColor: '#789ACD33',
+
                                                 borderRadius: '8px',
                                                 height: '35px',
                                                 fontWeight: 600,

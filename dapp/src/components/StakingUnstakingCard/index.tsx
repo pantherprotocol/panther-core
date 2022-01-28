@@ -61,7 +61,7 @@ export default function StakingUnstakingCard(props: {
                     </ToggleButtonGroup>
                 </Box>
                 <CardContent>
-                    {toggle == 'stake' ? (
+                    {toggle == 'stake' || toggle == null ? (
                         <StakeTab
                             tokenBalance={props.tokenBalance}
                             stakedBalance={props.stakedBalance}

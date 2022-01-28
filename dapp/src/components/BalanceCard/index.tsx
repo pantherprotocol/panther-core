@@ -8,6 +8,8 @@ import {Tooltip} from '@mui/material';
 import Address from '../Address';
 import accountAvatar from '../../images/account-avatar.png';
 import './styles.scss';
+import {useWeb3React} from '@web3-react/core';
+import {Web3Provider} from '@ethersproject/providers';
 
 const BalanceCard = (props: {
     rewardsBalance: string | null;
@@ -83,6 +85,9 @@ const AddressWithSetting = (props: {
 };
 
 const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
+    const context = useWeb3React<Web3Provider>();
+    const {account} = context;
+
     const refreshPage = () => {
         window.location.reload();
     };
@@ -123,45 +128,49 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                 </Tooltip>
             </Box>
 
-            <Box display="flex" alignItems="baseline">
-                <Typography
-                    component="div"
-                    sx={{
-                        fontWeight: 800,
-                        fontStyle: 'bold',
-                        fontSize: '32px',
-                        lineHeight: '42px',
-                        marginBottom: '-10px',
-                    }}
-                >
-                    {tokenBalance}
-                </Typography>
-                <Typography
-                    sx={{
-                        fontWeight: 700,
-                        fontStyle: 'normal',
-                        fontSize: '12px',
-                        lineHeight: '42px',
-                        marginLeft: '8px',
-                    }}
-                >
-                    ZKP
-                </Typography>
-            </Box>
-            {tokenMarketPrice && (
-                <Box display="flex" alignItems="baseline">
-                    <Typography
-                        sx={{
-                            fontWeight: 600,
-                            fontStyle: 'normal',
-                            fontSize: '14px',
-                            lineHeight: '42px',
-                            opacity: 0.5,
-                        }}
-                    >
-                        ~${tokenMarketPrice} USD
-                    </Typography>
-                </Box>
+            {account && (
+                <>
+                    <Box display="flex" alignItems="baseline">
+                        <Typography
+                            component="div"
+                            sx={{
+                                fontWeight: 800,
+                                fontStyle: 'bold',
+                                fontSize: '32px',
+                                lineHeight: '42px',
+                                marginBottom: '-10px',
+                            }}
+                        >
+                            {tokenBalance}
+                        </Typography>
+                        <Typography
+                            sx={{
+                                fontWeight: 700,
+                                fontStyle: 'normal',
+                                fontSize: '12px',
+                                lineHeight: '42px',
+                                marginLeft: '8px',
+                            }}
+                        >
+                            ZKP
+                        </Typography>
+                    </Box>
+                    {tokenMarketPrice && (
+                        <Box display="flex" alignItems="baseline">
+                            <Typography
+                                sx={{
+                                    fontWeight: 600,
+                                    fontStyle: 'normal',
+                                    fontSize: '14px',
+                                    lineHeight: '42px',
+                                    opacity: 0.5,
+                                }}
+                            >
+                                ~${tokenMarketPrice} USD
+                            </Typography>
+                        </Box>
+                    )}
+                </>
             )}
         </Box>
     );
@@ -169,6 +178,9 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
 
 const AddressBalances = props => {
     const {title, amountUSD, balance} = props;
+    const context = useWeb3React<Web3Provider>();
+    const {account} = context;
+
     return (
         <>
             <Box display="flex" alignItems="baseline">
@@ -196,45 +208,47 @@ const AddressBalances = props => {
                     </Tooltip>
                 </Typography>
             </Box>
-            <Box display="flex" justifyContent={'space-between'}>
-                <Box display="flex" justifyContent={'center'}>
-                    <Typography
-                        component="div"
-                        sx={{
-                            fontWeight: 800,
-                            fontStyle: 'bold',
-                            fontSize: '22px',
-                            lineHeight: '42px',
-                        }}
-                    >
-                        {balance}
-                    </Typography>
-                    <Typography
-                        sx={{
-                            fontWeight: 700,
-                            fontStyle: 'normal',
-                            fontSize: '12px',
-                            lineHeight: '42px',
-                            marginLeft: '8px',
-                        }}
-                    >
-                        ZKP
-                    </Typography>
+            {account && (
+                <Box display="flex" justifyContent={'space-between'}>
+                    <Box display="flex" justifyContent={'center'}>
+                        <Typography
+                            component="div"
+                            sx={{
+                                fontWeight: 800,
+                                fontStyle: 'bold',
+                                fontSize: '22px',
+                                lineHeight: '42px',
+                            }}
+                        >
+                            {balance}
+                        </Typography>
+                        <Typography
+                            sx={{
+                                fontWeight: 700,
+                                fontStyle: 'normal',
+                                fontSize: '12px',
+                                lineHeight: '42px',
+                                marginLeft: '8px',
+                            }}
+                        >
+                            ZKP
+                        </Typography>
+                    </Box>
+                    {amountUSD && (
+                        <Typography
+                            sx={{
+                                fontWeight: 600,
+                                fontStyle: 'normal',
+                                fontSize: '12px',
+                                lineHeight: '42px',
+                                marginLeft: '8px',
+                            }}
+                        >
+                            ~${amountUSD} USD
+                        </Typography>
+                    )}
                 </Box>
-                {amountUSD && (
-                    <Typography
-                        sx={{
-                            fontWeight: 600,
-                            fontStyle: 'normal',
-                            fontSize: '12px',
-                            lineHeight: '42px',
-                            marginLeft: '8px',
-                        }}
-                    >
-                        ~${amountUSD} USD
-                    </Typography>
-                )}
-            </Box>
+            )}
         </>
     );
 };

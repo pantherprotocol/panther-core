@@ -15,6 +15,7 @@
         background: $grey-btn;
         border-radius: 8px;
         cursor: pointer;
+        text-transform: capitalize;
 
         &:hover {
             background: $second-blue;

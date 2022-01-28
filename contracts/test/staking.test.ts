@@ -1,16 +1,16 @@
+import {Provider} from '@ethersproject/providers';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {smock, FakeContract} from '@defi-wonderland/smock';
-import {BaseContract, BigNumber, Contract, utils} from 'ethers';
+import {BaseContract, BigNumber, utils} from 'ethers';
 import chai from 'chai';
 import {ethers} from 'hardhat';
-import {Staking} from '../types/contracts';
+import {Staking, TokenMock, RewardMaster} from '../types/contracts';
 import {increaseTime} from './helpers/hardhatHelpers';
 import {hash4bytes, classicActionHash, CLASSIC, STAKE} from '../lib/hash';
+import {fromRpcSig} from 'ethereumjs-util';
+import {TypedDataDomain} from '@ethersproject/abstract-signer';
 
 const expect = chai.expect;
-
-chai.should(); // if you like should syntax
-chai.use(smock.matchers);
 
 const stakeType = hash4bytes(CLASSIC);
 
@@ -25,13 +25,13 @@ async function getBlockTimestamp() {
     return (await ethers.provider.getBlock('latest')).timestamp;
 }
 
-describe.only('Staking Contract', async () => {
-    let provider: any;
+describe('Staking Contract', async () => {
+    let provider: Provider;
     let rewardPool: FakeContract<BaseContract>;
-    let rewardToken: Contract;
     let rewardAdviser: FakeContract<BaseContract>;
-    let stakingToken: Contract;
-    let ctRewardMaster: Contract;
+    let rewardToken: TokenMock;
+    let stakingToken: TokenMock;
+    let ctRewardMaster: RewardMaster;
     let ctStaking: Staking;
     let startBlock: number;
     let owner: SignerWithAddress,
@@ -39,7 +39,8 @@ describe.only('Staking Contract', async () => {
         bob: SignerWithAddress,
         wallet1: SignerWithAddress,
         wallet2: SignerWithAddress,
-        wallet3: SignerWithAddress;
+        wallet3: SignerWithAddress,
+        wallet4: SignerWithAddress;
 
     const validTerms = {
         isEnabled: true,
@@ -55,8 +56,9 @@ describe.only('Staking Contract', async () => {
     const stakeType1 = '0x4ab0941b';
 
     before(async function () {
-        [owner, alice, bob, wallet1, wallet2, wallet3] =
-            await ethers.getSigners();
+        const users = await ethers.getSigners();
+
+        [owner, alice, bob, wallet1, wallet2, wallet3, wallet4] = users;
 
         provider = ethers.provider;
 
@@ -65,19 +67,19 @@ describe.only('Staking Contract', async () => {
 
         const TokenMock = await ethers.getContractFactory('TokenMock');
 
-        rewardToken = await TokenMock.deploy();
-        stakingToken = await TokenMock.deploy();
+        rewardToken = (await TokenMock.deploy()) as TokenMock;
+        stakingToken = (await TokenMock.deploy()) as TokenMock;
 
         // Deploy & Set configuration for RewardMaster contract
         const RewardMaster = await ethers.getContractFactory('RewardMaster');
         const actionType = classicActionHash(STAKE);
-        ctRewardMaster = await RewardMaster.deploy(
+        ctRewardMaster = (await RewardMaster.deploy(
             rewardToken.address,
             rewardPool.address,
             owner.address,
-        );
+        )) as RewardMaster;
 
-        // Deploy Staking contrac
+        // Deploy Staking contract
         const Staking = await ethers.getContractFactory('Staking');
         ctStaking = (await Staking.deploy(
             stakingToken.address,
@@ -112,13 +114,14 @@ describe.only('Staking Contract', async () => {
         await tx.wait();
 
         // Transfer staking tokens to users' wallets
-        [owner, alice, bob, wallet1, wallet2, wallet3].map(async user => {
-            const userBalance = BigNumber.from(10000);
+
+        const userBalance = BigNumber.from(10000);
+        for (const user of users) {
             await stakingToken.transfer(user.address, userBalance);
             await stakingToken
                 .connect(user)
                 .approve(ctStaking.address, ethers.constants.MaxInt256);
-        });
+        }
     });
 
     beforeEach(async () => {
@@ -132,19 +135,17 @@ describe.only('Staking Contract', async () => {
 
     describe('initial parameters checking', function () {
         it('stakingToken should be set properly', async () => {
-            await expect(stakingToken.address).to.equal(
-                await ctStaking.TOKEN(),
-            );
+            expect(stakingToken.address).to.equal(await ctStaking.TOKEN());
         });
 
         it('rewardMaster should be set properly', async () => {
-            await expect(ctRewardMaster.address).to.equal(
+            expect(ctRewardMaster.address).to.equal(
                 await ctStaking.REWARD_MASTER(),
             );
         });
 
         it('startBlock should be set properly', async () => {
-            await expect(startBlock).to.equal(await ctStaking.START_BLOCK());
+            expect(startBlock).to.equal(await ctStaking.START_BLOCK());
         });
     });
 
@@ -165,10 +166,10 @@ describe.only('Staking Contract', async () => {
         });
 
         it('amount allocation should be equal', async () => {
-            await expect(stakeInfo.amount).to.eq(100);
+            expect(stakeInfo.amount).to.eq(100);
         });
 
-        it('should get the stakes info for each account', async () => {
+        it('should get the stakes info', async () => {
             const stakes = await ctStaking.accountStakes(owner.address);
             const {delegatee, amount, claimedAt, stakeType, id} = stakes[0];
 
@@ -181,11 +182,77 @@ describe.only('Staking Contract', async () => {
         });
 
         it('stakeType should be equal', async () => {
-            await expect(stakeInfo.stakeType).to.eq(stakeType);
+            expect(stakeInfo.stakeType).to.eq(stakeType);
         });
 
         it('power should be equal', async () => {
-            await expect(powerInfo.own).to.eq(100);
+            expect(powerInfo.own).to.eq(100);
+        });
+
+        it('should stake with permit', async () => {
+            const amount = BigNumber.from(100);
+            const deadline = ethers.constants.MaxUint256;
+            const nonce = '0';
+            const spender = ctStaking.address;
+            const name = await stakingToken.name();
+            const version = '1';
+            const {chainId} = await provider.getNetwork();
+            const verifyingContract = stakingToken.address;
+
+            const types = {
+                Permit: [
+                    {name: 'owner', type: 'address'},
+                    {name: 'spender', type: 'address'},
+                    {name: 'value', type: 'uint256'},
+                    {name: 'nonce', type: 'uint256'},
+                    {name: 'deadline', type: 'uint256'},
+                ],
+            };
+
+            const value = {
+                owner: wallet4.address,
+                spender,
+                value: amount,
+                nonce,
+                deadline,
+            };
+
+            const domain: TypedDataDomain = {
+                name,
+                version,
+                chainId,
+                verifyingContract,
+            };
+
+            const signature = await wallet4._signTypedData(
+                domain,
+                types,
+                value,
+            );
+
+            const {v, r, s} = fromRpcSig(signature);
+
+            await ctStaking
+                .connect(wallet4)
+                .permitAndStake(
+                    wallet4.address,
+                    amount,
+                    deadline,
+                    v,
+                    r,
+                    s,
+                    stakeType,
+                    '0x00',
+                );
+
+            const stakes = await ctStaking.accountStakes(owner.address);
+            const {delegatee, amount: stakedAmount, claimedAt, id} = stakes[0];
+
+            expect(stakes.length).to.eq(1);
+            expect(delegatee).to.eq(ethers.constants.AddressZero);
+            expect(stakedAmount).to.eq(amount);
+            expect(claimedAt).to.eq(0);
+            expect(id).to.eq(0);
         });
     });
 
@@ -196,18 +263,17 @@ describe.only('Staking Contract', async () => {
         });
 
         it('amount allocation should be zero', async () => {
-            await expect(
-                (
-                    await ctStaking.stakes(owner.address, 0)
-                ).amount,
-            ).to.eq(100);
+            expect((await ctStaking.stakes(owner.address, 0)).amount).to.eq(
+                100,
+            );
         });
 
         it('power should be equal', async () => {
-            await expect((await ctStaking.power(owner.address)).own).to.eq(0);
+            expect((await ctStaking.power(owner.address)).own).to.eq(0);
         });
 
         it('it should remove the votes of delegatee after unstake', async () => {
+            // stake with wallet1 and delegate its power to wallet2
             await ctStaking.connect(wallet1).stake(100, stakeType, '0x00');
             await ctStaking.connect(wallet1).delegate(0, wallet2.address);
 
@@ -259,44 +325,30 @@ describe.only('Staking Contract', async () => {
 
         it('should get the total voting power', async () => {
             const totalVotingPower = await ctStaking.totalVotingPower();
-            expect(totalVotingPower).to.eq(100 + 1000 + 10000);
+            expect(totalVotingPower).to.eq(100 + 100 + 1000 + 10000);
         });
 
         it('should get the total  power', async () => {
             const {own, delegated} = await ctStaking.totalPower();
-            expect(own).to.eq(11000);
+            expect(own).to.eq(11100);
             expect(delegated).to.eq(100);
         });
 
         it('un-delegation to self', async () => {
             await ctStaking.delegate(1, owner.address);
-            await expect((await ctStaking.power(owner.address)).own).to.eq(
-                11100,
-            );
-            await expect(
-                (
-                    await ctStaking.power(alice.address)
-                ).delegated,
-            ).to.eq(0);
+            expect((await ctStaking.power(owner.address)).own).to.eq(11100);
+            expect((await ctStaking.power(alice.address)).delegated).to.eq(0);
         });
 
         it('re-delegation to another account', async () => {
             await ctStaking.delegate(2, alice.address);
-            await expect(
-                (
-                    await ctStaking.power(alice.address)
-                ).delegated,
-            ).to.eq(1000);
-
-            await ctStaking.delegate(2, bob.address);
-            await expect(
-                (
-                    await ctStaking.power(alice.address)
-                ).delegated,
-            ).to.eq(0);
-            await expect((await ctStaking.power(bob.address)).delegated).to.eq(
+            expect((await ctStaking.power(alice.address)).delegated).to.eq(
                 1000,
             );
+
+            await ctStaking.delegate(2, bob.address);
+            expect((await ctStaking.power(alice.address)).delegated).to.eq(0);
+            expect((await ctStaking.power(bob.address)).delegated).to.eq(1000);
         });
     });
 
@@ -308,18 +360,12 @@ describe.only('Staking Contract', async () => {
 
         it('undelegate after delegation', async () => {
             await ctStaking.delegate(4, wallet1.address);
-            await expect(
-                (
-                    await ctStaking.power(wallet1.address)
-                ).delegated,
-            ).to.eq(200);
+            expect((await ctStaking.power(wallet1.address)).delegated).to.eq(
+                200,
+            );
 
             await ctStaking.undelegate(4);
-            await expect(
-                (
-                    await ctStaking.power(wallet1.address)
-                ).delegated,
-            ).to.eq(0);
+            expect((await ctStaking.power(wallet1.address)).delegated).to.eq(0);
         });
     });
 
@@ -332,11 +378,9 @@ describe.only('Staking Contract', async () => {
         let snapshot5: any;
 
         before(async function () {
-            await stakingToken
-                .connect(wallet3)
-                .approve(ctStaking.address, 10000);
-            // stake 0
             snapshotBlockNum = (await provider.getBlock('latest')).number;
+
+            // stake 0
             await ctStaking.connect(wallet3).stake(100, stakeType, '0x00');
             // stake 1
             await ctStaking.connect(wallet3).stake(200, stakeType, '0x00');
@@ -347,9 +391,9 @@ describe.only('Staking Contract', async () => {
             // stake 4
             await ctStaking.connect(wallet3).stake(500, stakeType, '0x00');
             await increaseTime(3600);
-            await expect(await ctStaking.snapshotLength(wallet3.address)).to.eq(
-                5,
-            );
+
+            expect(await ctStaking.snapshotLength(wallet3.address)).to.eq(5);
+
             snapshot1 = await ctStaking.snapshot(wallet3.address, 0);
             snapshot2 = await ctStaking.snapshot(wallet3.address, 1);
             snapshot3 = await ctStaking.snapshot(wallet3.address, 2);
@@ -382,28 +426,88 @@ describe.only('Staking Contract', async () => {
             expect(snapshot5.ownPower).to.eq(1000);
         });
 
-        it('stakesNum() should return correct lengh', async () => {
-            await expect(await ctStaking.stakesNum(wallet3.address)).to.eq(5);
+        it('stakesNum() should return correct length', async () => {
+            expect(await ctStaking.stakesNum(wallet3.address)).to.eq(5);
         });
 
         it('latestSnapshotBlock() should return correct block number', async () => {
-            await expect(
-                await ctStaking.latestSnapshotBlock(wallet3.address),
-            ).to.eq(snapshotBlockNum + 5);
-        });
-
-        it('latestGlobalsSnapshotBlock() should return correct block number', async () => {
-            await expect(await ctStaking.latestGlobalsSnapshotBlock()).to.eq(
+            expect(await ctStaking.latestSnapshotBlock(wallet3.address)).to.eq(
                 snapshotBlockNum + 5,
             );
         });
 
         it('latestGlobalsSnapshotBlock() should return correct block number', async () => {
-            // expect(await ctStaking.snapshotLength(wallet1.address)).to.eq(4);
-            // expect(await ctStaking.snapshotLength(wallet2.address)).to.eq(0);
-            // expect(await ctStaking.snapshotLength(wallet3.address)).to.eq(5);
-            // expect(await ctStaking.snapshotLength(alice.address)).to.eq(3);
-            // expect(await ctStaking.snapshotLength(bob.address)).to.eq(1);
+            expect(await ctStaking.latestGlobalsSnapshotBlock()).to.eq(
+                snapshotBlockNum + 5,
+            );
+        });
+
+        it('latestGlobalsSnapshotBlock() should return correct block number', async () => {
+            expect(await ctStaking.snapshotLength(wallet1.address)).to.eq(4);
+            expect(await ctStaking.snapshotLength(wallet2.address)).to.eq(1);
+            expect(await ctStaking.snapshotLength(wallet3.address)).to.eq(5);
+            expect(await ctStaking.snapshotLength(alice.address)).to.eq(3);
+            expect(await ctStaking.snapshotLength(bob.address)).to.eq(1);
+        });
+
+        it('globalsSnapshotLength() should return correct snapshot length for global address', async () => {
+            expect(await ctStaking.globalsSnapshotLength()).to.be.eq(18);
+        });
+
+        it('globalsSnapshot() should return correct snapshot length for global address', async () => {
+            const length = await ctStaking.globalsSnapshotLength();
+            const lastIndex = length.sub(1);
+
+            const {ownPower, delegatedPower} = await ctStaking.globalsSnapshot(
+                lastIndex,
+            );
+
+            expect(ownPower).to.be.eq(11400);
+            expect(delegatedPower).to.be.eq(1000);
+        });
+
+        it('globalSnapshotAt() should return snapshot base on block number while hint is incorrect', async () => {
+            const blockNum = (await provider.getBlock('latest')).number;
+            const hint = 1;
+
+            const globalSnapshot = await ctStaking.globalSnapshotAt(
+                blockNum,
+                hint,
+            );
+
+            expect(globalSnapshot.ownPower).to.be.eq(11900);
+            expect(globalSnapshot.delegatedPower).to.be.eq(1000);
+            expect(globalSnapshot.beforeBlock).to.be.eq(blockNum);
+        });
+
+        it('globalSnapshotAt() should revert if block number is invalid', async () => {
+            const blockNum = ethers.constants.MaxUint256;
+            const hint = 999;
+
+            await expect(
+                ctStaking.globalSnapshotAt(blockNum, hint),
+            ).to.be.revertedWith('Staking: Too big block number');
+        });
+
+        it('snapshotAt() should return snapshot when hint is correct', async () => {
+            const snapshotLength = await ctStaking.snapshotLength(
+                wallet1.address,
+            );
+
+            const snapshotLastIndex = snapshotLength.sub(1);
+
+            const {ownPower, delegatedPower, beforeBlock} =
+                await ctStaking.snapshot(wallet1.address, snapshotLastIndex);
+
+            const snapshot = await ctStaking.snapshotAt(
+                wallet1.address,
+                beforeBlock,
+                snapshotLastIndex,
+            );
+
+            expect(snapshot.ownPower).to.be.eq(ownPower);
+            expect(snapshot.delegatedPower).to.be.eq(delegatedPower);
+            expect(snapshot.beforeBlock).to.be.eq(beforeBlock);
         });
     });
 
@@ -510,22 +614,22 @@ describe.only('Staking Contract', async () => {
                     allowedTill: toBytes32(till),
                 });
                 const termRes = await ctStaking.terms(stakeType1);
-                await expect(termRes.allowedSince).to.eq(since);
-                await expect(termRes.allowedTill).to.eq(till);
+                expect(termRes.allowedSince).to.eq(since);
+                expect(termRes.allowedTill).to.eq(till);
             });
 
             it('succeeds', async () => {
                 await ctStaking.addTerms(stakeType1, validTerms);
                 const termRes = await ctStaking.terms(stakeType1);
-                await expect(termRes.isEnabled).to.eq(true);
-                await expect(termRes.isRewarded).to.eq(true);
-                await expect(termRes.minAmountScaled).to.eq(0);
-                await expect(termRes.maxAmountScaled).to.eq(0);
-                await expect(termRes.allowedSince).to.eq(0);
-                await expect(termRes.allowedTill).to.eq(0);
-                await expect(termRes.lockedTill).to.eq(0);
-                await expect(termRes.exactLockPeriod).to.eq(0);
-                await expect(termRes.minLockPeriod).to.eq(30);
+                expect(termRes.isEnabled).to.eq(true);
+                expect(termRes.isRewarded).to.eq(true);
+                expect(termRes.minAmountScaled).to.eq(0);
+                expect(termRes.maxAmountScaled).to.eq(0);
+                expect(termRes.allowedSince).to.eq(0);
+                expect(termRes.allowedTill).to.eq(0);
+                expect(termRes.lockedTill).to.eq(0);
+                expect(termRes.exactLockPeriod).to.eq(0);
+                expect(termRes.minLockPeriod).to.eq(30);
             });
 
             it('succeeds with lockedTill', async () => {
@@ -537,10 +641,10 @@ describe.only('Staking Contract', async () => {
                     minLockPeriod: utils.hexZeroPad('0x00', 32),
                 });
                 const termRes = await ctStaking.terms(stakeType1);
-                await expect(termRes.allowedTill).to.eq(0);
-                await expect(termRes.lockedTill).to.eq(till);
-                await expect(termRes.exactLockPeriod).to.eq(0);
-                await expect(termRes.minLockPeriod).to.eq(0);
+                expect(termRes.allowedTill).to.eq(0);
+                expect(termRes.lockedTill).to.eq(till);
+                expect(termRes.exactLockPeriod).to.eq(0);
+                expect(termRes.minLockPeriod).to.eq(0);
             });
         });
     });

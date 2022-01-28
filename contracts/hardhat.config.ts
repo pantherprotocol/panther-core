@@ -47,6 +47,7 @@ const config: HardhatUserConfig = {
         },
         rinkeby: {
             url: `https://eth-rinkeby.alchemyapi.io/v2/${getAlchemyKey()}`,
+            chainId: 4,
             accounts: getAccounts(process.env.RINKEBY_PRIVKEY),
         },
         polygon: {

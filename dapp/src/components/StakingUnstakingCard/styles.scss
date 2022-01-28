@@ -62,30 +62,36 @@
 }
 
 .MuiToggleButtonGroup-root button.Mui-selected {
-    // opacity: 1;
     color: $white;
     background-color: $selected-item-color;
     border-radius: 8px !important;
 }
 
 .MuiToggleButtonGroup-root button {
-    // padding: 8px;
-    border: none !important;
     font-size: 14px;
     min-width: 150px;
     height: 45px;
     text-transform: capitalize;
     color: $white;
-    // opacity: 0.5;
     background-color: $button-group-item;
     border-radius: 8px !important;
+    border: 1px solid $button-group-item;
+
+    @media (max-width: 600px) {
+        min-width: 120px;
+    }
 }
 
 .MuiToggleButtonGroup-root {
     padding: 12px;
-    // background-color: $button-group;
     border-radius: 10px !important;
     margin-top: 12px;
+}
+
+.css-1gjgmky-MuiToggleButtonGroup-root
+    .MuiToggleButtonGroup-grouped:not(:first-of-type) {
+    margin-left: 0 !important;
+    border-left: initial !important;
 }
 
 .warning-box {

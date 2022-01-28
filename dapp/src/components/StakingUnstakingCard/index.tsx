@@ -47,12 +47,12 @@ export default function StakingUnstakingCard(props: {
                 sx={{
                     backgroundColor: '#2B334140',
                     borderRadius: '8px',
+                    padding: '0',
                 }}
             >
                 <Box
                     sx={{
                         display: 'flex',
-
                         justifyContent: 'center',
                     }}
                 >
@@ -61,7 +61,7 @@ export default function StakingUnstakingCard(props: {
                     </ToggleButtonGroup>
                 </Box>
                 <CardContent>
-                    {toggle == 'stake' ? (
+                    {toggle == 'stake' || toggle == null ? (
                         <StakeTab
                             tokenBalance={props.tokenBalance}
                             stakedBalance={props.stakedBalance}

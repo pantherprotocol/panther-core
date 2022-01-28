@@ -12,6 +12,10 @@
     font-weight: 400;
     color: $grey-text;
     cursor: pointer;
+
+    &:hover {
+        color: $white;
+    }
 }
 
 .nav-item.main-navigation a {

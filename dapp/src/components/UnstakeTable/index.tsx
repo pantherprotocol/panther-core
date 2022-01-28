@@ -108,7 +108,7 @@ export default function UnstakeTable() {
 
         const stakeID = BigNumber.from(id);
         const data = '0x00';
-        const unstakeResponse = await stakingService.unstake(
+        await stakingService.unstake(
             library,
             stakingContract,
             stakeID,
@@ -116,10 +116,6 @@ export default function UnstakeTable() {
             data,
             false,
         );
-
-        if (unstakeResponse) {
-            window.location.reload();
-        }
     };
 
     useEffect(() => {

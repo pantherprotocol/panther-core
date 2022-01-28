@@ -86,7 +86,7 @@ function StakingZkpPage() {
         }
     }, [active, chainId, deactivate]);
 
-    const setZkpTokenBalance = async () => {
+    const setZkpTokenBalance = useCallback(async () => {
         const stakingTokenContract =
             await stakingService.getStakingTokenContract(library);
         if (!stakingTokenContract) {
@@ -97,18 +97,18 @@ function StakingZkpPage() {
             account,
         );
         setTokenBalance(balance);
-    };
+    }, [account, library]);
 
-    const getTokenMarketPrice = async () => {
+    const getTokenMarketPrice = useCallback(async () => {
         const price = await stakingService.getZKPMarketPrice();
         if (price && tokenBalance && Number(tokenBalance) >= 0) {
             const tokenUSDValue: number = price * Number(tokenBalance);
             const formattedUSDValue = formatUSDPrice(tokenUSDValue.toString());
             setTokenUSDValue(formattedUSDValue);
         }
-    };
+    }, [tokenBalance]);
 
-    const getStakedZkpBalance = async () => {
+    const getStakedZkpBalance = useCallback(async () => {
         const stakingContract = await stakingService.getStakingContract(
             library,
         );
@@ -131,9 +131,9 @@ function StakingZkpPage() {
         const decimals = await stakingTokenContract.decimals();
         const totalStakedValue = utils.formatUnits(totalStaked, decimals);
         setStakedBalance((+totalStakedValue).toFixed(2));
-    };
+    }, [account, library]);
 
-    const getUnclaimedRewardsBalance = async () => {
+    const getUnclaimedRewardsBalance = useCallback(async () => {
         const stakingContract = await stakingService.getStakingContract(
             library,
         );
@@ -181,9 +181,8 @@ function StakingZkpPage() {
                 return totalRewards;
             }
         });
-
         setRewardsBalance(formatTokenBalance(totalRewards, decimals));
-    };
+    }, [account, library]);
 
     useEffect(() => {
         if (!library || !account) {
@@ -194,7 +193,18 @@ function StakingZkpPage() {
         getTokenMarketPrice();
         getStakedZkpBalance();
         getUnclaimedRewardsBalance();
-    });
+    }, [
+        setZkpTokenBalance,
+        getTokenMarketPrice,
+        getStakedZkpBalance,
+        getUnclaimedRewardsBalance,
+        tokenBalance,
+        tokenUSDValue,
+        stakedBalance,
+        rewardsBalance,
+        account,
+        library,
+    ]);
 
     const accountAddress = formatAccountAddress(account) || null;
 
@@ -221,11 +231,7 @@ function StakingZkpPage() {
                 }}
             />
 
-            <Box
-                sx={{
-                    marginTop: '100px',
-                }}
-            >
+            <Box className="main-box-holder">
                 <Container className="main-container">
                     <Grid container>
                         <Grid item md={1} xs={12} />

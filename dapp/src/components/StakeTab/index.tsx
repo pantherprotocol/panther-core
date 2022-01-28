@@ -69,7 +69,7 @@ export default function StakeTab(props: {
                     margin: '15px 0',
                 }}
             >
-                <CardContent>
+                <CardContent className="staking-info-card">
                     <StakingInfoMSG />
                     <Box display={'flex'} justifyContent={'center'}>
                         <StakingMethod />
@@ -125,14 +125,12 @@ const StakingInput = props => {
     return (
         <>
             <Box
+                className="amount-to-stake-card"
                 display="flex"
                 justifyContent="space-between"
                 alignItems={'center'}
             >
                 <Typography
-                    sx={{
-                        opacity: 0.5,
-                    }}
                     m={1}
                     color={'#FFFFFF'}
                     fontWeight={700}
@@ -152,7 +150,7 @@ const StakingInput = props => {
                         variant="subtitle2"
                         component="span"
                     >
-                        Available
+                        Available to stake:
                     </Typography>
                     <Typography
                         variant="subtitle2"
@@ -160,11 +158,19 @@ const StakingInput = props => {
                         m={1}
                         sx={{
                             color: '#ffdfbd',
+                            fontWeight: 700,
                         }}
                     >
                         {tokenBalance}
                     </Typography>
-                    <Typography variant="caption" component="span">
+                    <Typography
+                        variant="subtitle2"
+                        component="span"
+                        sx={{
+                            color: '#ffdfbd',
+                            fontWeight: 700,
+                        }}
+                    >
                         ZKP
                     </Typography>
                 </span>
@@ -242,6 +248,7 @@ const StakingInput = props => {
                     width={'20%'}
                     sx={{
                         cursor: 'pointer',
+                        lineHeight: 'initial',
                     }}
                     onClick={() => {
                         setAmountToStake(tokenBalance);
@@ -275,6 +282,7 @@ const StakingMethod = () => (
             alignItems={'center'}
         >
             <Typography
+                className="staking-method"
                 sx={{
                     fontWeight: 500,
                     fontStyle: 'normal',
@@ -345,25 +353,40 @@ const StakingInfoMSG = () => (
         sx={{
             textAlign: 'start',
             padding: ' 5px 4px',
+            paddingBottom: '20px',
         }}
     >
-        <Box display={'flex'} justifyContent={'start'} alignItems={'center'}>
+        <Box
+            display={'flex'}
+            justifyContent={'start'}
+            alignItems={'center'}
+            sx={{
+                paddingBottom: '20px',
+            }}
+        >
             <WarningIcon
                 sx={{
                     fill: 'yellow',
                     marginInlineEnd: '8px',
-                    marginBottom: '20px',
                 }}
             />
-            <Typography variant="subtitle2" mb={3}>
+            <Typography
+                variant="subtitle2"
+                mb={3}
+                sx={{
+                    fontWeight: 700,
+                    margin: 0,
+                }}
+            >
                 Staking will lock your tokens for 7+ days
             </Typography>
         </Box>
         <Typography
             variant="caption"
-            color={'#73829e'}
+            color={'#D8D8D8'}
             fontSize={'14px'}
             fontWeight={400}
+            paddingBottom={'10px'}
         >
             You will need to unstake in order for your staked assets to be
             liquid again. This process will take 7 days to complete.{' '}

@@ -1,10 +1,11 @@
 import React from 'react';
+import {Button} from '@mui/material';
 import './styles.scss';
 
 export const ConnectButton = (props: {text: string | null; onClick: any}) => {
     return (
         <div className="wallet-btn-holder">
-            <a
+            <Button
                 className="wallet-btn"
                 href="#"
                 onClick={() => {
@@ -12,7 +13,7 @@ export const ConnectButton = (props: {text: string | null; onClick: any}) => {
                 }}
             >
                 {props?.text || 'Connect Wallet'}
-            </a>
+            </Button>
         </div>
     );
 };

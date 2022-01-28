@@ -3,6 +3,14 @@ import './styles.scss';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {Route} from 'react-router';
 import StakingZkpPage from './pages/StakingZkpPage';
+import {ThemeProvider} from '@mui/material/styles';
+import {createTheme} from '@mui/material';
+
+const theme = createTheme({
+    typography: {
+        fontFamily: ['inter', 'sans-serif'].join(','),
+    },
+});
 
 function getMissingEnvVars() {
     // Need this ludicrous check because due to a quirk of dotenv-webpack,
@@ -45,11 +53,13 @@ function App() {
     }
 
     return (
-        <div className="App">
-            <Router>
-                <Route path={'/'} exact={true} component={StakingZkpPage} />
-            </Router>
-        </div>
+        <ThemeProvider theme={theme}>
+            <div className="App">
+                <Router>
+                    <Route path={'/'} exact={true} component={StakingZkpPage} />
+                </Router>
+            </div>
+        </ThemeProvider>
     );
 }
 

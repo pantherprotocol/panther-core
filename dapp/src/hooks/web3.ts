@@ -102,7 +102,6 @@ export function useInactiveListener(suppress = false) {
         ethereum.on('chainChanged', handleChainChanged);
         ethereum.on('accountsChanged', handleAccountsChanged);
         ethereum.on('networkChanged', handleNetworkChanged);
-        // console.debug('web3: set up ethereum listeners');
 
         return () => {
             if (ethereum.removeListener) {

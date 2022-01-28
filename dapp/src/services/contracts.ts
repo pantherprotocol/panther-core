@@ -1,0 +1,5 @@
+export const STAKING_CONTRACT = process.env.STAKING_CONTRACT;
+export const REWARD_MASTER_CONTRACT = process.env.REWARD_MASTER_CONTRACT;
+export const VESTING_POOLS_CONTRACT = process.env.VESTING_POOLS_CONTRACT;
+export const STAKING_TOKEN_CONTRACT = process.env.STAKING_TOKEN_CONTRACT;
+export const TOKEN_SYMBOL = process.env.TOKEN_SYMBOL;

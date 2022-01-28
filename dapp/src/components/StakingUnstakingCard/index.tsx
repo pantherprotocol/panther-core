@@ -47,12 +47,12 @@ export default function StakingUnstakingCard(props: {
                 sx={{
                     backgroundColor: '#2B334140',
                     borderRadius: '8px',
+                    padding: '0',
                 }}
             >
                 <Box
                     sx={{
                         display: 'flex',
-
                         justifyContent: 'center',
                     }}
                 >

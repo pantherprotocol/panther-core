@@ -8,6 +8,7 @@ import './styles.scss';
 const CurrentStakeAPY = (props: {currentAPY: string}) => {
     return (
         <Box
+            className="current-stake-apy-container"
             display={'flex'}
             justifyContent={'space-between'}
             alignItems={'center'}
@@ -20,6 +21,7 @@ const CurrentStakeAPY = (props: {currentAPY: string}) => {
             }}
         >
             <Box
+                className="current-stake-apy-inner"
                 width={'35%'}
                 display={'flex'}
                 flexDirection={'column'}

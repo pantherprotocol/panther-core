@@ -46,7 +46,7 @@ const BalanceCard = (props: {
                 />
 
                 <AddressBalances
-                    title={'Unclaimed Reward balance'}
+                    title={'Unclaimed Reward Balance'}
                     balance={props.rewardsBalance}
                     amountUSD={props.tokenUSDValue}
                 />
@@ -138,7 +138,7 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                 </Typography>
                 <Typography
                     sx={{
-                        fontWeight: 400,
+                        fontWeight: 700,
                         fontStyle: 'normal',
                         fontSize: '12px',
                         lineHeight: '42px',
@@ -152,15 +152,14 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                 <Box display="flex" alignItems="baseline">
                     <Typography
                         sx={{
-                            fontWeight: 400,
+                            fontWeight: 600,
                             fontStyle: 'normal',
                             fontSize: '14px',
                             lineHeight: '42px',
                             opacity: 0.5,
-                            marginBottom: '18px',
                         }}
                     >
-                        Approximately ${tokenMarketPrice}
+                        ~${tokenMarketPrice} USD
                     </Typography>
                 </Box>
             )}
@@ -208,11 +207,11 @@ const AddressBalances = props => {
                             lineHeight: '42px',
                         }}
                     >
-                        {balance || '38,070'}
+                        {balance}
                     </Typography>
                     <Typography
                         sx={{
-                            fontWeight: 400,
+                            fontWeight: 700,
                             fontStyle: 'normal',
                             fontSize: '12px',
                             lineHeight: '42px',
@@ -222,17 +221,19 @@ const AddressBalances = props => {
                         ZKP
                     </Typography>
                 </Box>
-                <Typography
-                    sx={{
-                        fontWeight: 400,
-                        fontStyle: 'normal',
-                        fontSize: '12px',
-                        lineHeight: '42px',
-                        marginLeft: '8px',
-                    }}
-                >
-                    {amountUSD}
-                </Typography>
+                {amountUSD && (
+                    <Typography
+                        sx={{
+                            fontWeight: 600,
+                            fontStyle: 'normal',
+                            fontSize: '12px',
+                            lineHeight: '42px',
+                            marginLeft: '8px',
+                        }}
+                    >
+                        ~${amountUSD} USD
+                    </Typography>
+                )}
             </Box>
         </>
     );

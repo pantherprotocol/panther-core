@@ -1,0 +1,14 @@
+.staking-info-card {
+    padding: 0 !important;
+}
+
+@media (max-width: 600px) {
+    .amount-to-stake-card {
+        flex-direction: column-reverse !important;
+        margin: 6px;
+    }
+
+    .staking-method {
+        margin-right: 0 !important;
+    }
+}

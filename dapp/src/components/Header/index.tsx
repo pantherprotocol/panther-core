@@ -211,6 +211,7 @@ const Header = props => {
                                                 background: '#14161935',
                                                 borderRadius: '8px',
                                                 height: '35px',
+                                                fontWeight: 600,
                                             }}
                                         >
                                             {accountBalance}

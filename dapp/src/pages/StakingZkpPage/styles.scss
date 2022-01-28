@@ -11,9 +11,19 @@ img {
     max-width: 100%;
 }
 
+.main-box-holder {
+    margin-top: 100px;
+}
+
 @media (min-width: 1200px) {
     .main-container {
         max-width: 1400px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-box-holder {
+        margin-top: 50px;
     }
 }
 

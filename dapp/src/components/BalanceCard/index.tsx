@@ -120,7 +120,7 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                 <Tooltip title="Reload" placement="top">
                     <RefreshIcon
                         sx={{
-                            opacity: 0.5,
+                            opacity: 0.6,
                             cursor: 'pointer',
                         }}
                         onClick={refreshPage}
@@ -163,7 +163,7 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                                     fontStyle: 'normal',
                                     fontSize: '14px',
                                     lineHeight: '42px',
-                                    opacity: 0.5,
+                                    opacity: 0.6,
                                 }}
                             >
                                 ~${tokenMarketPrice} USD
@@ -184,25 +184,14 @@ const AddressBalances = props => {
     return (
         <>
             <Box display="flex" alignItems="baseline">
-                <Typography
-                    sx={{
-                        fontWeight: 700,
-                        fontStyle: 'normal',
-                        fontSize: '16px',
-                        lineHeight: '42px',
-                        marginRight: '18px',
-                        opacity: 0.5,
-                    }}
-                >
-                    {title}
-                </Typography>
+                <Typography className="address-balance">{title}</Typography>
                 <Typography>
                     <Tooltip title={title} placement="top">
                         <ErrorOutlineIcon
                             fontSize="small"
                             className="error-outline"
                             sx={{
-                                opacity: 0.5,
+                                opacity: 0.6,
                             }}
                         />
                     </Tooltip>

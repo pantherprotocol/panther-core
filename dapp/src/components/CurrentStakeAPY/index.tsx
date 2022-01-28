@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {Link, Tooltip} from '@mui/material';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import infoIcon from '../../images/info-icon.svg';
+import {IconButton, Tooltip, Link} from '@mui/material';
 import React from 'react';
 import './styles.scss';
 
@@ -39,14 +39,13 @@ const CurrentStakeAPY = (props: {currentAPY: string}) => {
                     width={'100%'}
                 >
                     <Tooltip title={'Current APY'} placement="top">
-                        <ErrorOutlineIcon
-                            fontSize="small"
+                        <IconButton
                             sx={{
-                                marginTop: '5px',
-                                marginRight: '10px',
-                                color: '#687692',
+                                opacity: 0.6,
                             }}
-                        />
+                        >
+                            <img src={infoIcon} />
+                        </IconButton>
                     </Tooltip>
                 </Box>
                 <Box>

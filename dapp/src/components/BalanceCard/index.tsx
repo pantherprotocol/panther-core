@@ -2,8 +2,8 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import refreshIcon from '../../images/refresh-icon.svg';
+import infoIcon from '../../images/info-icon.svg';
 import {IconButton, Tooltip} from '@mui/material';
 import Address from '../Address';
 import accountAvatar from '../../images/wallet-icon.svg';
@@ -117,7 +117,7 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                 >
                     {title}
                 </Typography>
-                <Tooltip title="Delete">
+                <Tooltip title={title} placement="top">
                     <IconButton
                         onClick={refreshPage}
                         sx={{
@@ -188,13 +188,13 @@ const AddressBalances = props => {
                 <Typography className="address-balance">{title}</Typography>
                 <Typography>
                     <Tooltip title={title} placement="top">
-                        <ErrorOutlineIcon
-                            fontSize="small"
-                            className="error-outline"
+                        <IconButton
                             sx={{
                                 opacity: 0.6,
                             }}
-                        />
+                        >
+                            <img src={infoIcon} />
+                        </IconButton>
                     </Tooltip>
                 </Typography>
             </Box>

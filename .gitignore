@@ -10,7 +10,8 @@ tmp/
 typechain/
 typing/
 
-*.env
+.env
+.env.*
 *.log
 *.tsbuildinfo
 yarn-debug.log*

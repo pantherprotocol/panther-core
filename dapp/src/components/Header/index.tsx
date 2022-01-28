@@ -5,7 +5,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import logo from '../../images/panther-logo.svg';
-import analytics from '../../images/analytics.svg';
 import stakingIcon from '../../images/staking.svg';
 import docs from '../../images/docs.svg';
 import Address from '../Address';

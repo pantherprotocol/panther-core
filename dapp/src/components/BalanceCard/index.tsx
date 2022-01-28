@@ -3,8 +3,8 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import {Tooltip} from '@mui/material';
+import refreshIcon from '../../images/refresh-icon.svg';
+import {IconButton, Tooltip} from '@mui/material';
 import Address from '../Address';
 import accountAvatar from '../../images/wallet-icon.svg';
 import './styles.scss';
@@ -117,14 +117,15 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                 >
                     {title}
                 </Typography>
-                <Tooltip title="Reload" placement="top">
-                    <RefreshIcon
+                <Tooltip title="Delete">
+                    <IconButton
+                        onClick={refreshPage}
                         sx={{
                             opacity: 0.6,
-                            cursor: 'pointer',
                         }}
-                        onClick={refreshPage}
-                    />
+                    >
+                        <img src={refreshIcon} />
+                    </IconButton>
                 </Tooltip>
             </Box>
 

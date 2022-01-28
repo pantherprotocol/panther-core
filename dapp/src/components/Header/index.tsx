@@ -5,8 +5,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import logo from '../../images/panther-logo.svg';
-import stakingIcon from '../../images/staking.svg';
-import docs from '../../images/docs.svg';
+import stakingIcon from '../../images/staking-icon.svg';
+import docsIcon from '../../images/docs-icon.svg';
 import Address from '../Address';
 import accountAvatar from '../../images/meta-mask-icon.svg';
 import {LogoutButton} from '../LogoutButton';
@@ -125,7 +125,7 @@ const Header = props => {
                                 margin={'0 10px'}
                             >
                                 <Box className="header-icons">
-                                    <img src={docs} />
+                                    <img src={docsIcon} />
                                 </Box>
                                 <Typography
                                     className="nav-item"

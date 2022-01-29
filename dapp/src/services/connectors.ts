@@ -21,19 +21,12 @@ interface Network {
 }
 
 const supportedNetworks: Record<number, Network> = {
-    137: {
-        name: 'Matic (Polygon mainnet)',
-        rpcURL: 'https://rpc-mainnet.maticvigil.com/',
-        symbol: 'MATIC',
+    4: {
+        name: 'Rinkeby (Ethereum testnet)',
+        rpcURL: 'https://rinkey.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+        symbol: 'ETH',
         decimals: 18,
-        explorerURLs: ['https://polygonscan.com/'],
-    },
-    80001: {
-        name: 'Mumbai (Polygon testnet)',
-        rpcURL: 'https://rpc-mumbai.maticvigil.com/',
-        symbol: 'TMATIC',
-        decimals: 18,
-        explorerURLs: ['https://polygonscan.com/'],
+        explorerURLs: ['https://rinkeby.etherscan.io/'],
     },
     31337: {
         name: 'Hardhat Network',

@@ -171,11 +171,21 @@ which vesting should be allowed.
 
 - `cd ../dapp`
 
-- `cp .env.example .env` if you don't already have a suitable `.env`.
+- Configure the frontend environment to point at the right network
+  and smart contracts:
 
-- Make sure that `STAKING_CONTRACT` is set to the address of the newly
-  deployed `Staking.sol` contract from above, and similarly for
-  `REWARD_MASTER_CONTRACT`.
+  - If you want to test against the staging environment:
+
+        cp .env.staging .env
+
+  - or if you want to test against a local chain, do:
+
+        cp .env.example .env
+
+    if you don't already have a suitable `.env`, and make sure that
+    `STAKING_CONTRACT` is set to the address of the newly deployed
+    `Staking.sol` contract from above, and similarly for
+    `REWARD_MASTER_CONTRACT`.
 
 - `yarn start` to start the dApp in development mode, then visit
   http://localhost:3000.

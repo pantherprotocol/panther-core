@@ -6,7 +6,8 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
-import WarningIcon from '@mui/icons-material/Warning';
+import warningIcon from '../../images/warning-icon.svg';
+import {IconButton, Tooltip} from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import logo from '../../images/panther-logo.svg';
 import Input from '@mui/material/Input';
@@ -364,20 +365,19 @@ const StakingInfoMSG = () => (
                 paddingBottom: '20px',
             }}
         >
-            <WarningIcon
-                sx={{
-                    fill: 'yellow',
-                    marginInlineEnd: '8px',
-                }}
-            />
-            <Typography
-                variant="subtitle2"
-                mb={3}
-                sx={{
-                    fontWeight: 700,
-                    margin: 0,
-                }}
-            >
+            <Tooltip title={'warning'} placement="top">
+                <IconButton
+                    sx={{
+                        opacity: 0.6,
+                        marginInlineEnd: '8px',
+                        marginBottom: '24px',
+                    }}
+                >
+                    <img src={warningIcon} />
+                </IconButton>
+            </Tooltip>
+
+            <Typography variant="subtitle2" mb={3}>
                 Staking will lock your tokens for 7+ days
             </Typography>
         </Box>

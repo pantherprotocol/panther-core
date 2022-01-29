@@ -22,7 +22,10 @@ export default function StakingUnstakingCard(props: {
         event: React.MouseEvent<HTMLElement>,
         newState: string,
     ) => {
-        setToggle(newState);
+        if (newState !== null) {
+            setToggle(newState);
+            console.log(newState, 'is the new state');
+        }
     };
 
     const children = [
@@ -50,16 +53,12 @@ export default function StakingUnstakingCard(props: {
                     padding: '0',
                 }}
             >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                    }}
-                >
+                <Box>
                     <ToggleButtonGroup size="large" {...control}>
                         {children}
                     </ToggleButtonGroup>
                 </Box>
+
                 <CardContent>
                     {toggle == 'stake' || toggle == null ? (
                         <StakeTab

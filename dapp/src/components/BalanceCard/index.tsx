@@ -2,11 +2,11 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import {Tooltip} from '@mui/material';
+import refreshIcon from '../../images/refresh-icon.svg';
+import infoIcon from '../../images/info-icon.svg';
+import {IconButton, Tooltip} from '@mui/material';
 import Address from '../Address';
-import accountAvatar from '../../images/account-avatar.png';
+import accountAvatar from '../../images/wallet-icon.svg';
 import './styles.scss';
 import {useWeb3React} from '@web3-react/core';
 import {Web3Provider} from '@ethersproject/providers';
@@ -117,14 +117,15 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                 >
                     {title}
                 </Typography>
-                <Tooltip title="Reload" placement="top">
-                    <RefreshIcon
-                        sx={{
-                            opacity: 0.5,
-                            cursor: 'pointer',
-                        }}
+                <Tooltip title={title} placement="top">
+                    <IconButton
                         onClick={refreshPage}
-                    />
+                        sx={{
+                            opacity: 0.6,
+                        }}
+                    >
+                        <img src={refreshIcon} />
+                    </IconButton>
                 </Tooltip>
             </Box>
 
@@ -163,7 +164,7 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                                     fontStyle: 'normal',
                                     fontSize: '14px',
                                     lineHeight: '42px',
-                                    opacity: 0.5,
+                                    opacity: 0.6,
                                 }}
                             >
                                 ~${tokenMarketPrice} USD
@@ -184,27 +185,16 @@ const AddressBalances = props => {
     return (
         <>
             <Box display="flex" alignItems="baseline">
-                <Typography
-                    sx={{
-                        fontWeight: 700,
-                        fontStyle: 'normal',
-                        fontSize: '16px',
-                        lineHeight: '42px',
-                        marginRight: '18px',
-                        opacity: 0.5,
-                    }}
-                >
-                    {title}
-                </Typography>
+                <Typography className="address-balance">{title}</Typography>
                 <Typography>
                     <Tooltip title={title} placement="top">
-                        <ErrorOutlineIcon
-                            fontSize="small"
-                            className="error-outline"
+                        <IconButton
                             sx={{
-                                opacity: 0.5,
+                                opacity: 0.6,
                             }}
-                        />
+                        >
+                            <img src={infoIcon} />
+                        </IconButton>
                     </Tooltip>
                 </Typography>
             </Box>

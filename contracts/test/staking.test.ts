@@ -401,6 +401,19 @@ describe('Staking Contract', async () => {
             snapshot5 = await ctStaking.snapshot(wallet3.address, 4);
         });
 
+        const getAllSnapshots = async (user: SignerWithAddress) => {
+            const length = await ctStaking.snapshotLength(user.address);
+
+            const allUserSnapshots = [];
+
+            for (let i = BigNumber.from(0); i.lt(length); i = i.add(1)) {
+                const ss = await ctStaking.snapshot(user.address, i);
+                allUserSnapshots.push(ss);
+            }
+
+            return allUserSnapshots;
+        };
+
         it('snapshot1 should have correct params', async () => {
             expect(snapshot1.beforeBlock).to.eq(snapshotBlockNum + 1);
             expect(snapshot1.ownPower).to.eq(0);
@@ -466,20 +479,6 @@ describe('Staking Contract', async () => {
             expect(delegatedPower).to.be.eq(1000);
         });
 
-        it('globalSnapshotAt() should return snapshot base on block number while hint is incorrect', async () => {
-            const blockNum = (await provider.getBlock('latest')).number;
-            const hint = 1;
-
-            const globalSnapshot = await ctStaking.globalSnapshotAt(
-                blockNum,
-                hint,
-            );
-
-            expect(globalSnapshot.ownPower).to.be.eq(11900);
-            expect(globalSnapshot.delegatedPower).to.be.eq(1000);
-            expect(globalSnapshot.beforeBlock).to.be.eq(blockNum);
-        });
-
         it('globalSnapshotAt() should revert if block number is invalid', async () => {
             const blockNum = ethers.constants.MaxUint256;
             const hint = 999;
@@ -508,6 +507,52 @@ describe('Staking Contract', async () => {
             expect(snapshot.ownPower).to.be.eq(ownPower);
             expect(snapshot.delegatedPower).to.be.eq(delegatedPower);
             expect(snapshot.beforeBlock).to.be.eq(beforeBlock);
+        });
+
+        it('snapshotAt() should return snapshot when hint is incorrect and snapshot not found', async () => {
+            const blockNum = (await provider.getBlock('latest')).number;
+            const hint = 1;
+
+            const snapshot = await ctStaking.snapshotAt(
+                owner.address,
+                blockNum,
+                hint,
+            );
+
+            const allUserSnapshots = await getAllSnapshots(owner);
+            const length = allUserSnapshots.length;
+
+            const lastSnapshot = allUserSnapshots[length - 1];
+
+            expect(snapshot.beforeBlock).to.be.eq(blockNum);
+            expect(snapshot.ownPower).to.be.eq(lastSnapshot.ownPower);
+            expect(snapshot.delegatedPower).to.be.eq(
+                lastSnapshot.delegatedPower,
+            );
+        });
+
+        it('snapshotAt() should return snapshot when hint is incorrect and snapshot is found', async () => {
+            const allUserSnapshots = await getAllSnapshots(owner);
+            const length = allUserSnapshots.length;
+
+            // select one snapshot randomly
+            const randomIndex = Math.floor(Math.random() * length);
+            const selectedSnapshot = allUserSnapshots[randomIndex];
+
+            const blockNum = selectedSnapshot.beforeBlock;
+            const hint = randomIndex + 1; // incorrect
+
+            const snapshot = await ctStaking.snapshotAt(
+                owner.address,
+                blockNum,
+                hint,
+            );
+
+            expect(snapshot.beforeBlock).to.be.eq(blockNum);
+            expect(snapshot.ownPower).to.be.eq(selectedSnapshot.ownPower);
+            expect(snapshot.delegatedPower).to.be.eq(
+                selectedSnapshot.delegatedPower,
+            );
         });
     });
 

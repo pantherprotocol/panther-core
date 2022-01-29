@@ -28,11 +28,7 @@ const Address = (props: {
                 width={'24px'}
                 marginLeft={'18px'}
             >
-                <img
-                    src={props.accountAvatar}
-                    alt={'User avatar'}
-                    // className="user-avatar-img"
-                />
+                <img src={props.accountAvatar} alt={'User avatar'} />
             </Box>
             <Typography
                 sx={{

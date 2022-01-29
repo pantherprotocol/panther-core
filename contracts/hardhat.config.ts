@@ -14,51 +14,56 @@ import './tasks/time-increase';
 import './tasks/proposal-gen';
 
 import {HardhatUserConfig} from 'hardhat/config';
+import {NetworkUserConfig, HttpNetworkAccountsUserConfig} from 'hardhat/types';
 import {config as dotenvConfig} from 'dotenv';
 import {resolve} from 'path';
 
 dotenvConfig({path: resolve(__dirname, './.env')});
+
+type NetworkName = string;
+
+const CHAIN_IDS: {[name: string]: number} = {
+    bsc: 56,
+    bsctest: 97,
+    ganache: 1337,
+    goerli: 5,
+    hardhat: 31337,
+    kovan: 42,
+    mainnet: 1,
+    mumbai: 80001,
+    polygon: 137,
+    rinkeby: 4,
+    ropsten: 3,
+};
+
+const ALCHEMY_ENDPOINTS: {[name: string]: string} = {
+    mainnet: 'https://eth-mainnet.alchemyapi.io/v2/',
+    matic: 'https://polygon-mainnet.g.alchemy.com/v2/',
+    mumbai: 'https://polygon-mumbai.g.alchemy.com/v2/',
+    rinkeby: 'https://eth-rinkeby.alchemyapi.io/v2/',
+    polygon: 'https://polygon-mainnet.g.alchemy.com/v2/',
+};
 
 const config: HardhatUserConfig = {
     defaultNetwork: 'hardhat',
     networks: {
         hardhat: {
             forking: {
-                url: `https://eth-mainnet.alchemyapi.io/v2/${getAlchemyKey()}`,
-                blockNumber: 11589707,
+                url: process.env.HARDHAT_FORKING_URL || '',
+                // blockNumber: 13373824,
                 enabled: !!process.env.HARDHAT_FORKING_ENABLED,
             },
         },
         pchain: {url: 'http://127.0.0.1:8545'},
 
-        mainnet: {
-            url: `https://eth-mainnet.alchemyapi.io/v2/${getAlchemyKey()}`,
-            accounts: getAccounts(process.env.MAINNET_PRIVKEY),
-        },
-        matic: {
-            chainId: 137,
-            url: `https://polygon-mainnet.g.alchemy.com/v2/${getAlchemyKey()}`,
-            accounts: getAccounts(process.env.MAINNET_PRIVKEY),
-        },
-        mumbai: {
-            chainId: 80001,
-            url: `https://polygon-mumbai.g.alchemy.com/v2/${getAlchemyKey()}`,
-            accounts: getAccounts(process.env.MUMBAI_PRIVKEY),
-        },
-        rinkeby: {
-            url: `https://eth-rinkeby.alchemyapi.io/v2/${getAlchemyKey()}`,
-            chainId: 4,
-            accounts: getAccounts(process.env.RINKEBY_PRIVKEY),
-        },
-        polygon: {
-            chainId: 137,
-            url: `https://polygon-mainnet.g.alchemy.com/v2/${getAlchemyKey()}`,
-            accounts: getAccounts(process.env.MAINNET_PRIVKEY),
-        },
-    },
-    // @ts-ignore
-    namedAccounts: {
-        deployer: 0,
+        mainnet: createNetworkConfig('mainnet'),
+        goerli: createNetworkConfig('goerli'),
+        kovan: createNetworkConfig('kovan'),
+        rinkeby: createNetworkConfig('rinkeby'),
+        ropsten: createNetworkConfig('ropsten'),
+
+        polygon: createNetworkConfig('polygon'),
+        mumbai: createNetworkConfig('mumbai'),
     },
     etherscan: {
         apiKey: process.env.ETHERSCAN_API_KEY || process.env.POLYSCAN_API,
@@ -76,6 +81,10 @@ const config: HardhatUserConfig = {
     },
     mocha: {
         timeout: 2000000000,
+    },
+    // @ts-ignore
+    namedAccounts: {
+        deployer: 0,
     },
     paths: {
         artifacts: './artifacts',
@@ -114,23 +123,58 @@ const config: HardhatUserConfig = {
     },
 };
 
-function getAccounts(privKey: string | undefined = process.env.PRIVATE_KEY) {
-    if (process.env.FAKE_MNEMONIC)
-        return {
-            count: 5,
-            initialIndex: 0,
-            // fake mnemonic
-            mnemonic: 'any pig at zoo eat toy now ten men see job run',
-            path: "m/44'/60'/0'/0",
-        };
-
-    return [privKey || ''];
+function getAccounts(network: string): HttpNetworkAccountsUserConfig {
+    if (process.env.PRIVATE_KEY) {
+        return [process.env.PRIVATE_KEY];
+    }
+    return {
+        count: 5,
+        initialIndex: 0,
+        mnemonic: getMnemonic(network),
+        path: "m/44'/60'/0'/0",
+    };
 }
 
-function getAlchemyKey() {
-    if (!process.env.ALCHEMY_KEY && !process.env.FAKE_MNEMONIC)
-        throw new Error('Please set your ALCHEMY_KEY');
-    return process.env.ALCHEMY_KEY || '';
+function createNetworkConfig(
+    network: string,
+    extraOpts = {},
+): NetworkUserConfig {
+    return Object.assign(
+        {
+            accounts: getAccounts(network),
+            // @ts-ignore
+            chainId: CHAIN_IDS[network],
+            timeout: 99999,
+            url: getRpcUrl(network),
+        },
+        extraOpts,
+    );
+}
+
+function getRpcUrl(network: NetworkName): string {
+    if (!!process.env.HTTP_PROVIDER) return process.env.HTTP_PROVIDER;
+    if (network === 'bsc') return 'https://bsc-dataseed1.defibit.io/';
+    if (network === 'bsctest')
+        return 'https://data-seed-prebsc-1-s1.binance.org:8545';
+    if (network === 'mumbai') return 'https://rpc-mumbai.maticvigil.com/';
+    if (process.env.INFURA_API_KEY)
+        return `https://${network}.infura.io/v3/` + process.env.INFURA_API_KEY;
+    if (process.env.ALCHEMY_API_KEY && ALCHEMY_ENDPOINTS[network])
+        return ALCHEMY_ENDPOINTS[network] + process.env.ALCHEMY_API_KEY;
+    return 'undefined RPC provider URL';
+}
+
+function getMnemonic(network: NetworkName): string {
+    if (process.env.HARDHAT_NO_MNEMONIC) {
+        // dummy mnemonic
+        return 'any pig at zoo eat toy now ten men see job run';
+    }
+    if (process.env.MNEMONIC) return process.env.MNEMONIC;
+    try {
+        return require('./mnemonic.js');
+    } catch (error) {
+        throw new Error(`Please set your MNEMONIC (for network: ${network})`);
+    }
 }
 
 export default config;

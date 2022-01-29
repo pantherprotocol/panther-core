@@ -21,6 +21,7 @@ export class RewardMasterFixture {
 
     async initFixture() {
         const provider = ethers.provider;
+
         [
             this.signers.owner,
             this.signers.oracle,
@@ -45,10 +46,10 @@ export class RewardMasterFixture {
         this.startBlock = (await provider.getBlock('latest')).number;
     }
 
-    getAdvice = (
+    getAdvice(
         address: string,
         shares: BigNumber,
-    ): {stakeAdvice: Advice; unstakeAdvice: Advice} => {
+    ): {stakeAdvice: Advice; unstakeAdvice: Advice} {
         const stakeAdvice: Advice = {
             createSharesFor: address,
             sharesToCreate: shares,
@@ -66,11 +67,9 @@ export class RewardMasterFixture {
         };
 
         return {stakeAdvice, unstakeAdvice};
-    };
+    }
 
-    addRewardAdviser = (
-        from = this.signers.owner,
-    ): Promise<ContractTransaction> => {
+    addRewardAdviser(from = this.signers.owner): Promise<ContractTransaction> {
         return this.contracts.rewardMaster
             .connect(from)
             .addRewardAdviser(
@@ -78,7 +77,7 @@ export class RewardMasterFixture {
                 this.action,
                 this.contracts.rewardAdviser.address,
             );
-    };
+    }
 
     onAction(advice: Advice): Promise<ContractTransaction> {
         this.contracts.rewardAdviser.getRewardAdvice.returns(advice);

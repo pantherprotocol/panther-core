@@ -134,17 +134,17 @@ describe('Staking Contract', async () => {
     });
 
     describe('initial parameters checking', function () {
-        it('stakingToken should be set properly', async () => {
+        it('ensures stakingToken has been set properly', async () => {
             expect(stakingToken.address).to.equal(await ctStaking.TOKEN());
         });
 
-        it('rewardMaster should be set properly', async () => {
+        it('ensures rewardMaster has been set properly', async () => {
             expect(ctRewardMaster.address).to.equal(
                 await ctStaking.REWARD_MASTER(),
             );
         });
 
-        it('startBlock should be set properly', async () => {
+        it('ensures startBlock has been set properly', async () => {
             expect(startBlock).to.equal(await ctStaking.START_BLOCK());
         });
     });
@@ -165,7 +165,7 @@ describe('Staking Contract', async () => {
             ).to.be.revertedWith('Staking: Terms unknown or disabled');
         });
 
-        it('amount allocation should be equal', async () => {
+        it('ensures amount allocation is correct', async () => {
             expect(stakeInfo.amount).to.eq(100);
         });
 
@@ -181,15 +181,15 @@ describe('Staking Contract', async () => {
             expect(id).to.eq(0);
         });
 
-        it('stakeType should be equal', async () => {
+        it('should check the stakeType', async () => {
             expect(stakeInfo.stakeType).to.eq(stakeType);
         });
 
-        it('power should be equal', async () => {
+        it('should check the power of staker', async () => {
             expect(powerInfo.own).to.eq(100);
         });
 
-        it('should stake with permit', async () => {
+        it('should let user stake with permit', async () => {
             const amount = BigNumber.from(100);
             const deadline = ethers.constants.MaxUint256;
             const nonce = '0';
@@ -262,13 +262,13 @@ describe('Staking Contract', async () => {
             await ctStaking.unstake(0, '0x00', true);
         });
 
-        it('amount allocation should be zero', async () => {
+        it('ensures amount allocation is zero', async () => {
             expect((await ctStaking.stakes(owner.address, 0)).amount).to.eq(
                 100,
             );
         });
 
-        it('power should be equal', async () => {
+        it('ensures power is 0', async () => {
             expect((await ctStaking.power(owner.address)).own).to.eq(0);
         });
 
@@ -318,7 +318,7 @@ describe('Staking Contract', async () => {
             ).to.be.revertedWith("Staking: Can't delegate to GLOBAL_ACCOUNT");
         });
 
-        it('delegation to empty account', async () => {
+        it('should delegate to empty account', async () => {
             await ctStaking.delegate(1, alice.address);
             expect((await ctStaking.power(alice.address)).delegated).to.eq(100);
         });
@@ -334,13 +334,13 @@ describe('Staking Contract', async () => {
             expect(delegated).to.eq(100);
         });
 
-        it('un-delegation to self', async () => {
+        it('should un-delegate to self', async () => {
             await ctStaking.delegate(1, owner.address);
             expect((await ctStaking.power(owner.address)).own).to.eq(11100);
             expect((await ctStaking.power(alice.address)).delegated).to.eq(0);
         });
 
-        it('re-delegation to another account', async () => {
+        it('should re-delegate to another account', async () => {
             await ctStaking.delegate(2, alice.address);
             expect((await ctStaking.power(alice.address)).delegated).to.eq(
                 1000,
@@ -358,7 +358,7 @@ describe('Staking Contract', async () => {
             await ctStaking.stake(200, stakeType, '0x00');
         });
 
-        it('undelegate after delegation', async () => {
+        it('should undelegate after delegation', async () => {
             await ctStaking.delegate(4, wallet1.address);
             expect((await ctStaking.power(wallet1.address)).delegated).to.eq(
                 200,
@@ -414,48 +414,48 @@ describe('Staking Contract', async () => {
             return allUserSnapshots;
         };
 
-        it('snapshot1 should have correct params', async () => {
+        it('should check snapshot info for snapshot1', async () => {
             expect(snapshot1.beforeBlock).to.eq(snapshotBlockNum + 1);
             expect(snapshot1.ownPower).to.eq(0);
         });
 
-        it('snapshot2 should have correct params', async () => {
+        it('should check snapshot info for snapshot2', async () => {
             expect(snapshot2.beforeBlock).to.eq(snapshotBlockNum + 2);
             expect(snapshot2.ownPower).to.eq(100);
         });
 
-        it('snapshot3 should have correct params', async () => {
+        it('should check snapshot info for snapshot3', async () => {
             expect(snapshot3.beforeBlock).to.eq(snapshotBlockNum + 3);
             expect(snapshot3.ownPower).to.eq(300);
         });
 
-        it('snapshot4 should have correct params', async () => {
+        it('should check snapshot info for snapshot4', async () => {
             expect(snapshot4.beforeBlock).to.eq(snapshotBlockNum + 4);
             expect(snapshot4.ownPower).to.eq(600);
         });
 
-        it('snapshot5 should have correct params', async () => {
+        it('should check snapshot info for snapshot5', async () => {
             expect(snapshot5.beforeBlock).to.eq(snapshotBlockNum + 5);
             expect(snapshot5.ownPower).to.eq(1000);
         });
 
-        it('stakesNum() should return correct length', async () => {
+        it('should return correct length of stakes', async () => {
             expect(await ctStaking.stakesNum(wallet3.address)).to.eq(5);
         });
 
-        it('latestSnapshotBlock() should return correct block number', async () => {
+        it('should return correct block number of latest snapshot', async () => {
             expect(await ctStaking.latestSnapshotBlock(wallet3.address)).to.eq(
                 snapshotBlockNum + 5,
             );
         });
 
-        it('latestGlobalsSnapshotBlock() should return correct block number', async () => {
+        it('should return correct block number for latest global snapshot', async () => {
             expect(await ctStaking.latestGlobalsSnapshotBlock()).to.eq(
                 snapshotBlockNum + 5,
             );
         });
 
-        it('latestGlobalsSnapshotBlock() should return correct block number', async () => {
+        it('should return correct length of snapshots for each user', async () => {
             expect(await ctStaking.snapshotLength(wallet1.address)).to.eq(4);
             expect(await ctStaking.snapshotLength(wallet2.address)).to.eq(1);
             expect(await ctStaking.snapshotLength(wallet3.address)).to.eq(5);
@@ -463,11 +463,11 @@ describe('Staking Contract', async () => {
             expect(await ctStaking.snapshotLength(bob.address)).to.eq(1);
         });
 
-        it('globalsSnapshotLength() should return correct snapshot length for global address', async () => {
+        it('should return correct snapshot length for global address', async () => {
             expect(await ctStaking.globalsSnapshotLength()).to.be.eq(18);
         });
 
-        it('globalsSnapshot() should return correct snapshot length for global address', async () => {
+        it('should get correct power for global address', async () => {
             const length = await ctStaking.globalsSnapshotLength();
             const lastIndex = length.sub(1);
 
@@ -479,7 +479,7 @@ describe('Staking Contract', async () => {
             expect(delegatedPower).to.be.eq(1000);
         });
 
-        it('globalSnapshotAt() should revert if block number is invalid', async () => {
+        it('should not get snapshot of global account if block number is invalid', async () => {
             const blockNum = ethers.constants.MaxUint256;
             const hint = 999;
 
@@ -488,7 +488,7 @@ describe('Staking Contract', async () => {
             ).to.be.revertedWith('Staking: Too big block number');
         });
 
-        it('snapshotAt() should return snapshot when hint is correct', async () => {
+        it('should get requested snapshot when hint is correct', async () => {
             const snapshotLength = await ctStaking.snapshotLength(
                 wallet1.address,
             );
@@ -509,7 +509,7 @@ describe('Staking Contract', async () => {
             expect(snapshot.beforeBlock).to.be.eq(beforeBlock);
         });
 
-        it('snapshotAt() should return snapshot when hint is incorrect and snapshot not found', async () => {
+        it('should get latest snapshot when hint is incorrect and snapshot not found', async () => {
             const blockNum = (await provider.getBlock('latest')).number;
             const hint = 1;
 
@@ -531,7 +531,7 @@ describe('Staking Contract', async () => {
             );
         });
 
-        it('snapshotAt() should return snapshot when hint is incorrect and snapshot is found', async () => {
+        it('should get snapshot when hint is incorrect and snapshot is found', async () => {
             const allUserSnapshots = await getAllSnapshots(owner);
             const length = allUserSnapshots.length;
 

@@ -205,7 +205,7 @@ const StakingInput = props => {
                         }}
                         value={amountToStake}
                         onChange={e => {
-                            const regex = /^[0-9\b]+$/;
+                            const regex = /^\d*\.?\d*$/; // matches floating points numbers
                             if (
                                 tokenBalance &&
                                 Number(tokenBalance) &&

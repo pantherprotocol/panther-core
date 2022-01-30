@@ -82,7 +82,7 @@ Run the following command in the `zkp-token` repository, ensuring that
 either by setting the `REWARD_POOL` variable, or simply substituting
 the address into the command:
 
-    yarn hardhat pool:add $REWARD_POOL --network localhost
+    yarn hardhat pool:add --owner $REWARD_POOL --network localhost
 
 This will create a new pool with the `RewardPool` contract as its
 owner.

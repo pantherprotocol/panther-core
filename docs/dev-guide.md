@@ -139,7 +139,7 @@ account (i.e. zeroth signer).
 
 ### Register the classic staking type
 
-We need to call `addTerms()` on the `Staking` contract to register
+Go to `zkp-staking` repository. we need to call `addTerms()` on the `Staking` contract to register
 the `classic` type of staking with appropriate terms. There is a Hardhat
 task which makes this easy:
 

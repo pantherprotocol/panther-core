@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import logo from '../../images/panther-logo.svg';
 import stakingIcon from '../../images/staking-icon.svg';
 import docsIcon from '../../images/docs-icon.svg';
+import governanceIcon from '../../images/governance-icon.svg';
 import Address from '../Address';
 import accountAvatar from '../../images/meta-mask-icon.svg';
 import {LogoutButton} from '../LogoutButton';
@@ -131,8 +132,26 @@ const Header = props => {
                                     className="nav-item"
                                     variant="subtitle2"
                                 >
-                                    <a href="https://docs.pantherprotocol.io/">
+                                    <SafeLink href="https://docs.pantherprotocol.io/">
                                         Docs
+                                    </SafeLink>
+                                </Typography>
+                            </Box>
+                            <Box
+                                display={'flex'}
+                                justifyContent={'center'}
+                                alignItems={'center'}
+                            >
+                                <Box className="header-icons">
+                                    {' '}
+                                    <img src={governanceIcon} />
+                                </Box>
+                                <Typography
+                                    className="nav-item"
+                                    variant="subtitle2"
+                                >
+                                    <a href="https://snapshot.org/#/pantherprotocol.eth">
+                                        Governance
                                     </a>
                                 </Typography>
                             </Box>

@@ -91,6 +91,11 @@ export function toBytes32(data): string {
     return ethers.utils.hexZeroPad(data, 32);
 }
 
+const countDecimals = function (value) {
+    if (value % 1 != 0) return value.toString().split('.')[1].length;
+    return 0;
+};
+
 export async function stake(
     library: any,
     contract: ethers.Contract,
@@ -102,7 +107,11 @@ export async function stake(
     if (!contract) {
         return new Error('Missing contract parameter');
     }
-    const scaledAmount = toBN(Number(amount)).mul(e18);
+
+    const decimals = countDecimals(Number(amount));
+    const adjustedAmount = Number(amount) * 10 ** decimals;
+    const eDecimal = toBN(10).pow(toBN(decimals));
+    const scaledAmount = toBN(adjustedAmount).mul(e18).div(eDecimal);
 
     const stakingTokenContract = await getStakingTokenContract(library);
     if (!stakingTokenContract) {

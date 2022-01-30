@@ -24,7 +24,7 @@ const AdvancedStakingComingSoon = () => {
                         textAlign: 'left',
                     }}
                 >
-                    Advanced Staking Coming Soon
+                    Advanced Staking Is Coming
                 </Typography>
             </Box>
             <Box display="flex" alignItems="baseline">
@@ -39,8 +39,9 @@ const AdvancedStakingComingSoon = () => {
                         textAlign: 'left',
                     }}
                 >
-                    Advanced incentivized ZKP private staking with a higher APY
-                    is coming soon!
+                    Now that the initial staking program is underway, the team
+                    is working on advanced incentivized ZKP private staking with
+                    a higher APY. Watch out for announcements!
                 </Typography>
             </Box>
         </Card>

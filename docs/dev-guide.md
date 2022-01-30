@@ -82,7 +82,7 @@ Run the following command in the `zkp-token` repository, ensuring that
 either by setting the `REWARD_POOL` variable, or simply substituting
 the address into the command:
 
-    yarn hardhat pool:add $REWARD_POOL --network localhost
+    yarn hardhat pool:add --owner $REWARD_POOL --network localhost
 
 This will create a new pool with the `RewardPool` contract as its
 owner.
@@ -139,7 +139,7 @@ account (i.e. zeroth signer).
 
 ### Register the classic staking type
 
-We need to call `addTerms()` on the `Staking` contract to register
+Go to `zkp-staking` repository. we need to call `addTerms()` on the `Staking` contract to register
 the `classic` type of staking with appropriate terms. There is a Hardhat
 task which makes this easy:
 

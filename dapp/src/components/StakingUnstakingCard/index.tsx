@@ -15,6 +15,8 @@ export default function StakingUnstakingCard(props: {
     stakedBalance: string | null;
     setZkpTokenBalance: any;
     getStakedZkpBalance: any;
+    onConnect: any;
+    switchNetwork: any;
 }) {
     const [toggle, setToggle] = useState('stake');
 
@@ -67,6 +69,8 @@ export default function StakingUnstakingCard(props: {
                             rewardsBalance={props.rewardsBalance}
                             setZkpTokenBalance={props.setZkpTokenBalance}
                             getStakedZkpBalance={props.getStakedZkpBalance}
+                            onConnect={props.onConnect}
+                            switchNetwork={props.switchNetwork}
                         />
                     ) : (
                         <UnstakingTab rewardsBalance={props.rewardsBalance} />

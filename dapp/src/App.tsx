@@ -21,7 +21,6 @@ function getMissingEnvVars() {
         REWARD_MASTER_CONTRACT: process.env.REWARD_MASTER_CONTRACT,
         VESTING_POOLS_CONTRACT: process.env.VESTING_POOLS_CONTRACT,
         STAKING_TOKEN_CONTRACT: process.env.STAKING_TOKEN_CONTRACT,
-        TOKEN_SYMBOL: process.env.TOKEN_SYMBOL,
         CHAIN_ID: process.env.CHAIN_ID,
     };
     const missing = [] as Array<string>;

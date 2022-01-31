@@ -53,6 +53,7 @@ export default function StakingUnstakingCard(props: {
                     backgroundColor: '#2B334140',
                     borderRadius: '8px',
                     padding: '0',
+                    paddingTop: '24px',
                 }}
             >
                 <Box>

@@ -44,10 +44,10 @@ function StakingZkpPage() {
     // Logic to recognize the connector currently being activated
     const [activatingConnector, setActivatingConnector] = useState<any>();
     const [, setChainError] = useState('');
-    const [tokenBalance, setTokenBalance] = useState<string | null>('0.00');
+    const [tokenBalance, setTokenBalance] = useState<string | null>(null);
     const [tokenUSDValue, setTokenUSDValue] = useState<string | null>(null);
-    const [stakedBalance, setStakedBalance] = useState<any>('0.00');
-    const [rewardsBalance, setRewardsBalance] = useState<string | null>('0.00');
+    const [stakedBalance, setStakedBalance] = useState<any>(null);
+    const [rewardsBalance, setRewardsBalance] = useState<string | null>(null);
     const [currentAPY] = useState<string>('');
 
     // Handle logic to eagerly connect to the injected ethereum provider, if it
@@ -256,6 +256,7 @@ function StakingZkpPage() {
                                     />
                                     <AdvancedStakingComingSoon />
                                 </Box>
+                                <Footer />
                             </Grid>
                             <Grid
                                 item
@@ -282,7 +283,6 @@ function StakingZkpPage() {
                                             switchNetwork(setChainError);
                                         }}
                                     />
-                                    <Footer />
                                 </Box>
                             </Grid>
                         </Grid>

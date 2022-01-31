@@ -5,6 +5,8 @@
     padding-right: 0 !important;
     width: 100%;
     flex: 1 1 auto;
+    background-position: center;
+    background-size: cover;
 }
 
 img {
@@ -25,8 +27,4 @@ img {
     .main-box-holder {
         margin-top: 50px;
     }
-}
-
-.css-a26fzd-MuiInputBase-root-MuiInput-root:before {
-    border-bottom: none !important;
 }

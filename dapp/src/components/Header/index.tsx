@@ -212,7 +212,7 @@ const Header = props => {
                                         display={'flex'}
                                         justifyContent={'space-between'}
                                         alignItems={'center'}
-                                        margin={'0 5px'}
+                                        margin={'0 20px'}
                                         padding={'8px'}
                                         sx={{
                                             background: '#63728835',
@@ -221,33 +221,42 @@ const Header = props => {
                                         }}
                                     >
                                         {accountAddress && (
-                                            <Address
-                                                accountAvatar={accountAvatar}
-                                                accountAddress={accountAddress}
-                                            />
+                                            <Box>
+                                                <Address
+                                                    accountAvatar={
+                                                        accountAvatar
+                                                    }
+                                                    accountAddress={
+                                                        accountAddress
+                                                    }
+                                                />
+                                            </Box>
                                         )}
-                                        <Typography
-                                            variant="subtitle2"
-                                            width={'100%'}
-                                            display={'flex'}
-                                            justifyContent={'center'}
-                                            alignItems={'center'}
-                                            textAlign={'center'}
-                                            fontWeight={'bold'}
-                                            fontStyle={'normal'}
-                                            lineHeight={42}
-                                            fontSize={'14px'}
-                                            padding={'8px 8px'}
-                                            sx={{
-                                                backgroundColor: '#789ACD33',
+                                        <Box>
+                                            <Typography
+                                                variant="subtitle2"
+                                                display={'flex'}
+                                                justifyContent={'center'}
+                                                alignItems={'center'}
+                                                textAlign={'center'}
+                                                fontWeight={'bold'}
+                                                fontStyle={'normal'}
+                                                lineHeight={42}
+                                                fontSize={'14px'}
+                                                padding={'8px 8px'}
+                                                marginLeft={'20px'}
+                                                sx={{
+                                                    backgroundColor:
+                                                        '#789ACD50',
 
-                                                borderRadius: '8px',
-                                                height: '35px',
-                                                fontWeight: 600,
-                                            }}
-                                        >
-                                            {accountBalance}
-                                        </Typography>
+                                                    borderRadius: '8px',
+                                                    height: '35px',
+                                                    fontWeight: 600,
+                                                }}
+                                            >
+                                                {accountBalance}
+                                            </Typography>
+                                        </Box>
                                     </Box>
                                 </>
                             )}

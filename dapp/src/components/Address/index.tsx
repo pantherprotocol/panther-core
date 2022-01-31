@@ -52,6 +52,7 @@ const Address = (props: {
                                 height: '0.8em',
                                 marginRight: '18px',
                                 cursor: 'pointer',
+                                marginTop: '8px',
                             }}
                         />
                     </CopyToClipboard>

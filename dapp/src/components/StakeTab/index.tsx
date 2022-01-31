@@ -14,8 +14,12 @@ import Input from '@mui/material/Input';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import * as stakingService from '../../services/staking';
-import {useWeb3React} from '@web3-react/core';
+import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {useState} from 'react';
+import {ConnectButton} from '../ConnectButton';
+import {NoEthereumProviderError} from '@web3-react/injected-connector';
+import {useEffect} from 'react';
+import {onWrongNetwork} from '../../services/connectors';
 import './styles.scss';
 
 export default function StakeTab(props: {
@@ -24,9 +28,13 @@ export default function StakeTab(props: {
     stakedBalance: string | null;
     setZkpTokenBalance: any;
     getStakedZkpBalance: any;
+    onConnect: any;
+    switchNetwork: any;
 }) {
     const context = useWeb3React();
-    const {account, library} = context;
+    const {account, library, active, error} = context;
+    const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
+    const [wrongNetwork, setWrongNetwork] = useState(false);
     const [amountToStake, setAmountToStake] = useState<string | null>('0.00');
     const [, setStakedId] = useState<number | null>(null);
 
@@ -55,6 +63,37 @@ export default function StakeTab(props: {
         props.getStakedZkpBalance();
     };
 
+    useEffect((): any => {
+        const wrongNetwork =
+            onWrongNetwork(context) || error instanceof UnsupportedChainIdError;
+        setWrongNetwork(wrongNetwork);
+        console.debug(
+            'header: wrongNetwork',
+            wrongNetwork,
+            '/ active',
+            active,
+            '/ error',
+            error,
+        );
+        if (wrongNetwork) {
+            return;
+        }
+
+        if (account && library) {
+            let stale = false;
+
+            library.getBalance(account).then(() => {
+                if (!stale) {
+                    setWrongNetwork(onWrongNetwork(context));
+                }
+            });
+
+            return () => {
+                stale = true;
+            };
+        }
+    }, [context, active, account, library, error]);
+
     return (
         <Box width={'100%'}>
             <StakingInput
@@ -67,7 +106,7 @@ export default function StakeTab(props: {
                 sx={{
                     backgroundColor: '#2B334140',
                     borderRadius: '8px',
-                    margin: '15px 0',
+                    margin: '24px 0',
                 }}
             >
                 <CardContent className="staking-info-card">
@@ -78,32 +117,49 @@ export default function StakeTab(props: {
                 </CardContent>
             </Card>
 
-            <StakingBtn amountToStake={amountToStake} stake={stake} />
+            {wrongNetwork && (
+                <div className="buttons-holder">
+                    <ConnectButton
+                        text={'Switch network'}
+                        onClick={() => {
+                            props.switchNetwork();
+                        }}
+                    />
+                </div>
+            )}
+
+            {!active && !wrongNetwork && (
+                <div className="buttons-holder">
+                    <ConnectButton
+                        text={
+                            isNoEthereumProviderError
+                                ? 'Install MetaMask'
+                                : 'Connect Wallet'
+                        }
+                        onClick={() => {
+                            if (isNoEthereumProviderError) {
+                                window.open('https://metamask.io');
+                            } else {
+                                props.onConnect();
+                            }
+                        }}
+                    />
+                </div>
+            )}
+
+            {active && !wrongNetwork && (
+                <StakingBtn amountToStake={amountToStake} stake={stake} />
+            )}
         </Box>
     );
 }
 
 const StakingBtn = ({amountToStake, stake}) => {
     return (
-        <CardActions
-            sx={{
-                padding: '0',
-            }}
-        >
-            <Box
-                width={'100%'}
-                display={'flex'}
-                alignItems={'center'}
-                justifyContent={'center'}
-                borderRadius={'10px'}
-                minHeight={'60px'}
-                sx={{backgroundColor: '#1e4eb4'}}
-            >
+        <CardActions className="buttons-holder">
+            <Box className="stake-button-holder">
                 <Button
-                    sx={{
-                        color: '#FFFFFF',
-                        width: '100%',
-                    }}
+                    className="stake-button"
                     onClick={() => {
                         if (amountToStake && Number(amountToStake) > 0) {
                             stake(amountToStake);
@@ -357,14 +413,7 @@ const StakingInfoMSG = () => (
             paddingBottom: '20px',
         }}
     >
-        <Box
-            display={'flex'}
-            justifyContent={'start'}
-            alignItems={'center'}
-            sx={{
-                paddingBottom: '20px',
-            }}
-        >
+        <Box display={'flex'} justifyContent={'start'} alignItems={'center'}>
             <Tooltip title={'warning'} placement="top">
                 <IconButton
                     sx={{

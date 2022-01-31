@@ -275,6 +275,12 @@ function StakingZkpPage() {
                                         getStakedZkpBalance={
                                             getStakedZkpBalance
                                         }
+                                        onConnect={() => {
+                                            onConnect();
+                                        }}
+                                        switchNetwork={() => {
+                                            switchNetwork(setChainError);
+                                        }}
                                     />
                                     <Footer />
                                 </Box>

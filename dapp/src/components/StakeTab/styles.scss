@@ -1,5 +1,39 @@
+@import '../../variables';
+
 .staking-info-card {
     padding: 0 !important;
+}
+
+.buttons-holder {
+    padding: 0 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .stake-button-holder {
+        max-width: 220px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 0 1rem 0 $header-box-shadow;
+        background: $second-blue;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        padding: 0 5px;
+
+        .stake-button {
+            height: 45px;
+            width: 100%;
+            display: flex;
+            justify-content: center !important;
+            align-items: center !important;
+            color: $white !important;
+            text-decoration: none !important;
+            font-weight: 800 !important;
+            font-size: 18px !important;
+            text-transform: initial !important;
+        }
+    }
 }
 
 @media (max-width: 600px) {

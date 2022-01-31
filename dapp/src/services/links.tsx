@@ -1,5 +1,7 @@
 import React, {ReactElement} from 'react';
 
+import {Link} from '@mui/material';
+
 import {STAKING_CONTRACT} from './contracts';
 
 export const SafeLink = (props: {
@@ -9,6 +11,15 @@ export const SafeLink = (props: {
     <a href={props.href} target="_blank" rel="noopener noreferrer">
         {props.children}
     </a>
+);
+
+export const SafeMuiLink = (props: {
+    [key: string]: any;
+    children: string | ReactElement;
+}): ReactElement => (
+    <Link {...props} target="_blank" rel="noopener noreferrer">
+        {props.children}
+    </Link>
 );
 
 export const linkTextToTx = (

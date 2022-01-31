@@ -1,8 +1,11 @@
+import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import {IconButton, Tooltip} from '@mui/material';
+
+import {SafeMuiLink} from '../../services/links';
 import infoIcon from '../../images/info-icon.svg';
-import {IconButton, Tooltip, Link} from '@mui/material';
-import React from 'react';
+
 import './styles.scss';
 
 const CurrentStakeAPY = (props: {currentAPY: string}) => {
@@ -36,13 +39,13 @@ const CurrentStakeAPY = (props: {currentAPY: string}) => {
                 <Typography className="message-text">
                     Along with earning rewards, staking also allows you to vote
                     on Panther DAO proposals.{' '}
-                    <Link
-                        href="https://docs.pantherprotocol.io/"
+                    <SafeMuiLink
+                        href="https://docs.pantherprotocol.io/panther-dao-and-zkp/the-zkp-token/staking"
                         underline="always"
                         color="inherit"
                     >
-                        Learn more.
-                    </Link>
+                        Learn more
+                    </SafeMuiLink>
                 </Typography>
             </Box>
         </Box>

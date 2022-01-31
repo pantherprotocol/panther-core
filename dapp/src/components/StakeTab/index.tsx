@@ -1,25 +1,28 @@
 import * as React from 'react';
+import {useState, useEffect} from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {Link} from '@mui/material';
+import {IconButton, Tooltip} from '@mui/material';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import warningIcon from '../../images/warning-icon.svg';
-import {IconButton, Tooltip} from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
-import logo from '../../images/panther-logo.svg';
 import Input from '@mui/material/Input';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import * as stakingService from '../../services/staking';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
-import {useState} from 'react';
-import {ConnectButton} from '../ConnectButton';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
-import {useEffect} from 'react';
+
+import warningIcon from '../../images/warning-icon.svg';
+import logo from '../../images/panther-logo.svg';
+
+import * as stakingService from '../../services/staking';
+import {SafeMuiLink} from '../../services/links';
 import {onWrongNetwork} from '../../services/connectors';
+
+import {ConnectButton} from '../ConnectButton';
+
 import './styles.scss';
 
 export default function StakeTab(props: {
@@ -326,13 +329,13 @@ const StakingInfoMSG = () => (
         <Typography className="staking-info-text">
             You will need to unstake in order for your staked assets to be
             liquid again. This process will take 7 days to complete.{' '}
-            <Link
-                href="https://docs.pantherprotocol.io/"
+            <SafeMuiLink
+                href="https://docs.pantherprotocol.io/panther-dao-and-zkp/support/faq/staking-faq"
                 underline="always"
                 color="inherit"
             >
                 Learn more
-            </Link>
+            </SafeMuiLink>
         </Typography>
     </Box>
 );

@@ -132,7 +132,7 @@ const Header = props => {
                                     className="nav-item"
                                     variant="subtitle2"
                                 >
-                                    <SafeLink href="https://docs.pantherprotocol.io/">
+                                    <SafeLink href="https://docs.pantherprotocol.io/panther-dao-and-zkp/the-zkp-token/staking">
                                         Docs
                                     </SafeLink>
                                 </Typography>

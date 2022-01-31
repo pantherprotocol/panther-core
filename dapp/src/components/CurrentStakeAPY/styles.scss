@@ -1,3 +1,76 @@
+@import '../../variables';
+.current-stake-apy-container {
+    background-color: #2b334140 !important;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 1rem;
+    height: 130px;
+    margin-bottom: 1.5rem;
+
+    border: 1px solid #485267;
+    box-sizing: border-box;
+    border-radius: 8px;
+    backdrop-filter: blur(50px);
+    mix-blend-mode: normal;
+
+    .current-stake-apy-inner {
+        background: linear-gradient(0deg, #3f4a5f, #3f4a5f);
+        width: 35%;
+        flex-direction: column;
+        justify-content: center;
+        border-radius: 8px;
+
+        .icon {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+            width: 100%;
+            opacity: 0.6;
+        }
+        .apy-amount {
+            font-style: normal;
+            font-weight: 800;
+            font-size: 32px;
+            line-height: 16px;
+            align-items: center;
+            text-align: center;
+            color: #ffdfbd;
+        }
+        .apy-title {
+            color: $white;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 48px;
+            align-items: center;
+            text-align: center;
+        }
+    }
+    .current-stake-apy-text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 65%;
+        padding-left: 15px;
+        text-align: start;
+        color: $white;
+        .message-title {
+            width: 100%;
+            font-style: normal;
+            font-weight: bold;
+            font-size: 18px;
+            line-height: 42px;
+        }
+        .message-text {
+            width: 100%;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 16px;
+            line-height: 19px;
+            opacity: 0.8;
+        }
+    }
+}
+
 @media (max-width: 600px) {
     .current-stake-apy-container {
         height: auto !important;

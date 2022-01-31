@@ -7,90 +7,33 @@ import './styles.scss';
 
 const CurrentStakeAPY = (props: {currentAPY: string}) => {
     return (
-        <Box
-            className="current-stake-apy-container"
-            display={'flex'}
-            justifyContent={'space-between'}
-            alignItems={'center'}
-            sx={{
-                padding: '1rem 1rem',
-                border: '1px solid #384258',
-                borderRadius: '10px',
-                height: '130px',
-                marginBottom: '1.5rem',
-            }}
-        >
-            <Box
-                className="current-stake-apy-inner"
-                width={'35%'}
-                display={'flex'}
-                flexDirection={'column'}
-                justifyContent={'center'}
-                alignItems={'center'}
-                sx={{
-                    borderRadius: '8px',
-                    background: '#3F4A5F',
-                }}
-            >
-                <Box
-                    display={'flex'}
-                    justifyContent={'end'}
-                    alignItems={'center'}
-                    width={'100%'}
-                >
-                    <Tooltip title={'Current APY'} placement="top">
-                        <IconButton
-                            sx={{
-                                opacity: 0.6,
-                            }}
-                        >
+        <Box className="current-stake-apy-container">
+            <Box className="current-stake-apy-inner">
+                <Typography>
+                    <Tooltip
+                        title={'Current APY'}
+                        placement="top"
+                        className="icon"
+                    >
+                        <IconButton size="small">
                             <img src={infoIcon} />
                         </IconButton>
                     </Tooltip>
-                </Box>
-                <Box>
-                    <Typography
-                        variant="body1"
-                        color={'#FFDFBD'}
-                        fontSize={'32px'}
-                        fontWeight={800}
-                    >
-                        {props.currentAPY || '47.9%'}
-                    </Typography>
-                    <Typography
-                        variant="body1"
-                        color={'#FFFFFF'}
-                        fontSize={'16px'}
-                        fontWeight={500}
-                    >
-                        Current Staking APY
-                    </Typography>
-                </Box>
+                </Typography>
+
+                <Typography className="apy-amount">
+                    {props.currentAPY || '47.9%'}
+                </Typography>
+                <Typography className="apy-title">
+                    Current Staking APY
+                </Typography>
             </Box>
-            <Box
-                display={'flex'}
-                flexDirection={'column'}
-                justifyContent={'center'}
-                alignItems={'center'}
-                width={'65%'}
-                paddingLeft={'15px'}
-                sx={{
-                    textAlign: 'start',
-                }}
-            >
-                <Typography color={'#FFFFFF'} fontWeight={700} width={'100%'}>
+
+            <Box className="current-stake-apy-text">
+                <Typography className="message-title">
                     Earn more rewards for staking ZKP
                 </Typography>
-                <Typography
-                    variant="caption"
-                    color={'#FFFFFF'}
-                    fontSize={'13px'}
-                    fontWeight={400}
-                    width={'100%'}
-                    sx={{
-                        opacity: '0.9',
-                    }}
-                >
+                <Typography className="message-text">
                     Along with earning rewards, staking also allows you to vote
                     on Panther DAO proposals.{' '}
                     <Link

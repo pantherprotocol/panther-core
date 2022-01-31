@@ -18,6 +18,7 @@ default:
 
 stages: # List of stages for jobs, and their order of execution
   - test
+  - preview
 
 .yarn_cache_template: &yarn_cache_template
   cache:
@@ -41,3 +42,11 @@ combined-job:
     - yarn lint
     - yarn run build:contracts && yarn test
     - yarn run build:dapp
+
+preview:
+  stage: preview
+  only:
+    - merge_requests
+  script:
+    - >-
+      if [ -n "$CI_MERGE_REQUEST_IID" ]; then curl --data-urlencode "body=## After build, preview will 🚀[be here!](https://pr-${CI_MERGE_REQUEST_IID}.${AMPLIFY_APP_ID}.amplifyapp.com/)" --request POST --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions"; fi

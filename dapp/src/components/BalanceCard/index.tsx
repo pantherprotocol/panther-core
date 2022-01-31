@@ -4,6 +4,7 @@ import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import refreshIcon from '../../images/refresh-icon.svg';
 import infoIcon from '../../images/info-icon.svg';
+import settingIcon from '../../images/setting-icon.svg';
 import {IconButton, Tooltip} from '@mui/material';
 import Address from '../Address';
 import accountAvatar from '../../images/wallet-icon.svg';
@@ -18,14 +19,7 @@ const BalanceCard = (props: {
 }) => {
     return (
         <>
-            <Card
-                sx={{
-                    marginBottom: '20px',
-                    border: '1px solid #485267',
-                    backgroundColor: '#2B334140',
-                    borderRadius: '8px',
-                }}
-            >
+            <Card className="balance-card">
                 {props.accountAddress && (
                     <AddressWithSetting
                         accountAvatar={accountAvatar}
@@ -60,23 +54,19 @@ const AddressWithSetting = (props: {
     accountAddress: string | null;
 }) => {
     return (
-        <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-start"
-            marginBottom={'10px'}
-        >
-            <Box
-                width={'50%'}
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                className="address-container"
-            >
+        <Box className="address-with-setting">
+            <Box className="address">
                 <Address
                     accountAvatar={props.accountAvatar}
                     accountAddress={props.accountAddress}
                 />
+            </Box>
+            <Box className="setting-icon">
+                <Tooltip title="Settings" placement="top">
+                    <IconButton>
+                        <img src={settingIcon} />
+                    </IconButton>
+                </Tooltip>
             </Box>
         </Box>
     );
@@ -88,81 +78,32 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
     };
 
     return (
-        <Box
-            sx={{
-                background: '#63728835',
-                borderRadius: '8px',
-                padding: '0 15px',
-                mixBlendMode: 'normal',
-            }}
-        >
-            <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-            >
-                <Typography
-                    sx={{
-                        fontWeight: 800,
-                        fontStyle: 'normal',
-                        fontSize: '18px',
-                        lineHeight: '42px',
-                        alignItems: 'left',
-                    }}
-                >
-                    {title}
-                </Typography>
+        <Box className="total-balance">
+            <Box className="title-box">
+                <Typography className="title">{title}</Typography>
                 <Tooltip title={title} placement="top">
-                    <IconButton
-                        onClick={refreshPage}
-                        sx={{
-                            opacity: 0.6,
-                        }}
-                    >
-                        <img src={refreshIcon} alt="Refresh icon" />
+                    <IconButton onClick={refreshPage}>
+                        <img src={refreshIcon} />
                     </IconButton>
                 </Tooltip>
             </Box>
 
-            <Box display="flex" alignItems="baseline">
-                <Typography
-                    component="div"
-                    sx={{
-                        fontWeight: 800,
-                        fontStyle: 'bold',
-                        fontSize: '32px',
-                        lineHeight: '42px',
-                        marginBottom: '-10px',
-                    }}
-                >
-                    {tokenBalance || '-'}
-                </Typography>
-                <Typography
-                    sx={{
-                        fontWeight: 700,
-                        fontStyle: 'normal',
-                        fontSize: '12px',
-                        lineHeight: '42px',
-                        marginLeft: '8px',
-                    }}
-                >
-                    ZKP
-                </Typography>
-            </Box>
-            {tokenMarketPrice && (
-                <Box display="flex" alignItems="baseline">
-                    <Typography
-                        sx={{
-                            fontWeight: 600,
-                            fontStyle: 'normal',
-                            fontSize: '14px',
-                            lineHeight: '42px',
-                            opacity: 0.6,
-                        }}
-                    >
-                        ~${tokenMarketPrice} USD
-                    </Typography>
-                </Box>
+            {account && (
+                <>
+                    <Box className="amount-box">
+                        <Typography component="div" className="token-balance">
+                            {tokenBalance}
+                        </Typography>
+                        <Typography className="zkp-symbol">ZKP</Typography>
+                    </Box>
+                    {tokenMarketPrice && (
+                        <Box className="amount-box">
+                            <Typography className="token-market-price">
+                                {`~$ ${tokenMarketPrice} USD`}
+                            </Typography>
+                        </Box>
+                    )}
+                </>
             )}
         </Box>
     );
@@ -172,61 +113,34 @@ const AddressBalances = props => {
     const {title, amountUSD, balance} = props;
 
     return (
-        <>
-            <Box display="flex" alignItems="baseline">
-                <Typography className="address-balance">{title}</Typography>
+        <Box className="address-balance">
+            <Box className="title-box">
+                <Typography className="title">{title}</Typography>
                 <Typography>
                     <Tooltip title={title} placement="top">
-                        <IconButton
-                            sx={{
-                                opacity: 0.6,
-                            }}
-                        >
-                            <img src={infoIcon} alt="Info icon" />
+                        <IconButton>
+                            <img src={infoIcon} />
                         </IconButton>
                     </Tooltip>
                 </Typography>
             </Box>
-            <Box display="flex" justifyContent={'space-between'}>
-                <Box display="flex" justifyContent={'center'}>
-                    <Typography
-                        component="div"
-                        sx={{
-                            fontWeight: 800,
-                            fontStyle: 'bold',
-                            fontSize: '22px',
-                            lineHeight: '42px',
-                        }}
-                    >
-                        {balance || '-'}
-                    </Typography>
-                    <Typography
-                        sx={{
-                            fontWeight: 700,
-                            fontStyle: 'normal',
-                            fontSize: '12px',
-                            lineHeight: '42px',
-                            marginLeft: '8px',
-                        }}
-                    >
-                        ZKP
-                    </Typography>
+
+            {account && (
+                <Box className="amount-box">
+                    <Box className="balance-box">
+                        <Typography className="balance" component="div">
+                            {balance}
+                        </Typography>
+                        <Typography className="zkp-symbol">ZKP</Typography>
+                    </Box>
+                    {amountUSD && (
+                        <Typography className="amount-usd">
+                            {`~$ ${amountUSD} USD`}
+                        </Typography>
+                    )}
                 </Box>
-                {amountUSD && (
-                    <Typography
-                        sx={{
-                            fontWeight: 600,
-                            fontStyle: 'normal',
-                            fontSize: '12px',
-                            lineHeight: '42px',
-                            marginLeft: '8px',
-                        }}
-                    >
-                        ~${amountUSD} USD
-                    </Typography>
-                )}
-            </Box>
-        </>
+            )}
+        </Box>
     );
 };
 

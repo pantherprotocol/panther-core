@@ -6,7 +6,7 @@
     border-radius: 8px !important;
     mix-blend-mode: normal;
     backdrop-filter: blur(45px);
-    margin: 32px 0px 42px 0px;
+    margin: 32px 0 42px 0;
 }
 
 .buttons-holder {
@@ -35,7 +35,7 @@
     border: none;
     background: transparent;
     padding: 5px 16px;
-    margin: 20px 0px;
+    margin: 20px 0;
 
     .staking-info-title {
         font-weight: 800 !important;
@@ -51,7 +51,7 @@
         line-height: 25px;
         color: $white;
         opacity: 0.8;
-        padding: 20px 0px;
+        padding: 20px 0;
         text-align: start;
     }
 }
@@ -79,8 +79,13 @@
         min-width: 125px;
         color: $white;
         text-align: left;
-        margin-top: 0px;
-        padding: 0px 15px !important;
+        margin-top: 0;
+        cursor: pointer;
+
+        &:before,
+        &:after {
+            border: none !important;
+        }
     }
 
     .staking-method-estimated-gas-fee {
@@ -97,7 +102,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 10px 0px;
+    margin: 10px 0;
 
     .amount-to-stake-caption {
         color: $white;
@@ -149,7 +154,7 @@
         color: $white;
         margin-top: 16px;
         width: 230px;
-        margin: 0px 10px;
+        margin: 0 10px;
     }
 
     .staking-input-box {

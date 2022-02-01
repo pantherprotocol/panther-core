@@ -54,6 +54,7 @@ export default function StakeTab(props: {
             console.error(stakingResponse);
         }
         setStakedId(Number(stakingResponse));
+        setAmountToStake('');
         props.setZkpTokenBalance();
         props.getStakedZkpBalance();
     };

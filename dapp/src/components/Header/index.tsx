@@ -150,9 +150,9 @@ const Header = props => {
                                     className="nav-item"
                                     variant="subtitle2"
                                 >
-                                    <a href="https://snapshot.org/#/pantherprotocol.eth">
+                                    <SafeLink href="https://snapshot.org/#/pantherprotocol.eth">
                                         Governance
-                                    </a>
+                                    </SafeLink>
                                 </Typography>
                             </Box>
                         </Grid>

@@ -5,7 +5,7 @@
   "description": "Panther Protocol initial staking contracts",
   "scripts": {
     "build": "waffle",
-    "build:types": "./scripts/gen-types.sh",
+    "build:types": "cp -a types ../dapp/src",
     "chain": "FAKE_MNEMONIC=yes hardhat node",
     "compile": "FAKE_MNEMONIC=yes hardhat compile",
     "console": "FAKE_MNEMONIC=yes hardhat console --network localhost",

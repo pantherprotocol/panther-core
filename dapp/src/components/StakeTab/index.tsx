@@ -13,6 +13,7 @@ import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import logo from '../../images/panther-logo.svg';
 import * as stakingService from '../../services/staking';
+import {formatCurrency} from '../../utils';
 import {onWrongNetwork} from '../../services/connectors';
 import {ConnectButton} from '../ConnectButton';
 import './styles.scss';
@@ -30,7 +31,7 @@ export default function StakeTab(props: {
     const {account, library, active, error} = context;
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
-    const [amountToStake, setAmountToStake] = useState<string | null>('0');
+    const [amountToStake, setAmountToStake] = useState<string | null>();
     const [, setStakedId] = useState<number | null>(null);
 
     const stake = async (amount: string) => {
@@ -168,6 +169,26 @@ const StakingInput = props => {
     const context = useWeb3React();
     const {account} = context;
     const {tokenBalance, setAmountToStake, amountToStake} = props;
+    const changeHandler = e => {
+        const inputTextLength = e.target.value.length;
+        if (inputTextLength > 10) {
+            return;
+        }
+
+        const regex = /^\d*\.?\d*$/; // matches floating points numbers
+        if (
+            tokenBalance &&
+            Number(tokenBalance) &&
+            Number(e.target.value) > Number(tokenBalance) &&
+            regex.test(e.target.value)
+        ) {
+            return null;
+        } else if (regex.test(e.target.value)) {
+            setAmountToStake(e.target.value.toString() || '');
+        } else {
+            setAmountToStake('');
+        }
+    };
     return (
         <>
             <Box className="staking-input-header">
@@ -191,7 +212,7 @@ const StakingInput = props => {
                         variant="subtitle2"
                         component="span"
                     >
-                        {tokenBalance}
+                        {formatCurrency(tokenBalance)}
                     </Typography>
                     <Typography
                         className="token-balance"
@@ -211,26 +232,10 @@ const StakingInput = props => {
                     <Input
                         className="staking-input"
                         value={amountToStake}
-                        onChange={e => {
-                            const regex = /^\d*\.?\d*$/; // matches floating points numbers
-                            if (
-                                tokenBalance &&
-                                Number(tokenBalance) &&
-                                Number(e.target.value) > Number(tokenBalance) &&
-                                regex.test(e.target.value)
-                            ) {
-                                return null;
-                            } else if (regex.test(e.target.value)) {
-                                setAmountToStake(
-                                    e.target.value.toString() || '',
-                                );
-                            } else {
-                                setAmountToStake('');
-                            }
-                        }}
+                        onChange={changeHandler}
                         autoComplete="off"
                         autoFocus={true}
-                        placeholder={amountToStake ? amountToStake : ''}
+                        placeholder={amountToStake ? amountToStake : '0'}
                         disableUnderline={true}
                         disabled={!account}
                         endAdornment={

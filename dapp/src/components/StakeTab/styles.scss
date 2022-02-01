@@ -12,6 +12,7 @@
 .buttons-holder {
     background: #4c5873 !important;
     border-radius: 16px;
+    height: 80px;
 }
 
 .staking-button {
@@ -152,9 +153,11 @@
         font-size: 36px;
         line-height: 46px;
         color: $white;
-        margin-top: 16px;
-        width: 230px;
-        margin: 0 10px;
+        padding: 0px 15px;
+        width: 330px;
+    }
+    input {
+        text-align: end !important;
     }
 
     .staking-input-box {
@@ -170,6 +173,7 @@
         display: flex;
         align-items: center;
         color: $white;
+        padding-left: 30px;
     }
 
     .staking-input-max {

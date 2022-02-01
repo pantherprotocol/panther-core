@@ -2,10 +2,8 @@ import * as React from 'react';
 import {useState, useEffect} from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {IconButton, Tooltip} from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import InputAdornment from '@mui/material/InputAdornment';
 import Input from '@mui/material/Input';
@@ -13,16 +11,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
-
-import warningIcon from '../../images/warning-icon.svg';
 import logo from '../../images/panther-logo.svg';
-
 import * as stakingService from '../../services/staking';
-import {SafeMuiLink} from '../../services/links';
 import {onWrongNetwork} from '../../services/connectors';
-
 import {ConnectButton} from '../ConnectButton';
-
 import './styles.scss';
 
 export default function StakeTab(props: {
@@ -104,19 +96,12 @@ export default function StakeTab(props: {
                 setAmountToStake={setAmountToStake}
                 amountToStake={amountToStake}
             />
-            <Card
-                variant="outlined"
-                sx={{
-                    backgroundColor: '#2B334140',
-                    borderRadius: '8px',
-                    margin: '24px 0',
-                }}
-            >
-                <CardContent className="staking-info-card">
+            <Card variant="outlined" className="staking-info-card">
+                <CardContent>
                     <StakingInfoMSG />
-                    <Box display={'flex'} justifyContent={'center'}>
-                        <StakingMethod />
-                    </Box>
+                    {/* <Box display={'flex'} justifyContent={'center'}> */}
+                    <StakingMethod />
+                    {/* </Box> */}
                 </CardContent>
             </Card>
 
@@ -159,28 +144,22 @@ export default function StakeTab(props: {
 
 const StakingBtn = ({amountToStake, stake}) => {
     return (
-        <CardActions
-            sx={{
-                padding: '0',
-            }}
-        >
-            <Box className="staking-button">
-                <Button
-                    className="stake-button"
-                    onClick={() => {
-                        if (amountToStake && Number(amountToStake) > 0) {
-                            stake(amountToStake);
-                        }
-                    }}
-                >
-                    Stake{' '}
-                    {amountToStake && Number(amountToStake) > 0
-                        ? amountToStake
-                        : ''}{' '}
-                    ZKP
-                </Button>
-            </Box>
-        </CardActions>
+        <Box className="buttons-holder">
+            <Button
+                className="staking-button"
+                onClick={() => {
+                    if (amountToStake && Number(amountToStake) > 0) {
+                        stake(amountToStake);
+                    }
+                }}
+            >
+                Stake{' '}
+                {amountToStake && Number(amountToStake) > 0
+                    ? amountToStake
+                    : ''}{' '}
+                ZKP
+            </Button>
+        </Box>
     );
 };
 
@@ -315,27 +294,12 @@ const StakingMethod = () => (
 
 const StakingInfoMSG = () => (
     <Box className="staking-info-container">
-        <Box className="staking-info-title">
-            <Tooltip title={'warning'} placement="top" className="icon">
-                <IconButton>
-                    <img src={warningIcon} />
-                </IconButton>
-            </Tooltip>
-
-            <Typography variant="subtitle2">
-                Staking will lock your tokens for 7+ days
-            </Typography>
-        </Box>
+        <Typography variant="subtitle2" className="staking-info-title">
+            Staking will lock your tokens for a minimum of 7 days
+        </Typography>
         <Typography className="staking-info-text">
-            You will need to unstake in order for your staked assets to be
-            liquid again. This process will take 7 days to complete.{' '}
-            <SafeMuiLink
-                href="https://docs.pantherprotocol.io/panther-dao-and-zkp/support/faq/staking-faq"
-                underline="always"
-                color="inherit"
-            >
-                Learn more
-            </SafeMuiLink>
+            You will need to unstake to collect your rewards and for your staked
+            tokens to be unlocked again. Unstaking is available after 7 days.
         </Typography>
     </Box>
 );

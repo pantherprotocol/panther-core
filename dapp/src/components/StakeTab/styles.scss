@@ -2,56 +2,57 @@
 
 .staking-info-card {
     padding: 0 !important;
+    background: rgba(99, 114, 136, 0.15) !important;
+    border-radius: 8px !important;
+    mix-blend-mode: normal;
+    backdrop-filter: blur(45px);
+    margin: 32px 0px 42px 0px;
 }
 
 .buttons-holder {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: #4c5873 !important;
+    border-radius: 16px;
 }
 
 .staking-button {
+    height: 80px;
     padding: 0;
     width: 100%;
+    color: $white !important;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 30px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    min-height: 60px;
-    background-color: #1e4eb4 !important;
+    text-align: center;
+    opacity: 0.5;
 }
 
 .staking-info-container {
     flex-direction: column;
-    align-items: flex-start;
-    height: auto;
     text-align: start;
-    padding: 5px 20px 4px 4px;
+    border: none;
+    background: transparent;
+    padding: 5px 16px;
+    margin: 20px 0px;
 
     .staking-info-title {
-        display: flex;
-        justify-content: start;
-        align-items: center;
-        padding-bottom: 24px;
-        font-style: normal;
-        font-weight: bold;
-        font-size: 18px;
+        font-weight: 800 !important;
+        font-size: 18px !important;
         line-height: 42px;
-    }
-
-    .icon {
-        opacity: 0.6 !important;
-        margin-inline-end: 8px;
+        display: flex;
+        align-items: center;
+        color: $main-heading-span;
     }
 
     .staking-info-text {
-        font-style: normal;
-        font-weight: normal;
         font-size: 16px;
         line-height: 25px;
         color: $white;
         opacity: 0.8;
-        margin-bottom: 20px;
+        padding: 20px 0px;
+        text-align: start;
     }
 }
 
@@ -61,7 +62,6 @@
     height: auto;
     text-align: start;
     width: 100%;
-    border: 1px solid rgba(99, 114, 136, 0.2);
     background: rgba(99, 114, 136, 0.2);
     padding: 5px 16px;
     border-radius: 10px;

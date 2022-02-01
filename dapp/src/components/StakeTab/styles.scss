@@ -153,9 +153,10 @@
         font-size: 36px;
         line-height: 46px;
         color: $white;
-        margin-top: 16px;
-        width: 230px;
-        margin: 0 10px;
+        max-width: 310px;
+        min-width: 100px;
+        margin: 10px 5px;
+        padding: 0px 15px;
     }
 
     .staking-input-box {

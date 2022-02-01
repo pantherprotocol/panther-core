@@ -30,7 +30,7 @@ export default function StakeTab(props: {
     const {account, library, active, error} = context;
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
-    const [amountToStake, setAmountToStake] = useState<string | null>('0');
+    const [amountToStake, setAmountToStake] = useState<string | null>();
     const [, setStakedId] = useState<number | null>(null);
 
     const stake = async (amount: string) => {
@@ -168,6 +168,34 @@ const StakingInput = props => {
     const context = useWeb3React();
     const {account} = context;
     const {tokenBalance, setAmountToStake, amountToStake} = props;
+    const [width, setWidth] = useState(0);
+
+    //this function may need some improvement for more accurate width calculation
+    function calcWidth(length: number) {
+        const width: number = 105 + (length - 1) * (length + 16);
+        return width;
+    }
+
+    const changeHandler = e => {
+        const length = e.target.value.length;
+        if (length > 10) {
+            return;
+        }
+        setWidth(calcWidth(length));
+        const regex = /^\d*\.?\d*$/; // matches floating points numbers
+        if (
+            tokenBalance &&
+            Number(tokenBalance) &&
+            Number(e.target.value) > Number(tokenBalance) &&
+            regex.test(e.target.value)
+        ) {
+            return null;
+        } else if (regex.test(e.target.value)) {
+            setAmountToStake(e.target.value.toString() || '');
+        } else {
+            setAmountToStake('');
+        }
+    };
     return (
         <>
             <Box className="staking-input-header">
@@ -211,28 +239,15 @@ const StakingInput = props => {
                     <Input
                         className="staking-input"
                         value={amountToStake}
-                        onChange={e => {
-                            const regex = /^\d*\.?\d*$/; // matches floating points numbers
-                            if (
-                                tokenBalance &&
-                                Number(tokenBalance) &&
-                                Number(e.target.value) > Number(tokenBalance) &&
-                                regex.test(e.target.value)
-                            ) {
-                                return null;
-                            } else if (regex.test(e.target.value)) {
-                                setAmountToStake(
-                                    e.target.value.toString() || '',
-                                );
-                            } else {
-                                setAmountToStake('');
-                            }
-                        }}
+                        onChange={changeHandler}
                         autoComplete="off"
                         autoFocus={true}
-                        placeholder={amountToStake ? amountToStake : ''}
+                        placeholder={amountToStake ? amountToStake : '0'}
                         disableUnderline={true}
                         disabled={!account}
+                        sx={{
+                            width: `${width}px`,
+                        }}
                         endAdornment={
                             <InputAdornment
                                 position="end"

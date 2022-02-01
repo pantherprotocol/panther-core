@@ -168,20 +168,12 @@ const StakingInput = props => {
     const context = useWeb3React();
     const {account} = context;
     const {tokenBalance, setAmountToStake, amountToStake} = props;
-    const [width, setWidth] = useState(0);
-
-    //this function may need some improvement for more accurate width calculation
-    function calcWidth(length: number) {
-        const width: number = 105 + (length - 1) * (length + 16);
-        return width;
-    }
-
     const changeHandler = e => {
-        const length = e.target.value.length;
-        if (length > 10) {
+        const inputTextLength = e.target.value.length;
+        if (inputTextLength > 10) {
             return;
         }
-        setWidth(calcWidth(length));
+
         const regex = /^\d*\.?\d*$/; // matches floating points numbers
         if (
             tokenBalance &&
@@ -245,9 +237,6 @@ const StakingInput = props => {
                         placeholder={amountToStake ? amountToStake : '0'}
                         disableUnderline={true}
                         disabled={!account}
-                        sx={{
-                            width: `${width}px`,
-                        }}
                         endAdornment={
                             <InputAdornment
                                 position="end"

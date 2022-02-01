@@ -153,10 +153,11 @@
         font-size: 36px;
         line-height: 46px;
         color: $white;
-        max-width: 310px;
-        min-width: 100px;
-        margin: 10px 5px;
         padding: 0px 15px;
+        width: 330px;
+    }
+    input {
+        text-align: end !important;
     }
 
     .staking-input-box {
@@ -172,6 +173,7 @@
         display: flex;
         align-items: center;
         color: $white;
+        padding-left: 30px;
     }
 
     .staking-input-max {

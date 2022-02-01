@@ -3,11 +3,15 @@
     mix-blend-mode: normal;
     backdrop-filter: blur(49.2869px);
     border-radius: 8.76212px;
-    * {
+    p {
         padding: 0 15px;
-        display: flex;
         font-style: normal;
         text-align: left;
+    }
+
+    a {
+        color: white;
+        text-decoration: underline;
     }
 
     .card-title {

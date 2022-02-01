@@ -37,11 +37,12 @@ const CurrentStakeAPY = (props: {currentAPY: string}) => {
 
             <Box className="current-stake-apy-text">
                 <Typography className="message-title">
-                    Earn more rewards for staking ZKP
+                    Earn rewards for staking ZKP
                 </Typography>
                 <Typography className="message-text">
-                    Along with earning rewards, staking also allows you to vote
-                    on Panther DAO proposals.{' '}
+                    Along with earning from a 6.65million $ZKP staking rewards
+                    pool, staking also gives you voting rights on Panther DAO
+                    proposals.{' '}
                     <SafeMuiLink
                         href="https://docs.pantherprotocol.io/panther-dao-and-zkp/the-zkp-token/staking"
                         underline="always"

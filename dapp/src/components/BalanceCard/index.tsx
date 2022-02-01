@@ -62,13 +62,13 @@ const AddressWithSetting = (props: {
                     accountAddress={props.accountAddress}
                 />
             </Box>
-            <Box className="setting-icon">
+            {/*<Box className="setting-icon">
                 <Tooltip title="Settings" placement="top">
                     <IconButton>
                         <img src={settingIcon} />
                     </IconButton>
                 </Tooltip>
-            </Box>
+            </Box>*/}
         </Box>
     );
 };

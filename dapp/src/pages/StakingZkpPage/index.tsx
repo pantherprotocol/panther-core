@@ -245,7 +245,6 @@ function StakingZkpPage() {
                                         accountAddress={accountAddress}
                                     />
                                     <AdvancedStakingComingSoon />
-                                    <Footer />
                                 </Box>
                                 <Footer />
                             </Grid>

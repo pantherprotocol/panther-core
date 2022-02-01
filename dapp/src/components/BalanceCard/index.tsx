@@ -88,22 +88,18 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
                 </Tooltip>
             </Box>
 
-            {account && (
-                <>
-                    <Box className="amount-box">
-                        <Typography component="div" className="token-balance">
-                            {tokenBalance}
-                        </Typography>
-                        <Typography className="zkp-symbol">ZKP</Typography>
-                    </Box>
-                    {tokenMarketPrice && (
-                        <Box className="amount-box">
-                            <Typography className="token-market-price">
-                                {`~$ ${tokenMarketPrice} USD`}
-                            </Typography>
-                        </Box>
-                    )}
-                </>
+            <Box className="amount-box">
+                <Typography component="div" className="token-balance">
+                    {tokenBalance}
+                </Typography>
+                <Typography className="zkp-symbol">ZKP</Typography>
+            </Box>
+            {tokenMarketPrice && (
+                <Box className="amount-box">
+                    <Typography className="token-market-price">
+                        {`~$ ${tokenMarketPrice} USD`}
+                    </Typography>
+                </Box>
             )}
         </Box>
     );
@@ -125,21 +121,19 @@ const AddressBalances = props => {
                 </Typography>
             </Box>
 
-            {account && (
-                <Box className="amount-box">
-                    <Box className="balance-box">
-                        <Typography className="balance" component="div">
-                            {balance}
-                        </Typography>
-                        <Typography className="zkp-symbol">ZKP</Typography>
-                    </Box>
-                    {amountUSD && (
-                        <Typography className="amount-usd">
-                            {`~$ ${amountUSD} USD`}
-                        </Typography>
-                    )}
+            <Box className="amount-box">
+                <Box className="balance-box">
+                    <Typography className="balance" component="div">
+                        {balance}
+                    </Typography>
+                    <Typography className="zkp-symbol">ZKP</Typography>
                 </Box>
-            )}
+                {amountUSD && (
+                    <Typography className="amount-usd">
+                        {`~$ ${amountUSD} USD`}
+                    </Typography>
+                )}
+            </Box>
         </Box>
     );
 };

@@ -2,17 +2,17 @@
 
 .wallet-btn-holder {
     width: 100%;
+    height: 100%;
     text-align: center;
     box-shadow: 0 0 1rem 0 $header-box-shadow;
     background: $second-blue;
-    border-radius: 10px;
     display: flex;
     align-items: center;
-    padding: 0 5px;
     justify-content: center;
 
+    border-radius: 16px;
+
     .wallet-btn {
-        max-width: 220px;
         height: 45px;
         width: 100%;
         display: flex;

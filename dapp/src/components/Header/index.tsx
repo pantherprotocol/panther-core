@@ -78,7 +78,7 @@ const Header = props => {
 
     const accountAddress = formatAccountAddress(account) || null;
     const accountBalance =
-        formatAccountBalance(balance, requiredNetwork.symbol) || 'Error';
+        formatAccountBalance(balance, requiredNetwork.symbol) || '-';
 
     return (
         <Box sx={{flexGrow: 1}}>
@@ -97,7 +97,7 @@ const Header = props => {
                                 marginRight={'10px'}
                                 width={'10%'}
                             >
-                                <SafeLink href="/">
+                                <SafeLink href="https://pantherprotocol.io/">
                                     <img src={logo} alt="Logo" />
                                 </SafeLink>
                             </Box>

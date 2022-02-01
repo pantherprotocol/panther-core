@@ -4,7 +4,7 @@ import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import refreshIcon from '../../images/refresh-icon.svg';
 import infoIcon from '../../images/info-icon.svg';
-import settingIcon from '../../images/setting-icon.svg';
+// import settingIcon from '../../images/setting-icon.svg';
 import {IconButton, Tooltip} from '@mui/material';
 import Address from '../Address';
 import accountAvatar from '../../images/wallet-icon.svg';

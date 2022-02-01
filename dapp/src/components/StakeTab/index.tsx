@@ -16,7 +16,9 @@ import * as stakingService from '../../services/staking';
 import {formatCurrency} from '../../utils';
 import {onWrongNetwork} from '../../services/connectors';
 import {ConnectButton} from '../ConnectButton';
+import {Store} from 'react-notifications-component';
 import './styles.scss';
+import {openNotification} from '../../services/notification';
 
 export default function StakeTab(props: {
     rewardsBalance: string | null;
@@ -50,14 +52,20 @@ export default function StakeTab(props: {
             stakeType,
             signer,
         );
+
         if (stakingResponse instanceof Error) {
-            //TODO: Popup notification and return data
             console.error(stakingResponse);
+            openNotification(
+                'Transaction error',
+                'Your staking transaction encountered an error. Please try again!',
+                'danger',
+            );
         }
         setStakedId(Number(stakingResponse));
         setAmountToStake('');
         props.setZkpTokenBalance();
         props.getStakedZkpBalance();
+        Store.removeAllNotifications();
     };
 
     useEffect((): any => {

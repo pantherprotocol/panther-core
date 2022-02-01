@@ -181,6 +181,8 @@ const StakingBtn = ({amountToStake, stake}) => {
 };
 
 const StakingInput = props => {
+    const context = useWeb3React();
+    const {account} = context;
     const {tokenBalance, setAmountToStake, amountToStake} = props;
     return (
         <>
@@ -284,6 +286,7 @@ const StakingInput = props => {
                         autoFocus={true}
                         placeholder={amountToStake ? amountToStake : ''}
                         disableUnderline={true}
+                        disabled={!account}
                         endAdornment={
                             <InputAdornment
                                 position="end"

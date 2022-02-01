@@ -13,6 +13,7 @@ import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import logo from '../../images/panther-logo.svg';
 import * as stakingService from '../../services/staking';
+import {formatCurrency} from '../../utils';
 import {onWrongNetwork} from '../../services/connectors';
 import {ConnectButton} from '../ConnectButton';
 import './styles.scss';
@@ -211,7 +212,7 @@ const StakingInput = props => {
                         variant="subtitle2"
                         component="span"
                     >
-                        {tokenBalance}
+                        {formatCurrency(tokenBalance)}
                     </Typography>
                     <Typography
                         className="token-balance"

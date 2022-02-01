@@ -9,6 +9,7 @@ import {IconButton, Tooltip} from '@mui/material';
 import Address from '../Address';
 import accountAvatar from '../../images/wallet-icon.svg';
 import './styles.scss';
+import {formatCurrency} from '../../utils';
 
 const BalanceCard = (props: {
     rewardsBalance: string | null;
@@ -90,14 +91,14 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
 
             <Box className="amount-box">
                 <Typography component="div" className="token-balance">
-                    {tokenBalance}
+                    {formatCurrency(tokenBalance)}
                 </Typography>
                 <Typography className="zkp-symbol">ZKP</Typography>
             </Box>
             {tokenMarketPrice && (
                 <Box className="amount-box">
                     <Typography className="token-market-price">
-                        {`~$ ${tokenMarketPrice} USD`}
+                        {`~$ ${formatCurrency(tokenMarketPrice)} USD`}
                     </Typography>
                 </Box>
             )}
@@ -124,13 +125,13 @@ const AddressBalances = props => {
             <Box className="amount-box">
                 <Box className="balance-box">
                     <Typography className="balance" component="div">
-                        {balance}
+                        {formatCurrency(balance)}
                     </Typography>
                     <Typography className="zkp-symbol">ZKP</Typography>
                 </Box>
                 {amountUSD && (
                     <Typography className="amount-usd">
-                        {`~$ ${amountUSD} USD`}
+                        {`~$ ${formatCurrency(amountUSD)} USD`}
                     </Typography>
                 )}
             </Box>

@@ -15,6 +15,7 @@
         border-radius: 8px;
         cursor: pointer;
         text-transform: capitalize;
+        min-width: 135px;
 
         &:hover {
             background: $second-blue;

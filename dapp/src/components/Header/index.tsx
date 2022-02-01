@@ -87,7 +87,8 @@ const Header = props => {
                     <Grid container>
                         <Grid
                             item
-                            md={6}
+                            lg={6}
+                            md={12}
                             xs={12}
                             display={'flex'}
                             alignItems={'center'}
@@ -158,7 +159,8 @@ const Header = props => {
                         </Grid>
                         <Grid
                             item
-                            md={6}
+                            lg={6}
+                            md={12}
                             xs={12}
                             display={'flex'}
                             justifyContent={'end'}
@@ -245,10 +247,10 @@ const Header = props => {
                                                 fontSize={'14px'}
                                                 padding={'8px 8px'}
                                                 marginLeft={'20px'}
+                                                minWidth={'80px'}
                                                 sx={{
                                                     backgroundColor:
                                                         '#789ACD50',
-
                                                     borderRadius: '8px',
                                                     height: '35px',
                                                     fontWeight: 600,

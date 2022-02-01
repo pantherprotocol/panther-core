@@ -83,6 +83,9 @@ function StakingZkpPage() {
     const disconnect = useCallback(async () => {
         if (active && chainId) {
             deactivate();
+            setTokenBalance(null);
+            setStakedBalance(null);
+            setRewardsBalance(null);
         }
     }, [active, chainId, deactivate]);
 

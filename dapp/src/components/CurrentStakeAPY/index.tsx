@@ -14,7 +14,10 @@ const CurrentStakeAPY = (props: {currentAPY: string}) => {
             <Box className="current-stake-apy-inner">
                 <Typography>
                     <Tooltip
-                        title={'Current APY'}
+                        title={
+                            'Indicative forecast for first 30 days assuming 50% of eligible token supply staked. More accurate figures will be provided when staking stabilises.'
+                        }
+                        data-html="true"
                         placement="top"
                         className="icon"
                     >
@@ -25,10 +28,10 @@ const CurrentStakeAPY = (props: {currentAPY: string}) => {
                 </Typography>
 
                 <Typography className="apy-amount">
-                    {props.currentAPY || '47.9%'}
+                    {props.currentAPY || '46.98%'}
                 </Typography>
                 <Typography className="apy-title">
-                    Current Staking APY
+                    Indicative initial APY
                 </Typography>
             </Box>
 

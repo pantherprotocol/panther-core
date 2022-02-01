@@ -2,42 +2,183 @@
 
 .staking-info-card {
     padding: 0 !important;
+    background: rgba(99, 114, 136, 0.15) !important;
+    border-radius: 8px !important;
+    mix-blend-mode: normal;
+    backdrop-filter: blur(45px);
+    margin: 32px 0px 42px 0px;
 }
 
 .buttons-holder {
-    padding: 0 !important;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: #4c5873 !important;
+    border-radius: 16px;
+}
 
-    .stake-button-holder {
-        max-width: 220px;
-        width: 100%;
-        text-align: center;
-        box-shadow: 0 0 1rem 0 $header-box-shadow;
-        background: $second-blue;
-        border-radius: 10px;
+.staking-button {
+    height: 80px;
+    padding: 0;
+    width: 100%;
+    color: $white !important;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 30px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    opacity: 0.5;
+}
+
+.staking-info-container {
+    flex-direction: column;
+    text-align: start;
+    border: none;
+    background: transparent;
+    padding: 5px 16px;
+    margin: 20px 0px;
+
+    .staking-info-title {
+        font-weight: 800 !important;
+        font-size: 18px !important;
+        line-height: 42px;
         display: flex;
         align-items: center;
-        padding: 0 5px;
+        color: $main-heading-span;
+    }
 
-        .stake-button {
-            height: 45px;
-            width: 100%;
-            display: flex;
-            justify-content: center !important;
-            align-items: center !important;
-            color: $white !important;
-            text-decoration: none !important;
-            font-weight: 800 !important;
-            font-size: 18px !important;
-            text-transform: initial !important;
-        }
+    .staking-info-text {
+        font-size: 16px;
+        line-height: 25px;
+        color: $white;
+        opacity: 0.8;
+        padding: 20px 0px;
+        text-align: start;
+    }
+}
+
+.staking-method-container {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    text-align: start;
+    width: 100%;
+    background: rgba(99, 114, 136, 0.2);
+    padding: 5px 16px;
+    border-radius: 10px;
+
+    .staking-method-title {
+        font-weight: 500;
+        font-style: normal;
+        font-size: 16px;
+        line-height: 42px;
+        margin-right: 18px;
+        color: #d8d8d8;
+    }
+
+    .staking-method-select {
+        min-width: 125px;
+        color: $white;
+        text-align: left;
+        margin-top: 0px;
+        padding: 0px 15px !important;
+    }
+
+    .staking-method-estimated-gas-fee {
+        font-weight: 500;
+        font-style: normal;
+        font-size: 16px;
+        line-height: 42px;
+        margin-right: 18px;
+        color: $white;
+    }
+}
+
+.staking-input-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0px;
+
+    .amount-to-stake-caption {
+        color: $white;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 42px;
+        display: flex;
+        align-items: center;
+    }
+
+    .available-to-stake-caption {
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 42px;
+
+        align-items: center;
+        text-align: right;
+        color: $white;
+        opacity: 0.5;
+    }
+
+    .token-balance {
+        font-weight: 800;
+        font-size: 16px;
+        line-height: 42px;
+        align-items: center;
+        color: #ffdfbd;
+        margin-left: 10px;
+    }
+}
+
+.staking-input-container {
+    background-color: #3f4a5f;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border: 1px solid #ffdfbd;
+    border-radius: 15px;
+
+    .staking-input {
+        border: 0;
+        font-weight: 800;
+        font-size: 36px;
+        line-height: 46px;
+        color: $white;
+        margin-top: 16px;
+        width: 230px;
+        margin: 0px 10px;
+    }
+
+    .staking-input-box {
+        display: flex;
+        align-items: center;
+        width: 70%;
+    }
+
+    .staking-input-symbol {
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 42px;
+        display: flex;
+        align-items: center;
+        color: $white;
+    }
+
+    .staking-input-max {
+        color: #ffdfbd;
+        font-weight: 800;
+        font-size: 16px;
+        width: 20%;
+        cursor: pointer;
+        line-height: initial;
     }
 }
 
 @media (max-width: 600px) {
-    .amount-to-stake-card {
+    .staking-input-header {
         flex-direction: column-reverse !important;
         margin: 6px;
     }

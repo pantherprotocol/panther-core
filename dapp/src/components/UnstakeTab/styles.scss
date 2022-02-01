@@ -1,0 +1,25 @@
+@import '../../variables';
+
+.unstaking-info-message {
+    text-align: center;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    background-color: #6372882e;
+}
+.total-unclaimed-rewards {
+    width: 55%;
+    margin: 25px 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    background-color: #6372882e;
+    opacity: 0.5;
+}
+.total-unclaimed-container {
+    display: flex;
+    justify-content: center;
+    text-align: start;
+}

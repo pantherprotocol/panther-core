@@ -15,46 +15,17 @@ const Address = (props: {
     const {account} = context;
 
     return (
-        <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-around"
-            width={'100%'}
-        >
-            <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                width={'24px'}
-                marginLeft={'18px'}
-            >
+        <Box className="address-container">
+            <Box className="user-avatar">
                 <img src={props.accountAvatar} alt={'User avatar'} />
             </Box>
-            <Typography
-                sx={{
-                    fontWeight: 400,
-                    fontStyle: 'normal',
-                    fontSize: '14px',
-                    lineHeight: '42px',
-                    marginLeft: '18px',
-                    marginRight: '18px',
-                }}
-            >
+            <Typography className="account-address">
                 {props.accountAddress}
             </Typography>
             <Tooltip title="Copy Wallet Address" placement="top">
                 <span>
                     <CopyToClipboard text={account}>
-                        <ContentCopyIcon
-                            sx={{
-                                opacity: 0.5,
-                                width: '0.8em',
-                                height: '0.8em',
-                                marginRight: '18px',
-                                cursor: 'pointer',
-                                marginTop: '8px',
-                            }}
-                        />
+                        <ContentCopyIcon className="content-copy-icon" />
                     </CopyToClipboard>
                 </span>
             </Tooltip>

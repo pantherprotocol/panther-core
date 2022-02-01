@@ -1,0 +1,25 @@
+.advanced-staking-comming-soon-card {
+    background: rgba(99, 114, 136, 0.2) !important;
+    mix-blend-mode: normal;
+    backdrop-filter: blur(49.2869px);
+    border-radius: 8.76212px;
+    * {
+        padding: 0 15px;
+        display: flex;
+        font-style: normal;
+        text-align: left;
+    }
+
+    .card-title {
+        font-weight: 800;
+        font-size: 18px;
+        line-height: 42px;
+    }
+    .card-text {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 22px;
+        margin-bottom: 18px;
+        opacity: 0.5;
+    }
+}

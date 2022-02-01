@@ -2,10 +2,8 @@ import * as React from 'react';
 import {useState, useEffect} from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {IconButton, Tooltip} from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import InputAdornment from '@mui/material/InputAdornment';
 import Input from '@mui/material/Input';
@@ -13,16 +11,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
-
-import warningIcon from '../../images/warning-icon.svg';
 import logo from '../../images/panther-logo.svg';
-
 import * as stakingService from '../../services/staking';
-import {SafeMuiLink} from '../../services/links';
 import {onWrongNetwork} from '../../services/connectors';
-
 import {ConnectButton} from '../ConnectButton';
-
 import './styles.scss';
 
 export default function StakeTab(props: {
@@ -104,19 +96,12 @@ export default function StakeTab(props: {
                 setAmountToStake={setAmountToStake}
                 amountToStake={amountToStake}
             />
-            <Card
-                variant="outlined"
-                sx={{
-                    backgroundColor: '#2B334140',
-                    borderRadius: '8px',
-                    margin: '24px 0',
-                }}
-            >
-                <CardContent className="staking-info-card">
+            <Card variant="outlined" className="staking-info-card">
+                <CardContent>
                     <StakingInfoMSG />
-                    <Box display={'flex'} justifyContent={'center'}>
-                        <StakingMethod />
-                    </Box>
+                    {/* <Box display={'flex'} justifyContent={'center'}> */}
+                    <StakingMethod />
+                    {/* </Box> */}
                 </CardContent>
             </Card>
 
@@ -159,24 +144,22 @@ export default function StakeTab(props: {
 
 const StakingBtn = ({amountToStake, stake}) => {
     return (
-        <CardActions className="buttons-holder">
-            <Box className="stake-button-holder">
-                <Button
-                    className="stake-button"
-                    onClick={() => {
-                        if (amountToStake && Number(amountToStake) > 0) {
-                            stake(amountToStake);
-                        }
-                    }}
-                >
-                    Stake{' '}
-                    {amountToStake && Number(amountToStake) > 0
-                        ? amountToStake
-                        : ''}{' '}
-                    ZKP
-                </Button>
-            </Box>
-        </CardActions>
+        <Box className="buttons-holder">
+            <Button
+                className="staking-button"
+                onClick={() => {
+                    if (amountToStake && Number(amountToStake) > 0) {
+                        stake(amountToStake);
+                    }
+                }}
+            >
+                Stake{' '}
+                {amountToStake && Number(amountToStake) > 0
+                    ? amountToStake
+                    : ''}{' '}
+                ZKP
+            </Button>
+        </Box>
     );
 };
 
@@ -186,16 +169,9 @@ const StakingInput = props => {
     const {tokenBalance, setAmountToStake, amountToStake} = props;
     return (
         <>
-            <Box
-                className="amount-to-stake-card"
-                display="flex"
-                justifyContent="space-between"
-                alignItems={'center'}
-            >
+            <Box className="staking-input-header">
                 <Typography
-                    m={1}
-                    color={'#FFFFFF'}
-                    fontWeight={700}
+                    className="amount-to-stake-caption"
                     variant="subtitle2"
                     component="span"
                 >
@@ -203,67 +179,36 @@ const StakingInput = props => {
                 </Typography>
                 <span>
                     <Typography
-                        sx={{
-                            opacity: 0.5,
-                        }}
-                        m={1}
-                        color={'#FFFFFF'}
-                        fontWeight={700}
+                        className="available-to-stake-caption"
                         variant="subtitle2"
                         component="span"
                     >
                         Available to stake:
                     </Typography>
                     <Typography
+                        className="token-balance"
                         variant="subtitle2"
                         component="span"
-                        m={1}
-                        sx={{
-                            color: '#ffdfbd',
-                            fontWeight: 700,
-                        }}
                     >
                         {tokenBalance}
                     </Typography>
                     <Typography
+                        className="token-balance"
                         variant="subtitle2"
                         component="span"
-                        sx={{
-                            color: '#ffdfbd',
-                            fontWeight: 700,
-                        }}
                     >
                         ZKP
                     </Typography>
                 </span>
             </Box>
-            <Box
-                height={'80px'}
-                display={'flex'}
-                alignItems={'center'}
-                justifyContent={'space-between'}
-                padding={'16px'}
-                borderRadius={'8px'}
-                bgcolor={'#929FB759'}
-                border={'1px solid #FFDFBD'}
-            >
-                <Box display={'flex'} alignItems={'center'} width={'70%'}>
-                    <Box display={'flex'}>
+            <Box className="staking-input-container">
+                <Box className="staking-input-box">
+                    <Box>
                         <img src={logo} height={'40px'} width={'40px'} />
                     </Box>
 
                     <Input
-                        sx={{
-                            m: 2,
-                            mt: 3,
-                            border: 0,
-                            fontWeight: 600,
-                            fontSize: '24px',
-                            color: '#ffdfbd',
-                            marginInlineEnd: '16px',
-                            marginTop: '16px',
-                            width: '180px',
-                        }}
+                        className="staking-input"
                         value={amountToStake}
                         onChange={e => {
                             const regex = /^\d*\.?\d*$/; // matches floating points numbers
@@ -290,10 +235,7 @@ const StakingInput = props => {
                         endAdornment={
                             <InputAdornment
                                 position="end"
-                                sx={{
-                                    fontSize: '14px',
-                                    color: '#FFFFFF',
-                                }}
+                                className="staking-input-symbol"
                             >
                                 <span>ZKP</span>
                             </InputAdornment>
@@ -305,14 +247,7 @@ const StakingInput = props => {
                 <Typography
                     variant="caption"
                     component="span"
-                    color="#ffdfbd"
-                    fontWeight={800}
-                    fontSize={16}
-                    width={'20%'}
-                    sx={{
-                        cursor: 'pointer',
-                        lineHeight: 'initial',
-                    }}
+                    className="staking-input-max"
                     onClick={() => {
                         setAmountToStake(tokenBalance);
                     }}
@@ -325,50 +260,21 @@ const StakingInput = props => {
 };
 
 const StakingMethod = () => (
-    <Box
-        flexDirection={'column'}
-        alignItems={'flex-start'}
-        height={'auto'}
-        textAlign={'start'}
-        width={'100%'}
-        sx={{
-            textAlign: 'start',
-            border: '1px solid rgb(0 0 0 / 38 %)',
-            background: '#6372882E',
-            padding: '5px 16px',
-            borderRadius: '10px',
-        }}
-    >
+    <Box className="staking-method-container">
         <Box
             display="flex"
             justifyContent={'space-between'}
             alignItems={'center'}
         >
-            <Typography
-                className="staking-method"
-                sx={{
-                    fontWeight: 500,
-                    fontStyle: 'normal',
-                    fontSize: '16px',
-                    lineHeight: '42px',
-                    marginRight: '18px',
-                    color: '#D8D8D8',
-                }}
-            >
+            <Typography className="staking-method-title">
                 Staking Method:
             </Typography>
             <Select
-                labelId="addresses-select-standard-label"
-                id="addresses-select-standard"
+                labelId="staking-method-select-label"
+                id="staking-method-selectd"
                 variant="standard"
                 value={'Standard'}
-                sx={{
-                    m: 0,
-                    minWidth: 125,
-                    color: '#FFFFFF',
-                    textAlign: 'center',
-                    marginTop: '0px',
-                }}
+                className="staking-method-select"
             >
                 <MenuItem selected value={'Standard'}>
                     Standard
@@ -379,28 +285,10 @@ const StakingMethod = () => (
             </Select>
         </Box>
         <Box display="flex" justifyContent={'space-between'}>
-            <Typography
-                sx={{
-                    fontWeight: 500,
-                    fontStyle: 'normal',
-                    fontSize: '16px',
-                    lineHeight: '42px',
-                    marginRight: '18px',
-                    color: '#D8D8D8',
-                }}
-            >
+            <Typography className="staking-method-title">
                 Estimated Gas Fee:
             </Typography>
-            <Typography
-                sx={{
-                    fontWeight: 500,
-                    fontStyle: 'normal',
-                    fontSize: '16px',
-                    lineHeight: '42px',
-                    marginRight: '18px',
-                    color: '#FFFFFF',
-                }}
-            >
+            <Typography className="staking-method-estimated-gas-fee">
                 0.0001 ETH
             </Typography>
         </Box>
@@ -408,50 +296,13 @@ const StakingMethod = () => (
 );
 
 const StakingInfoMSG = () => (
-    <Box
-        flexDirection={'column'}
-        alignItems={'flex-start'}
-        height={'auto'}
-        textAlign={'start'}
-        sx={{
-            textAlign: 'start',
-            padding: ' 5px 4px',
-            paddingBottom: '20px',
-        }}
-    >
-        <Box display={'flex'} justifyContent={'start'} alignItems={'center'}>
-            <Tooltip title={'warning'} placement="top">
-                <IconButton
-                    sx={{
-                        opacity: 0.6,
-                        marginInlineEnd: '8px',
-                        marginBottom: '24px',
-                    }}
-                >
-                    <img src={warningIcon} />
-                </IconButton>
-            </Tooltip>
-
-            <Typography variant="subtitle2" mb={3}>
-                Staking will lock your tokens for 7+ days
-            </Typography>
-        </Box>
-        <Typography
-            variant="caption"
-            color={'#D8D8D8'}
-            fontSize={'14px'}
-            fontWeight={400}
-            paddingBottom={'10px'}
-        >
-            You will need to unstake in order for your staked assets to be
-            liquid again. This process will take 7 days to complete.{' '}
-            <SafeMuiLink
-                href="https://docs.pantherprotocol.io/panther-dao-and-zkp/support/faq/staking-faq"
-                underline="always"
-                color="inherit"
-            >
-                Learn more
-            </SafeMuiLink>
+    <Box className="staking-info-container">
+        <Typography variant="subtitle2" className="staking-info-title">
+            Staking will lock your tokens for a minimum of 7 days
+        </Typography>
+        <Typography className="staking-info-text">
+            You will need to unstake to collect your rewards and for your staked
+            tokens to be unlocked again. Unstaking is available after 7 days.
         </Typography>
     </Box>
 );

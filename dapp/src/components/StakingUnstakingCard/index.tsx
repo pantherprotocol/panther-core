@@ -26,7 +26,6 @@ export default function StakingUnstakingCard(props: {
     ) => {
         if (newState !== null) {
             setToggle(newState);
-            console.log(newState, 'is the new state');
         }
     };
 
@@ -47,15 +46,7 @@ export default function StakingUnstakingCard(props: {
 
     return (
         <Box width={'100%'} margin={'0 5'}>
-            <Card
-                variant="outlined"
-                sx={{
-                    backgroundColor: '#2B334140',
-                    borderRadius: '8px',
-                    padding: '0',
-                    paddingTop: '24px',
-                }}
-            >
+            <Card className="balance-card">
                 <Box>
                     <ToggleButtonGroup size="large" {...control}>
                         {children}

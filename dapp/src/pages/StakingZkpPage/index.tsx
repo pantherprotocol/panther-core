@@ -213,8 +213,6 @@ function StakingZkpPage() {
             className="main-app"
             sx={{
                 backgroundImage: `url(${background})`,
-                backgroundPosition: 'center center',
-                backgroundSize: 'cover',
             }}
         >
             <CssBaseline />
@@ -236,15 +234,7 @@ function StakingZkpPage() {
                     <Grid container>
                         <Grid item md={1} xs={12} />
                         <Grid item container spacing={2} md={10} xs={12}>
-                            <Grid
-                                item
-                                xs={12}
-                                md={5}
-                                display={'flex'}
-                                flexDirection={'column'}
-                                justifyContent={'start'}
-                                alignItems={'center'}
-                            >
+                            <Grid item xs={12} md={5}>
                                 <Box width={'100%'}>
                                     <BalanceCard
                                         key={tokenUSDValue}
@@ -258,14 +248,7 @@ function StakingZkpPage() {
                                 </Box>
                                 <Footer />
                             </Grid>
-                            <Grid
-                                item
-                                xs={12}
-                                md={7}
-                                display={'flex'}
-                                justifyContent={'center'}
-                                alignItems={'center'}
-                            >
+                            <Grid item xs={12} md={7}>
                                 <Box width={'100%'}>
                                     <CurrentStakeAPY currentAPY={currentAPY} />
                                     <StakingUnstakingCard

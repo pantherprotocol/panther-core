@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import logo from '../../images/panther-logo.svg';
 import stakingIcon from '../../images/staking-icon.svg';
 import docsIcon from '../../images/docs-icon.svg';
+import governanceIcon from '../../images/governance-icon.svg';
 import Address from '../Address';
 import accountAvatar from '../../images/meta-mask-icon.svg';
 import {LogoutButton} from '../LogoutButton';
@@ -136,6 +137,24 @@ const Header = props => {
                                     </SafeLink>
                                 </Typography>
                             </Box>
+                            <Box
+                                display={'flex'}
+                                justifyContent={'center'}
+                                alignItems={'center'}
+                            >
+                                <Box className="header-icons">
+                                    {' '}
+                                    <img src={governanceIcon} />
+                                </Box>
+                                <Typography
+                                    className="nav-item"
+                                    variant="subtitle2"
+                                >
+                                    <a href="https://snapshot.org/#/pantherprotocol.eth">
+                                        Governance
+                                    </a>
+                                </Typography>
+                            </Box>
                         </Grid>
                         <Grid
                             item
@@ -193,7 +212,7 @@ const Header = props => {
                                         display={'flex'}
                                         justifyContent={'space-between'}
                                         alignItems={'center'}
-                                        margin={'0 5px'}
+                                        margin={'0 20px'}
                                         padding={'8px'}
                                         sx={{
                                             background: '#63728835',
@@ -202,33 +221,42 @@ const Header = props => {
                                         }}
                                     >
                                         {accountAddress && (
-                                            <Address
-                                                accountAvatar={accountAvatar}
-                                                accountAddress={accountAddress}
-                                            />
+                                            <Box>
+                                                <Address
+                                                    accountAvatar={
+                                                        accountAvatar
+                                                    }
+                                                    accountAddress={
+                                                        accountAddress
+                                                    }
+                                                />
+                                            </Box>
                                         )}
-                                        <Typography
-                                            variant="subtitle2"
-                                            width={'100%'}
-                                            display={'flex'}
-                                            justifyContent={'center'}
-                                            alignItems={'center'}
-                                            textAlign={'center'}
-                                            fontWeight={'bold'}
-                                            fontStyle={'normal'}
-                                            lineHeight={42}
-                                            fontSize={'14px'}
-                                            padding={'8px 8px'}
-                                            sx={{
-                                                backgroundColor: '#789ACD33',
+                                        <Box>
+                                            <Typography
+                                                variant="subtitle2"
+                                                display={'flex'}
+                                                justifyContent={'center'}
+                                                alignItems={'center'}
+                                                textAlign={'center'}
+                                                fontWeight={'bold'}
+                                                fontStyle={'normal'}
+                                                lineHeight={42}
+                                                fontSize={'14px'}
+                                                padding={'8px 8px'}
+                                                marginLeft={'20px'}
+                                                sx={{
+                                                    backgroundColor:
+                                                        '#789ACD50',
 
-                                                borderRadius: '8px',
-                                                height: '35px',
-                                                fontWeight: 600,
-                                            }}
-                                        >
-                                            {accountBalance}
-                                        </Typography>
+                                                    borderRadius: '8px',
+                                                    height: '35px',
+                                                    fontWeight: 600,
+                                                }}
+                                            >
+                                                {accountBalance}
+                                            </Typography>
+                                        </Box>
                                     </Box>
                                 </>
                             )}

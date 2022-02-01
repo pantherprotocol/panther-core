@@ -61,7 +61,7 @@ export const AddTokenButton = (props: {
                 className="add-token-button"
                 onClick={addZKPToken}
             >
-                ADD ZKP Token
+                Add ZKP token
             </Button>
         </div>
     );

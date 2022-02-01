@@ -8,7 +8,7 @@ import {createTheme} from '@mui/material';
 
 const theme = createTheme({
     typography: {
-        fontFamily: ['inter', 'sans-serif'].join(','),
+        fontFamily: ['Inter', 'sans-serif'].join(','),
         fontSize: 14,
         fontWeightRegular: 400,
     },

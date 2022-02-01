@@ -8,6 +8,7 @@ contracts/typechain/
 contracts/types/
 contracts/typing/
 dapp/public/preparation/
+dapp/src/types/
 .husky/_/
 node_modules/
 tmp/

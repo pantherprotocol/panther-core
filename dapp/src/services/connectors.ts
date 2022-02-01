@@ -21,6 +21,13 @@ interface Network {
 }
 
 const supportedNetworks: Record<number, Network> = {
+    1: {
+        name: 'Ethereum mainnet',
+        rpcURL: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+        symbol: 'ETH',
+        decimals: 18,
+        explorerURLs: ['https://etherscan.io/'],
+    },
     4: {
         name: 'Rinkeby (Ethereum testnet)',
         rpcURL: 'https://rinkey.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',

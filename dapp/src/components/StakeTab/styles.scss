@@ -13,6 +13,14 @@
     background: #4c5873 !important;
     border-radius: 16px;
     height: 80px;
+
+    &.active {
+        background-color: $second-blue !important;
+
+        .staking-button {
+            opacity: 1;
+        }
+    }
 }
 
 .staking-button {
@@ -21,13 +29,14 @@
     width: 100%;
     color: $white !important;
     font-style: normal;
-    font-weight: bold;
-    font-size: 18px;
+    font-weight: bold !important;
+    font-size: 18px !important;
+    text-transform: none !important;
     line-height: 30px;
     display: flex;
     align-items: center;
     text-align: center;
-    opacity: 0.5;
+    opacity: 0.7;
 }
 
 .staking-info-container {

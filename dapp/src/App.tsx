@@ -5,6 +5,7 @@ import {Route} from 'react-router';
 import StakingZkpPage from './pages/StakingZkpPage';
 import {ThemeProvider} from '@mui/material/styles';
 import {createTheme} from '@mui/material';
+import {ReactNotifications} from 'react-notifications-component';
 
 const theme = createTheme({
     typography: {
@@ -55,6 +56,7 @@ function App() {
 
     return (
         <ThemeProvider theme={theme}>
+            <ReactNotifications />
             <div className="App">
                 <Router>
                     <Route path={'/'} exact={true} component={StakingZkpPage} />

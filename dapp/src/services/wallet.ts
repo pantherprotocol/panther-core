@@ -1,4 +1,5 @@
 import {CHAIN_HEX_ID, requiredNetwork, suggestedRpcURL} from './connectors';
+import {openNotification} from './notification';
 
 export const switchNetwork = async (errorHandler?: (msg: string) => void) => {
     const {ethereum} = window as any;
@@ -29,6 +30,7 @@ export const switchNetwork = async (errorHandler?: (msg: string) => void) => {
                 });
             } catch (addError) {
                 console.error(addError);
+                openNotification('Add token error', addError, 'danger');
                 if (errorHandler) errorHandler(addError.message);
             }
         }
@@ -54,9 +56,15 @@ export const changeWallet = async (accountToSwitch: string) => {
                     console.log('Please connect to MetaMask.');
                 } else {
                     console.error(error);
+                    openNotification(
+                        'Metamask error',
+                        'Please connect to MetaMask.',
+                        'danger',
+                    );
                 }
             });
     } catch (switchError) {
         console.error(switchError);
+        openNotification('Switch wallet error', 'Please try again.', 'danger');
     }
 };

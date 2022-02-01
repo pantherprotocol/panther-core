@@ -5,6 +5,7 @@ import {useWeb3React} from '@web3-react/core';
 import * as stakingService from '../../services/staking';
 import {STAKING_TOKEN_CONTRACT} from '../../services/contracts';
 import './styles.scss';
+import {openNotification} from '../../services/notification';
 
 export const AddTokenButton = (props: {
     setTokenAdded: (b: boolean) => void;
@@ -47,6 +48,11 @@ export const AddTokenButton = (props: {
                         console.log('Please connect to MetaMask.');
                     } else {
                         console.error(error);
+                        openNotification(
+                            'Metamask error',
+                            'Please connect to MetaMask.',
+                            'danger',
+                        );
                     }
                 });
         } catch (switchError) {

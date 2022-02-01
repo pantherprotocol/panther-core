@@ -1,4 +1,5 @@
 @import 'variables';
+@import '~react-notifications-component/dist/scss/notification';
 
 /* inter-regular - latin */
 @font-face {
@@ -6,7 +7,7 @@
     font-style: normal;
     font-weight: 400;
     src: local(''),
-        url('../public/fonts/Inter//inter-v7-latin-regular.woff2')
+        url('../public/fonts/Inter/inter-v7-latin-regular.woff2')
             format('woff2'),
         /* Chrome 26+, Opera 23+, Firefox 39+ */
             url('../public/fonts/Inter/inter-v7-latin-regular.woff')
@@ -345,4 +346,13 @@ a {
     to {
         transform: rotate(360deg);
     }
+}
+
+.rnc__notification-item--info {
+    background-color: $grey-btn;
+    border-left: 8px solid $cube;
+}
+
+.rnc__notification-item--info .rnc__notification-close-mark {
+    background-color: $grey-btn;
 }

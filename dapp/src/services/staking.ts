@@ -16,6 +16,7 @@ import {
     VESTING_POOLS_CONTRACT,
 } from './contracts';
 import {CONFIRMATIONS_NUM, e18, toBN} from '../utils';
+import {openNotification} from './notification';
 
 const CoinGeckoClient = new CoinGecko();
 
@@ -133,6 +134,11 @@ export async function stake(
             'Approval transaction gone wrong:',
             approveTransactionResponse,
         );
+        openNotification(
+            'Transaction error',
+            'Approval transaction gone wrong: ' + approveTransactionResponse,
+            'danger',
+        );
         return e;
     }
 
@@ -147,6 +153,12 @@ export async function stake(
 
     let stakingResponse: any;
 
+    openNotification(
+        'Transaction in progress',
+        'Your staking transaction is currently in progress. Please wait for confirmation!',
+        'info',
+    );
+
     try {
         stakingResponse = await stakingSigner.stake(
             scaledAmount,
@@ -157,6 +169,11 @@ export async function stake(
         console.error(
             'Staking transaction gone wrong:',
             approveTransactionResponse,
+        );
+        openNotification(
+            'Transaction error',
+            'Staking transaction gone wrong: ' + approveTransactionResponse,
+            'danger',
         );
         return e;
     }
@@ -169,8 +186,14 @@ export async function stake(
         ({event}) => event === 'StakeCreated',
     );
     console.debug(event);
-    if (!event)
+    if (!event) {
         console.error('No StakeCreated event found for this transaction.');
+        openNotification(
+            'Transaction error',
+            'No StakeCreated event found for this transaction.',
+            'danger',
+        );
+    }
     return event?.args.stakeID;
 }
 

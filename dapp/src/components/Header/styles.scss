@@ -97,6 +97,11 @@
     padding-right: 5px;
 }
 
+.header-right-container {
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
 .address-btn {
     max-width: 220px;
     width: 100%;

@@ -248,7 +248,6 @@ const Header = props => {
                                                 sx={{
                                                     backgroundColor:
                                                         '#789ACD50',
-
                                                     borderRadius: '8px',
                                                     height: '35px',
                                                     fontWeight: 600,

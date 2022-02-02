@@ -318,14 +318,6 @@ const StakingMethod = () => (
                 </MenuItem>
             </Select>
         </Box>
-        <Box display="flex" justifyContent={'space-between'}>
-            <Typography className="staking-method-title">
-                Estimated Gas Fee:
-            </Typography>
-            <Typography className="staking-method-estimated-gas-fee">
-                0.0001 ETH
-            </Typography>
-        </Box>
     </Box>
 );
 

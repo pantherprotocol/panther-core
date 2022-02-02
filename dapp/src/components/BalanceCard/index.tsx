@@ -33,13 +33,17 @@ const BalanceCard = (props: {
                     </Typography>
                 )}
                 <TotalBalance
-                    title={'Total Balance'}
+                    title={'Unstaked Balance'}
+                    tooltip={
+                        'This is the amount of ZKP you have available for staking.'
+                    }
                     tokenBalance={props.tokenBalance}
                     tokenMarketPrice={props.tokenUSDValue}
                 />
 
                 <AddressBalances
                     title={'Staked Balance'}
+                    tooltip={'This is the total amount you have staked so far.'}
                     balance={props.stakedBalance}
                     amountUSD={props.tokenUSDValue}
                 />
@@ -77,7 +81,7 @@ const AddressWithSetting = (props: {
     );
 };
 
-const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
+const TotalBalance = ({title, tooltip, tokenBalance, tokenMarketPrice}) => {
     const refreshPage = () => {
         window.location.reload();
     };
@@ -86,7 +90,14 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
         <Box className="total-balance">
             <Box className="title-box">
                 <Typography className="title">{title}</Typography>
-                <Tooltip title={title} placement="top">
+                {false && tooltip && (
+                    <Tooltip title={tooltip} placement="top">
+                        <IconButton>
+                            <img src={infoIcon} />
+                        </IconButton>
+                    </Tooltip>
+                )}
+                <Tooltip title={'Click to refresh balances'} placement="top">
                     <IconButton onClick={refreshPage}>
                         <img src={refreshIcon} />
                     </IconButton>
@@ -111,18 +122,20 @@ const TotalBalance = ({title, tokenBalance, tokenMarketPrice}) => {
 };
 
 const AddressBalances = props => {
-    const {title, amountUSD, balance} = props;
+    const {title, tooltip, amountUSD, balance} = props;
 
     return (
         <Box className="address-balance">
             <Box className="title-box">
                 <Typography className="title">{title}</Typography>
                 <Typography>
-                    <Tooltip title={title} placement="top">
-                        <IconButton>
-                            <img src={infoIcon} />
-                        </IconButton>
-                    </Tooltip>
+                    {tooltip && (
+                        <Tooltip title={tooltip} placement="top">
+                            <IconButton>
+                                <img src={infoIcon} />
+                            </IconButton>
+                        </Tooltip>
+                    )}
                 </Typography>
             </Box>
 

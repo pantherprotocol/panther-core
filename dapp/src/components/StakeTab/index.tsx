@@ -146,7 +146,11 @@ export default function StakeTab(props: {
             )}
 
             {active && !wrongNetwork && (
-                <StakingBtn amountToStake={amountToStake} stake={stake} />
+                <StakingBtn
+                    amountToStake={amountToStake}
+                    tokenBalance={props.tokenBalance}
+                    stake={stake}
+                />
             )}
         </Box>
     );
@@ -154,9 +158,13 @@ export default function StakeTab(props: {
 
 const getButtonText = (
     amountToStake: string | undefined,
+    tokenBalance: number,
 ): [string, boolean] => {
     if (!amountToStake) {
         return ['Enter amount to stake above', false];
+    }
+    if (Number(amountToStake) > tokenBalance) {
+        return ['Insufficient balance', false];
     }
     if (Number(amountToStake) >= 100) {
         return [`STAKE ${amountToStake} ZKP`, true];
@@ -164,15 +172,15 @@ const getButtonText = (
     return ['Stake amount must be above 100', false];
 };
 
-const StakingBtn = ({amountToStake, stake}) => {
-    const [buttonText, ready] = getButtonText(amountToStake);
+const StakingBtn = ({amountToStake, tokenBalance, stake}) => {
+    const [buttonText, ready] = getButtonText(amountToStake, tokenBalance);
     const activeClass = ready ? 'active' : '';
     return (
         <Box className={`buttons-holder ${activeClass}`}>
             <Button
                 className="staking-button"
                 onClick={() => {
-                    if (amountToStake && Number(amountToStake) > 0) {
+                    if (ready) {
                         stake(amountToStake);
                     }
                 }}

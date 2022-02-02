@@ -340,7 +340,7 @@ export async function getStakingTransactionsNumber(
 
 export async function getZKPMarketPrice(): Promise<number | null> {
     const symbol = TOKEN_SYMBOL;
-    if (!symbol) {
+    if (!symbol || symbol === 'none') {
         return null;
     }
 

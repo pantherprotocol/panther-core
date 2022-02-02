@@ -4,10 +4,11 @@ import {abi as REWARDS_MASTER_ABI} from '../abi/RewardsMaster';
 import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
+import {Staking} from '../types/contracts/Staking';
 import {formatTokenBalance} from './account';
 import {JsonRpcSigner} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 import {
     REWARD_MASTER_CONTRACT,
     STAKING_CONTRACT,
@@ -16,7 +17,7 @@ import {
     VESTING_POOLS_CONTRACT,
 } from './contracts';
 import {CONFIRMATIONS_NUM, e18, toBN} from '../utils';
-import {openNotification} from './notification';
+import {openNotification, removeNotification} from './notification';
 
 const CoinGeckoClient = new CoinGecko();
 
@@ -97,33 +98,22 @@ const countDecimals = function (value) {
     return 0;
 };
 
-export async function stake(
-    library: any,
-    contract: ethers.Contract,
-    amount: string,
-    stakeType: string,
-    signer: JsonRpcSigner,
-    data?: any,
-): Promise<BigNumber | Error> {
-    if (!contract) {
-        return new Error('Missing contract parameter');
-    }
-
-    const decimals = countDecimals(Number(amount));
-    const adjustedAmount = Number(amount) * 10 ** decimals;
-    const eDecimal = toBN(10).pow(toBN(decimals));
-    const scaledAmount = toBN(adjustedAmount).mul(e18).div(eDecimal);
-
-    const stakingTokenContract = await getStakingTokenContract(library);
-    if (!stakingTokenContract) {
-        return new Error('Could not initialize staking contract');
-    }
-    const stakingTokenSigner = stakingTokenContract.connect(signer);
-
-    const approvedStatus = await stakingTokenSigner.approve(
+async function getApproval(
+    stakingTokenSignableContract: Staking,
+    scaledAmount: BigNumber,
+): Promise<Error | undefined> {
+    console.debug(`Calling approve(${STAKING_CONTRACT}, ${scaledAmount})`);
+    const approvedStatus = await stakingTokenSignableContract.approve(
         STAKING_CONTRACT,
         scaledAmount,
     );
+    const notificationId = openNotification(
+        'Approval in progress',
+        'Your transaction to approve the staking contract to spend your ZKP is currently in progress. Please wait for confirmation!',
+        'info',
+        15000,
+    );
+    console.debug(`got notificationId ${notificationId}`);
     let approveTransactionResponse;
     try {
         approveTransactionResponse = await approvedStatus.wait(
@@ -141,6 +131,79 @@ export async function stake(
         );
         return e;
     }
+    console.debug('removing notification', notificationId);
+    removeNotification(notificationId);
+    return;
+}
+
+export async function stake(
+    library: any,
+    account: string,
+    contract: ethers.Contract,
+    balance: string,
+    amount: string,
+    stakeType: string,
+    signer: JsonRpcSigner,
+    data?: any,
+): Promise<BigNumber | Error> {
+    if (!contract) {
+        return new Error('Missing contract parameter');
+    }
+
+    if (!signer) {
+        return new Error('stake(): Undefined signer');
+    }
+
+    const decimals = countDecimals(Number(amount));
+    const adjustedAmount = Number(amount) * 10 ** decimals;
+    const eDecimal = toBN(10).pow(toBN(decimals));
+    const scaledAmount = toBN(adjustedAmount).mul(e18).div(eDecimal);
+
+    const stakingTokenContract = await getStakingTokenContract(library);
+    if (!stakingTokenContract) {
+        return new Error('Could not initialize staking contract');
+    }
+    const stakingTokenSignableContract = stakingTokenContract.connect(
+        signer,
+    ) as Staking;
+
+    if (Number(amount) > Number(balance)) {
+        const msg = `Tried to stake ${amount} > balance ${balance}`;
+        console.error(msg);
+        openNotification(
+            'Transaction error',
+            msg + '. Please try again with smaller amount.',
+            'danger',
+        );
+        return new Error(msg);
+    }
+
+    console.debug(`Getting allowance for ${account} on ${STAKING_CONTRACT}`);
+    const allowance = await stakingTokenSignableContract.allowance(
+        account,
+        STAKING_CONTRACT,
+    );
+    console.debug(`Got allowance ${allowance} for ${account}`);
+    if (utils.parseUnits(amount, 18).gt(allowance)) {
+        const error = await getApproval(
+            stakingTokenSignableContract,
+            scaledAmount,
+        );
+        if (error) {
+            return error;
+        }
+        // const notificationId = openNotification(
+        //     'Approval succeeded',
+        //     'Your transaction to approve the staking contract to spend your ZKP succeeded.',
+        //     'info',
+        // );
+    } else {
+        console.debug(
+            `Allowance ${utils.formatEther(
+                allowance,
+            )} >= ${amount}; skipping approval`,
+        );
+    }
 
     const stakingSigner = contract.connect(signer);
 
@@ -153,12 +216,6 @@ export async function stake(
 
     let stakingResponse: any;
 
-    openNotification(
-        'Transaction in progress',
-        'Your staking transaction is currently in progress. Please wait for confirmation!',
-        'info',
-    );
-
     try {
         stakingResponse = await stakingSigner.stake(
             scaledAmount,
@@ -166,34 +223,42 @@ export async function stake(
             data ? data : '0x00',
         );
     } catch (e) {
-        console.error(
-            'Staking transaction gone wrong:',
-            approveTransactionResponse,
-        );
+        console.error('Staking transaction gone wrong:', stakingResponse);
         openNotification(
             'Transaction error',
-            'Staking transaction gone wrong: ' + approveTransactionResponse,
+            'Staking transaction gone wrong: ' + stakingResponse,
             'danger',
         );
         return e;
     }
 
+    openNotification(
+        'Transaction in progress',
+        'Your staking transaction is currently in progress. Please wait for confirmation!',
+        'info',
+    );
+
     const stakeTransactionResponse = await stakingResponse.wait(
         CONFIRMATIONS_NUM,
     );
+
     console.debug(stakeTransactionResponse.events);
     const event = stakeTransactionResponse.events.find(
         ({event}) => event === 'StakeCreated',
     );
     console.debug(event);
     if (!event) {
-        console.error('No StakeCreated event found for this transaction.');
-        openNotification(
-            'Transaction error',
-            'No StakeCreated event found for this transaction.',
-            'danger',
-        );
+        const msg = 'No StakeCreated event found for this transaction.';
+        console.error(msg);
+        openNotification('Transaction error', msg, 'danger');
+        return new Error(msg);
     }
+    openNotification(
+        'Stake completed successfully',
+        'Congratulations! Your staking transaction was processed!',
+        'info',
+    );
+
     return event?.args.stakeID;
 }
 

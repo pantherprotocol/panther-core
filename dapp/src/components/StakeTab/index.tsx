@@ -40,14 +40,16 @@ export default function StakeTab(props: {
         const stakingContract = await stakingService.getStakingContract(
             library,
         );
-        if (!stakingContract) {
+        if (!stakingContract || !account || !props.tokenBalance) {
             return;
         }
         const stakeType = '0x4ab0941a';
         const signer = library.getSigner(account).connectUnchecked();
         const stakingResponse = await stakingService.stake(
             library,
+            account,
             stakingContract,
+            props.tokenBalance,
             amount,
             stakeType,
             signer,

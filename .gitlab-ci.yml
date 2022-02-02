@@ -40,7 +40,8 @@ combined-job:
   <<: *yarn_cache_template
   script:
     - yarn lint
-    - yarn run build:contracts && yarn test
+    - HARDHAT_NO_MNEMONIC=yes yarn run build:contracts && yarn test
+    - yarn workspace @zkp-staking/contracts build:types
     - yarn run build:dapp
 
 preview:

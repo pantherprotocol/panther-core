@@ -46,6 +46,7 @@ function StakingZkpPage() {
     const [, setChainError] = useState('');
     const [tokenBalance, setTokenBalance] = useState<string | null>(null);
     const [tokenUSDValue, setTokenUSDValue] = useState<string | null>(null);
+    const [pricePerToken, setPricePerToken] = useState<number | null>(null);
     const [stakedBalance, setStakedBalance] = useState<any>(null);
     const [rewardsBalance, setRewardsBalance] = useState<string | null>(null);
     const [currentAPY] = useState<string>('');
@@ -89,6 +90,16 @@ function StakingZkpPage() {
         }
     }, [active, chainId, deactivate]);
 
+    const getTokenMarketPrice = useCallback(async balance => {
+        const price = await stakingService.getZKPMarketPrice();
+        if (price && balance && Number(balance) >= 0) {
+            setPricePerToken(price);
+            const tokenUSDValue: number = price * Number(balance);
+            const formattedUSDValue = formatUSDPrice(tokenUSDValue.toString());
+            setTokenUSDValue(formattedUSDValue);
+        }
+    }, []);
+
     const setZkpTokenBalance = useCallback(async () => {
         const stakingTokenContract =
             await stakingService.getStakingTokenContract(library);
@@ -99,17 +110,10 @@ function StakingZkpPage() {
             stakingTokenContract,
             account,
         );
-        setTokenBalance(balance);
-    }, [account, library]);
 
-    const getTokenMarketPrice = useCallback(async () => {
-        const price = await stakingService.getZKPMarketPrice();
-        if (price && tokenBalance && Number(tokenBalance) >= 0) {
-            const tokenUSDValue: number = price * Number(tokenBalance);
-            const formattedUSDValue = formatUSDPrice(tokenUSDValue.toString());
-            setTokenUSDValue(formattedUSDValue);
-        }
-    }, [tokenBalance]);
+        setTokenBalance(balance);
+        getTokenMarketPrice(balance);
+    }, [account, library, getTokenMarketPrice]);
 
     const getStakedZkpBalance = useCallback(async () => {
         const stakingContract = await stakingService.getStakingContract(
@@ -193,12 +197,10 @@ function StakingZkpPage() {
         }
 
         setZkpTokenBalance();
-        getTokenMarketPrice();
         getStakedZkpBalance();
         getUnclaimedRewardsBalance();
     }, [
         setZkpTokenBalance,
-        getTokenMarketPrice,
         getStakedZkpBalance,
         getUnclaimedRewardsBalance,
         tokenBalance,
@@ -243,6 +245,7 @@ function StakingZkpPage() {
                                         key={tokenUSDValue}
                                         tokenBalance={tokenBalance}
                                         tokenUSDValue={tokenUSDValue}
+                                        pricePerToken={pricePerToken}
                                         stakedBalance={stakedBalance}
                                         rewardsBalance={rewardsBalance}
                                         accountAddress={accountAddress}

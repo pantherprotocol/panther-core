@@ -1,4 +1,5 @@
 @import '../../variables';
+
 .balance-card {
     background-color: #2b334140 !important;
     border: 1px solid #485267;
@@ -7,6 +8,7 @@
     margin-bottom: 20px !important;
     mix-blend-mode: normal;
     backdrop-filter: blur(50px);
+
     .zkp-symbol {
         font-weight: 700;
         font-style: normal;
@@ -14,10 +16,19 @@
         line-height: 42px;
         margin-left: 8px;
     }
+
+    .token-balance {
+        font-size: 16px;
+        font-weight: 600;
+        padding-top: 10px;
+        padding-bottom: 30px;
+    }
+
     .total-balance {
         background: #63728835;
         border-radius: 8px;
         padding: 0 15px;
+
         .title-box {
             display: flex;
             align-items: center;
@@ -27,9 +38,11 @@
                 opacity: 0.5;
             }
         }
+
         .amount-box {
             display: flex;
             align-items: center;
+
             .token-balance {
                 font-weight: bold;
                 font-style: normal;
@@ -46,8 +59,10 @@
             }
         }
     }
+
     .address-balance {
         padding: 0 15px;
+
         .title-box {
             display: flex;
             align-items: baseline;
@@ -56,12 +71,15 @@
                 opacity: 0.5;
             }
         }
+
         .amount-box {
             display: flex;
             justify-content: space-between;
+
             .balance-box {
                 display: flex;
                 justify-content: center;
+
                 .balance {
                     font-weight: 800;
                     font-style: normal;
@@ -69,6 +87,7 @@
                     line-height: 42px;
                 }
             }
+
             .token-balance {
                 font-weight: 800;
                 font-style: normal;
@@ -86,6 +105,7 @@
         }
     }
 }
+
 .title {
     height: 35px;
     font-weight: normal;
@@ -96,6 +116,7 @@
     align-items: center;
     opacity: 0.6;
 }
+
 .address-with-setting {
     display: flex;
     align-items: center;
@@ -108,6 +129,7 @@
         width: 50%;
         justify-content: center;
     }
+
     .setting-icon {
         display: flex;
         width: 50%;
@@ -115,6 +137,7 @@
         opacity: 0.6;
     }
 }
+
 @media (max-width: 600px) {
     .address-container {
         width: 100% !important;

@@ -10,14 +10,33 @@ import Address from '../Address';
 import accountAvatar from '../../images/wallet-icon.svg';
 import './styles.scss';
 import {formatCurrency} from '../../utils';
+import {formatUSDPrice} from '../../services/account';
 
 const BalanceCard = (props: {
     rewardsBalance: string | null;
     tokenBalance: string | null;
     stakedBalance: string | null;
     tokenUSDValue: string | null;
+    pricePerToken: number | null;
     accountAddress: string | null;
 }) => {
+    const stakedUSDValue: string | null =
+        props.stakedBalance && props.pricePerToken
+            ? formatUSDPrice(
+                  (
+                      props.pricePerToken * Number(props.stakedBalance)
+                  ).toString(),
+              )
+            : '';
+    const rewardsUSDValue: string | null =
+        props.rewardsBalance && props.pricePerToken
+            ? formatUSDPrice(
+                  (
+                      props.pricePerToken * Number(props.rewardsBalance)
+                  ).toString(),
+              )
+            : '';
+
     return (
         <>
             <Card className="balance-card">
@@ -28,7 +47,7 @@ const BalanceCard = (props: {
                     />
                 )}
                 {!props.accountAddress && (
-                    <Typography component="text" className="token-balance">
+                    <Typography component="div" className="token-balance">
                         Please connect your wallet to view balances.
                     </Typography>
                 )}
@@ -45,13 +64,13 @@ const BalanceCard = (props: {
                     title={'Staked Balance'}
                     tooltip={'This is the total amount you have staked so far.'}
                     balance={props.stakedBalance}
-                    amountUSD={props.tokenUSDValue}
+                    amountUSD={stakedUSDValue}
                 />
 
                 <AddressBalances
                     title={'Unclaimed Reward Balance'}
                     balance={props.rewardsBalance}
-                    amountUSD={props.tokenUSDValue}
+                    amountUSD={rewardsUSDValue}
                 />
             </Card>
         </>

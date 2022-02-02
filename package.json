@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build:types": "yarn workspace @zkp-staking/contracts compile && yarn workspace @zkp-staking/contracts build:types",
+    "build:types": "HARDHAT_NO_MNEMONIC=yes yarn workspace @zkp-staking/contracts compile && yarn workspace @zkp-staking/contracts build:types",
     "chain": "yarn workspace @zkp-staking/contracts chain",
     "console": "yarn workspace @zkp-staking/contracts console",
     "contracts": "yarn workspace @zkp-staking/contracts contracts",

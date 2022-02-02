@@ -27,7 +27,11 @@ const BalanceCard = (props: {
                         accountAddress={props.accountAddress}
                     />
                 )}
-
+                {!props.accountAddress && (
+                    <Typography component="text" className="token-balance">
+                        Please connect your wallet to view balances.
+                    </Typography>
+                )}
                 <TotalBalance
                     title={'Total Balance'}
                     tokenBalance={props.tokenBalance}

@@ -338,6 +338,20 @@ export async function getStakingTransactionsNumber(
     return stakesNumber;
 }
 
+export async function getTotalStaked(
+    contract: ethers.Contract,
+): Promise<number | null | Error> {
+    if (!contract) {
+        return null;
+    }
+    try {
+        return await contract.totalStaked();
+    } catch (err) {
+        console.warn('Failed to fetch totalStaked from Staking contract:', err);
+        return err;
+    }
+}
+
 export async function getZKPMarketPrice(): Promise<number | null> {
     const symbol = TOKEN_SYMBOL;
     if (!symbol || symbol === 'none') {

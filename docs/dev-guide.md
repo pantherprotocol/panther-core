@@ -178,6 +178,10 @@ which vesting should be allowed.
 
         cp .env.staging .env
 
+  - or the production environment:
+
+        cp .env.production .env
+
   - or if you want to test against a local chain, do:
 
         cp .env.example .env

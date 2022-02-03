@@ -221,6 +221,7 @@ export async function stake(
             scaledAmount,
             stakeType,
             data ? data : '0x00',
+            {gasLimit: 320000},
         );
     } catch (e) {
         console.error('Staking transaction gone wrong:', stakingResponse);

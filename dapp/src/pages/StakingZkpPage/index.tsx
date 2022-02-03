@@ -27,6 +27,8 @@ import {
 } from '../../services/staking';
 import {formatAccountAddress} from '../../services/account';
 
+const E18 = BigNumber.from(10).pow(18);
+
 function StakingZkpPage() {
     const context = useWeb3React<Web3Provider>();
 
@@ -49,7 +51,7 @@ function StakingZkpPage() {
     const [pricePerToken, setPricePerToken] = useState<number | null>(null);
     const [stakedBalance, setStakedBalance] = useState<any>(null);
     const [rewardsBalance, setRewardsBalance] = useState<string | null>(null);
-    const [currentAPY] = useState<string>('');
+    const [currentAPY, setCurrentAPY] = useState<number | null>(null);
 
     // Handle logic to eagerly connect to the injected ethereum provider, if it
     // exists and has granted access already
@@ -190,6 +192,39 @@ function StakingZkpPage() {
         });
         setRewardsBalance(formatTokenBalance(totalRewards, decimals));
     }, [account, library]);
+
+    const getAPY = useCallback(async () => {
+        const stakingContract = await stakingService.getStakingContract(
+            library,
+        );
+        if (!stakingContract) {
+            return;
+        }
+        const totalStaked = await stakingService.getTotalStaked(
+            stakingContract,
+        );
+        if (!totalStaked || totalStaked instanceof Error) {
+            return;
+        }
+        console.log('Total ZKP staked:', utils.formatEther(totalStaked));
+
+        const rewardsAvailable = BigNumber.from('6650000').mul(E18);
+        const annualRewards = rewardsAvailable.mul(365).div(91);
+        console.log('Annual rewards', utils.formatEther(annualRewards));
+
+        // Calculate as a percentage with 2 digits of precision
+        const APY = Number(annualRewards.mul(10000).div(totalStaked)) / 100;
+        setCurrentAPY(APY);
+        console.log(`Calculated APY as ${APY}%`);
+    }, [library]);
+
+    useEffect(() => {
+        if (!library) {
+            console.error("Can't get APY without library");
+            return;
+        }
+        getAPY();
+    }, [library, getAPY]);
 
     useEffect(() => {
         if (!library || !account) {

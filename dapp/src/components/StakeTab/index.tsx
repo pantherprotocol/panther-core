@@ -316,8 +316,8 @@ const StakingInfoMSG = () => (
             Staking will lock your tokens for a minimum of 7 days
         </Typography>
         <Typography className="staking-info-text">
-            You will need to unstake to collect your rewards and for your staked
-            tokens to be unlocked again. Unstaking is available after 7 days.
+            You will need to unstake to collect your rewards. Rewards are not
+            automatically staked. Unstaking is available after 7 days.
         </Typography>
     </Box>
 );

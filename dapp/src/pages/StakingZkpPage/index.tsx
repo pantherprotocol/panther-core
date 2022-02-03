@@ -220,7 +220,7 @@ function StakingZkpPage() {
 
     useEffect(() => {
         if (!library) {
-            console.error("Can't get APY without library");
+            // Wallet not connected yet
             return;
         }
         getAPY();

@@ -1,6 +1,6 @@
 import {BigNumber, Contract} from 'ethers';
 import chai from 'chai';
-import {ethers} from 'hardhat';
+import {ethers, network} from 'hardhat';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
 import {RewardMaster, RewardPool, Staking} from '../types/contracts';
@@ -30,10 +30,12 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
     let rewardMaster: RewardMaster;
     let staking: Staking;
     let deployer: SignerWithAddress;
+    let evmId: any;
     const users = Array(4) as SignerWithAddress[];
     const poolId = 0;
 
     before(async () => {
+        evmId = await network.provider.send('evm_snapshot');
         provider = ethers.provider;
         startTime = await getTime();
         scenario = getScenario(startTime);
@@ -156,6 +158,10 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
         await zkpToken
             .connect(users[3])
             .increaseAllowance(staking.address, scenario.totals.tokenStaked[3]);
+    });
+
+    after(async function () {
+        await network.provider.send('evm_revert', [evmId]);
     });
 
     playPointAndCheckResult(0, 0);

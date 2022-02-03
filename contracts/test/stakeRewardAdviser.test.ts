@@ -1,4 +1,4 @@
-import {ethers} from 'hardhat';
+import {ethers, network} from 'hardhat';
 import {BigNumber} from 'ethers';
 import {expect} from 'chai';
 import {StakeRewardAdviser} from '../types/contracts';
@@ -13,6 +13,7 @@ import {
 describe('StakeRewardAdviser', () => {
     let stakeRewardAdviser: StakeRewardAdviser;
     let message: string;
+    let evmId: any;
 
     const stakeType = hash4bytes(CLASSIC);
     const STAKED = classicActionHash(STAKE);
@@ -37,6 +38,7 @@ describe('StakeRewardAdviser', () => {
     };
 
     before(async () => {
+        evmId = await network.provider.send('evm_snapshot');
         const StakeRewardAdviser = await ethers.getContractFactory(
             'StakeRewardAdviser',
         );
@@ -47,6 +49,10 @@ describe('StakeRewardAdviser', () => {
         )) as StakeRewardAdviser;
 
         message = generateMessage(staker, stakeAmount);
+    });
+
+    after(async function () {
+        await network.provider.send('evm_revert', [evmId]);
     });
 
     it('should get the FACTOR from contract', async () => {

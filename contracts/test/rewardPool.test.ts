@@ -1,6 +1,6 @@
 import chai from 'chai';
 const expect = chai.expect;
-import hre from 'hardhat';
+import hre, {network} from 'hardhat';
 const {getSigners} = hre.ethers;
 import {BigNumber, BaseContract} from 'ethers';
 import {smock, MockContract, FakeContract} from '@defi-wonderland/smock';
@@ -20,10 +20,17 @@ describe('RewardPool', async () => {
     let alice: SignerWithAddress;
     let wallet1: SignerWithAddress;
     let wallet2: SignerWithAddress;
+    let evmId: any;
 
     before(async function () {
+        evmId = await network.provider.send('evm_snapshot');
         [deployer, alice, wallet1, wallet2] = await getSigners();
     });
+
+    after(async function () {
+        await network.provider.send('evm_revert', [evmId]);
+    });
+
     beforeEach(async () => {
         const rewardPoolFactory = await smock.mock('RewardPool');
         vestingPoolFactory = await smock.fake('IVestingPools');

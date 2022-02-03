@@ -1,4 +1,4 @@
-import {ethers} from 'hardhat';
+import {ethers, network} from 'hardhat';
 import {BigNumber} from 'ethers';
 import {Provider} from '@ethersproject/providers';
 import {expect} from 'chai';
@@ -28,11 +28,17 @@ describe('Reward Master', () => {
     let provider: Provider;
     let startBlock: number;
     let action: string;
+    let evmId: any;
     const accumRewardPerShareScale = BigNumber.from(1e9); // hardcoded in RewardMaster
 
     before(async () => {
+        evmId = await network.provider.send('evm_snapshot');
         fixture = new RewardMasterFixture();
         provider = ethers.provider;
+    });
+
+    after(async function () {
+        await network.provider.send('evm_revert', [evmId]);
     });
 
     const initFixture = async () => {

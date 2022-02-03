@@ -1,0 +1,49 @@
+summary of what changed (72 characters or less)
+
+# Complete these three sentences:
+Without this patch, ...
+
+This is a problem because ...
+
+This patch solves the problem by ...
+
+# Add Asana link here
+Issue-URL: ...
+
+# If applicable, add extra info here, for example:
+#
+#   - how to reproduce the problem being solved
+#   - how to test the fix
+#   - any other special instructions
+
+
+# Checklist to make sure this is a high quality commit:
+#
+#  [ ] The message explains WHY the change is needed.
+#  [ ] The message explains HOW the change solves the problem.
+#  [ ] The commit does not combine unrelated changes.
+#  [ ] The commit does not introduce any breakage.
+#  [ ] The commit does not introduce any new technical debt.
+#  [ ] The commit updates any related documentation.
+#  [ ] The commit includes automated testing.
+#  [ ] The commit has been thoroughly tested.
+#
+# Best practice guidelines on how to make great commits:
+#
+#  - https://www.youtube.com/watch?v=pU-VasVPNAs
+#  - https://sparkbox.com/foundry/atomic_commits_with_git
+#  - https://wiki.openstack.org/wiki/GitCommitMessages#Structural_split_of_changes
+#  - https://dev.to/yvonnickfrin/a-guide-on-commit-messages-d8n
+#  - https://cbea.ms/git-commit/
+#  - https://www.kernel.org/doc/Documentation/process/submitting-patches.rst
+#  - https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
+#  - https://alistapart.com/article/the-art-of-the-commit/
+#  - https://blog.adamspiers.org/2012/11/10/7-principles-for-contributing-patches-to-software-projects/
+#
+# Panther coding standards:
+#
+#  - https://docs.google.com/document/d/1cZfuY1isGjatnHO_M3T9D7niqKJXwxztQ48ypctb33c/edit#
+#
+# Scenarios in which it is OK to omit the body of the commit message:
+#
+#  - Fixing a typo in non-code text or comment.

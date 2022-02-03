@@ -9,6 +9,7 @@ contracts/types/
 contracts/typing/
 dapp/public/preparation/
 dapp/src/types/
+.gitmessage
 .husky/_/
 node_modules/
 tmp/

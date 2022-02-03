@@ -16,7 +16,7 @@
     "build:dapp": "yarn workspace @zkp-staking/dapp build",
     "test:contracts": "yarn workspace @zkp-staking/contracts test",
     "test:dapp": "yarn workspace @zkp-staking/dapp test",
-    "postinstall": "husky install",
+    "postinstall": "git config commit.template .gitmessage; husky install",
     "prettier:fix": "prettier --write .",
     "prettier:check": "prettier --check .",
     "prettier:list-different": "yarn prettier --list-different ."

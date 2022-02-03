@@ -277,17 +277,6 @@ const StakingInput = props => {
                         aria-describedby="staking-value-helper-text"
                     />
                 </Box>
-
-                <Typography
-                    variant="caption"
-                    component="span"
-                    className="staking-input-max"
-                    onClick={() => {
-                        setAmountToStake(tokenBalance);
-                    }}
-                >
-                    MAX
-                </Typography>
             </Box>
         </>
     );

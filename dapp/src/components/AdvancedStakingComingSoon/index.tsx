@@ -8,7 +8,7 @@ import './styles.scss';
 
 const AdvancedStakingComingSoon = () => {
     return (
-        <Card className="advanced-staking-comming-soon-card" variant="outlined">
+        <Card className="advanced-staking-coming-soon-card" variant="outlined">
             <Typography className="card-title">
                 Advanced staking is on the way!
             </Typography>

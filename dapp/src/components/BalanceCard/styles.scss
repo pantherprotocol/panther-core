@@ -5,9 +5,10 @@
     border: 1px solid transparent;
     border-radius: 8px !important;
     box-sizing: border-box;
-    margin-bottom: 20px !important;
+    margin-bottom: 55px !important;
     mix-blend-mode: normal;
     backdrop-filter: blur(50px);
+    padding: 16px 16px 24px;
 
     .zkp-symbol {
         font-weight: 700;
@@ -39,7 +40,7 @@
             justify-content: space-between;
 
             img {
-                opacity: 0.7;
+                opacity: 0.8;
             }
         }
 
@@ -67,20 +68,17 @@
     }
 
     .address-balance {
-        padding: 0 15px;
+        padding: 24px 15px 0;
 
         .title-box {
             display: flex;
-            align-items: baseline;
-
-            img {
-                opacity: 0.5;
-            }
+            align-items: center;
         }
 
         .amount-box {
             display: flex;
             justify-content: space-between;
+            align-items: center;
 
             .balance-box {
                 display: flex;

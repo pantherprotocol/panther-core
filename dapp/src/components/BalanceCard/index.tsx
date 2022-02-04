@@ -125,14 +125,14 @@ const TotalBalance = ({title, tooltip, tokenBalance, tokenMarketPrice}) => {
 
             <Box className="amount-box">
                 <Typography component="div" className="token-balance">
-                    {formatCurrency(tokenBalance)}
+                    {tokenBalance ? formatCurrency(tokenBalance) : '-'}
                 </Typography>
                 <Typography className="zkp-symbol main-symbol">ZKP</Typography>
             </Box>
             {tokenMarketPrice && (
                 <Box className="amount-box">
                     <Typography className="token-market-price">
-                        {`~$ ${formatCurrency(tokenMarketPrice)} USD`}
+                        {tokenMarketPrice ? `~$ ${formatCurrency(tokenMarketPrice)} USD` : '-'}
                     </Typography>
                 </Box>
             )}
@@ -161,7 +161,7 @@ const AddressBalances = props => {
             <Box className="amount-box">
                 <Box className="balance-box">
                     <Typography className="balance" component="div">
-                        {formatCurrency(balance)}
+                        {balance ? formatCurrency(balance) : '-'}
                     </Typography>
                     <Typography className="zkp-symbol">ZKP</Typography>
                 </Box>

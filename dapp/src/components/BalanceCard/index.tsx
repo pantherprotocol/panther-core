@@ -127,7 +127,7 @@ const TotalBalance = ({title, tooltip, tokenBalance, tokenMarketPrice}) => {
                 <Typography component="div" className="token-balance">
                     {formatCurrency(tokenBalance)}
                 </Typography>
-                <Typography className="zkp-symbol">ZKP</Typography>
+                <Typography className="zkp-symbol main-symbol">ZKP</Typography>
             </Box>
             {tokenMarketPrice && (
                 <Box className="amount-box">

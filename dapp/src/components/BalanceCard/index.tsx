@@ -132,7 +132,9 @@ const TotalBalance = ({title, tooltip, tokenBalance, tokenMarketPrice}) => {
             {tokenMarketPrice && (
                 <Box className="amount-box">
                     <Typography className="token-market-price">
-                        {tokenMarketPrice ? `~$ ${formatCurrency(tokenMarketPrice)} USD` : '-'}
+                        {tokenMarketPrice
+                            ? `~$ ${formatCurrency(tokenMarketPrice)} USD`
+                            : '-'}
                     </Typography>
                 </Box>
             )}

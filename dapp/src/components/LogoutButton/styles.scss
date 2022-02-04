@@ -1,14 +1,13 @@
 @import '../../variables';
-
 .logout-button-holder {
     height: 100%;
-    margin-left: 5px;
+    margin: 5px;
 
     .logout-button {
         color: $white;
         height: 50px;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-left: 25px;
+        padding-right: 25px;
         display: inline-block;
         line-height: normal;
         vertical-align: middle;

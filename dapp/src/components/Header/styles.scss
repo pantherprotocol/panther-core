@@ -7,34 +7,42 @@
     padding-top: 16px;
 }
 
-.nav-item a {
-    font-size: 18px;
-    font-weight: 400;
-    color: $grey-text;
-    cursor: pointer;
+.nav-bar {
+    align-items: center;
+    display: flex;
 
-    &:hover {
+    .logo {
+        margin-right: 10px;
+        width: 10%;
+    }
+
+    .nav-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-left: 20px;
+        padding-right: 5px;
+        margin: 0px 10px;
+    }
+
+    .nav-item a {
+        font-size: 18px;
+        font-weight: 400;
+        color: $grey-text;
+        cursor: pointer;
+        padding-left: 10px;
+
+        &:hover {
+            color: $white;
+        }
+    }
+
+    .nav-item.active-item a {
         color: $white;
+        font-size: 18px;
+        font-weight: 800;
     }
 }
-
-.nav-item.main-navigation a {
-    color: $white;
-    font-size: 18px;
-    font-weight: 800;
-}
-
-.more-item {
-    width: 45px;
-    height: 45px;
-    margin: 0 5px;
-    background: $button-holder;
-    mix-blend-mode: normal;
-    backdrop-filter: blur(40px);
-
-    border-radius: 8px;
-}
-
 .addresses-box {
     display: flex;
     justify-content: space-between;
@@ -89,59 +97,38 @@
     padding: 0 25px;
 }
 
-.header-icons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-left: 20px;
-    padding-right: 5px;
-}
-
 .header-right-container {
-    display: flex !important;
-    justify-content: flex-end !important;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
+.address-and-balance-holder {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 20px;
+    padding: 0 8px;
+    background: #63728835;
+    background: rgba(99, 114, 136, 0.2);
 
-.address-btn {
-    max-width: 220px;
-    width: 100%;
-
-    .currency-navi-holder {
+    border-radius: 8px;
+    min-height: 50px;
+    .account-balance {
         display: flex;
-        flex-direction: column;
         justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-weight: bold;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 42px;
+        padding: 8px 8px;
+        margin: 0 20px;
+        height: 35px;
+        min-width: 80px;
+        background: rgba(120, 154, 205, 0.2);
 
-        .currency-logo {
-            display: none;
-        }
-
-        .navi-btn-text-hold {
-            display: inline-block;
-            align-items: center;
-
-            .front-text {
-                background: $grey-btn;
-                font-weight: 800;
-                border-radius: 8px;
-                display: inline-block;
-                margin: 0 15px 0 0;
-                padding-left: 15px;
-                padding-right: 15px;
-                vertical-align: middle;
-            }
-
-            .main-text {
-                font-size: 14px;
-                font-weight: 800;
-                color: $white;
-                opacity: 1;
-                display: inline-block;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                vertical-align: middle;
-            }
-        }
+        border-radius: 8px;
     }
 }
 

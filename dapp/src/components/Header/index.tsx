@@ -85,72 +85,30 @@ const Header = props => {
             <AppBar position="static" className="app-bar">
                 <Toolbar>
                     <Grid container>
-                        <Grid
-                            item
-                            lg={6}
-                            md={12}
-                            xs={12}
-                            display={'flex'}
-                            alignItems={'center'}
-                        >
-                            <Box
-                                className="logo"
-                                marginRight={'10px'}
-                                width={'10%'}
-                            >
+                        <Grid item lg={6} md={12} xs={12} className="nav-bar">
+                            <Box className="logo">
                                 <SafeLink href="https://pantherprotocol.io/">
                                     <img src={logo} alt="Logo" />
                                 </SafeLink>
                             </Box>
-                            <Box
-                                display={'flex'}
-                                justifyContent={'center'}
-                                alignItems={'center'}
-                                margin={'0 10px'}
-                            >
-                                <Box className="header-icons">
-                                    <img src={stakingIcon} />
-                                </Box>
+                            <Box className="nav-item active-item">
+                                <img src={stakingIcon} />
 
-                                <Typography
-                                    className="nav-item main-navigation"
-                                    variant="subtitle2"
-                                    lineHeight={3}
-                                >
+                                <Typography>
                                     <a href="/">Staking</a>
                                 </Typography>
                             </Box>
-                            <Box
-                                display={'flex'}
-                                justifyContent={'center'}
-                                alignItems={'center'}
-                                margin={'0 10px'}
-                            >
-                                <Box className="header-icons">
-                                    <img src={docsIcon} />
-                                </Box>
-                                <Typography
-                                    className="nav-item"
-                                    variant="subtitle2"
-                                >
+                            <Box className="nav-item">
+                                <img src={docsIcon} />
+                                <Typography>
                                     <SafeLink href="https://docs.pantherprotocol.io/panther-dao-and-zkp/the-zkp-token/staking">
                                         Docs
                                     </SafeLink>
                                 </Typography>
                             </Box>
-                            <Box
-                                display={'flex'}
-                                justifyContent={'center'}
-                                alignItems={'center'}
-                            >
-                                <Box className="header-icons">
-                                    {' '}
-                                    <img src={governanceIcon} />
-                                </Box>
-                                <Typography
-                                    className="nav-item"
-                                    variant="subtitle2"
-                                >
+                            <Box className="nav-item">
+                                <img src={governanceIcon} />
+                                <Typography>
                                     <SafeLink href="https://snapshot.org/#/pantherprotocol.eth">
                                         Governance
                                     </SafeLink>
@@ -162,14 +120,11 @@ const Header = props => {
                             lg={6}
                             md={12}
                             xs={12}
-                            display={'flex'}
-                            justifyContent={'end'}
-                            alignItems={'center'}
                             className="header-right-container"
                         >
                             {/* connection button */}
                             {!active && !wrongNetwork && (
-                                <div className="address-btn">
+                                <Box className="address-btn">
                                     <ConnectButton
                                         text={
                                             isNoEthereumProviderError
@@ -186,18 +141,18 @@ const Header = props => {
                                             }
                                         }}
                                     />
-                                </div>
+                                </Box>
                             )}
 
                             {wrongNetwork && (
-                                <div className="address-btn">
+                                <Box className="address-btn">
                                     <ConnectButton
                                         text={'Switch network'}
                                         onClick={() => {
                                             props.switchNetwork();
                                         }}
                                     />
-                                </div>
+                                </Box>
                             )}
 
                             {/* account details */}
@@ -210,18 +165,7 @@ const Header = props => {
                                             />
                                         </Box>
                                     )}
-                                    <Box
-                                        display={'flex'}
-                                        justifyContent={'space-between'}
-                                        alignItems={'center'}
-                                        margin={'0 20px'}
-                                        padding={'8px'}
-                                        sx={{
-                                            background: '#63728835',
-                                            borderRadius: '8px',
-                                            height: '50px',
-                                        }}
-                                    >
+                                    <Box className="address-and-balance-holder">
                                         {accountAddress && (
                                             <Box>
                                                 <Address
@@ -234,31 +178,9 @@ const Header = props => {
                                                 />
                                             </Box>
                                         )}
-                                        <Box>
-                                            <Typography
-                                                variant="subtitle2"
-                                                display={'flex'}
-                                                justifyContent={'center'}
-                                                alignItems={'center'}
-                                                textAlign={'center'}
-                                                fontWeight={'bold'}
-                                                fontStyle={'normal'}
-                                                lineHeight={42}
-                                                fontSize={'14px'}
-                                                padding={'8px 8px'}
-                                                marginLeft={'20px'}
-                                                minWidth={'80px'}
-                                                sx={{
-                                                    backgroundColor:
-                                                        '#789ACD50',
-                                                    borderRadius: '8px',
-                                                    height: '35px',
-                                                    fontWeight: 600,
-                                                }}
-                                            >
-                                                {accountBalance}
-                                            </Typography>
-                                        </Box>
+                                        <Typography className="account-balance">
+                                            {accountBalance}
+                                        </Typography>
                                     </Box>
                                 </>
                             )}

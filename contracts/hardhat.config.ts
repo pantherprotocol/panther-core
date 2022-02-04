@@ -38,10 +38,13 @@ const CHAIN_IDS: {[name: string]: number} = {
 
 const ALCHEMY_ENDPOINTS: {[name: string]: string} = {
     mainnet: 'https://eth-mainnet.alchemyapi.io/v2/',
+    rinkeby: 'https://eth-rinkeby.alchemyapi.io/v2/',
+    goerli: 'https://eth-goerli.alchemyapi.io/v2/',
+    kovan: 'https://eth-kovan.alchemyapi.io/v2/',
+    ropsten: 'https://eth-ropsten.alchemyapi.io/v2/',
+
     matic: 'https://polygon-mainnet.g.alchemy.com/v2/',
     mumbai: 'https://polygon-mumbai.g.alchemy.com/v2/',
-    rinkeby: 'https://eth-rinkeby.alchemyapi.io/v2/',
-    polygon: 'https://polygon-mainnet.g.alchemy.com/v2/',
 };
 
 const config: HardhatUserConfig = {

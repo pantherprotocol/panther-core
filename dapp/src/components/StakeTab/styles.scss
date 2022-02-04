@@ -168,6 +168,9 @@
     input {
         text-align: end !important;
     }
+    .MuiInputBase-input.MuiInput-input.Mui-disabled {
+        -webkit-text-fill-color: $table-header-grey;
+    }
 
     .staking-input-box {
         display: flex;

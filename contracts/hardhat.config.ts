@@ -47,15 +47,19 @@ const ALCHEMY_ENDPOINTS: {[name: string]: string} = {
     mumbai: 'https://polygon-mumbai.g.alchemy.com/v2/',
 };
 
+const forkingConfig = {
+    url: process.env.HARDHAT_FORKING_URL || 'ts compiler hack',
+    blockNumber: Number(process.env.HARDHAT_FORKING_BLOCK),
+    enabled: !!process.env.HARDHAT_FORKING_ENABLED,
+};
+
 const config: HardhatUserConfig = {
     defaultNetwork: 'hardhat',
     networks: {
         hardhat: {
-            forking: {
-                url: process.env.HARDHAT_FORKING_URL || '',
-                // blockNumber: 13373824,
-                enabled: !!process.env.HARDHAT_FORKING_ENABLED,
-            },
+            forking: process.env.HARDHAT_FORKING_URL
+                ? forkingConfig
+                : undefined,
         },
         pchain: {url: 'http://127.0.0.1:8545'},
 

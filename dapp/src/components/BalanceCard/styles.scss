@@ -29,6 +29,18 @@
         padding-bottom: 30px;
     }
 
+    .not-connected-balance-container {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .balance-not-connected {
+        text-align: left;
+        text-decoration: underline;
+        font-weight: normal;
+        padding-top: 12px;
+    }
+
     .total-balance {
         background: $main-balance-card-background;
         border-radius: 8px;

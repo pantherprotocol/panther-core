@@ -8,7 +8,7 @@ import logo from '../../images/panther-logo.svg';
 import {STAKING_TOKEN_CONTRACT} from '../../services/contracts';
 import {openNotification} from '../../services/notification';
 import * as stakingService from '../../services/staking';
-import {DECIMALS} from '../../utils';
+import {DECIMALS} from '../../utils/constants';
 
 import './styles.scss';
 

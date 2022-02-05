@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography';
 import {BigNumber} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
-import {SafeMuiLink} from '../../services/links';
-import {formatCurrency, formatPercentage} from '../../utils';
+import {formatCurrency, formatPercentage} from '../../utils/helpers';
+import {SafeMuiLink} from '../Common/links';
 
 import './styles.scss';
 

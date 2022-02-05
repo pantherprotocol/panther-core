@@ -15,7 +15,7 @@ import {BigNumber} from 'ethers';
 import infoIcon from '../../images/info-icon.svg';
 import * as stakingService from '../../services/staking';
 import {getRewardsBalance} from '../../services/staking';
-import {formatCurrency, formatTime} from '../../utils';
+import {formatTime, formatCurrency} from '../../utils/helpers';
 
 import './styles.scss';
 

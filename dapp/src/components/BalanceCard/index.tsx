@@ -9,9 +9,8 @@ import {BigNumber} from 'ethers';
 import ethLogo from '../../images/eth-logo.svg';
 import infoIcon from '../../images/info-icon.svg';
 import refreshIcon from '../../images/refresh-icon.svg';
-// import settingIcon from '../../images/setting-icon.svg';
 import accountAvatar from '../../images/wallet-icon.svg';
-import {fiatPrice, formatCurrency} from '../../utils';
+import {fiatPrice, formatCurrency} from '../../utils/helpers';
 import Address from '../Address';
 
 import './styles.scss';

@@ -3,7 +3,7 @@ import * as React from 'react';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 
-import {SafeLink} from '../../services/links';
+import {SafeLink} from '../Common/links';
 
 import './styles.scss';
 

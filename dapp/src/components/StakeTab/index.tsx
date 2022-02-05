@@ -259,7 +259,6 @@ const StakingInput = props => {
 
                     <Input
                         className="staking-input"
-                        value={amountToStake}
                         onChange={changeHandler}
                         autoComplete="off"
                         autoFocus={true}

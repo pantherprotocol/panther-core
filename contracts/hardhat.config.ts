@@ -38,21 +38,28 @@ const CHAIN_IDS: {[name: string]: number} = {
 
 const ALCHEMY_ENDPOINTS: {[name: string]: string} = {
     mainnet: 'https://eth-mainnet.alchemyapi.io/v2/',
+    rinkeby: 'https://eth-rinkeby.alchemyapi.io/v2/',
+    goerli: 'https://eth-goerli.alchemyapi.io/v2/',
+    kovan: 'https://eth-kovan.alchemyapi.io/v2/',
+    ropsten: 'https://eth-ropsten.alchemyapi.io/v2/',
+
     matic: 'https://polygon-mainnet.g.alchemy.com/v2/',
     mumbai: 'https://polygon-mumbai.g.alchemy.com/v2/',
-    rinkeby: 'https://eth-rinkeby.alchemyapi.io/v2/',
-    polygon: 'https://polygon-mainnet.g.alchemy.com/v2/',
+};
+
+const forkingConfig = {
+    url: process.env.HARDHAT_FORKING_URL || 'ts compiler hack',
+    blockNumber: Number(process.env.HARDHAT_FORKING_BLOCK),
+    enabled: !!process.env.HARDHAT_FORKING_ENABLED,
 };
 
 const config: HardhatUserConfig = {
     defaultNetwork: 'hardhat',
     networks: {
         hardhat: {
-            forking: {
-                url: process.env.HARDHAT_FORKING_URL || '',
-                // blockNumber: 13373824,
-                enabled: !!process.env.HARDHAT_FORKING_ENABLED,
-            },
+            forking: process.env.HARDHAT_FORKING_URL
+                ? forkingConfig
+                : undefined,
         },
         pchain: {url: 'http://127.0.0.1:8545'},
 

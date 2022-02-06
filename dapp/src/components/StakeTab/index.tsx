@@ -16,9 +16,8 @@ import * as stakingService from '../../services/staking';
 import {formatCurrency} from '../../utils';
 import {onWrongNetwork} from '../../services/connectors';
 import {ConnectButton} from '../ConnectButton';
-import {Store} from 'react-notifications-component';
+
 import './styles.scss';
-import {openNotification} from '../../services/notification';
 
 export default function StakeTab(props: {
     rewardsBalance: string | null;
@@ -30,7 +29,7 @@ export default function StakeTab(props: {
     switchNetwork: any;
 }) {
     const context = useWeb3React();
-    const {account, library, active, error} = context;
+    const {account, library, chainId, active, error} = context;
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
     const [amountToStake, setAmountToStake] = useState<string | null>();
@@ -47,27 +46,22 @@ export default function StakeTab(props: {
         const signer = library.getSigner(account).connectUnchecked();
         const stakingResponse = await stakingService.stake(
             library,
+            chainId,
             account,
             stakingContract,
+            signer,
             props.tokenBalance,
             amount,
             stakeType,
-            signer,
         );
 
         if (stakingResponse instanceof Error) {
-            console.error(stakingResponse);
-            openNotification(
-                'Transaction error',
-                'Your staking transaction encountered an error. Please try again!',
-                'danger',
-            );
+            return;
         }
         setStakedId(Number(stakingResponse));
         setAmountToStake('');
         props.setZkpTokenBalance();
         props.getStakedZkpBalance();
-        Store.removeAllNotifications();
     };
 
     useEffect((): any => {

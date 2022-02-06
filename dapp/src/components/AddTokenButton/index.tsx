@@ -4,6 +4,7 @@ import {Web3Provider} from '@ethersproject/providers';
 import {useWeb3React} from '@web3-react/core';
 import * as stakingService from '../../services/staking';
 import {STAKING_TOKEN_CONTRACT} from '../../services/contracts';
+import logo from '../../images/panther-logo.svg';
 import './styles.scss';
 import {openNotification} from '../../services/notification';
 
@@ -36,6 +37,7 @@ export const AddTokenButton = (props: {
                             address: tokenAddress,
                             symbol: tokenSymbol,
                             decimals: tokenDecimals,
+                            image: logo,
                         },
                     },
                 })

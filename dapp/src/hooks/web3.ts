@@ -5,13 +5,15 @@
 // derived from example provided at https://github.com/NoahZinsmeister/web3-react
 
 import {useState, useEffect} from 'react';
-import {useWeb3React, UnsupportedChainIdError} from '@web3-react/core';
-import {injected} from '../services/connectors';
+
 import {Contract} from '@ethersproject/contracts';
+import {useWeb3React, UnsupportedChainIdError} from '@web3-react/core';
 import {
     NoEthereumProviderError,
     UserRejectedRequestError as UserRejectedRequestErrorInjected,
 } from '@web3-react/injected-connector';
+
+import {injected} from '../services/connectors';
 
 export function useEagerConnect() {
     const {activate, active} = useWeb3React();

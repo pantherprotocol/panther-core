@@ -1,8 +1,11 @@
 import * as React from 'react';
+
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
+import Typography from '@mui/material/Typography';
+
 import UnstakeTable from '../UnstakeTable';
+
 import './styles.scss';
 
 export default function UnstakingTab(props: {rewardsBalance: string | null}) {

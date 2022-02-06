@@ -1,12 +1,15 @@
-import * as React from 'react';
 import {useState} from 'react';
+import * as React from 'react';
+
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+
 import StakeTab from '../../components/StakeTab';
 import UnstakingTab from '../../components/UnstakeTab';
+
 import './styles.scss';
 
 export default function StakingUnstakingCard(props: {

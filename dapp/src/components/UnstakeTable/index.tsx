@@ -1,20 +1,22 @@
+import {useState, useEffect} from 'react';
 import * as React from 'react';
+
+import {Button} from '@mui/material';
+import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import {Button} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {useState} from 'react';
-import * as stakingService from '../../services/staking';
-import {useEffect} from 'react';
 import {BigNumber} from 'ethers';
+
 import {formatAccountBalance, formatTokenBalance} from '../../services/account';
-import {formatTime} from '../../utils';
+import * as stakingService from '../../services/staking';
 import {getRewardsBalanceForCalculations} from '../../services/staking';
+import {formatTime} from '../../utils';
+
 import './styles.scss';
 
 export default function UnstakeTable() {

@@ -1,11 +1,11 @@
 import {UnsupportedChainIdError} from '@web3-react/core';
-import {Web3ReactContextInterface} from './types';
 import {
     InjectedConnector,
     NoEthereumProviderError,
 } from '@web3-react/injected-connector';
-
 import {utils} from 'ethers';
+
+import {Web3ReactContextInterface} from './types';
 
 export const CHAIN_ID = Number(process.env.CHAIN_ID);
 export const CHAIN_HEX_ID = utils.hexValue(CHAIN_ID);

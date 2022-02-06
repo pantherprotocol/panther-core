@@ -1,16 +1,17 @@
-import * as ethers from 'ethers';
-import {BigNumber, Contract, ContractTransaction, utils} from 'ethers';
-import {JsonRpcSigner} from '@ethersproject/providers';
 import {TransactionResponse} from '@ethersproject/abstract-provider';
 import {TypedDataDomain} from '@ethersproject/abstract-signer';
-import {fromRpcSig} from 'ethereumjs-util';
+import {JsonRpcSigner} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
+import {fromRpcSig} from 'ethereumjs-util';
+import * as ethers from 'ethers';
+import {BigNumber, Contract, ContractTransaction, utils} from 'ethers';
 
 import {abi as REWARDS_MASTER_ABI} from '../abi/RewardsMaster';
 import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
 import {Staking} from '../types/contracts/Staking';
+import {CONFIRMATIONS_NUM, e18, toBN} from '../utils';
 
 import {formatTokenBalance} from './account';
 import {
@@ -20,7 +21,6 @@ import {
     TOKEN_SYMBOL,
     VESTING_POOLS_CONTRACT,
 } from './contracts';
-import {CONFIRMATIONS_NUM, e18, toBN} from '../utils';
 import {openNotification, removeNotification} from './notification';
 
 const CoinGeckoClient = new CoinGecko();

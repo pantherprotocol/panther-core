@@ -4,6 +4,7 @@ import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import refreshIcon from '../../images/refresh-icon.svg';
 import infoIcon from '../../images/info-icon.svg';
+import ethLogo from '../../images/eth-logo.svg';
 // import settingIcon from '../../images/setting-icon.svg';
 import {IconButton, Tooltip} from '@mui/material';
 import Address from '../Address';
@@ -47,9 +48,17 @@ const BalanceCard = (props: {
                     />
                 )}
                 {!props.accountAddress && (
-                    <Typography component="div" className="token-balance">
-                        Please connect your wallet to view balances.
-                    </Typography>
+                    <div className="not-connected-balance-container">
+                        <IconButton>
+                            <img src={ethLogo} />
+                        </IconButton>
+                        <Typography
+                            component="div"
+                            className="token-balance balance-not-connected"
+                        >
+                            Connect wallet
+                        </Typography>
+                    </div>
                 )}
                 <TotalBalance
                     title={'Unstaked Balance'}
@@ -125,14 +134,16 @@ const TotalBalance = ({title, tooltip, tokenBalance, tokenMarketPrice}) => {
 
             <Box className="amount-box">
                 <Typography component="div" className="token-balance">
-                    {formatCurrency(tokenBalance)}
+                    {tokenBalance ? formatCurrency(tokenBalance) : '-'}
                 </Typography>
-                <Typography className="zkp-symbol">ZKP</Typography>
+                <Typography className="zkp-symbol main-symbol">ZKP</Typography>
             </Box>
             {tokenMarketPrice && (
                 <Box className="amount-box">
                     <Typography className="token-market-price">
-                        {`~$ ${formatCurrency(tokenMarketPrice)} USD`}
+                        {tokenMarketPrice
+                            ? `~$ ${formatCurrency(tokenMarketPrice)} USD`
+                            : '-'}
                     </Typography>
                 </Box>
             )}
@@ -161,7 +172,7 @@ const AddressBalances = props => {
             <Box className="amount-box">
                 <Box className="balance-box">
                     <Typography className="balance" component="div">
-                        {formatCurrency(balance)}
+                        {balance ? formatCurrency(balance) : '-'}
                     </Typography>
                     <Typography className="zkp-symbol">ZKP</Typography>
                 </Box>

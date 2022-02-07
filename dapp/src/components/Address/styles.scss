@@ -1,19 +1,25 @@
+@import '../../variables';
+
 .address-container {
     display: flex;
     align-items: center;
     justify-content: space-around;
     width: 100%;
+
     .user-avatar {
-        width: 24px;
+        width: 34px;
+        height: 34px;
         margin-left: 18px;
     }
+
     .account-address {
         font-size: 16px;
         line-height: 48px;
         margin: 0 18px;
     }
+
     .content-copy-icon {
-        opacity: 0.8;
+        opacity: 0.6;
         width: 21px;
         margin-top: 4px;
         cursor: pointer;

@@ -1,20 +1,25 @@
 @import '../../variables';
 
 .balance-card {
-    background-color: #2b334140 !important;
+    background-color: $balance-card-background !important;
     border: 1px solid transparent;
     border-radius: 8px !important;
     box-sizing: border-box;
-    margin-bottom: 20px !important;
+    margin-bottom: 55px !important;
     mix-blend-mode: normal;
     backdrop-filter: blur(50px);
+    padding: 16px 16px 24px;
 
     .zkp-symbol {
         font-weight: 700;
         font-style: normal;
-        font-size: 12px;
+        font-size: 16px;
         line-height: 42px;
         margin-left: 8px;
+
+        &.main-symbol {
+            padding-top: 14px;
+        }
     }
 
     .token-balance {
@@ -24,10 +29,22 @@
         padding-bottom: 30px;
     }
 
+    .not-connected-balance-container {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .balance-not-connected {
+        text-align: left;
+        text-decoration: underline;
+        font-weight: normal;
+        padding-top: 12px;
+    }
+
     .total-balance {
-        background: #63728835;
+        background: $main-balance-card-background;
         border-radius: 8px;
-        padding: 0 15px;
+        padding: 10px 10px 10px 25px;
 
         .title-box {
             display: flex;
@@ -35,7 +52,7 @@
             justify-content: space-between;
 
             img {
-                opacity: 0.5;
+                opacity: 0.8;
             }
         }
 
@@ -48,6 +65,8 @@
                 font-style: normal;
                 font-size: 39px;
                 line-height: 19px;
+                padding-top: 15px;
+                padding-bottom: 15px;
             }
 
             .token-market-price {
@@ -61,20 +80,17 @@
     }
 
     .address-balance {
-        padding: 0 15px;
+        padding: 24px 15px 0;
 
         .title-box {
             display: flex;
-            align-items: baseline;
-
-            img {
-                opacity: 0.5;
-            }
+            align-items: center;
         }
 
         .amount-box {
             display: flex;
             justify-content: space-between;
+            align-items: center;
 
             .balance-box {
                 display: flex;
@@ -108,10 +124,7 @@
 
 .title {
     height: 35px;
-    font-weight: normal;
-    font-style: normal;
-    font-size: 18px;
-    line-height: 42px;
+    font-size: 18px !important;
     display: flex;
     align-items: center;
     opacity: 0.6;
@@ -121,7 +134,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 
     .address {
         display: flex;

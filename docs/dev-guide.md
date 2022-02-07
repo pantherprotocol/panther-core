@@ -99,7 +99,7 @@ available for staking.
 Still in `zkp-token`, create a new vesting pool with the deployer
 account as the owner, by running:
 
-    yarn hardhat pool:add 0 --network localhost
+    yarn hardhat pool:add --owner 0 --network localhost
 
 Here the `0` refers to the first of 20 signers which Hardhat
 automatically makes available via `hre.ethers.getSigners()`.

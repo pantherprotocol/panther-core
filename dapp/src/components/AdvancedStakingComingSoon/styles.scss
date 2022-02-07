@@ -1,8 +1,11 @@
-.advanced-staking-comming-soon-card {
-    background: rgba(99, 114, 136, 0.2) !important;
-    mix-blend-mode: normal;
-    backdrop-filter: blur(49.2869px);
-    border-radius: 8.76212px;
+@import '../../variables.scss';
+
+.advanced-staking-coming-soon-card {
+    background: transparent !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    border: 1px solid #485267 !important;
+    margin-top: 40px;
     p {
         padding: 0 15px;
         font-style: normal;
@@ -10,20 +13,23 @@
     }
 
     a {
-        color: white;
+        color: $white;
         text-decoration: underline;
     }
 
     .card-title {
-        font-weight: 800;
+        font-weight: bold;
         font-size: 18px;
         line-height: 42px;
+        color: $white;
     }
     .card-text {
-        font-weight: 400;
-        font-size: 14px;
-        line-height: 22px;
-        margin-bottom: 18px;
-        opacity: 0.5;
+        margin: 18px 0px;
+
+        font-size: 16px;
+        line-height: 26px;
+        color: $white;
+
+        opacity: 0.7;
     }
 }

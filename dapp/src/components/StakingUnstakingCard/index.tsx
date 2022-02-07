@@ -45,7 +45,7 @@ export default function StakingUnstakingCard(props: {
     };
 
     return (
-        <Box width={'100%'} margin={'0 5'}>
+        <Box className="balance-card-holder">
             <Card className="balance-card">
                 <Box>
                     <ToggleButtonGroup size="large" {...control}>

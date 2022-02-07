@@ -49,5 +49,20 @@ preview:
   only:
     - merge_requests
   script:
-    - >-
-      if [ -n "$CI_MERGE_REQUEST_IID" ]; then curl --data-urlencode "body=## After build, preview will 🚀[be here!](https://pr-${CI_MERGE_REQUEST_IID}.${AMPLIFY_APP_ID}.amplifyapp.com/)" --request POST --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions"; fi
+    - |
+      apt-get update
+      apt-get -y install jq
+      if [ -n "$CI_MERGE_REQUEST_IID" ]; then
+        thread_id=$(
+          curl \
+              --data-urlencode "body=## After build, preview will 🚀[be here!](https://pr-${CI_MERGE_REQUEST_IID}.${AMPLIFY_APP_ID}.amplifyapp.com/)" \
+              --request POST \
+              --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+              "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions" \
+          | jq -r .id
+        )
+        curl -v -X PUT \
+          --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+          "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions/$thread_id?resolved=true" \
+        | jq .
+      fi

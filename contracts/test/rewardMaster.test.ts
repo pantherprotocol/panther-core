@@ -6,6 +6,11 @@ import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {FakeContract} from '@defi-wonderland/smock';
 import {RewardMasterFixture} from './shared';
 import {
+    mineBlock,
+    revertSnapshot,
+    takeSnapshot,
+} from './helpers/hardhatHelpers';
+import {
     RewardPool,
     IErc20Min,
     RewardMaster,
@@ -27,11 +32,17 @@ describe('Reward Master', () => {
     let provider: Provider;
     let startBlock: number;
     let action: string;
+    let snapshotId: number;
     const accumRewardPerShareScale = BigNumber.from(1e9); // hardcoded in RewardMaster
 
     before(async () => {
+        snapshotId = await takeSnapshot();
         fixture = new RewardMasterFixture();
         provider = ethers.provider;
+    });
+
+    after(async function () {
+        await revertSnapshot(snapshotId);
     });
 
     const initFixture = async () => {
@@ -148,6 +159,14 @@ describe('Reward Master', () => {
                 rewardToken.balanceOf.returns(vestedRewards);
 
                 await fixture.addRewardAdviser();
+            });
+
+            beforeEach(async () => {
+                // Simulate blocks mined between vesting request
+                const {timestamp} = await provider.getBlock('latest');
+                for (let i = 1; i <= 300; i++) {
+                    await mineBlock(timestamp + i);
+                }
             });
 
             after(async () => {

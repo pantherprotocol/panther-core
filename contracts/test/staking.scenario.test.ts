@@ -8,7 +8,11 @@ import {RewardMaster, RewardPool, Staking} from '../types/contracts';
 import abiZkpToken from './assets/ZKPToken.json';
 import abiVestingPools from './assets/VestingPools.json';
 import {getScenario, Scenario} from './assets/staking.scenario.data';
-import {mineBlock} from './helpers/hardhatHelpers';
+import {
+    mineBlock,
+    revertSnapshot,
+    takeSnapshot,
+} from './helpers/hardhatHelpers';
 
 const expect = chai.expect;
 const toBN = ethers.BigNumber.from;
@@ -30,10 +34,12 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
     let rewardMaster: RewardMaster;
     let staking: Staking;
     let deployer: SignerWithAddress;
+    let snapshotId: number;
     const users = Array(4) as SignerWithAddress[];
     const poolId = 0;
 
     before(async () => {
+        snapshotId = await takeSnapshot();
         provider = ethers.provider;
         startTime = await getTime();
         scenario = getScenario(startTime);
@@ -158,15 +164,19 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
             .increaseAllowance(staking.address, scenario.totals.tokenStaked[3]);
     });
 
-    playPointAndCheckResult(0);
-    playPointAndCheckResult(1);
-    playPointAndCheckResult(2);
-    playPointAndCheckResult(3);
-    playPointAndCheckResult(4);
-    playPointAndCheckResult(5);
-    // playPointAndCheckResult(6);
-    playPointAndCheckResult(7);
-    playPointAndCheckResult(8);
+    after(async function () {
+        await revertSnapshot(snapshotId);
+    });
+
+    playPointAndCheckResult(0, 0);
+    playPointAndCheckResult(1, 300);
+    playPointAndCheckResult(2, 300);
+    playPointAndCheckResult(3, 300);
+    playPointAndCheckResult(4, 300);
+    playPointAndCheckResult(5, 300);
+    playPointAndCheckResult(6, 300);
+    playPointAndCheckResult(7, 300);
+    playPointAndCheckResult(8, 300);
 
     checkFinalUserTokenBalance(0);
     checkFinalUserTokenBalance(1);
@@ -177,15 +187,28 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
         return (await provider.getBlock('latest')).timestamp;
     }
 
-    function playPointAndCheckResult(pInd: number) {
+    function playPointAndCheckResult(pInd: number, blocksToPreMine = 0) {
         it(`shall play scenario step #${pInd}`, async () => {
             const {timestamp, stakesStaked, stakesUnstaked} =
                 scenario.points[pInd];
 
-            await mineBlock(timestamp - 10);
+            // First, pre-mine required number of blocks
+            const blocksToMine = blocksToPreMine > 1 ? blocksToPreMine : 1;
+            for (let i = 0; i < blocksToMine - 1; i++) {
+                const blockTime = timestamp - 5 * (blocksToMine - i);
+                await mineBlock(blockTime);
+            }
+            await mineBlock(timestamp - 5);
+
             // All txs must get in the same block with the expected timestamp
             // therefore we temporarily disable "auto-mine"
             await provider.send('evm_setAutomine', [false]);
+
+            if (!stakesStaked && !stakesUnstaked) {
+                // No stake/unstake txs which trigger vesting "under the hood"
+                // Let's trigger it explicitly
+                await rewardMaster.triggerVesting();
+            }
 
             if (stakesStaked) {
                 for (const i of stakesStaked) {

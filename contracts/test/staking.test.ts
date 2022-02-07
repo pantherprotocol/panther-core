@@ -165,20 +165,8 @@ describe('Staking Contract', async () => {
             ).to.be.revertedWith('Staking: Terms unknown or disabled');
         });
 
-        it('ensures amount allocation is correct', async () => {
-            expect(stakeInfo.amount).to.eq(100);
-        });
-
-        it('should get the stakes info', async () => {
-            const stakes = await ctStaking.accountStakes(owner.address);
-            const {delegatee, amount, claimedAt, stakeType, id} = stakes[0];
-
-            expect(stakes.length).to.eq(1);
-            expect(delegatee).to.eq(ethers.constants.AddressZero);
-            expect(amount).to.eq(100);
-            expect(claimedAt).to.eq(0);
-            expect(stakeType).to.eq(stakeType);
-            expect(id).to.eq(0);
+        it('amount allocation should be equal', async () => {
+            await expect(stakeInfo.amount).to.eq(100);
         });
 
         it('should check the stakeType', async () => {

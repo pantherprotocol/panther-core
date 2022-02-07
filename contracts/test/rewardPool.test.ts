@@ -24,6 +24,7 @@ describe('RewardPool', async () => {
     before(async function () {
         [deployer, alice, wallet1, wallet2] = await getSigners();
     });
+
     beforeEach(async () => {
         const rewardPoolFactory = await smock.mock('RewardPool');
         vestingPoolFactory = await smock.fake('IVestingPools');

@@ -16,7 +16,7 @@ export const formatAccountBalance = (
 ): string | null => {
     if (!balance) return null;
     const amount = formatEther(balance);
-    return `${(+amount).toFixed(2)} ${currency}`;
+    return `${(+amount).toFixed(4)} ${currency}`;
 };
 
 export const formatTokenBalance = (

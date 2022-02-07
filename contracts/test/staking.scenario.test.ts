@@ -1,6 +1,6 @@
 import {BigNumber, Contract} from 'ethers';
 import chai from 'chai';
-import {ethers, network} from 'hardhat';
+import {ethers} from 'hardhat';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
 import {RewardMaster, RewardPool, Staking} from '../types/contracts';
@@ -8,7 +8,11 @@ import {RewardMaster, RewardPool, Staking} from '../types/contracts';
 import abiZkpToken from './assets/ZKPToken.json';
 import abiVestingPools from './assets/VestingPools.json';
 import {getScenario, Scenario} from './assets/staking.scenario.data';
-import {mineBlock} from './helpers/hardhatHelpers';
+import {
+    mineBlock,
+    revertSnapshot,
+    takeSnapshot,
+} from './helpers/hardhatHelpers';
 
 const expect = chai.expect;
 const toBN = ethers.BigNumber.from;
@@ -30,12 +34,12 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
     let rewardMaster: RewardMaster;
     let staking: Staking;
     let deployer: SignerWithAddress;
-    let evmId: any;
+    let snapshotId: number;
     const users = Array(4) as SignerWithAddress[];
     const poolId = 0;
 
     before(async () => {
-        evmId = await network.provider.send('evm_snapshot');
+        snapshotId = await takeSnapshot();
         provider = ethers.provider;
         startTime = await getTime();
         scenario = getScenario(startTime);
@@ -161,7 +165,7 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
     });
 
     after(async function () {
-        await network.provider.send('evm_revert', [evmId]);
+        await revertSnapshot(snapshotId);
     });
 
     playPointAndCheckResult(0, 0);

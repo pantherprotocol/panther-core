@@ -1,3 +1,4 @@
+import {Provider} from '@ethersproject/providers';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {smock, FakeContract} from '@defi-wonderland/smock';
 import {BaseContract, BigNumber, utils} from 'ethers';

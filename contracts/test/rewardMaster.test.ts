@@ -1,11 +1,15 @@
-import {ethers, network} from 'hardhat';
+import {ethers} from 'hardhat';
 import {BigNumber} from 'ethers';
 import {Provider} from '@ethersproject/providers';
 import {expect} from 'chai';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {FakeContract} from '@defi-wonderland/smock';
 import {RewardMasterFixture} from './shared';
-import {mineBlock} from './helpers/hardhatHelpers';
+import {
+    mineBlock,
+    revertSnapshot,
+    takeSnapshot,
+} from './helpers/hardhatHelpers';
 import {
     RewardPool,
     IErc20Min,
@@ -28,17 +32,17 @@ describe('Reward Master', () => {
     let provider: Provider;
     let startBlock: number;
     let action: string;
-    let evmId: any;
+    let snapshotId: number;
     const accumRewardPerShareScale = BigNumber.from(1e9); // hardcoded in RewardMaster
 
     before(async () => {
-        evmId = await network.provider.send('evm_snapshot');
+        snapshotId = await takeSnapshot();
         fixture = new RewardMasterFixture();
         provider = ethers.provider;
     });
 
     after(async function () {
-        await network.provider.send('evm_revert', [evmId]);
+        await revertSnapshot(snapshotId);
     });
 
     const initFixture = async () => {

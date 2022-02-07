@@ -1,4 +1,4 @@
-import {ethers, network} from 'hardhat';
+import {ethers} from 'hardhat';
 import {expect} from 'chai';
 import {MockStakingMsgProcessor} from '../types/contracts';
 import {
@@ -33,20 +33,13 @@ const expectedNonEmptyDataMsg = expectedEmptyDataMsg + 'ff050405090806050709';
 
 describe('StakingMsgProcessor', () => {
     let mockProcessor: MockStakingMsgProcessor;
-    let evmId: any;
 
     before(async () => {
-        evmId = await network.provider.send('evm_snapshot');
-
         const StakingMsgProcessor = await ethers.getContractFactory(
             'MockStakingMsgProcessor',
         );
         mockProcessor =
             (await StakingMsgProcessor.deploy()) as MockStakingMsgProcessor;
-    });
-
-    after(async function () {
-        await network.provider.send('evm_revert', [evmId]);
     });
 
     describe('internal _encodeStakeActionType function', () => {

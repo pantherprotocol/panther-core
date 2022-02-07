@@ -169,6 +169,10 @@ which vesting should be allowed.
 
 ## Setting up the frontend
 
+- `yarn build:types` to copy the auto-generated
+  [TypeChain](https://github.com/dethcrypto/TypeChain) declarations
+  into `../dapp/src/types`.
+
 - `cd ../dapp`
 
 - Configure the frontend environment to point at the right network

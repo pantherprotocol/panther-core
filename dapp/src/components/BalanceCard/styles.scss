@@ -1,158 +1,159 @@
 @import '../../variables';
+.balance-card-holder {
+    .balance-card {
+        background-color: $balance-card-background !important;
+        border: 1px solid transparent;
+        border-radius: 8px !important;
+        box-sizing: border-box;
+        margin-bottom: 55px !important;
+        mix-blend-mode: normal;
+        backdrop-filter: blur(50px);
+        padding: 16px 16px 24px;
 
-.balance-card {
-    background-color: $balance-card-background !important;
-    border: 1px solid transparent;
-    border-radius: 8px !important;
-    box-sizing: border-box;
-    margin-bottom: 55px !important;
-    mix-blend-mode: normal;
-    backdrop-filter: blur(50px);
-    padding: 16px 16px 24px;
+        .zkp-symbol {
+            font-weight: 700;
+            font-style: normal;
+            font-size: 16px;
+            line-height: 42px;
+            margin-left: 8px;
 
-    .zkp-symbol {
-        font-weight: 700;
-        font-style: normal;
-        font-size: 16px;
-        line-height: 42px;
-        margin-left: 8px;
-
-        &.main-symbol {
-            padding-top: 14px;
-        }
-    }
-
-    .token-balance {
-        font-size: 16px;
-        font-weight: 600;
-        padding-top: 10px;
-        padding-bottom: 30px;
-    }
-
-    .not-connected-balance-container {
-        display: flex;
-        align-items: flex-start;
-    }
-
-    .balance-not-connected {
-        text-align: left;
-        text-decoration: underline;
-        font-weight: normal;
-        padding-top: 12px;
-    }
-
-    .total-balance {
-        background: $main-balance-card-background;
-        border-radius: 8px;
-        padding: 10px 10px 10px 25px;
-
-        .title-box {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            img {
-                opacity: 0.8;
+            &.main-symbol {
+                padding-top: 14px;
             }
         }
 
-        .amount-box {
-            display: flex;
-            align-items: center;
-
-            .token-balance {
-                font-weight: bold;
-                font-style: normal;
-                font-size: 39px;
-                line-height: 19px;
-                padding-top: 15px;
-                padding-bottom: 15px;
-            }
-
-            .token-market-price {
-                font-weight: normal;
-                font-style: normal;
-                font-size: 18px;
-                line-height: 42px;
-                opacity: 0.8;
-            }
-        }
-    }
-
-    .address-balance {
-        padding: 24px 15px 0;
-
-        .title-box {
-            display: flex;
-            align-items: center;
+        .token-balance {
+            font-size: 16px;
+            font-weight: 600;
+            padding-top: 10px;
+            padding-bottom: 30px;
         }
 
-        .amount-box {
+        .not-connected-balance-container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+        }
 
-            .balance-box {
+        .balance-not-connected {
+            text-align: left;
+            text-decoration: underline;
+            font-weight: normal;
+            padding-top: 12px;
+        }
+
+        .total-balance {
+            background: $main-balance-card-background;
+            border-radius: 8px;
+            padding: 10px 10px 10px 25px;
+
+            .title-box {
                 display: flex;
-                justify-content: center;
+                align-items: center;
+                justify-content: space-between;
 
-                .balance {
+                img {
+                    opacity: 0.8;
+                }
+            }
+
+            .amount-box {
+                display: flex;
+                align-items: center;
+
+                .token-balance {
+                    font-weight: bold;
+                    font-style: normal;
+                    font-size: 39px;
+                    line-height: 19px;
+                    padding-top: 15px;
+                    padding-bottom: 15px;
+                }
+
+                .token-market-price {
+                    font-weight: normal;
+                    font-style: normal;
+                    font-size: 18px;
+                    line-height: 42px;
+                    opacity: 0.8;
+                }
+            }
+        }
+
+        .address-balance {
+            padding: 24px 15px 0;
+
+            .title-box {
+                display: flex;
+                align-items: center;
+            }
+
+            .amount-box {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                .balance-box {
+                    display: flex;
+                    justify-content: center;
+
+                    .balance {
+                        font-weight: 800;
+                        font-style: normal;
+                        font-size: 21px;
+                        line-height: 42px;
+                    }
+                }
+
+                .token-balance {
                     font-weight: 800;
                     font-style: normal;
                     font-size: 21px;
                     line-height: 42px;
                 }
-            }
 
-            .token-balance {
-                font-weight: 800;
-                font-style: normal;
-                font-size: 21px;
-                line-height: 42px;
-            }
-
-            .amount-usd {
-                font-weight: normal;
-                font-style: normal;
-                font-size: 16px;
-                line-height: 42px;
-                opacity: 0.8;
+                .amount-usd {
+                    font-weight: normal;
+                    font-style: normal;
+                    font-size: 16px;
+                    line-height: 42px;
+                    opacity: 0.8;
+                }
             }
         }
     }
-}
 
-.title {
-    height: 35px;
-    font-size: 18px !important;
-    display: flex;
-    align-items: center;
-    opacity: 0.6;
-}
-
-.address-with-setting {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-bottom: 15px;
-
-    .address {
+    .title {
+        height: 35px;
+        font-size: 18px !important;
         display: flex;
         align-items: center;
-        width: 50%;
-        justify-content: center;
-    }
-
-    .setting-icon {
-        display: flex;
-        width: 50%;
-        justify-content: end;
         opacity: 0.6;
     }
-}
 
-@media (max-width: 600px) {
-    .address-container {
-        width: 100% !important;
+    .address-with-setting {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 15px;
+
+        .address {
+            display: flex;
+            align-items: center;
+            width: 50%;
+            justify-content: center;
+        }
+
+        .setting-icon {
+            display: flex;
+            width: 50%;
+            justify-content: end;
+            opacity: 0.6;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .address-container {
+            width: 100% !important;
+        }
     }
 }

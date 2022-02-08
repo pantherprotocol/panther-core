@@ -15,14 +15,8 @@ export default function UnstakingTab(props: {
     fetchData: () => Promise<void>;
 }) {
     return (
-        <Box width={'100%'} margin={'0 5'}>
-            <Card
-                variant="outlined"
-                sx={{
-                    backgroundColor: '#2B334140',
-                    borderRadius: '8px',
-                }}
-            >
+        <Box className="unstaking-tab-holder">
+            <Card variant="outlined">
                 <UnstakingInfoMSG />
                 <UnstakeTable fetchData={props.fetchData} />
                 <TotalUnclaimedRewards rewardsBalance={props.rewardsBalance} />

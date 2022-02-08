@@ -1,210 +1,212 @@
 @import '../../variables';
+.staking-tab-holder {
+    width: 100%;
+    .staking-info-card {
+        padding: 0 !important;
+        background: rgba(99, 114, 136, 0.15) !important;
+        border-radius: 8px !important;
+        mix-blend-mode: normal;
+        backdrop-filter: blur(45px);
+        margin: 32px 0 42px 0;
+    }
 
-.staking-info-card {
-    padding: 0 !important;
-    background: rgba(99, 114, 136, 0.15) !important;
-    border-radius: 8px !important;
-    mix-blend-mode: normal;
-    backdrop-filter: blur(45px);
-    margin: 32px 0 42px 0;
-}
+    .buttons-holder {
+        background: #4c5873 !important;
+        border-radius: 16px;
+        height: 80px;
 
-.buttons-holder {
-    background: #4c5873 !important;
-    border-radius: 16px;
-    height: 80px;
+        &.active {
+            background-color: $second-blue !important;
 
-    &.active {
-        background-color: $second-blue !important;
-
-        .staking-button {
-            opacity: 1;
+            .staking-button {
+                opacity: 1;
+            }
         }
     }
-}
 
-.staking-button {
-    height: 80px;
-    padding: 0;
-    width: 100%;
-    color: $white !important;
-    font-style: normal;
-    font-weight: bold !important;
-    font-size: 18px !important;
-    text-transform: none !important;
-    line-height: 30px;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    opacity: 0.7;
-}
-
-.staking-info-container {
-    flex-direction: column;
-    text-align: start;
-    border: none;
-    background: transparent;
-    padding: 5px 16px;
-    margin: 20px 0;
-
-    .staking-info-title {
-        font-weight: 800 !important;
+    .staking-button {
+        height: 80px;
+        padding: 0;
+        width: 100%;
+        color: $white !important;
+        font-style: normal;
+        font-weight: bold !important;
         font-size: 18px !important;
-        line-height: 42px;
+        text-transform: none !important;
+        line-height: 30px;
         display: flex;
         align-items: center;
-        color: $main-heading-span;
+        text-align: center;
+        opacity: 0.7;
     }
 
-    .staking-info-text {
-        font-size: 16px;
-        line-height: 25px;
-        color: $white;
-        opacity: 0.8;
-        padding: 20px 0;
+    .staking-info-container {
+        flex-direction: column;
         text-align: start;
-    }
-}
+        border: none;
+        background: transparent;
+        padding: 5px 16px;
+        margin: 20px 0;
 
-.staking-method-container {
-    flex-direction: column;
-    align-items: flex-start;
-    height: auto;
-    text-align: start;
-    width: 100%;
-    background: rgba(99, 114, 136, 0.2);
-    padding: 5px 16px;
-    border-radius: 10px;
+        .staking-info-title {
+            font-weight: 800 !important;
+            font-size: 18px !important;
+            line-height: 42px;
+            display: flex;
+            align-items: center;
+            color: $main-heading-span;
+        }
 
-    .staking-method-title {
-        font-weight: 500;
-        font-style: normal;
-        font-size: 16px;
-        line-height: 42px;
-        margin-right: 18px;
-        color: #d8d8d8;
-    }
-
-    .staking-method-select {
-        min-width: 125px;
-        color: $white;
-        text-align: left;
-        margin-top: 0;
-        cursor: pointer;
-
-        &:before,
-        &:after {
-            border: none !important;
+        .staking-info-text {
+            font-size: 16px;
+            line-height: 25px;
+            color: $white;
+            opacity: 0.8;
+            padding: 20px 0;
+            text-align: start;
         }
     }
 
-    .staking-method-estimated-gas-fee {
-        font-weight: 500;
-        font-style: normal;
-        font-size: 16px;
-        line-height: 42px;
-        margin-right: 18px;
-        color: $white;
-    }
-}
+    .staking-method-container {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        text-align: start;
+        width: 100%;
+        background: rgba(99, 114, 136, 0.2);
+        padding: 5px 16px;
+        border-radius: 10px;
 
-.staking-input-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px 0;
+        .staking-method-title {
+            font-weight: 500;
+            font-style: normal;
+            font-size: 16px;
+            line-height: 42px;
+            margin-right: 18px;
+            color: #d8d8d8;
+        }
 
-    .amount-to-stake-caption {
-        color: $white;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 16px;
-        line-height: 42px;
-        display: flex;
-        align-items: center;
-    }
+        .staking-method-select {
+            min-width: 125px;
+            color: $white;
+            text-align: left;
+            margin-top: 0;
+            cursor: pointer;
 
-    .available-to-stake-caption {
-        font-style: normal;
-        font-weight: 500;
-        font-size: 16px;
-        line-height: 42px;
+            &:before,
+            &:after {
+                border: none !important;
+            }
+        }
 
-        align-items: center;
-        text-align: right;
-        color: $white;
-        opacity: 0.5;
-    }
-
-    .token-balance {
-        font-weight: 800;
-        font-size: 16px;
-        line-height: 42px;
-        align-items: center;
-        color: #ffdfbd;
-        margin-left: 10px;
-    }
-}
-
-.staking-input-container {
-    background-color: #3f4a5f;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px;
-    border: 1px solid #ffdfbd;
-    border-radius: 15px;
-
-    .staking-input {
-        border: 0;
-        font-weight: 800;
-        font-size: 36px;
-        line-height: 46px;
-        color: $white;
-        padding: 0px 15px;
-        width: 330px;
-    }
-    input {
-        text-align: end !important;
-    }
-    .MuiInputBase-input.MuiInput-input.Mui-disabled {
-        -webkit-text-fill-color: $table-header-grey;
+        .staking-method-estimated-gas-fee {
+            font-weight: 500;
+            font-style: normal;
+            font-size: 16px;
+            line-height: 42px;
+            margin-right: 18px;
+            color: $white;
+        }
     }
 
-    .staking-input-box {
-        display: flex;
-        align-items: center;
-        width: 70%;
-    }
-
-    .staking-input-symbol {
-        font-weight: 500;
-        font-size: 20px;
-        line-height: 42px;
-        display: flex;
-        align-items: center;
-        color: $white;
-        padding-left: 30px;
-    }
-
-    .staking-input-max {
-        color: #ffdfbd;
-        font-weight: 800;
-        font-size: 16px;
-        width: 20%;
-        cursor: pointer;
-        line-height: initial;
-    }
-}
-
-@media (max-width: 600px) {
     .staking-input-header {
-        flex-direction: column-reverse !important;
-        margin: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+
+        .amount-to-stake-caption {
+            color: $white;
+            font-style: normal;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 42px;
+            display: flex;
+            align-items: center;
+        }
+
+        .available-to-stake-caption {
+            font-style: normal;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 42px;
+
+            align-items: center;
+            text-align: right;
+            color: $white;
+            opacity: 0.5;
+        }
+
+        .token-balance {
+            font-weight: 800;
+            font-size: 16px;
+            line-height: 42px;
+            align-items: center;
+            color: #ffdfbd;
+            margin-left: 10px;
+        }
     }
 
-    .staking-method {
-        margin-right: 0 !important;
+    .staking-input-container {
+        background-color: #3f4a5f;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+        border: 1px solid #ffdfbd;
+        border-radius: 15px;
+
+        .staking-input {
+            border: 0;
+            font-weight: 800;
+            font-size: 36px;
+            line-height: 46px;
+            color: $white;
+            padding: 0px 15px;
+            width: 380px;
+        }
+        input {
+            text-align: end !important;
+        }
+        .MuiInputBase-input.MuiInput-input.Mui-disabled {
+            -webkit-text-fill-color: $table-header-grey;
+        }
+
+        .staking-input-box {
+            display: flex;
+            align-items: center;
+            width: 90%;
+        }
+
+        .staking-input-symbol {
+            font-weight: 500;
+            font-size: 20px;
+            line-height: 42px;
+            display: flex;
+            align-items: center;
+            color: $white;
+            padding-left: 30px;
+        }
+
+        .staking-input-max {
+            color: #ffdfbd;
+            font-weight: 800;
+            font-size: 16px;
+            width: 20%;
+            cursor: pointer;
+            line-height: initial;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .staking-input-header {
+            flex-direction: column-reverse !important;
+            margin: 6px;
+        }
+
+        .staking-method {
+            margin-right: 0 !important;
+        }
     }
 }

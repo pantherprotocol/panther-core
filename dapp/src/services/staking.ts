@@ -1,10 +1,11 @@
-import {TransactionResponse} from '@ethersproject/abstract-provider';
-import {TypedDataDomain} from '@ethersproject/abstract-signer';
+import type {TypedDataDomain} from '@ethersproject/abstract-signer';
 import {JsonRpcSigner} from '@ethersproject/providers';
+import type {TransactionResponse} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
 import * as ethers from 'ethers';
-import {BigNumber, Contract, ContractTransaction, utils} from 'ethers';
+import {BigNumber, Contract, utils} from 'ethers';
+import type {ContractTransaction} from 'ethers';
 
 import {abi as REWARDS_MASTER_ABI} from '../abi/RewardsMaster';
 import {abi as STAKING_ABI} from '../abi/Staking';

@@ -1,5 +1,5 @@
 import {formatEther} from '@ethersproject/units';
-import {BigNumberish, ethers, utils} from 'ethers';
+import {BigNumber, ethers, utils} from 'ethers';
 
 export const formatAccountAddress = (
     account: string | undefined | null,
@@ -11,7 +11,7 @@ export const formatAccountAddress = (
 };
 
 export const formatAccountBalance = (
-    balance: BigNumberish | null,
+    balance: BigNumber | null,
     currency: string,
 ): string | null => {
     if (!balance) return null;
@@ -20,8 +20,8 @@ export const formatAccountBalance = (
 };
 
 export const formatTokenBalance = (
-    balance: BigNumberish | null,
-    decimal: BigNumberish,
+    balance: BigNumber | null,
+    decimal: BigNumber,
 ): string | null => {
     if (!balance) return null;
     const formattedBalance = utils.formatUnits(balance, decimal);
@@ -45,7 +45,7 @@ export async function getTokenBalance(
         console.error('getTokenBalance called with null address');
         return null;
     }
-    const balance: BigNumberish = await contract.balanceOf(address);
+    const balance: BigNumber = await contract.balanceOf(address);
     const decimal = await contract.decimals();
     return formatTokenBalance(balance, decimal);
 }

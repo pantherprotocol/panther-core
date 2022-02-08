@@ -193,22 +193,19 @@ const StakingInput = props => {
     const {tokenBalance, setAmountToStake, amountToStake} = props;
     const changeHandler = e => {
         const inputTextLength = e.target.value.length;
-        if (inputTextLength > 10) {
+        if (inputTextLength > 12) {
             return;
         }
 
         const regex = /^\d*\.?\d*$/; // matches floating points numbers
-        if (
-            tokenBalance &&
-            Number(tokenBalance) &&
-            Number(e.target.value) > Number(tokenBalance) &&
-            regex.test(e.target.value)
-        ) {
-            return null;
-        } else if (regex.test(e.target.value)) {
+        if (!regex.test(e.target.value)) {
+            return false;
+        }
+        if (tokenBalance && Number(tokenBalance)) {
             setAmountToStake(e.target.value.toString() || '');
+            return true;
         } else {
-            setAmountToStake('');
+            return false;
         }
     };
     return (
@@ -252,11 +249,13 @@ const StakingInput = props => {
                     </Box>
 
                     <Input
+                        inputProps={{pattern: '[0-9]*', inputMode: 'decimal'}}
                         className="staking-input"
+                        value={amountToStake}
                         onChange={changeHandler}
                         autoComplete="off"
                         autoFocus={true}
-                        placeholder={amountToStake ? amountToStake : '0'}
+                        placeholder="0"
                         disableUnderline={true}
                         disabled={!account}
                         endAdornment={

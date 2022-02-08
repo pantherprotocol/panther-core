@@ -1,10 +1,13 @@
 import React from 'react';
+
+import {Web3Provider} from '@ethersproject/providers';
+import {Web3ReactProvider} from '@web3-react/core';
 import ReactDOM from 'react-dom';
-import './index.scss';
+
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {Web3ReactProvider} from '@web3-react/core';
-import {Web3Provider} from '@ethersproject/providers';
+
+import './index.scss';
 
 function getLibrary(provider: any): Web3Provider {
     const library = new Web3Provider(provider);

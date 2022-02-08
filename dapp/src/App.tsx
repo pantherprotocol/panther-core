@@ -1,11 +1,14 @@
 import React from 'react';
-import './styles.scss';
-import {BrowserRouter as Router} from 'react-router-dom';
-import {Route} from 'react-router';
-import StakingZkpPage from './pages/StakingZkpPage';
-import {ThemeProvider} from '@mui/material/styles';
+
 import {createTheme} from '@mui/material';
+import {ThemeProvider} from '@mui/material/styles';
 import {ReactNotifications} from 'react-notifications-component';
+import {Route} from 'react-router';
+import {BrowserRouter as Router} from 'react-router-dom';
+
+import StakingZkpPage from './pages/StakingZkpPage';
+
+import './styles.scss';
 
 const theme = createTheme({
     typography: {

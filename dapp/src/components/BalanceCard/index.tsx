@@ -1,17 +1,20 @@
 import * as React from 'react';
+
+import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
-import refreshIcon from '../../images/refresh-icon.svg';
-import infoIcon from '../../images/info-icon.svg';
+
 import ethLogo from '../../images/eth-logo.svg';
+import infoIcon from '../../images/info-icon.svg';
+import refreshIcon from '../../images/refresh-icon.svg';
 // import settingIcon from '../../images/setting-icon.svg';
-import {IconButton, Tooltip} from '@mui/material';
-import Address from '../Address';
 import accountAvatar from '../../images/wallet-icon.svg';
-import './styles.scss';
-import {formatCurrency} from '../../utils';
 import {formatUSDPrice} from '../../services/account';
+import {formatCurrency} from '../../utils';
+import Address from '../Address';
+
+import './styles.scss';
 
 const BalanceCard = (props: {
     rewardsBalance: string | null;

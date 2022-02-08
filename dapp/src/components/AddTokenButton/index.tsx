@@ -1,12 +1,15 @@
 import React, {useCallback} from 'react';
-import Button from '@mui/material/Button';
+
 import {Web3Provider} from '@ethersproject/providers';
+import Button from '@mui/material/Button';
 import {useWeb3React} from '@web3-react/core';
-import * as stakingService from '../../services/staking';
-import {STAKING_TOKEN_CONTRACT} from '../../services/contracts';
+
 import logo from '../../images/panther-logo.svg';
-import './styles.scss';
+import {STAKING_TOKEN_CONTRACT} from '../../services/contracts';
 import {openNotification} from '../../services/notification';
+import * as stakingService from '../../services/staking';
+
+import './styles.scss';
 
 export const AddTokenButton = (props: {
     setTokenAdded: (b: boolean) => void;

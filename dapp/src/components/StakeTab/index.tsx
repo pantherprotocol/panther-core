@@ -1,20 +1,22 @@
-import * as React from 'react';
 import {useState, useEffect} from 'react';
+import * as React from 'react';
+
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import InputAdornment from '@mui/material/InputAdornment';
 import Input from '@mui/material/Input';
+import InputAdornment from '@mui/material/InputAdornment';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
+
 import logo from '../../images/panther-logo.svg';
+import {onWrongNetwork} from '../../services/connectors';
 import * as stakingService from '../../services/staking';
 import {formatCurrency} from '../../utils';
-import {onWrongNetwork} from '../../services/connectors';
 import {ConnectButton} from '../ConnectButton';
 
 import './styles.scss';

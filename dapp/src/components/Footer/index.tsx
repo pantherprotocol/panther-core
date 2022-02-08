@@ -1,9 +1,11 @@
 import React from 'react';
-import './styles.scss';
-import twitter from './../../images/twitter-icon.svg';
+
 import discord from './../../images/discord-icon.svg';
-import telegram from './../../images/telegram-icon.svg';
 import medium from './../../images/medium-icon.svg';
+import telegram from './../../images/telegram-icon.svg';
+import twitter from './../../images/twitter-icon.svg';
+
+import './styles.scss';
 
 export const Footer = () => {
     return (

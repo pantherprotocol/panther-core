@@ -1,10 +1,11 @@
 import React from 'react';
+
+import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {IconButton, Tooltip} from '@mui/material';
 
-import {SafeMuiLink} from '../../services/links';
 import infoIcon from '../../images/info-icon.svg';
+import {SafeMuiLink} from '../../services/links';
 
 import './styles.scss';
 

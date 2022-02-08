@@ -1,31 +1,37 @@
 import React, {useCallback, useEffect, useState} from 'react';
+
+import {BigNumber} from '@ethersproject/bignumber';
+import {Web3Provider} from '@ethersproject/providers';
 import {Container} from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import {Box} from '@mui/system';
-import CssBaseline from '@mui/material/CssBaseline';
-import './styles.scss';
-import BalanceCard from '../../components/BalanceCard';
-import AdvancedStakingComingSoon from '../../components/AdvancedStakingComingSoon';
-import StakingUnstakingCard from '../../components/StakingUnstakingCard';
-import CurrentStakeAPY from '../../components/CurrentStakeAPY';
-import background from '../../images/background.png';
-import {Footer} from '../../components/Footer';
-import {switchNetwork} from '../../services/wallet';
-import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
-import {injected} from '../../services/connectors';
 import {useWeb3React} from '@web3-react/core';
-import {Web3Provider} from '@ethersproject/providers';
-import Header from '../../components/Header';
-import * as stakingService from '../../services/staking';
-import * as accountService from '../../services/account';
-import {BigNumber} from '@ethersproject/bignumber';
 import {utils} from 'ethers';
-import {formatTokenBalance, formatUSDPrice} from '../../services/account';
+
+import AdvancedStakingComingSoon from '../../components/AdvancedStakingComingSoon';
+import BalanceCard from '../../components/BalanceCard';
+import CurrentStakeAPY from '../../components/CurrentStakeAPY';
+import {Footer} from '../../components/Footer';
+import Header from '../../components/Header';
+import StakingUnstakingCard from '../../components/StakingUnstakingCard';
+import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
+import background from '../../images/background.png';
+import * as accountService from '../../services/account';
+import {
+    formatTokenBalance,
+    formatUSDPrice,
+    formatAccountAddress,
+} from '../../services/account';
+import {injected} from '../../services/connectors';
+import * as stakingService from '../../services/staking';
 import {
     getAccountStakes,
     getRewardsBalanceForCalculations,
 } from '../../services/staking';
-import {formatAccountAddress} from '../../services/account';
+import {switchNetwork} from '../../services/wallet';
+
+import './styles.scss';
 
 const E18 = BigNumber.from(10).pow(18);
 

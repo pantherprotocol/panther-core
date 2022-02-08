@@ -1,28 +1,30 @@
+import {useState, useEffect} from 'react';
 import * as React from 'react';
+
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import logo from '../../images/panther-logo.svg';
-import stakingIcon from '../../images/staking-icon.svg';
+import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
+import {NoEthereumProviderError} from '@web3-react/injected-connector';
+
 import docsIcon from '../../images/docs-icon.svg';
 import governanceIcon from '../../images/governance-icon.svg';
-import Address from '../Address';
 import accountAvatar from '../../images/meta-mask-icon.svg';
-import {LogoutButton} from '../LogoutButton';
-import {SafeLink} from '../../services/links';
-import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
-import {useState} from 'react';
-import {NoEthereumProviderError} from '@web3-react/injected-connector';
-import {useEffect} from 'react';
-import {onWrongNetwork, requiredNetwork} from '../../services/connectors';
+import logo from '../../images/panther-logo.svg';
+import stakingIcon from '../../images/staking-icon.svg';
 import {
     formatAccountAddress,
     formatAccountBalance,
 } from '../../services/account';
-import {ConnectButton} from '../ConnectButton';
+import {onWrongNetwork, requiredNetwork} from '../../services/connectors';
+import {SafeLink} from '../../services/links';
+import Address from '../Address';
 import {AddTokenButton} from '../AddTokenButton';
+import {ConnectButton} from '../ConnectButton';
+import {LogoutButton} from '../LogoutButton';
+
 import './styles.scss';
 
 const Header = props => {

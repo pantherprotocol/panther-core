@@ -1,10 +1,12 @@
 import React from 'react';
+
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import {Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {useWeb3React} from '@web3-react/core';
-import {Tooltip} from '@mui/material';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+
 import './styles.scss';
 
 const Address = (props: {

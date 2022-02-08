@@ -1,4 +1,5 @@
 import React from 'react';
+
 import './styles.scss';
 
 export const Spinner = (props: {text?: string; color?: string}) => {

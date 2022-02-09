@@ -114,7 +114,7 @@
     "prettier": "^2.3.2",
     "react-copy-to-clipboard": "^5.0.4",
     "react-hot-loader": "^4.13.0",
-    "react-notifications-component": "^3.3.11",
+    "react-notifications-component": "^3.4.0",
     "sass": "^1.37.5",
     "sass-loader": "^12.1.0",
     "sinon": "^12.0.1",

@@ -18900,10 +18900,10 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-notifications-component@^3.3.11:
-  version "3.3.11"
-  resolved "https://registry.yarnpkg.com/react-notifications-component/-/react-notifications-component-3.3.11.tgz#b1bbfd0ecf88d2e6344ce4ff31ff6aab1a965f3c"
-  integrity sha512-czkbOomxkiNWt0VRjxRzNgbS/iaX2dWvZwrGc3Xx+OfcTVR1XVJ7Ih71u+h0eTkUFIz1bXPV2PL9dUcnG71kng==
+react-notifications-component@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/react-notifications-component/-/react-notifications-component-3.4.0.tgz#e2b252533b55e18b9cedb48893525b373b809c53"
+  integrity sha512-bKD8lNVDCWHYgxhjk+gDgHC+idqUrHd9tHdF/4GBQPZaNcthrwzHF94QJFxRbIBFQ5Ef/cqtMdxbk4sVYSjgLA==
 
 react-refresh@^0.8.3:
   version "0.8.3"

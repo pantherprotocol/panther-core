@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import './index.scss';
+import './styles.scss';
 
 function getLibrary(provider: any): Web3Provider {
     const library = new Web3Provider(provider);

@@ -1,11 +1,13 @@
 @import '../../variables';
+$unstaking-tab-holder-background: #2b334140;
+$unstaking-tab-background: rgba(99, 114, 136, 0.2);
 
 .unstaking-tab-holder {
     width: 100%;
     margin: 0px 5px;
 
     .MuiCard-root {
-        background-color: #2b334140;
+        background-color: $unstaking-tab-holder-background;
         border-radius: 8px;
     }
 
@@ -14,7 +16,7 @@
         padding: 16px;
         border-radius: 8px;
         margin-bottom: 30px;
-        background-color: $balance-card-background;
+        background-color: $unstaking-tab-background;
     }
 
     .total-unclaimed-container {
@@ -28,7 +30,7 @@
             justify-content: center;
             padding: 16px;
             border-radius: 8px;
-            background-color: $balance-card-background;
+            background-color: $unstaking-tab-background;
         }
     }
 }

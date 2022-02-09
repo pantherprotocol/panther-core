@@ -1,4 +1,5 @@
 @import '../../variables';
+$transition-tooltip-background-color: #616161;
 
 .MuiTable-root {
     th {
@@ -47,7 +48,7 @@
 
 .MuiTooltip-tooltip,
 .transition-tooltip {
-    background-color: #616161 !important;
+    background-color: $transition-tooltip-background-color !important;
     // background-color: $card-background !important;
     padding: 20px !important;
 

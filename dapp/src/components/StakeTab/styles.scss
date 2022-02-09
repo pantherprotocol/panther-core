@@ -1,10 +1,19 @@
 @import '../../variables';
+$staking-tab-background: rgba(99, 114, 136, 0.2);
+$staking-info-background: rgba(99, 114, 136, 0.15);
+$buttons-holder-background-color: #4c5873;
+$staking-info-title-background-color: #ffdfbd;
+$staking-method-title-color: #d8d8d8;
+$token-balance-color: #ffdfbd;
+$staking-input-container-color: #ffdfbd;
+$input-disabled-color: #6c757e;
+$staking-input-max-button-color: #ffdfbd;
 
 .staking-tab-holder {
     width: 100%;
     .staking-info-card {
         padding: 0 !important;
-        background: rgba(99, 114, 136, 0.15) !important;
+        background: $staking-info-background !important;
         border-radius: 8px !important;
         mix-blend-mode: normal;
         backdrop-filter: blur(45px);
@@ -12,7 +21,7 @@
     }
 
     .buttons-holder {
-        background: #4c5873 !important;
+        background: $buttons-holder-background-color !important;
         border-radius: 16px;
         height: 80px;
 
@@ -29,7 +38,7 @@
         height: 80px;
         padding: 0;
         width: 100%;
-        color: $white !important;
+        color: white !important;
         font-style: normal;
         font-weight: bold !important;
         font-size: 18px !important;
@@ -55,13 +64,13 @@
             line-height: 42px;
             display: flex;
             align-items: center;
-            color: $main-heading-span;
+            color: $staking-info-title-background-color;
         }
 
         .staking-info-text {
             font-size: 16px;
             line-height: 25px;
-            color: $white;
+            color: white;
             opacity: 0.8;
             padding: 20px 0;
             text-align: start;
@@ -74,7 +83,7 @@
         height: auto;
         text-align: start;
         width: 100%;
-        background: $balance-card-background;
+        background: $staking-tab-background;
         padding: 5px 16px;
         border-radius: 10px;
 
@@ -84,12 +93,12 @@
             font-size: 16px;
             line-height: 42px;
             margin-right: 18px;
-            color: #d8d8d8;
+            color: $staking-method-title-color;
         }
 
         .staking-method-select {
             min-width: 125px;
-            color: $white;
+            color: white;
             text-align: left;
             margin-top: 0;
             cursor: pointer;
@@ -106,7 +115,7 @@
             font-size: 16px;
             line-height: 42px;
             margin-right: 18px;
-            color: $white;
+            color: white;
         }
     }
 
@@ -117,7 +126,7 @@
         margin: 10px 0;
 
         .amount-to-stake-caption {
-            color: $white;
+            color: white;
             font-style: normal;
             font-weight: 500;
             font-size: 16px;
@@ -134,7 +143,7 @@
 
             align-items: center;
             text-align: right;
-            color: $white;
+            color: white;
             opacity: 0.5;
         }
 
@@ -143,7 +152,7 @@
             font-size: 16px;
             line-height: 42px;
             align-items: center;
-            color: #ffdfbd;
+            color: $token-balance-color;
             margin-left: 10px;
         }
     }
@@ -155,7 +164,7 @@
         align-items: center;
         justify-content: space-between;
         padding: 16px;
-        border: 1px solid #ffdfbd;
+        border: 1px solid $staking-input-container-color;
         border-radius: 15px;
 
         .staking-input {
@@ -163,7 +172,7 @@
             font-weight: 800;
             font-size: 36px;
             line-height: 46px;
-            color: $white;
+            color: white;
             padding: 0px 15px;
             width: 380px;
         }
@@ -171,7 +180,7 @@
             text-align: end !important;
         }
         .MuiInputBase-input.MuiInput-input.Mui-disabled {
-            -webkit-text-fill-color: $table-header-grey;
+            -webkit-text-fill-color: $input-disabled-color;
         }
 
         .staking-input-box {
@@ -188,6 +197,7 @@
         .staking-input-symbol {
             display: flex;
             align-items: center;
+            color: white;
             padding-left: 30px;
 
             .staking-symbol-holder {
@@ -213,7 +223,7 @@
         }
 
         .staking-input-max {
-            color: #ffdfbd;
+            color: $staking-input-max-button-color;
             font-weight: 800;
             font-size: 16px;
             width: 20%;

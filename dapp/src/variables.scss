@@ -4,6 +4,7 @@ $light-gray: #e7e7e7;
 $price-unit: #f0ffff;
 $black: #191c1f;
 $main-brown: #ffdfbd;
+$highlighted-text: #ffdfbd;
 $grey-btn: #475267;
 $grey-btn-border: #485267;
 $dark-gray: #404a53;
@@ -11,7 +12,6 @@ $muted-text: gray;
 $modal-back: #151c2a;
 $switch-back: #111420;
 $button-group-item: linear-gradient(0deg, #727b93, #727b93);
-
 $input-border: #acacc2;
 $btn-blue: #205bea;
 $second-blue: #1e4eb4;
@@ -38,12 +38,12 @@ $progress: #fddcbc;
 $main-background: #0c121e;
 $main-text: #bbbbbb;
 $grey-text: rgba(255, 255, 255, 0.5);
-$button-holder: rgba(107, 155, 183, 0.2);
+$buttons-holder-background-color: rgba(107, 155, 183, 0.2);
 $border-button: rgba(255, 255, 255, 0.36);
 $dropdown-border-color: rgba(102, 141, 198, 0.4);
 $warning-box: rgb(0 0 0 / 38%);
 $header-box-shadow: rgba(0, 0, 0, 0.1);
-$balance-card-background: rgba(99, 114, 136, 0.2);
+
 $main-heading-span: #ffdfbd;
 $third-blue: linear-gradient(0deg, #2b63eb, #2b63eb);
 $blue-linear: linear-gradient(
@@ -67,8 +67,6 @@ $dropdown-background: linear-gradient(
     rgba(75, 86, 107, 0.3),
     rgba(75, 86, 107, 0.3)
 );
-$main-balance-card-background: linear-gradient(0deg, #3f4a5f, #3f4a5f);
+
+$warning-box-background: linear-gradient(216deg, #0000007a, transparent);
 $toggle-button-group-color: linear-gradient(0deg, #3f4a5f, #3f4a5f);
-$dialog-confirm-button: rgba(32, 91, 234, 1);
-$dialog-cancel-button: rgba(168, 179, 202, 1);
-$dialog-background-color: #303c54;

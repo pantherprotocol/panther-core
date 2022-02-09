@@ -194,7 +194,7 @@ a {
     margin-bottom: 0;
     border: 1px solid $warning-box;
     height: auto;
-    background-image: linear-gradient(216deg, #0000007a, transparent);
+    background-image: $warning-box-background;
     padding: 16px;
     border-radius: 10px;
     flex-direction: column;

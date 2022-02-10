@@ -11,7 +11,9 @@ import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
 import {Staking, IStakingTypes} from '../types/contracts/Staking';
+import {ErrorWithTx} from '../components/Common/error-with-tx';
 import {CONFIRMATIONS_NUM} from '../utils/constants';
+import {getEventFromReceipt} from '../utils/transactions';
 
 import {
     REWARD_MASTER_CONTRACT,
@@ -191,21 +193,11 @@ export async function stake(
     );
 
     const receipt = await tx.wait(CONFIRMATIONS_NUM);
-    if (!receipt) {
-        return txError('Failed to get transaction receipt.', tx);
-    }
-    if (!receipt.events) {
-        return txError('Failed to get transaction events.', receipt);
+    const event = await getEventFromReceipt(receipt, 'StakeCreated');
+    if (event instanceof Error) {
+        return event;
     }
 
-    const event = receipt.events.find(({event}) => event === 'StakeCreated');
-    if (!event) {
-        return txError(
-            'No StakeCreated event found for this transaction.',
-            receipt.events,
-        );
-    }
-    console.debug('StakeCreated event:', event);
     removeNotification(inProgress);
     openNotification(
         'Stake completed successfully',
@@ -332,35 +324,58 @@ async function permitAndStake(
 }
 
 export async function unstake(
-    library: any,
     contract: Contract,
     stakeID: BigNumber,
     signer: JsonRpcSigner,
     data?: string,
     isForced = false,
-): Promise<boolean | Error> {
-    if (!contract) {
-        return new Error('Missing contract parameter');
-    }
+): Promise<Error | undefined> {
+    if (!contract) return new Error('Missing contract parameter');
+    if (!signer) return new Error('stake(): Undefined signer');
 
     const stakingSigner = contract.connect(signer);
-
-    const unstakingResponse: any = await stakingSigner.unstake(
-        stakeID,
-        data ? data : '0x00',
-        isForced,
-        {
-            gasLimit: 250000,
-        },
-    );
-
+    let tx: any;
     try {
-        await unstakingResponse.wait(CONFIRMATIONS_NUM);
+        tx = await stakingSigner.unstake(
+            stakeID,
+            data ? data : '0x00',
+            isForced,
+            {
+                gasLimit: 250000,
+            },
+
+        );
     } catch (e: any) {
-        return e;
+        const errMsg =
+            'Unstaking transaction failed: ' + (e.message || 'Unknown error');
+        console.error(errMsg);
+        openNotification(
+            'Transaction error',
+            ErrorWithTx({errorMessage: errMsg, txHash: tx?.hash}),
+            'danger',
+        );
+        return e as Error;
     }
 
-    return true;
+    const inProgress = openNotification(
+        'Transaction in progress',
+        'Your unstaking transaction is currently in progress. Please wait for confirmation!',
+        'info',
+    );
+
+    const receipt = await tx.wait(CONFIRMATIONS_NUM);
+    const event = await getEventFromReceipt(receipt, 'StakeClaimed');
+    if (event instanceof Error) {
+        return event;
+    }
+
+    removeNotification(inProgress);
+    openNotification(
+        'Unstaking completed successfully',
+        'Congratulations! Your unstaking transaction was processed!',
+        'info',
+        15000,
+    );
 }
 
 export async function getAccountStakes(

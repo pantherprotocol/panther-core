@@ -20,7 +20,7 @@ const BalanceCard = (props: {
     rewardsBalance: string | null;
     tokenBalance: string | null;
     stakedBalance: string | null;
-    tokenUSDValue: string | null;
+    tokenBalanceUSD: string | null;
     pricePerToken: number | null;
     accountAddress: string | null;
 }) => {
@@ -69,7 +69,7 @@ const BalanceCard = (props: {
                         'This is the amount of ZKP you have available for staking.'
                     }
                     tokenBalance={props.tokenBalance}
-                    tokenMarketPrice={props.tokenUSDValue}
+                    tokenMarketPrice={props.tokenBalanceUSD}
                 />
 
                 <AddressBalances

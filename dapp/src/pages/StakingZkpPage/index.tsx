@@ -53,7 +53,7 @@ function StakingZkpPage() {
     const [activatingConnector, setActivatingConnector] = useState<any>();
     const [, setChainError] = useState('');
     const [tokenBalance, setTokenBalance] = useState<string | null>(null);
-    const [tokenUSDValue, setTokenUSDValue] = useState<string | null>(null);
+    const [tokenBalanceUSD, setTokenBalanceUSD] = useState<string | null>(null);
     const [pricePerToken, setPricePerToken] = useState<number | null>(null);
     const [stakedBalance, setStakedBalance] = useState<any>(null);
     const [rewardsBalance, setRewardsBalance] = useState<string | null>(null);
@@ -102,9 +102,11 @@ function StakingZkpPage() {
         const price = await stakingService.getZKPMarketPrice();
         if (price && balance && Number(balance) >= 0) {
             setPricePerToken(price);
-            const tokenUSDValue: number = price * Number(balance);
-            const formattedUSDValue = formatUSDPrice(tokenUSDValue.toString());
-            setTokenUSDValue(formattedUSDValue);
+            const tokenBalanceUSD: number = price * Number(balance);
+            const formattedUSDValue = formatUSDPrice(
+                tokenBalanceUSD.toString(),
+            );
+            setTokenBalanceUSD(formattedUSDValue);
         }
     }, []);
 
@@ -279,9 +281,8 @@ function StakingZkpPage() {
                             <Grid item xs={12} md={5}>
                                 <Box width={'100%'}>
                                     <BalanceCard
-                                        key={tokenUSDValue}
                                         tokenBalance={tokenBalance}
-                                        tokenUSDValue={tokenUSDValue}
+                                        tokenBalanceUSD={tokenBalanceUSD}
                                         pricePerToken={pricePerToken}
                                         stakedBalance={stakedBalance}
                                         rewardsBalance={rewardsBalance}

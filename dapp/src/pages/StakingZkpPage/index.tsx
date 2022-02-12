@@ -97,15 +97,10 @@ function StakingZkpPage() {
         }
     }, [active, chainId, deactivate]);
 
-    const getTokenMarketPrice = useCallback(async balance => {
+    const getTokenMarketPrice = useCallback(async () => {
         const price = await stakingService.getZKPMarketPrice();
-        if (price && balance && Number(balance) >= 0) {
+        if (price) {
             setPricePerToken(price);
-            const tokenBalanceUSD: number = price * Number(balance);
-            const formattedUSDValue = formatUSDPrice(
-                tokenBalanceUSD.toString(),
-            );
-            setTokenBalanceUSD(formattedUSDValue);
         }
     }, []);
 
@@ -119,10 +114,16 @@ function StakingZkpPage() {
             stakingTokenContract,
             account,
         );
-
         setTokenBalance(balance);
-        getTokenMarketPrice(balance);
-    }, [account, library, getTokenMarketPrice]);
+
+        if (pricePerToken && balance && Number(balance) >= 0) {
+            const tokenBalanceUSD: number = pricePerToken * Number(balance);
+            const formattedUSDValue = formatUSDPrice(
+                tokenBalanceUSD.toString(),
+            );
+            setTokenBalanceUSD(formattedUSDValue);
+        }
+    }, [account, library, pricePerToken]);
 
     const getStakedZkpBalance = useCallback(async () => {
         const stakingContract = await stakingService.getStakingContract(
@@ -235,12 +236,14 @@ function StakingZkpPage() {
             return;
         }
 
+        getTokenMarketPrice();
         setZkpTokenBalance();
         getStakedZkpBalance();
         getUnclaimedRewardsBalance();
     }, [
         library,
         account,
+        getTokenMarketPrice,
         setZkpTokenBalance,
         getStakedZkpBalance,
         getUnclaimedRewardsBalance,

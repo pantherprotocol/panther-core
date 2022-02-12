@@ -10,9 +10,10 @@ import {abi as REWARDS_MASTER_ABI} from '../abi/RewardsMaster';
 import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
-import {Staking, IStakingTypes} from '../types/contracts/Staking';
 import {ErrorWithTx} from '../components/Common/error-with-tx';
+import {Staking, IStakingTypes} from '../types/contracts/Staking';
 import {CONFIRMATIONS_NUM} from '../utils/constants';
+import {parseTxErrorMessage} from '../utils/errors';
 import {getEventFromReceipt} from '../utils/transactions';
 
 import {
@@ -182,8 +183,8 @@ export async function stake(
             stakeType,
             data,
         );
-    } catch (err: any) {
-        return txError(err.message || 'Failed to submit transaction.', err);
+    } catch (err) {
+        return txError(parseTxErrorMessage(err), err);
     }
 
     const inProgress = openNotification(
@@ -343,15 +344,14 @@ export async function unstake(
             {
                 gasLimit: 250000,
             },
-
         );
     } catch (e: any) {
-        const errMsg =
-            'Unstaking transaction failed: ' + (e.message || 'Unknown error');
-        console.error(errMsg);
         openNotification(
             'Transaction error',
-            ErrorWithTx({errorMessage: errMsg, txHash: tx?.hash}),
+            ErrorWithTx({
+                errorMessage: parseTxErrorMessage(e),
+                txHash: tx?.hash,
+            }),
             'danger',
         );
         return e as Error;

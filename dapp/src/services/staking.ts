@@ -10,7 +10,7 @@ import {abi as REWARDS_MASTER_ABI} from '../abi/RewardsMaster';
 import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
-import {ErrorWithTx} from '../components/Common/error-with-tx';
+import {MessageWithTx} from '../components/Common/MessageWithTx';
 import {Staking, IStakingTypes} from '../types/contracts/Staking';
 import {CONFIRMATIONS_NUM} from '../utils/constants';
 import {parseTxErrorMessage} from '../utils/errors';
@@ -348,8 +348,8 @@ export async function unstake(
     } catch (e: any) {
         openNotification(
             'Transaction error',
-            ErrorWithTx({
-                errorMessage: parseTxErrorMessage(e),
+            MessageWithTx({
+                message: parseTxErrorMessage(e),
                 txHash: tx?.hash,
             }),
             'danger',

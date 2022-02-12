@@ -3,8 +3,6 @@ import {escapeRegExp} from 'lodash';
 
 import {E18} from './constants';
 
-export const toBN = (n: number): BigNumber => BigNumber.from(n);
-
 // For testing only!
 let localeOverride: string | undefined;
 export function _setLocale(locale: string) {

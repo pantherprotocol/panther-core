@@ -4,17 +4,16 @@ import type {TransactionResponse} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
 import * as ethers from 'ethers';
-import {BigNumber, Contract, utils} from 'ethers';
+import {BigNumber, Contract, constants, utils} from 'ethers';
 import type {ContractTransaction} from 'ethers';
 
 import {abi as REWARDS_MASTER_ABI} from '../abi/RewardsMaster';
 import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
-import {Staking} from '../types/contracts/Staking';
-import {CONFIRMATIONS_NUM, E18, toBN} from '../utils';
+import {Staking, IStakingTypes} from '../types/contracts/Staking';
+import {CONFIRMATIONS_NUM} from '../utils';
 
-import {formatTokenBalance} from './account';
 import {
     REWARD_MASTER_CONTRACT,
     STAKING_CONTRACT,
@@ -118,14 +117,14 @@ export async function generatePermitSignature(
     account: string,
     signer: JsonRpcSigner,
     tokenContract: Contract,
-    scaledAmount: BigNumber,
+    amount: BigNumber,
     deadline: number,
 ) {
     const nonce = await tokenContract.nonces(account);
     const permitParams = {
         owner: account,
         spender: STAKING_CONTRACT,
-        value: scaledAmount,
+        value: amount,
         nonce,
         deadline,
     };
@@ -174,8 +173,7 @@ export async function stake(
     account: string,
     stakingContract: Staking,
     signer: JsonRpcSigner,
-    balance: string,
-    amount: string,
+    amount: BigNumber, // assumes already validated as <= tokenBalance
     stakeType: string,
     data?: any,
 ): Promise<BigNumber | Error> {
@@ -187,19 +185,6 @@ export async function stake(
     }
     if (!signer) {
         return new Error('stake(): undefined signer');
-    }
-
-    if (Number(amount) > Number(balance)) {
-        const msg = `Tried to stake ${amount} > balance ${balance}`;
-        console.error(msg);
-        openNotification(
-            'Transaction error',
-            msg + '. Please try again with smaller amount.',
-            'danger',
-        );
-        return new Error(msg);
-    } else {
-        console.debug(`Will stake ${amount} <= balance ${balance}`);
     }
 
     const stakingContractSignable = stakingContract.connect(signer);
@@ -253,44 +238,24 @@ export async function stake(
     return event?.args?.stakeID;
 }
 
-function getScaledAmount(amount: string): BigNumber {
-    const decimals = countDecimals(Number(amount));
-    const adjustedAmount = Number(amount) * 10 ** decimals;
-    const eDecimal = toBN(10).pow(toBN(decimals));
-    return toBN(adjustedAmount).mul(E18).div(eDecimal);
-}
-
-const countDecimals = function (value) {
-    if (value % 1 != 0) return value.toString().split('.')[1].length;
-    return 0;
-};
-
 async function initiateStakingTransaction(
     library: any,
     account: string,
     chainId: number,
     signer: JsonRpcSigner,
     stakingContractSignable: Staking,
-    amount: string,
+    amount: BigNumber,
     stakeType: string,
-    data?: any = '0x00',
-): ContractTransaction {
+    data: any = '0x00',
+): Promise<ContractTransaction> {
     const tokenContract = await getStakingTokenContract(library);
     if (!tokenContract) {
         throw new Error('Could not initialize token contract');
     }
 
-    const scaledAmount = getScaledAmount(amount);
-    console.debug(
-        'Scaled amount: ',
-        scaledAmount.toString(),
-        'amount: ',
-        amount,
-    );
-
     const allowance = await getAllowance(library, account, tokenContract);
     console.debug(`Got allowance ${allowance} for ${account}`);
-    const allowanceSufficient = utils.parseUnits(amount, 18).lte(allowance);
+    const allowanceSufficient = amount.lte(allowance);
     if (allowanceSufficient) {
         console.debug(
             `Allowance ${utils.formatEther(
@@ -301,7 +266,7 @@ async function initiateStakingTransaction(
             library,
             account,
             stakingContractSignable,
-            scaledAmount,
+            amount,
             stakeType,
             data,
         );
@@ -309,7 +274,7 @@ async function initiateStakingTransaction(
         console.debug(
             `Allowance ${utils.formatEther(
                 allowance,
-            )} >= ${amount}; using permitAndStake()`,
+            )} < ${amount}; using permitAndStake()`,
         );
         return await permitAndStake(
             library,
@@ -318,7 +283,7 @@ async function initiateStakingTransaction(
             signer,
             stakingContractSignable,
             tokenContract,
-            scaledAmount,
+            amount,
             stakeType,
             data,
         );
@@ -338,11 +303,11 @@ async function normalStake(
     library: any,
     account: string,
     contractSignable: Staking,
-    scaledAmount: BigNumber,
+    amount: BigNumber,
     stakeType: string,
     data: any,
 ) {
-    return await contractSignable.stake(scaledAmount, stakeType, data, {
+    return await contractSignable.stake(amount, stakeType, data, {
         gasLimit: 320000,
     });
 }
@@ -354,7 +319,7 @@ async function permitAndStake(
     signer: JsonRpcSigner,
     stakingContractSignable: Staking,
     tokenContract: Contract,
-    scaledAmount: BigNumber,
+    amount: BigNumber,
     stakeType: string,
     data: any,
 ): Promise<TransactionResponse> {
@@ -367,14 +332,14 @@ async function permitAndStake(
         account,
         signer,
         tokenContract,
-        scaledAmount,
+        amount,
         deadline,
     );
     const {v, r, s} = fromRpcSig(permitSig);
 
     return await stakingContractSignable.permitAndStake(
         account,
-        scaledAmount,
+        amount,
         deadline,
         v,
         r,
@@ -414,31 +379,40 @@ export async function unstake(
 }
 
 export async function getAccountStakes(
-    contract: ethers.Contract,
+    contract: Staking,
+    address: string,
+): Promise<IStakingTypes.StakeStructOutput[]> {
+    return await contract.accountStakes(address);
+}
+
+function getActiveStakeAmount(
+    stake: IStakingTypes.StakeStructOutput,
+): BigNumber {
+    return stake.claimedAt ? constants.Zero : stake.amount;
+}
+
+export function sumActiveAccountStakes(
+    stakes: IStakingTypes.StakeStructOutput[],
+): BigNumber {
+    return stakes.reduce(
+        (acc, stake) => acc.add(getActiveStakeAmount(stake)),
+        constants.Zero,
+    );
+}
+
+export async function getTotalStakedForAccount(
+    contract: Staking,
     address: string | null | undefined,
-): Promise<any> {
-    if (!contract) {
+): Promise<BigNumber | null> {
+    if (!contract || !address) {
         return null;
     }
-    const stakes: any = await contract.accountStakes(address);
-    return stakes;
+    const stakes = await getAccountStakes(contract, address);
+    return sumActiveAccountStakes(stakes);
 }
 
 export async function getRewardsBalance(
     contract: ethers.Contract,
-    tokenContract: ethers.Contract,
-    address: string | null | undefined,
-): Promise<string | null> {
-    if (!contract) {
-        return null;
-    }
-    const rewards: BigNumber = await contract.entitled(address);
-    return formatTokenBalance(rewards);
-}
-
-export async function getRewardsBalanceForCalculations(
-    contract: ethers.Contract,
-    tokenContract: ethers.Contract,
     address: string | null | undefined,
 ): Promise<BigNumber | null> {
     if (!contract) {
@@ -457,9 +431,7 @@ export async function getStakingTransactionsNumber(
     return await contract.stakesNum(address);
 }
 
-export async function getTotalStaked(
-    contract: ethers.Contract,
-): Promise<number | null | Error> {
+export async function getTotalStaked(contract: ethers.Contract): Promise<any> {
     if (!contract) {
         return null;
     }
@@ -471,7 +443,7 @@ export async function getTotalStaked(
     }
 }
 
-export async function getZKPMarketPrice(): Promise<number | null> {
+export async function getZKPMarketPrice(): Promise<BigNumber | null> {
     const symbol = TOKEN_SYMBOL;
     if (!symbol || symbol === 'none') {
         return null;
@@ -497,5 +469,9 @@ export async function getZKPMarketPrice(): Promise<number | null> {
         console.warn(`Coingecko price response was missing ${symbol}`);
         return null;
     }
-    return priceData.data[symbol]['usd'];
+    const price = ethers.utils.parseUnits(
+        String(priceData.data[symbol]['usd']),
+        18,
+    );
+    return price;
 }

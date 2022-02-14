@@ -15,18 +15,20 @@ export const formatAccountAddress = (
 export const formatAccountBalance = (
     balance: BigNumber | null,
     currency: string,
+    decimals = 2,
 ): string | null => {
     if (!balance) return null;
     const amount = formatEther(balance);
-    return `${(+amount).toFixed(4)} ${currency}`;
+    return `${(+amount).toFixed(decimals)} ${currency}`;
 };
 
 export const formatTokenBalance = (
     balance: BigNumber | null,
+    decimals = 2,
 ): string | null => {
     if (!balance) return null;
     const formattedBalance = utils.formatUnits(balance, DECIMALS);
-    return (+formattedBalance).toFixed(4);
+    return (+formattedBalance).toFixed(decimals);
 };
 
 export const formatUSDPrice = (balance: string | null): string | null => {
@@ -37,7 +39,7 @@ export const formatUSDPrice = (balance: string | null): string | null => {
 export async function getTokenBalance(
     contract: ethers.Contract,
     address: string | null | undefined,
-): Promise<string | null> {
+): Promise<BigNumber | null> {
     if (!contract) {
         console.error('getTokenBalance called with null contract');
         return null;
@@ -46,6 +48,5 @@ export async function getTokenBalance(
         console.error('getTokenBalance called with null address');
         return null;
     }
-    const balance: BigNumber = await contract.balanceOf(address);
-    return formatTokenBalance(balance);
+    return await contract.balanceOf(address);
 }

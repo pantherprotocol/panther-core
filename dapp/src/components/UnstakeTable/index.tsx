@@ -14,7 +14,7 @@ import {BigNumber} from 'ethers';
 
 import {formatAccountBalance, formatTokenBalance} from '../../services/account';
 import * as stakingService from '../../services/staking';
-import {getRewardsBalanceForCalculations} from '../../services/staking';
+import {getRewardsBalance} from '../../services/staking';
 import {formatTime} from '../../utils';
 
 import './styles.scss';
@@ -45,6 +45,9 @@ export default function UnstakeTable() {
     };
 
     const setTotalStaked = async () => {
+        if (!account) {
+            return;
+        }
         const stakingContract = await stakingService.getStakingContract(
             library,
         );
@@ -61,24 +64,19 @@ export default function UnstakeTable() {
         if (!rewardsMasterContract) {
             return;
         }
-        const stakedData = await stakingService.getAccountStakes(
+        const stakes = await stakingService.getAccountStakes(
             stakingContract,
             account,
         );
 
-        let totalStaked = BigNumber.from(0);
-        stakedData.map(item => {
-            totalStaked = totalStaked.add(item.amount);
-            return totalStaked;
-        });
-        const rewardsBalance = await getRewardsBalanceForCalculations(
+        const totalStaked = stakingService.sumActiveAccountStakes(stakes);
+        const rewardsBalance = await getRewardsBalance(
             rewardsMasterContract,
-            stakingTokenContract,
             account,
         );
         if (!rewardsBalance) return;
 
-        const stakeData = stakedData.map(item => {
+        const stakeData = stakes.map(item => {
             const calculatedReward = formatTokenBalance(
                 rewardsBalance.mul(item.amount).div(totalStaked),
             );

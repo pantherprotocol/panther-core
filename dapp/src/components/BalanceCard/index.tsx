@@ -4,42 +4,34 @@ import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
+import {BigNumber} from 'ethers';
 
 import ethLogo from '../../images/eth-logo.svg';
 import infoIcon from '../../images/info-icon.svg';
 import refreshIcon from '../../images/refresh-icon.svg';
 // import settingIcon from '../../images/setting-icon.svg';
 import accountAvatar from '../../images/wallet-icon.svg';
-import {formatUSDPrice} from '../../services/account';
-import {formatCurrency} from '../../utils';
+import {fiatPrice, formatCurrency} from '../../utils';
 import Address from '../Address';
 
 import './styles.scss';
 
 const BalanceCard = (props: {
-    rewardsBalance: string | null;
-    tokenBalance: string | null;
-    stakedBalance: string | null;
-    tokenBalanceUSD: string | null;
-    pricePerToken: number | null;
+    rewardsBalance: BigNumber | null;
+    tokenBalance: BigNumber | null;
+    stakedBalance: BigNumber | null;
+    tokenBalanceUSD: BigNumber | null;
+    pricePerToken: BigNumber | null;
     accountAddress: string | null;
 }) => {
-    const stakedUSDValue: string | null =
-        props.stakedBalance && props.pricePerToken
-            ? formatUSDPrice(
-                  (
-                      props.pricePerToken * Number(props.stakedBalance)
-                  ).toString(),
-              )
-            : '';
-    const rewardsUSDValue: string | null =
-        props.rewardsBalance && props.pricePerToken
-            ? formatUSDPrice(
-                  (
-                      props.pricePerToken * Number(props.rewardsBalance)
-                  ).toString(),
-              )
-            : '';
+    const stakedUSDValue: BigNumber | null = fiatPrice(
+        props.stakedBalance,
+        props.pricePerToken,
+    );
+    const rewardsUSDValue: BigNumber | null = fiatPrice(
+        props.rewardsBalance,
+        props.pricePerToken,
+    );
 
     return (
         <>
@@ -154,7 +146,12 @@ const TotalBalance = ({title, tooltip, tokenBalance, tokenMarketPrice}) => {
     );
 };
 
-const AddressBalances = props => {
+const AddressBalances = (props: {
+    title: string;
+    tooltip?: string;
+    amountUSD: BigNumber | null;
+    balance: BigNumber | null;
+}) => {
     const {title, tooltip, amountUSD, balance} = props;
 
     return (

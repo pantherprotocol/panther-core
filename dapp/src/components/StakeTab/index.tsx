@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import * as React from 'react';
 
 import Box from '@mui/material/Box';
@@ -12,21 +12,24 @@ import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
+import {BigNumber, utils} from 'ethers';
 
 import logo from '../../images/panther-logo.svg';
 import {onWrongNetwork} from '../../services/connectors';
 import * as stakingService from '../../services/staking';
-import {formatCurrency} from '../../utils';
+import {formatCurrency, safeParseUnits} from '../../utils';
 import {ConnectButton} from '../ConnectButton';
 
 import './styles.scss';
 
+// Minimum stake is fixed in classic staking terms; no need for a contract call.
+const MINIMUM_STAKE = utils.parseUnits('100');
+
 export default function StakeTab(props: {
-    rewardsBalance: string | null;
-    tokenBalance: string | null;
-    stakedBalance: string | null;
-    setZkpTokenBalance: any;
-    getStakedZkpBalance: any;
+    rewardsBalance: BigNumber | null;
+    tokenBalance: BigNumber | null;
+    stakedBalance: BigNumber | null;
+    fetchData: () => Promise<void>;
     onConnect: any;
     switchNetwork: any;
 }) {
@@ -35,36 +38,57 @@ export default function StakeTab(props: {
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
     const [amountToStake, setAmountToStake] = useState<string>('');
+    const [amountToStakeBN, setAmountToStakeBN] = useState<BigNumber | null>(
+        null,
+    );
     const [, setStakedId] = useState<number | null>(null);
 
-    const stake = async (amount: string) => {
-        const stakingContract = await stakingService.getStakingContract(
-            library,
-        );
-        if (!stakingContract || !account || !props.tokenBalance) {
-            return;
+    // For use when user types input
+    const setStakingAmount = useCallback((amount: string) => {
+        setAmountToStake(amount);
+        const bn = safeParseUnits(amount);
+        if (bn) {
+            setAmountToStakeBN(bn);
         }
-        const stakeType = '0x4ab0941a';
-        const signer = library.getSigner(account).connectUnchecked();
-        const stakingResponse = await stakingService.stake(
-            library,
-            chainId,
-            account,
-            stakingContract,
-            signer,
-            props.tokenBalance,
-            amount,
-            stakeType,
-        );
+    }, []);
 
-        if (stakingResponse instanceof Error) {
-            return;
-        }
-        setStakedId(Number(stakingResponse));
-        setAmountToStake('');
-        props.setZkpTokenBalance();
-        props.getStakedZkpBalance();
-    };
+    // For use when user clicks Max button
+    const setStakingAmountBN = useCallback((amountBN: BigNumber) => {
+        const amount = utils.formatEther(amountBN);
+        setAmountToStake(amount);
+        setAmountToStakeBN(amountBN);
+    }, []);
+
+    const stake = useCallback(
+        async (amount: BigNumber) => {
+            const stakingContract = await stakingService.getStakingContract(
+                library,
+            );
+            if (!stakingContract || !account || !props.tokenBalance) {
+                return;
+            }
+
+            const stakeType = '0x4ab0941a';
+            const signer = library.getSigner(account).connectUnchecked();
+            const stakingResponse = await stakingService.stake(
+                library,
+                chainId,
+                account,
+                stakingContract,
+                signer,
+                amount,
+                stakeType,
+            );
+
+            if (stakingResponse instanceof Error) {
+                return;
+            }
+            setStakedId(Number(stakingResponse));
+            setStakingAmount('');
+            props.fetchData();
+        },
+        [library, account, chainId, props, setStakingAmount],
+    );
 
     useEffect((): any => {
         const wrongNetwork =
@@ -101,7 +125,8 @@ export default function StakeTab(props: {
         <Box width={'100%'}>
             <StakingInput
                 tokenBalance={props.tokenBalance}
-                setAmountToStake={setAmountToStake}
+                setStakingAmount={setStakingAmount}
+                setStakingAmountBN={setStakingAmountBN}
                 amountToStake={amountToStake}
             />
             <Card variant="outlined" className="staking-info-card">
@@ -146,6 +171,7 @@ export default function StakeTab(props: {
             {active && !wrongNetwork && (
                 <StakingBtn
                     amountToStake={amountToStake}
+                    amountToStakeBN={amountToStakeBN}
                     tokenBalance={props.tokenBalance}
                     stake={stake}
                 />
@@ -155,31 +181,61 @@ export default function StakeTab(props: {
 }
 
 const getButtonText = (
-    amountToStake: string | undefined,
-    tokenBalance: number,
+    amount: string | null,
+    amountBN: BigNumber | null,
+    tokenBalance: BigNumber | null,
 ): [string, boolean] => {
-    if (!amountToStake) {
+    if (!tokenBalance) {
+        return ["Couldn't get token balance", false];
+    }
+    if (!amount || !amountBN) {
         return ['Enter amount to stake above', false];
     }
-    if (Number(amountToStake) > tokenBalance) {
+    if (amountBN.gt(tokenBalance)) {
+        console.debug(
+            'Insufficient balance:',
+            utils.formatEther(amountBN),
+            '>',
+            utils.formatEther(tokenBalance),
+        );
         return ['Insufficient balance', false];
     }
-    if (Number(amountToStake) >= 100) {
-        return [`STAKE ${amountToStake} ZKP`, true];
+    if (amountBN.gte(MINIMUM_STAKE)) {
+        console.debug(
+            'Sufficient balance:',
+            utils.formatEther(amountBN),
+            amountBN.eq(tokenBalance) ? '==' : '<=',
+            utils.formatEther(tokenBalance),
+        );
+        // We display amount rather than stringifying amountBN, because we want
+        // to make sure we display the same amount which is visible in the
+        // staking amount field, and this is not guaranteed to be the same
+        // due to rounding discrepancies, e.g. if Max button is clicked.
+        return [`STAKE ${amount} ZKP`, true];
     }
+    console.debug('Below minimum stake amount:', utils.formatEther(amountBN));
     return ['Stake amount must be above 100', false];
 };
 
-const StakingBtn = ({amountToStake, tokenBalance, stake}) => {
-    const [buttonText, ready] = getButtonText(amountToStake, tokenBalance);
+const StakingBtn = (props: {
+    amountToStake: string | null;
+    amountToStakeBN: BigNumber | null;
+    tokenBalance: BigNumber | null;
+    stake: (amount: BigNumber) => Promise<void>;
+}) => {
+    const [buttonText, ready] = getButtonText(
+        props.amountToStake,
+        props.amountToStakeBN,
+        props.tokenBalance,
+    );
     const activeClass = ready ? 'active' : '';
     return (
         <Box className={`buttons-holder ${activeClass}`}>
             <Button
                 className="staking-button"
                 onClick={() => {
-                    if (ready) {
-                        stake(amountToStake);
+                    if (ready && props.amountToStakeBN) {
+                        props.stake(props.amountToStakeBN);
                     }
                 }}
             >
@@ -189,11 +245,15 @@ const StakingBtn = ({amountToStake, tokenBalance, stake}) => {
     );
 };
 
-const StakingInput = props => {
+const StakingInput = (props: {
+    tokenBalance: BigNumber | null;
+    amountToStake: string | null;
+    setStakingAmount: (amount: string) => void;
+    setStakingAmountBN: (amount: BigNumber) => void;
+}) => {
     const context = useWeb3React();
     const {account} = context;
-    const {tokenBalance, setAmountToStake, amountToStake} = props;
-    const changeHandler = e => {
+    const changeHandler = (e: any) => {
         const inputTextLength = e.target.value.length;
         if (inputTextLength > 12) {
             return;
@@ -203,8 +263,9 @@ const StakingInput = props => {
         if (!regex.test(e.target.value)) {
             return false;
         }
-        if (tokenBalance && Number(tokenBalance)) {
-            setAmountToStake(e.target.value.toString() || '');
+        if (props.tokenBalance && Number(props.tokenBalance)) {
+            const amount = e.target.value.toString();
+            props.setStakingAmount(amount);
             return true;
         } else {
             return false;
@@ -233,7 +294,7 @@ const StakingInput = props => {
                         variant="subtitle2"
                         component="span"
                     >
-                        {formatCurrency(tokenBalance)}
+                        {formatCurrency(props.tokenBalance)}
                     </Typography>
                     <Typography
                         className="token-balance"
@@ -253,7 +314,7 @@ const StakingInput = props => {
                     <Input
                         inputProps={{pattern: '[0-9]*', inputMode: 'decimal'}}
                         className="staking-input"
-                        value={amountToStake}
+                        value={props.amountToStake}
                         onChange={changeHandler}
                         autoComplete="off"
                         autoFocus={true}
@@ -271,6 +332,19 @@ const StakingInput = props => {
                         aria-describedby="staking-value-helper-text"
                     />
                 </Box>
+
+                <Typography
+                    variant="caption"
+                    component="span"
+                    className="staking-input-max"
+                    onClick={() => {
+                        if (props.tokenBalance) {
+                            props.setStakingAmountBN(props.tokenBalance);
+                        }
+                    }}
+                >
+                    MAX
+                </Typography>
             </Box>
         </>
     );

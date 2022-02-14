@@ -7,7 +7,7 @@
     margin-bottom: 30px;
     background-color: #6372882e;
 }
-.total-unclaimed-rewards {
+.total-rewards {
     width: 55%;
     margin: 25px 0;
     display: flex;
@@ -17,6 +17,10 @@
     margin-bottom: 30px;
     background-color: #6372882e;
     opacity: 0.5;
+
+    &.no-unclaimed-rewards {
+        justify-content: center;
+    }
 }
 .total-unclaimed-container {
     display: flex;

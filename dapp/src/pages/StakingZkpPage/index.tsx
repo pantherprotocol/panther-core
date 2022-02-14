@@ -30,10 +30,9 @@ import {
     getRewardsBalanceForCalculations,
 } from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
+import {DECIMALS, E18} from '../../utils';
 
 import './styles.scss';
-
-const E18 = BigNumber.from(10).pow(18);
 
 function StakingZkpPage() {
     const context = useWeb3React<Web3Provider>();
@@ -145,8 +144,7 @@ function StakingZkpPage() {
                 return totalStaked;
             }
         });
-        const decimals = await stakingTokenContract.decimals();
-        const totalStakedValue = utils.formatUnits(totalStaked, decimals);
+        const totalStakedValue = utils.formatUnits(totalStaked, DECIMALS);
         setStakedBalance((+totalStakedValue).toFixed(2));
     }, [account, library]);
 
@@ -177,8 +175,6 @@ function StakingZkpPage() {
         );
         if (!rewardsBalanceNumber) return;
 
-        const decimals = await stakingTokenContract.decimals();
-
         const stakedData = await getAccountStakes(stakingContract, account);
 
         let totalStaked = BigNumber.from(0);
@@ -198,7 +194,7 @@ function StakingZkpPage() {
                 return totalRewards;
             }
         });
-        setRewardsBalance(formatTokenBalance(totalRewards, decimals));
+        setRewardsBalance(formatTokenBalance(totalRewards));
     }, [account, library]);
 
     const getAPY = useCallback(async () => {

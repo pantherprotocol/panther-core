@@ -12,7 +12,7 @@ import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
 import {Staking} from '../types/contracts/Staking';
-import {CONFIRMATIONS_NUM, e18, toBN} from '../utils';
+import {CONFIRMATIONS_NUM, E18, toBN} from '../utils';
 
 import {formatTokenBalance} from './account';
 import {
@@ -257,7 +257,7 @@ function getScaledAmount(amount: string): BigNumber {
     const decimals = countDecimals(Number(amount));
     const adjustedAmount = Number(amount) * 10 ** decimals;
     const eDecimal = toBN(10).pow(toBN(decimals));
-    return toBN(adjustedAmount).mul(e18).div(eDecimal);
+    return toBN(adjustedAmount).mul(E18).div(eDecimal);
 }
 
 const countDecimals = function (value) {
@@ -433,8 +433,7 @@ export async function getRewardsBalance(
         return null;
     }
     const rewards: BigNumber = await contract.entitled(address);
-    const decimal = await tokenContract.decimals();
-    return formatTokenBalance(rewards, decimal);
+    return formatTokenBalance(rewards);
 }
 
 export async function getRewardsBalanceForCalculations(

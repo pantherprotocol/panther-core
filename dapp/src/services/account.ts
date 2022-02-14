@@ -1,6 +1,8 @@
 import {formatEther} from '@ethersproject/units';
 import {BigNumber, ethers, utils} from 'ethers';
 
+import {DECIMALS} from '../utils';
+
 export const formatAccountAddress = (
     account: string | undefined | null,
 ): string | null => {
@@ -21,11 +23,10 @@ export const formatAccountBalance = (
 
 export const formatTokenBalance = (
     balance: BigNumber | null,
-    decimal: BigNumber,
 ): string | null => {
     if (!balance) return null;
-    const formattedBalance = utils.formatUnits(balance, decimal);
-    return (+formattedBalance).toFixed(2);
+    const formattedBalance = utils.formatUnits(balance, DECIMALS);
+    return (+formattedBalance).toFixed(4);
 };
 
 export const formatUSDPrice = (balance: string | null): string | null => {
@@ -46,6 +47,5 @@ export async function getTokenBalance(
         return null;
     }
     const balance: BigNumber = await contract.balanceOf(address);
-    const decimal = await contract.decimals();
-    return formatTokenBalance(balance, decimal);
+    return formatTokenBalance(balance);
 }

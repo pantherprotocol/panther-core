@@ -78,12 +78,9 @@ export default function UnstakeTable() {
         );
         if (!rewardsBalanceNumber) return;
 
-        const decimals = await stakingTokenContract.decimals();
-
         const stakeData = stakedData.map(item => {
             const calculatedReward = formatTokenBalance(
                 rewardsBalanceNumber.mul(item.amount).div(totalStaked),
-                decimals,
             );
             if (!calculatedReward) return;
             return createStakedDataRow(

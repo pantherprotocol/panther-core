@@ -16,5 +16,6 @@ export const formatCurrency = (value: number | string) => {
 };
 
 export const toBN = (n: number): ethers.BigNumber => ethers.BigNumber.from(n);
-export const e18 = toBN(10).pow(toBN(18)); //18 decimal places after floating point
+export const DECIMALS = 18; //18 decimal places after floating point
+export const E18 = toBN(10).pow(toBN(DECIMALS));
 export const CONFIRMATIONS_NUM = 1;

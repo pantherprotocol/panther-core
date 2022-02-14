@@ -39,6 +39,28 @@ const createStakedDataRow = (
     };
 };
 
+function buildStakedDataRows(
+    stakedData: any,
+    rewardsBalance: BigNumber,
+    totalStaked: BigNumber,
+) {
+    return stakedData.map(item => {
+        const calculatedReward = formatCurrency(
+            rewardsBalance.mul(item.amount).div(totalStaked),
+            {decimals: 2},
+        );
+        if (!calculatedReward) return;
+        return createStakedDataRow(
+            item.id,
+            item.stakedAt,
+            item.amount,
+            calculatedReward,
+            item.lockedTill,
+            item.claimedAt,
+        );
+    });
+}
+
 export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
     const context = useWeb3React();
     const {account, library} = context;
@@ -76,21 +98,11 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         );
         if (!rewardsBalance) return;
 
-        const stakeData = stakes.map(item => {
-            const calculatedReward = formatCurrency(
-                rewardsBalance.mul(item.amount).div(totalStaked),
-                {decimals: 2},
-            );
-            if (!calculatedReward) return;
-            return createStakedDataRow(
-                item.id,
-                item.stakedAt,
-                item.amount,
-                calculatedReward,
-                item.lockedTill,
-                item.claimedAt,
-            );
-        });
+        const stakeData = buildStakedDataRows(
+            stakedData,
+            rewardsBalance,
+            totalStaked,
+        );
         setStakedData(stakeData);
     };
 

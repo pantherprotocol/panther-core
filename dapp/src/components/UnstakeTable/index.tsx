@@ -19,30 +19,30 @@ import {formatCurrency, formatTime} from '../../utils';
 
 import './styles.scss';
 
+const createStakedDataRow = (
+    id: number,
+    stakedAt: number,
+    amount: BigNumber,
+    calculatedReward: string,
+    lockedTill: number,
+    claimedAt: number,
+) => {
+    const unstakable = lockedTill * 1000 > new Date().getTime();
+    return {
+        id,
+        stakedAt: stakedAt * 1000,
+        amount,
+        calculatedReward,
+        lockedTill: lockedTill * 1000,
+        unstakable,
+        claimedAt,
+    };
+};
+
 export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
     const context = useWeb3React();
     const {account, library} = context;
     const [stakedData, setStakedData] = useState<any[]>([]);
-
-    const createStakedDataRow = (
-        id: number,
-        stakedAt: number,
-        amount: BigNumber,
-        calculatedReward: string,
-        lockedTill: number,
-        claimedAt: number,
-    ) => {
-        const unstakable = lockedTill * 1000 > new Date().getTime();
-        return {
-            id,
-            stakedAt: stakedAt * 1000,
-            amount,
-            calculatedReward,
-            lockedTill: lockedTill * 1000,
-            unstakable,
-            claimedAt,
-        };
-    };
 
     const setTotalStaked = async () => {
         if (!account) {

@@ -169,12 +169,12 @@ function StakingZkpPage() {
             return;
         }
 
-        const rewardsBalanceNumber = await getRewardsBalanceForCalculations(
+        const rewardsBalance = await getRewardsBalanceForCalculations(
             rewardsMasterContract,
             stakingTokenContract,
             account,
         );
-        if (!rewardsBalanceNumber) return;
+        if (!rewardsBalance) return;
 
         const stakedData = await getAccountStakes(stakingContract, account);
 
@@ -187,7 +187,7 @@ function StakingZkpPage() {
         let totalRewards = BigNumber.from(0);
         stakedData.map(item => {
             if (item.claimedAt == 0) {
-                const calculatedReward = rewardsBalanceNumber
+                const calculatedReward = rewardsBalance
                     .mul(item.amount)
                     .div(totalStaked);
                 if (!calculatedReward) return;

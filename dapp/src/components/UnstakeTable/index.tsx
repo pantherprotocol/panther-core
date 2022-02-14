@@ -71,16 +71,16 @@ export default function UnstakeTable() {
             totalStaked = totalStaked.add(item.amount);
             return totalStaked;
         });
-        const rewardsBalanceNumber = await getRewardsBalanceForCalculations(
+        const rewardsBalance = await getRewardsBalanceForCalculations(
             rewardsMasterContract,
             stakingTokenContract,
             account,
         );
-        if (!rewardsBalanceNumber) return;
+        if (!rewardsBalance) return;
 
         const stakeData = stakedData.map(item => {
             const calculatedReward = formatTokenBalance(
-                rewardsBalanceNumber.mul(item.amount).div(totalStaked),
+                rewardsBalance.mul(item.amount).div(totalStaked),
             );
             if (!calculatedReward) return;
             return createStakedDataRow(

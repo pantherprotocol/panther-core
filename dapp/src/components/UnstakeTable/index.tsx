@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import * as React from 'react';
 
 import {Button, Tooltip} from '@mui/material';
@@ -66,7 +66,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
     const {account, library} = context;
     const [stakedData, setStakedData] = useState<any[]>([]);
 
-    const setTotalStaked = async () => {
+    const setTotalStaked = useCallback(async () => {
         if (!account) {
             return;
         }
@@ -99,12 +99,12 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         if (!rewardsBalance) return;
 
         const stakeData = buildStakedDataRows(
-            stakedData,
+            stakes,
             rewardsBalance,
             totalStaked,
         );
         setStakedData(stakeData);
-    };
+    }, [account, library]);
 
     const unstake = async id => {
         const stakingContract = await stakingService.getStakingContract(
@@ -126,6 +126,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
             data,
             false,
         );
+        setTotalStaked();
         props.fetchData();
     };
 
@@ -135,7 +136,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         }
 
         setTotalStaked();
-    });
+    }, [account, library, setTotalStaked]);
 
     return (
         <TableContainer component={Paper}>

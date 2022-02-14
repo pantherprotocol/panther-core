@@ -445,8 +445,7 @@ export async function getRewardsBalanceForCalculations(
     if (!contract) {
         return null;
     }
-    const rewards: BigNumber = await contract.entitled(address);
-    return rewards;
+    return await contract.entitled(address);
 }
 
 export async function getStakingTransactionsNumber(
@@ -456,8 +455,7 @@ export async function getStakingTransactionsNumber(
     if (!contract) {
         return null;
     }
-    const stakesNumber: number = await contract.stakesNum(address);
-    return stakesNumber;
+    return await contract.stakesNum(address);
 }
 
 export async function getTotalStaked(

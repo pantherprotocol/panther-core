@@ -216,7 +216,7 @@ export async function stake(
             stakeType,
             data,
         );
-    } catch (err) {
+    } catch (err: any) {
         return txError(err.message || 'Failed to submit transaction.', err);
     }
 
@@ -406,7 +406,7 @@ export async function unstake(
 
     try {
         await unstakingResponse.wait(CONFIRMATIONS_NUM);
-    } catch (e) {
+    } catch (e: any) {
         return e;
     }
 
@@ -468,7 +468,7 @@ export async function getTotalStaked(
     }
     try {
         return await contract.totalStaked();
-    } catch (err) {
+    } catch (err: any) {
         console.warn('Failed to fetch totalStaked from Staking contract:', err);
         return err;
     }
@@ -486,7 +486,7 @@ export async function getZKPMarketPrice(): Promise<number | null> {
             ids: [symbol],
             vs_currencies: ['usd'],
         });
-    } catch (err) {
+    } catch (err: any) {
         console.warn(`Failed to fetch ${symbol} from coingecko`, err);
         return null;
     }

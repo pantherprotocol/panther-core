@@ -27,6 +27,8 @@
       "dapp"
     ],
     "nohoist": [
+      "**/typechain",
+      "**/@typechain/*",
       "**/solhint",
       "**/solhint/*"
     ]

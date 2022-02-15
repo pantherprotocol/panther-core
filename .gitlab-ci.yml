@@ -30,8 +30,9 @@ stages: # List of stages for jobs, and their order of execution
         - .yarn-cache/
         - node_modules/
         - '**/node_modules/'
-  before_script:
-    - yarn install --cache-folder .yarn-cache
+      policy: pull-push
+  allow_failure:
+    exit_codes: 111 # disable push cache
 
 # These jobs are run in parallel within the test stage:
 
@@ -39,6 +40,16 @@ combined-job:
   stage: test
   <<: *yarn_cache_template
   script:
+    - |
+      if  yarn install --cache-folder .yarn-cache | grep -q "success Already up-to-date."; then
+        echo "Using exit code 111 to avoid pushing cache"
+        exit 111 # skip pushing cache
+      else
+        echo "Using exit code 0"
+        exit 0 # push cache
+      fi
+
+  after_script:
     - yarn lint
     - HARDHAT_NO_MNEMONIC=yes yarn run build:contracts && yarn test:contracts
     - yarn workspace @zkp-staking/contracts build:types

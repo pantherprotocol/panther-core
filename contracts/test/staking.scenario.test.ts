@@ -60,7 +60,11 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
         await zkpToken.mint(users[2].address, scenario.totals.tokenStaked[2]);
         await zkpToken.mint(users[3].address, scenario.totals.tokenStaked[3]);
 
-        // "Hack" to link the bytecode
+        // "Hack" to link the bytecode. The compiler uses the hash of the
+        // library name surrounded by __$...$__ as a placeholder in the bytecode
+        // for linking the library later.  In this case it is the TokenAddress
+        // library in contracts/utils/Linking.sol which is acting as the
+        // placeholder for the ZKPToken contract.
         const linkedBytecode = abiVestingPools.bytecode.replace(
             /__\$dec3ebc58bfa2d6d17c9f2277dbc63d4a3\$__/g,
             zkpToken.address.replace('0x', ''),

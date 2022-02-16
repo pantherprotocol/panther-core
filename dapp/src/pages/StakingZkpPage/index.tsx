@@ -241,15 +241,11 @@ function StakingZkpPage() {
         getStakedZkpBalance();
         getUnclaimedRewardsBalance();
     }, [
+        library,
+        account,
         setZkpTokenBalance,
         getStakedZkpBalance,
         getUnclaimedRewardsBalance,
-        tokenBalance,
-        tokenUSDValue,
-        stakedBalance,
-        rewardsBalance,
-        account,
-        library,
     ]);
 
     const accountAddress = formatAccountAddress(account) || null;

@@ -3,23 +3,28 @@ import React from 'react';
 import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import {BigNumber} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
 import {SafeMuiLink} from '../../services/links';
-import {formatPercentage} from '../../utils';
+import {formatCurrency, formatPercentage} from '../../utils';
 
 import './styles.scss';
 
-const CurrentStakeAPY = (props: {currentAPY: number | null}) => {
+const CurrentStakeAPY = (props: {
+    currentAPY: number | null;
+    totalZKPStaked: BigNumber | null;
+}) => {
+    const totalZKPStaked = props.totalZKPStaked
+        ? formatCurrency(props.totalZKPStaked) + ' ZKP'
+        : '$ZKP';
     return (
         <Box className="current-stake-apy-container">
             {typeof props.currentAPY === 'number' && (
                 <Box className="current-stake-apy-inner">
                     <Typography>
                         <Tooltip
-                            title={
-                                'Current APY based on total $ZKP currently staked. This will reduce as more people stake.'
-                            }
+                            title={`Current APY based on ${totalZKPStaked} currently staked. This will reduce as more people stake.`}
                             data-html="true"
                             placement="top"
                             className="icon"

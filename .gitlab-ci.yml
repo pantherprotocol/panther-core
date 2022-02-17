@@ -18,43 +18,46 @@ default:
 
 stages: # List of stages for jobs, and their order of execution
   - test
+  - cache
   - preview
 
 .yarn_cache_template: &yarn_cache_template
-  cache:
-    - key:
-        files:
-          - package.json
-          - yarn.lock
-      paths:
-        - .yarn-cache/
-        - node_modules/
-        - '**/node_modules/'
-      policy: pull-push
-  allow_failure:
-    exit_codes: 111 # disable push cache
+  key:
+    files:
+      - package.json
+      - yarn.lock
+  paths:
+    - .cache_exists
+    - .yarn-cache/
+    - node_modules/
+    - '**/node_modules/'
+  policy: pull
 
 # These jobs are run in parallel within the test stage:
-
 combined-job:
   stage: test
-  <<: *yarn_cache_template
+  cache:
+    <<: *yarn_cache_template
+  before_script:
+    - yarn install --cache-folder .yarn-cache
   script:
-    - |
-      if  yarn install --cache-folder .yarn-cache | grep -q "success Already up-to-date."; then
-        echo "Using exit code 111 to avoid pushing cache"
-        exit 111 # skip pushing cache
-      else
-        echo "Using exit code 0"
-        exit 0 # push cache
-      fi
-
-  after_script:
     - yarn lint
-    - HARDHAT_NO_MNEMONIC=yes yarn run build:contracts && yarn test:contracts
+    - HARDHAT_NO_MNEMONIC=yes yarn run build:contracts && yarn test
     - yarn workspace @zkp-staking/contracts build:types
     - yarn run build:dapp
     - yarn run test:dapp
+
+build-cache:
+  stage: cache
+  cache:
+    <<: *yarn_cache_template
+    policy: pull-push
+  script:
+    - |
+      [[ -f .cache_exists ]] && echo "cache already exists" && exit 111
+    - echo > .cache_exists
+  allow_failure:
+    exit_codes: 111 # disable push cache
 
 preview:
   stage: preview

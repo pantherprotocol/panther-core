@@ -34,7 +34,7 @@ export default function StakeTab(props: {
     const {account, library, chainId, active, error} = context;
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
-    const [amountToStake, setAmountToStake] = useState<string | null>();
+    const [amountToStake, setAmountToStake] = useState<string>('');
     const [, setStakedId] = useState<number | null>(null);
 
     const stake = async (amount: string) => {

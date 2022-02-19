@@ -4,6 +4,7 @@ cache/
 compiled/
 coverage/
 node_modules/
+staging/
 tmp/
 typing/
 types/

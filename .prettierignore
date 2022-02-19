@@ -4,6 +4,7 @@ contracts/cache/
 contracts/coverage/
 contracts/coverage.json
 contracts/deployments/
+contracts/staging/
 contracts/typechain/
 contracts/types/
 contracts/typing/

@@ -1,4 +1,5 @@
 import {BigNumber, utils} from 'ethers';
+import {escapeRegExp} from 'lodash';
 
 export const toBN = (n: number): BigNumber => BigNumber.from(n);
 export const DECIMALS = 18; //18 decimal places after floating point
@@ -14,14 +15,14 @@ export const formatTime = (date: number | null): string | null => {
     return localDate.toLocaleString();
 };
 
-export function getDefaultLocale(): string {
+export function getLocale(): string {
     return (
         navigator.language || new Intl.NumberFormat().resolvedOptions().locale
     );
 }
 
 export function formatPercentage(percentage: number): string {
-    const percentFormat = new Intl.NumberFormat(getDefaultLocale(), {
+    const percentFormat = new Intl.NumberFormat(getLocale(), {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
         // maximumSignificantDigits: 4,
@@ -39,12 +40,14 @@ export function fiatPrice(
 
 function getDecimalSeparator(): string {
     const n = 1.1;
-    return n.toLocaleString().substring(1, 2);
+    return n.toLocaleString(getLocale()).substring(1, 2);
 }
 
 export function roundDown(s: string, decimals: number): string {
-    const regexp = new RegExp(`(${getDecimalSeparator()}\\d{${decimals}}).+$`);
-    return s.replace(regexp, '$1');
+    const sep = escapeRegExp(getDecimalSeparator());
+    const regexp = new RegExp(`(${sep}\\d{${decimals}}).+$`);
+    const rounded = s.replace(regexp, '$1');
+    return rounded;
 }
 
 export function formatCurrency(value: BigNumber | null) {
@@ -53,7 +56,7 @@ export function formatCurrency(value: BigNumber | null) {
     }
     const num = Number(utils.formatEther(value));
 
-    const currencyFormat = new Intl.NumberFormat(getDefaultLocale(), {
+    const currencyFormat = new Intl.NumberFormat(getLocale(), {
         // minimumSignificantDigits: 10,
         minimumFractionDigits: 10,
         // maximumFractionDigits: 5,

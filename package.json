@@ -27,6 +27,9 @@
       "dapp"
     ],
     "nohoist": [
+      "**/@nomiclabs/hardhat-ethers",
+      "**/typechain",
+      "**/@typechain/*",
       "**/solhint",
       "**/solhint/*"
     ]

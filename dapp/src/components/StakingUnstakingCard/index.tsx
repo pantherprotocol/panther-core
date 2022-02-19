@@ -6,6 +6,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import {BigNumber} from 'ethers';
 
 import StakeTab from '../../components/StakeTab';
 import UnstakingTab from '../../components/UnstakeTab';
@@ -13,11 +14,10 @@ import UnstakingTab from '../../components/UnstakeTab';
 import './styles.scss';
 
 export default function StakingUnstakingCard(props: {
-    rewardsBalance: string | null;
-    tokenBalance: string | null;
-    stakedBalance: string | null;
-    setZkpTokenBalance: any;
-    getStakedZkpBalance: any;
+    rewardsBalance: BigNumber | null;
+    tokenBalance: BigNumber | null;
+    stakedBalance: BigNumber | null;
+    fetchData: () => Promise<void>;
     onConnect: any;
     switchNetwork: any;
 }) {
@@ -62,13 +62,15 @@ export default function StakingUnstakingCard(props: {
                             tokenBalance={props.tokenBalance}
                             stakedBalance={props.stakedBalance}
                             rewardsBalance={props.rewardsBalance}
-                            setZkpTokenBalance={props.setZkpTokenBalance}
-                            getStakedZkpBalance={props.getStakedZkpBalance}
+                            fetchData={props.fetchData}
                             onConnect={props.onConnect}
                             switchNetwork={props.switchNetwork}
                         />
                     ) : (
-                        <UnstakingTab rewardsBalance={props.rewardsBalance} />
+                        <UnstakingTab
+                            rewardsBalance={props.rewardsBalance}
+                            fetchData={props.fetchData}
+                        />
                     )}
                 </CardContent>
             </Card>

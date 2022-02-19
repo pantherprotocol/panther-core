@@ -8,6 +8,7 @@ import logo from '../../images/panther-logo.svg';
 import {STAKING_TOKEN_CONTRACT} from '../../services/contracts';
 import {openNotification} from '../../services/notification';
 import * as stakingService from '../../services/staking';
+import {DECIMALS} from '../../utils';
 
 import './styles.scss';
 
@@ -28,7 +29,6 @@ export const AddTokenButton = (props: {
             return;
         }
         const tokenSymbol = await tokenContract.symbol();
-        const tokenDecimals = await tokenContract.decimals();
 
         try {
             await ethereum
@@ -39,7 +39,7 @@ export const AddTokenButton = (props: {
                         options: {
                             address: tokenAddress,
                             symbol: tokenSymbol,
-                            decimals: tokenDecimals,
+                            decimals: DECIMALS,
                             image: logo,
                         },
                     },

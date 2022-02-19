@@ -6,13 +6,14 @@ import Typography from '@mui/material/Typography';
 
 import infoIcon from '../../images/info-icon.svg';
 import {SafeMuiLink} from '../../services/links';
+import {percentFormat} from '../../utils';
 
 import './styles.scss';
 
 const CurrentStakeAPY = (props: {currentAPY: number | null}) => {
     return (
         <Box className="current-stake-apy-container">
-            {props.currentAPY && (
+            {typeof props.currentAPY === 'number' && (
                 <Box className="current-stake-apy-inner">
                     <Typography>
                         <Tooltip
@@ -30,14 +31,14 @@ const CurrentStakeAPY = (props: {currentAPY: number | null}) => {
                     </Typography>
 
                     <Typography className="apy-amount">
-                        {props.currentAPY || '??'}%
+                        {percentFormat.format(props.currentAPY) || '??'}
                     </Typography>
                     <Typography className="apy-title">
                         Current staking APY
                     </Typography>
                 </Box>
             )}
-            {!props.currentAPY && (
+            {typeof props.currentAPY !== 'number' && (
                 <Box className="current-stake-apy-inner">
                     <Typography className="message-title">
                         Connect wallet

@@ -67,13 +67,13 @@ const webpackConfig = (): Configuration | any => ({
             {
                 test: /\.ts|\.tsx?$/,
                 use: [
-                    ...babelConfig,
                     {
                         loader: 'ts-loader',
                         options: {
                             transpileOnly: true,
                         },
                     },
+                    ...babelConfig,
                 ],
                 include: [
                     path.resolve(__dirname, './src'),

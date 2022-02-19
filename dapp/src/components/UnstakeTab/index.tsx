@@ -3,12 +3,17 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
+import {BigNumber, constants} from 'ethers';
 
+import {formatCurrency} from '../../utils';
 import UnstakeTable from '../UnstakeTable';
 
 import './styles.scss';
 
-export default function UnstakingTab(props: {rewardsBalance: string | null}) {
+export default function UnstakingTab(props: {
+    rewardsBalance: BigNumber | null;
+    fetchData: () => Promise<void>;
+}) {
     return (
         <Box width={'100%'} margin={'0 5'}>
             <Card
@@ -19,7 +24,7 @@ export default function UnstakingTab(props: {rewardsBalance: string | null}) {
                 }}
             >
                 <UnstakingInfoMSG />
-                <UnstakeTable />
+                <UnstakeTable fetchData={props.fetchData} />
                 <TotalUnclaimedRewards rewardsBalance={props.rewardsBalance} />
             </Card>
         </Box>
@@ -35,19 +40,27 @@ const UnstakingInfoMSG = () => (
     </Box>
 );
 
-const TotalUnclaimedRewards = (props: {rewardsBalance: string | null}) => (
-    <Box className="total-unclaimed-container">
-        <Box className="total-unclaimed-rewards">
-            {props.rewardsBalance && (
-                <>
+const TotalUnclaimedRewards = (props: {rewardsBalance: BigNumber | null}) => {
+    const hasRewards =
+        props.rewardsBalance && props.rewardsBalance.gt(constants.Zero);
+
+    return (
+        <Box className="total-unclaimed-container">
+            {!hasRewards && (
+                <Box className="total-unclaimed-rewards no-unclaimed-rewards">
+                    <Typography variant="caption">No rewards yet</Typography>
+                </Box>
+            )}
+            {props.rewardsBalance && hasRewards && (
+                <Box className="total-unclaimed-rewards">
                     <Typography variant="caption">
                         Total Unclaimed Rewards:
                     </Typography>
                     <Typography variant="caption">
-                        {props.rewardsBalance}
+                        {formatCurrency(props.rewardsBalance)}
                     </Typography>
-                </>
+                </Box>
             )}
         </Box>
-    </Box>
-);
+    );
+};

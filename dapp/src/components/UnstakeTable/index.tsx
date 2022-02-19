@@ -14,12 +14,12 @@ import {BigNumber} from 'ethers';
 
 import {formatAccountBalance, formatTokenBalance} from '../../services/account';
 import * as stakingService from '../../services/staking';
-import {getRewardsBalanceForCalculations} from '../../services/staking';
+import {getRewardsBalance} from '../../services/staking';
 import {formatTime} from '../../utils';
 
 import './styles.scss';
 
-export default function UnstakeTable() {
+export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
     const context = useWeb3React();
     const {account, library} = context;
     const [stakedData, setStakedData] = useState<any[]>([]);
@@ -45,6 +45,9 @@ export default function UnstakeTable() {
     };
 
     const setTotalStaked = async () => {
+        if (!account) {
+            return;
+        }
         const stakingContract = await stakingService.getStakingContract(
             library,
         );
@@ -61,29 +64,21 @@ export default function UnstakeTable() {
         if (!rewardsMasterContract) {
             return;
         }
-        const stakedData = await stakingService.getAccountStakes(
+        const stakes = await stakingService.getAccountStakes(
             stakingContract,
             account,
         );
 
-        let totalStaked = BigNumber.from(0);
-        stakedData.map(item => {
-            totalStaked = totalStaked.add(item.amount);
-            return totalStaked;
-        });
-        const rewardsBalanceNumber = await getRewardsBalanceForCalculations(
+        const totalStaked = stakingService.sumActiveAccountStakes(stakes);
+        const rewardsBalance = await getRewardsBalance(
             rewardsMasterContract,
-            stakingTokenContract,
             account,
         );
-        if (!rewardsBalanceNumber) return;
+        if (!rewardsBalance) return;
 
-        const decimals = await stakingTokenContract.decimals();
-
-        const stakeData = stakedData.map(item => {
+        const stakeData = stakes.map(item => {
             const calculatedReward = formatTokenBalance(
-                rewardsBalanceNumber.mul(item.amount).div(totalStaked),
-                decimals,
+                rewardsBalance.mul(item.amount).div(totalStaked),
             );
             if (!calculatedReward) return;
             return createStakedDataRow(
@@ -118,6 +113,7 @@ export default function UnstakeTable() {
             data,
             false,
         );
+        props.fetchData();
     };
 
     useEffect(() => {

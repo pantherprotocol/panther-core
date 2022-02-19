@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 
 import infoIcon from '../../images/info-icon.svg';
 import {SafeMuiLink} from '../../services/links';
-import {percentFormat} from '../../utils';
+import {formatPercentage} from '../../utils';
 
 import './styles.scss';
 
@@ -31,7 +31,7 @@ const CurrentStakeAPY = (props: {currentAPY: number | null}) => {
                     </Typography>
 
                     <Typography className="apy-amount">
-                        {percentFormat.format(props.currentAPY) || '??'}
+                        {formatPercentage(props.currentAPY) || '??'}
                     </Typography>
                     <Typography className="apy-title">
                         Current staking APY

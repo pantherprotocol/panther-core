@@ -26,7 +26,7 @@ import {
     fiatPrice,
     formatCurrency,
     formatEther,
-    percentFormat,
+    formatPercentage,
     E18,
 } from '../../utils';
 
@@ -221,7 +221,7 @@ function StakingZkpPage() {
             ? Number(annualRewards.mul(10000000).div(totalStaked)) / 10000000
             : 0;
         setCurrentAPY(APY);
-        console.log('Calculated APY as', APY, percentFormat.format(APY));
+        console.log('Calculated APY as', APY, formatPercentage(APY));
     }, [library]);
 
     useEffect(() => {

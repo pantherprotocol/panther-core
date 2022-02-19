@@ -12,6 +12,7 @@ import './styles.scss';
 
 export default function UnstakingTab(props: {
     rewardsBalance: BigNumber | null;
+    fetchData: () => Promise<void>;
 }) {
     return (
         <Box width={'100%'} margin={'0 5'}>
@@ -23,7 +24,7 @@ export default function UnstakingTab(props: {
                 }}
             >
                 <UnstakingInfoMSG />
-                <UnstakeTable />
+                <UnstakeTable fetchData={props.fetchData} />
                 <TotalUnclaimedRewards rewardsBalance={props.rewardsBalance} />
             </Card>
         </Box>

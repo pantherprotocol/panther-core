@@ -67,7 +67,10 @@ export default function StakingUnstakingCard(props: {
                             switchNetwork={props.switchNetwork}
                         />
                     ) : (
-                        <UnstakingTab rewardsBalance={props.rewardsBalance} />
+                        <UnstakingTab
+                            rewardsBalance={props.rewardsBalance}
+                            fetchData={props.fetchData}
+                        />
                     )}
                 </CardContent>
             </Card>

@@ -19,7 +19,7 @@ import {formatTime} from '../../utils';
 
 import './styles.scss';
 
-export default function UnstakeTable() {
+export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
     const context = useWeb3React();
     const {account, library} = context;
     const [stakedData, setStakedData] = useState<any[]>([]);
@@ -113,6 +113,7 @@ export default function UnstakeTable() {
             data,
             false,
         );
+        props.fetchData();
     };
 
     useEffect(() => {

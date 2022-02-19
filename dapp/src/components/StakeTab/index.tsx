@@ -312,7 +312,7 @@ const StakingInput = (props: {
                     </Box>
 
                     <Input
-                        inputProps={{pattern: '[0-9]*', inputMode: 'decimal'}}
+                        inputProps={{pattern: '[0-9.]*', inputMode: 'decimal'}}
                         className="staking-input"
                         value={props.amountToStake}
                         onChange={changeHandler}

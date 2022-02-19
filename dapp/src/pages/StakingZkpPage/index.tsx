@@ -54,6 +54,9 @@ function StakingZkpPage() {
         null,
     );
     const [pricePerToken, setPricePerToken] = useState<BigNumber | null>(null);
+    const [totalZKPStaked, setTotalZKPStaked] = useState<BigNumber | null>(
+        null,
+    );
     const [stakedBalance, setStakedBalance] = useState<BigNumber | null>(null);
     const [rewardsBalance, setRewardsBalance] = useState<BigNumber | null>(
         null,
@@ -211,6 +214,7 @@ function StakingZkpPage() {
             return;
         }
         console.log('Total ZKP staked:', formatCurrency(totalStaked));
+        setTotalZKPStaked(totalStaked);
 
         const rewardsAvailable = BigNumber.from('6650000').mul(E18);
         const annualRewards = rewardsAvailable.mul(365).div(91);
@@ -297,7 +301,10 @@ function StakingZkpPage() {
                             </Grid>
                             <Grid item xs={12} md={7}>
                                 <Box width={'100%'}>
-                                    <CurrentStakeAPY currentAPY={currentAPY} />
+                                    <CurrentStakeAPY
+                                        currentAPY={currentAPY}
+                                        totalZKPStaked={totalZKPStaked}
+                                    />
                                     <StakingUnstakingCard
                                         tokenBalance={tokenBalance}
                                         stakedBalance={stakedBalance}

@@ -14,24 +14,21 @@ export const formatTime = (date: number | null): string | null => {
     return localDate.toLocaleString();
 };
 
-export const defaultLocale = new Intl.NumberFormat().resolvedOptions().locale;
+export function getDefaultLocale(): string {
+    return (
+        navigator.language || new Intl.NumberFormat().resolvedOptions().locale
+    );
+}
 
-export const currencyFormat = new Intl.NumberFormat(defaultLocale, {
-    // minimumSignificantDigits: 10,
-    minimumFractionDigits: 10,
-    // maximumFractionDigits: 5,
-
-    // TypeScript doesn't allow these :-(
-    // roundingMode: 'floor',
-    // trailingZeroDisplay: 'lessPrecision',
-});
-
-export const percentFormat = new Intl.NumberFormat(defaultLocale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-    // maximumSignificantDigits: 4,
-    style: 'percent',
-});
+export function formatPercentage(percentage: number): string {
+    const percentFormat = new Intl.NumberFormat(getDefaultLocale(), {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        // maximumSignificantDigits: 4,
+        style: 'percent',
+    });
+    return percentFormat.format(percentage);
+}
 
 export function fiatPrice(
     amount: BigNumber | null,
@@ -40,8 +37,13 @@ export function fiatPrice(
     return amount && price && amount.mul(price).div(E18);
 }
 
+function getDecimalSeparator(): string {
+    const n = 1.1;
+    return n.toLocaleString().substring(1, 2);
+}
+
 export function roundDown(s: string, decimals: number): string {
-    const regexp = new RegExp(`(\\.\\d{${decimals}}).+$`);
+    const regexp = new RegExp(`(${getDecimalSeparator()}\\d{${decimals}}).+$`);
     return s.replace(regexp, '$1');
 }
 
@@ -50,7 +52,18 @@ export function formatCurrency(value: BigNumber | null) {
         return '';
     }
     const num = Number(utils.formatEther(value));
-    return roundDown(currencyFormat.format(num), 3);
+
+    const currencyFormat = new Intl.NumberFormat(getDefaultLocale(), {
+        // minimumSignificantDigits: 10,
+        minimumFractionDigits: 10,
+        // maximumFractionDigits: 5,
+
+        // TypeScript doesn't allow these :-(
+        // roundingMode: 'floor',
+        // trailingZeroDisplay: 'lessPrecision',
+    });
+    const formatted = currencyFormat.format(num);
+    return roundDown(formatted, 3);
     // return ethers.utils
     //     .commify()
     //     .replace(/\.0$/, '');

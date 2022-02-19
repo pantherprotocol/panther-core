@@ -1,5 +1,9 @@
 @import '../../variables';
 
+.MuiTable-root th {
+    vertical-align: top;
+}
+
 .MuiTable-root .btn {
     color: $white;
     background: $second-blue;

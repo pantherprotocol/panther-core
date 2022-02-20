@@ -6,15 +6,6 @@ export const DECIMALS = 18; //18 decimal places after floating point
 export const E18 = toBN(10).pow(toBN(DECIMALS));
 export const CONFIRMATIONS_NUM = 1;
 
-export const formatTime = (date: number | null): string | null => {
-    if (!date) return null;
-    const localDate = new Date(date);
-    localDate.setMinutes(
-        localDate.getMinutes() - localDate.getTimezoneOffset(),
-    );
-    return localDate.toLocaleString();
-};
-
 // For testing only!
 let localeOverride: string | undefined;
 export function _setLocale(locale: string) {
@@ -28,6 +19,12 @@ export function getLocale(): string {
         new Intl.NumberFormat().resolvedOptions().locale
     );
 }
+
+export const formatTime = (date: number | null): string | null => {
+    if (!date) return null;
+    const localDate = new Date(date);
+    return localDate.toLocaleString(getLocale());
+};
 
 export function formatPercentage(percentage: number): string {
     const percentFormat = new Intl.NumberFormat(getLocale(), {

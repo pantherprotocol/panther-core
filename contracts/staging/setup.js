@@ -1,3 +1,6 @@
+txs = {};
+w = new ethers.Wallet(process.env.PRIVATE_KEY);
+deployer = w.connect(ethers.provider);
 
 // rewardPoolFactory = await ethers.getContractFactory('RewardPool', deployer);
 // rewardPool = await RewardPool.deploy(vestingPools.address, deployer.address);

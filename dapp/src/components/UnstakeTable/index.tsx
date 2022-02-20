@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import * as React from 'react';
 
 import {Button, Tooltip} from '@mui/material';
@@ -19,32 +19,54 @@ import {formatCurrency, formatTime} from '../../utils';
 
 import './styles.scss';
 
+const createStakedDataRow = (
+    id: number,
+    stakedAt: number,
+    amount: BigNumber,
+    calculatedReward: string,
+    lockedTill: number,
+    claimedAt: number,
+) => {
+    const unstakable = lockedTill * 1000 > new Date().getTime();
+    return {
+        id,
+        stakedAt: stakedAt * 1000,
+        amount,
+        calculatedReward,
+        lockedTill: lockedTill * 1000,
+        unstakable,
+        claimedAt,
+    };
+};
+
+function buildStakedDataRows(
+    stakedData: any,
+    rewardsBalance: BigNumber,
+    totalStaked: BigNumber,
+) {
+    return stakedData.map(item => {
+        const calculatedReward = formatCurrency(
+            rewardsBalance.mul(item.amount).div(totalStaked),
+            {decimals: 2},
+        );
+        if (!calculatedReward) return;
+        return createStakedDataRow(
+            item.id,
+            item.stakedAt,
+            item.amount,
+            calculatedReward,
+            item.lockedTill,
+            item.claimedAt,
+        );
+    });
+}
+
 export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
     const context = useWeb3React();
     const {account, library} = context;
     const [stakedData, setStakedData] = useState<any[]>([]);
 
-    const createStakedDataRow = (
-        id: number,
-        stakedAt: number,
-        amount: BigNumber,
-        calculatedReward: string,
-        lockedTill: number,
-        claimedAt: number,
-    ) => {
-        const unstakable = lockedTill * 1000 > new Date().getTime();
-        return {
-            id,
-            stakedAt: stakedAt * 1000,
-            amount,
-            calculatedReward,
-            lockedTill: lockedTill * 1000,
-            unstakable,
-            claimedAt,
-        };
-    };
-
-    const setTotalStaked = async () => {
+    const setTotalStaked = useCallback(async () => {
         if (!account) {
             return;
         }
@@ -76,23 +98,13 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         );
         if (!rewardsBalance) return;
 
-        const stakeData = stakes.map(item => {
-            const calculatedReward = formatCurrency(
-                rewardsBalance.mul(item.amount).div(totalStaked),
-                {decimals: 2},
-            );
-            if (!calculatedReward) return;
-            return createStakedDataRow(
-                item.id,
-                item.stakedAt,
-                item.amount,
-                calculatedReward,
-                item.lockedTill,
-                item.claimedAt,
-            );
-        });
+        const stakeData = buildStakedDataRows(
+            stakes,
+            rewardsBalance,
+            totalStaked,
+        );
         setStakedData(stakeData);
-    };
+    }, [account, library]);
 
     const unstake = async id => {
         const stakingContract = await stakingService.getStakingContract(
@@ -114,6 +126,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
             data,
             false,
         );
+        setTotalStaked();
         props.fetchData();
     };
 
@@ -123,7 +136,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         }
 
         setTotalStaked();
-    });
+    }, [account, library, setTotalStaked]);
 
     return (
         <TableContainer component={Paper}>

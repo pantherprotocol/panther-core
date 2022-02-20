@@ -58,7 +58,10 @@ export function roundDown(s: string, decimals: number): string {
     return rounded;
 }
 
-export function formatCurrency(value: BigNumber | null) {
+export function formatCurrency(
+    value: BigNumber | null,
+    options?: {decimals?: number},
+) {
     if (!value) {
         return '';
     }
@@ -74,7 +77,7 @@ export function formatCurrency(value: BigNumber | null) {
         // trailingZeroDisplay: 'lessPrecision',
     });
     const formatted = currencyFormat.format(num);
-    return roundDown(formatted, 3);
+    return roundDown(formatted, options?.decimals ?? 3);
     // return ethers.utils
     //     .commify()
     //     .replace(/\.0$/, '');

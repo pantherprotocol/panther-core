@@ -13,10 +13,9 @@ import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
-import {formatAccountBalance, formatTokenBalance} from '../../services/account';
 import * as stakingService from '../../services/staking';
 import {getRewardsBalance} from '../../services/staking';
-import {formatTime} from '../../utils';
+import {formatCurrency, formatTime} from '../../utils';
 
 import './styles.scss';
 
@@ -78,8 +77,9 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         if (!rewardsBalance) return;
 
         const stakeData = stakes.map(item => {
-            const calculatedReward = formatTokenBalance(
+            const calculatedReward = formatCurrency(
                 rewardsBalance.mul(item.amount).div(totalStaked),
+                {decimals: 2},
             );
             if (!calculatedReward) return;
             return createStakedDataRow(
@@ -168,10 +168,10 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                                         {formatTime(row.stakedAt)}
                                     </TableCell>
                                     <TableCell align="right">
-                                        {formatAccountBalance(
-                                            row.amount,
-                                            'ZKP',
-                                        )}
+                                        {formatCurrency(row.amount, {
+                                            decimals: 2,
+                                        })}{' '}
+                                        ZKP
                                     </TableCell>
                                     <TableCell align="right">
                                         {row.calculatedReward} ZKP

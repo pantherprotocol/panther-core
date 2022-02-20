@@ -14,12 +14,10 @@ import governanceIcon from '../../images/governance-icon.svg';
 import accountAvatar from '../../images/meta-mask-icon.svg';
 import logo from '../../images/panther-logo.svg';
 import stakingIcon from '../../images/staking-icon.svg';
-import {
-    formatAccountAddress,
-    formatAccountBalance,
-} from '../../services/account';
+import {formatAccountAddress} from '../../services/account';
 import {onWrongNetwork, requiredNetwork} from '../../services/connectors';
 import {SafeLink} from '../../services/links';
+import {formatCurrency} from '../../utils';
 import Address from '../Address';
 import {AddTokenButton} from '../AddTokenButton';
 import {ConnectButton} from '../ConnectButton';
@@ -80,7 +78,7 @@ const Header = props => {
 
     const accountAddress = formatAccountAddress(account) || null;
     const accountBalance =
-        formatAccountBalance(balance, requiredNetwork.symbol) || '-';
+        formatCurrency(balance) + ' ' + requiredNetwork.symbol || '-';
 
     return (
         <Box sx={{flexGrow: 1}}>

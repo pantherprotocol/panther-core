@@ -34,7 +34,7 @@ const BalanceCard = (props: {
     );
 
     return (
-        <>
+        <Box className="balance-card-holder">
             <Card className="balance-card">
                 {props.accountAddress && (
                     <AddressWithSetting
@@ -77,7 +77,7 @@ const BalanceCard = (props: {
                     amountUSD={rewardsUSDValue}
                 />
             </Card>
-        </>
+        </Box>
     );
 };
 

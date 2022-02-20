@@ -2,6 +2,11 @@
 
 .MuiTable-root th {
     vertical-align: top;
+    font-size: 0.875rem !important;
+}
+.MuiTableCell-root {
+    padding: 10px 5px !important;
+    font-size: 0.775rem !important;
 }
 
 .MuiTable-root .btn {

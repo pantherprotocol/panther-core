@@ -367,6 +367,9 @@ export async function unstake(
         stakeID,
         data ? data : '0x00',
         isForced,
+        {
+            gasLimit: 250000,
+        },
     );
 
     try {

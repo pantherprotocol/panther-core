@@ -48,9 +48,7 @@ const TotalUnclaimedRewards = (props: {rewardsBalance: BigNumber | null}) => {
             {props.rewardsBalance && hasRewards && (
                 <Box className="total-unclaimed-rewards">
                     <Typography variant="caption">
-                        Total Unclaimed Rewards:
-                    </Typography>
-                    <Typography variant="caption">
+                        Total Unclaimed Rewards:{' '}
                         {formatCurrency(props.rewardsBalance)}
                     </Typography>
                 </Box>

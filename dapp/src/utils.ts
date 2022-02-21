@@ -50,6 +50,10 @@ export function getDecimalSeparator(): string {
 
 export function roundDown(s: string, decimals: number): string {
     const sep = escapeRegExp(getDecimalSeparator());
+    if (decimals === 0) {
+        const regexp = new RegExp(`${sep}\\d+$`);
+        return s.replace(regexp, '');
+    }
     const regexp = new RegExp(`(${sep}\\d{${decimals}}).+$`);
     const rounded = s.replace(regexp, '$1');
     return rounded;

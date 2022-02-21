@@ -16,7 +16,7 @@ const CurrentStakeAPY = (props: {
     totalZKPStaked: BigNumber | null;
 }) => {
     const totalZKPStaked = props.totalZKPStaked
-        ? formatCurrency(props.totalZKPStaked) + ' ZKP'
+        ? formatCurrency(props.totalZKPStaked, {decimals: 0}) + ' ZKP'
         : '$ZKP';
     return (
         <Box className="current-stake-apy-container">

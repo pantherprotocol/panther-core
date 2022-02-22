@@ -11,7 +11,6 @@ import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
 import docsIcon from '../../images/docs-icon.svg';
 import governanceIcon from '../../images/governance-icon.svg';
-import accountAvatar from '../../images/meta-mask-icon.svg';
 import logo from '../../images/panther-logo.svg';
 import stakingIcon from '../../images/staking-icon.svg';
 import {formatAccountAddress} from '../../services/account';
@@ -146,14 +145,7 @@ const Header = props => {
                                     <Box className="address-and-balance-holder">
                                         {accountAddress && (
                                             <Box>
-                                                <Address
-                                                    accountAvatar={
-                                                        accountAvatar
-                                                    }
-                                                    accountAddress={
-                                                        accountAddress
-                                                    }
-                                                />
+                                                <Address />
                                             </Box>
                                         )}
                                         <Typography className="account-balance">

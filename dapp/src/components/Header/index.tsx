@@ -16,7 +16,7 @@ import logo from '../../images/panther-logo.svg';
 import stakingIcon from '../../images/staking-icon.svg';
 import {formatAccountAddress} from '../../services/account';
 import {onWrongNetwork, requiredNetwork} from '../../services/connectors';
-import {SafeLink} from '../../services/links';
+import {SafeLink, safeOpenMetamask} from '../../services/links';
 import {formatCurrency} from '../../utils';
 import Address from '../Address';
 import {AddTokenButton} from '../AddTokenButton';
@@ -133,9 +133,7 @@ const Header = props => {
                                         }
                                         onClick={() => {
                                             if (isNoEthereumProviderError) {
-                                                window.open(
-                                                    'https://metamask.io',
-                                                );
+                                                safeOpenMetamask();
                                             } else {
                                                 props.onConnect();
                                             }

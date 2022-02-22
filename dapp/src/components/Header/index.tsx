@@ -27,8 +27,7 @@ import './styles.scss';
 
 const Header = props => {
     const context = useWeb3React();
-    const {account, library, chainId, active, error} = context;
-    const [balance, setBalance] = useState(null);
+    const {account, active, error} = context;
     const [wrongNetwork, setWrongNetwork] = useState(false);
     const [tokenAdded, setTokenAdded] = useState<boolean>(
         !!localStorage.getItem('ZKP-Staking:tokenAdded'),
@@ -51,34 +50,11 @@ const Header = props => {
         if (wrongNetwork) {
             return;
         }
-
-        if (account && library) {
-            let stale = false;
-
-            library
-                .getBalance(account)
-                .then((balance: any) => {
-                    if (!stale) {
-                        setBalance(balance);
-                        setWrongNetwork(onWrongNetwork(context));
-                    }
-                })
-                .catch(() => {
-                    if (!stale) {
-                        setBalance(null);
-                    }
-                });
-
-            return () => {
-                stale = true;
-                setBalance(null);
-            };
-        }
-    }, [context, active, account, library, chainId, error]); // ensures refresh if referential identity of library doesn't change across chainIds
+    }, [context, active, error]); // ensures refresh if referential identity of library doesn't change across chainIds
 
     const accountAddress = formatAccountAddress(account) || null;
     const accountBalance =
-        formatCurrency(balance) + ' ' + requiredNetwork.symbol || '-';
+        formatCurrency(props.balance) + ' ' + requiredNetwork.symbol || '-';
 
     return (
         <Box sx={{flexGrow: 1}}>

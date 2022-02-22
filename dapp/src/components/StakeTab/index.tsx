@@ -16,6 +16,7 @@ import {BigNumber, utils} from 'ethers';
 
 import logo from '../../images/panther-logo.svg';
 import {onWrongNetwork} from '../../services/connectors';
+import {safeOpenMetamask} from '../../services/links';
 import * as stakingService from '../../services/staking';
 import {formatCurrency, safeParseUnits} from '../../utils';
 import {ConnectButton} from '../ConnectButton';
@@ -159,7 +160,7 @@ export default function StakeTab(props: {
                         }
                         onClick={() => {
                             if (isNoEthereumProviderError) {
-                                window.open('https://metamask.io');
+                                safeOpenMetamask();
                             } else {
                                 props.onConnect();
                             }

@@ -3,7 +3,6 @@ import {JsonRpcSigner} from '@ethersproject/providers';
 import type {TransactionResponse} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
-import * as ethers from 'ethers';
 import {BigNumber, Contract, constants, utils} from 'ethers';
 import type {ContractTransaction} from 'ethers';
 
@@ -11,8 +10,11 @@ import {abi as REWARDS_MASTER_ABI} from '../abi/RewardsMaster';
 import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
 import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
+import {MessageWithTx} from '../components/Common/MessageWithTx';
 import {Staking, IStakingTypes} from '../types/contracts/Staking';
-import {CONFIRMATIONS_NUM} from '../utils';
+import {CONFIRMATIONS_NUM} from '../utils/constants';
+import {parseTxErrorMessage} from '../utils/errors';
+import {getEventFromReceipt} from '../utils/transactions';
 
 import {
     REWARD_MASTER_CONTRACT,
@@ -36,16 +38,12 @@ export async function getStakingContract(
         console.error(`STAKING_ABI not defined`);
         return;
     }
-    return new ethers.Contract(
-        STAKING_CONTRACT,
-        STAKING_ABI,
-        library,
-    ) as Staking;
+    return new Contract(STAKING_CONTRACT, STAKING_ABI, library) as Staking;
 }
 
 export async function getStakingTokenContract(
     library,
-): Promise<ethers.Contract | undefined> {
+): Promise<Contract | undefined> {
     if (!STAKING_TOKEN_CONTRACT) {
         console.error(`STAKING_TOKEN_CONTRACT not defined`);
         return;
@@ -54,16 +52,12 @@ export async function getStakingTokenContract(
         console.error(`STAKING_TOKEN_ABI not defined`);
         return;
     }
-    return new ethers.Contract(
-        STAKING_TOKEN_CONTRACT,
-        STAKING_TOKEN_ABI,
-        library,
-    );
+    return new Contract(STAKING_TOKEN_CONTRACT, STAKING_TOKEN_ABI, library);
 }
 
 export async function getRewardsMasterContract(
     library,
-): Promise<ethers.Contract | undefined> {
+): Promise<Contract | undefined> {
     if (!REWARD_MASTER_CONTRACT) {
         console.error(`REWARD_MASTER_CONTRACT not defined`);
         return;
@@ -72,16 +66,12 @@ export async function getRewardsMasterContract(
         console.error(`STAKING_TOKEN_ABI not defined`);
         return;
     }
-    return new ethers.Contract(
-        REWARD_MASTER_CONTRACT,
-        REWARDS_MASTER_ABI,
-        library,
-    );
+    return new Contract(REWARD_MASTER_CONTRACT, REWARDS_MASTER_ABI, library);
 }
 
 export async function getVestingPoolsContract(
     library,
-): Promise<ethers.Contract | undefined> {
+): Promise<Contract | undefined> {
     if (!VESTING_POOLS_CONTRACT) {
         console.error(`VESTING_POOLS_CONTRACT not defined`);
         return;
@@ -90,15 +80,11 @@ export async function getVestingPoolsContract(
         console.error(`VESTING_POOLS_ABI not defined`);
         return;
     }
-    return new ethers.Contract(
-        VESTING_POOLS_CONTRACT,
-        VESTING_POOLS_ABI,
-        library,
-    );
+    return new Contract(VESTING_POOLS_CONTRACT, VESTING_POOLS_ABI, library);
 }
 
 export function toBytes32(data): string {
-    return ethers.utils.hexZeroPad(data, 32);
+    return utils.hexZeroPad(data, 32);
 }
 
 const EIP712_TYPES = {
@@ -142,12 +128,8 @@ export async function generatePermitSignature(
     );
 
     if (
-        ethers.utils.verifyTypedData(
-            domain,
-            EIP712_TYPES,
-            permitParams,
-            signature,
-        ) != account
+        utils.verifyTypedData(domain, EIP712_TYPES, permitParams, signature) !=
+        account
     ) {
         console.error(
             `Failed to verify typed data as signed by ${account}`,
@@ -201,8 +183,8 @@ export async function stake(
             stakeType,
             data,
         );
-    } catch (err: any) {
-        return txError(err.message || 'Failed to submit transaction.', err);
+    } catch (err) {
+        return txError(parseTxErrorMessage(err), err);
     }
 
     const inProgress = openNotification(
@@ -212,21 +194,11 @@ export async function stake(
     );
 
     const receipt = await tx.wait(CONFIRMATIONS_NUM);
-    if (!receipt) {
-        return txError('Failed to get transaction receipt.', tx);
-    }
-    if (!receipt.events) {
-        return txError('Failed to get transaction events.', receipt);
+    const event = await getEventFromReceipt(receipt, 'StakeCreated');
+    if (event instanceof Error) {
+        return event;
     }
 
-    const event = receipt.events.find(({event}) => event === 'StakeCreated');
-    if (!event) {
-        return txError(
-            'No StakeCreated event found for this transaction.',
-            receipt.events,
-        );
-    }
-    console.debug('StakeCreated event:', event);
     removeNotification(inProgress);
     openNotification(
         'Stake completed successfully',
@@ -353,35 +325,57 @@ async function permitAndStake(
 }
 
 export async function unstake(
-    library: any,
-    contract: ethers.Contract,
+    contract: Contract,
     stakeID: BigNumber,
     signer: JsonRpcSigner,
     data?: string,
     isForced = false,
-): Promise<boolean | Error> {
-    if (!contract) {
-        return new Error('Missing contract parameter');
-    }
+): Promise<Error | undefined> {
+    if (!contract) return new Error('Missing contract parameter');
+    if (!signer) return new Error('stake(): Undefined signer');
 
     const stakingSigner = contract.connect(signer);
-
-    const unstakingResponse: any = await stakingSigner.unstake(
-        stakeID,
-        data ? data : '0x00',
-        isForced,
-        {
-            gasLimit: 250000,
-        },
-    );
-
+    let tx: any;
     try {
-        await unstakingResponse.wait(CONFIRMATIONS_NUM);
+        tx = await stakingSigner.unstake(
+            stakeID,
+            data ? data : '0x00',
+            isForced,
+            {
+                gasLimit: 250000,
+            },
+        );
     } catch (e: any) {
-        return e;
+        openNotification(
+            'Transaction error',
+            MessageWithTx({
+                message: parseTxErrorMessage(e),
+                txHash: tx?.hash,
+            }),
+            'danger',
+        );
+        return e as Error;
     }
 
-    return true;
+    const inProgress = openNotification(
+        'Transaction in progress',
+        'Your unstaking transaction is currently in progress. Please wait for confirmation!',
+        'info',
+    );
+
+    const receipt = await tx.wait(CONFIRMATIONS_NUM);
+    const event = await getEventFromReceipt(receipt, 'StakeClaimed');
+    if (event instanceof Error) {
+        return event;
+    }
+
+    removeNotification(inProgress);
+    openNotification(
+        'Unstaking completed successfully',
+        'Congratulations! Your unstaking transaction was processed!',
+        'info',
+        15000,
+    );
 }
 
 export async function getAccountStakes(
@@ -418,7 +412,7 @@ export async function getTotalStakedForAccount(
 }
 
 export async function getRewardsBalance(
-    contract: ethers.Contract,
+    contract: Contract,
     address: string | null | undefined,
 ): Promise<BigNumber | null> {
     if (!contract) {
@@ -428,7 +422,7 @@ export async function getRewardsBalance(
 }
 
 export async function getStakingTransactionsNumber(
-    contract: ethers.Contract,
+    contract: Contract,
     address: string | null | undefined,
 ): Promise<number | null> {
     if (!contract) {
@@ -437,7 +431,7 @@ export async function getStakingTransactionsNumber(
     return await contract.stakesNum(address);
 }
 
-export async function getTotalStaked(contract: ethers.Contract): Promise<any> {
+export async function getTotalStaked(contract: Contract): Promise<any> {
     if (!contract) {
         return null;
     }
@@ -475,9 +469,6 @@ export async function getZKPMarketPrice(): Promise<BigNumber | null> {
         console.warn(`Coingecko price response was missing ${symbol}`);
         return null;
     }
-    const price = ethers.utils.parseUnits(
-        String(priceData.data[symbol]['usd']),
-        18,
-    );
+    const price = utils.parseUnits(String(priceData.data[symbol]['usd']), 18);
     return price;
 }

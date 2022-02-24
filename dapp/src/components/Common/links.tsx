@@ -2,16 +2,18 @@ import React, {ReactElement} from 'react';
 
 import {Link} from '@mui/material';
 
-import {STAKING_CONTRACT} from './contracts';
+import {STAKING_CONTRACT} from '../../services/contracts';
 
-export const SafeLink = (props: {
+export function SafeLink(props: {
     href: string;
     children: string | ReactElement;
-}): ReactElement => (
-    <a href={props.href} target="_blank" rel="noopener noreferrer">
-        {props.children}
-    </a>
-);
+}): ReactElement {
+    return (
+        <a href={props.href} target="_blank" rel="noopener noreferrer">
+            {props.children}
+        </a>
+    );
+}
 
 export const SafeMuiLink = (props: {
     [key: string]: any;

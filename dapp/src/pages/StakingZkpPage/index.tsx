@@ -22,13 +22,13 @@ import {formatAccountAddress} from '../../services/account';
 import {injected} from '../../services/connectors';
 import * as stakingService from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
+import {E18} from '../../utils/constants';
 import {
     fiatPrice,
     formatCurrency,
     formatEther,
     formatPercentage,
-    E18,
-} from '../../utils';
+} from '../../utils/helpers';
 
 import './styles.scss';
 

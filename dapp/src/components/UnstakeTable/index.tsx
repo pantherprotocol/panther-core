@@ -15,7 +15,7 @@ import {BigNumber} from 'ethers';
 import infoIcon from '../../images/info-icon.svg';
 import * as stakingService from '../../services/staking';
 import {getRewardsBalance} from '../../services/staking';
-import {formatCurrency, formatTime} from '../../utils';
+import {formatTime, formatCurrency} from '../../utils/helpers';
 
 import './styles.scss';
 
@@ -110,7 +110,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         const stakingContract = await stakingService.getStakingContract(
             library,
         );
-        if (!stakingContract) {
+        if (!stakingContract || !account) {
             return;
         }
 
@@ -119,7 +119,6 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         const stakeID = BigNumber.from(id);
         const data = '0x00';
         await stakingService.unstake(
-            library,
             stakingContract,
             stakeID,
             signer,

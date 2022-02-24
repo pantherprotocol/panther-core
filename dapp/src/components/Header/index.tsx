@@ -1,5 +1,5 @@
-import {useState, useEffect} from 'react';
 import * as React from 'react';
+import {useState, useEffect} from 'react';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -16,10 +16,10 @@ import logo from '../../images/panther-logo.svg';
 import stakingIcon from '../../images/staking-icon.svg';
 import {formatAccountAddress} from '../../services/account';
 import {onWrongNetwork, requiredNetwork} from '../../services/connectors';
-import {SafeLink, safeOpenMetamask} from '../../services/links';
-import {formatCurrency} from '../../utils';
+import {formatCurrency} from '../../utils/helpers';
 import Address from '../Address';
 import {AddTokenButton} from '../AddTokenButton';
+import {SafeLink, safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 import {LogoutButton} from '../LogoutButton';
 

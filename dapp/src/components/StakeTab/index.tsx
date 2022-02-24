@@ -16,9 +16,9 @@ import {BigNumber, utils} from 'ethers';
 
 import logo from '../../images/panther-logo.svg';
 import {onWrongNetwork} from '../../services/connectors';
-import {safeOpenMetamask} from '../../services/links';
 import * as stakingService from '../../services/staking';
-import {formatCurrency, safeParseUnits} from '../../utils';
+import {formatCurrency, safeParseUnits} from '../../utils/helpers';
+import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 
 import './styles.scss';

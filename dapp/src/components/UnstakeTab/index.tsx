@@ -5,7 +5,7 @@ import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import {BigNumber, constants} from 'ethers';
 
-import {formatCurrency} from '../../utils';
+import {formatCurrency} from '../../utils/helpers';
 import UnstakeTable from '../UnstakeTable';
 
 import './styles.scss';

@@ -123,7 +123,7 @@ export default function StakeTab(props: {
     }, [context, active, account, library, error]);
 
     return (
-        <Box width={'100%'}>
+        <Box className="staking-tab-holder">
             <StakingInput
                 tokenBalance={props.tokenBalance}
                 setStakingAmount={setStakingAmount}

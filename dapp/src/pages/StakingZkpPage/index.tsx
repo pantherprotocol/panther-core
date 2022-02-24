@@ -61,6 +61,7 @@ function StakingZkpPage() {
     const [rewardsBalance, setRewardsBalance] = useState<BigNumber | null>(
         null,
     );
+    const [ethBalance, setEthBalance] = useState<BigNumber | null>(null);
     const [currentAPY, setCurrentAPY] = useState<number | null>(null);
 
     // Handle logic to eagerly connect to the injected ethereum provider, if it
@@ -200,6 +201,30 @@ function StakingZkpPage() {
         [account, library],
     );
 
+    const fetchEthBalance = useCallback(async () => {
+        if (account && library) {
+            let stale = false;
+
+            library
+                .getBalance(account)
+                .then((balance: any) => {
+                    if (!stale) {
+                        setEthBalance(balance);
+                    }
+                })
+                .catch(() => {
+                    if (!stale) {
+                        setEthBalance(null);
+                    }
+                });
+
+            return () => {
+                stale = true;
+                setEthBalance(null);
+            };
+        }
+    }, [account, library]);
+
     const getAPY = useCallback(async () => {
         const stakingContract = await stakingService.getStakingContract(
             library,
@@ -244,6 +269,7 @@ function StakingZkpPage() {
         await fetchZkpTokenBalance(price);
         await fetchStakedZkpBalance(price);
         await getUnclaimedRewardsBalance(price);
+        await fetchEthBalance();
     }, [
         library,
         account,
@@ -251,6 +277,7 @@ function StakingZkpPage() {
         fetchZkpTokenBalance,
         fetchStakedZkpBalance,
         getUnclaimedRewardsBalance,
+        fetchEthBalance,
     ]);
 
     useEffect(() => {
@@ -278,6 +305,7 @@ function StakingZkpPage() {
                 disconnect={() => {
                     disconnect();
                 }}
+                balance={ethBalance}
             />
 
             <Box className="main-box-holder">

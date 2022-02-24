@@ -22,6 +22,7 @@ const BalanceCard = (props: {
     tokenBalanceUSD: BigNumber | null;
     pricePerToken: BigNumber | null;
     accountAddress: string | null;
+    networkLogo: string | undefined;
 }) => {
     const stakedUSDValue: BigNumber | null = fiatPrice(
         props.stakedBalance,
@@ -36,10 +37,20 @@ const BalanceCard = (props: {
         <Box className="balance-card-holder">
             <Card className="balance-card">
                 {props.accountAddress && (
-                    <AddressWithSetting
-                        accountAvatar={accountAvatar}
-                        accountAddress={props.accountAddress}
-                    />
+                    <div className="balance-card-account-holder">
+                        <AddressWithSetting
+                            accountAvatar={accountAvatar}
+                            accountAddress={props.accountAddress}
+                        />
+                        {props.networkLogo && (
+                            <div className="network-logo-holder">
+                                <img
+                                    src={props.networkLogo}
+                                    alt="Network logo"
+                                />
+                            </div>
+                        )}
+                    </div>
                 )}
                 {!props.accountAddress && (
                     <div className="not-connected-balance-container">

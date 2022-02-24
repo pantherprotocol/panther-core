@@ -1,12 +1,19 @@
-import {CHAIN_HEX_ID, requiredNetwork, suggestedRpcURL} from './connectors';
+import {utils} from 'ethers';
+
+import {supportedNetworks} from './connectors';
 import {openNotification} from './notification';
 
-export const switchNetwork = async (errorHandler?: (msg: string) => void) => {
+export const switchNetwork = async (
+    chainId: number,
+    errorHandler?: (msg: string) => void,
+) => {
     const {ethereum} = window as any;
+    const switchToChainId = utils.hexValue(chainId);
+    const requiredNetwork = supportedNetworks[chainId];
     try {
         await ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{chainId: CHAIN_HEX_ID}],
+            params: [{chainId: switchToChainId}],
         });
     } catch (switchError: any) {
         // This error code indicates that the chain has not been added to MetaMask.
@@ -16,8 +23,8 @@ export const switchNetwork = async (errorHandler?: (msg: string) => void) => {
                     method: 'wallet_addEthereumChain',
                     params: [
                         {
-                            chainId: CHAIN_HEX_ID,
-                            rpcUrls: [suggestedRpcURL],
+                            chainId: switchToChainId,
+                            rpcUrls: [requiredNetwork.rpcURL],
                             chainName: requiredNetwork.name,
                             nativeCurrency: {
                                 name: requiredNetwork.name,

@@ -1,15 +1,12 @@
 import type {TypedDataDomain} from '@ethersproject/abstract-signer';
+import type {BytesLike} from '@ethersproject/bytes';
 import {JsonRpcSigner} from '@ethersproject/providers';
 import type {TransactionResponse} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
-import {BigNumber, Contract, constants, utils} from 'ethers';
+import {BigNumber, constants, utils} from 'ethers';
 import type {ContractTransaction} from 'ethers';
 
-import {abi as REWARDS_MASTER_ABI} from '../abi/RewardsMaster';
-import {abi as STAKING_ABI} from '../abi/Staking';
-import {abi as STAKING_TOKEN_ABI} from '../abi/StakingToken';
-import {abi as VESTING_POOLS_ABI} from '../abi/VestingPools';
 import {MessageWithTx} from '../components/Common/MessageWithTx';
 import {Staking, IStakingTypes} from '../types/contracts/Staking';
 import {CONFIRMATIONS_NUM} from '../utils/constants';
@@ -17,73 +14,19 @@ import {parseTxErrorMessage} from '../utils/errors';
 import {getEventFromReceipt} from '../utils/transactions';
 
 import {
-    REWARD_MASTER_CONTRACT,
-    STAKING_CONTRACT,
-    STAKING_TOKEN_CONTRACT,
-    TOKEN_SYMBOL,
-    VESTING_POOLS_CONTRACT,
+    ContractName,
+    getContractAddress,
+    getRewardMasterContract,
+    getStakingContract,
+    getTokenContract,
+    getSignableContract,
 } from './contracts';
+import {env} from './env';
 import {openNotification, removeNotification} from './notification';
 
 const CoinGeckoClient = new CoinGecko();
 
-export async function getStakingContract(
-    library,
-): Promise<Staking | undefined> {
-    if (!STAKING_CONTRACT) {
-        console.error(`STAKING_CONTRACT not defined`);
-        return;
-    }
-    if (!STAKING_ABI) {
-        console.error(`STAKING_ABI not defined`);
-        return;
-    }
-    return new Contract(STAKING_CONTRACT, STAKING_ABI, library) as Staking;
-}
-
-export async function getStakingTokenContract(
-    library,
-): Promise<Contract | undefined> {
-    if (!STAKING_TOKEN_CONTRACT) {
-        console.error(`STAKING_TOKEN_CONTRACT not defined`);
-        return;
-    }
-    if (!STAKING_TOKEN_ABI) {
-        console.error(`STAKING_TOKEN_ABI not defined`);
-        return;
-    }
-    return new Contract(STAKING_TOKEN_CONTRACT, STAKING_TOKEN_ABI, library);
-}
-
-export async function getRewardsMasterContract(
-    library,
-): Promise<Contract | undefined> {
-    if (!REWARD_MASTER_CONTRACT) {
-        console.error(`REWARD_MASTER_CONTRACT not defined`);
-        return;
-    }
-    if (!STAKING_TOKEN_ABI) {
-        console.error(`STAKING_TOKEN_ABI not defined`);
-        return;
-    }
-    return new Contract(REWARD_MASTER_CONTRACT, REWARDS_MASTER_ABI, library);
-}
-
-export async function getVestingPoolsContract(
-    library,
-): Promise<Contract | undefined> {
-    if (!VESTING_POOLS_CONTRACT) {
-        console.error(`VESTING_POOLS_CONTRACT not defined`);
-        return;
-    }
-    if (!VESTING_POOLS_ABI) {
-        console.error(`VESTING_POOLS_ABI not defined`);
-        return;
-    }
-    return new Contract(VESTING_POOLS_CONTRACT, VESTING_POOLS_ABI, library);
-}
-
-export function toBytes32(data): string {
+export function toBytes32(data: BytesLike): string {
     return utils.hexZeroPad(data, 32);
 }
 
@@ -102,14 +45,15 @@ export async function generatePermitSignature(
     chainId: number,
     account: string,
     signer: JsonRpcSigner,
-    tokenContract: Contract,
     amount: BigNumber,
     deadline: number,
 ) {
+    const stakingContract = getStakingContract(library, chainId);
+    const tokenContract = getTokenContract(library, chainId);
     const nonce = await tokenContract.nonces(account);
     const permitParams = {
         owner: account,
-        spender: STAKING_CONTRACT,
+        spender: stakingContract.address,
         value: amount,
         nonce,
         deadline,
@@ -118,7 +62,7 @@ export async function generatePermitSignature(
         name: await tokenContract.name(),
         version: '1',
         chainId,
-        verifyingContract: STAKING_TOKEN_CONTRACT,
+        verifyingContract: tokenContract.address,
     };
 
     const signature = await signer._signTypedData(
@@ -151,34 +95,27 @@ function txError(msg: string, diagnostics: any): Error {
 
 export async function stake(
     library: any,
-    chainId: number | undefined,
+    chainId: number,
     account: string,
-    stakingContract: Staking,
-    signer: JsonRpcSigner,
     amount: BigNumber, // assumes already validated as <= tokenBalance
     stakeType: string,
     data?: any,
 ): Promise<BigNumber | Error> {
-    if (!chainId) {
-        return new Error('stake(): missing chainId');
-    }
-    if (!stakingContract) {
-        return new Error('stake(): missing Staking contract');
-    }
-    if (!signer) {
-        return new Error('stake(): undefined signer');
-    }
+    const {signer, contract} = getSignableContract(
+        library,
+        chainId,
+        account,
+        getStakingContract,
+    );
 
-    const stakingContractSignable = stakingContract.connect(signer);
-
-    let tx;
+    let tx: any;
     try {
         tx = await initiateStakingTransaction(
             library,
             account,
             chainId,
             signer,
-            stakingContractSignable,
+            contract,
             amount,
             stakeType,
             data,
@@ -215,17 +152,14 @@ async function initiateStakingTransaction(
     account: string,
     chainId: number,
     signer: JsonRpcSigner,
-    stakingContractSignable: Staking,
+    contract: Staking,
     amount: BigNumber,
     stakeType: string,
     data: any = '0x00',
 ): Promise<ContractTransaction> {
-    const tokenContract = await getStakingTokenContract(library);
-    if (!tokenContract) {
-        throw new Error('Could not initialize token contract');
+    const allowance = await getAllowance(library, chainId, account);
+    if (!allowance) {
     }
-
-    const allowance = await getAllowance(library, account, tokenContract);
     console.debug(`Got allowance ${allowance} for ${account}`);
     const allowanceSufficient = amount.lte(allowance);
     if (allowanceSufficient) {
@@ -234,14 +168,7 @@ async function initiateStakingTransaction(
                 allowance,
             )} >= ${amount}; using regular stake()`,
         );
-        return await normalStake(
-            library,
-            account,
-            stakingContractSignable,
-            amount,
-            stakeType,
-            data,
-        );
+        return await normalStake(contract, amount, stakeType, data);
     } else {
         console.debug(
             `Allowance ${utils.formatEther(
@@ -250,11 +177,10 @@ async function initiateStakingTransaction(
         );
         return await permitAndStake(
             library,
-            account,
             chainId,
+            account,
             signer,
-            stakingContractSignable,
-            tokenContract,
+            contract,
             amount,
             stakeType,
             data,
@@ -264,33 +190,32 @@ async function initiateStakingTransaction(
 
 async function getAllowance(
     library: any,
+    chainId: number,
     account: string,
-    tokenContract: Contract,
 ): Promise<BigNumber> {
-    console.debug(`Getting allowance for ${account} on ${STAKING_CONTRACT}`);
-    return await tokenContract.allowance(account, STAKING_CONTRACT);
+    const stakingContract = getContractAddress(ContractName.STAKING, chainId);
+    const tokenContract = getTokenContract(library, chainId);
+    console.debug(`Getting allowance for ${account} on ${stakingContract}`);
+    return await tokenContract.allowance(account, stakingContract);
 }
 
 async function normalStake(
-    library: any,
-    account: string,
-    contractSignable: Staking,
+    contract: Staking,
     amount: BigNumber,
     stakeType: string,
     data: any,
 ) {
-    return await contractSignable.stake(amount, stakeType, data, {
+    return await contract.stake(amount, stakeType, data, {
         gasLimit: 320000,
     });
 }
 
 async function permitAndStake(
     library: any,
-    account: string,
     chainId: number,
+    account: string,
     signer: JsonRpcSigner,
-    stakingContractSignable: Staking,
-    tokenContract: Contract,
+    contract: Staking,
     amount: BigNumber,
     stakeType: string,
     data: any,
@@ -303,13 +228,12 @@ async function permitAndStake(
         chainId,
         account,
         signer,
-        tokenContract,
         amount,
         deadline,
     );
     const {v, r, s} = fromRpcSig(permitSig);
 
-    return await stakingContractSignable.permitAndStake(
+    return await contract.permitAndStake(
         account,
         amount,
         deadline,
@@ -325,26 +249,25 @@ async function permitAndStake(
 }
 
 export async function unstake(
-    contract: Contract,
+    library: any,
+    chainId: number,
+    account: string,
     stakeID: BigNumber,
-    signer: JsonRpcSigner,
     data?: string,
     isForced = false,
 ): Promise<Error | undefined> {
-    if (!contract) return new Error('Missing contract parameter');
-    if (!signer) return new Error('stake(): Undefined signer');
+    const {contract} = getSignableContract(
+        library,
+        chainId,
+        account,
+        getStakingContract,
+    );
 
-    const stakingSigner = contract.connect(signer);
     let tx: any;
     try {
-        tx = await stakingSigner.unstake(
-            stakeID,
-            data ? data : '0x00',
-            isForced,
-            {
-                gasLimit: 250000,
-            },
-        );
+        tx = await contract.unstake(stakeID, data ? data : '0x00', isForced, {
+            gasLimit: 250000,
+        });
     } catch (e: any) {
         openNotification(
             'Transaction error',
@@ -379,10 +302,12 @@ export async function unstake(
 }
 
 export async function getAccountStakes(
-    contract: Staking,
-    address: string,
+    library: any,
+    chainId: number,
+    account: string,
 ): Promise<IStakingTypes.StakeStructOutput[]> {
-    return await contract.accountStakes(address);
+    const contract = getStakingContract(library, chainId);
+    return await contract.accountStakes(account);
 }
 
 function getActiveStakeAmount(
@@ -401,40 +326,33 @@ export function sumActiveAccountStakes(
 }
 
 export async function getTotalStakedForAccount(
-    contract: Staking,
-    address: string | null | undefined,
+    library: any,
+    chainId: number,
+    account: string,
 ): Promise<BigNumber | null> {
-    if (!contract || !address) {
-        return null;
-    }
-    const stakes = await getAccountStakes(contract, address);
+    const stakes = await getAccountStakes(library, chainId, account);
     return sumActiveAccountStakes(stakes);
 }
 
 export async function getRewardsBalance(
-    contract: Contract,
-    address: string | null | undefined,
+    library: any,
+    chainId: number,
+    account: string,
 ): Promise<BigNumber | null> {
-    if (!contract) {
-        return null;
+    const contract = getRewardMasterContract(library, chainId);
+    try {
+        return await contract.entitled(account);
+    } catch (err: any) {
+        console.warn(`Failed to fetch rewards entitled for ${account}:`, err);
+        return err;
     }
-    return await contract.entitled(address);
 }
 
-export async function getStakingTransactionsNumber(
-    contract: Contract,
-    address: string | null | undefined,
-): Promise<number | null> {
-    if (!contract) {
-        return null;
-    }
-    return await contract.stakesNum(address);
-}
-
-export async function getTotalStaked(contract: Contract): Promise<any> {
-    if (!contract) {
-        return null;
-    }
+export async function getTotalStaked(
+    library: any,
+    chainId: number,
+): Promise<BigNumber> {
+    const contract = getStakingContract(library, chainId);
     try {
         return await contract.totalStaked();
     } catch (err: any) {
@@ -444,12 +362,12 @@ export async function getTotalStaked(contract: Contract): Promise<any> {
 }
 
 export async function getZKPMarketPrice(): Promise<BigNumber | null> {
-    const symbol = TOKEN_SYMBOL;
+    const symbol = env.TOKEN_SYMBOL;
     if (!symbol || symbol === 'none') {
         return null;
     }
 
-    let priceData;
+    let priceData: any;
     try {
         priceData = await CoinGeckoClient.simple.price({
             ids: [symbol],

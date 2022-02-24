@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 
 import {BigNumber} from '@ethersproject/bignumber';
-import {Web3Provider} from '@ethersproject/providers';
 import {Container} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
@@ -19,7 +18,7 @@ import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
 import background from '../../images/background.png';
 import * as accountService from '../../services/account';
 import {formatAccountAddress} from '../../services/account';
-import {injected} from '../../services/connectors';
+import {injected, supportedNetworks, Network} from '../../services/connectors';
 import * as stakingService from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
 import {E18} from '../../utils/constants';
@@ -33,7 +32,7 @@ import {
 import './styles.scss';
 
 function StakingZkpPage() {
-    const context = useWeb3React<Web3Provider>();
+    const context = useWeb3React();
 
     const {
         connector,
@@ -80,10 +79,13 @@ function StakingZkpPage() {
         !triedEager || activatingConnector || error;
     useInactiveListener(suppressInactiveListeners);
 
+    const currentNetwork: Network | null =
+        context && context.chainId ? supportedNetworks[context.chainId] : null;
+
     const onConnect = useCallback(async () => {
-        console.log('onConnect: error', error, '/ chainId', chainId);
+        console.debug('onConnect: error', error, '/ chainId', chainId);
         if (!chainId) {
-            console.log(
+            console.debug(
                 'Connecting to the network; injected connector:',
                 injected,
             );
@@ -114,13 +116,10 @@ function StakingZkpPage() {
 
     const fetchZkpTokenBalance = useCallback(
         async (price: BigNumber | null) => {
-            const stakingTokenContract =
-                await stakingService.getStakingTokenContract(library);
-            if (!stakingTokenContract) {
-                return;
-            }
+            if (!library || !chainId || !account) return;
             const balance = await accountService.getTokenBalance(
-                stakingTokenContract,
+                library,
+                chainId,
                 account,
             );
             setTokenBalance(balance);
@@ -136,22 +135,15 @@ function StakingZkpPage() {
                 `(USD \$${formatCurrency(tokenBalanceUSD)})`,
             );
         },
-        [account, library],
+        [library, chainId, account],
     );
 
     const fetchStakedZkpBalance = useCallback(
         async (price: BigNumber | null) => {
-            if (!account) return;
-            const stakingContract = await stakingService.getStakingContract(
-                library,
-            );
-            const stakingTokenContract =
-                await stakingService.getStakingTokenContract(library);
-            if (!stakingContract || !stakingTokenContract) {
-                return;
-            }
+            if (!library || !account || !chainId) return;
             const totalStaked = await stakingService.getTotalStakedForAccount(
-                stakingContract,
+                library,
+                chainId,
                 account,
             );
             setStakedBalance(totalStaked);
@@ -161,33 +153,16 @@ function StakingZkpPage() {
                 `(USD \$${formatCurrency(fiatPrice(totalStaked, price))})`,
             );
         },
-        [account, library],
+        [library, chainId, account],
     );
 
     const getUnclaimedRewardsBalance = useCallback(
         async (price: BigNumber | null) => {
-            if (!account) return;
-            const stakingContract = await stakingService.getStakingContract(
-                library,
-            );
-            if (!stakingContract) {
-                return;
-            }
-
-            const stakingTokenContract =
-                await stakingService.getStakingTokenContract(library);
-            if (!stakingTokenContract) {
-                return;
-            }
-
-            const rewardsMasterContract =
-                await stakingService.getRewardsMasterContract(library);
-            if (!rewardsMasterContract) {
-                return;
-            }
+            if (!library || !chainId || !account) return;
 
             const rewardsBalance = await stakingService.getRewardsBalance(
-                rewardsMasterContract,
+                library,
+                chainId,
                 account,
             );
             if (!rewardsBalance) return;
@@ -198,7 +173,7 @@ function StakingZkpPage() {
                 `(USD \$${formatCurrency(fiatPrice(rewardsBalance, price))})`,
             );
         },
-        [account, library],
+        [library, chainId, account],
     );
 
     const fetchEthBalance = useCallback(async () => {
@@ -226,14 +201,10 @@ function StakingZkpPage() {
     }, [account, library]);
 
     const getAPY = useCallback(async () => {
-        const stakingContract = await stakingService.getStakingContract(
-            library,
-        );
-        if (!stakingContract) {
-            return;
-        }
+        if (!library || !chainId) return;
         const totalStaked = await stakingService.getTotalStaked(
-            stakingContract,
+            library,
+            chainId,
         );
         if (!totalStaked || totalStaked instanceof Error) {
             return;
@@ -243,15 +214,15 @@ function StakingZkpPage() {
 
         const rewardsAvailable = BigNumber.from('6650000').mul(E18);
         const annualRewards = rewardsAvailable.mul(365).div(91);
-        console.log('Annual rewards', formatCurrency(annualRewards));
+        console.log('Annual rewards:', formatCurrency(annualRewards));
 
         // Calculate as a percentage with healthy dose of precision
         const APY = totalStaked.gt(constants.Zero)
             ? Number(annualRewards.mul(10000000).div(totalStaked)) / 10000000
             : 0;
         setCurrentAPY(APY);
-        console.log('Calculated APY as', APY, formatPercentage(APY));
-    }, [library]);
+        console.log(`Calculated APY as ${formatPercentage(APY)} (${APY})`);
+    }, [library, chainId]);
 
     useEffect(() => {
         if (!library) {
@@ -265,11 +236,11 @@ function StakingZkpPage() {
         if (!library || !account) {
             return;
         }
+        await fetchEthBalance();
         const price = await fetchTokenMarketPrice();
         await fetchZkpTokenBalance(price);
         await fetchStakedZkpBalance(price);
         await getUnclaimedRewardsBalance(price);
-        await fetchEthBalance();
     }, [
         library,
         account,
@@ -299,13 +270,16 @@ function StakingZkpPage() {
                 onConnect={() => {
                     onConnect();
                 }}
-                switchNetwork={() => {
-                    switchNetwork(setChainError);
+                switchNetwork={(chainId: number) => {
+                    switchNetwork(chainId, setChainError);
                 }}
                 disconnect={() => {
                     disconnect();
                 }}
                 balance={ethBalance}
+                networkName={currentNetwork?.name}
+                networkSymbol={currentNetwork?.symbol}
+                networkLogo={currentNetwork?.logo}
             />
 
             <Box className="main-box-holder">
@@ -322,6 +296,7 @@ function StakingZkpPage() {
                                         stakedBalance={stakedBalance}
                                         rewardsBalance={rewardsBalance}
                                         accountAddress={accountAddress}
+                                        networkLogo={currentNetwork?.logo}
                                     />
                                     <AdvancedStakingComingSoon />
                                 </Box>
@@ -338,11 +313,15 @@ function StakingZkpPage() {
                                         stakedBalance={stakedBalance}
                                         rewardsBalance={rewardsBalance}
                                         fetchData={fetchData}
+                                        networkLogo={currentNetwork?.logo}
                                         onConnect={() => {
                                             onConnect();
                                         }}
-                                        switchNetwork={() => {
-                                            switchNetwork(setChainError);
+                                        switchNetwork={(chainId: number) => {
+                                            switchNetwork(
+                                                chainId,
+                                                setChainError,
+                                            );
                                         }}
                                     />
                                 </Box>

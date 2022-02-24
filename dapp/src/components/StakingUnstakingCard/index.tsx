@@ -19,6 +19,7 @@ export default function StakingUnstakingCard(props: {
     stakedBalance: BigNumber | null;
     fetchData: () => Promise<void>;
     onConnect: any;
+    networkLogo?: string;
     switchNetwork: any;
 }) {
     const [toggle, setToggle] = useState('stake');
@@ -64,6 +65,7 @@ export default function StakingUnstakingCard(props: {
                             rewardsBalance={props.rewardsBalance}
                             fetchData={props.fetchData}
                             onConnect={props.onConnect}
+                            networkLogo={props.networkLogo}
                             switchNetwork={props.switchNetwork}
                         />
                     ) : (

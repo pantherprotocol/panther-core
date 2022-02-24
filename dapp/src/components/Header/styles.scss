@@ -42,6 +42,7 @@
             font-weight: 800;
         }
     }
+
     .addresses-box {
         display: flex;
         justify-content: space-between;
@@ -106,6 +107,7 @@
         justify-content: flex-end;
         align-items: center;
     }
+
     .address-and-balance-holder {
         display: flex;
         justify-content: space-between;
@@ -113,25 +115,23 @@
         margin: 0 20px;
         padding: 0 8px;
         background: #63728835;
-        background: rgba(99, 114, 136, 0.2);
-
+        background: $balance-card-background;
         border-radius: 8px;
         min-height: 50px;
+
         .account-balance {
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-            font-weight: bold;
             font-weight: 600;
             font-size: 14px;
             line-height: 42px;
             padding: 8px 8px;
             margin: 0 20px;
             height: 35px;
-            min-width: 80px;
+            min-width: 115px;
             background: rgba(120, 154, 205, 0.2);
-
             border-radius: 8px;
         }
     }

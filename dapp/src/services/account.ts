@@ -1,4 +1,6 @@
-import {BigNumber, ethers} from 'ethers';
+import {BigNumber} from 'ethers';
+
+import {getTokenContract} from './contracts';
 
 export const formatAccountAddress = (
     account: string | undefined | null,
@@ -10,16 +12,10 @@ export const formatAccountAddress = (
 };
 
 export async function getTokenBalance(
-    contract: ethers.Contract,
-    address: string | null | undefined,
+    library: any,
+    chainId: number,
+    account: string,
 ): Promise<BigNumber | null> {
-    if (!contract) {
-        console.error('getTokenBalance called with null contract');
-        return null;
-    }
-    if (!address) {
-        console.error('getTokenBalance called with null address');
-        return null;
-    }
-    return await contract.balanceOf(address);
+    const contract = getTokenContract(library, chainId);
+    return await contract.balanceOf(account);
 }

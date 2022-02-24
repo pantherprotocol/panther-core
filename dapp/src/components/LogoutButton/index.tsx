@@ -1,17 +1,12 @@
 import React from 'react';
 
 import Button from '@mui/material/Button';
-import {useHistory} from 'react-router-dom';
 
 import './styles.scss';
 
-export const LogoutButton = () => {
-    const history = useHistory();
-
-    const navigateButtonClick = () => {
-        history.push({
-            pathname: '/',
-        });
+export const LogoutButton = (props: {disconnect: () => void}) => {
+    const logoutButtonClick = () => {
+        props.disconnect();
     };
 
     return (
@@ -19,7 +14,7 @@ export const LogoutButton = () => {
             <Button
                 className="logout-button"
                 onClick={() => {
-                    navigateButtonClick();
+                    logoutButtonClick();
                 }}
             >
                 Logout

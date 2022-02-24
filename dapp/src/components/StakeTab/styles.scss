@@ -1,4 +1,5 @@
 @import '../../variables';
+
 .staking-tab-holder {
     width: 100%;
     .staking-info-card {
@@ -73,7 +74,7 @@
         height: auto;
         text-align: start;
         width: 100%;
-        background: rgba(99, 114, 136, 0.2);
+        background: $balance-card-background;
         padding: 5px 16px;
         border-radius: 10px;
 
@@ -177,16 +178,38 @@
             display: flex;
             align-items: center;
             width: 90%;
+
+            &-inner {
+                display: flex;
+                align-items: center;
+            }
         }
 
         .staking-input-symbol {
-            font-weight: 500;
-            font-size: 20px;
-            line-height: 42px;
             display: flex;
             align-items: center;
-            color: $white;
             padding-left: 30px;
+
+            .staking-symbol-holder {
+                display: flex;
+                align-items: center;
+                justify-content: space-around;
+                background: $header-box-shadow;
+                border-radius: 8px;
+                width: 100px;
+
+                img {
+                    width: 30px;
+                    height: 26px;
+                }
+
+                span {
+                    color: $white;
+                    font-weight: 500;
+                    font-size: 20px;
+                    line-height: 42px;
+                }
+            }
         }
 
         .staking-input-max {

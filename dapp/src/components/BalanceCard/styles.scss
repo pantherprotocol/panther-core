@@ -1,4 +1,5 @@
 @import '../../variables';
+
 .balance-card-holder {
     .balance-card {
         background-color: $balance-card-background !important;
@@ -9,6 +10,28 @@
         mix-blend-mode: normal;
         backdrop-filter: blur(50px);
         padding: 16px 16px 24px;
+
+        &-account-holder {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .network-logo-holder {
+                width: 56px;
+                height: 52px;
+                border: 1px solid $grey-btn-border;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 15px;
+
+                img {
+                    width: 26px;
+                    height: 23px;
+                }
+            }
+        }
 
         .zkp-symbol {
             font-weight: 700;
@@ -139,7 +162,6 @@
         .address {
             display: flex;
             align-items: center;
-            width: 50%;
             justify-content: center;
         }
 

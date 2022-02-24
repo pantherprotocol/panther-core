@@ -15,19 +15,20 @@ import accountAvatar from '../../images/meta-mask-icon.svg';
 import logo from '../../images/panther-logo.svg';
 import stakingIcon from '../../images/staking-icon.svg';
 import {formatAccountAddress} from '../../services/account';
-import {onWrongNetwork, requiredNetwork} from '../../services/connectors';
+import {onWrongNetwork} from '../../services/connectors';
+import {CHAIN_IDS} from '../../services/env';
 import {formatCurrency} from '../../utils/helpers';
 import Address from '../Address';
-import {AddTokenButton} from '../AddTokenButton';
 import {SafeLink, safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
-import {LogoutButton} from '../LogoutButton';
+import {NetworkButton} from '../NetworkButton';
+import {SettingsButton} from '../SettingsButton';
 
 import './styles.scss';
 
 const Header = props => {
     const context = useWeb3React();
-    const {account, active, error} = context;
+    const {account, active, error, chainId} = context;
     const [wrongNetwork, setWrongNetwork] = useState(false);
     const [tokenAdded, setTokenAdded] = useState<boolean>(
         !!localStorage.getItem('ZKP-Staking:tokenAdded'),
@@ -53,8 +54,9 @@ const Header = props => {
     }, [context, active, error]); // ensures refresh if referential identity of library doesn't change across chainIds
 
     const accountAddress = formatAccountAddress(account) || null;
+
     const accountBalance =
-        formatCurrency(props.balance) + ' ' + requiredNetwork.symbol || '-';
+        formatCurrency(props.balance) + ' ' + (props?.networkSymbol || '-');
 
     return (
         <Box sx={{flexGrow: 1}}>
@@ -123,7 +125,12 @@ const Header = props => {
                                     <ConnectButton
                                         text={'Switch network'}
                                         onClick={() => {
-                                            props.switchNetwork();
+                                            const chainIdToSwitch = chainId
+                                                ? chainId
+                                                : CHAIN_IDS[0];
+                                            props.switchNetwork(
+                                                chainIdToSwitch,
+                                            );
                                         }}
                                     />
                                 </Box>
@@ -132,12 +139,12 @@ const Header = props => {
                             {/* account details */}
                             {active && !wrongNetwork && (
                                 <>
-                                    {!tokenAdded && (
-                                        <Box>
-                                            <AddTokenButton
-                                                setTokenAdded={setTokenAdded}
-                                            />
-                                        </Box>
+                                    {props.networkName && props.networkLogo && (
+                                        <NetworkButton
+                                            networkName={props.networkName}
+                                            networkLogo={props.networkLogo}
+                                            switchNetwork={props.switchNetwork}
+                                        />
                                     )}
                                     <Box className="address-and-balance-holder">
                                         {accountAddress && (
@@ -161,12 +168,12 @@ const Header = props => {
 
                             {/* disconnection button */}
                             {active && !wrongNetwork && (
-                                <Box
-                                    onClick={() => {
-                                        props.disconnect();
-                                    }}
-                                >
-                                    <LogoutButton />
+                                <Box>
+                                    <SettingsButton
+                                        tokenAdded={tokenAdded}
+                                        setTokenAdded={setTokenAdded}
+                                        disconnect={props.disconnect}
+                                    />
                                 </Box>
                             )}
                         </Grid>

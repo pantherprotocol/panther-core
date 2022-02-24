@@ -14,7 +14,6 @@ import {BigNumber} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
 import * as stakingService from '../../services/staking';
-import {getRewardsBalance} from '../../services/staking';
 import {formatTime, formatCurrency} from '../../utils/helpers';
 
 import './styles.scss';
@@ -63,37 +62,23 @@ function buildStakedDataRows(
 
 export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
     const context = useWeb3React();
-    const {account, library} = context;
+    const {library, chainId, account} = context;
     const [stakedData, setStakedData] = useState<any[]>([]);
 
     const setTotalStaked = useCallback(async () => {
-        if (!account) {
-            return;
-        }
-        const stakingContract = await stakingService.getStakingContract(
-            library,
-        );
-        if (!stakingContract) {
-            return;
-        }
-        const stakingTokenContract =
-            await stakingService.getStakingTokenContract(library);
-        if (!stakingTokenContract) {
-            return;
-        }
-        const rewardsMasterContract =
-            await stakingService.getRewardsMasterContract(library);
-        if (!rewardsMasterContract) {
+        if (!library || !chainId || !account) {
             return;
         }
         const stakes = await stakingService.getAccountStakes(
-            stakingContract,
+            library,
+            chainId,
             account,
         );
 
         const totalStaked = stakingService.sumActiveAccountStakes(stakes);
-        const rewardsBalance = await getRewardsBalance(
-            rewardsMasterContract,
+        const rewardsBalance = await stakingService.getRewardsBalance(
+            library,
+            chainId,
             account,
         );
         if (!rewardsBalance) return;
@@ -104,30 +89,29 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
             totalStaked,
         );
         setStakedData(stakeData);
-    }, [account, library]);
+    }, [library, chainId, account]);
 
-    const unstake = async id => {
-        const stakingContract = await stakingService.getStakingContract(
-            library,
-        );
-        if (!stakingContract || !account) {
-            return;
-        }
+    const unstake = useCallback(
+        async id => {
+            if (!library || !chainId || !account) {
+                return;
+            }
 
-        const signer = library.getSigner(account).connectUnchecked();
-
-        const stakeID = BigNumber.from(id);
-        const data = '0x00';
-        await stakingService.unstake(
-            stakingContract,
-            stakeID,
-            signer,
-            data,
-            false,
-        );
-        setTotalStaked();
-        props.fetchData();
-    };
+            const stakeID = BigNumber.from(id);
+            const data = '0x00';
+            await stakingService.unstake(
+                library,
+                chainId,
+                account,
+                stakeID,
+                data,
+                false,
+            );
+            setTotalStaked();
+            props.fetchData();
+        },
+        [library, chainId, account, setTotalStaked, props],
+    );
 
     useEffect(() => {
         if (!library || !account) {

@@ -165,6 +165,7 @@ function getRpcUrl(network: NetworkName): string {
     if (network === 'bsctest')
         return 'https://data-seed-prebsc-1-s1.binance.org:8545';
     if (network === 'mumbai') return 'https://rpc-mumbai.maticvigil.com/';
+    if (network === 'polygon') return 'https://polygon-rpc.com/';
     if (process.env.INFURA_API_KEY)
         return `https://${network}.infura.io/v3/` + process.env.INFURA_API_KEY;
     if (process.env.ALCHEMY_API_KEY && ALCHEMY_ENDPOINTS[network])

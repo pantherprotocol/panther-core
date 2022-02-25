@@ -3,6 +3,7 @@ import React from 'react';
 import {Web3Provider} from '@ethersproject/providers';
 import {Web3ReactProvider} from '@web3-react/core';
 import ReactDOM from 'react-dom';
+import {Provider} from 'react-redux';
 
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -17,9 +18,11 @@ function getLibrary(provider: any): Web3Provider {
 
 ReactDOM.render(
     <React.StrictMode>
-        <Web3ReactProvider getLibrary={getLibrary}>
-            <App />
-        </Web3ReactProvider>
+        <Provider store={store}>
+            <Web3ReactProvider getLibrary={getLibrary}>
+                <App />
+            </Web3ReactProvider>
+        </Provider>
     </React.StrictMode>,
     document.getElementById('root'),
 );

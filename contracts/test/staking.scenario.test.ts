@@ -38,14 +38,9 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
     const users = Array(4) as SignerWithAddress[];
     const poolId = 0;
 
-    before(async () => {
-        snapshotId = await takeSnapshot();
-        provider = ethers.provider;
+    const deployAndConfigContracts = async () => {
         startTime = await getTime();
         scenario = getScenario(startTime);
-
-        [deployer, users[0], users[1], users[2], users[3]] =
-            await ethers.getSigners();
 
         const ZKPTokenContract = new ethers.ContractFactory(
             abiZkpToken.abi,
@@ -142,18 +137,6 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
             stakeRewardAdviser.address,
         );
 
-        await staking.addTerms(CLASSIC, {
-            isEnabled: true,
-            isRewarded: true,
-            minAmountScaled: 0,
-            maxAmountScaled: 0,
-            allowedSince: 0,
-            allowedTill: 0,
-            lockedTill: 0,
-            exactLockPeriod: 0,
-            minLockPeriod: 100,
-        });
-
         await zkpToken
             .connect(users[0])
             .increaseAllowance(staking.address, scenario.totals.tokenStaked[0]);
@@ -166,32 +149,29 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
         await zkpToken
             .connect(users[3])
             .increaseAllowance(staking.address, scenario.totals.tokenStaked[3]);
+    };
+
+    before(async () => {
+        snapshotId = await takeSnapshot();
+        provider = ethers.provider;
+
+        [deployer, users[0], users[1], users[2], users[3]] =
+            await ethers.getSigners();
     });
 
     after(async function () {
         await revertSnapshot(snapshotId);
     });
 
-    playPointAndCheckResult(0, 0);
-    playPointAndCheckResult(1, 300);
-    playPointAndCheckResult(2, 300);
-    playPointAndCheckResult(3, 300);
-    playPointAndCheckResult(4, 300);
-    playPointAndCheckResult(5, 300);
-    playPointAndCheckResult(6, 300);
-    playPointAndCheckResult(7, 300);
-    playPointAndCheckResult(8, 300);
-
-    checkFinalUserTokenBalance(0);
-    checkFinalUserTokenBalance(1);
-    checkFinalUserTokenBalance(2);
-    checkFinalUserTokenBalance(3);
-
     async function getTime(): Promise<number> {
         return (await provider.getBlock('latest')).timestamp;
     }
 
-    function playPointAndCheckResult(pInd: number, blocksToPreMine = 0) {
+    function playPointAndCheckResult(
+        pInd: number,
+        blocksToPreMine = 0,
+        isRewarded: boolean,
+    ) {
         it(`shall play scenario step #${pInd}`, async () => {
             const {timestamp, stakesStaked, stakesUnstaked} =
                 scenario.points[pInd];
@@ -236,6 +216,11 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
             await provider.send('evm_setAutomine', [true]);
         });
 
+        if (isRewarded) rewardIsEnabledTests(pInd);
+        else rewardIsDisabledTests(pInd);
+    }
+
+    function rewardIsEnabledTests(pInd: number) {
         it(`shall retain expected amount of staked tokens`, async () => {
             const {timestamp, stakedBalances} = scenario.points[pInd];
             expect(await getTime(), 'timestamp').to.be.eq(timestamp);
@@ -265,18 +250,115 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
         });
     }
 
-    function checkFinalUserTokenBalance(userId: number) {
-        it(`shall return both staked and rewarded tokens to user #${userId}`, async () => {
-            const {timestamp} = scenario.points[scenario.points.length - 1];
+    function rewardIsDisabledTests(pInd: number) {
+        it(`shall retain expected amount of staked tokens`, async () => {
+            const {timestamp, stakedBalances} = scenario.points[pInd];
             expect(await getTime(), 'timestamp').to.be.eq(timestamp);
-
-            expect(await zkpToken.balanceOf(users[userId].address)).to.be.eq(
-                scenario.totals.tokenUnstaked[userId].add(
-                    scenario.totals.rewardTokenPaid[userId],
-                ),
+            expect(await zkpToken.balanceOf(staking.address)).to.be.eq(
+                arrayTotal(stakedBalances),
             );
         });
+
+        it(`shall have expected amount of outstanding shares`, async () => {
+            const {timestamp} = scenario.points[pInd];
+            expect(await getTime(), 'timestamp').to.be.eq(timestamp);
+            expect(await rewardMaster.totalShares()).to.be.eq(0);
+        });
+
+        it(`shall retain expected amount of reward tokens`, async () => {
+            const {timestamp} = scenario.points[pInd];
+            expect(await getTime(), 'timestamp').to.be.eq(timestamp);
+            expect(await zkpToken.balanceOf(rewardMaster.address)).to.be.eq(0);
+        });
     }
+
+    async function addTerms(isRewarded: boolean) {
+        await staking.addTerms(CLASSIC, {
+            isEnabled: true,
+            isRewarded,
+            minAmountScaled: 0,
+            maxAmountScaled: 0,
+            allowedSince: 0,
+            allowedTill: 0,
+            lockedTill: 0,
+            exactLockPeriod: 0,
+            minLockPeriod: 100,
+        });
+    }
+
+    describe('Staking scenarios when reward is enabled', () => {
+        const isRewarded = true;
+
+        before(async () => {
+            await deployAndConfigContracts();
+            await addTerms(isRewarded);
+        });
+
+        playPointAndCheckResult(0, 0, isRewarded);
+        playPointAndCheckResult(1, 300, isRewarded);
+        playPointAndCheckResult(2, 300, isRewarded);
+        playPointAndCheckResult(3, 300, isRewarded);
+        playPointAndCheckResult(4, 300, isRewarded);
+        playPointAndCheckResult(5, 300, isRewarded);
+        playPointAndCheckResult(6, 300, isRewarded);
+        playPointAndCheckResult(7, 300, isRewarded);
+        playPointAndCheckResult(8, 300, isRewarded);
+
+        checkFinalUserTokenBalance(0);
+        checkFinalUserTokenBalance(1);
+        checkFinalUserTokenBalance(2);
+        checkFinalUserTokenBalance(3);
+
+        function checkFinalUserTokenBalance(userId: number) {
+            it(`shall return both staked and rewarded tokens to user #${userId}`, async () => {
+                const {timestamp} = scenario.points[scenario.points.length - 1];
+                expect(await getTime(), 'timestamp').to.be.eq(timestamp);
+
+                expect(
+                    await zkpToken.balanceOf(users[userId].address),
+                ).to.be.eq(
+                    scenario.totals.tokenUnstaked[userId].add(
+                        scenario.totals.rewardTokenPaid[userId],
+                    ),
+                );
+            });
+        }
+    });
+
+    describe('Staking scenarios when reward is disabled', () => {
+        const isRewarded = false;
+
+        before(async () => {
+            await deployAndConfigContracts();
+            await addTerms(isRewarded);
+        });
+
+        playPointAndCheckResult(0, 0, isRewarded);
+        playPointAndCheckResult(1, 300, isRewarded);
+        playPointAndCheckResult(2, 300, isRewarded);
+        playPointAndCheckResult(3, 300, isRewarded);
+        playPointAndCheckResult(4, 300, isRewarded);
+        playPointAndCheckResult(5, 300, isRewarded);
+        playPointAndCheckResult(6, 300, isRewarded);
+        playPointAndCheckResult(7, 300, isRewarded);
+        playPointAndCheckResult(8, 300, isRewarded);
+
+        checkFinalUserTokenBalance(0);
+        checkFinalUserTokenBalance(1);
+        checkFinalUserTokenBalance(2);
+        checkFinalUserTokenBalance(3);
+
+        function checkFinalUserTokenBalance(userId: number) {
+            it(`shall return both staked and rewarded tokens to user #${userId}`, async () => {
+                const {timestamp} = scenario.points[scenario.points.length - 1];
+                expect(await getTime(), 'timestamp').to.be.eq(timestamp);
+
+                expect(
+                    await zkpToken.balanceOf(users[userId].address),
+                ).to.be.eq(scenario.totals.tokenUnstaked[userId]);
+            });
+        }
+    });
 
     function arrayTotal(bigNumbers: BigNumber[]): BigNumber {
         return bigNumbers.reduce((acc: BigNumber, v) => acc.add(v), toBN(0));

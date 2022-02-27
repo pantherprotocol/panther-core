@@ -7,8 +7,14 @@ This is a problem because ...
 
 This patch solves the problem by ...
 
-# Add Asana link here
+# Add Clickup link here
 Issue-URL: ...
+
+# If merging this commit completes the Clickup task, then
+# also add a line like this one, using the Clickup task id:
+Clickup: #u7hu[completed]
+# Then when the commit is merged, the task will automatically
+# change status to COMPLETED.
 
 # If applicable, add extra info here, for example:
 #

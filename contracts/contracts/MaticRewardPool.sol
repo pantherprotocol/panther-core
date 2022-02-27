@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+
 import "./interfaces/IErc20Min.sol";
 import "./interfaces/IRewardPool.sol";
 import "./utils/Claimable.sol";
@@ -17,7 +18,8 @@ contract MaticRewardPool is
     ImmutableOwnable,
     NonReentrant,
     Claimable,
-    IRewardPool
+    IRewardPool,
+    Utils
 {
     /// @notice Address of the token vested ($ZKP)
     IErc20Min public immutable token;
@@ -92,14 +94,16 @@ contract MaticRewardPool is
     }
 
     function _releasableAmount() internal view returns (uint256) {
-        uint256 now = timeNow();
-        if (startTime > now) return 0;
+        uint256 timeNow = timeNow();
+
+        if (startTime > timeNow) return 0;
 
         // trusted contract - no reentrancy guard needed
         uint256 balance = token.balanceOf(address(this));
-        if (now >= endTime) return balance;
+        if (timeNow > endTime) return balance;
 
-        uint256 timeLeft = uint256(endTime) - now;
+        uint256 timeLeft = uint256(endTime) - timeNow;
+
         return (balance * timeLeft) / (endTime - startTime);
     }
 

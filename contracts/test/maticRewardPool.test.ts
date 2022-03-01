@@ -95,13 +95,13 @@ describe('Matic Reward Pool', () => {
                 ).to.be.revertedWith('ImmOwn: unauthorized');
             });
 
-            it('should not initialize contract when end time is less that current time', async () => {
+            it('should not initialize contract when end time is less than current time', async () => {
                 await expect(
                     maticRewardPool.initialize(recipient.address, startTime, 0),
                 ).to.be.revertedWith('RP: I2');
             });
 
-            it('should not initialize contract when end time is less that start time', async () => {
+            it('should not initialize contract when end time is less than start time', async () => {
                 await expect(
                     maticRewardPool.initialize(
                         recipient.address,
@@ -147,7 +147,7 @@ describe('Matic Reward Pool', () => {
                 const now =
                     (await ethers.provider.getBlock('latest')).timestamp + 1;
 
-                const amount = await getReleasableAmount(
+                const amount = getReleasableAmount(
                     BigNumber.from(10).pow(24),
                     now,
                 );
@@ -171,7 +171,7 @@ describe('Matic Reward Pool', () => {
 
         describe('#releasableAmount()', () => {
             it('should return the 0 releasable amount if vesting is not started', async () => {
-                await getReleasableAmount(
+                getReleasableAmount(
                     BigNumber.from(10).pow(24),
                     await getCurrentTime(),
                 );
@@ -182,7 +182,7 @@ describe('Matic Reward Pool', () => {
             it('should calculate and return the 0 releasable amount when vesting is started', async () => {
                 await mineBlock(startTime + 43200);
 
-                const amount = await getReleasableAmount(
+                const amount = getReleasableAmount(
                     BigNumber.from(10).pow(24),
                     await getCurrentTime(),
                 );
@@ -195,7 +195,7 @@ describe('Matic Reward Pool', () => {
             it('should return the current balance as releasable amount when vesting is ended', async () => {
                 await mineBlock(endTime + 1);
 
-                await getReleasableAmount(
+                getReleasableAmount(
                     BigNumber.from(10).pow(24),
                     await getCurrentTime(),
                 );
@@ -236,7 +236,7 @@ describe('Matic Reward Pool', () => {
         });
     });
 
-    async function getReleasableAmount(balance: BigNumber, now: number) {
+    function getReleasableAmount(balance: BigNumber, now: number) {
         if (startTime > now) {
             return 0;
         }

@@ -198,17 +198,26 @@ which vesting should be allowed.
 - `yarn start` to start the dApp in development mode, then visit
   http://localhost:3000.
 
-## Interacting with the chain from the console
+## Interacting with the local chain from the console
 
+    cd ../contracts
     yarn console
 
 Now you can easily retrieve the deployed contracts, e.g.:
 
     master = await ethers.getContract('RewardMaster'); master.address
 
+## Interacting with staging / production environments from the console
+
+Shared deployments are archived under `contracts/deployments/ARCHIVE`,
+and need to be restored from the archive in order for use by hardhat,
+e.g.
+
+    cp -a contracts/deployments/{ARCHIVE/staging/rinkeby,rinkeby}
+    yarn hardhat console --network rinkeby
+
 ## Checking smart contract test coverage
 
-    cd ../contracts
     yarn coverage
 
 Then open `coverage/index.html` in your browser.

@@ -247,8 +247,8 @@ describe('Matic Reward Pool', () => {
             return balance;
         }
 
-        const timeLeft = endTime - now;
-        return balance.mul(timeLeft).div(endTime - startTime);
+        const timeElapsed = now - startTime;
+        return balance.mul(timeElapsed).div(endTime - startTime);
     }
 
     async function getCurrentTime() {

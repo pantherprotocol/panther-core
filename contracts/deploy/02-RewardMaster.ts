@@ -1,12 +1,19 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
+import {Contract} from 'ethers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
     const {deploy} = deployments;
     const {deployer} = await getNamedAccounts();
 
-    const pool = await hre.ethers.getContract('RewardPool');
+    let pool: Contract;
+
+    if (hre.network.name == 'polygon' || hre.network.name == 'mumbai') {
+        pool = await hre.ethers.getContract('MaticRewardPool');
+    } else {
+        pool = await hre.ethers.getContract('RewardPool');
+    }
 
     await deploy('RewardMaster', {
         from: deployer,

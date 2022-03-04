@@ -1,0 +1,349 @@
+{
+  "address": "0x4A185F3f01473DCF61AE9012CdB8684212DEa31B",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_poolId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_recipient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_endTime",
+          "type": "uint256"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Vested",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "OWNER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "claimedToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "claimErc20",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "endTime",
+      "outputs": [
+        {
+          "internalType": "uint32",
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_recipient",
+          "type": "address"
+        },
+        {
+          "internalType": "uint32",
+          "name": "_startTime",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint32",
+          "name": "_endTime",
+          "type": "uint32"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "recipient",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "releasableAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "startTime",
+      "outputs": [
+        {
+          "internalType": "uint32",
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "internalType": "contract IErc20Min",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "vestRewards",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x9c3c022db4aeb5b02ece93b9acbdca2089d22155774c3e9487e7ec4daba305fa",
+  "receipt": {
+    "to": null,
+    "from": "0x5FFfdD1dE35fFC2f66bFD78E064C280FeD9E68de",
+    "contractAddress": "0x4A185F3f01473DCF61AE9012CdB8684212DEa31B",
+    "transactionIndex": 8,
+    "gasUsed": "700085",
+    "logsBloom": "0x00000000000000020000000000000000000000000000000000008000000000000000000000000000400000000000000000008000000000000000000000000000000000000000000000000000000000800000000000000000000100000000000000000000000000000000000000000000000000000000000080000000000000000000000000400000000000000000000000000000000000000000000000000000200000000000000020000000000000000001000000000000000000000000004000000000000000000001000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000100000",
+    "blockHash": "0x1125ade45a0e9fc7171baeda6fc1853ec82a75e3fd051ca792270b4dd9447642",
+    "transactionHash": "0x9c3c022db4aeb5b02ece93b9acbdca2089d22155774c3e9487e7ec4daba305fa",
+    "logs": [
+      {
+        "transactionIndex": 8,
+        "blockNumber": 25371518,
+        "transactionHash": "0x9c3c022db4aeb5b02ece93b9acbdca2089d22155774c3e9487e7ec4daba305fa",
+        "address": "0x0000000000000000000000000000000000001010",
+        "topics": [
+          "0x4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0x0000000000000000000000000000000000000000000000000000000000001010",
+          "0x0000000000000000000000005fffdd1de35ffc2f66bfd78e064c280fed9e68de",
+          "0x000000000000000000000000c26880a0af2ea0c7e8130e6ec47af756465452e8"
+        ],
+        "data": "0x0000000000000000000000000000000000000000000000000018df3c68f560ee000000000000000000000000000000000000000000000000897a8acea87817c00000000000000000000000000000000000000000000006a693385e810db530f60000000000000000000000000000000000000000000000008961ab923f82b6d20000000000000000000000000000000000000000000006a693513dbd76aa91e4",
+        "logIndex": 23,
+        "blockHash": "0x1125ade45a0e9fc7171baeda6fc1853ec82a75e3fd051ca792270b4dd9447642"
+      }
+    ],
+    "blockNumber": 25371518,
+    "cumulativeGasUsed": "3397185",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0xf0BA5B1ee6Aff5dcd99aa6C922C9F0739F23C4D4",
+    "0x5FFfdD1dE35fFC2f66bFD78E064C280FeD9E68de"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "496176f3b3122619b8c2f798da67ee81",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_poolId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_recipient\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_endTime\",\"type\":\"uint256\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Vested\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"OWNER\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"claimedToken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"claimErc20\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"endTime\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_recipient\",\"type\":\"address\"},{\"internalType\":\"uint32\",\"name\":\"_startTime\",\"type\":\"uint32\"},{\"internalType\":\"uint32\",\"name\":\"_endTime\",\"type\":\"uint32\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"recipient\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"releasableAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"startTime\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"contract IErc20Min\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"vestRewards\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This contract is supposed to release $ZKP to the `RewardMaster` on Matic. Tokens to vest will be bridged from the mainnet to Matic (maybe, a few times).\",\"kind\":\"dev\",\"methods\":{\"claimErc20(address,address,uint256)\":{\"details\":\"May be only called by the {OWNER}\"},\"initialize(address,uint32,uint32)\":{\"details\":\"Owner only may call, once only\"},\"vestRewards()\":{\"details\":\"{recipient} only may call\"}},\"title\":\"MaticRewardPool\",\"version\":1},\"userdoc\":{\"events\":{\"Initialized(uint256,address,uint256)\":{\"notice\":\"Emitted on parameters initialized.\"},\"Vested(uint256)\":{\"notice\":\"Emitted on vesting to the {recipient}\"}},\"kind\":\"user\",\"methods\":{\"OWNER()\":{\"notice\":\"The owner who has privileged rights\"},\"claimErc20(address,address,uint256)\":{\"notice\":\"Withdraws accidentally sent token from this contract\"},\"endTime()\":{\"notice\":\"(UNIX) Timestamp when vesting ends\"},\"initialize(address,uint32,uint32)\":{\"notice\":\"Sets the {recipient}, {startTime} and {endTime} to given values\"},\"recipient()\":{\"notice\":\"Address to vest tokens to\"},\"releasableAmount()\":{\"notice\":\"Returns token amount that may be released (vested) now\"},\"startTime()\":{\"notice\":\"(UNIX) Timestamp when vesting starts\"},\"token()\":{\"notice\":\"Address of the token vested ($ZKP)\"},\"vestRewards()\":{\"notice\":\"Vests releasable token amount to the {recipient}\"}},\"notice\":\"It vests $ZKP token from its balance gradually over time.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/MaticRewardPool.sol\":\"MaticRewardPool\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":800},\"remappings\":[]},\"sources\":{\"contracts/MaticRewardPool.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\nimport \\\"./interfaces/IErc20Min.sol\\\";\\nimport \\\"./interfaces/IRewardPool.sol\\\";\\nimport \\\"./utils/Claimable.sol\\\";\\nimport \\\"./utils/ImmutableOwnable.sol\\\";\\nimport \\\"./utils/Utils.sol\\\";\\nimport \\\"./utils/NonReentrant.sol\\\";\\n\\n/**\\n * @title MaticRewardPool\\n * @notice It vests $ZKP token from its balance gradually over time.\\n * @dev This contract is supposed to release $ZKP to the `RewardMaster` on Matic.\\n * Tokens to vest will be bridged from the mainnet to Matic (maybe, a few times).\\n */\\ncontract MaticRewardPool is\\n    ImmutableOwnable,\\n    NonReentrant,\\n    Claimable,\\n    IRewardPool,\\n    Utils\\n{\\n    /// @notice Address of the token vested ($ZKP)\\n    IErc20Min public immutable token;\\n\\n    /// @notice Address to vest tokens to\\n    address public recipient;\\n\\n    /// @notice (UNIX) Timestamp when vesting starts\\n    uint32 public startTime;\\n    /// @notice (UNIX) Timestamp when vesting ends\\n    uint32 public endTime;\\n\\n    constructor(address _token, address _owner)\\n        ImmutableOwnable(_owner)\\n        nonZeroAddress(_token)\\n    {\\n        token = IErc20Min(_token);\\n    }\\n\\n    /// @inheritdoc IRewardPool\\n    function releasableAmount() external view override returns (uint256) {\\n        if (recipient == address(0)) return 0;\\n\\n        return _releasableAmount();\\n    }\\n\\n    /// @inheritdoc IRewardPool\\n    function vestRewards() external override returns (uint256 amount) {\\n        // revert if unauthorized or recipient not yet set\\n        require(msg.sender == recipient, \\\"RP: unauthorized\\\");\\n\\n        amount = _releasableAmount();\\n\\n        if (amount != 0) {\\n            // trusted contract - no reentrancy guard needed\\n            token.transfer(recipient, amount);\\n            emit Vested(amount);\\n        }\\n    }\\n\\n    /// @notice Sets the {recipient}, {startTime} and {endTime} to given values\\n    /// @dev Owner only may call, once only\\n    function initialize(\\n        address _recipient,\\n        uint32 _startTime,\\n        uint32 _endTime\\n    ) external onlyOwner nonZeroAddress(_recipient) {\\n        // once only\\n        require(recipient == address(0), \\\"RP: initialized\\\");\\n        // _endTime can't be in the past\\n        require(_endTime > timeNow(), \\\"RP: I2\\\");\\n        require(_endTime > _startTime, \\\"RP: I3\\\");\\n\\n        recipient = _recipient;\\n        startTime = _startTime;\\n        endTime = _endTime;\\n\\n        emit Initialized(0, _recipient, _endTime);\\n    }\\n\\n    /// @notice Withdraws accidentally sent token from this contract\\n    /// @dev May be only called by the {OWNER}\\n    function claimErc20(\\n        address claimedToken,\\n        address to,\\n        uint256 amount\\n    ) external onlyOwner nonReentrant {\\n        if (claimedToken == address(token)) {\\n            require(timeNow() > endTime, \\\"RP: prohibited\\\");\\n        }\\n        _claimErc20(claimedToken, to, amount);\\n    }\\n\\n    function _releasableAmount() internal view returns (uint256) {\\n        uint256 timeNow = timeNow();\\n\\n        if (startTime > timeNow) return 0;\\n\\n        // trusted contract - no reentrancy guard needed\\n        uint256 balance = token.balanceOf(address(this));\\n        if (timeNow > endTime) return balance;\\n\\n        uint256 timeLeft = uint256(endTime) - timeNow;\\n\\n        return (balance * timeLeft) / (endTime - startTime);\\n    }\\n\\n    modifier nonZeroAddress(address account) {\\n        require(account != address(0), \\\"RP: zero address\\\");\\n        _;\\n    }\\n}\\n\",\"keccak256\":\"0x425f2309f9dcfa9cc28fba19c3882e7d62a59ed2f0ab5d1290f4fec6cc3de950\",\"license\":\"MIT\"},\"contracts/interfaces/IErc20Min.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\ninterface IErc20Min {\\n    /// @dev ERC-20 `balanceOf`\\n    function balanceOf(address account) external view returns (uint256);\\n\\n    /// @dev ERC-20 `transfer`\\n    function transfer(address recipient, uint256 amount)\\n        external\\n        returns (bool);\\n\\n    /// @dev ERC-20 `transferFrom`\\n    function transferFrom(\\n        address sender,\\n        address recipient,\\n        uint256 amount\\n    ) external returns (bool);\\n\\n    /// @dev EIP-2612 `permit`\\n    function permit(\\n        address owner,\\n        address spender,\\n        uint256 value,\\n        uint256 deadline,\\n        uint8 v,\\n        bytes32 r,\\n        bytes32 s\\n    ) external;\\n}\\n\",\"keccak256\":\"0x732db097fcf91d4e4bf49a43262f9268e02f6a7abb7583edfa861468c0541bf2\",\"license\":\"MIT\"},\"contracts/interfaces/IRewardPool.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.0;\\n\\ninterface IRewardPool {\\n    /// @notice Returns token amount that may be released (vested) now\\n    function releasableAmount() external view returns (uint256);\\n\\n    /// @notice Vests releasable token amount to the {recipient}\\n    /// @dev {recipient} only may call\\n    function vestRewards() external returns (uint256 amount);\\n\\n    /// @notice Emitted on vesting to the {recipient}\\n    event Vested(uint256 amount);\\n\\n    /// @notice Emitted on parameters initialized.\\n    event Initialized(uint256 _poolId, address _recipient, uint256 _endTime);\\n}\\n\",\"keccak256\":\"0x71e5db44f47a4e7256deceef5077d5ddda9dcb5815bf12590746f3d7aa812054\",\"license\":\"BUSL-1.1\"},\"contracts/utils/Claimable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// solhint-disable-next-line compiler-fixed, compiler-gt-0_8\\npragma solidity ^0.8.0;\\n\\n/**\\n * @title Claimable\\n * @notice It withdraws accidentally sent tokens from this contract.\\n */\\ncontract Claimable {\\n    bytes4 private constant SELECTOR_TRANSFER =\\n        bytes4(keccak256(bytes(\\\"transfer(address,uint256)\\\")));\\n\\n    /// @dev Withdraws ERC20 tokens from this contract\\n    /// (take care of reentrancy attack risk mitigation)\\n    function _claimErc20(\\n        address token,\\n        address to,\\n        uint256 amount\\n    ) internal {\\n        // solhint-disable avoid-low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            abi.encodeWithSelector(SELECTOR_TRANSFER, to, amount)\\n        );\\n        require(\\n            success && (data.length == 0 || abi.decode(data, (bool))),\\n            \\\"claimErc20: TRANSFER_FAILED\\\"\\n        );\\n    }\\n}\\n\",\"keccak256\":\"0x702e63e7eef33ed5490abd4a58db7074a1bcf1b055057cbbbdbeaa4112f5c437\",\"license\":\"MIT\"},\"contracts/utils/ImmutableOwnable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// solhint-disable-next-line compiler-fixed, compiler-gt-0_8\\npragma solidity ^0.8.0;\\n\\n/// @title Staking\\nabstract contract ImmutableOwnable {\\n    /// @notice The owner who has privileged rights\\n    // solhint-disable-next-line var-name-mixedcase\\n    address public immutable OWNER;\\n\\n    /// @dev Throws if called by any account other than the {OWNER}.\\n    modifier onlyOwner() {\\n        require(OWNER == msg.sender, \\\"ImmOwn: unauthorized\\\");\\n        _;\\n    }\\n\\n    constructor(address _owner) {\\n        require(_owner != address(0), \\\"ImmOwn: zero owner address\\\");\\n        OWNER = _owner;\\n    }\\n}\\n\",\"keccak256\":\"0xa7fcff1c9e37b9c757c39cf83b9149b440de47f72a1fb77426a75520fedead5c\",\"license\":\"MIT\"},\"contracts/utils/NonReentrant.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// solhint-disable-next-line compiler-fixed, compiler-gt-0_8\\npragma solidity ^0.8.0;\\n\\n/**\\n * @title NonReentrant\\n * @notice It provides reentrancy guard.\\n * The code borrowed from openzeppelin-contracts.\\n * Unlike original, this version requires neither `constructor` no `init` call.\\n */\\nabstract contract NonReentrant {\\n    uint256 private constant _NOT_ENTERED = 1;\\n    uint256 private constant _ENTERED = 2;\\n\\n    uint256 private _reentrancyStatus;\\n\\n    modifier nonReentrant() {\\n        // Being called right after deployment, when _reentrancyStatus is 0 ,\\n        // it does not revert (which is expected behaviour)\\n        require(_reentrancyStatus != _ENTERED, \\\"claimErc20: reentrant call\\\");\\n\\n        // Any calls to nonReentrant after this point will fail\\n        _reentrancyStatus = _ENTERED;\\n\\n        _;\\n\\n        // By storing the original value once again, a refund is triggered (see\\n        // https://eips.ethereum.org/EIPS/eip-2200)\\n        _reentrancyStatus = _NOT_ENTERED;\\n    }\\n}\\n\",\"keccak256\":\"0xbf71fedcb5a991cc9142ec5f8260ddfd30da2d17f0fe9171ea276901835a53fa\",\"license\":\"MIT\"},\"contracts/utils/Utils.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// solhint-disable-next-line compiler-fixed, compiler-gt-0_8\\npragma solidity ^0.8.0;\\n\\nabstract contract Utils {\\n    function safe32(uint256 n) internal pure returns (uint32) {\\n        require(n < 2**32, \\\"UNSAFE32\\\");\\n        return uint32(n);\\n    }\\n\\n    function safe96(uint256 n) internal pure returns (uint96) {\\n        require(n < 2**96, \\\"UNSAFE96\\\");\\n        return uint96(n);\\n    }\\n\\n    function safe128(uint256 n) internal pure returns (uint128) {\\n        require(n < 2**128, \\\"UNSAFE128\\\");\\n        return uint128(n);\\n    }\\n\\n    function safe160(uint256 n) internal pure returns (uint160) {\\n        require(n < 2**160, \\\"UNSAFE160\\\");\\n        return uint160(n);\\n    }\\n\\n    function safe32TimeNow() internal view returns (uint32) {\\n        return safe32(timeNow());\\n    }\\n\\n    function safe32BlockNow() internal view returns (uint32) {\\n        return safe32(blockNow());\\n    }\\n\\n    /// @dev Returns the current block timestamp (added to ease testing)\\n    function timeNow() internal view virtual returns (uint256) {\\n        return block.timestamp;\\n    }\\n\\n    /// @dev Returns the current block number (added to ease testing)\\n    function blockNow() internal view virtual returns (uint256) {\\n        return block.number;\\n    }\\n}\\n\",\"keccak256\":\"0x792e9324cc764dbd45210aa817127d67fae28bee7dc9b91e98cd1253617b04e1\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60c060405234801561001057600080fd5b50604051610d3f380380610d3f83398101604081905261002f91610118565b806001600160a01b03811661008b5760405162461bcd60e51b815260206004820152601a60248201527f496d6d4f776e3a207a65726f206f776e6572206164647265737300000000000060448201526064015b60405180910390fd5b60601b6001600160601b031916608052816001600160a01b0381166100e55760405162461bcd60e51b815260206004820152601060248201526f52503a207a65726f206164647265737360801b6044820152606401610082565b505060601b6001600160601b03191660a05261014a565b80516001600160a01b038116811461011357600080fd5b919050565b6000806040838503121561012a578182fd5b610133836100fc565b9150610141602084016100fc565b90509250929050565b60805160601c60a05160601c610ba86101976000396000818161018d0152818161024a015281816103fb015261077d01526000818160ad0152818161032801526104a80152610ba86000f3fe608060405234801561001057600080fd5b50600436106100a35760003560e01c806366d003ac1161007657806392a70fb01161005b57806392a70fb014610160578063f1a9a9b414610175578063fc0c546a1461018857600080fd5b806366d003ac1461013657806378e979251461014957600080fd5b8063117803e3146100a85780633197cbb6146100ec5780633c43059d146101185780635b9400811461012e575b600080fd5b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b60015461010390600160c01b900463ffffffff1681565b60405163ffffffff90911681526020016100e3565b6101206101af565b6040519081526020016100e3565b610120610300565b6001546100cf906001600160a01b031681565b60015461010390600160a01b900463ffffffff1681565b61017361016e366004610a15565b610326565b005b610173610183366004610a50565b6104a6565b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b6001546000906001600160a01b031633146102115760405162461bcd60e51b815260206004820152601060248201527f52503a20756e617574686f72697a65640000000000000000000000000000000060448201526064015b60405180910390fd5b610219610741565b905080156102fd5760015460405163a9059cbb60e01b81526001600160a01b039182166004820152602481018390527f00000000000000000000000000000000000000000000000000000000000000009091169063a9059cbb90604401602060405180830381600087803b15801561029057600080fd5b505af11580156102a4573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906102c89190610a92565b506040518181527f612773fe32ce5ff928e8196b31fe6ebfdbc51c93547d7e8a28cff137bfd317919060200160405180910390a15b90565b6001546000906001600160a01b03166103195750600090565b610321610741565b905090565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461039e5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a65640000000000000000000000006044820152606401610208565b600260005414156103f15760405162461bcd60e51b815260206004820152601a60248201527f636c61696d45726332303a207265656e7472616e742063616c6c0000000000006044820152606401610208565b60026000819055507f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316836001600160a01b0316141561049157600154600160c01b900463ffffffff1642116104915760405162461bcd60e51b815260206004820152600e60248201527f52503a2070726f686962697465640000000000000000000000000000000000006044820152606401610208565b61049c838383610885565b5050600160005550565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461051e5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a65640000000000000000000000006044820152606401610208565b826001600160a01b0381166105755760405162461bcd60e51b815260206004820152601060248201527f52503a207a65726f2061646472657373000000000000000000000000000000006044820152606401610208565b6001546001600160a01b0316156105ce5760405162461bcd60e51b815260206004820152600f60248201527f52503a20696e697469616c697a656400000000000000000000000000000000006044820152606401610208565b428263ffffffff16116106235760405162461bcd60e51b815260206004820152600660248201527f52503a20493200000000000000000000000000000000000000000000000000006044820152606401610208565b8263ffffffff168263ffffffff161161067e5760405162461bcd60e51b815260206004820152600660248201527f52503a20493300000000000000000000000000000000000000000000000000006044820152606401610208565b600180546001600160a01b0386167fffffffffffffffff0000000000000000000000000000000000000000000000009091168117600160a01b63ffffffff87811691909102919091177fffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffff16600160c01b91861691820217909255604080516000815260208101929092528101919091527f0a704da44b3f5e15006ba5f8755eff30ba4f855f7a647776ed3584627af820529060600160405180910390a150505050565b6001546000904290600160a01b900463ffffffff1681101561076557600091505090565b6040516370a0823160e01b81523060048201526000907f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316906370a082319060240160206040518083038186803b1580156107c757600080fd5b505afa1580156107db573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906107ff9190610ab9565b600154909150600160c01b900463ffffffff1682111561081f5792915050565b60015460009061083d908490600160c01b900463ffffffff16610b49565b6001549091506108639063ffffffff600160a01b8204811691600160c01b900416610b60565b63ffffffff166108738284610b2a565b61087d9190610b0a565b935050505090565b604080518082018252601981527f7472616e7366657228616464726573732c75696e74323536290000000000000060209182015281516001600160a01b0385811660248301526044808301869052845180840390910181526064909201845291810180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1663a9059cbb60e01b179052915160009283928716916109269190610ad1565b6000604051808303816000865af19150503d8060008114610963576040519150601f19603f3d011682016040523d82523d6000602084013e610968565b606091505b50915091508180156109925750805115806109925750808060200190518101906109929190610a92565b6109de5760405162461bcd60e51b815260206004820152601b60248201527f636c61696d45726332303a205452414e534645525f4641494c454400000000006044820152606401610208565b5050505050565b80356001600160a01b03811681146109fc57600080fd5b919050565b803563ffffffff811681146109fc57600080fd5b600080600060608486031215610a29578283fd5b610a32846109e5565b9250610a40602085016109e5565b9150604084013590509250925092565b600080600060608486031215610a64578283fd5b610a6d846109e5565b9250610a7b60208501610a01565b9150610a8960408501610a01565b90509250925092565b600060208284031215610aa3578081fd5b81518015158114610ab2578182fd5b9392505050565b600060208284031215610aca578081fd5b5051919050565b60008251815b81811015610af15760208186018101518583015201610ad7565b81811115610aff5782828501525b509190910192915050565b600082610b2557634e487b7160e01b81526012600452602481fd5b500490565b6000816000190483118215151615610b4457610b44610b85565b500290565b600082821015610b5b57610b5b610b85565b500390565b600063ffffffff83811690831681811015610b7d57610b7d610b85565b039392505050565b634e487b7160e01b600052601160045260246000fdfea164736f6c6343000804000a",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100a35760003560e01c806366d003ac1161007657806392a70fb01161005b57806392a70fb014610160578063f1a9a9b414610175578063fc0c546a1461018857600080fd5b806366d003ac1461013657806378e979251461014957600080fd5b8063117803e3146100a85780633197cbb6146100ec5780633c43059d146101185780635b9400811461012e575b600080fd5b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b60015461010390600160c01b900463ffffffff1681565b60405163ffffffff90911681526020016100e3565b6101206101af565b6040519081526020016100e3565b610120610300565b6001546100cf906001600160a01b031681565b60015461010390600160a01b900463ffffffff1681565b61017361016e366004610a15565b610326565b005b610173610183366004610a50565b6104a6565b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b6001546000906001600160a01b031633146102115760405162461bcd60e51b815260206004820152601060248201527f52503a20756e617574686f72697a65640000000000000000000000000000000060448201526064015b60405180910390fd5b610219610741565b905080156102fd5760015460405163a9059cbb60e01b81526001600160a01b039182166004820152602481018390527f00000000000000000000000000000000000000000000000000000000000000009091169063a9059cbb90604401602060405180830381600087803b15801561029057600080fd5b505af11580156102a4573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906102c89190610a92565b506040518181527f612773fe32ce5ff928e8196b31fe6ebfdbc51c93547d7e8a28cff137bfd317919060200160405180910390a15b90565b6001546000906001600160a01b03166103195750600090565b610321610741565b905090565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461039e5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a65640000000000000000000000006044820152606401610208565b600260005414156103f15760405162461bcd60e51b815260206004820152601a60248201527f636c61696d45726332303a207265656e7472616e742063616c6c0000000000006044820152606401610208565b60026000819055507f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316836001600160a01b0316141561049157600154600160c01b900463ffffffff1642116104915760405162461bcd60e51b815260206004820152600e60248201527f52503a2070726f686962697465640000000000000000000000000000000000006044820152606401610208565b61049c838383610885565b5050600160005550565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461051e5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a65640000000000000000000000006044820152606401610208565b826001600160a01b0381166105755760405162461bcd60e51b815260206004820152601060248201527f52503a207a65726f2061646472657373000000000000000000000000000000006044820152606401610208565b6001546001600160a01b0316156105ce5760405162461bcd60e51b815260206004820152600f60248201527f52503a20696e697469616c697a656400000000000000000000000000000000006044820152606401610208565b428263ffffffff16116106235760405162461bcd60e51b815260206004820152600660248201527f52503a20493200000000000000000000000000000000000000000000000000006044820152606401610208565b8263ffffffff168263ffffffff161161067e5760405162461bcd60e51b815260206004820152600660248201527f52503a20493300000000000000000000000000000000000000000000000000006044820152606401610208565b600180546001600160a01b0386167fffffffffffffffff0000000000000000000000000000000000000000000000009091168117600160a01b63ffffffff87811691909102919091177fffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffff16600160c01b91861691820217909255604080516000815260208101929092528101919091527f0a704da44b3f5e15006ba5f8755eff30ba4f855f7a647776ed3584627af820529060600160405180910390a150505050565b6001546000904290600160a01b900463ffffffff1681101561076557600091505090565b6040516370a0823160e01b81523060048201526000907f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316906370a082319060240160206040518083038186803b1580156107c757600080fd5b505afa1580156107db573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906107ff9190610ab9565b600154909150600160c01b900463ffffffff1682111561081f5792915050565b60015460009061083d908490600160c01b900463ffffffff16610b49565b6001549091506108639063ffffffff600160a01b8204811691600160c01b900416610b60565b63ffffffff166108738284610b2a565b61087d9190610b0a565b935050505090565b604080518082018252601981527f7472616e7366657228616464726573732c75696e74323536290000000000000060209182015281516001600160a01b0385811660248301526044808301869052845180840390910181526064909201845291810180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1663a9059cbb60e01b179052915160009283928716916109269190610ad1565b6000604051808303816000865af19150503d8060008114610963576040519150601f19603f3d011682016040523d82523d6000602084013e610968565b606091505b50915091508180156109925750805115806109925750808060200190518101906109929190610a92565b6109de5760405162461bcd60e51b815260206004820152601b60248201527f636c61696d45726332303a205452414e534645525f4641494c454400000000006044820152606401610208565b5050505050565b80356001600160a01b03811681146109fc57600080fd5b919050565b803563ffffffff811681146109fc57600080fd5b600080600060608486031215610a29578283fd5b610a32846109e5565b9250610a40602085016109e5565b9150604084013590509250925092565b600080600060608486031215610a64578283fd5b610a6d846109e5565b9250610a7b60208501610a01565b9150610a8960408501610a01565b90509250925092565b600060208284031215610aa3578081fd5b81518015158114610ab2578182fd5b9392505050565b600060208284031215610aca578081fd5b5051919050565b60008251815b81811015610af15760208186018101518583015201610ad7565b81811115610aff5782828501525b509190910192915050565b600082610b2557634e487b7160e01b81526012600452602481fd5b500490565b6000816000190483118215151615610b4457610b44610b85565b500290565b600082821015610b5b57610b5b610b85565b500390565b600063ffffffff83811690831681811015610b7d57610b7d610b85565b039392505050565b634e487b7160e01b600052601160045260246000fdfea164736f6c6343000804000a",
+  "devdoc": {
+    "details": "This contract is supposed to release $ZKP to the `RewardMaster` on Matic. Tokens to vest will be bridged from the mainnet to Matic (maybe, a few times).",
+    "kind": "dev",
+    "methods": {
+      "claimErc20(address,address,uint256)": {
+        "details": "May be only called by the {OWNER}"
+      },
+      "initialize(address,uint32,uint32)": {
+        "details": "Owner only may call, once only"
+      },
+      "vestRewards()": {
+        "details": "{recipient} only may call"
+      }
+    },
+    "title": "MaticRewardPool",
+    "version": 1
+  },
+  "userdoc": {
+    "events": {
+      "Initialized(uint256,address,uint256)": {
+        "notice": "Emitted on parameters initialized."
+      },
+      "Vested(uint256)": {
+        "notice": "Emitted on vesting to the {recipient}"
+      }
+    },
+    "kind": "user",
+    "methods": {
+      "OWNER()": {
+        "notice": "The owner who has privileged rights"
+      },
+      "claimErc20(address,address,uint256)": {
+        "notice": "Withdraws accidentally sent token from this contract"
+      },
+      "endTime()": {
+        "notice": "(UNIX) Timestamp when vesting ends"
+      },
+      "initialize(address,uint32,uint32)": {
+        "notice": "Sets the {recipient}, {startTime} and {endTime} to given values"
+      },
+      "recipient()": {
+        "notice": "Address to vest tokens to"
+      },
+      "releasableAmount()": {
+        "notice": "Returns token amount that may be released (vested) now"
+      },
+      "startTime()": {
+        "notice": "(UNIX) Timestamp when vesting starts"
+      },
+      "token()": {
+        "notice": "Address of the token vested ($ZKP)"
+      },
+      "vestRewards()": {
+        "notice": "Vests releasable token amount to the {recipient}"
+      }
+    },
+    "notice": "It vests $ZKP token from its balance gradually over time.",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 4200,
+        "contract": "contracts/MaticRewardPool.sol:MaticRewardPool",
+        "label": "_reentrancyStatus",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 25,
+        "contract": "contracts/MaticRewardPool.sol:MaticRewardPool",
+        "label": "recipient",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_address"
+      },
+      {
+        "astId": 28,
+        "contract": "contracts/MaticRewardPool.sol:MaticRewardPool",
+        "label": "startTime",
+        "offset": 20,
+        "slot": "1",
+        "type": "t_uint32"
+      },
+      {
+        "astId": 31,
+        "contract": "contracts/MaticRewardPool.sol:MaticRewardPool",
+        "label": "endTime",
+        "offset": 24,
+        "slot": "1",
+        "type": "t_uint32"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint32": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      }
+    }
+  }
+}

@@ -1,10 +1,11 @@
 import React, {useCallback} from 'react';
 
+import {BigNumber} from '@ethersproject/bignumber';
 import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber} from 'ethers';
+import {constants} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
 import {useAppSelector} from '../../redux/hooks';
@@ -18,15 +19,44 @@ import './styles.scss';
 
 const TOTAL_REWARDS_AVAILABLE = 6_650_000 + 2_000_000;
 
-const CurrentStakeAPY = (props: {
-    networkName: string | undefined;
-    currentAPY: number | null;
-}) => {
+const getAPY = (totalStaked: BigNumber | null, chainId: number | undefined) => {
+    if (!chainId || !totalStaked) return null;
+    console.log('Total ZKP staked:', formatCurrency(totalStaked));
+
+    const rewardsAvailable = chainVar('REWARD_POOL_SIZE', chainId);
+    const rewardsAvailableBN = BigNumber.from(rewardsAvailable).mul(E18);
+    const programDays = chainVar('STAKING_PROGRAM_DURATION', chainId);
+    if (!programDays) return;
+
+    console.log(
+        'Staking program:',
+        rewardsAvailable,
+        'ZKP over',
+        programDays,
+        'days',
+    );
+    const annualRewards = rewardsAvailableBN.mul(365).div(programDays);
+    console.log('Annual rewards:', formatCurrency(annualRewards));
+
+    // Calculate as a percentage with healthy dose of precision
+    const currentStakingAPY = totalStaked?.gt(constants.Zero)
+        ? Number(annualRewards.mul(10000000).div(totalStaked)) / 10000000
+        : 0;
+    console.log(
+        `Calculated APY as ${formatPercentage(
+            currentStakingAPY,
+        )} (${currentStakingAPY})`,
+    );
+    return currentStakingAPY;
+};
+
+const CurrentStakeAPY = (props: {networkName: string | undefined}) => {
     const context = useWeb3React();
     const {chainId} = context;
-    const totalStakedBN = useAppSelector(totalStakedSelector);
-    const totalStakedText = totalStakedBN
-        ? formatCurrency(totalStakedBN, {decimals: 0}) + ' ZKP'
+    const totalStaked = useAppSelector(totalStakedSelector);
+    const currentStakingAPY = getAPY(totalStaked, chainId);
+    const totalZKPStaked = totalStaked
+        ? formatCurrency(totalStaked, {decimals: 0}) + ' ZKP'
         : '$ZKP';
 
     const getRewardPoolSize = useCallback(() => {
@@ -54,11 +84,11 @@ const CurrentStakeAPY = (props: {
 
     return (
         <Box className="current-stake-apy-container">
-            {typeof props.currentAPY === 'number' && (
+            {typeof currentStakingAPY === 'number' && (
                 <Box className="current-stake-apy-inner">
                     <Typography>
                         <Tooltip
-                            title={`Current APY based on ${totalStakedText} currently staked${getRewardProgramText()}. APY will reduce as more people stake.`}
+                            title={`Current APY based on ${totalZKPStaked} currently staked${getRewardProgramText()}. APY will reduce as more people stake.`}
                             data-html="true"
                             placement="top"
                             className="icon"
@@ -70,14 +100,14 @@ const CurrentStakeAPY = (props: {
                     </Typography>
 
                     <Typography className="apy-amount">
-                        {formatPercentage(props.currentAPY) || '??'}
+                        {formatPercentage(currentStakingAPY) || '??'}
                     </Typography>
                     <Typography className="apy-title">
                         Current staking APY
                     </Typography>
                 </Box>
             )}
-            {typeof props.currentAPY !== 'number' && (
+            {typeof currentStakingAPY !== 'number' && (
                 <Box className="current-stake-apy-inner">
                     <Typography className="message-title">
                         Connect wallet

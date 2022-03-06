@@ -16,34 +16,22 @@ import Header from '../../components/Header';
 import StakingUnstakingCard from '../../components/StakingUnstakingCard';
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
 import background from '../../images/background.png';
-import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {
-    getTotalStaked,
-    totalStakedSelector,
-} from '../../redux/slices/totalStaked';
+import {useAppDispatch} from '../../redux/hooks';
+import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import * as accountService from '../../services/account';
 import {formatAccountAddress} from '../../services/account';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
 import {chainHasStakesReporter} from '../../services/contracts';
-import {chainVar} from '../../services/env';
 import * as stakingService from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
-import {E18} from '../../utils/constants';
-import {
-    fiatPrice,
-    formatCurrency,
-    formatEther,
-    formatPercentage,
-} from '../../utils/helpers';
+import {fiatPrice, formatCurrency, formatEther} from '../../utils/helpers';
 
 import './styles.scss';
 
 function StakingZkpPage() {
     const context = useWeb3React();
     const dispatch = useAppDispatch();
-    const totalStaked = useAppSelector(totalStakedSelector);
-
     const {
         connector,
         chainId,
@@ -68,7 +56,6 @@ function StakingZkpPage() {
     const [rewardsBalance, setRewardsBalance] = useState<BigNumber | null>(
         null,
     );
-    const [currentAPY, setCurrentAPY] = useState<number | null>(null);
 
     const accountAddress = formatAccountAddress(account);
 
@@ -196,42 +183,6 @@ function StakingZkpPage() {
         [library, chainId, account],
     );
 
-    const getAPY = useCallback(async () => {
-        if (!library || !chainId) return;
-
-        console.log('Total ZKP staked:', formatCurrency(totalStaked));
-
-        const rewardsAvailable = chainVar('REWARD_POOL_SIZE', chainId);
-        const rewardsAvailableBN = BigNumber.from(rewardsAvailable).mul(E18);
-        const programDays = chainVar('STAKING_PROGRAM_DURATION', chainId);
-        if (!programDays) return;
-
-        console.log(
-            'Staking program:',
-            rewardsAvailable,
-            'ZKP over',
-            programDays,
-            'days',
-        );
-        const annualRewards = rewardsAvailableBN.mul(365).div(programDays);
-        console.log('Annual rewards:', formatCurrency(annualRewards));
-
-        // Calculate as a percentage with healthy dose of precision
-        const APY = totalStaked?.gt(constants.Zero)
-            ? Number(annualRewards.mul(10000000).div(totalStaked)) / 10000000
-            : 0;
-        setCurrentAPY(APY);
-        console.log(`Calculated APY as ${formatPercentage(APY)} (${APY})`);
-    }, [library, chainId, totalStaked]);
-
-    useEffect(() => {
-        if (!library) {
-            // Wallet not connected yet
-            return;
-        }
-        getAPY();
-    }, [library, getAPY, context]);
-
     const fetchData = useCallback(async (): Promise<void> => {
         if (!library || !account) {
             setRewardsBalance(null);
@@ -242,9 +193,12 @@ function StakingZkpPage() {
         await fetchZkpTokenBalance(price);
         await fetchStakedZkpBalance(price);
         await getUnclaimedRewardsBalance(price);
+        dispatch(getTotalStaked(context));
     }, [
         library,
         account,
+        context,
+        dispatch,
         fetchTokenMarketPrice,
         fetchZkpTokenBalance,
         fetchStakedZkpBalance,
@@ -255,7 +209,7 @@ function StakingZkpPage() {
         dispatch(getTotalStaked(context));
         dispatch(getZKPTokenMarketPrice());
         fetchData();
-    }, [fetchData, dispatch, context]);
+    }, [fetchData, context, dispatch]);
 
     return (
         <Box
@@ -305,7 +259,6 @@ function StakingZkpPage() {
                                 <Box width={'100%'}>
                                     <CurrentStakeAPY
                                         networkName={currentNetwork?.name}
-                                        currentAPY={currentAPY}
                                     />
                                     <StakingUnstakingCard
                                         tokenBalance={tokenBalance}

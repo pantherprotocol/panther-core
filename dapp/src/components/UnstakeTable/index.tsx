@@ -72,6 +72,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
             await unstake(library, chainId, account, stakeID, data, false);
 
             dispatch(getTotalStaked(context));
+
             props.fetchData();
         },
         [library, chainId, account, props, context, dispatch],

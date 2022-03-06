@@ -7,6 +7,8 @@ import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
+import {useAppSelector} from '../../redux/hooks';
+import {totalStakedSelector} from '../../redux/slices/totalStaked';
 import {chainVar} from '../../services/env';
 import {E18} from '../../utils/constants';
 import {formatCurrency, formatPercentage} from '../../utils/helpers';
@@ -19,13 +21,12 @@ const TOTAL_REWARDS_AVAILABLE = 6_650_000 + 2_000_000;
 const CurrentStakeAPY = (props: {
     networkName: string | undefined;
     currentAPY: number | null;
-    totalZKPStaked: BigNumber | null;
 }) => {
     const context = useWeb3React();
     const {chainId} = context;
-
-    const totalZKPStaked = props.totalZKPStaked
-        ? formatCurrency(props.totalZKPStaked, {decimals: 0}) + ' ZKP'
+    const totalStakedBN = useAppSelector(totalStakedSelector);
+    const totalStakedText = totalStakedBN
+        ? formatCurrency(totalStakedBN, {decimals: 0}) + ' ZKP'
         : '$ZKP';
 
     const getRewardPoolSize = useCallback(() => {
@@ -57,7 +58,7 @@ const CurrentStakeAPY = (props: {
                 <Box className="current-stake-apy-inner">
                     <Typography>
                         <Tooltip
-                            title={`Current APY based on ${totalZKPStaked} currently staked${getRewardProgramText()}. APY will reduce as more people stake.`}
+                            title={`Current APY based on ${totalStakedText} currently staked${getRewardProgramText()}. APY will reduce as more people stake.`}
                             data-html="true"
                             placement="top"
                             className="icon"

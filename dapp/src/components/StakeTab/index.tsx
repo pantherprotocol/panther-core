@@ -13,6 +13,8 @@ import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import {BigNumber, utils} from 'ethers';
 
 import logo from '../../images/panther-logo.svg';
+import {useAppDispatch} from '../../redux/hooks';
+import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {onWrongNetwork} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
 import * as stakingService from '../../services/staking';
@@ -43,7 +45,7 @@ export default function StakeTab(props: {
         null,
     );
     const [, setStakedId] = useState<number | null>(null);
-
+    const dispatch = useAppDispatch();
     // For use when user types input
     const setStakingAmount = useCallback((amount: string) => {
         setAmountToStake(amount);
@@ -80,9 +82,10 @@ export default function StakeTab(props: {
             }
             setStakedId(Number(stakingResponse));
             setStakingAmount('');
+            dispatch(getTotalStaked(context));
             props.fetchData();
         },
-        [library, account, chainId, props, setStakingAmount],
+        [library, account, chainId, props, setStakingAmount, context, dispatch],
     );
 
     useEffect((): any => {

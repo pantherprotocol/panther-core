@@ -1,10 +1,12 @@
 import {configureStore} from '@reduxjs/toolkit';
 
 import chainBalanceReducer from './slices/chainBalance';
+import totalStakedReducer from './slices/totalStaked';
 
 export const store = configureStore({
     reducer: {
         chainBalance: chainBalanceReducer,
+        totalStaked: totalStakedReducer,
     },
 });
 

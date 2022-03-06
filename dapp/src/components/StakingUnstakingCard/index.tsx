@@ -14,7 +14,6 @@ import UnstakingTab from '../../components/UnstakeTab';
 import './styles.scss';
 
 export default function StakingUnstakingCard(props: {
-    rewardsBalance: BigNumber | null;
     tokenBalance: BigNumber | null;
     fetchData: () => Promise<void>;
     onConnect: any;
@@ -60,17 +59,13 @@ export default function StakingUnstakingCard(props: {
                     {toggle == 'stake' || toggle == null ? (
                         <StakeTab
                             tokenBalance={props.tokenBalance}
-                            rewardsBalance={props.rewardsBalance}
                             fetchData={props.fetchData}
                             onConnect={props.onConnect}
                             networkLogo={props.networkLogo}
                             switchNetwork={props.switchNetwork}
                         />
                     ) : (
-                        <UnstakingTab
-                            rewardsBalance={props.rewardsBalance}
-                            fetchData={props.fetchData}
-                        />
+                        <UnstakingTab fetchData={props.fetchData} />
                     )}
                 </CardContent>
             </Card>

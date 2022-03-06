@@ -10,18 +10,20 @@ import {BigNumber} from 'ethers';
 import ethLogo from '../../images/eth-logo.svg';
 import infoIcon from '../../images/info-icon.svg';
 import {useAppSelector} from '../../redux/hooks';
-import {marketPriceSelector} from '../../redux/slices/zkpMarketPrice';
+import {
+    unclaimedRewardsSelector,
+    zkpTokenUSDMarketPriceSelector,
+} from '../../redux/slices/unclaimedRewards';
 import {
     zkpStakedBalanceSelector,
     zkpUSDStakedBalanceSelector,
 } from '../../redux/slices/zkpStakedBalance';
-import {fiatPrice, formatCurrency} from '../../utils/helpers';
+import {formatCurrency} from '../../utils/helpers';
 import Address from '../Address';
 
 import './styles.scss';
 
 const BalanceCard = (props: {
-    rewardsBalance: BigNumber | null;
     tokenBalance: BigNumber | null;
     tokenBalanceUSD: BigNumber | null;
     accountAddress: string | null;
@@ -31,12 +33,8 @@ const BalanceCard = (props: {
     const stakedUSDValue: BigNumber | null = useAppSelector(
         zkpUSDStakedBalanceSelector,
     );
-    const pricePerToken = useAppSelector(marketPriceSelector);
-
-    const rewardsUSDValue: BigNumber | null = fiatPrice(
-        props.rewardsBalance,
-        pricePerToken,
-    );
+    const rewardsUSDValue = useAppSelector(zkpTokenUSDMarketPriceSelector);
+    const rewardBalance = useAppSelector(unclaimedRewardsSelector);
 
     return (
         <Box className="balance-card-holder">
@@ -70,9 +68,10 @@ const BalanceCard = (props: {
                     balance={stakedBalance}
                     amountUSD={stakedUSDValue}
                 />
+
                 <AddressBalances
                     title={'Unclaimed Reward Balance'}
-                    balance={props.rewardsBalance}
+                    balance={rewardBalance}
                     amountUSD={rewardsUSDValue}
                 />
             </Card>

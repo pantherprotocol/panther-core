@@ -15,14 +15,16 @@ import {BigNumber, constants} from 'ethers';
 import infoIcon from '../../images/info-icon.svg';
 import {useAppDispatch} from '../../redux/hooks';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
+import {resetUnclaimedRewards} from '../../redux/slices/unclaimedRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
+import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 import {chainHasStakesReporter} from '../../services/contracts';
 import {unstake, StakeRow, getStakesAndRewards} from '../../services/staking';
 import {formatTime, formatCurrency} from '../../utils/helpers';
 
 import './styles.scss';
 
-export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
+export default function UnstakeTable() {
     const context = useWeb3React();
     const {library, chainId, account} = context;
     const dispatch = useAppDispatch();
@@ -72,9 +74,10 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
             await unstake(library, chainId, account, stakeID, data, false);
             dispatch(getTotalStaked(context));
             dispatch(getZkpStakedBalance(context));
-            props.fetchData();
+            dispatch(resetUnclaimedRewards());
+            dispatch(getZkpTokenBalance(context));
         },
-        [library, chainId, account, props, context, dispatch],
+        [library, chainId, account, context, dispatch],
     );
 
     useEffect(() => {

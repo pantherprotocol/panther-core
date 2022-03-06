@@ -6,6 +6,7 @@ import totalStakedReducer from './slices/totalStaked';
 import unclaimedRewardsReducer from './slices/unclaimedRewards';
 import zkpMarketPriceReducer from './slices/zkpMarketPrice';
 import zkpStakedBalanceReducer from './slices/zkpStakedBalance';
+import zkpTokenBalanceReducer from './slices/zkpTokenBalance';
 
 export const store = configureStore({
     reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
         blur: blurReducer,
         zkpStakedBalance: zkpStakedBalanceReducer,
         unclaimedRewards: unclaimedRewardsReducer,
+        zkpTokenBalance: zkpTokenBalanceReducer,
     },
 });
 

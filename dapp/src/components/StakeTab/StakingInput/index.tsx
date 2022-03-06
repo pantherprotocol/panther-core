@@ -5,17 +5,20 @@ import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 
 import logo from '../../../images/panther-logo.svg';
+import {useAppSelector} from '../../../redux/hooks';
+import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
 import {formatCurrency} from '../../../utils/helpers';
 
 import './styles.scss';
 
-const StakingInput = (props: {
-    tokenBalance: BigNumber | null;
+export default function StakingInput(props: {
     amountToStake: string | null;
     setStakingAmount: (amount: string) => void;
     setStakingAmountBN: (amount: BigNumber) => void;
     networkLogo?: string;
-}) => {
+}) {
+    const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
+
     const context = useWeb3React();
     const {account} = context;
     const changeHandler = (e: any) => {
@@ -28,7 +31,7 @@ const StakingInput = (props: {
         if (!regex.test(e.target.value)) {
             return false;
         }
-        if (props.tokenBalance && Number(props.tokenBalance)) {
+        if (tokenBalance && Number(tokenBalance)) {
             const amount = e.target.value.toString();
             props.setStakingAmount(amount);
             return true;
@@ -59,7 +62,7 @@ const StakingInput = (props: {
                         variant="subtitle2"
                         component="span"
                     >
-                        {formatCurrency(props.tokenBalance)}
+                        {formatCurrency(tokenBalance)}
                     </Typography>
                     <Typography
                         className="token-balance"
@@ -73,8 +76,8 @@ const StakingInput = (props: {
                         component="span"
                         className="staking-input-max"
                         onClick={() => {
-                            if (props.tokenBalance) {
-                                props.setStakingAmountBN(props.tokenBalance);
+                            if (tokenBalance) {
+                                props.setStakingAmountBN(tokenBalance);
                             }
                         }}
                     >
@@ -119,5 +122,4 @@ const StakingInput = (props: {
             </Box>
         </>
     );
-};
-export default StakingInput;
+}

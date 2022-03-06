@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import {IconButton, Box, Card, Typography} from '@mui/material';
-import {BigNumber} from 'ethers';
 
 import ethLogo from '../../images/eth-logo.svg';
 import {useAppSelector} from '../../redux/hooks';
@@ -21,15 +20,11 @@ import UnstakedBalance from './UnstakedBalance';
 import './styles.scss';
 
 const BalanceCard = (props: {
-    tokenBalance: BigNumber | null;
-    tokenBalanceUSD: BigNumber | null;
     accountAddress: string | null;
     networkLogo: string | undefined;
 }) => {
     const stakedBalance = useAppSelector(zkpStakedBalanceSelector);
-    const stakedUSDValue: BigNumber | null = useAppSelector(
-        zkpUSDStakedBalanceSelector,
-    );
+    const stakedUSDValue = useAppSelector(zkpUSDStakedBalanceSelector);
     const rewardsUSDValue = useAppSelector(zkpTokenUSDMarketPriceSelector);
     const rewardBalance = useAppSelector(unclaimedRewardsSelector);
 
@@ -50,10 +45,7 @@ const BalanceCard = (props: {
                         </Typography>
                     </div>
                 )}
-                <UnstakedBalance
-                    tokenBalance={props.tokenBalance}
-                    tokenMarketPrice={props.tokenBalanceUSD}
-                />
+                <UnstakedBalance />
 
                 <AddressBalances
                     title={'Staked Balance'}

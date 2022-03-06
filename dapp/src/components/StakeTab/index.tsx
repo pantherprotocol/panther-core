@@ -6,9 +6,14 @@ import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import {BigNumber, utils} from 'ethers';
 
-import {useAppDispatch} from '../../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
+import {resetUnclaimedRewards} from '../../redux/slices/unclaimedRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
+import {
+    getZkpTokenBalance,
+    zkpTokenBalanceSelector,
+} from '../../redux/slices/zkpTokenBalance';
 import {onWrongNetwork} from '../../services/connectors';
 import {chainHasAdvancedStaking} from '../../services/contracts';
 import {CHAIN_IDS} from '../../services/env';
@@ -25,13 +30,12 @@ import StakingMethod from './StakingMethod';
 import './styles.scss';
 
 export default function StakeTab(props: {
-    tokenBalance: BigNumber | null;
-    fetchData: () => Promise<void>;
     onConnect: any;
     networkLogo?: string;
     switchNetwork: any;
 }) {
     const context = useWeb3React();
+    const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const dispatch = useAppDispatch();
 
     const {account, library, chainId, active, error} = context;
@@ -69,7 +73,7 @@ export default function StakeTab(props: {
 
     const stake = useCallback(
         async (amount: BigNumber) => {
-            if (!chainId || !account || !props.tokenBalance) {
+            if (!chainId || !account || !tokenBalance) {
                 return;
             }
             const stakingTypeHex = utils.keccak256(
@@ -90,17 +94,18 @@ export default function StakeTab(props: {
             setStakingAmount('');
             dispatch(getTotalStaked(context));
             dispatch(getZkpStakedBalance(context));
-            props.fetchData();
+            dispatch(getZkpTokenBalance(context));
+            dispatch(resetUnclaimedRewards());
         },
         [
             library,
             account,
             chainId,
-            props,
             setStakingAmount,
             context,
             dispatch,
             stakeType,
+            tokenBalance,
         ],
     );
 
@@ -138,7 +143,6 @@ export default function StakeTab(props: {
     return (
         <Box className="staking-tab-holder">
             <StakingInput
-                tokenBalance={props.tokenBalance}
                 setStakingAmount={setStakingAmount}
                 setStakingAmountBN={setStakingAmountBN}
                 amountToStake={amountToStake}
@@ -195,7 +199,6 @@ export default function StakeTab(props: {
                 <StakingBtn
                     amountToStake={amountToStake}
                     amountToStakeBN={amountToStakeBN}
-                    tokenBalance={props.tokenBalance}
                     stake={stake}
                 />
             )}

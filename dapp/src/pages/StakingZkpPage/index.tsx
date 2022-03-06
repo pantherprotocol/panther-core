@@ -1,12 +1,10 @@
 import React, {useCallback, useEffect, useState} from 'react';
 
-import {BigNumber} from '@ethersproject/bignumber';
 import {Container} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import {Box} from '@mui/system';
 import {useWeb3React} from '@web3-react/core';
-import {constants} from 'ethers';
 
 import AdvancedStakingComingSoon from '../../components/AdvancedStakingComingSoon';
 import BalanceCard from '../../components/BalanceCard';
@@ -23,44 +21,30 @@ import {
     getUnclaimedRewards,
     resetUnclaimedRewards,
 } from '../../redux/slices/unclaimedRewards';
-import {
-    getZKPTokenMarketPrice,
-    marketPriceSelector,
-} from '../../redux/slices/zkpMarketPrice';
+import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import {
     getZkpStakedBalance,
     resetZkpStakedBalance,
 } from '../../redux/slices/zkpStakedBalance';
-import * as accountService from '../../services/account';
+import {
+    getZkpTokenBalance,
+    resetZkpTokenBalance,
+} from '../../redux/slices/zkpTokenBalance';
 import {formatAccountAddress} from '../../services/account';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
 import {switchNetwork} from '../../services/wallet';
-import {fiatPrice, formatCurrency, formatEther} from '../../utils/helpers';
 
 import './styles.scss';
 
 function StakingZkpPage() {
     const context = useWeb3React();
     const dispatch = useAppDispatch();
-    const price: BigNumber | null = useAppSelector(marketPriceSelector);
-    const {
-        connector,
-        chainId,
-        activate,
-        deactivate,
-        active,
-        account,
-        library,
-        error,
-    } = context;
+    const {connector, chainId, activate, deactivate, active, account, error} =
+        context;
 
     // Logic to recognize the connector currently being activated
     const [activatingConnector, setActivatingConnector] = useState<any>();
     const [, setChainError] = useState('');
-    const [tokenBalance, setTokenBalance] = useState<BigNumber | null>(null);
-    const [tokenBalanceUSD, setTokenBalanceUSD] = useState<BigNumber | null>(
-        null,
-    );
     const accountAddress = formatAccountAddress(account);
 
     // Handle logic to eagerly connect to the injected ethereum provider, if it
@@ -99,55 +83,18 @@ function StakingZkpPage() {
     const disconnect = useCallback(async () => {
         if (active && chainId) {
             deactivate();
-            setTokenBalance(null);
+            dispatch(resetZkpTokenBalance());
             dispatch(resetZkpStakedBalance());
             dispatch(resetUnclaimedRewards());
         }
     }, [active, chainId, deactivate, dispatch]);
 
-    const fetchZkpTokenBalance = useCallback(
-        async (price: BigNumber | null) => {
-            if (!library || !chainId || !account) return;
-            const balance = await accountService.getTokenBalance(
-                library,
-                chainId,
-                account,
-            );
-            setTokenBalance(balance);
-
-            let tokenBalanceUSD: BigNumber | null = null;
-            if (price && balance && balance.gte(constants.Zero)) {
-                tokenBalanceUSD = fiatPrice(balance, price);
-                setTokenBalanceUSD(tokenBalanceUSD);
-            }
-            console.debug(
-                'tokenBalance:',
-                formatEther(balance),
-                `(USD \$${formatCurrency(tokenBalanceUSD)})`,
-            );
-        },
-        [library, chainId, account],
-    );
-
-    const fetchData = useCallback(async (): Promise<void> => {
-        if (!library || !account) {
-            dispatch(resetUnclaimedRewards());
-
-            return;
-        }
-
-        await fetchZkpTokenBalance(price);
-    }, [library, account, price, dispatch, fetchZkpTokenBalance]);
-
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
-    useEffect(() => {
-        dispatch(getTotalStaked(context));
         dispatch(getZKPTokenMarketPrice());
+        dispatch(getZkpTokenBalance(context));
         dispatch(getZkpStakedBalance(context));
         dispatch(getUnclaimedRewards(context));
+        dispatch(getTotalStaked(context));
     }, [context, dispatch]);
 
     const isBlur = useAppSelector(blurSelector);
@@ -184,8 +131,6 @@ function StakingZkpPage() {
                             <Grid item xs={12} md={5}>
                                 <Box width={'100%'}>
                                     <BalanceCard
-                                        tokenBalance={tokenBalance}
-                                        tokenBalanceUSD={tokenBalanceUSD}
                                         accountAddress={accountAddress}
                                         networkLogo={currentNetwork?.logo}
                                     />
@@ -204,8 +149,6 @@ function StakingZkpPage() {
                                         networkName={currentNetwork?.name}
                                     />
                                     <StakingUnstakingCard
-                                        tokenBalance={tokenBalance}
-                                        fetchData={fetchData}
                                         networkLogo={currentNetwork?.logo}
                                         onConnect={() => {
                                             onConnect();

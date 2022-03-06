@@ -9,6 +9,12 @@ import {BigNumber} from 'ethers';
 
 import ethLogo from '../../images/eth-logo.svg';
 import infoIcon from '../../images/info-icon.svg';
+import {useAppSelector} from '../../redux/hooks';
+import {marketPriceSelector} from '../../redux/slices/zkpMarketPrice';
+import {
+    zkpStakedBalanceSelector,
+    zkpUSDStakedBalanceSelector,
+} from '../../redux/slices/zkpStakedBalance';
 import {fiatPrice, formatCurrency} from '../../utils/helpers';
 import Address from '../Address';
 
@@ -17,19 +23,19 @@ import './styles.scss';
 const BalanceCard = (props: {
     rewardsBalance: BigNumber | null;
     tokenBalance: BigNumber | null;
-    stakedBalance: BigNumber | null;
     tokenBalanceUSD: BigNumber | null;
-    pricePerToken: BigNumber | null;
     accountAddress: string | null;
     networkLogo: string | undefined;
 }) => {
-    const stakedUSDValue: BigNumber | null = fiatPrice(
-        props.stakedBalance,
-        props.pricePerToken,
+    const stakedBalance = useAppSelector(zkpStakedBalanceSelector);
+    const stakedUSDValue: BigNumber | null = useAppSelector(
+        zkpUSDStakedBalanceSelector,
     );
+    const pricePerToken = useAppSelector(marketPriceSelector);
+
     const rewardsUSDValue: BigNumber | null = fiatPrice(
         props.rewardsBalance,
-        props.pricePerToken,
+        pricePerToken,
     );
 
     return (
@@ -61,7 +67,7 @@ const BalanceCard = (props: {
                 <AddressBalances
                     title={'Staked Balance'}
                     tooltip={'This is the total amount you have staked so far.'}
-                    balance={props.stakedBalance}
+                    balance={stakedBalance}
                     amountUSD={stakedUSDValue}
                 />
                 <AddressBalances

@@ -4,6 +4,7 @@ import blurReducer from './slices/blur';
 import chainBalanceReducer from './slices/chainBalance';
 import totalStakedReducer from './slices/totalStaked';
 import zkpMarketPriceReducer from './slices/zkpMarketPrice';
+import zkpStakedBalanceReducer from './slices/zkpStakedBalance';
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
         totalStaked: totalStakedReducer,
         zkpMarketPrice: zkpMarketPriceReducer,
         blur: blurReducer,
+        zkpStakedBalance: zkpStakedBalanceReducer,
     },
 });
 

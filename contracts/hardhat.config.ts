@@ -10,6 +10,7 @@ import 'solidity-coverage';
 import './tasks/terms-add';
 import './tasks/reward-adviser-add';
 import './tasks/reward-pool-init';
+import './tasks/matic-reward-pool-init';
 import './tasks/time-increase';
 import './tasks/proposal-gen';
 
@@ -43,7 +44,7 @@ const ALCHEMY_ENDPOINTS: {[name: string]: string} = {
     kovan: 'https://eth-kovan.alchemyapi.io/v2/',
     ropsten: 'https://eth-ropsten.alchemyapi.io/v2/',
 
-    matic: 'https://polygon-mainnet.g.alchemy.com/v2/',
+    polygon: 'https://polygon-mainnet.g.alchemy.com/v2/',
     mumbai: 'https://polygon-mumbai.g.alchemy.com/v2/',
 };
 

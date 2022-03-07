@@ -131,12 +131,13 @@ export async function stake(
     );
 
     const receipt = await tx.wait(CONFIRMATIONS_NUM);
+    removeNotification(inProgress);
+
     const event = await getEventFromReceipt(receipt, 'StakeCreated');
     if (event instanceof Error) {
         return event;
     }
 
-    removeNotification(inProgress);
     openNotification(
         'Stake completed successfully',
         'Congratulations! Your staking transaction was processed!',
@@ -287,12 +288,13 @@ export async function unstake(
     );
 
     const receipt = await tx.wait(CONFIRMATIONS_NUM);
+    removeNotification(inProgress);
+
     const event = await getEventFromReceipt(receipt, 'StakeClaimed');
     if (event instanceof Error) {
         return event;
     }
 
-    removeNotification(inProgress);
     openNotification(
         'Unstaking completed successfully',
         'Congratulations! Your unstaking transaction was processed!',

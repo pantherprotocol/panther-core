@@ -94,17 +94,15 @@ contract MaticRewardPool is
     }
 
     function _releasableAmount() internal view returns (uint256) {
-        uint256 timeNow = timeNow();
+        uint256 _timeNow = timeNow();
 
-        if (startTime > timeNow) return 0;
+        if (startTime > _timeNow) return 0;
 
         // trusted contract - no reentrancy guard needed
         uint256 balance = token.balanceOf(address(this));
-        if (timeNow > endTime) return balance;
+        if (_timeNow >= endTime) return balance;
 
-        uint256 timeLeft = uint256(endTime) - timeNow;
-
-        return (balance * timeLeft) / (endTime - startTime);
+        return (balance * (_timeNow - startTime)) / (endTime - startTime);
     }
 
     modifier nonZeroAddress(address account) {

@@ -1,6 +1,5 @@
 import {ethers} from 'hardhat';
 import {BigNumber} from 'ethers';
-import {Provider} from '@ethersproject/providers';
 import {expect} from 'chai';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {FakeContract, smock} from '@defi-wonderland/smock';
@@ -16,7 +15,6 @@ describe('Matic Reward Pool', () => {
     let maticRewardPool: MaticRewardPool;
     let owner: SignerWithAddress;
     let recipient: SignerWithAddress;
-    let provider: Provider;
     let startTime: number;
     let endTime: number;
     let snapshotId: number;
@@ -25,7 +23,6 @@ describe('Matic Reward Pool', () => {
         snapshotId = await takeSnapshot();
 
         [owner, recipient] = await ethers.getSigners();
-        provider = ethers.provider;
 
         rewardToken = await smock.fake('IErc20Min');
     });
@@ -35,7 +32,7 @@ describe('Matic Reward Pool', () => {
     });
 
     beforeEach(async () => {
-        startTime = (await provider.getBlock('latest')).timestamp + 100;
+        startTime = (await getCurrentTime()) + 100;
         endTime = startTime + 86400;
 
         const MaticRewardPool = await ethers.getContractFactory(
@@ -141,24 +138,21 @@ describe('Matic Reward Pool', () => {
 
         describe('#vestRewards', () => {
             it('should vest token to recipient', async () => {
+                const balance = BigNumber.from(10).pow(24);
+                fakeBalance(balance);
+
                 // fast-forward 1/2 through the reward window
                 await mineBlock(startTime + 43200);
 
-                const now =
-                    (await ethers.provider.getBlock('latest')).timestamp + 1;
+                await expect(
+                    maticRewardPool.connect(recipient).vestRewards(),
+                ).to.emit(maticRewardPool, 'Vested');
 
-                const amount = getReleasableAmount(
-                    BigNumber.from(10).pow(24),
-                    now,
-                );
-
-                await expect(maticRewardPool.connect(recipient).vestRewards())
-                    .to.emit(maticRewardPool, 'Vested')
-                    .withArgs(amount);
+                const now = await getCurrentTime();
 
                 expect(rewardToken.transfer).to.have.been.calledWith(
                     recipient.address,
-                    amount,
+                    getReleasableAmount(balance, now),
                 );
             });
 
@@ -170,38 +164,38 @@ describe('Matic Reward Pool', () => {
         });
 
         describe('#releasableAmount()', () => {
+            const balance = BigNumber.from(10).pow(24);
+
             it('should return the 0 releasable amount if vesting is not started', async () => {
-                getReleasableAmount(
-                    BigNumber.from(10).pow(24),
-                    await getCurrentTime(),
-                );
+                fakeBalance(balance);
 
                 expect(await maticRewardPool.releasableAmount()).to.be.eq(0);
             });
 
-            it('should calculate and return the 0 releasable amount when vesting is started', async () => {
-                await mineBlock(startTime + 43200);
-
-                const amount = getReleasableAmount(
-                    BigNumber.from(10).pow(24),
-                    await getCurrentTime(),
-                );
+            it('should return 1/4 of the balance when 1/4 of the vesting period elapsed', async () => {
+                fakeBalance(balance);
+                await mineBlock(startTime + 21600);
 
                 expect(await maticRewardPool.releasableAmount()).to.be.eq(
-                    amount,
+                    balance.div(4),
                 );
             });
 
-            it('should return the current balance as releasable amount when vesting is ended', async () => {
-                await mineBlock(endTime + 1);
-
-                getReleasableAmount(
-                    BigNumber.from(10).pow(24),
-                    await getCurrentTime(),
-                );
+            it('should return 3/4 of the balance when 3/4 of the vesting period elapsed', async () => {
+                fakeBalance(balance);
+                await mineBlock(startTime + 64800);
 
                 expect(await maticRewardPool.releasableAmount()).to.be.eq(
-                    BigNumber.from(10).pow(24),
+                    balance.mul(3).div(4),
+                );
+            });
+
+            it('should return the balance as releasable amount when vesting is ended', async () => {
+                fakeBalance(balance);
+                await mineBlock(endTime + 1);
+
+                expect(await maticRewardPool.releasableAmount()).to.be.eq(
+                    balance,
                 );
             });
         });
@@ -236,19 +230,21 @@ describe('Matic Reward Pool', () => {
         });
     });
 
+    function fakeBalance(balance: BigNumber) {
+        rewardToken.balanceOf.returns(balance);
+    }
+
     function getReleasableAmount(balance: BigNumber, now: number) {
         if (startTime > now) {
             return 0;
         }
 
-        rewardToken.balanceOf.returns(balance);
-
         if (now >= endTime) {
             return balance;
         }
 
-        const timeLeft = endTime - now;
-        return balance.mul(timeLeft).div(endTime - startTime);
+        const timeElapsed = now - startTime;
+        return balance.mul(timeElapsed).div(endTime - startTime);
     }
 
     async function getCurrentTime() {

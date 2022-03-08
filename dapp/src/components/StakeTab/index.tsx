@@ -7,8 +7,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
@@ -360,33 +358,35 @@ const StakingInput = (props: {
     );
 };
 
-const StakingMethod = () => (
-    <Box className="staking-method-container">
-        <Box
-            display="flex"
-            justifyContent={'space-between'}
-            alignItems={'center'}
-        >
-            <Typography className="staking-method-title">
-                Staking Method:
-            </Typography>
-            <Select
-                labelId="staking-method-select-label"
-                id="staking-method-selectd"
-                variant="standard"
-                value={'Standard'}
-                className="staking-method-select"
-            >
-                <MenuItem selected value={'Standard'}>
-                    Standard
-                </MenuItem>
-                <MenuItem value={'Advanced'} disabled={true}>
-                    Advanced
-                </MenuItem>
-            </Select>
-        </Box>
-    </Box>
-);
+// Reintroduce when advanced staking is supported.
+//
+// const StakingMethod = () => (
+//     <Box className="staking-method-container">
+//         <Box
+//             display="flex"
+//             justifyContent={'space-between'}
+//             alignItems={'center'}
+//         >
+//             <Typography className="staking-method-title">
+//                 Staking Method:
+//             </Typography>
+//             <Select
+//                 labelId="staking-method-select-label"
+//                 id="staking-method-selectd"
+//                 variant="standard"
+//                 value={'Standard'}
+//                 className="staking-method-select"
+//             >
+//                 <MenuItem selected value={'Standard'}>
+//                     Standard
+//                 </MenuItem>
+//                 <MenuItem value={'Advanced'} disabled={true}>
+//                     Advanced
+//                 </MenuItem>
+//             </Select>
+//         </Box>
+//     </Box>
+// );
 
 const StakingInfoMSG = () => (
     <Box className="staking-info-container">

@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 
 import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
+import {chainVar} from '../../services/env';
+import {E18} from '../../utils/constants';
 import {formatCurrency, formatPercentage} from '../../utils/helpers';
 import {SafeMuiLink} from '../Common/links';
 
@@ -15,16 +18,30 @@ const CurrentStakeAPY = (props: {
     currentAPY: number | null;
     totalZKPStaked: BigNumber | null;
 }) => {
+    const context = useWeb3React();
+    const {chainId} = context;
+
     const totalZKPStaked = props.totalZKPStaked
         ? formatCurrency(props.totalZKPStaked, {decimals: 0}) + ' ZKP'
         : '$ZKP';
+
+    const getRewardProgramText = useCallback(() => {
+        if (!chainId) return '';
+        const rewardsAvailable = chainVar('REWARD_POOL_SIZE', chainId);
+        const rewardsAvailableBN = BigNumber.from(rewardsAvailable).mul(E18);
+        const programDays = chainVar('STAKING_PROGRAM_DURATION', chainId);
+        return ` on a reward pool of ${formatCurrency(rewardsAvailableBN, {
+            decimals: 0,
+        })} ZKP available over ${programDays} days`;
+    }, [chainId]);
+
     return (
         <Box className="current-stake-apy-container">
             {typeof props.currentAPY === 'number' && (
                 <Box className="current-stake-apy-inner">
                     <Typography>
                         <Tooltip
-                            title={`Current APY based on ${totalZKPStaked} currently staked. This will reduce as more people stake.`}
+                            title={`Current APY based on ${totalZKPStaked} currently staked${getRewardProgramText()}. APY will reduce as more people stake.`}
                             data-html="true"
                             placement="top"
                             className="icon"

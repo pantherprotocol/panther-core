@@ -2,7 +2,8 @@ import React, {ReactElement} from 'react';
 
 import {Link} from '@mui/material';
 
-import {STAKING_CONTRACT} from '../../services/contracts';
+import {ContractName, getContractAddress} from '../../services/contracts';
+import {env} from '../../services/env';
 
 export function SafeLink(props: {
     href: string;
@@ -24,41 +25,59 @@ export const SafeMuiLink = (props: {
     </Link>
 );
 
-export const linkTextToTx = (
+function getBlockExplorerURL(chainId: number): string {
+    const varName = `BLOCK_EXPLORER_${chainId}`;
+    const explorerURL = env[varName];
+    if (!explorerURL) {
+        throw `${varName} not defined`;
+    }
+    console.debug(`Resolved ${varName} as ${explorerURL}`);
+    return explorerURL;
+}
+
+export function addressLink(chainId: number, address: string): string {
+    const explorerURL = getBlockExplorerURL(chainId);
+    return explorerURL + 'address/' + address;
+}
+
+export function txLink(chainId: number, txHash: string): string {
+    const explorerURL = getBlockExplorerURL(chainId);
+    return explorerURL + 'tx/' + txHash;
+}
+
+export function linkTextToTx(
+    chainId: number | undefined,
     text: string,
     txHash: string | null,
-): ReactElement => {
-    if (!txHash || !process.env.BLOCK_EXPLORER) {
+): ReactElement {
+    if (!txHash || !chainId) {
         return <span>{text}</span>;
     }
-    return (
-        <SafeLink href={process.env.BLOCK_EXPLORER + 'tx/' + txHash}>
-            {text}
-        </SafeLink>
-    );
-};
+    return <SafeLink href={txLink(chainId, txHash)}>{text}</SafeLink>;
+}
 
 export const linkTextToAddress = (
+    chainId: number | undefined,
     text: string,
-    address: string | null | undefined,
+    address: string,
 ): ReactElement => {
-    if (!address || !process.env.BLOCK_EXPLORER) {
+    if (!address || !chainId) {
         return <span>{address}</span>;
     }
-    return (
-        <SafeLink href={process.env.BLOCK_EXPLORER + 'address/' + address}>
-            {text}
-        </SafeLink>
-    );
+    return <SafeLink href={addressLink(chainId, address)}>{text}</SafeLink>;
 };
 
-export const linkTextToStakingContract = (text: string): ReactElement => {
-    return linkTextToAddress(text, STAKING_CONTRACT);
+export const linkTextToStakingContract = (
+    chainId: number,
+    text: string,
+): ReactElement => {
+    const address = getContractAddress(ContractName.STAKING, chainId);
+    return linkTextToAddress(chainId, text, address);
 };
 
-export const safeWindowOpen = (URL: string, options?: Array<string>): void => {
+export const safeWindowOpen = (url: string, options?: Array<string>): void => {
     window.open(
-        URL,
+        url,
         '_blank',
         ['noopener', 'noreferrer'].concat(options || []).join(','),
     );

@@ -1,13 +1,12 @@
 import React, {useCallback} from 'react';
 
-import {Web3Provider} from '@ethersproject/providers';
 import Button from '@mui/material/Button';
 import {useWeb3React} from '@web3-react/core';
 
+import metamaskIcon from '../../images/meta-mask-icon.svg';
 import logo from '../../images/panther-logo.svg';
-import {STAKING_TOKEN_CONTRACT} from '../../services/contracts';
+import {getTokenContract} from '../../services/contracts';
 import {openNotification} from '../../services/notification';
-import * as stakingService from '../../services/staking';
 import {DECIMALS} from '../../utils/constants';
 
 import './styles.scss';
@@ -15,19 +14,14 @@ import './styles.scss';
 export const AddTokenButton = (props: {
     setTokenAdded: (b: boolean) => void;
 }) => {
-    const context = useWeb3React<Web3Provider>();
-    const {library} = context;
+    const context = useWeb3React();
+    const {library, chainId} = context;
 
     const addZKPToken = useCallback(async () => {
         const {ethereum} = window as any;
 
-        const tokenAddress = STAKING_TOKEN_CONTRACT;
-        const tokenContract = await stakingService.getStakingTokenContract(
-            library,
-        );
-        if (!tokenContract) {
-            return;
-        }
+        if (!library || !chainId) return;
+        const tokenContract = getTokenContract(library, chainId);
         const tokenSymbol = await tokenContract.symbol();
 
         try {
@@ -37,7 +31,7 @@ export const AddTokenButton = (props: {
                     params: {
                         type: 'ERC20',
                         options: {
-                            address: tokenAddress,
+                            address: tokenContract.address,
                             symbol: tokenSymbol,
                             decimals: DECIMALS,
                             image: logo,
@@ -63,7 +57,7 @@ export const AddTokenButton = (props: {
         } catch (switchError) {
             console.error(switchError);
         }
-    }, [library, props]);
+    }, [library, chainId, props]);
 
     return (
         <div className="add-token-button-holder">
@@ -72,7 +66,8 @@ export const AddTokenButton = (props: {
                 className="add-token-button"
                 onClick={addZKPToken}
             >
-                Add ZKP token
+                <img src={metamaskIcon} alt={'Metamask logo'} />
+                <span>Add ZKP token</span>
             </Button>
         </div>
     );

@@ -3,60 +3,64 @@ import {
     InjectedConnector,
     NoEthereumProviderError,
 } from '@web3-react/injected-connector';
-import {utils} from 'ethers';
 
+import ethIcon from '../images/eth-logo.svg';
+import polygonIcon from '../images/polygon-logo.svg';
+
+import {CHAIN_IDS} from './env';
 import {Web3ReactContextInterface} from './types';
 
-export const CHAIN_ID = Number(process.env.CHAIN_ID);
-export const CHAIN_HEX_ID = utils.hexValue(CHAIN_ID);
-
-const supportedChainIds = [CHAIN_ID];
-
-interface Network {
+export interface Network {
     name: string;
     rpcURL: string;
     symbol: string;
     decimals: number;
     explorerURLs: Array<string>;
+    logo: string;
 }
 
-const supportedNetworks: Record<number, Network> = {
+export const supportedNetworks: Record<number, Network> = {
     1: {
-        name: 'Ethereum mainnet',
+        name: 'Ethereum',
         rpcURL: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
         symbol: 'ETH',
         decimals: 18,
         explorerURLs: ['https://etherscan.io/'],
+        logo: ethIcon,
     },
     4: {
-        name: 'Rinkeby (Ethereum testnet)',
+        name: 'Rinkeby',
         rpcURL: 'https://rinkey.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
         symbol: 'ETH',
         decimals: 18,
         explorerURLs: ['https://rinkeby.etherscan.io/'],
+        logo: ethIcon,
+    },
+    137: {
+        name: 'Polygon',
+        rpcURL: 'https://polygon-rpc.com/',
+        symbol: 'MATIC',
+        decimals: 18,
+        explorerURLs: ['https://polygonscan.com/'],
+        logo: polygonIcon,
+    },
+    80001: {
+        name: 'Mumbai',
+        rpcURL: 'https://rpc-mumbai.maticvigil.com',
+        symbol: 'MATIC',
+        decimals: 18,
+        explorerURLs: ['https://mumbai.polygonscan.com/'],
+        logo: polygonIcon,
     },
     31337: {
-        name: 'Hardhat Network',
+        name: 'Hardhat',
         rpcURL: 'http://127.0.0.1:8545/',
         symbol: 'ETH',
         decimals: 18,
         explorerURLs: ['https://tryethernal.com/'],
+        logo: ethIcon,
     },
 };
-
-export const requiredChainId = Number(process.env.CHAIN_ID);
-if (!requiredChainId) {
-    throw `CHAIN_ID must be set to a supported network`;
-}
-export const requiredNetwork = supportedNetworks[requiredChainId];
-if (!requiredNetwork) {
-    throw `CHAIN_ID was set to ${requiredChainId} which is not a supported network`;
-}
-export const suggestedRpcURL =
-    process.env.SUGGESTED_RPC_URL || requiredNetwork.rpcURL;
-if (process.env.NODE_ENV !== 'test') {
-    console.log('Required network details:\n', requiredNetwork);
-}
 
 export const hasWallet = (error: Error | undefined): boolean => {
     return !(error instanceof NoEthereumProviderError);
@@ -64,7 +68,7 @@ export const hasWallet = (error: Error | undefined): boolean => {
 
 // chainId and error are passed from web3-react context.
 export const onWrongNetwork = (context: Web3ReactContextInterface): boolean => {
-    if (context.chainId && context.chainId !== requiredChainId) {
+    if (context.chainId && !CHAIN_IDS.includes(context.chainId)) {
         return true;
     }
     return !!(
@@ -81,5 +85,5 @@ export const isConnected = ({
 };
 
 export const injected = new InjectedConnector({
-    supportedChainIds,
+    supportedChainIds: CHAIN_IDS,
 });

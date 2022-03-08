@@ -16,6 +16,7 @@ import {BigNumber, utils} from 'ethers';
 
 import logo from '../../images/panther-logo.svg';
 import {onWrongNetwork} from '../../services/connectors';
+import {CHAIN_IDS} from '../../services/env';
 import * as stakingService from '../../services/staking';
 import {formatCurrency, safeParseUnits} from '../../utils/helpers';
 import {safeOpenMetamask} from '../Common/links';
@@ -32,6 +33,7 @@ export default function StakeTab(props: {
     stakedBalance: BigNumber | null;
     fetchData: () => Promise<void>;
     onConnect: any;
+    networkLogo?: string;
     switchNetwork: any;
 }) {
     const context = useWeb3React();
@@ -62,21 +64,15 @@ export default function StakeTab(props: {
 
     const stake = useCallback(
         async (amount: BigNumber) => {
-            const stakingContract = await stakingService.getStakingContract(
-                library,
-            );
-            if (!stakingContract || !account || !props.tokenBalance) {
+            if (!chainId || !account || !props.tokenBalance) {
                 return;
             }
 
             const stakeType = '0x4ab0941a';
-            const signer = library.getSigner(account).connectUnchecked();
             const stakingResponse = await stakingService.stake(
                 library,
                 chainId,
                 account,
-                stakingContract,
-                signer,
                 amount,
                 stakeType,
             );
@@ -129,6 +125,7 @@ export default function StakeTab(props: {
                 setStakingAmount={setStakingAmount}
                 setStakingAmountBN={setStakingAmountBN}
                 amountToStake={amountToStake}
+                networkLogo={props.networkLogo}
             />
             <Card variant="outlined" className="staking-info-card">
                 <CardContent>
@@ -144,7 +141,10 @@ export default function StakeTab(props: {
                     <ConnectButton
                         text={'Switch network'}
                         onClick={() => {
-                            props.switchNetwork();
+                            const chainIdToSwitch = chainId
+                                ? chainId
+                                : CHAIN_IDS[0];
+                            props.switchNetwork(chainIdToSwitch);
                         }}
                     />
                 </div>
@@ -251,6 +251,7 @@ const StakingInput = (props: {
     amountToStake: string | null;
     setStakingAmount: (amount: string) => void;
     setStakingAmountBN: (amount: BigNumber) => void;
+    networkLogo?: string;
 }) => {
     const context = useWeb3React();
     const {account} = context;
@@ -308,7 +309,7 @@ const StakingInput = (props: {
             </Box>
             <Box className="staking-input-container">
                 <Box className="staking-input-box">
-                    <Box>
+                    <Box className="staking-input-box-inner">
                         <img src={logo} height={'40px'} width={'40px'} />
                     </Box>
 
@@ -327,7 +328,15 @@ const StakingInput = (props: {
                                 position="end"
                                 className="staking-input-symbol"
                             >
-                                <span>ZKP</span>
+                                <div className="staking-symbol-holder">
+                                    {props.networkLogo && (
+                                        <img
+                                            src={props.networkLogo}
+                                            alt="Network logo"
+                                        />
+                                    )}
+                                    <span>ZKP</span>
+                                </div>
                             </InputAdornment>
                         }
                         aria-describedby="staking-value-helper-text"

@@ -39,6 +39,7 @@ $main-text: #bbbbbb;
 $grey-text: rgba(255, 255, 255, 0.5);
 $button-holder: rgba(107, 155, 183, 0.2);
 $border-button: rgba(255, 255, 255, 0.36);
+$dropdown-border-color: rgba(102, 141, 198, 0.4);
 $warning-box: rgb(0 0 0 / 38%);
 $header-box-shadow: rgba(0, 0, 0, 0.1);
 $balance-card-background: rgba(99, 114, 136, 0.2);
@@ -59,6 +60,11 @@ $navigation-background: linear-gradient(
     0deg,
     rgba(71, 82, 103, 0.1),
     rgba(71, 82, 103, 0.1)
+);
+$dropdown-background: linear-gradient(
+    0deg,
+    rgba(75, 86, 107, 0.3),
+    rgba(75, 86, 107, 0.3)
 );
 $main-balance-card-background: linear-gradient(0deg, #3f4a5f, #3f4a5f);
 $toggle-button-group-color: linear-gradient(0deg, #3f4a5f, #3f4a5f);

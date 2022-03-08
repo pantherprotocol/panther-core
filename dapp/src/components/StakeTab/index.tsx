@@ -131,7 +131,7 @@ export default function StakeTab(props: {
                 <CardContent>
                     <StakingInfoMSG />
                     {/* <Box display={'flex'} justifyContent={'center'}> */}
-                    <StakingMethod />
+                    {/* <StakingMethod /> */}
                     {/* </Box> */}
                 </CardContent>
             </Card>

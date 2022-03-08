@@ -19,6 +19,7 @@ import background from '../../images/background.png';
 import * as accountService from '../../services/account';
 import {formatAccountAddress} from '../../services/account';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
+import {chainVar} from '../../services/env';
 import * as stakingService from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
 import {E18} from '../../utils/constants';
@@ -212,8 +213,17 @@ function StakingZkpPage() {
         console.log('Total ZKP staked:', formatCurrency(totalStaked));
         setTotalZKPStaked(totalStaked);
 
-        const rewardsAvailable = BigNumber.from('6650000').mul(E18);
-        const annualRewards = rewardsAvailable.mul(365).div(91);
+        const rewardsAvailable = chainVar('REWARD_POOL_SIZE', chainId);
+        const rewardsAvailableBN = BigNumber.from(rewardsAvailable).mul(E18);
+        const programDays = chainVar('STAKING_PROGRAM_DURATION', chainId);
+        console.log(
+            'Staking program:',
+            rewardsAvailable,
+            'ZKP over',
+            programDays,
+            'days',
+        );
+        const annualRewards = rewardsAvailableBN.mul(365).div(programDays);
         console.log('Annual rewards:', formatCurrency(annualRewards));
 
         // Calculate as a percentage with healthy dose of precision

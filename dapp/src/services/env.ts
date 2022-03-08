@@ -5,6 +5,8 @@ const REQUIRED_CHAIN_ENV_VAR_PREFIXES: string[] = [
     'REWARD_MASTER_CONTRACT',
     'STAKING_TOKEN_CONTRACT',
     'BLOCK_EXPLORER',
+    'REWARD_POOL_SIZE',
+    'STAKING_PROGRAM_DURATION',
 ];
 
 // We need this ludicrous repetitive approach because due to a quirk of
@@ -50,6 +52,18 @@ export const env = {
     BLOCK_EXPLORER_137: process.env.BLOCK_EXPLORER_137,
     BLOCK_EXPLORER_31337: process.env.BLOCK_EXPLORER_31337,
     BLOCK_EXPLORER_80001: process.env.BLOCK_EXPLORER_80001,
+
+    REWARD_POOL_SIZE_1: process.env.REWARD_POOL_SIZE_1,
+    REWARD_POOL_SIZE_4: process.env.REWARD_POOL_SIZE_4,
+    REWARD_POOL_SIZE_137: process.env.REWARD_POOL_SIZE_137,
+    REWARD_POOL_SIZE_31337: process.env.REWARD_POOL_SIZE_31337,
+    REWARD_POOL_SIZE_80001: process.env.REWARD_POOL_SIZE_80001,
+
+    STAKING_PROGRAM_DURATION_1: process.env.STAKING_PROGRAM_DURATION_1,
+    STAKING_PROGRAM_DURATION_4: process.env.STAKING_PROGRAM_DURATION_4,
+    STAKING_PROGRAM_DURATION_137: process.env.STAKING_PROGRAM_DURATION_137,
+    STAKING_PROGRAM_DURATION_31337: process.env.STAKING_PROGRAM_DURATION_31337,
+    STAKING_PROGRAM_DURATION_80001: process.env.STAKING_PROGRAM_DURATION_80001,
 };
 
 export const CHAIN_IDS = env.CHAIN_IDS
@@ -59,6 +73,10 @@ export const CHAIN_IDS = env.CHAIN_IDS
 if (!CHAIN_IDS.length) {
     throw `Failed to parse CHAIN_IDS value of '${env.CHAIN_IDS}' as a list of
     supported networks; got: '${CHAIN_IDS}'`;
+}
+
+export function chainVar(varName: string, chainId: number): string {
+    return env[`${varName}_${chainId}`];
 }
 
 function getRequiredChainEnvVars(chainId: number): string[] {

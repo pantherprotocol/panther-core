@@ -240,7 +240,7 @@ function StakingZkpPage() {
             return;
         }
         getAPY();
-    }, [library, getAPY]);
+    }, [library, getAPY, stakedBalance]);
 
     const fetchData = useCallback(async (): Promise<void> => {
         if (!library || !account) {

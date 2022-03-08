@@ -30,9 +30,6 @@ const Header = props => {
     const context = useWeb3React();
     const {account, active, error, chainId} = context;
     const [wrongNetwork, setWrongNetwork] = useState(false);
-    const [tokenAdded, setTokenAdded] = useState<boolean>(
-        !!localStorage.getItem('ZKP-Staking:tokenAdded'),
-    );
 
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
 
@@ -170,8 +167,6 @@ const Header = props => {
                             {active && !wrongNetwork && (
                                 <Box>
                                     <SettingsButton
-                                        tokenAdded={tokenAdded}
-                                        setTokenAdded={setTokenAdded}
                                         disconnect={props.disconnect}
                                     />
                                 </Box>

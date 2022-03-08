@@ -11,9 +11,7 @@ import {DECIMALS} from '../../utils/constants';
 
 import './styles.scss';
 
-export const AddTokenButton = (props: {
-    setTokenAdded: (b: boolean) => void;
-}) => {
+export const AddTokenButton = () => {
     const context = useWeb3React();
     const {library, chainId} = context;
 
@@ -38,10 +36,6 @@ export const AddTokenButton = (props: {
                         },
                     },
                 })
-                .then(() => {
-                    props.setTokenAdded(true);
-                    localStorage.setItem('ZKP-Staking:tokenAdded', 'yes');
-                })
                 .catch((error: any) => {
                     if (error.code === 4001) {
                         console.log('Please connect to MetaMask.');
@@ -57,7 +51,7 @@ export const AddTokenButton = (props: {
         } catch (switchError) {
             console.error(switchError);
         }
-    }, [library, chainId, props]);
+    }, [library, chainId]);
 
     return (
         <div className="add-token-button-holder">

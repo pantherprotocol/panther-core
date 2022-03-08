@@ -13,11 +13,7 @@ import {LogoutButton} from '../LogoutButton';
 
 import './styles.scss';
 
-export const SettingsButton = (props: {
-    tokenAdded: boolean;
-    setTokenAdded: (b: boolean) => void;
-    disconnect: () => void;
-}) => {
+export const SettingsButton = (props: {disconnect: () => void}) => {
     return (
         <Box className="settings-button-holder">
             <Box className="settings-button-container">
@@ -33,13 +29,9 @@ export const SettingsButton = (props: {
                         <MenuItem className="menu-item">
                             <ContractButton />
                         </MenuItem>
-                        {!props.tokenAdded && (
-                            <MenuItem className="menu-item">
-                                <AddTokenButton
-                                    setTokenAdded={props.setTokenAdded}
-                                />
-                            </MenuItem>
-                        )}
+                        <MenuItem className="menu-item">
+                            <AddTokenButton />
+                        </MenuItem>
                         <MenuItem className="menu-item">
                             <LogoutButton disconnect={props.disconnect} />
                         </MenuItem>

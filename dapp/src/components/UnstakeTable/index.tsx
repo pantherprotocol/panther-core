@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import * as React from 'react';
 
-import {Button, Tooltip} from '@mui/material';
+import {Button /*, Tooltip */} from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,7 +12,7 @@ import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 
-import infoIcon from '../../images/info-icon.svg';
+// import infoIcon from '../../images/info-icon.svg';
 import * as stakingService from '../../services/staking';
 import {formatTime, formatCurrency} from '../../utils/helpers';
 
@@ -132,6 +132,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                     <TableRow>
                         <TableCell align="left">Staked Date</TableCell>
                         <TableCell align="right">Amount Staked</TableCell>
+                        {/*
                         <TableCell align="right">
                             Rewards
                             <Tooltip
@@ -145,6 +146,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                                 <img src={infoIcon} />
                             </Tooltip>
                         </TableCell>
+             */}
                         <TableCell align="center">Locked Till</TableCell>
                         <TableCell align="center">Action</TableCell>
                     </TableRow>
@@ -169,9 +171,11 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                                         })}{' '}
                                         ZKP
                                     </TableCell>
+                                    {/*
                                     <TableCell align="right">
                                         {row.calculatedReward} ZKP
                                     </TableCell>
+                                 */}
                                     <TableCell align="center">
                                         {formatTime(row.lockedTill)}
                                     </TableCell>

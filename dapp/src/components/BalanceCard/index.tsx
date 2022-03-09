@@ -28,10 +28,10 @@ const BalanceCard = (props: {
         props.stakedBalance,
         props.pricePerToken,
     );
-    const rewardsUSDValue: BigNumber | null = fiatPrice(
-        props.rewardsBalance,
-        props.pricePerToken,
-    );
+    // const rewardsUSDValue: BigNumber | null = fiatPrice(
+    //     props.rewardsBalance,
+    //     props.pricePerToken,
+    // );
 
     return (
         <Box className="balance-card-holder">
@@ -80,12 +80,13 @@ const BalanceCard = (props: {
                     balance={props.stakedBalance}
                     amountUSD={stakedUSDValue}
                 />
-
+                {/*
                 <AddressBalances
                     title={'Unclaimed Reward Balance'}
                     balance={props.rewardsBalance}
                     amountUSD={rewardsUSDValue}
-                />
+                    />
+                 */}
             </Card>
         </Box>
     );

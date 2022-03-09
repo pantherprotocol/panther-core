@@ -13,6 +13,7 @@ import './tasks/reward-pool-init';
 import './tasks/matic-reward-pool-init';
 import './tasks/time-increase';
 import './tasks/proposal-gen';
+import './tasks/vesting-list';
 
 import {HardhatUserConfig} from 'hardhat/config';
 import {NetworkUserConfig, HttpNetworkAccountsUserConfig} from 'hardhat/types';

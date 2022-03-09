@@ -168,11 +168,15 @@ function StakingZkpPage() {
             );
             if (!rewardsBalance) return;
             setRewardsBalance(rewardsBalance);
-            console.debug(
-                'rewardsBalance:',
-                formatCurrency(rewardsBalance),
-                `(USD \$${formatCurrency(fiatPrice(rewardsBalance, price))})`,
-            );
+            if (chainId !== 137) {
+                console.debug(
+                    'rewardsBalance:',
+                    formatCurrency(rewardsBalance),
+                    `(USD \$${formatCurrency(
+                        fiatPrice(rewardsBalance, price),
+                    )})`,
+                );
+            }
         },
         [library, chainId, account],
     );

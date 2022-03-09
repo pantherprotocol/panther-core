@@ -60,7 +60,7 @@ const webpackConfig = (): Configuration | any => ({
     },
     output: {
         path: path.join(__dirname, './build'),
-        filename: 'build.js',
+        filename: 'build-[contenthash].js',
     },
     module: {
         rules: [

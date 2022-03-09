@@ -19,7 +19,6 @@ default:
 stages: # List of stages for jobs, and their order of execution
   - test
   - cache
-  - preview
 
 .yarn_cache_template: &yarn_cache_template
   key:
@@ -45,25 +44,6 @@ combined-job:
     - HARDHAT_NO_MNEMONIC=yes yarn run build:contracts && yarn test
     - yarn workspace @zkp-staking/contracts build:types
     - yarn run build:dapp
-    - yarn run test:dapp
-
-build-cache:
-  stage: cache
-  cache:
-    <<: *yarn_cache_template
-    policy: pull-push
-  script:
-    - |
-      [[ -f .cache_exists ]] && echo "cache already exists" && exit 111
-    - echo > .cache_exists
-  allow_failure:
-    exit_codes: 111 # disable push cache
-
-preview:
-  stage: preview
-  only:
-    - merge_requests
-  script:
     - |
       apt-get update
       apt-get -y install jq
@@ -81,3 +61,17 @@ preview:
           "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions/$thread_id?resolved=true" \
         | jq .
       fi
+
+    - yarn run test:dapp
+
+build-cache:
+  stage: cache
+  cache:
+    <<: *yarn_cache_template
+    policy: pull-push
+  script:
+    - |
+      [[ -f .cache_exists ]] && echo "cache already exists" && exit 111
+    - echo > .cache_exists
+  allow_failure:
+    exit_codes: 111 # disable push cache

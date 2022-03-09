@@ -315,6 +315,7 @@ function StakingZkpPage() {
                             <Grid item xs={12} md={7}>
                                 <Box width={'100%'}>
                                     <CurrentStakeAPY
+                                        networkName={currentNetwork?.name}
                                         currentAPY={currentAPY}
                                         totalZKPStaked={totalZKPStaked}
                                     />

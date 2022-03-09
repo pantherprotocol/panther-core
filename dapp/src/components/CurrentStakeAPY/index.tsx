@@ -14,7 +14,10 @@ import {SafeMuiLink} from '../Common/links';
 
 import './styles.scss';
 
+const TOTAL_REWARDS_AVAILABLE = 6_650_000 + 2_000_000;
+
 const CurrentStakeAPY = (props: {
+    networkName: string | undefined;
     currentAPY: number | null;
     totalZKPStaked: BigNumber | null;
 }) => {
@@ -25,15 +28,28 @@ const CurrentStakeAPY = (props: {
         ? formatCurrency(props.totalZKPStaked, {decimals: 0}) + ' ZKP'
         : '$ZKP';
 
+    const getRewardPoolSize = useCallback(() => {
+        if (!chainId) return '';
+        return chainVar('REWARD_POOL_SIZE', chainId);
+    }, [chainId]);
+
     const getRewardProgramText = useCallback(() => {
         if (!chainId) return '';
-        const rewardsAvailable = chainVar('REWARD_POOL_SIZE', chainId);
+        const rewardsAvailable = getRewardPoolSize();
         const rewardsAvailableBN = BigNumber.from(rewardsAvailable).mul(E18);
         const programDays = chainVar('STAKING_PROGRAM_DURATION', chainId);
         return ` on a reward pool of ${formatCurrency(rewardsAvailableBN, {
             decimals: 0,
         })} ZKP available over ${programDays} days`;
-    }, [chainId]);
+    }, [getRewardPoolSize, chainId]);
+
+    const getPoolSizeText = useCallback(() => {
+        const poolSize = getRewardPoolSize();
+        const poolSizeText = Number(poolSize || TOTAL_REWARDS_AVAILABLE) / 1e6;
+        return poolSize && props.networkName
+            ? `a ${poolSizeText} million $ZKP rewards pool on ${props.networkName}`
+            : `${poolSizeText} million in $ZKP reward pools`;
+    }, [getRewardPoolSize, props]);
 
     return (
         <Box className="current-stake-apy-container">
@@ -75,9 +91,8 @@ const CurrentStakeAPY = (props: {
                     Earn rewards for staking ZKP
                 </Typography>
                 <Typography className="message-text">
-                    Along with earning from a 6.65million $ZKP staking rewards
-                    pool, staking also gives you voting rights on Panther DAO
-                    proposals.{' '}
+                    Along with earning from {getPoolSizeText()}, staking also
+                    gives you voting rights on Panther DAO proposals.{' '}
                     <SafeMuiLink
                         href="https://docs.pantherprotocol.io/panther-dao-and-zkp/the-zkp-token/staking"
                         underline="always"

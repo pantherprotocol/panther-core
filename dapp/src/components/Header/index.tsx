@@ -1,9 +1,10 @@
 import * as React from 'react';
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
@@ -13,6 +14,7 @@ import docsIcon from '../../images/docs-icon.svg';
 import governanceIcon from '../../images/governance-icon.svg';
 import accountAvatar from '../../images/meta-mask-icon.svg';
 import logo from '../../images/panther-logo.svg';
+import refreshIcon from '../../images/refresh-icon.svg';
 import stakingIcon from '../../images/staking-icon.svg';
 import {formatAccountAddress} from '../../services/account';
 import {onWrongNetwork} from '../../services/connectors';
@@ -27,13 +29,15 @@ import {SettingsButton} from '../SettingsButton';
 import './styles.scss';
 
 const Header = props => {
+    const {onConnect, updateEthBalance} = props;
+
     const context = useWeb3React();
     const {account, active, error, chainId} = context;
     const [wrongNetwork, setWrongNetwork] = useState(false);
 
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
 
-    useEffect((): any => {
+    useEffect((): void => {
         const wrongNetwork =
             onWrongNetwork(context) || error instanceof UnsupportedChainIdError;
         setWrongNetwork(wrongNetwork);
@@ -45,10 +49,7 @@ const Header = props => {
             '/ error',
             error,
         );
-        if (wrongNetwork) {
-            return;
-        }
-    }, [context, active, error]); // ensures refresh if referential identity of library doesn't change across chainIds
+    }, [context, active, error]);
 
     const accountAddress = formatAccountAddress(account) || null;
 
@@ -110,7 +111,7 @@ const Header = props => {
                                             if (isNoEthereumProviderError) {
                                                 safeOpenMetamask();
                                             } else {
-                                                props.onConnect();
+                                                onConnect();
                                             }
                                         }}
                                     />
@@ -157,6 +158,11 @@ const Header = props => {
                                             </Box>
                                         )}
                                         <Typography className="account-balance">
+                                            <IconButton
+                                                onClick={updateEthBalance}
+                                            >
+                                                <img src={refreshIcon} />
+                                            </IconButton>
                                             {accountBalance}
                                         </Typography>
                                     </Box>

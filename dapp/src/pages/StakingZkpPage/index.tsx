@@ -64,6 +64,8 @@ function StakingZkpPage() {
     const [ethBalance, setEthBalance] = useState<BigNumber | null>(null);
     const [currentAPY, setCurrentAPY] = useState<number | null>(null);
 
+    const accountAddress = formatAccountAddress(account);
+
     // Handle logic to eagerly connect to the injected ethereum provider, if it
     // exists and has granted access already
     const triedEager = useEagerConnect();
@@ -185,22 +187,14 @@ function StakingZkpPage() {
         if (account && library) {
             let stale = false;
 
-            library
-                .getBalance(account)
-                .then((balance: any) => {
-                    if (!stale) {
-                        setEthBalance(balance);
-                    }
-                })
-                .catch(() => {
-                    if (!stale) {
-                        setEthBalance(null);
-                    }
-                });
+            library.getBalance(account).then((balance: any) => {
+                if (!stale) {
+                    setEthBalance(balance);
+                }
+            });
 
             return () => {
                 stale = true;
-                setEthBalance(null);
             };
         }
     }, [account, library]);
@@ -252,6 +246,7 @@ function StakingZkpPage() {
         }
         await fetchEthBalance();
         const price = await fetchTokenMarketPrice();
+        await fetchEthBalance();
         await fetchZkpTokenBalance(price);
         await fetchStakedZkpBalance(price);
         await getUnclaimedRewardsBalance(price);
@@ -268,8 +263,6 @@ function StakingZkpPage() {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
-
-    const accountAddress = formatAccountAddress(account) || null;
 
     return (
         <Box
@@ -290,6 +283,8 @@ function StakingZkpPage() {
                 disconnect={() => {
                     disconnect();
                 }}
+                updateEthBalance={fetchEthBalance}
+                accountAddress={accountAddress}
                 balance={ethBalance}
                 networkName={currentNetwork?.name}
                 networkSymbol={currentNetwork?.symbol}

@@ -10,7 +10,6 @@ import {BigNumber} from 'ethers';
 import ethLogo from '../../images/eth-logo.svg';
 import infoIcon from '../../images/info-icon.svg';
 import refreshIcon from '../../images/refresh-icon.svg';
-import accountAvatar from '../../images/wallet-icon.svg';
 import {fiatPrice, formatCurrency} from '../../utils/helpers';
 import Address from '../Address';
 
@@ -41,22 +40,7 @@ const BalanceCard = (props: {
     return (
         <Box className="balance-card-holder">
             <Card className="balance-card">
-                {props.accountAddress && (
-                    <div className="balance-card-account-holder">
-                        <AddressWithSetting
-                            accountAvatar={accountAvatar}
-                            accountAddress={props.accountAddress}
-                        />
-                        {props.networkLogo && (
-                            <div className="network-logo-holder">
-                                <img
-                                    src={props.networkLogo}
-                                    alt="Network logo"
-                                />
-                            </div>
-                        )}
-                    </div>
-                )}
+                {props.accountAddress && <AddressWithSetting />}
                 {!props.accountAddress && (
                     <div className="not-connected-balance-container">
                         <IconButton>
@@ -97,17 +81,11 @@ const BalanceCard = (props: {
     );
 };
 
-const AddressWithSetting = (props: {
-    accountAvatar: string;
-    accountAddress: string | null;
-}) => {
+const AddressWithSetting = () => {
     return (
         <Box className="address-with-setting">
             <Box className="address">
-                <Address
-                    accountAvatar={props.accountAvatar}
-                    accountAddress={props.accountAddress}
-                />
+                <Address />
             </Box>
             {/*<Box className="setting-icon">
                 <Tooltip title="Settings" placement="top">

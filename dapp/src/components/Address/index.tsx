@@ -6,32 +6,38 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {useWeb3React} from '@web3-react/core';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import Jazzicon, {jsNumberForAddress} from 'react-jazzicon';
+
+import {formatAccountAddress} from '../../services/account';
 
 import './styles.scss';
 
-const Address = (props: {
-    accountAvatar: string;
-    accountAddress: string | null;
-}) => {
+const Address = () => {
     const context = useWeb3React();
     const {account} = context;
 
     return (
-        <Box className="address-container">
-            <Box className="user-avatar">
-                <img src={props.accountAvatar} alt={'User avatar'} />
+        (account && (
+            <Box className="address-container">
+                <Box className="user-avatar">
+                    <Jazzicon
+                        diameter={30}
+                        seed={jsNumberForAddress(account)}
+                    />
+                </Box>
+                <Typography className="account-address">
+                    {formatAccountAddress(account)}
+                </Typography>
+                <Tooltip title="Copy Wallet Address" placement="top">
+                    <span>
+                        <CopyToClipboard text={account}>
+                            <ContentCopyIcon className="content-copy-icon" />
+                        </CopyToClipboard>
+                    </span>
+                </Tooltip>
             </Box>
-            <Typography className="account-address">
-                {props.accountAddress}
-            </Typography>
-            <Tooltip title="Copy Wallet Address" placement="top">
-                <span>
-                    <CopyToClipboard text={account}>
-                        <ContentCopyIcon className="content-copy-icon" />
-                    </CopyToClipboard>
-                </span>
-            </Tooltip>
-        </Box>
+        )) ||
+        null
     );
 };
 export default Address;

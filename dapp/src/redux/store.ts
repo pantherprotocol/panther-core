@@ -1,7 +1,11 @@
 import {configureStore} from '@reduxjs/toolkit';
 
+import chainBalanceReducer from './slices/chainBalance';
+
 export const store = configureStore({
-    reducer: {},
+    reducer: {
+        chainBalance: chainBalanceReducer,
+    },
 });
 
 export type AppDispatch = typeof store.dispatch;

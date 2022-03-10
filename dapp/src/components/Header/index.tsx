@@ -5,6 +5,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
@@ -53,8 +54,17 @@ const Header = props => {
 
     const accountAddress = formatAccountAddress(account) || null;
 
-    const accountBalance =
-        formatCurrency(props.balance) + ' ' + (props?.networkSymbol || '-');
+    const AccountBalance = () => (
+        <Typography className="account-balance">
+            <IconButton onClick={updateEthBalance}>
+                <img src={refreshIcon} />
+            </IconButton>
+            {formatCurrency(props.balance) || '-'}
+            <InputAdornment position="end" className="currency-symbol">
+                <span>{props.networkSymbol || '-'}</span>
+            </InputAdornment>
+        </Typography>
+    );
 
     return (
         <Box sx={{flexGrow: 1}}>
@@ -157,14 +167,7 @@ const Header = props => {
                                                 />
                                             </Box>
                                         )}
-                                        <Typography className="account-balance">
-                                            <IconButton
-                                                onClick={updateEthBalance}
-                                            >
-                                                <img src={refreshIcon} />
-                                            </IconButton>
-                                            {accountBalance}
-                                        </Typography>
+                                        <AccountBalance />
                                     </Box>
                                 </>
                             )}

@@ -2,9 +2,12 @@
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.0;
 
+import "./interfaces/IErc20Min.sol";
 import "./actions/StakingMsgProcessor.sol";
 import "./interfaces/IRewardAdviser.sol";
 import "./utils/Claimable.sol";
+import "./utils/ImmutableOwnable.sol";
+import "./utils/NonReentrant.sol";
 import "./utils/Utils.sol";
 
 /**
@@ -22,31 +25,33 @@ import "./utils/Utils.sol";
  * Note, it pays "new" rewards to stakers both under "old" and "new" stakes.
  */
 contract StakeRewardController is
+    ImmutableOwnable,
     StakingMsgProcessor,
     Utils,
     Claimable,
+    NonReentrant,
     IRewardAdviser
 {
     /**
      * ARPT (Arpt, arpt) stands for "Accumulated amount of Rewards Per staked Token".
      *
-     * Staking reward is calculated on redemption of a stake (`action == UNSTAKED`),
+     * Staking reward is calculated on redemption of a stake (action == UNSTAKE),
      * when we know `stakedAt`, `claimedAt` and `amount` of the stake.
      *
      * The amount to reward on every stake unstaked we compute as follows.
      *   appreciation = newArpt - arptHistory[stakedAt]      // See (2) and (3)
      *   rewardAmount = amount * appreciation                               (1)
      *
-     * Each time when a stake is created (on "STAKED") or redeemed (on "UNSTAKED"),
+     * Each time when a stake is created (on "STAKE") or redeemed (on "UNSTAKE"),
      * we calculate and saves params as follows.
-     *   timeNow = action == STAKED ? stakedAt : claimedAt
+     *   timeNow = action == STAKE ? stakedAt : claimedAt
      *   rewardAdded = (timeNow - rewardUpdatedOn) * REWARD_PER_SECOND
      *   rewardPerTokenAdded = rewardAdded / totalStaked;
      *   newArpt = accumRewardPerToken + rewardPerTokenAdded                (2)
      *   accumRewardPerToken = newArpt
      *   storage rewardUpdatedOn = timeNow
-     *   totalStaked = totalStaked + (action == STAKED ? +amount : -amount)
-     *   if (action == STAKED) {
+     *   totalStaked = totalStaked + (action == STAKE ? +amount : -amount)
+     *   if (action == STAKE) {
      *     arptHistory[timeNow] = newArpt                                   (3)
      *   }
      *
@@ -73,9 +78,9 @@ contract StakeRewardController is
     /// @dev Amount of rewards accrued to the reward pool every second (scaled)
     uint256 private constant sc_REWARD_PER_SECOND = (2e24 * SCALE) / 56 days;
 
-    bytes4 public STAKE_TYPE = 0x4ab0941a;
-    bytes4 private immutable STAKED;
-    bytes4 private immutable UNSTAKED;
+    bytes4 public STAKE_TYPE = 0x4ab0941a; // bytes4(keccak256("classic"))
+    bytes4 private immutable STAKE;
+    bytes4 private immutable UNSTAKE;
 
     // "shares" for "old" stakes are scaled (down) with this factor
     uint256 private constant OLD_SHARE_FACTOR = 1e6;
@@ -92,27 +97,25 @@ contract StakeRewardController is
     uint96 public totalStaked;
 
     /// @notice Mapping from `stakedAt` to "Accumulated Reward amount Per Token staked" (scaled)
-    /// @dev We pre-populate "old" stakes data, then "STAKED" calls append new stakes
+    /// @dev We pre-populate "old" stakes data, then "STAKE" calls append new stakes
     mapping(uint256 => uint256) public scArptHistory;
 
     /// @dev Emitted when new reward amount counted in `totalRewardAccrued`
-    event RewardAdded(uint256 reward);
+    event RewardAdded(uint256 reward, uint256 newScArpt);
     /// @dev Emitted when reward paid to a staker
     event RewardPaid(address indexed staker, uint256 reward);
-
-    function saveHistoricalData(
-        uint256[] calldata accumRewards,
-        uint256[] calldata timestamps
-    ) external onlyDeployer onlyOnce;
+    /// @dev Emitted when stake history gets initialized
+    event HistoryInitialized(uint256 historyEnd);
 
     constructor(
+        address _owner,
         address token,
         address rewardTreasury,
         address rewardMaster,
         address historyProvider
-    ) {
-        STAKED = _encodeStakeActionType(STAKE_TYPE);
-        UNSTAKED = _encodeUnstakeActionType(STAKE_TYPE);
+    ) ImmutableOwnable(_owner) {
+        STAKE = _encodeStakeActionType(STAKE_TYPE);
+        UNSTAKE = _encodeUnstakeActionType(STAKE_TYPE);
 
         require(
             token != address(0) &&
@@ -134,7 +137,6 @@ contract StakeRewardController is
 
     function getRewardAdvice(bytes4 action, bytes memory message)
         external
-        view
         override
         returns (Advice memory)
     {
@@ -142,41 +144,81 @@ contract StakeRewardController is
 
         (
             address staker,
-            uint96 stakeAmount, // uint32 id
+            uint96 stakeAmount,
             ,
-            uint32 stakedAt, // uint32 lockedTill
+            uint32 stakedAt,
             ,
-            uint32 claimedAt, // bytes memory data
-            ,
+            uint32 claimedAt,
 
         ) = _unpackStakingActionMsg(message);
 
         require(staker != address(0), "SRC: unexpected zero staker");
-        require(amount != 0, "SRC: unexpected zero amount");
+        require(stakeAmount != 0, "SRC: unexpected zero amount");
         require(stakedAt != 0, "SRC: unexpected zero stakedAt");
         require(claimedAt <= safe32TimeNow(), "SRC: claimedAt not yet come");
         require(
-            action != UNSTAKED || claimedAt >= stakedAt,
+            action != UNSTAKE || claimedAt >= stakedAt,
             "SRC: unexpected claimedAt"
         );
 
         if (stakedAt < activeSince) {
-            require(action == UNSTAKED, "SRC: invalid 'old' action");
+            require(action == UNSTAKE, "SRC: invalid 'old' action");
             _countUnstakeAndPayReward(staker, stakeAmount, stakedAt, claimedAt);
-            return _getUnstakeModifiedAdvice(staker, amount);
+            return _getUnstakeModifiedAdvice(staker, stakeAmount);
         }
 
-        if (action == STAKED) {
+        if (action == STAKE) {
             _countNewStake(stakeAmount, stakedAt);
             return _getStakeVoidAdvice(staker);
         }
 
-        if (action == UNSTAKED) {
+        if (action == UNSTAKE) {
             _countUnstakeAndPayReward(staker, stakeAmount, stakedAt, claimedAt);
             return _getUnstakeVoidAdvice(staker);
         }
 
         revert("SRC: unsupported action");
+    }
+
+    /// @notice It initializes historical data (for "old" stakes).
+    /// Only HISTORY_PROVIDER may call, and only if the history has not been finalized.
+    /// @dev If `historyEnd` is 0, may be called again (gets finalized otherwise).
+    /// ATTN: None of the "old" stake MUST be repaid by the historyEnd !!!
+    function saveHistoricalData(
+        uint96[] calldata amounts,
+        uint32[] calldata stakedAtDates,
+        uint32 historyEnd
+    ) external {
+        require(!isInitialized(), "SRC: already initialized");
+        require(msg.sender == HISTORY_PROVIDER, "SRC: unauthorized");
+        require(
+            amounts.length == stakedAtDates.length,
+            "SRC: unmatched length"
+        );
+
+        uint32 lastDate = 0;
+        for (uint256 i = 0; i < amounts.length; i++) {
+            uint32 stakedAt = stakedAtDates[i];
+            uint96 amount = amounts[i];
+            require(
+                stakedAt != 0 && stakedAt >= lastDate,
+                "SRC: wrong history order"
+            );
+            require(amount != 0, "SRC: unexpected zero amount");
+
+            _countNewStake(amount, stakedAt);
+
+            lastDate = stakedAt;
+        }
+
+        if (historyEnd != 0) {
+            require(
+                historyEnd >= lastDate && historyEnd <= safe32TimeNow(),
+                "SRC: wrong historyEnd"
+            );
+            prefilledHistoryEnd = historyEnd;
+            emit HistoryInitialized(historyEnd);
+        }
     }
 
     /// @notice Withdraws accidentally sent token from this contract
@@ -192,6 +234,7 @@ contract StakeRewardController is
     function _countNewStake(uint96 stakeAmount, uint32 stakedAt) internal {
         uint256 _scArpt = _updateRewardPoolParams(stakedAt);
         if (scArptHistory[stakedAt] == 0) {
+            // if not registered yet for this time (i.e. block)
             scArptHistory[stakedAt] = _scArpt;
         }
         totalStaked = safe96(uint256(totalStaked) + uint256(stakeAmount));
@@ -220,35 +263,36 @@ contract StakeRewardController is
         }
     }
 
-    function _updateRewardPoolParams(uint32 validAt)
+    function _updateRewardPoolParams(uint32 actionTime)
         internal
         returns (uint256 newScArpt)
     {
         newScArpt = scAccumRewardPerToken;
-        uint32 prevValidAt = rewardUpdatedOn;
-        if (prevValidAt >= validAt) return newScArpt;
+        uint32 prevActionTime = rewardUpdatedOn;
+        if (prevActionTime >= actionTime) return newScArpt;
 
         uint256 rewardAdded;
         (newScArpt, rewardAdded) = _computeRewardsAddition(
             newScArpt,
-            validAt,
-            prevValidAt,
+            actionTime,
+            prevActionTime,
             totalStaked
         );
         scAccumRewardPerToken = newScArpt;
         totalRewardAccrued = safe96(uint256(totalRewardAccrued) + rewardAdded);
-        rewardUpdatedOn = validAt;
+        rewardUpdatedOn = actionTime;
 
-        emit RewardAdded(rewardAdded);
+        emit RewardAdded(rewardAdded, newScArpt);
     }
 
     function _computeRewardsAddition(
         uint256 prevScArpt,
-        uint32 validAt,
-        uint32 prevValidAt,
+        uint32 actionTime,
+        uint32 prevActionTime,
         uint256 _totalStaked
     ) internal pure returns (uint256 newScArpt, uint256 rewardAdded) {
-        uint256 scRewardAdded = (validAt - prevValidAt) * sc_REWARD_PER_SECOND;
+        uint256 scRewardAdded = (actionTime - prevActionTime) *
+            sc_REWARD_PER_SECOND;
         rewardAdded = scRewardAdded / SCALE;
         newScArpt = prevScArpt + scRewardAdded / _totalStaked;
     }
@@ -282,6 +326,7 @@ contract StakeRewardController is
 
     function _getStakeVoidAdvice(address staker)
         internal
+        view
         returns (Advice memory advice)
     {
         advice = _getEmptyAdvice();
@@ -290,6 +335,7 @@ contract StakeRewardController is
 
     function _getUnstakeVoidAdvice(address staker)
         internal
+        view
         returns (Advice memory advice)
     {
         advice = _getEmptyAdvice();
@@ -298,6 +344,7 @@ contract StakeRewardController is
 
     function _getUnstakeModifiedAdvice(address staker, uint96 amount)
         internal
+        view
         returns (Advice memory advice)
     {
         advice = _getEmptyAdvice();
@@ -305,7 +352,7 @@ contract StakeRewardController is
         advice.sharesToRedeem = safe96(uint256(amount) / OLD_SHARE_FACTOR);
     }
 
-    function _getEmptyAdvice() internal pure returns (Advice memory advice) {
+    function _getEmptyAdvice() internal view returns (Advice memory advice) {
         advice = Advice(
             address(0), // createSharesFor
             0, // sharesToCreate

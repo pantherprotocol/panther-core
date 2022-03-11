@@ -29,20 +29,17 @@ contract RewardTreasury is ImmutableOwnable, NonReentrant, Claimable {
         token = _token;
     }
 
-    /// @notece It sets amounts as ERC20 allowances over the {token} to specified spenders
+    /// @notice It sets amount as ERC20 allowance over the {token} to the given spender
     /// @dev May be only called by the {OWNER}
-    function batchApprove(address[] spenders, uint256[] amounts)
+    function approveSpender(address spender, uint256 amount)
         external
         onlyOwner
     {
-        require(spenders.length == amounts.length, "RT: unmatched length");
-        for (uint256 i = 0; i < spenders.length; i++) {
-            // call to the trusted contract - no reentrancy guard needed
-            IErc20Approve(token).approve(spenders[i], amounts[i]);
-        }
+        // call to the trusted contract - no reentrancy guard needed
+        IErc20Approve(token).approve(spender, amount);
     }
 
-    /// @notice Withdraws accidentally sent token from this contract
+    /// @notice Withdraws accidentally sent tokens from this contract
     /// @dev May be only called by the {OWNER}
     function claimErc20(
         address claimedToken,

@@ -54,7 +54,7 @@ const Header = props => {
     const accountAddress = formatAccountAddress(account) || null;
 
     const AccountBalance = () => (
-        <Typography className="account-balance">
+        <Box className="account-balance">
             <IconButton onClick={updateEthBalance}>
                 <img src={refreshIcon} />
             </IconButton>
@@ -62,7 +62,7 @@ const Header = props => {
             <InputAdornment position="end" className="currency-symbol">
                 <span>{props.networkSymbol || '-'}</span>
             </InputAdornment>
-        </Typography>
+        </Box>
     );
 
     return (

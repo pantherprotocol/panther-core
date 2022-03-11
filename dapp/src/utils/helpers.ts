@@ -75,7 +75,7 @@ export function formatCurrency(
         // trailingZeroDisplay: 'lessPrecision',
     });
     const formatted = currencyFormat.format(num);
-    return roundDown(formatted, options?.decimals ?? 3);
+    return roundDown(formatted, options?.decimals ?? 2);
     // return ethers.utils
     //     .commify()
     //     .replace(/\.0$/, '');

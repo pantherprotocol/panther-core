@@ -24,20 +24,22 @@ contract RewardTreasury is ImmutableOwnable, NonReentrant, Claimable {
     /// @notice Address of the Reward Pool token
     address public immutable token;
 
-    constructor(
-        address _owner,
-        address _token,
-        address[] spenders,
-        uint256[] amounts
-    ) ImmutableOwnable(_owner) nonZeroAddress(_token) {
+    constructor(address _owner, address _token) ImmutableOwnable(_owner) {
+        require(_token != address(0), "RT: E1");
         token = _token;
-        _batchApprove(spenders, amounts);
     }
 
     /// @notece It sets amounts as ERC20 allowances over the {token} to specified spenders
     /// @dev May be only called by the {OWNER}
-    function approve(address[] spenders, uint256[] amounts) external onlyOwner {
-        _batchApprove(spenders, amounts);
+    function batchApprove(address[] spenders, uint256[] amounts)
+        external
+        onlyOwner
+    {
+        require(spenders.length == amounts.length, "RT: unmatched length");
+        for (uint256 i = 0; i < spenders.length; i++) {
+            // call to the trusted contract - no reentrancy guard needed
+            IErc20Approve(token).approve(spenders[i], amounts[i]);
+        }
     }
 
     /// @notice Withdraws accidentally sent token from this contract
@@ -49,18 +51,5 @@ contract RewardTreasury is ImmutableOwnable, NonReentrant, Claimable {
     ) external onlyOwner nonReentrant {
         require(claimedToken != token, "RT: prohibited");
         _claimErc20(claimedToken, to, amount);
-    }
-
-    function _batchApprove(address[] spenders, uint256[] amounts) internal {
-        require(spenders.length == amounts.length, "RT: unmatched length");
-        for (uint256 i = 0; i < spenders.length; i++) {
-            /// Call to the trusted contract - no reentrancy guard needed
-            IErc20Approve(token).approve(spenders[i], amounts[i]);
-        }
-    }
-
-    modifier nonZeroAddress(address account) {
-        require(account != address(0), "RT: zero address");
-        _;
     }
 }

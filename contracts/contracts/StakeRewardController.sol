@@ -14,10 +14,10 @@ import "./utils/Utils.sol";
  * this contract to process messages from the "Staking" contract.
  * It replaces the "StakeRewardAdviser" on Polygon.
  * It simulates "advise" of "StakeRewardAdviser" to the "RewardMaster"
- * For stakes created before the replacement (aka "old" stakes):
- * - it returns modified "advices" with "old" rewards ("shares"),
- *   but with the address of this contract set as the reward recipients
- * - it receives "old" rewards which the "RewardMaster" pays on "advices".
+ * For stakes created before the replacement (aka "old" stakes) it returns
+ * modified "advices" with "old" amounts of rewards ("shares") but with the
+ * address of the REWARD_TREASURY as the recipient of rewards. So the latest
+ * gets "old" rewards which the "RewardMaster" pays on "advices".
  * For "new" stakes, it returns "advices" with zero rewards (zero "shares").
  * Note, it pays "new" rewards to stakers both under "old" and "new" stakes.
  */
@@ -64,17 +64,21 @@ contract StakeRewardController is
     /// @notice RewardMaster instance authorized to call `getRewardAdvice` on this contract
     address public immutable REWARD_MASTER;
 
-    /// @notice Amount of rewards accrued to the reward pool every second (scaled)
-    uint256 public immutable sc_REWARD_PER_SECOND;
+    /// @notice Account authorized to initialize initial historical data
+    address private immutable HISTORY_PROVIDER;
 
+    // Params named with "sc" prefix are scaled (up) with this factor
+    uint256 private constant SCALE = 1e9;
+
+    /// @dev Amount of rewards accrued to the reward pool every second (scaled)
+    uint256 private constant sc_REWARD_PER_SECOND = (2e24 * SCALE) / 56 days;
+
+    bytes4 public STAKE_TYPE = 0x4ab0941a;
     bytes4 private immutable STAKED;
     bytes4 private immutable UNSTAKED;
 
     // "shares" for "old" stakes are scaled (down) with this factor
     uint256 private constant OLD_SHARE_FACTOR = 1e6;
-
-    // Params named with "sc" prefix are scaled (up) with this factor
-    uint256 private constant SCALE = 1e9;
 
     // solhint-enable var-name-mixedcase
 
@@ -101,14 +105,31 @@ contract StakeRewardController is
         uint256[] calldata timestamps
     ) external onlyDeployer onlyOnce;
 
-    constructor(bytes4 stakeType, uint256 stakeAmountToSharesScFactor) {
+    constructor(
+        address token,
+        address rewardTreasury,
+        address rewardMaster,
+        address historyProvider
+    ) {
+        STAKED = _encodeStakeActionType(STAKE_TYPE);
+        UNSTAKED = _encodeUnstakeActionType(STAKE_TYPE);
+
         require(
-            stakeType != bytes4(0) && stakeAmountToSharesScFactor != 0,
-            "PSA:E1"
+            token != address(0) &&
+                rewardTreasury != address(0) &&
+                rewardMaster != address(0) &&
+                historyProvider != address(0),
+            "SRC: E1"
         );
-        STAKED = _encodeStakeActionType(stakeType);
-        UNSTAKED = _encodeUnstakeActionType(stakeType);
-        FACTOR = stakeAmountToSharesScFactor;
+
+        REWARD_TOKEN = token;
+        REWARD_TREASURY = rewardTreasury;
+        REWARD_MASTER = rewardMaster;
+        HISTORY_PROVIDER = historyProvider;
+    }
+
+    function isInitialized() public view returns (bool) {
+        return prefilledHistoryEnd != 0;
     }
 
     function getRewardAdvice(bytes4 action, bytes memory message)
@@ -208,7 +229,7 @@ contract StakeRewardController is
         if (prevValidAt >= validAt) return newScArpt;
 
         uint256 rewardAdded;
-        (newScArpt, rewardAdded) = _computeRewardPoolUpdate(
+        (newScArpt, rewardAdded) = _computeRewardsAddition(
             newScArpt,
             validAt,
             prevValidAt,
@@ -221,7 +242,7 @@ contract StakeRewardController is
         emit RewardAdded(rewardAdded);
     }
 
-    function _computeRewardPoolUpdate(
+    function _computeRewardsAddition(
         uint256 prevScArpt,
         uint32 validAt,
         uint32 prevValidAt,
@@ -290,7 +311,7 @@ contract StakeRewardController is
             0, // sharesToCreate
             address(0), // redeemSharesFrom
             0, // sharesToRedeem
-            address(this) // sendRewardTo
+            REWARD_TREASURY // sendRewardTo
         );
     }
 }

@@ -2,6 +2,7 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task} from 'hardhat/config';
 import {BigNumber, Event} from 'ethers';
 import fs from 'fs';
+import {filterPaginator} from '../lib/utils';
 
 const QUERY_BLOCKS = 1000;
 
@@ -50,8 +51,6 @@ task('staking:list', 'Output staking events data as JSON')
         );
 
         const filter = stakingContract.filters.StakeCreated();
-        const logs = [];
-        let queryStartBlock = Number(taskArgs.start);
         let endBlock;
 
         if (taskArgs.end) {
@@ -60,38 +59,16 @@ task('staking:list', 'Output staking events data as JSON')
             endBlock = (await hre.ethers.provider.getBlock('latest')).number;
         }
 
-        console.log('Start block:', queryStartBlock);
-        console.log('End block:', endBlock);
-        const chunks = Math.ceil((endBlock - queryStartBlock) / QUERY_BLOCKS);
-        let idx = 1;
-        while (queryStartBlock < endBlock) {
-            let queryEndBlock;
-            if (queryStartBlock + QUERY_BLOCKS - 1 < endBlock) {
-                queryEndBlock = queryStartBlock + QUERY_BLOCKS - 1;
-            } else {
-                queryEndBlock = endBlock;
-            }
+        const logs = await filterPaginator(
+            Number(taskArgs.start),
+            endBlock,
+            QUERY_BLOCKS,
+            stakingContract,
+            filter,
+            extractLogData,
+            hre,
+        );
 
-            console.log(
-                `${idx} of ${chunks}: from block`,
-                queryStartBlock,
-                'to',
-                queryEndBlock,
-                ' ...',
-            );
-            const newLogs = await stakingContract.queryFilter(
-                filter,
-                queryStartBlock,
-                queryEndBlock,
-            );
-            for await (const newLog of newLogs) {
-                const rec = await extractLogData(hre, newLog);
-                if (rec) logs.push(rec);
-            }
-            console.log(`   Got ${newLogs.length} events`);
-            queryStartBlock += QUERY_BLOCKS;
-            idx++;
-        }
         console.log(logs);
         if (taskArgs.out) {
             fs.writeFileSync(taskArgs.out, JSON.stringify(logs, null, 2));

@@ -2,6 +2,7 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task} from 'hardhat/config';
 import {BigNumber, Event} from 'ethers';
 import fs from 'fs';
+import {filterPaginator} from '../lib/utils';
 
 // import {abi as REWARD_POOL_ABI} from '../deployments/ARCHIVE/production/artifacts/contracts/MaticRewardPool.sol/MaticRewardPool.json';
 const REWARD_POOL_ADDRESS = '0x773d49309c4E9fc2e9254E7250F157D99eFe2d75';
@@ -37,38 +38,19 @@ task('vesting:list', 'Output vesting data as JSON')
         );
 
         const filter = rewardPool.filters.Vested();
-        const logs = [];
-        let queryStartBlock = FIRST_VESTED_BLOCK;
         const currentBlock = (await hre.ethers.provider.getBlock('latest'))
             .number;
 
-        console.log('Current block:', currentBlock);
-        while (queryStartBlock < currentBlock) {
-            let queryEndBlock;
-            if (queryStartBlock + QUERY_BLOCKS - 1 < currentBlock) {
-                queryEndBlock = queryStartBlock + QUERY_BLOCKS - 1;
-            } else {
-                queryEndBlock = currentBlock;
-            }
+        const logs = await filterPaginator(
+            FIRST_VESTED_BLOCK,
+            currentBlock,
+            QUERY_BLOCKS,
+            rewardPool,
+            filter,
+            extractLogData,
+            hre,
+        );
 
-            console.log(
-                'Fetching Vested events from blocks',
-                queryStartBlock,
-                'to',
-                queryEndBlock,
-                ' ...',
-            );
-            const newLogs = await rewardPool.queryFilter(
-                filter,
-                queryStartBlock,
-                queryEndBlock,
-            );
-            for await (const newLog of newLogs) {
-                logs.push(await extractLogData(hre, newLog));
-            }
-            console.log(`   Got ${newLogs.length} events`);
-            queryStartBlock += QUERY_BLOCKS;
-        }
         console.log(logs);
         if (taskArgs.out) {
             fs.writeFileSync(taskArgs.out, JSON.stringify(logs, null, 2));

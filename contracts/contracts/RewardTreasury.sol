@@ -5,15 +5,10 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/IErc20Min.sol";
+import "./interfaces/IErc20Approve.sol";
 import "./utils/ImmutableOwnable.sol";
 import "./utils/Claimable.sol";
 import "./utils/NonReentrant.sol";
-
-interface IErc20Approve {
-    /// @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
-    // Beware of risk: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    function approve(address spender, uint256 amount) external returns (bool);
-}
 
 /**
  * @title RewardTreasury

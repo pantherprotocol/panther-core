@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/IErc20Min.sol";
+import "./interfaces/ITotalStaked.sol";
 import "./actions/StakingMsgProcessor.sol";
 import "./interfaces/IRewardAdviser.sol";
 import "./utils/Claimable.sol";
@@ -15,14 +16,16 @@ import "./utils/Utils.sol";
  * @notice It accounts for and sends staking rewards to stakers
  * @dev It acts as the "RewardAdviser" for the "RewardMaster". The latter calls
  * this contract to process messages from the "Staking" contract.
- * It replaces the "StakeRewardAdviser" on Polygon.
- * It simulates "advise" of "StakeRewardAdviser" to the "RewardMaster"
- * For stakes created before the replacement (aka "old" stakes) it returns
- * modified "advices" with "old" amounts of rewards ("shares") but with the
- * address of the REWARD_TREASURY as the recipient of rewards. So the latest
- * gets "old" rewards which the "RewardMaster" pays on "advices".
- * For "new" stakes, it returns "advices" with zero rewards (zero "shares").
- * Note, it pays "new" rewards to stakers both under "old" and "new" stakes.
+ * On Polygon, it replaces the "StakeRewardAdviser" and, together with the
+ * "RewardTreasury", the "MaticRewardPool".
+ * It simulates "advices" of the "StakeRewardAdviser" to the "RewardMaster":
+ * - for stakes created before the replacement (aka "old" stakes), it returns
+ * modified "advices" with "old" amounts of rewards ("shares"), but with the
+ * address of the REWARD_TREASURY as the recipient of rewards; so the latest
+ * gets "old" rewards, which the "RewardMaster" pays on "advices";
+ * - for "new" stakes, it returns "advices" with zero rewards (zero "shares").
+ * It acts as a "spender" from the "RewardTreasury", calling `transferFrom` to
+ * send "new" rewards to stakers, both under "old" and "new" stakes.
  */
 contract StakeRewardController is
     ImmutableOwnable,
@@ -63,6 +66,9 @@ contract StakeRewardController is
     /// @notice The ERC20 token to pay rewards in
     address public immutable REWARD_TOKEN;
 
+    /// @notice Staking contract instance that handles stakes
+    address public immutable STAKING;
+
     /// @notice Account that approves this contract as a spender of {REWARD_TOKEN} it holds
     address public immutable REWARD_TREASURY;
 
@@ -75,10 +81,20 @@ contract StakeRewardController is
     // Params named with "sc" prefix are scaled (up) with this factor
     uint256 private constant SCALE = 1e9;
 
-    /// @dev Amount of rewards accrued to the reward pool every second (scaled)
-    uint256 private constant sc_REWARD_PER_SECOND = (2e24 * SCALE) / 56 days;
+    /// @notice (UNIX) Time when reward accrual starts
+    uint256 public immutable REWARDING_START;
+    /// @notice (UNIX) Time when reward accrual ends
+    uint256 public immutable REWARDING_END;
+    /// @notice Total amount of allocated rewards (with 18 decimals)
+    uint256 public constant REWARD_AMOUNT = 2e24; // 2M tokens
 
-    bytes4 public STAKE_TYPE = 0x4ab0941a; // bytes4(keccak256("classic"))
+    /// @dev Period when rewards are accrued
+    uint256 private constant REWARDING_DURATION = 56 days;
+    /// @dev Amount of rewards accrued to the reward pool every second (scaled)
+    uint256 private constant sc_REWARD_PER_SECOND =
+        (REWARD_AMOUNT * SCALE) / REWARDING_DURATION;
+
+    bytes4 private constant STAKE_TYPE = 0x4ab0941a; // bytes4(keccak256("classic"))
     bytes4 private immutable STAKE;
     bytes4 private immutable UNSTAKE;
 
@@ -87,14 +103,22 @@ contract StakeRewardController is
 
     // solhint-enable var-name-mixedcase
 
+    /// @notice (UNIX) Time when history of "old" stakes was generated
     uint32 public prefilledHistoryEnd;
+    /// @notice (UNIX) Time when this contract started processing of stakes
     uint32 public activeSince;
 
-    uint256 public scAccumRewardPerToken;
-    uint96 public totalRewardAccrued;
-    uint32 public rewardUpdatedOn;
-
+    /// @notice Total amount of outstanding stakes this contract is aware of
     uint96 public totalStaked;
+
+    /// @notice (UNIX) Timestamp when rewards accrued for the last time
+    uint32 public rewardUpdatedOn;
+    /// @notice Amounts of rewards accrued till the `rewardUpdatedOn`
+    uint96 public totalRewardAccrued;
+
+    /// @notice "Accumulated amount of Rewards Per staked Token" (scaled)
+    /// computed at the `rewardUpdatedOn` time
+    uint256 public scAccumRewardPerToken;
 
     /// @notice Mapping from `stakedAt` to "Accumulated Reward amount Per Token staked" (scaled)
     /// @dev We pre-populate "old" stakes data, then "STAKE" calls append new stakes
@@ -105,20 +129,25 @@ contract StakeRewardController is
     /// @dev Emitted when reward paid to a staker
     event RewardPaid(address indexed staker, uint256 reward);
     /// @dev Emitted when stake history gets initialized
-    event HistoryInitialized(uint256 historyEnd);
+    event HistoryInitialized(uint256 historyEnd, uint256 _totalStaked);
+    /// @dev Emitted on activation of this contract
+    event Activated(uint256 _activeSince, uint256 actualTotalStaked);
 
     constructor(
         address _owner,
         address token,
+        address stakingContract,
         address rewardTreasury,
         address rewardMaster,
-        address historyProvider
+        address historyProvider,
+        uint256 rewardingStart
     ) ImmutableOwnable(_owner) {
         STAKE = _encodeStakeActionType(STAKE_TYPE);
         UNSTAKE = _encodeUnstakeActionType(STAKE_TYPE);
 
         require(
             token != address(0) &&
+                stakingContract != address(0) &&
                 rewardTreasury != address(0) &&
                 rewardMaster != address(0) &&
                 historyProvider != address(0),
@@ -126,9 +155,16 @@ contract StakeRewardController is
         );
 
         REWARD_TOKEN = token;
+        STAKING = stakingContract;
         REWARD_TREASURY = rewardTreasury;
         REWARD_MASTER = rewardMaster;
         HISTORY_PROVIDER = historyProvider;
+
+        REWARDING_START = rewardingStart;
+        uint256 rewardingEnd = rewardingStart + REWARDING_DURATION;
+        require(rewardingEnd > timeNow(), "SRC: E2");
+
+        REWARDING_END = rewardingEnd;
     }
 
     function isInitialized() public view returns (bool) {
@@ -180,6 +216,40 @@ contract StakeRewardController is
         revert("SRC: unsupported action");
     }
 
+    /// @notice It returns "Accumulated amount of Rewards Per staked Token" for given time.
+    /// If zero value as the time provided, the current network time assumed.
+    function getScArptAt(uint32 timestamp) external view returns (uint256) {
+        // first, try to use historical data
+        {
+            uint256 historicalScArpt = scArptHistory[timestamp];
+            if (historicalScArpt != 0) return historicalScArpt;
+        }
+
+        uint256 scArpt;
+        {
+            // then use the latest updated value, if applicable
+            uint32 _lastUpdatedOn = rewardUpdatedOn;
+            uint256 _lastScArpt = scAccumRewardPerToken;
+            if (timestamp == _lastUpdatedOn) return _lastScArpt;
+
+            // finally use extrapolation, if not data from the past requested
+            uint32 _timeNow = safe32TimeNow();
+            bool isForNow = timestamp == 0 || timestamp == _timeNow;
+            bool isForFuture = timestamp > _timeNow;
+            if (isForNow || isForFuture) {
+                uint32 till = isForNow ? _timeNow : timestamp;
+                (scArpt, ) = _computeRewardsAddition(
+                    _lastUpdatedOn,
+                    till,
+                    _lastScArpt,
+                    totalStaked
+                );
+            }
+        }
+        require(scArpt != 0, "SRC: no data for requested time");
+        return scArpt;
+    }
+
     /// @notice It initializes historical data (for "old" stakes).
     /// Only HISTORY_PROVIDER may call, and only if the history has not been finalized.
     /// @dev If `historyEnd` is 0, may be called again (gets finalized otherwise).
@@ -217,8 +287,43 @@ contract StakeRewardController is
                 "SRC: wrong historyEnd"
             );
             prefilledHistoryEnd = historyEnd;
-            emit HistoryInitialized(historyEnd);
+            emit HistoryInitialized(historyEnd, totalStaked);
         }
+    }
+
+    /// @notice It sets this contract as "active"
+    /// which assumes the contract started receiving data on new stakes
+    /// @dev Owner only may calls
+    function setActive() external onlyOwner {
+        require(activeSince == 0, "SRC: already activated");
+        uint32 _timeNow = safe32TimeNow();
+        activeSince = _timeNow;
+
+        // Call to a trusted contract - no reentrancy guard needed
+        uint256 actualTotalStaked = ITotalStaked(STAKING).totalStaked();
+        uint256 savedTotalStaked = uint256(totalStaked);
+
+        if (actualTotalStaked == savedTotalStaked) {
+            // stakes have been neither created nor repaid since finalization
+            // of historical data - no corrections needed
+            return;
+        }
+
+        if (actualTotalStaked > savedTotalStaked) {
+            // new stakes have been created since historical data finalization
+            uint256 increase = actualTotalStaked - savedTotalStaked;
+            // it roughly adjusts totals by counting an equivalent "stake"
+            _countNewStake(safe96(increase), _timeNow);
+        }
+
+        if (savedTotalStaked > actualTotalStaked) {
+            // some "old" stakes was repaid after historical data finalization.
+            // it shall be prevented as it results in inaccurate rewarding.
+            // next line shall soften (but not exclude) inaccuracies.
+            totalStaked = safe96(actualTotalStaked);
+        }
+
+        emit Activated(_timeNow, actualTotalStaked);
     }
 
     /// @notice Withdraws accidentally sent token from this contract
@@ -230,6 +335,8 @@ contract StakeRewardController is
     ) external onlyOwner nonReentrant {
         _claimErc20(claimedToken, to, amount);
     }
+
+    /// Private and internal functions follow
 
     function _countNewStake(uint96 stakeAmount, uint32 stakedAt) internal {
         uint256 _scArpt = _updateRewardPoolParams(stakedAt);
@@ -273,9 +380,9 @@ contract StakeRewardController is
 
         uint256 rewardAdded;
         (newScArpt, rewardAdded) = _computeRewardsAddition(
-            newScArpt,
-            actionTime,
             prevActionTime,
+            actionTime,
+            newScArpt,
             totalStaked
         );
         scAccumRewardPerToken = newScArpt;
@@ -286,13 +393,17 @@ contract StakeRewardController is
     }
 
     function _computeRewardsAddition(
+        uint32 fromTime,
+        uint32 tillTime,
         uint256 prevScArpt,
-        uint32 actionTime,
-        uint32 prevActionTime,
         uint256 _totalStaked
-    ) internal pure returns (uint256 newScArpt, uint256 rewardAdded) {
-        uint256 scRewardAdded = (actionTime - prevActionTime) *
-            sc_REWARD_PER_SECOND;
+    ) internal view returns (uint256 newScArpt, uint256 rewardAdded) {
+        if (tillTime <= REWARDING_START) return (prevScArpt, 0);
+
+        uint256 from = fromTime >= REWARDING_START ? fromTime : REWARDING_START;
+        uint256 till = tillTime <= REWARDING_END ? tillTime : REWARDING_END;
+        uint256 scRewardAdded = (till - from) * sc_REWARD_PER_SECOND;
+
         rewardAdded = scRewardAdded / SCALE;
         newScArpt = prevScArpt + scRewardAdded / _totalStaked;
     }

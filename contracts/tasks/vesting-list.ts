@@ -43,8 +43,14 @@ task('vesting:list', 'Output vesting data as JSON')
             .number;
 
         console.log('Current block:', currentBlock);
-        while (queryStartBlock + QUERY_BLOCKS < currentBlock) {
-            const queryEndBlock = queryStartBlock + QUERY_BLOCKS - 1;
+        while (queryStartBlock < currentBlock) {
+            let queryEndBlock;
+            if (queryStartBlock + QUERY_BLOCKS - 1 < currentBlock) {
+                queryEndBlock = queryStartBlock + QUERY_BLOCKS - 1;
+            } else {
+                queryEndBlock = currentBlock;
+            }
+
             console.log(
                 'Fetching Vested events from blocks',
                 queryStartBlock,

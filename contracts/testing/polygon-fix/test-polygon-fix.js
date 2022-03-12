@@ -26,7 +26,7 @@ treasuryAddress = process.env.REWARD_TREASURY;
 rewardMasterAddress = process.env.REWARD_MASTER;
 controllerAddress = process.env.STAKE_REWARD_CONTROLLER;
 
-abi = JSON.parse(fs.readFileSync('../../zkp-token/artifacts/contracts/PZkpToken.sol/PZkpToken.json')).abi; abi.map(i => i.name);
+abi = JSON.parse(fs.readFileSync('../../zkp-token/artifacts/contracts/PZkpToken.sol/PZkpToken.json')).abi; abi.map(i => i.name).slice(0, 5);
 token = await ethers.getContractAt(abi, tokenAddress); null;
 getBal = async addr => u.formatEther(await token.balanceOf(addr));
 
@@ -109,11 +109,11 @@ tx = await controller.saveHistoricalData(historyAmounts.slice(-1), historyTimest
 
 tx = await controller.setActive(); r = await tx.wait();
 
-balancesBefore = await getBals();
+balancesBefore = await getBals(); balancesBefore.map(fe);
 
 await showStake(staker.address, 0);
 tx = await staking.connect(staker).unstake(0, '0x00', false); r = await tx.wait();
 
-balancesAfter = await getBals();
+balancesAfter = await getBals(); balancesAfter.map(fe);
 
 deltas = _.zipWith([balancesBefore, balancesAfter], (b, a) => fe(a.sub(b)));

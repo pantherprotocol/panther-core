@@ -40,8 +40,6 @@ treasury = await ethers.getContractAt('RewardTreasury', treasuryAddress); null;
 await getBal(treasuryAddress);
 await getBal(rewardMasterAddress);
 
-controller = await ethers.getContractAt('StakeRewardController', controllerAddress); null;
-
 imp = async function (addr) {
     await hnp.request({method: 'hardhat_impersonateAccount', params: [addr]});
     return await ethers.getSigner(addr);
@@ -73,6 +71,7 @@ await getBal(treasuryAddress);
 
 /////////////////////////////////////////////////////////////////////////
 // Switch adviser to StakeRewardController
+controller = await ethers.getContractAt('StakeRewardController', controllerAddress); null;
 owner = await imp(await rewardMaster.OWNER()); owner.address;
 
 tx = await deployer.sendTransaction({value: u.parseEther('1000'), to: owner.address}); r = await tx.wait();
@@ -88,11 +87,11 @@ staker = await imp('0x966d4b4965f3ad106ee1ce3e92f17c7f8505df78'); staker.address
 await getBal(staker.address);
 await showStake(staker.address, 0);
 
-tx = await staking.connect(staker).unstake(0, '0x00', false);
+// tx = await staking.connect(staker).unstake(0, '0x00', false);
 // Should fail with 'Stake locked'
 
 await th.increaseTime(3600 * 24 * 7);
-tx = await staking.connect(staker).unstake(0, '0x00', false); r = await tx.wait();
+// tx = await staking.connect(staker).unstake(0, '0x00', false); r = await tx.wait();
 // Should fail with 'Staking: REWARD_MASTER reverts'
 
 /////////////////////////////////////////////////////////////////////////
@@ -100,11 +99,12 @@ tx = await staking.connect(staker).unstake(0, '0x00', false); r = await tx.wait(
 owner = await imp(await treasury.OWNER()); owner.address;
 balance = await token.balanceOf(treasuryAddress);
 tx = await treasury.connect(owner).approveSpender(controller.address, balance); r = await tx.wait();
+// tx = await staking.connect(staker).unstake(0, '0x00', false); r = await tx.wait();
 // Should still fail with 'Staking: REWARD_MASTER reverts'
 
 /////////////////////////////////////////////////////////////////////////
 // Activate StakeRewardController
-tx = await controller.setActive(); r = await tx.wait();
+// tx = await controller.setActive(); r = await tx.wait();
 // Should fail with 'SRC: yet uninitialized'
 
 historyAmounts = JSON.parse(fs.readFileSync('./tmp/amounts.json')); historyAmounts.length;

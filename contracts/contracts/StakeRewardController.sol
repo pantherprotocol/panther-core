@@ -88,6 +88,9 @@ contract StakeRewardController is
     /// @notice Total amount of allocated rewards (with 18 decimals)
     uint256 public constant REWARD_AMOUNT = 2e24; // 2M tokens
 
+    /// @dev Minimum amount of `totalStaked` when rewards accrued
+    uint256 private constant MIN_TOTAL_STAKE_REWARDED = 100e18;
+
     /// @dev Period when rewards are accrued
     uint256 private constant REWARDING_DURATION = 56 days;
     /// @dev Amount of rewards accrued to the reward pool every second (scaled)
@@ -390,7 +393,14 @@ contract StakeRewardController is
         internal
         returns (uint256 newScArpt)
     {
+        uint96 _totalStaked = totalStaked;
         newScArpt = scAccumRewardPerToken;
+
+        if (_totalStaked < MIN_TOTAL_STAKE_REWARDED) {
+            // Too small amount is staked for reward accruals
+            return newScArpt;
+        }
+
         uint32 prevActionTime = rewardUpdatedOn;
         if (prevActionTime >= actionTime) return newScArpt;
 

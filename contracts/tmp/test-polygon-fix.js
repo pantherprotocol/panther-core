@@ -1,4 +1,6 @@
+// cp .env.matic-fork.example
 // yarn hardhat node --no-deploy
+// yarn deploy --network localhost --tags StakeRewardController
 
 e = ethers = hre.ethers; null;
 u = ethers.utils; null;

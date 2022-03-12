@@ -15,7 +15,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             process.env.REWARD_TREASURY,
             process.env.REWARD_MASTER,
             deployer, //  history_provider,
-            Math.floor(new Date().getTime() / 1000) + 30,
+            1646697599, // REWARDING_START - beginning of MaticRewardPool vesting
         ],
         log: true,
         autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks

@@ -5,6 +5,7 @@ contracts/coverage/
 contracts/coverage.json
 contracts/deployments/
 contracts/staging/
+contracts/test/manual/**/*.js
 contracts/typechain/
 contracts/types/
 contracts/typing/

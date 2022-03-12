@@ -1,6 +1,12 @@
-// cp .env.matic-fork.example .env
-// yarn hardhat node --no-deploy
-// yarn deploy --network localhost --tags StakeRewardController
+// Testing Polygon staking bug fix in a local fork:
+//
+//    cp .env.matic-fork.example .env
+//    // Edit .env to add missing keys
+//    yarn hardhat node --no-deploy
+//    yarn deploy --network localhost --tags StakeRewardController
+//    yarn console
+//
+// then copy and paste the below:
 
 e = ethers = hre.ethers; null;
 u = ethers.utils; null;

@@ -6,7 +6,7 @@ coverage/
 node_modules/
 staging/
 tmp/
-testing/
+testing/**/*.cli.js
 typing/
 types/
 .yarn/

@@ -201,7 +201,7 @@ module.exports = hre => {
             deployer,
             owner,
             minter,
-        }
+        };
     }
 
     function getAddresses() {
@@ -213,7 +213,7 @@ module.exports = hre => {
             _rewardMaster,
             _staking,
             _rewardTreasury,
-        }
+        };
     }
 
     return {

@@ -88,7 +88,7 @@ const Header = (props: {
     return (
         <Box sx={{flexGrow: 1}}>
             <AppBar position="static" className="app-bar">
-                <Toolbar>
+                <Toolbar className="main-toolbar">
                     <Grid container>
                         <Grid item lg={6} md={12} xs={12} className="nav-bar">
                             <Box className="logo">

@@ -258,7 +258,12 @@ function StakingZkpPage() {
                                 </Box>
                                 <Footer />
                             </Grid>
-                            <Grid item xs={12} md={7}>
+                            <Grid
+                                item
+                                xs={12}
+                                md={7}
+                                className="apy-staking-right-panel"
+                            >
                                 <Box width={'100%'}>
                                     <CurrentStakeAPY
                                         networkName={currentNetwork?.name}

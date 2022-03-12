@@ -129,7 +129,7 @@ export default function StakeTab(props: {
                 networkLogo={props.networkLogo}
             />
             <Card variant="outlined" className="staking-info-card">
-                <CardContent>
+                <CardContent className="staking-info-card-content">
                     <StakingInfoMSG />
                     {/* <Box display={'flex'} justifyContent={'center'}> */}
                     {/* <StakingMethod /> */}

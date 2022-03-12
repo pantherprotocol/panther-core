@@ -1,10 +1,11 @@
 /*
 This module is supposed for manual testing of "unstaking" in the hardhat forked Polygon environment.
 For example, run in hardhat console:
-> getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
-> test = getTest(hre)
-> contracts = await test.init(parseInt(new Date('2022-05-03T18:00Z').getTime() / 1000))
-> txs = await test.batchUnstake(test.stakesData)
+
+  getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
+  test = getTest(hre)
+  contracts = await test.init(parseInt(new Date('2022-05-03T18:00Z').getTime() / 1000))
+  txs = await test.batchUnstake(test.stakesData)
 */
 
 const stakesData = require('./data/staking_3.json');

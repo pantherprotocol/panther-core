@@ -5,13 +5,15 @@ contracts/coverage/
 contracts/coverage.json
 contracts/deployments/
 contracts/staging/
-contracts/test/manual/**/*.js
+contracts/testing/**/*.js
 contracts/typechain/
 contracts/types/
 contracts/typing/
 dapp/public/preparation/
 dapp/src/types/
+.eslintignore
 .gitmessage
+.prettierignore
 .husky/_/
 node_modules/
 tmp/

@@ -6,6 +6,7 @@ coverage/
 node_modules/
 staging/
 tmp/
+testing/
 typing/
 types/
 .yarn/

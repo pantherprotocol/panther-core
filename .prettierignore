@@ -7,12 +7,14 @@ contracts/deployments/
 contracts/staging/
 contracts/tenderly.yaml
 contracts/testing/**/*.cli.js
+contracts/testing/**/data
 contracts/typechain/
 contracts/types/
 contracts/typing/
 dapp/public/preparation/
 dapp/src/types/
 .eslintignore
+.gitignore
 .gitmessage
 .prettierignore
 .husky/_/

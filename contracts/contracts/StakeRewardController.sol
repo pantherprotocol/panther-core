@@ -90,6 +90,8 @@ contract StakeRewardController is
 
     /// @dev Minimum amount of `totalStaked` when rewards accrued
     uint256 private constant MIN_TOTAL_STAKE_REWARDED = 100e18;
+    /// @dev Value for zero scARPT (`0` means "undefined")
+    uint256 private constant ZERO_SC_ARPT = 1;
 
     /// @dev Period when rewards are accrued
     uint256 private constant REWARDING_DURATION = 56 days;
@@ -202,18 +204,17 @@ contract StakeRewardController is
             ,
             uint32 stakedAt,
             ,
-            uint32 claimedAt,
+            ,
 
         ) = _unpackStakingActionMsg(message);
 
         require(staker != address(0), "SRC: unexpected zero staker");
         require(stakeAmount != 0, "SRC: unexpected zero amount");
         require(stakedAt != 0, "SRC: unexpected zero stakedAt");
-        require(claimedAt <= safe32TimeNow(), "SRC: claimedAt not yet come");
-        require(
-            action != UNSTAKE || claimedAt >= stakedAt,
-            "SRC: unexpected claimedAt"
-        );
+
+        // we ignore `claimedAt` from the `message` as the deployed version of
+        // the Staking contract never sets it in messages (it's a bug)
+        uint32 claimedAt = action == UNSTAKE ? safe32TimeNow() : 0;
 
         if (stakedAt < activeSince) {
             require(action == UNSTAKE, "SRC: invalid 'old' action");
@@ -360,7 +361,7 @@ contract StakeRewardController is
         uint256 scArpt = _updateRewardPoolParams(stakedAt);
         if (scArptHistory[stakedAt] == 0) {
             // if not registered yet for this time (i.e. block)
-            scArptHistory[stakedAt] = scArpt;
+            scArptHistory[stakedAt] = scArpt != 0 ? scArpt : ZERO_SC_ARPT;
         }
         totalStaked = safe96(uint256(totalStaked) + uint256(stakeAmount));
     }

@@ -11,7 +11,7 @@ For example, run in hardhat console:
 const stakesData = require('./data/staking_3.json');
 const PZkpToken = require('./PZkpToken.json');
 const {classicActionHash, STAKE, UNSTAKE} = require('../../lib/hash');
-const {mineBlock} = require('../../lib/hardhat');
+const {impersonate, unimpersonate, increaseTime, mineBlock} = require('../../lib/hardhat');
 
 module.exports = hre => {
     const {ethers} = hre;
@@ -44,26 +44,17 @@ module.exports = hre => {
     let pzkToken, staking, rewardMaster, rewardTreasury, stakeRwdCtr;
 
     async function init(newTime = defaultNewTime) {
-        await hre.network.provider.request({
-            method: 'hardhat_impersonateAccount',
-            params: [_deployer],
-        });
+        await impersonate(_deployer);
         deployer = await ethers.getSigner(_deployer);
-        await hre.network.provider.request({
-            method: 'hardhat_impersonateAccount',
-            params: [_owner],
-        });
+        await impersonate(_owner);
         owner = await ethers.getSigner(_owner);
-        await network.provider.send('hardhat_setBalance', [
+        await provider.send('hardhat_setBalance', [
             _owner,
             '0x1000000000000000',
         ]);
         minter = await ethers.getSigner(_minter);
-        await hre.network.provider.request({
-            method: 'hardhat_impersonateAccount',
-            params: [_minter],
-        });
-        await network.provider.send('hardhat_setBalance', [
+        await impersonate(_minter);
+        await provider.send('hardhat_setBalance', [
             _minter,
             '0x1000000000000000',
         ]);
@@ -160,21 +151,15 @@ module.exports = hre => {
     async function unstake(account, stakeId) {
         const balance = await provider.getBalance(account);
         if (minBalance.gt(balance)) {
-            await network.provider.send('hardhat_setBalance', [
+            await provider.send('hardhat_setBalance', [
                 account,
                 minBalanceStr,
             ]);
         }
-        await hre.network.provider.request({
-            method: 'hardhat_impersonateAccount',
-            params: [account],
-        });
+        await impersonate(account);
         const signer = await ethers.getSigner(account);
         const tx = await staking.connect(signer).unstake(stakeId, 0x00, false);
-        await hre.network.provider.request({
-            method: 'hardhat_stopImpersonatingAccount',
-            params: [account],
-        });
+        await unimpersonate(account);
         return await tx.wait();
     }
 

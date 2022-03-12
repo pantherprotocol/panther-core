@@ -1,6 +1,5 @@
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
-import {EthereumProvider} from 'hardhat/types';
-import {ethers} from 'hardhat';
+import {ethers, network} from 'hardhat';
 
 const provider = ethers.provider;
 
@@ -24,13 +23,17 @@ export const revertSnapshot = async (id: number) => {
     await provider.send('evm_revert', [id]);
 };
 
-export const impersonate = async (
-    hardhatProvider: EthereumProvider,
-    addr: string,
-): Promise<SignerWithAddress> => {
-    await hardhatProvider.request({
+export const impersonate = async (addr: string): Promise<SignerWithAddress> => {
+    await network.provider.request({
         method: 'hardhat_impersonateAccount',
         params: [addr],
     });
     return await ethers.getSigner(addr);
+};
+
+export const unimpersonate = async (addr: string): Promise<void> => {
+    await network.provider.request({
+        method: 'hardhat_stopImpersonatingAccount',
+        params: [addr],
+    });
 };

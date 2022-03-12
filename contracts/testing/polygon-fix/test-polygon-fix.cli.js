@@ -15,7 +15,7 @@ let {fe, pe, BN, toBN, td} = require('./lib/units-shortcuts');
 hnp = hre.network.provider;
 let {increaseTime, impersonate} = require('./lib/hardhat');
 let {showStake: _showStake, replaceRewardAdviser} = require('./lib/staking');
-imp = _.partial(impersonate, hnp);
+imp = impersonate;
 let {getBalanceFetcher, showBalances} = require('./lib/polygon-fix');
 
 let {deployer} = await e.getNamedSigners(); deployer.address;

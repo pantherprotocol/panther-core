@@ -116,8 +116,13 @@ tx = await controller.saveHistoricalData(historyAmounts.slice(-1), historyTimest
 
 tx = await controller.setActive(); r = await tx.wait();
 
-await getBal(staker.address);
-await getBal(treasury.address);
+stakerBefore = await token.balanceOf(staker.address); fe(stakerBefore);
+treasuryBefore = await token.balanceOf(treasury.address); fe(treasuryBefore);
+rewardMasterBefore = await token.balanceOf(rewardMaster.address); fe(rewardMasterBefore);
 
 await showStake(staker.address, 0);
-tx = await staking.connect(staker).unstake(0, '0x00', false);
+tx = await staking.connect(staker).unstake(0, '0x00', false); r = await tx.wait();
+
+stakerAfter = await token.balanceOf(staker.address); 'staker: ' + fe(stakerAfter.sub(stakerBefore));
+treasuryAfter = await token.balanceOf(treasury.address); 'RewardTreasury: ' + fe(treasuryAfter.sub(treasuryBefore));
+rewardMasterAfter = await token.balanceOf(rewardMaster.address); 'RewardMaster: ' + fe(rewardMasterAfter.sub(rewardMasterBefore));

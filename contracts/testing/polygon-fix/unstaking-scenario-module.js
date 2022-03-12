@@ -2,19 +2,19 @@
 This module is supposed for manual testing of "unstaking" in the hardhat forked Polygon environment.
 For example, run in hardhat console:
 
+  stakesData = require('./testing/polygon-fix/data/staking_3.json').slice(0, 100)
   getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
-  t = getTest(hre)
+  t = getTest(hre, stakesData)
   contracts = await t.init('2022-05-02T18:00Z')
-  txs = await t.batchUnstake(t.stakesData.slice(0, 5))
+  txs = await t.batchUnstake(stakesData.slice(0, 5))
   await t.increaseTime(3600 * 24);
-  txs = await t.batchUnstake(t.stakesData.slice(5, 10))
+  txs = await t.batchUnstake(stakesData.slice(5, 10))
 
 Note that newTime parameter to init() needs to be after the end of historical
 data for saveHistoricalData() to work, but before the reward period ends for
 deployment of StakeRewardController to work.
 */
 
-const stakesData = require('./data/staking_3.json');
 const PZkpToken = require('./PZkpToken.json');
 const {classicActionHash, STAKE, UNSTAKE} = require('../../lib/hash');
 const {
@@ -26,7 +26,7 @@ const {
 const {replaceRewardAdviser} = require('../../lib/staking');
 const {parseDate} = require('../../lib/units-shortcuts');
 
-module.exports = hre => {
+module.exports = (hre, stakesData) => {
     const {ethers} = hre;
 
     console.log(`stakesData.length = ${stakesData.length})`);

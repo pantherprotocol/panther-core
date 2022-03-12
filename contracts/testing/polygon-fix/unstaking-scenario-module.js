@@ -11,6 +11,7 @@ For example, run in hardhat console:
 const stakesData = require('./data/staking_3.json');
 const PZkpToken = require('./PZkpToken.json');
 const {classicActionHash, STAKE, UNSTAKE} = require('../../lib/hash');
+const {mineBlock} = require('../../lib/hardhat');
 
 module.exports = hre => {
     const {ethers} = hre;
@@ -151,7 +152,7 @@ module.exports = hre => {
             await stakeRwdCtr.connect(deployer).isActive(),
         ); // true
 
-        await ethers.provider.send('evm_mine', [newTime]);
+        await mineBlock(newTime);
 
         return getContracts();
     }

@@ -1,4 +1,4 @@
-// cp .env.matic-fork.example
+// cp .env.matic-fork.example .env
 // yarn hardhat node --no-deploy
 // yarn deploy --network localhost --tags StakeRewardController
 

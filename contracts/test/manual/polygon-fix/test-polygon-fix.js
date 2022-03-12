@@ -16,7 +16,7 @@ BN = ethers.BigNumber; null;
 toBN = BN.from;
 hnp = hre.network.provider; null;
 td = toDate = timestamp => new Date(timestamp * 1000);
-th = require('./test/helpers/hardhatHelpers');
+th = require('./lib/hardhat');
 
 let {deployer} = await e.getNamedSigners(); deployer.address;
 

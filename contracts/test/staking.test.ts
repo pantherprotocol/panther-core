@@ -5,7 +5,7 @@ import {BaseContract, BigNumber, utils} from 'ethers';
 import chai from 'chai';
 import {ethers} from 'hardhat';
 import {Staking, TokenMock, RewardMaster} from '../types/contracts';
-import {increaseTime} from './helpers/hardhatHelpers';
+import {increaseTime} from '../lib/hardhat';
 import {hash4bytes, classicActionHash, CLASSIC, STAKE} from '../lib/hash';
 import {fromRpcSig} from 'ethereumjs-util';
 import {TypedDataDomain} from '@ethersproject/abstract-signer';

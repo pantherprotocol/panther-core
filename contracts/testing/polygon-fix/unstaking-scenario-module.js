@@ -4,23 +4,22 @@ For example, run in hardhat console:
 
   getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
   test = getTest(hre)
-  contracts = await test.init(parseInt(new Date('2022-05-03T18:00Z').getTime() / 1000))
-  txs = await test.batchUnstake(test.stakesData)
+  contracts = await test.init('2022-05-03T18:00Z')
+  txs = await test.batchUnstake(test.stakesData).slice(0, 5)
 */
 
 const stakesData = require('./data/staking_3.json');
 const PZkpToken = require('./PZkpToken.json');
 const {classicActionHash, STAKE, UNSTAKE} = require('../../lib/hash');
 const {impersonate, unimpersonate, increaseTime, mineBlock} = require('../../lib/hardhat');
+const {parseDate} = require('../../lib/units-shortcuts');
 
 module.exports = hre => {
     const {ethers} = hre;
 
     console.log(`stakesData.length = ${stakesData.length})`);
 
-    const defaultNewTime = parseInt(
-        new Date('2022-03-24T00:00:05.000Z').getTime() / 1000,
-    );
+    const defaultNewTime = '2022-03-24T00:00:05.000Z';
 
     const actionStake = classicActionHash(STAKE);
     const actionUnstake = classicActionHash(UNSTAKE);
@@ -143,7 +142,7 @@ module.exports = hre => {
             await stakeRwdCtr.connect(deployer).isActive(),
         ); // true
 
-        await mineBlock(newTime);
+        await mineBlock(parseDate(newTime));
 
         return getContracts();
     }

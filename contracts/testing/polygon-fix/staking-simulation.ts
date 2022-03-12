@@ -1,5 +1,5 @@
 import fs from 'fs';
-import stakedHistory from './staking_3.json';
+import stakedHistory from './data/staking_3.json';
 import {utils} from 'ethers';
 
 function getRandomInt(max: number) {
@@ -83,8 +83,8 @@ function main() {
         r.APY = (((r.rewards / r.amountDec) * 100) / r.durationDays) * 365;
     });
 
-    fs.writeFileSync('rewards.json', JSON.stringify(rewards, null, 2));
-    fs.writeFileSync('actions.json', JSON.stringify(actions, null, 2));
+    fs.writeFileSync('data/rewards.json', JSON.stringify(rewards, null, 2));
+    fs.writeFileSync('data/actions.json', JSON.stringify(actions, null, 2));
 
     console.log(
         'totalRewards',

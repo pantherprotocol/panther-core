@@ -7,7 +7,7 @@ For example, run in hardhat console:
 > const txs = await test.batchUnstake(test.stakesData)
 */
 
-const stakesData = require('./staking_3.json');
+const stakesData = require('./data/staking_3.json');
 const PZkpToken = require('./PZkpToken.json');
 
 module.exports = hre => {

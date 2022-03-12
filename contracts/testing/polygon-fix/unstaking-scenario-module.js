@@ -9,6 +9,7 @@ For example, run in hardhat console:
 
 const stakesData = require('./data/staking_3.json');
 const PZkpToken = require('./PZkpToken.json');
+const {classicActionHash, STAKE, UNSTAKE} = require('../../lib/hash');
 
 module.exports = hre => {
     const {ethers} = hre;
@@ -19,8 +20,8 @@ module.exports = hre => {
         new Date('2022-03-24T00:00:05.000Z').getTime() / 1000,
     );
 
-    const actionStake = '0x1e4d02b5';
-    const actionUnstake = '0x493bdf45';
+    const actionStake = classicActionHash(STAKE);
+    const actionUnstake = classicActionHash(UNSTAKE);
     const rewardingStart = 1646697599;
     const oneMatic = ethers.BigNumber.from(`${1e18}`);
 

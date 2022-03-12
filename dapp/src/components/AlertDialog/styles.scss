@@ -1,0 +1,72 @@
+@import '../../variables';
+
+.css-e53awj-MuiStack-root {
+    justify-content: center;
+}
+
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper {
+    background-color: transparent !important;
+}
+.alert-dialog-container {
+    padding: 10px 10px;
+    border-radius: 18px;
+    width: 596.72px;
+    background: $dialog-background-color !important;
+    color: $white;
+
+    .x-icon {
+        display: flex;
+        justify-content: end;
+    }
+
+    .warning-header {
+        display: flex;
+        justify-content: center;
+        text-transform: uppercase;
+        margin-bottom: 45px;
+        .warning-text {
+            font-weight: 800;
+            font-size: 32px;
+            padding-left: 15px;
+        }
+    }
+    p {
+        font-size: 22px;
+        text-align: center;
+        line-height: 27px;
+        &.message {
+            font-weight: 700;
+            color: #ffdfbd;
+            margin: 20px 0px;
+        }
+
+        a {
+            color: $white;
+            text-decoration: underline;
+        }
+    }
+
+    .buttons-holder {
+        margin: 45px 0px 15px 0px;
+    }
+    .button {
+        text-transform: capitalize;
+        text-align: center;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 30px;
+        display: flex;
+        align-items: center;
+        width: 45%;
+        height: 62.71px;
+        border-radius: 12px;
+        box-shadow: none;
+        color: $white;
+    }
+    .cancel-button {
+        border: 1.04px solid $dialog-cancel-button;
+    }
+    .confirm-button {
+        background-color: $dialog-confirm-button !important;
+    }
+}

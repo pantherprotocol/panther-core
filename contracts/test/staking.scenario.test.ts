@@ -8,11 +8,7 @@ import {RewardMaster, RewardPool, Staking} from '../types/contracts';
 import abiZkpToken from './assets/ZKPToken.json';
 import abiVestingPools from './assets/VestingPools.json';
 import {getScenario, Scenario} from './assets/staking.scenario.data';
-import {
-    mineBlock,
-    revertSnapshot,
-    takeSnapshot,
-} from './helpers/hardhatHelpers';
+import {mineBlock, revertSnapshot, takeSnapshot} from '../lib/hardhat';
 
 const expect = chai.expect;
 const toBN = ethers.BigNumber.from;

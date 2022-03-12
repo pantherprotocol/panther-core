@@ -4,11 +4,7 @@ import {expect} from 'chai';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {FakeContract, smock} from '@defi-wonderland/smock';
 import {IErc20Min, MaticRewardPool} from '../types/contracts';
-import {
-    mineBlock,
-    revertSnapshot,
-    takeSnapshot,
-} from './helpers/hardhatHelpers';
+import {mineBlock, revertSnapshot, takeSnapshot} from '../lib/hardhat';
 
 describe('Matic Reward Pool', () => {
     let rewardToken: FakeContract<IErc20Min>;

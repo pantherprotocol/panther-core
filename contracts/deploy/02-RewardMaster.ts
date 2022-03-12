@@ -17,7 +17,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     await deploy('RewardMaster', {
         from: deployer,
-        args: [process.env.STAKING_TOKEN, pool.address, deployer],
+        args: [process.env.TOKEN_ADDRESS, pool.address, deployer],
         log: true,
         autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
     });

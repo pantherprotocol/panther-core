@@ -9,11 +9,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(`Deploying RewardPool on ${hre.network.name}...`);
 
     if (hre.network.name == 'polygon' || hre.network.name == 'mumbai') {
-        console.log(`STAKING_TOKEN=${process.env.STAKING_TOKEN}`);
+        console.log(`TOKEN_ADDRESS=${process.env.TOKEN_ADDRESS}`);
 
         await deploy('MaticRewardPool', {
             from: deployer,
-            args: [process.env.STAKING_TOKEN, deployer],
+            args: [process.env.TOKEN_ADDRESS, deployer],
             log: true,
             autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
         });

@@ -383,7 +383,11 @@ contract StakeRewardController is
         if (reward != 0) {
             // trusted contract - nether reentrancy guard nor safeTransfer required
             require(
-                IErc20Min(REWARD_TOKEN).transfer(staker, reward),
+                IErc20Min(REWARD_TOKEN).transferFrom(
+                    REWARD_TREASURY,
+                    staker,
+                    reward
+                ),
                 "SRC: Internal transfer failed"
             );
             emit RewardPaid(staker, reward);

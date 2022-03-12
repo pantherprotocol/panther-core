@@ -16,7 +16,7 @@ hnp = hre.network.provider;
 let {increaseTime, impersonate} = require('./lib/hardhat');
 let {showStake: _showStake, replaceRewardAdviser} = require('./lib/staking');
 imp = _.partial(impersonate, hnp);
-let {getBalanceFetcher} = require('./lib/polygon-fix');
+let {getBalanceFetcher, showBalances} = require('./lib/polygon-fix');
 
 let {deployer} = await e.getNamedSigners(); deployer.address;
 
@@ -116,4 +116,4 @@ tx = await staking.connect(staker).unstake(0, '0x00', false); r = await tx.wait(
 
 balancesAfter = await getBals(); balancesAfter.map(fe);
 
-deltas = _.zipWith([balancesBefore, balancesAfter], (b, a) => fe(a.sub(b)));
+deltas = _.zipWith(balancesBefore, balancesAfter, (b, a) => a.sub(b)); showBalances(deltas);

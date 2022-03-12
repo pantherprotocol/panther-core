@@ -1,4 +1,6 @@
-import {Contract} from 'ethers';
+import {BigNumber, Contract, utils} from 'ethers';
+
+const fe = utils.formatEther;
 
 async function getBalances(
     token: Contract,
@@ -20,4 +22,12 @@ export function getBalanceFetcher(
     rewardMaster: string,
 ) {
     return async () => getBalances(token, staker, treasury, rewardMaster);
+}
+
+export function showBalances(balances: BigNumber[]): void {
+    console.log(`
+staker:       ${fe(balances[0])}
+treasury:     ${fe(balances[1])}
+rewardMaster: ${fe(balances[2])}
+`);
 }

@@ -8,15 +8,15 @@
 //
 // then copy and paste the below:
 
+_ = require('lodash'); null;
 e = ethers = hre.ethers; null;
 u = ethers.utils; null;
-fe = u.formatEther;
-pe = u.parseEther;
-BN = ethers.BigNumber; null;
-toBN = BN.from;
-hnp = hre.network.provider; null;
-td = toDate = timestamp => new Date(timestamp * 1000);
-th = require('./lib/hardhat');
+let {fe, pe, BN, toBN, td} = require('./lib/units-shortcuts');
+hnp = hre.network.provider;
+let {increaseTime, impersonate} = require('./lib/hardhat');
+let {showStake: _showStake, replaceRewardAdviser} = require('./lib/staking');
+imp = _.partial(impersonate, hnp);
+let {getBalanceFetcher} = require('./lib/polygon-fix');
 
 let {deployer} = await e.getNamedSigners(); deployer.address;
 
@@ -31,19 +31,15 @@ token = await ethers.getContractAt(abi, tokenAddress); null;
 getBal = async addr => u.formatEther(await token.balanceOf(addr));
 
 staking = await ethers.getContractAt('Staking', stakingAddress); null;
+showStake = _.partial(_showStake, staking);
+
 fe(await staking.totalStaked());
-showStake = async function (addr, stakeId) {stake = await staking.stakes(addr, stakeId); return [fe(stake.amount), td(stake.stakedAt), td(stake.claimedAt)];};
 
 rewardMaster = await ethers.getContractAt('RewardMaster', rewardMasterAddress); null;
 treasury = await ethers.getContractAt('RewardTreasury', treasuryAddress); null;
 
-await getBal(treasuryAddress);
-await getBal(rewardMasterAddress);
-
-imp = async function (addr) {
-    await hnp.request({method: 'hardhat_impersonateAccount', params: [addr]});
-    return await ethers.getSigner(addr);
-};
+getBals = getBalanceFetcher(token, stakingAddress, treasuryAddress, rewardMasterAddress);
+await getBals();
 
 minterAddress = await token.minter(); minterAddress;
 
@@ -78,10 +74,7 @@ tx = await deployer.sendTransaction({value: u.parseEther('1000'), to: owner.addr
 
 hash = require('./lib/hash');
 
-tx = await rewardMaster.connect(owner).removeRewardAdviser(staking.address, hash.classicActionHash(hash.STAKE)); r = await tx.wait();
-tx = await rewardMaster.connect(owner).removeRewardAdviser(staking.address, hash.classicActionHash(hash.UNSTAKE)); r = await tx.wait();
-tx = await rewardMaster.connect(owner).addRewardAdviser(staking.address, hash.classicActionHash(hash.STAKE), controller.address); r = await tx.wait();
-tx = await rewardMaster.connect(owner).addRewardAdviser(staking.address, hash.classicActionHash(hash.UNSTAKE), controller.address); r = await tx.wait();
+await replaceRewardAdviser(rewardMaster.connect(owner), staking.address, controller.address);
 
 staker = await imp('0x966d4b4965f3ad106ee1ce3e92f17c7f8505df78'); staker.address;
 await getBal(staker.address);
@@ -90,8 +83,8 @@ await showStake(staker.address, 0);
 // tx = await staking.connect(staker).unstake(0, '0x00', false);
 // Should fail with 'Stake locked'
 
-await th.increaseTime(3600 * 24 * 7);
-// tx = await staking.connect(staker).unstake(0, '0x00', false); r = await tx.wait();
+await increaseTime(3600 * 24 * 7);
+// tx = await staking.connect(staker).unstake(0, '0x00', false);
 // Should fail with 'Staking: REWARD_MASTER reverts'
 
 /////////////////////////////////////////////////////////////////////////
@@ -99,16 +92,16 @@ await th.increaseTime(3600 * 24 * 7);
 owner = await imp(await treasury.OWNER()); owner.address;
 balance = await token.balanceOf(treasuryAddress);
 tx = await treasury.connect(owner).approveSpender(controller.address, balance); r = await tx.wait();
-// tx = await staking.connect(staker).unstake(0, '0x00', false); r = await tx.wait();
+// tx = await staking.connect(staker).unstake(0, '0x00', false);
 // Should still fail with 'Staking: REWARD_MASTER reverts'
 
 /////////////////////////////////////////////////////////////////////////
 // Activate StakeRewardController
-// tx = await controller.setActive(); r = await tx.wait();
+// tx = await controller.setActive();
 // Should fail with 'SRC: yet uninitialized'
 
-historyAmounts = JSON.parse(fs.readFileSync('./tmp/amounts.json')); historyAmounts.length;
-historyTimestamps = JSON.parse(fs.readFileSync('./tmp/timestamps.json')); historyTimestamps.length;
+historyAmounts = JSON.parse(fs.readFileSync('./testing/polygon-fix/amounts.json')); historyAmounts.length;
+historyTimestamps = JSON.parse(fs.readFileSync('./testing/polygon-fix/timestamps.json')); historyTimestamps.length;
 historyAmounts.length === historyTimestamps.length;
 
 tx = await controller.saveHistoricalData(historyAmounts.slice(0, -1), historyTimestamps.slice(0, -1), 0); r = await tx.wait();
@@ -116,13 +109,11 @@ tx = await controller.saveHistoricalData(historyAmounts.slice(-1), historyTimest
 
 tx = await controller.setActive(); r = await tx.wait();
 
-stakerBefore = await token.balanceOf(staker.address); fe(stakerBefore);
-treasuryBefore = await token.balanceOf(treasury.address); fe(treasuryBefore);
-rewardMasterBefore = await token.balanceOf(rewardMaster.address); fe(rewardMasterBefore);
+balancesBefore = await getBals();
 
 await showStake(staker.address, 0);
 tx = await staking.connect(staker).unstake(0, '0x00', false); r = await tx.wait();
 
-stakerAfter = await token.balanceOf(staker.address); 'staker: ' + fe(stakerAfter.sub(stakerBefore));
-treasuryAfter = await token.balanceOf(treasury.address); 'RewardTreasury: ' + fe(treasuryAfter.sub(treasuryBefore));
-rewardMasterAfter = await token.balanceOf(rewardMaster.address); 'RewardMaster: ' + fe(rewardMasterAfter.sub(rewardMasterBefore));
+balancesAfter = await getBals();
+
+deltas = _.zipWith([balancesBefore, balancesAfter], (b, a) => fe(a.sub(b)));

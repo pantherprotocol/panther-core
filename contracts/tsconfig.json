@@ -17,6 +17,7 @@
     "artifacts/**/*",
     "artifacts/**/*.json",
     "deploy/**/*",
+    "lib/**/*",
     "tasks/**/*",
     "test/**/*",
     "typechain/**/*",

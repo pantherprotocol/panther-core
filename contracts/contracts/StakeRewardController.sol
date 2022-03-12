@@ -14,7 +14,7 @@ import "./utils/Utils.sol";
 /**
  * @title StakeRewardController
  * @notice It accounts for and sends staking rewards to stakers
- * @dev It acts as the "RewardAdviser" for the "RewardMaster". The latter calls
+ * @dev It acts as the "RewardAdviser" for the "RewardMaster". The later calls
  * this contract to process messages from the "Staking" contract.
  * On Polygon, it replaces the "StakeRewardAdviser" and, together with the
  * "RewardTreasury", the "MaticRewardPool".
@@ -125,13 +125,21 @@ contract StakeRewardController is
     mapping(uint256 => uint256) public scArptHistory;
 
     /// @dev Emitted when new reward amount counted in `totalRewardAccrued`
-    event RewardAdded(uint256 reward, uint256 newScArpt);
+    event RewardAdded(
+        uint256 reward,
+        uint256 _totalRewardAccrued,
+        uint256 newScArpt
+    );
     /// @dev Emitted when reward paid to a staker
     event RewardPaid(address indexed staker, uint256 reward);
     /// @dev Emitted when stake history gets initialized
-    event HistoryInitialized(uint256 historyEnd, uint256 _totalStaked);
+    event HistoryInitialized(
+        uint256 historyEnd,
+        uint256 _totalStaked,
+        uint256 scArpt
+    );
     /// @dev Emitted on activation of this contract
-    event Activated(uint256 _activeSince, uint256 actualTotalStaked);
+    event Activated(uint256 _activeSince, uint256 _totalStaked, uint256 scArpt);
 
     constructor(
         address _owner,
@@ -167,8 +175,14 @@ contract StakeRewardController is
         REWARDING_END = rewardingEnd;
     }
 
+    /// @notice If historical data has been initialized
     function isInitialized() public view returns (bool) {
         return prefilledHistoryEnd != 0;
+    }
+
+    /// @notice If the contract is active (i.e. processes new stakes)
+    function isActive() public view returns (bool) {
+        return activeSince != 0;
     }
 
     function getRewardAdvice(bytes4 action, bytes memory message)
@@ -177,6 +191,7 @@ contract StakeRewardController is
         returns (Advice memory)
     {
         require(msg.sender == REWARD_MASTER, "SRC: unauthorized");
+        require(isActive(), "SRC: not yet active");
 
         (
             address staker,
@@ -218,21 +233,22 @@ contract StakeRewardController is
 
     /// @notice It returns "Accumulated amount of Rewards Per staked Token" for given time.
     /// If zero value as the time provided, the current network time assumed.
-    function getScArptAt(uint32 timestamp) external view returns (uint256) {
+    function getScArptAt(uint32 timestamp)
+        external
+        view
+        returns (uint256 scArpt)
+    {
         // first, try to use historical data
-        {
-            uint256 historicalScArpt = scArptHistory[timestamp];
-            if (historicalScArpt != 0) return historicalScArpt;
-        }
+        scArpt = _getHistoricalArpt(timestamp);
+        if (scArpt != 0) return scArpt;
 
-        uint256 scArpt;
         {
             // then use the latest updated value, if applicable
             uint32 _lastUpdatedOn = rewardUpdatedOn;
             uint256 _lastScArpt = scAccumRewardPerToken;
             if (timestamp == _lastUpdatedOn) return _lastScArpt;
 
-            // finally use extrapolation, if not data from the past requested
+            // finally use extrapolation, unless data from the past requested
             uint32 _timeNow = safe32TimeNow();
             bool isForNow = timestamp == 0 || timestamp == _timeNow;
             bool isForFuture = timestamp > _timeNow;
@@ -247,6 +263,7 @@ contract StakeRewardController is
             }
         }
         require(scArpt != 0, "SRC: no data for requested time");
+
         return scArpt;
     }
 
@@ -283,11 +300,15 @@ contract StakeRewardController is
 
         if (historyEnd != 0) {
             require(
-                historyEnd >= lastDate && historyEnd <= safe32TimeNow(),
+                historyEnd >= rewardUpdatedOn && historyEnd <= safe32TimeNow(),
                 "SRC: wrong historyEnd"
             );
             prefilledHistoryEnd = historyEnd;
-            emit HistoryInitialized(historyEnd, totalStaked);
+            emit HistoryInitialized(
+                historyEnd,
+                totalStaked,
+                scAccumRewardPerToken
+            );
         }
     }
 
@@ -295,7 +316,9 @@ contract StakeRewardController is
     /// which assumes the contract started receiving data on new stakes
     /// @dev Owner only may calls
     function setActive() external onlyOwner {
-        require(activeSince == 0, "SRC: already activated");
+        require(!isActive(), "SRC: already active");
+        require(isInitialized(), "SRC: yet uninitialized");
+
         uint32 _timeNow = safe32TimeNow();
         activeSince = _timeNow;
 
@@ -303,27 +326,19 @@ contract StakeRewardController is
         uint256 actualTotalStaked = ITotalStaked(STAKING).totalStaked();
         uint256 savedTotalStaked = uint256(totalStaked);
 
-        if (actualTotalStaked == savedTotalStaked) {
-            // stakes have been neither created nor repaid since finalization
-            // of historical data - no corrections needed
-            return;
-        }
-
         if (actualTotalStaked > savedTotalStaked) {
             // new stakes have been created since historical data finalization
             uint256 increase = actualTotalStaked - savedTotalStaked;
             // it roughly adjusts totals by counting an equivalent "stake"
             _countNewStake(safe96(increase), _timeNow);
-        }
-
-        if (savedTotalStaked > actualTotalStaked) {
+        } else if (savedTotalStaked > actualTotalStaked) {
             // some "old" stakes was repaid after historical data finalization.
-            // it shall be prevented as it results in inaccurate rewarding.
-            // next line shall soften (but not exclude) inaccuracies.
+            // it results in inaccurate rewarding and shall be avoided.
+            // the next line can decrease (but not exclude) inaccuracies.
             totalStaked = safe96(actualTotalStaked);
         }
 
-        emit Activated(_timeNow, actualTotalStaked);
+        emit Activated(_timeNow, actualTotalStaked, scAccumRewardPerToken);
     }
 
     /// @notice Withdraws accidentally sent token from this contract
@@ -339,10 +354,10 @@ contract StakeRewardController is
     /// Private and internal functions follow
 
     function _countNewStake(uint96 stakeAmount, uint32 stakedAt) internal {
-        uint256 _scArpt = _updateRewardPoolParams(stakedAt);
+        uint256 scArpt = _updateRewardPoolParams(stakedAt);
         if (scArptHistory[stakedAt] == 0) {
             // if not registered yet for this time (i.e. block)
-            scArptHistory[stakedAt] = _scArpt;
+            scArptHistory[stakedAt] = scArpt;
         }
         totalStaked = safe96(uint256(totalStaked) + uint256(stakeAmount));
     }
@@ -354,6 +369,7 @@ contract StakeRewardController is
         uint32 claimedAt
     ) internal {
         uint256 startScArpt = _getHistoricalArpt(stakedAt);
+        require(startScArpt != 0, "SRC: unknown ARPT for stakedAt");
 
         uint256 endScArpt = _updateRewardPoolParams(claimedAt);
         uint256 reward = _countReward(stakeAmount, startScArpt, endScArpt);
@@ -386,26 +402,29 @@ contract StakeRewardController is
             totalStaked
         );
         scAccumRewardPerToken = newScArpt;
-        totalRewardAccrued = safe96(uint256(totalRewardAccrued) + rewardAdded);
+        uint96 _totalRewardAccrued = safe96(
+            uint256(totalRewardAccrued) + rewardAdded
+        );
+        totalRewardAccrued = _totalRewardAccrued;
         rewardUpdatedOn = actionTime;
 
-        emit RewardAdded(rewardAdded, newScArpt);
+        emit RewardAdded(rewardAdded, _totalRewardAccrued, newScArpt);
     }
 
     function _computeRewardsAddition(
         uint32 fromTime,
         uint32 tillTime,
-        uint256 prevScArpt,
+        uint256 fromScArpt,
         uint256 _totalStaked
     ) internal view returns (uint256 newScArpt, uint256 rewardAdded) {
-        if (tillTime <= REWARDING_START) return (prevScArpt, 0);
+        if (tillTime <= REWARDING_START) return (fromScArpt, 0);
 
         uint256 from = fromTime >= REWARDING_START ? fromTime : REWARDING_START;
         uint256 till = tillTime <= REWARDING_END ? tillTime : REWARDING_END;
         uint256 scRewardAdded = (till - from) * sc_REWARD_PER_SECOND;
 
         rewardAdded = scRewardAdded / SCALE;
-        newScArpt = prevScArpt + scRewardAdded / _totalStaked;
+        newScArpt = fromScArpt + scRewardAdded / _totalStaked;
     }
 
     function _getHistoricalArpt(uint32 stakedAt)
@@ -423,8 +442,6 @@ contract StakeRewardController is
             // approximate
             scArpt = scArptHistory[activeSince];
         }
-
-        require(scArpt > 0, "SRC: unknown Arptsu for stakedAt");
     }
 
     function _countReward(

@@ -31,6 +31,7 @@ const PZkpToken = require('./PZkpToken.json');
 const {
     classicActionHash,
     hash4bytes,
+    CLASSIC,
     STAKE,
     UNSTAKE,
 } = require('../../lib/hash');

@@ -70,6 +70,7 @@ const {
 module.exports = (hre, stakesData) => {
     const {ethers} = hre;
     const {utils} = ethers;
+    const fe = utils.formatEther;
 
     console.log(`stakesData.length = ${stakesData.length})`);
 
@@ -170,7 +171,6 @@ module.exports = (hre, stakesData) => {
             staking.address,
         );
         if (allowance.lt(minRequired)) {
-            const fe = ethers.utils.formatEther;
             const LOTS = ethers.utils.parseEther('2000000');
             console.log(
                 `   Allowance for ${signer.address} ${fe(allowance)} ` +
@@ -248,6 +248,8 @@ module.exports = (hre, stakesData) => {
 
     async function executeSimulation(simulationData) {
         const results = [];
+        // const totalAbsDelta = BigNumber.from('0');
+        const totalDelta = BigNumber.from('0');
         let i = 0;
         for await (const action of simulationData) {
             console.log(
@@ -272,9 +274,16 @@ module.exports = (hre, stakesData) => {
                     : stake(action.address, action.amount);
             const result = await promise;
             results.push(result);
-            if (action.action === 'unstaking') {
+            if (action.action === 'unstaking' && result.reward) {
+                const expectedRewards = utils.parseEther(
+                    String(action.rewards),
+                );
+                const actualRewards = result.reward;
+                const delta = actualRewards.sub(expectedRewards);
+                // totalAbsDelta = totalDelta.add(delta.abs());
+                totalDelta = totalDelta.add(delta);
                 console.log(
-                    `   RewardPaid: ${utils.formatEther(result.reward)}`,
+                    `   RewardPaid: ${fe(result.reward)}  delta: ${fe(delta)}`,
                 );
             }
             simulationData.transactionHash = result.tx.hash;

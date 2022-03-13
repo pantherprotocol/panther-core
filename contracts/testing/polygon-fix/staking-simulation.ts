@@ -68,7 +68,14 @@ async function main() {
             rewards: 0,
         };
     });
-    console.log('Loaded', stakingRecords.length, 'records.');
+    const existingStakers = _.uniq(stakingRecords.map(r => r.address));
+    console.log(
+        'Loaded',
+        stakingRecords.length,
+        'records from',
+        existingStakers.length,
+        'unique stakers',
+    );
 
     await addSimulatedStakes(200, stakingRecords);
 
@@ -183,6 +190,15 @@ async function addSimulatedStakes(
             rewards: 0,
         });
     }
+    const finalStakers = _.uniq(stakingRecords.map(r => r.address));
+    const delta = finalStakers.length - existingStakers.length;
+    console.log(
+        'Added',
+        delta,
+        'new stakers;',
+        finalStakers.length,
+        'in total',
+    );
 }
 
 function doSimulation(actions: StakingAction[]) {

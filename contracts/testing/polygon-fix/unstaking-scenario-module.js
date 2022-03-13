@@ -1,37 +1,55 @@
 /*
 This module is supposed for manual testing of "unstaking" in the hardhat forked Polygon environment.
-For example, run in hardhat console:
+For example, to test batch unstaking, run this in hardhat console:
 
   stakesData = require('./testing/polygon-fix/data/staking_3.json').slice(0, 100)
   getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
   t = getTest(hre, stakesData)
   contracts = await t.init('2022-05-02T18:00Z')
+
   txs = await t.batchUnstake(stakesData.slice(0, 5))
   await t.increaseTime(3600 * 24);
   txs = await t.batchUnstake(stakesData.slice(5, 10))
 
-Note that newTime parameter to init() needs to be after the end of historical
-data for saveHistoricalData() to work, but before the reward period ends for
-deployment of StakeRewardController to work.
+Or for a full simulation:
+
+  simulationData = require('./testing/polygon-fix/data/actions.json')
+  _ = require('lodash')
+  let [historical, toSimulate] = _.partition(simulationData, i => i.type === "real")
+  getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
+  t = getTest(hre, historical)
+  contracts = await t.init()
+  results = await t.executeSimulation(toSimulate)
+
+Note that the newTime parameter to init() (or current time, if not supplied)
+needs to be after the end of historical data for saveHistoricalData() to work,
+but before the reward period ends for deployment of StakeRewardController to
+work.
 */
 
 const PZkpToken = require('./PZkpToken.json');
-const {classicActionHash, STAKE, UNSTAKE} = require('../../lib/hash');
+const {
+    classicActionHash,
+    hash4bytes,
+    STAKE,
+    UNSTAKE,
+} = require('../../lib/hash');
 const {
     impersonate,
     unimpersonate,
     increaseTime,
     mineBlock,
+    ensureMinBalance,
 } = require('../../lib/hardhat');
-const {replaceRewardAdviser} = require('../../lib/staking');
+const {replaceRewardAdviser, saveHistoricalData} = require('../../lib/staking');
 const {parseDate} = require('../../lib/units-shortcuts');
+const {getBlockTimestamp} = require('../../lib/provider');
 
 module.exports = (hre, stakesData) => {
     const {ethers} = hre;
+    const {utils} = ethers;
 
     console.log(`stakesData.length = ${stakesData.length})`);
-
-    const defaultNewTime = '2022-03-24T00:00:05.000Z';
 
     const actionStake = classicActionHash(STAKE);
     const actionUnstake = classicActionHash(UNSTAKE);
@@ -39,7 +57,6 @@ module.exports = (hre, stakesData) => {
     const oneMatic = ethers.BigNumber.from(`${1e18}`);
 
     const minBalanceStr = '0x1000000000000000';
-    const minBalance = ethers.BigNumber.from(minBalanceStr);
 
     const provider = ethers.provider;
 
@@ -54,10 +71,12 @@ module.exports = (hre, stakesData) => {
     let deployer, owner, minter;
     let pzkToken, staking, rewardMaster, rewardTreasury, stakeRwdCtr;
 
-    async function init(newTime = defaultNewTime) {
-        const newTimestamp = parseDate(newTime);
-        console.log(`time-warping to ${newTime} (${newTimestamp})`);
-        await mineBlock(newTimestamp);
+    async function init(newTime) {
+        if (newTime) {
+            const newTimestamp = parseDate(newTime);
+            console.log(`time-warping to ${newTime} (${newTimestamp})`);
+            await mineBlock(newTimestamp);
+        }
 
         deployer = await impersonate(_deployer);
         owner = await impersonate(_owner);
@@ -92,22 +111,20 @@ module.exports = (hre, stakesData) => {
             _staking,
             _rewardTreasury,
             _rewardMaster,
-            _deployer,
+            _deployer, // historyProvider
             rewardingStart,
         );
-        await stakeRwdCtr.connect(deployer).saveHistoricalData(
-            stakesData.map(e => e.amount),
-            stakesData.map(e => e.timestamp),
-            stakesData[stakesData.length - 1].timestamp + 100,
-        );
-        await stakeRwdCtr.isInitialized(); // true
+        console.log('Current block time:', await getBlockTimestamp());
+        await saveHistoricalData(stakeRwdCtr.connect(deployer), stakesData);
         console.log(
             'stakeRwdCtr.totalStaked: ',
-            (await stakeRwdCtr.connect(deployer).totalStaked()).toString(),
+            utils.formatEther(
+                await stakeRwdCtr.connect(deployer).totalStaked(),
+            ),
         );
         console.log(
             'staking.totalStaked:     ',
-            (await staking.totalStaked()).toString(),
+            utils.formatEther(await staking.totalStaked()),
         );
 
         await pzkToken
@@ -148,26 +165,75 @@ module.exports = (hre, stakesData) => {
         return getContracts();
     }
 
-    async function unstake(account, stakeId) {
-        const balance = await provider.getBalance(account);
-        if (minBalance.gt(balance)) {
-            await provider.send('hardhat_setBalance', [account, minBalanceStr]);
+    async function stake(account, amount) {
+        await ensureMinBalance(account, minBalanceStr);
+        const signer = await impersonate(account);
+        const tx = await staking
+            .connect(signer)
+            .stake(amount, hash4bytes(CLASSIC), 0x00);
+        await unimpersonate(account);
+        // console.log(`  submitted as ${tx.hash}`);
+        const receipt = await tx.wait();
+        const event = await getEventFromReceipt(receipt, 'StakeCreated');
+        if (event instanceof Error) {
+            console.error(event);
+            return;
         }
+        const stakeId = event?.args?.stakeID;
+        return {tx, receipt, event, stakeId};
+    }
+
+    async function unstake(account, stakeId) {
+        await ensureMinBalance(account, minBalanceStr);
         const signer = await impersonate(account);
         const tx = await staking.connect(signer).unstake(stakeId, 0x00, false);
         await unimpersonate(account);
-        return await tx.wait();
+        const receipt = await tx.wait();
+        const event = await getEventFromReceipt(receipt, 'RewardPaid');
+        if (event instanceof Error) {
+            console.error(event);
+            return;
+        }
+        if (account !== event?.args?.user) {
+            throw (
+                `Unstaked from ${account} ` +
+                `but got RewardPaid event to ${event.args.staker}`
+            );
+        }
+        const reward = event?.args?.reward;
+        return {tx, receipt, event, reward};
     }
 
     async function batchUnstake(stakes) {
-        let txs = [];
+        const txs = [];
         let i = 0;
-        for (let {address, stakeID} of stakes) {
+        for (const {address, stakeID} of stakes) {
             console.log(`Unstaking #${i++} for ${address}.${stakeID}`);
             const tx = await unstake(address, stakeID);
             txs.push(tx);
         }
         return await Promise.all(txs);
+    }
+
+    async function executeSimulation(simulationData) {
+        const results = [];
+        let i = 0;
+        for await (const action of simulationData) {
+            console.log(
+                `Action #${i++} @${action.timestamp} ${action.date}\n` +
+                    `${action.action} ${utils.formatEther(action.amount)} ` +
+                    `for ${action.address}.${action.stakeID}`,
+            );
+            await mineBlock(action.timestamp);
+            const promise =
+                action.action === 'unstake'
+                    ? unstake(action.address, action.stakeID)
+                    : stake(action.address, action.amount);
+            const result = await promise;
+            results.push(result);
+            simulationData.transactionHash = result.tx.hash;
+        }
+        return results;
     }
 
     function getContracts() {
@@ -207,6 +273,7 @@ module.exports = (hre, stakesData) => {
         init,
         batchUnstake,
         unstake,
+        executeSimulation,
 
         parseDate,
         increaseTime,
@@ -220,7 +287,6 @@ module.exports = (hre, stakesData) => {
             rewardingStart,
             oneMatic,
             minBalanceStr,
-            minBalance,
         },
     };
 };

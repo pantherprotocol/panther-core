@@ -1,4 +1,4 @@
-// FIXME: duplicated with contracts/lib/events.ts
+// FIXME: duplicated with dapp/src/utils/transactions.ts
 
 // Finds first event with a given name from the transaction receipt
 export async function getEventFromReceipt(

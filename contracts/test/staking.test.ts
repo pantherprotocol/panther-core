@@ -7,6 +7,7 @@ import {ethers} from 'hardhat';
 import {Staking, TokenMock, RewardMaster} from '../types/contracts';
 import {increaseTime} from '../lib/hardhat';
 import {hash4bytes, classicActionHash, CLASSIC, STAKE} from '../lib/hash';
+import {getBlockTimestamp} from '../lib/provider';
 import {fromRpcSig} from 'ethereumjs-util';
 import {TypedDataDomain} from '@ethersproject/abstract-signer';
 
@@ -19,10 +20,6 @@ function toBytes32(n: number | string | bigint) {
         ethers.utils.hexlify(ethers.BigNumber.from(n)),
         32,
     );
-}
-
-async function getBlockTimestamp() {
-    return (await ethers.provider.getBlock('latest')).timestamp;
 }
 
 describe('Staking Contract', async () => {

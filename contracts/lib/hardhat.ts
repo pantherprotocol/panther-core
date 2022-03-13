@@ -37,3 +37,14 @@ export const unimpersonate = async (addr: string): Promise<void> => {
         params: [addr],
     });
 };
+
+export const ensureMinBalance = async (
+    account: string,
+    minBalanceStr: string,
+): Promise<void> => {
+    const balance = await provider.getBalance(account);
+    const minBalanceBN = ethers.BigNumber.from(minBalanceStr);
+    if (minBalanceBN.gt(balance)) {
+        await provider.send('hardhat_setBalance', [account, minBalanceStr]);
+    }
+};

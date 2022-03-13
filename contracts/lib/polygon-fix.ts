@@ -1,6 +1,6 @@
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 // import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {BigNumber, Contract, ethers, utils} from 'ethers';
+import {BigNumber, Contract, utils} from 'ethers';
 import * as fs from 'fs';
 
 import {impersonate} from './hardhat';
@@ -23,7 +23,6 @@ const pzkTokenAbi = JSON.parse(
         )
         .toString(),
 ).abi;
-export const pzkToken = new ethers.Contract(TOKEN, pzkTokenAbi);
 
 export async function getSigners() {
     return {
@@ -33,9 +32,13 @@ export async function getSigners() {
     };
 }
 
+export async function getTokenContract(hre: any): Promise<Contract> {
+    return await hre.ethers.getContractAt(pzkTokenAbi, TOKEN);
+}
+
 export async function getContracts(hre: any, deployer: any) {
     return {
-        pzkToken: pzkToken,
+        pzkToken: await getTokenContract(hre),
         staking: await hre.ethers.getContractAt('Staking', STAKING),
         rewardMaster: await hre.ethers.getContractAt(
             'RewardMaster',
@@ -65,44 +68,24 @@ async function deployController(hre: any, deployer: SignerWithAddress) {
     );
 }
 
-const fe = utils.formatEther;
-
-async function getBalances(
-    token: Contract,
-    staker: string,
-    treasury: string,
-    rewardMaster: string,
-) {
-    return Promise.all(
-        [staker, treasury, rewardMaster].map(
-            async (addr: string) => await token.balanceOf(addr),
-        ),
-    );
-}
-
-export function getBalanceFetcher(
-    token: Contract,
-    staker: string,
-    treasury: string,
-    rewardMaster: string,
-) {
-    return async () => getBalances(token, staker, treasury, rewardMaster);
-}
-
-export function showBalances(balances: BigNumber[]): void {
+export async function showBalances(tokenContract: Contract): Promise<void> {
     console.log(`
-staker:       ${fe(balances[0])}
-treasury:     ${fe(balances[1])}
-rewardMaster: ${fe(balances[2])}
+RewardMaster:   ${utils.formatEther(
+        await tokenContract.balanceOf(REWARD_MASTER),
+    )}
+RewardTreasury: ${utils.formatEther(
+        await tokenContract.balanceOf(REWARD_TREASURY),
+    )}
 `);
 }
 
 export async function mintTo(
-    recipient: string,
+    tokenContract: Contract,
     minter: SignerWithAddress,
+    recipient: string,
     amount: BigNumber,
 ): Promise<void> {
-    await pzkToken
+    await tokenContract
         .connect(minter)
-        .deposit(recipient, ethers.utils.hexZeroPad(amount.toHexString(), 32));
+        .deposit(recipient, utils.hexZeroPad(amount.toHexString(), 32));
 }

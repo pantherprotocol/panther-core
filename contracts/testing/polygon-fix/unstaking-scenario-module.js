@@ -8,14 +8,17 @@ For example, to test batch unstaking, run this in hardhat console:
   u = ethers.utils; null;
   let {fe, pe, BN, toBN, td} = require('./lib/units-shortcuts');
 
-  stakesData = require('./testing/polygon-fix/data/staking_3.json').slice(0, 100)
+  stakesData = require('./testing/polygon-fix/data/staking_3.json').slice(0, 100); null
   getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
   t = getTest(hre, stakesData); null
-  contracts = await t.init('2022-05-02T18:00Z'); null
+  let {contracts, signers, showBalances} = await t.init('2022-05-02T18:00Z'); null
 
+  await showBalances()
   resultsBefore = await t.batchUnstake(stakesData.slice(0, 5)); resultsBefore.length
+  await showBalances()
   await t.increaseTime(3600 * 24);
   resultsAfter = await t.batchUnstake(stakesData.slice(5, 10)); resultsAfter.length
+  await showBalances()
 
 Or for a full simulation:
 
@@ -33,6 +36,7 @@ but before the reward period ends for deployment of StakeRewardController to
 work.
 */
 
+const _ = require('lodash');
 const {
     classicActionHash,
     hash4bytes,
@@ -57,7 +61,8 @@ const {
     REWARDING_START,
     getContracts,
     getSigners,
-    mintTo,
+    mintTo: _mintTo,
+    showBalances: _showBalances,
 } = require('../../lib/polygon-fix');
 
 module.exports = (hre, stakesData) => {
@@ -76,6 +81,7 @@ module.exports = (hre, stakesData) => {
 
     let deployer, owner, minter;
     let staking, rewardMaster, rewardTreasury, stakeRwdCtr;
+    let mintTo, showBalances;
 
     async function init(newTime) {
         if (newTime) {
@@ -87,6 +93,9 @@ module.exports = (hre, stakesData) => {
         ({deployer, owner, minter} = await getSigners());
         ({pzkToken, staking, rewardMaster, rewardTreasury, stakeRwdCtr} =
             await getContracts(hre, deployer));
+
+        mintTo = _.partial(_mintTo, pzkToken, minter);
+        showBalances = _.partial(_showBalances, pzkToken);
 
         await provider.send('hardhat_setBalance', [
             OWNER,
@@ -109,8 +118,9 @@ module.exports = (hre, stakesData) => {
             'staking.totalStaked:     ',
             utils.formatEther(await staking.totalStaked()),
         );
+        await showBalances();
 
-        await mintTo(rewardTreasury.address, minter, oneMatic.mul(2e6));
+        await mintTo(rewardTreasury.address, oneMatic.mul(2e6));
 
         await replaceRewardAdviser(
             rewardMaster.connect(owner),
@@ -140,7 +150,12 @@ module.exports = (hre, stakesData) => {
             await stakeRwdCtr.connect(deployer).isActive(),
         ); // true
 
-        return getContracts(hre, deployer);
+        return {
+            contracts: getContracts(hre, deployer),
+            signers: {deployer, owner, minter},
+            mintTo,
+            showBalances,
+        };
     }
 
     async function stake(account, amount) {

@@ -22,12 +22,12 @@ For example, to test batch unstaking, run this in hardhat console:
 
 Or for a full simulation:
 
-  simulationData = require('./testing/polygon-fix/data/actions.json')
-  _ = require('lodash')
-  let [historical, toSimulate] = _.partition(simulationData, i => i.type === "real")
+  simulationData = require('./testing/polygon-fix/data/actions.json'); simulationData.length
+  _ = require('lodash'); null
+  let [historical, toSimulate] = _.partition(simulationData, i => i.type === "real"); [historical.length, toSimulate.length]
   getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
   t = getTest(hre, historical); null
-  contracts = await t.init(); null
+  let {contracts, signers, showBalances} = await t.init(); null
   results = await t.executeSimulation(toSimulate); results.length
 
 Note that the newTime parameter to init() (or current time, if not supplied)
@@ -63,6 +63,8 @@ const {
     getSigners,
     mintTo: _mintTo,
     showBalances: _showBalances,
+    showStates: _showStates,
+    ensureMinTokenBalance,
 } = require('../../lib/polygon-fix');
 
 module.exports = (hre, stakesData) => {
@@ -80,8 +82,8 @@ module.exports = (hre, stakesData) => {
     const provider = ethers.provider;
 
     let deployer, owner, minter;
-    let staking, rewardMaster, rewardTreasury, stakeRwdCtr;
-    let mintTo, showBalances;
+    let pzkToken, staking, rewardMaster, rewardTreasury, stakeRwdCtr;
+    let mintTo, showBalances, showStates;
 
     async function init(newTime) {
         if (newTime) {
@@ -96,6 +98,7 @@ module.exports = (hre, stakesData) => {
 
         mintTo = _.partial(_mintTo, pzkToken, minter);
         showBalances = _.partial(_showBalances, pzkToken);
+        showStates = _.partial(_showStates, pzkToken, staking, stakeRwdCtr);
 
         await provider.send('hardhat_setBalance', [
             OWNER,
@@ -143,7 +146,10 @@ module.exports = (hre, stakesData) => {
 
         await rewardTreasury
             .connect(owner)
-            .approveSpender(stakeRwdCtr.address, '2000000000000000000000000');
+            .approveSpender(
+                stakeRwdCtr.address,
+                ethers.utils.parseEther('2000000'),
+            );
         await stakeRwdCtr.connect(owner).setActive();
         console.log(
             'stakeRwdCtr.isActive: ',
@@ -151,16 +157,36 @@ module.exports = (hre, stakesData) => {
         ); // true
 
         return {
-            contracts: getContracts(hre, deployer),
+            contracts: await getContracts(hre, deployer),
             signers: {deployer, owner, minter},
             mintTo,
             showBalances,
         };
     }
 
+    async function ensureApproval(signer, minRequired) {
+        const allowance = await pzkToken.allowance(
+            signer.address,
+            staking.address,
+        );
+        if (allowance.lt(minRequired)) {
+            const fe = ethers.utils.formatEther;
+            const LOTS = ethers.utils.parseEther('2000000');
+            console.log(
+                `   Allowance for ${signer.address} ${fe(allowance)} ` +
+                    `below min ${fe(minRequired)}; approving ${fe(LOTS)}`,
+            );
+            const tx = await pzkToken
+                .connect(signer)
+                .approve(staking.address, LOTS);
+            await tx.wait();
+        }
+    }
+
     async function stake(account, amount) {
         await ensureMinBalance(account, MIN_BALANCE);
         const signer = await impersonate(account);
+        await ensureApproval(signer, amount);
         const tx = await staking
             .connect(signer)
             .stake(amount, hash4bytes(CLASSIC), 0x00);
@@ -201,10 +227,8 @@ module.exports = (hre, stakesData) => {
                 );
             }
         } else {
-            console.error(
-                receipt,
-                "Didn't get RewardPaid event from unstake()",
-            );
+            console.error(receipt);
+            throw "Didn't get RewardPaid event from unstake()";
         }
         const reward = event?.args?.reward;
         return {tx, receipt, event, reward};
@@ -217,11 +241,7 @@ module.exports = (hre, stakesData) => {
             console.log(`Unstaking #${i++} for ${address}.${stakeID}`);
             const result = await unstake(address, stakeID);
             results.push(result);
-            if (result.reward) {
-                console.log(
-                    `  RewardPaid: ${utils.formatEther(result.reward)}`,
-                );
-            }
+            console.log(`  RewardPaid: ${utils.formatEther(result.reward)}`);
         }
         return await Promise.all(results);
     }
@@ -235,14 +255,32 @@ module.exports = (hre, stakesData) => {
                     `${action.action} ${utils.formatEther(action.amount)} ` +
                     `for ${action.address}.${action.stakeID}`,
             );
+            await ensureMinTokenBalance(
+                pzkToken,
+                minter,
+                action.address,
+                action.amount,
+            );
+            // console.log('action: ', action);
+            if (i % 5 == 0) {
+                await showStates();
+            }
             await mineBlock(action.timestamp);
             const promise =
-                action.action === 'unstake'
+                action.action === 'unstaking'
                     ? unstake(action.address, action.stakeID)
                     : stake(action.address, action.amount);
             const result = await promise;
             results.push(result);
+            if (action.action === 'unstaking') {
+                console.log(
+                    `   RewardPaid: ${utils.formatEther(result.reward)}`,
+                );
+            }
             simulationData.transactionHash = result.tx.hash;
+            console.log(
+                '-------------------------------------------------------',
+            );
         }
         return results;
     }

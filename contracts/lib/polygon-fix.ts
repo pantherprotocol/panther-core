@@ -3,6 +3,9 @@ import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {BigNumber, Contract, utils} from 'ethers';
 import * as fs from 'fs';
 
+// import {Staking} from '../types/contracts/Staking';
+// import {StakeRewardController} from '../types/contracts/StakeRewardController';
+
 import {impersonate} from './hardhat';
 
 export const REWARDING_START = 1646697599;
@@ -68,15 +71,21 @@ async function deployController(hre: any, deployer: SignerWithAddress) {
     );
 }
 
+const fe = utils.formatEther;
+
 export async function showBalances(tokenContract: Contract): Promise<void> {
     console.log(`
-RewardMaster:   ${utils.formatEther(
-        await tokenContract.balanceOf(REWARD_MASTER),
-    )}
-RewardTreasury: ${utils.formatEther(
-        await tokenContract.balanceOf(REWARD_TREASURY),
-    )}
+RewardMaster:   ${fe(await tokenContract.balanceOf(REWARD_MASTER))}
+RewardTreasury: ${fe(await tokenContract.balanceOf(REWARD_TREASURY))}
 `);
+}
+
+export async function showStates(
+    tokenContract: Contract,
+    // staking: Staking,
+    // controller: StakeRewardController,
+): Promise<void> {
+    await showBalances(tokenContract);
 }
 
 export async function mintTo(
@@ -89,3 +98,23 @@ export async function mintTo(
         .connect(minter)
         .deposit(recipient, utils.hexZeroPad(amount.toHexString(), 32));
 }
+
+export const ensureMinTokenBalance = async (
+    tokenContract: Contract,
+    minter: SignerWithAddress,
+    account: string,
+    minBalanceStr: string,
+): Promise<void> => {
+    const balance = await tokenContract.balanceOf(account);
+    const minBalanceBN = BigNumber.from(minBalanceStr);
+    const airdrop = utils.parseEther('2000000');
+    if (minBalanceBN.gt(balance)) {
+        console.log(
+            `   Balance for ${account} ${fe(balance)} ` +
+                `below ${fe(minBalanceStr)}; topping up with ${fe(airdrop)}`,
+        );
+        await mintTo(tokenContract, minter, account, airdrop);
+    } else {
+        console.log(`  Balance for ${account} ${fe(balance)} sufficient`);
+    }
+};

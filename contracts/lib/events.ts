@@ -1,26 +1,27 @@
-// FIXME: duplicated with dapp/src/utils/transactions.ts
+// FIXME: slightly duplicated with dapp/src/utils/transactions.ts
+
+import {Contract} from 'ethers';
 
 // Finds first event with a given name from the transaction receipt
 export async function getEventFromReceipt(
     receipt: any,
+    contract: Contract,
     eventName: string,
 ): Promise<any> {
     if (!receipt) {
         return new Error('Failed to get transaction receipt.');
     }
 
-    if (!receipt.events) {
-        return new Error('Failed to get transaction events.');
+    if (!receipt.logs) {
+        return new Error('Failed to get transaction logs.');
     }
 
-    const event = receipt.events.find(
-        ({event}: {event: string}) => event === eventName,
-    );
-    if (!event) {
-        return new Error(`No ${eventName} event found for this transaction.`);
+    for (const log of receipt.logs) {
+        try {
+            const parsed = contract.interface.parseLog(log);
+            if (parsed.name == eventName) {
+                return parsed;
+            }
+        } catch {}
     }
-
-    console.debug(`${eventName} event: ${JSON.stringify(event)}`);
-
-    return event;
 }

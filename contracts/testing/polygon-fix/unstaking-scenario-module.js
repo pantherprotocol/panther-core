@@ -146,10 +146,16 @@ module.exports = (hre, stakesData) => {
         await unimpersonate(account);
         // console.log(`  submitted as ${tx.hash}`);
         const receipt = await tx.wait();
-        const event = await getEventFromReceipt(receipt, 'StakeCreated');
-        if (event instanceof Error) {
-            console.error(event);
-            return {};
+        const event = await getEventFromReceipt(
+            receipt,
+            staking,
+            'StakeCreated',
+        );
+        if (!event) {
+            console.error(
+                receipt,
+                "Didn't get StakeCreated event from stake()",
+            );
         }
         const stakeId = event?.args?.stakeID;
         return {tx, receipt, event, stakeId};
@@ -161,15 +167,22 @@ module.exports = (hre, stakesData) => {
         const tx = await staking.connect(signer).unstake(stakeId, 0x00, false);
         await unimpersonate(account);
         const receipt = await tx.wait();
-        const event = await getEventFromReceipt(receipt, 'RewardPaid');
-        if (event instanceof Error) {
-            console.error(event);
-            return {};
-        }
-        if (account !== event?.args?.user) {
-            throw (
-                `Unstaked from ${account} ` +
-                `but got RewardPaid event to ${event.args.staker}`
+        const event = await getEventFromReceipt(
+            receipt,
+            stakeRwdCtr,
+            'RewardPaid',
+        );
+        if (event) {
+            if (event.args && account !== event.args.staker) {
+                throw (
+                    `Unstaked from ${account} ` +
+                    `but got RewardPaid event to ${event.args.staker}`
+                );
+            }
+        } else {
+            console.error(
+                receipt,
+                "Didn't get RewardPaid event from unstake()",
             );
         }
         const reward = event?.args?.reward;
@@ -177,14 +190,19 @@ module.exports = (hre, stakesData) => {
     }
 
     async function batchUnstake(stakes) {
-        const txs = [];
+        const results = [];
         let i = 0;
         for (const {address, stakeID} of stakes) {
             console.log(`Unstaking #${i++} for ${address}.${stakeID}`);
-            const tx = await unstake(address, stakeID);
-            txs.push(tx);
+            const result = await unstake(address, stakeID);
+            results.push(result);
+            if (result.reward) {
+                console.log(
+                    `  RewardPaid: ${utils.formatEther(result.reward)}`,
+                );
+            }
         }
-        return await Promise.all(txs);
+        return await Promise.all(results);
     }
 
     async function executeSimulation(simulationData) {

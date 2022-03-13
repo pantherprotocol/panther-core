@@ -202,7 +202,28 @@ async function addSimulatedStakes(
 }
 
 function doSimulation(actions: StakingAction[]) {
-    console.log('Simulating ...');
+    const [historical, toSimulate] = _.partition(
+        actions,
+        a => a.type === 'real',
+    );
+    const [staking, unstaking] = _.partition(
+        actions,
+        a => a.action === 'staking',
+    );
+
+    console.log(
+        'Simulating',
+        actions.length,
+        'actions:',
+        staking.length,
+        'staking /',
+        unstaking.length,
+        'unstaking /',
+        historical.length,
+        'historical /',
+        toSimulate.length,
+        'synthetic',
+    );
 
     let currentlyStaked: any[] = [];
     const startTimestamp = Math.floor(

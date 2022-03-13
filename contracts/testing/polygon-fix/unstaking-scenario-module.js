@@ -26,9 +26,9 @@ Or for a full simulation:
   _ = require('lodash')
   let [historical, toSimulate] = _.partition(simulationData, i => i.type === "real")
   getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
-  t = getTest(hre, historical)
-  contracts = await t.init()
-  results = await t.executeSimulation(toSimulate)
+  t = getTest(hre, historical); null
+  contracts = await t.init(); null
+  results = await t.executeSimulation(toSimulate); results.length
 
 Note that the newTime parameter to init() (or current time, if not supplied)
 needs to be after the end of historical data for saveHistoricalData() to work,

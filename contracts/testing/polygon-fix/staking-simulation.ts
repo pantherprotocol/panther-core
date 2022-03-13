@@ -1,4 +1,5 @@
 import fs from 'fs';
+import _ from 'lodash';
 import {Wallet, utils} from 'ethers';
 import {assert} from 'console';
 
@@ -107,6 +108,15 @@ async function main() {
     );
 }
 
+function getStakerAddress(existingStakers: string[], count: number): string {
+    const totalStakers = existingStakers.length + count;
+    const stakerIndex = getRandomInt(totalStakers);
+    if (stakerIndex < existingStakers.length) {
+        return existingStakers[stakerIndex];
+    }
+    return Wallet.createRandom().address;
+}
+
 async function addSimulatedStakes(
     count: number,
     stakingRecords: StakingAction[],
@@ -130,6 +140,8 @@ async function addSimulatedStakes(
         .map(stakeRecord => stakeRecord.unstakedAt)
         .reduce((a, b) => Math.max(a, b), 0);
 
+    const existingStakers = _.uniq(stakingRecords.map(r => r.address));
+
     console.log('Adding', count, 'simulated stakes ...');
     const lockedPeriod = 7 * 24 * 3600;
     for (let i = 0; i < count; i++) {
@@ -152,10 +164,11 @@ async function addSimulatedStakes(
         assert(unstakedAt < maxUnstakingTimeForSimulatedStake);
 
         const stakedAmountDec = getRandomInt(10_000) + 100;
-        const wallet = Wallet.createRandom();
+        const address = getStakerAddress(existingStakers, count);
+
         stakingRecords.push({
             action: 'staking',
-            address: wallet.address,
+            address,
             uuid: uuid(),
             timestamp: stakedAt,
             date: new Date(stakedAt * 1000),

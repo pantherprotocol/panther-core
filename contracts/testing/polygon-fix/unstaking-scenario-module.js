@@ -2,6 +2,12 @@
 This module is supposed for manual testing of "unstaking" in the hardhat forked Polygon environment.
 For example, to test batch unstaking, run this in hardhat console:
 
+  // Useful shortcuts for quick typing (optional)
+  _ = require('lodash'); null;
+  e = ethers = hre.ethers; null;
+  u = ethers.utils; null;
+  let {fe, pe, BN, toBN, td} = require('./lib/units-shortcuts');
+
   stakesData = require('./testing/polygon-fix/data/staking_3.json').slice(0, 100)
   getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
   t = getTest(hre, stakesData)

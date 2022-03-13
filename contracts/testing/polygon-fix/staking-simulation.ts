@@ -85,6 +85,7 @@ async function main() {
             action: 'unstaking',
             type: 'simulated',
             timestamp: Number(rec.unstakedAt),
+            date: new Date(rec.unstakedAt * 1000),
         };
     });
 

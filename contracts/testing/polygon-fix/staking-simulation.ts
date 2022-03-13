@@ -97,15 +97,14 @@ async function main() {
     fs.writeFileSync(outFile, JSON.stringify(actions, null, 2));
     console.log(`Wrote to ${outFile}`);
 
-    console.log(
-        'totalRewards',
-        actions.map((s: any) => s.rewards).reduce((a, b) => a + b, 0),
-    );
+    const totalRewards = _.sumBy(actions, i => i.rewards);
+    console.log('totalRewards', totalRewards);
 
-    console.log(
-        'Contract generated rewards: ',
-        (endTimestamp - startTimestamp) * REWARD_TOKENS_PER_SECOND,
-    );
+    const contractRewards =
+        (endTimestamp - startTimestamp) * REWARD_TOKENS_PER_SECOND;
+    console.log('Contract generated rewards: ', contractRewards);
+
+    console.log('Delta:', contractRewards - totalRewards);
 }
 
 function getStakerAddress(existingStakers: string[], count: number): string {

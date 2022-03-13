@@ -59,16 +59,13 @@ module.exports = (hre, stakesData) => {
         console.log(`time-warping to ${newTime} (${newTimestamp})`);
         await mineBlock(newTimestamp);
 
-        await impersonate(_deployer);
-        deployer = await ethers.getSigner(_deployer);
-        await impersonate(_owner);
-        owner = await ethers.getSigner(_owner);
+        deployer = await impersonate(_deployer);
+        owner = await impersonate(_owner);
         await provider.send('hardhat_setBalance', [
             _owner,
             '0x1000000000000000',
         ]);
-        minter = await ethers.getSigner(_minter);
-        await impersonate(_minter);
+        minter = await impersonate(_minter);
         await provider.send('hardhat_setBalance', [
             _minter,
             '0x1000000000000000',
@@ -156,8 +153,7 @@ module.exports = (hre, stakesData) => {
         if (minBalance.gt(balance)) {
             await provider.send('hardhat_setBalance', [account, minBalanceStr]);
         }
-        await impersonate(account);
-        const signer = await ethers.getSigner(account);
+        const signer = await impersonate(account);
         const tx = await staking.connect(signer).unstake(stakeId, 0x00, false);
         await unimpersonate(account);
         return await tx.wait();

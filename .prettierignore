@@ -6,7 +6,7 @@ contracts/coverage.json
 contracts/deployments/
 contracts/staging/
 contracts/tenderly.yaml
-contracts/testing/**/*.js
+contracts/testing/**/*.cli.js
 contracts/typechain/
 contracts/types/
 contracts/typing/

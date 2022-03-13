@@ -289,7 +289,7 @@ module.exports = (hre, stakesData) => {
         for await (const action of actions) {
             divider();
             console.log(
-                `Action #${i++} @${action.timestamp} ${action.date}\n` +
+                `Action #${i++} @ ${action.timestamp} ${action.date}\n` +
                     `${action.action} ${utils.formatEther(action.amount)} ` +
                     `for ${action.address}` +
                     (action.stakeID ? '.' + action.stakeID : ''),

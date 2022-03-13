@@ -72,12 +72,12 @@ module.exports = (hre, stakesData) => {
         ]);
 
         pzkToken = new ethers.Contract(_token, PZkpToken.abi);
-        const staking = await ethers.getContractAt('Staking', _staking);
-        const rewardMaster = await ethers.getContractAt(
+        staking = await ethers.getContractAt('Staking', _staking);
+        rewardMaster = await ethers.getContractAt(
             'RewardMaster',
             _rewardMaster,
         );
-        const rewardTreasury = await ethers.getContractAt(
+        rewardTreasury = await ethers.getContractAt(
             'RewardTreasury',
             _rewardTreasury,
         );

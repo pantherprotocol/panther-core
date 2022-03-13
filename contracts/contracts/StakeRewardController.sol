@@ -432,7 +432,8 @@ contract StakeRewardController is
         uint256 fromScArpt,
         uint256 _totalStaked
     ) internal view returns (uint256 newScArpt, uint256 rewardAdded) {
-        if (tillTime <= REWARDING_START) return (fromScArpt, 0);
+        if (fromTime >= REWARDING_END || tillTime <= REWARDING_START)
+            return (fromScArpt, 0);
 
         uint256 from = fromTime >= REWARDING_START ? fromTime : REWARDING_START;
         uint256 till = tillTime <= REWARDING_END ? tillTime : REWARDING_END;

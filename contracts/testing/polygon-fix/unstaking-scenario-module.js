@@ -69,14 +69,14 @@ const {
 
 module.exports = (hre, stakesData) => {
     const {ethers} = hre;
-    const {utils} = ethers;
+    const {constants, utils} = ethers;
     const fe = utils.formatEther;
 
     console.log(`stakesData.length = ${stakesData.length})`);
 
     const ACTION_STAKE = classicActionHash(STAKE);
     const ACTION_UNSTAKE = classicActionHash(UNSTAKE);
-    const oneMatic = ethers.BigNumber.from(`${1e18}`);
+    const oneMatic = utils.parseEther('1');
 
     const MIN_BALANCE = '0x1000000000000000';
 
@@ -248,8 +248,8 @@ module.exports = (hre, stakesData) => {
 
     async function executeSimulation(simulationData) {
         const results = [];
-        // const totalAbsDelta = BigNumber.from('0');
-        const totalDelta = BigNumber.from('0');
+        const totalAbsDelta = constants.Zero;
+        const netDelta = constants.Zero;
         let i = 0;
         for await (const action of simulationData) {
             console.log(
@@ -266,6 +266,10 @@ module.exports = (hre, stakesData) => {
             // console.log('action: ', action);
             if (i % 5 == 0) {
                 await showStates();
+                console.log(
+                    `   Total delta: ${fe(totalAbsDelta)} (absolute) / ` +
+                        `${fe(netDelta)} (net)`,
+                );
             }
             await mineBlock(action.timestamp);
             const promise =
@@ -280,8 +284,8 @@ module.exports = (hre, stakesData) => {
                 );
                 const actualRewards = result.reward;
                 const delta = actualRewards.sub(expectedRewards);
-                // totalAbsDelta = totalDelta.add(delta.abs());
-                totalDelta = totalDelta.add(delta);
+                totalAbsDelta = totalAbsDelta.add(delta.abs());
+                netDelta = netDelta.add(delta);
                 console.log(
                     `   RewardPaid: ${fe(result.reward)}  delta: ${fe(delta)}`,
                 );

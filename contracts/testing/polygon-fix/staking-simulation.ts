@@ -1,7 +1,11 @@
 import fs from 'fs';
-import stakedHistory from './data/staking_3.json';
 import {Wallet, utils} from 'ethers';
 import {assert} from 'console';
+
+import {toDate} from '../../lib/units-shortcuts';
+import {getBlockTimestamp} from '../../lib/provider';
+
+import stakedHistory from './data/staking_3.json';
 
 const REWARD_TOKENS_PER_SECOND = 2000000 / 56 / 60 / 60 / 24;
 
@@ -39,7 +43,7 @@ interface StakingAction {
     APY?: number;
 }
 
-function main() {
+async function main() {
     console.log('Loading history ...');
     const stakingRecords: StakingAction[] = stakedHistory.map((rec: any) => {
         const unstakedAt =
@@ -65,7 +69,7 @@ function main() {
     });
     console.log('Loaded', stakingRecords.length, 'records.');
 
-    addSimulatedStakes(200, stakingRecords);
+    await addSimulatedStakes(200, stakingRecords);
 
     const unstakingRecords = stakingRecords.map((rec: any) => {
         return {
@@ -103,10 +107,24 @@ function main() {
     );
 }
 
-function addSimulatedStakes(count: number, stakingRecords: StakingAction[]) {
-    const minStakeTimeForSimulatedStake = stakingRecords
-        .map(stakeRecord => stakeRecord.stakedAt)
-        .reduce((a, b) => Math.max(a, b), 0);
+async function addSimulatedStakes(
+    count: number,
+    stakingRecords: StakingAction[],
+) {
+    const forkTime = await getBlockTimestamp(
+        Number(process.env.HARDHAT_FORKING_BLOCK),
+    );
+    console.log('Fork occurred at', forkTime, `(${toDate(forkTime)})`);
+
+    const minStakeTimeForSimulatedStake = Math.max(
+        forkTime,
+        ...stakingRecords.map(stakeRecord => stakeRecord.stakedAt),
+    );
+    console.log(
+        'Earliest time for new simulated stakes:',
+        minStakeTimeForSimulatedStake,
+        `(${toDate(minStakeTimeForSimulatedStake)})`,
+    );
 
     const maxUnstakingTimeForSimulatedStake = stakingRecords
         .map(stakeRecord => stakeRecord.unstakedAt)

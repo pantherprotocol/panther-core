@@ -3,6 +3,8 @@ import stakedHistory from './data/staking_3.json';
 import {utils} from 'ethers';
 import {assert} from 'console';
 
+const REWARD_TOKENS_PER_SECOND = 2000000 / 56 / 60 / 60 / 24;
+
 function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
 }
@@ -18,9 +20,27 @@ function uuid() {
     );
 }
 
+interface StakingAction {
+    uuid: string;
+    amount: string;
+    timestamp: number;
+    date: Date;
+    action: string;
+    type: string;
+    stakedAt: number;
+    lockedTill: number;
+    unstakedAt: number;
+    amountDec: number;
+    durationDays: number;
+    stakedDate: Date;
+    unstakedDate: Date;
+    rewards: number;
+    APY?: number;
+}
+
 function main() {
     console.log('Loading history ...');
-    const stakingRecords = stakedHistory.map((rec: any) => {
+    const stakingRecords: StakingAction[] = stakedHistory.map((rec: any) => {
         const unstakedAt =
             Number(rec.lockedTill) + getRandomInt(30 * 24 * 3600);
 
@@ -43,7 +63,45 @@ function main() {
         };
     });
 
-    // Adding Simulated stakes:
+    addSimulatedStakes(15, stakingRecords);
+
+    const unstakingRecords = stakingRecords.map((rec: any) => {
+        return {
+            ...rec,
+            action: 'unstaking',
+            type: 'simulated',
+            timestamp: Number(rec.unstakedAt),
+        };
+    });
+
+    console.log('Combining records ...');
+    let actions = [...stakingRecords, ...unstakingRecords];
+    console.log('Sorting records ...');
+    actions = actions.sort((a, b) => a.timestamp - b.timestamp);
+
+    const {startTimestamp, endTimestamp} = doSimulation(actions);
+
+    console.log('Calculating APY ...');
+    actions.map((r: any) => {
+        r.APY = (((r.rewards / r.amountDec) * 100) / r.durationDays) * 365;
+    });
+
+    const outFile = __dirname + '/data/actions.json';
+    fs.writeFileSync(outFile, JSON.stringify(actions, null, 2));
+    console.log(`Wrote to ${outFile}`);
+
+    console.log(
+        'totalRewards',
+        actions.map((s: any) => s.rewards).reduce((a, b) => a + b, 0),
+    );
+
+    console.log(
+        'Contract generated rewards: ',
+        (endTimestamp - startTimestamp) * REWARD_TOKENS_PER_SECOND,
+    );
+}
+
+function addSimulatedStakes(count: number, stakingRecords: StakingAction[]) {
     const minStakeTimeForSimulatedStake = stakingRecords
         .map(stakeRecord => stakeRecord.stakedAt)
         .reduce((a, b) => Math.max(a, b), 0);
@@ -52,10 +110,9 @@ function main() {
         .map(stakeRecord => stakeRecord.unstakedAt)
         .reduce((a, b) => Math.max(a, b), 0);
 
-    const simulatedStakeNum = 15;
-    console.log(`Adding ${simulatedStakeNum} simulated stakes ...`);
+    console.log(`Adding ${count} simulated stakes ...`);
     const lockedPeriod = 7 * 24 * 3600;
-    for (let i = 0; i < simulatedStakeNum; i++) {
+    for (let i = 0; i < count; i++) {
         const stakedAt =
             minStakeTimeForSimulatedStake +
             getRandomInt(
@@ -92,32 +149,20 @@ function main() {
             rewards: 0,
         });
     }
+}
 
-    const unstakingRecords = stakingRecords.map((rec: any) => {
-        return {
-            ...rec,
-            action: 'unstaking',
-            type: 'simulated',
-            timestamp: Number(rec.unstakedAt),
-        };
-    });
+function doSimulation(actions: StakingAction[]) {
+    console.log('Simulating ...');
 
-    console.log('Combining records ...');
-    let actions = [...stakingRecords, ...unstakingRecords];
-    console.log('Sorting records ...');
-    actions = actions.sort((a, b) => a.timestamp - b.timestamp);
-
-    const tokenPerSecond = 2000000 / 56 / 60 / 60 / 24;
     let currentlyStaked: any[] = [];
-    const startedTimestamp = Math.floor(
+    const startTimestamp = Math.floor(
         +new Date('Mon 7 Mar 23:59:59 UTC 2022') / 1000,
     );
-    let prevTimeStamp = startedTimestamp;
+    let prevTimeStamp = startTimestamp;
 
-    console.log('Simulating ...');
     actions.forEach((action: any) => {
         const totalAccumulatedRewards =
-            (action.timestamp - prevTimeStamp) * tokenPerSecond;
+            (action.timestamp - prevTimeStamp) * REWARD_TOKENS_PER_SECOND;
 
         if (action.action === 'staking') {
             currentlyStaked.push(action);
@@ -133,7 +178,9 @@ function main() {
             const current = actions.find((s: any) => {
                 return s.uuid === staked.uuid && s.action === 'unstaking';
             });
-
+            if (!current) {
+                throw `Couldn't find unstaking action with uuid ${staked.uuid}`;
+            }
             current.rewards +=
                 (totalAccumulatedRewards * current.amountDec) / totalStaked;
         });
@@ -147,24 +194,7 @@ function main() {
         prevTimeStamp = action.timestamp;
     });
 
-    console.log('Calculating APY ...');
-    actions.map((r: any) => {
-        r.APY = (((r.rewards / r.amountDec) * 100) / r.durationDays) * 365;
-    });
-
-    const outFile = __dirname + '/data/actions.json';
-    fs.writeFileSync(outFile, JSON.stringify(actions, null, 2));
-    console.log(`Wrote to ${outFile}`);
-
-    console.log(
-        'totalRewards',
-        actions.map((s: any) => s.rewards).reduce((a, b) => a + b, 0),
-    );
-
-    console.log(
-        'Contract generated rewards: ',
-        (prevTimeStamp - startedTimestamp) * tokenPerSecond,
-    );
+    return {startTimestamp, endTimestamp: prevTimeStamp};
 }
 
 main();

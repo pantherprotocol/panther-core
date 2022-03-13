@@ -3,9 +3,14 @@ This module is supposed for manual testing of "unstaking" in the hardhat forked 
 For example, run in hardhat console:
 
   getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
-  test = getTest(hre)
-  contracts = await test.init('2022-05-03T18:00Z')
-  txs = await test.batchUnstake(test.stakesData).slice(0, 5)
+  t = getTest(hre)
+  contracts = await t.init('2022-05-02T18:00Z')
+  await t.increaseTime(3600 * 24);
+  txs = await t.batchUnstake(t.stakesData.slice(0, 5))
+
+Note that newTime parameter to init() needs to be after the end of historical
+data for saveHistoricalData() to work, but before the reward period ends for
+deployment of StakeRewardController to work.
 */
 
 const stakesData = require('./data/staking_3.json');
@@ -43,6 +48,10 @@ module.exports = hre => {
     let pzkToken, staking, rewardMaster, rewardTreasury, stakeRwdCtr;
 
     async function init(newTime = defaultNewTime) {
+        const newTimestamp = parseDate(newTime);
+        console.log(`time-warping to ${newTime} (${newTimestamp})`);
+        await mineBlock(newTimestamp);
+
         await impersonate(_deployer);
         deployer = await ethers.getSigner(_deployer);
         await impersonate(_owner);
@@ -142,8 +151,6 @@ module.exports = hre => {
             await stakeRwdCtr.connect(deployer).isActive(),
         ); // true
 
-        await mineBlock(parseDate(newTime));
-
         return getContracts();
     }
 
@@ -210,6 +217,10 @@ module.exports = hre => {
         init,
         batchUnstake,
         unstake,
+
+        parseDate,
+        increaseTime,
+        mineBlock,
 
         stakesData,
 

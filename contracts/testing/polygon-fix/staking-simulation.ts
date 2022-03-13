@@ -64,7 +64,7 @@ function main() {
         };
     });
 
-    addSimulatedStakes(15, stakingRecords);
+    addSimulatedStakes(200, stakingRecords);
 
     const unstakingRecords = stakingRecords.map((rec: any) => {
         return {

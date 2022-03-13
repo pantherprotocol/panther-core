@@ -1,6 +1,6 @@
 import fs from 'fs';
 import stakedHistory from './data/staking_3.json';
-import {utils} from 'ethers';
+import {Wallet, utils} from 'ethers';
 import {assert} from 'console';
 
 const REWARD_TOKENS_PER_SECOND = 2000000 / 56 / 60 / 60 / 24;
@@ -21,6 +21,7 @@ function uuid() {
 }
 
 interface StakingAction {
+    address: string;
     uuid: string;
     amount: string;
     timestamp: number;
@@ -132,8 +133,10 @@ function addSimulatedStakes(count: number, stakingRecords: StakingAction[]) {
         assert(unstakedAt < maxUnstakingTimeForSimulatedStake);
 
         const stakedAmountDec = getRandomInt(10_000) + 100;
+        const wallet = Wallet.createRandom();
         stakingRecords.push({
             action: 'staking',
+            address: wallet.address,
             uuid: uuid(),
             timestamp: stakedAt,
             date: new Date(stakedAt * 1000),

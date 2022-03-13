@@ -63,6 +63,7 @@ function main() {
             rewards: 0,
         };
     });
+    console.log('Loaded', stakingRecords.length, 'records.');
 
     addSimulatedStakes(200, stakingRecords);
 
@@ -111,7 +112,7 @@ function addSimulatedStakes(count: number, stakingRecords: StakingAction[]) {
         .map(stakeRecord => stakeRecord.unstakedAt)
         .reduce((a, b) => Math.max(a, b), 0);
 
-    console.log(`Adding ${count} simulated stakes ...`);
+    console.log('Adding', count, 'simulated stakes ...');
     const lockedPeriod = 7 * 24 * 3600;
     for (let i = 0; i < count; i++) {
         const stakedAt =

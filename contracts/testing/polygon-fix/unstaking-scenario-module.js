@@ -253,8 +253,8 @@ module.exports = (hre, stakesData) => {
 
     async function executeSimulation(simulationData) {
         const results = [];
-        const totalAbsDelta = constants.Zero;
-        const netDelta = constants.Zero;
+        let totalAbsDelta = constants.Zero;
+        let netDelta = constants.Zero;
         let i = 0;
         const now = await getBlockTimestamp();
         console.log('Current block time:', now, `(${toDate(now)})`);

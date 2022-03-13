@@ -7,9 +7,9 @@ For example, to test batch unstaking, run this in hardhat console:
   t = getTest(hre, stakesData)
   contracts = await t.init('2022-05-02T18:00Z')
 
-  txs = await t.batchUnstake(stakesData.slice(0, 5))
+  resultsBefore = await t.batchUnstake(stakesData.slice(0, 5))
   await t.increaseTime(3600 * 24);
-  txs = await t.batchUnstake(stakesData.slice(5, 10))
+  resultsAfter = await t.batchUnstake(stakesData.slice(5, 10))
 
 Or for a full simulation:
 

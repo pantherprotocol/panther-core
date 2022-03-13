@@ -251,11 +251,13 @@ module.exports = (hre, stakesData) => {
         const totalAbsDelta = constants.Zero;
         const netDelta = constants.Zero;
         let i = 0;
+        console.log('Current block time:', await getBlockTimestamp());
         for await (const action of simulationData) {
             console.log(
                 `Action #${i++} @${action.timestamp} ${action.date}\n` +
                     `${action.action} ${utils.formatEther(action.amount)} ` +
-                    `for ${action.address}.${action.stakeID}`,
+                    `for ${action.address}` +
+                    (action.stakeId ? '.' + action.stakeID : ''),
             );
             await ensureMinTokenBalance(
                 pzkToken,

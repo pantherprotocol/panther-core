@@ -46,7 +46,7 @@ const {
 } = require('../../lib/hash');
 const {
     impersonate,
-    unimpersonate,
+    // unimpersonate,
     increaseTime,
     mineBlock,
     ensureMinBalance,
@@ -191,7 +191,7 @@ module.exports = (hre, stakesData) => {
         const tx = await staking
             .connect(signer)
             .stake(amount, hash4bytes(CLASSIC), 0x00);
-        await unimpersonate(account);
+        // await unimpersonate(account);
         // console.log(`  submitted as ${tx.hash}`);
         const receipt = await tx.wait();
         const event = await getEventFromReceipt(
@@ -213,7 +213,7 @@ module.exports = (hre, stakesData) => {
         await ensureMinBalance(account, MIN_BALANCE);
         const signer = await impersonate(account);
         const tx = await staking.connect(signer).unstake(stakeID, 0x00, false);
-        await unimpersonate(account);
+        // await unimpersonate(account);
         const receipt = await tx.wait();
         const event = await getEventFromReceipt(
             receipt,

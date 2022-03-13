@@ -53,7 +53,7 @@ const {
 } = require('../../lib/hardhat');
 const {replaceRewardAdviser, saveHistoricalData} = require('../../lib/staking');
 const {getEventFromReceipt} = require('../../lib/events');
-const {parseDate} = require('../../lib/units-shortcuts');
+const {parseDate, toDate} = require('../../lib/units-shortcuts');
 const {getBlockTimestamp} = require('../../lib/provider');
 const {
     MINTER,
@@ -110,7 +110,8 @@ module.exports = (hre, stakesData) => {
             '0x1000000000000000',
         ]);
 
-        console.log('Current block time:', await getBlockTimestamp());
+        const now = await getBlockTimestamp();
+        console.log('Current block time:', now, `(${toDate(now)})`);
         await saveHistoricalData(stakeRwdCtr.connect(deployer), stakesData);
         console.log(
             'stakeRwdCtr.totalStaked: ',
@@ -251,7 +252,8 @@ module.exports = (hre, stakesData) => {
         const totalAbsDelta = constants.Zero;
         const netDelta = constants.Zero;
         let i = 0;
-        console.log('Current block time:', await getBlockTimestamp());
+        const now = await getBlockTimestamp();
+        console.log('Current block time:', now, `(${toDate(now)})`);
         for await (const action of simulationData) {
             console.log(
                 `Action #${i++} @${action.timestamp} ${action.date}\n` +

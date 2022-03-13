@@ -13,7 +13,9 @@ export async function getEventFromReceipt(
         return new Error('Failed to get transaction events.');
     }
 
-    const event = receipt.events.find(({event}) => event === eventName);
+    const event = receipt.events.find(
+        ({event}: {event: string}) => event === eventName,
+    );
     if (!event) {
         return new Error(`No ${eventName} event found for this transaction.`);
     }

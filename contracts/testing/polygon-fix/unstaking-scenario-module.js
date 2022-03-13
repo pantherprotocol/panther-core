@@ -27,7 +27,6 @@ but before the reward period ends for deployment of StakeRewardController to
 work.
 */
 
-const PZkpToken = require('./PZkpToken.json');
 const {
     classicActionHash,
     hash4bytes,
@@ -43,8 +42,17 @@ const {
     ensureMinBalance,
 } = require('../../lib/hardhat');
 const {replaceRewardAdviser, saveHistoricalData} = require('../../lib/staking');
+const {getEventFromReceipt} = require('../../lib/events');
 const {parseDate} = require('../../lib/units-shortcuts');
 const {getBlockTimestamp} = require('../../lib/provider');
+const {
+    MINTER,
+    OWNER,
+    REWARDING_START,
+    getContracts,
+    getSigners,
+    mintTo,
+} = require('../../lib/polygon-fix');
 
 module.exports = (hre, stakesData) => {
     const {ethers} = hre;
@@ -52,25 +60,16 @@ module.exports = (hre, stakesData) => {
 
     console.log(`stakesData.length = ${stakesData.length})`);
 
-    const actionStake = classicActionHash(STAKE);
-    const actionUnstake = classicActionHash(UNSTAKE);
-    const rewardingStart = 1646697599;
+    const ACTION_STAKE = classicActionHash(STAKE);
+    const ACTION_UNSTAKE = classicActionHash(UNSTAKE);
     const oneMatic = ethers.BigNumber.from(`${1e18}`);
 
-    const minBalanceStr = '0x1000000000000000';
+    const MIN_BALANCE = '0x1000000000000000';
 
     const provider = ethers.provider;
 
-    const _deployer = '0xe14d84b1DF1C205E33420ffE00bA44F85e35f791';
-    const _minter = '0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa';
-    const _token = '0x9A06Db14D639796B25A6ceC6A1bf614fd98815EC';
-    const _owner = '0x208Fb9169BBec5915722e0AfF8B0eeEdaBf8a6f0';
-    const _rewardMaster = '0x09220DD0c342Ee92C333FAa6879984D63B4dff03';
-    const _staking = '0x4cEc451F63DBE47D9dA2DeBE2B734E4CB4000Eac';
-    const _rewardTreasury = '0x20AD9300BdE78a24798b1Ee2e14858E5581585Bc';
-
     let deployer, owner, minter;
-    let pzkToken, staking, rewardMaster, rewardTreasury, stakeRwdCtr;
+    let staking, rewardMaster, rewardTreasury, stakeRwdCtr;
 
     async function init(newTime) {
         if (newTime) {
@@ -79,42 +78,19 @@ module.exports = (hre, stakesData) => {
             await mineBlock(newTimestamp);
         }
 
-        deployer = await impersonate(_deployer);
-        owner = await impersonate(_owner);
+        ({deployer, owner, minter} = await getSigners());
+        ({pzkToken, staking, rewardMaster, rewardTreasury, stakeRwdCtr} =
+            await getContracts(hre, deployer));
+
         await provider.send('hardhat_setBalance', [
-            _owner,
+            OWNER,
             '0x1000000000000000',
         ]);
-        minter = await impersonate(_minter);
         await provider.send('hardhat_setBalance', [
-            _minter,
+            MINTER,
             '0x1000000000000000',
         ]);
 
-        pzkToken = new ethers.Contract(_token, PZkpToken.abi);
-        staking = await ethers.getContractAt('Staking', _staking);
-        rewardMaster = await ethers.getContractAt(
-            'RewardMaster',
-            _rewardMaster,
-        );
-        rewardTreasury = await ethers.getContractAt(
-            'RewardTreasury',
-            _rewardTreasury,
-        );
-
-        const StakeRewardController = await ethers.getContractFactory(
-            'StakeRewardController',
-            provider,
-        );
-        stakeRwdCtr = await StakeRewardController.connect(deployer).deploy(
-            _owner,
-            _token,
-            _staking,
-            _rewardTreasury,
-            _rewardMaster,
-            _deployer, // historyProvider
-            rewardingStart,
-        );
         console.log('Current block time:', await getBlockTimestamp());
         await saveHistoricalData(stakeRwdCtr.connect(deployer), stakesData);
         console.log(
@@ -128,30 +104,25 @@ module.exports = (hre, stakesData) => {
             utils.formatEther(await staking.totalStaked()),
         );
 
-        await pzkToken
-            .connect(minter)
-            .deposit(
-                _rewardTreasury,
-                ethers.utils.hexZeroPad(oneMatic.mul(2e6).toHexString(), 32),
-            );
+        await mintTo(rewardTreasury.address, minter, oneMatic.mul(2e6));
 
         await replaceRewardAdviser(
             rewardMaster.connect(owner),
-            _staking,
+            staking.address,
             stakeRwdCtr.address,
         );
         console.log(
-            'rewardMaster.rewardAdvisers.actionStake: ',
+            'rewardMaster.rewardAdvisers.ACTION_STAKE: ',
             await rewardMaster
                 .connect(deployer)
-                .rewardAdvisers(_staking, actionStake),
+                .rewardAdvisers(staking.address, ACTION_STAKE),
         );
 
         console.log(
-            'rewardMaster.rewardAdvisers.actionUnstake: ',
+            'rewardMaster.rewardAdvisers.ACTION_UNSTAKE: ',
             await rewardMaster
                 .connect(deployer)
-                .rewardAdvisers(_staking, actionUnstake),
+                .rewardAdvisers(staking.address, ACTION_UNSTAKE),
         );
 
         await rewardTreasury
@@ -163,11 +134,11 @@ module.exports = (hre, stakesData) => {
             await stakeRwdCtr.connect(deployer).isActive(),
         ); // true
 
-        return getContracts();
+        return getContracts(hre, deployer);
     }
 
     async function stake(account, amount) {
-        await ensureMinBalance(account, minBalanceStr);
+        await ensureMinBalance(account, MIN_BALANCE);
         const signer = await impersonate(account);
         const tx = await staking
             .connect(signer)
@@ -178,14 +149,14 @@ module.exports = (hre, stakesData) => {
         const event = await getEventFromReceipt(receipt, 'StakeCreated');
         if (event instanceof Error) {
             console.error(event);
-            return;
+            return {};
         }
         const stakeId = event?.args?.stakeID;
         return {tx, receipt, event, stakeId};
     }
 
     async function unstake(account, stakeId) {
-        await ensureMinBalance(account, minBalanceStr);
+        await ensureMinBalance(account, MIN_BALANCE);
         const signer = await impersonate(account);
         const tx = await staking.connect(signer).unstake(stakeId, 0x00, false);
         await unimpersonate(account);
@@ -193,7 +164,7 @@ module.exports = (hre, stakesData) => {
         const event = await getEventFromReceipt(receipt, 'RewardPaid');
         if (event instanceof Error) {
             console.error(event);
-            return;
+            return {};
         }
         if (account !== event?.args?.user) {
             throw (
@@ -237,38 +208,7 @@ module.exports = (hre, stakesData) => {
         return results;
     }
 
-    function getContracts() {
-        return {
-            pzkToken,
-            staking,
-            rewardMaster,
-            rewardTreasury,
-            stakeRwdCtr,
-        };
-    }
-
-    function getSigners() {
-        return {
-            deployer,
-            owner,
-            minter,
-        };
-    }
-
-    function getAddresses() {
-        return {
-            _deployer,
-            _minter,
-            _token,
-            _owner,
-            _rewardMaster,
-            _staking,
-            _rewardTreasury,
-        };
-    }
-
     return {
-        getAddresses,
         getContracts,
         getSigners,
         init,
@@ -283,11 +223,11 @@ module.exports = (hre, stakesData) => {
         stakesData,
 
         constants: {
-            actionStake,
-            actionUnstake,
-            rewardingStart,
+            ACTION_STAKE,
+            ACTION_UNSTAKE,
+            REWARDING_START,
             oneMatic,
-            minBalanceStr,
+            MIN_BALANCE,
         },
     };
 };

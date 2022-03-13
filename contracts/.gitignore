@@ -8,6 +8,7 @@ dist/
 node_modules/
 .openzeppelin/
 tenderly.yaml
+testing/**/data/
 tmp/
 typechain/
 types/

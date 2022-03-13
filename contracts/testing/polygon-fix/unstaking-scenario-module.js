@@ -70,18 +70,15 @@ module.exports = hre => {
         ]);
 
         pzkToken = new ethers.Contract(_token, PZkpToken.abi);
-        const Staking = await ethers.getContractFactory('Staking', provider);
-        staking = await Staking.attach(_staking);
-        const RewardMaster = await ethers.getContractFactory(
+        const staking = await ethers.getContractAt('Staking', _staking);
+        const rewardMaster = await ethers.getContractAt(
             'RewardMaster',
-            provider,
+            _rewardMaster,
         );
-        rewardMaster = await RewardMaster.attach(_rewardMaster);
-        const RewardTreasury = await ethers.getContractFactory(
+        const rewardTreasury = await ethers.getContractAt(
             'RewardTreasury',
-            provider,
+            _rewardTreasury,
         );
-        rewardTreasury = await RewardTreasury.attach(_rewardTreasury);
 
         const StakeRewardController = await ethers.getContractFactory(
             'StakeRewardController',

@@ -18,6 +18,7 @@ const stakesData = require('./data/staking_3.json');
 const PZkpToken = require('./PZkpToken.json');
 const {classicActionHash, STAKE, UNSTAKE} = require('../../lib/hash');
 const {impersonate, unimpersonate, increaseTime, mineBlock} = require('../../lib/hardhat');
+const {replaceRewardAdviser} = require('../../lib/staking');
 const {parseDate} = require('../../lib/units-shortcuts');
 
 module.exports = hre => {
@@ -117,18 +118,9 @@ module.exports = hre => {
                 ethers.utils.hexZeroPad(oneMatic.mul(2e6).toHexString(), 32),
             );
 
-        await rewardMaster
-            .connect(owner)
-            .removeRewardAdviser(_staking, actionStake);
-        await rewardMaster
-            .connect(owner)
-            .removeRewardAdviser(_staking, actionUnstake);
-        await rewardMaster
-            .connect(owner)
-            .addRewardAdviser(_staking, actionStake, stakeRwdCtr.address);
-        await rewardMaster
-            .connect(owner)
-            .addRewardAdviser(_staking, actionUnstake, stakeRwdCtr.address);
+        await replaceRewardAdviser(rewardMaster
+                                   .connect(owner),
+                                   _staking, stakeRwdCtr.address);
         console.log(
             'rewardMaster.rewardAdvisers.actionStake: ',
             await rewardMaster

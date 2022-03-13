@@ -205,14 +205,14 @@ module.exports = (hre, stakesData) => {
                 "Didn't get StakeCreated event from stake()",
             );
         }
-        const stakeId = event?.args?.stakeID;
-        return {tx, receipt, event, stakeId};
+        const stakeID = event?.args?.stakeID;
+        return {tx, receipt, event, stakeID};
     }
 
-    async function unstake(account, stakeId) {
+    async function unstake(account, stakeID) {
         await ensureMinBalance(account, MIN_BALANCE);
         const signer = await impersonate(account);
-        const tx = await staking.connect(signer).unstake(stakeId, 0x00, false);
+        const tx = await staking.connect(signer).unstake(stakeID, 0x00, false);
         await unimpersonate(account);
         const receipt = await tx.wait();
         const event = await getEventFromReceipt(
@@ -251,20 +251,48 @@ module.exports = (hre, stakesData) => {
         console.log(char.repeat(78));
     }
 
-    async function executeSimulation(simulationData) {
+    async function executeSimulation(actions) {
         const results = [];
         let totalAbsDelta = constants.Zero;
         let netDelta = constants.Zero;
         let i = 0;
         const now = await getBlockTimestamp();
         console.log('Current block time:', now, `(${toDate(now)})`);
-        for await (const action of simulationData) {
+
+        const [historical, toSimulate] = _.partition(
+            actions,
+            a => a.type === 'real',
+        );
+        const [staking, unstaking] = _.partition(
+            actions,
+            a => a.action === 'staking',
+        );
+
+        // Needed to update stakeID of unstaking action just after the
+        // corresponding staking action succeeded and generated a new stakeID
+        const unstakingByUuid = _.keyBy(unstaking, a => a.uuid);
+
+        console.log(
+            'Simulating',
+            actions.length,
+            'actions:',
+            staking.length,
+            'staking /',
+            unstaking.length,
+            'unstaking /',
+            historical.length,
+            'historical /',
+            toSimulate.length,
+            'synthetic',
+        );
+
+        for await (const action of actions) {
             divider();
             console.log(
                 `Action #${i++} @${action.timestamp} ${action.date}\n` +
                     `${action.action} ${utils.formatEther(action.amount)} ` +
                     `for ${action.address}` +
-                    (action.stakeId ? '.' + action.stakeID : ''),
+                    (action.stakeID ? '.' + action.stakeID : ''),
             );
             await ensureMinTokenBalance(
                 pzkToken,
@@ -300,8 +328,33 @@ module.exports = (hre, stakesData) => {
                 console.log(
                     `   RewardPaid: ${fe(result.reward)}  delta: ${fe(delta)}`,
                 );
+            } else if (action.action === 'staking' && result.stakeID) {
+                console.log(
+                    '   StakeCreated: stakeID',
+                    result.stakeID.toString(),
+                );
+                if (action.stakeID) {
+                    if (action.stakeID !== result.stakeID) {
+                        throw (
+                            `Source data had stakeID ${action.stakeID} ` +
+                            `but contract created stake with ID ${result.stakeID}`
+                        );
+                    }
+                } else {
+                    action.stakeID = result.stakeID;
+                }
+                // Ensure future unstaking has stakeID
+                const unstaking = unstakingByUuid[action.uuid];
+                if (!unstaking) {
+                    throw (
+                        `Couldn't get corresponding unstaking action ` +
+                        `with uuid ${action.uuid} ` +
+                        `in order to set stakeID to ${result.stakeID}`
+                    );
+                }
+                unstaking.stakeID = action.stakeID;
             }
-            simulationData.transactionHash = result.tx.hash;
+            actions.transactionHash = result.tx.hash;
         }
         return results;
     }

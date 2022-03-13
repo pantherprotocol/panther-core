@@ -10,12 +10,12 @@ For example, to test batch unstaking, run this in hardhat console:
 
   stakesData = require('./testing/polygon-fix/data/staking_3.json').slice(0, 100)
   getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
-  t = getTest(hre, stakesData)
-  contracts = await t.init('2022-05-02T18:00Z')
+  t = getTest(hre, stakesData); null
+  contracts = await t.init('2022-05-02T18:00Z'); null
 
-  resultsBefore = await t.batchUnstake(stakesData.slice(0, 5))
+  resultsBefore = await t.batchUnstake(stakesData.slice(0, 5)); resultsBefore.length
   await t.increaseTime(3600 * 24);
-  resultsAfter = await t.batchUnstake(stakesData.slice(5, 10))
+  resultsAfter = await t.batchUnstake(stakesData.slice(5, 10)); resultsAfter.length
 
 Or for a full simulation:
 

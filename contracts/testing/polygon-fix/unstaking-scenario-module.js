@@ -247,6 +247,10 @@ module.exports = (hre, stakesData) => {
         return await Promise.all(results);
     }
 
+    function divider(char = '-') {
+        console.log(char.repeat(78));
+    }
+
     async function executeSimulation(simulationData) {
         const results = [];
         const totalAbsDelta = constants.Zero;
@@ -255,6 +259,7 @@ module.exports = (hre, stakesData) => {
         const now = await getBlockTimestamp();
         console.log('Current block time:', now, `(${toDate(now)})`);
         for await (const action of simulationData) {
+            divider();
             console.log(
                 `Action #${i++} @${action.timestamp} ${action.date}\n` +
                     `${action.action} ${utils.formatEther(action.amount)} ` +
@@ -269,11 +274,13 @@ module.exports = (hre, stakesData) => {
             );
             // console.log('action: ', action);
             if (i % 5 == 0) {
+                divider('=');
                 await showStates();
                 console.log(
                     `   Total delta: ${fe(totalAbsDelta)} (absolute) / ` +
                         `${fe(netDelta)} (net)`,
                 );
+                divider('=');
             }
             await mineBlock(action.timestamp);
             const promise =
@@ -295,9 +302,6 @@ module.exports = (hre, stakesData) => {
                 );
             }
             simulationData.transactionHash = result.tx.hash;
-            console.log(
-                '-------------------------------------------------------',
-            );
         }
         return results;
     }

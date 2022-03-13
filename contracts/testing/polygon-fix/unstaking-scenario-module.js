@@ -301,15 +301,6 @@ module.exports = (hre, stakesData) => {
                 action.amount,
             );
             // console.log('action: ', action);
-            if (i % 5 == 0) {
-                divider('=');
-                await showStates();
-                console.log(
-                    `   Total delta: ${fe(totalAbsDelta)} (absolute) / ` +
-                        `${fe(netDelta)} (net)`,
-                );
-                divider('=');
-            }
             await mineBlock(action.timestamp);
             const promise =
                 action.action === 'unstaking'
@@ -355,6 +346,15 @@ module.exports = (hre, stakesData) => {
                 unstaking.stakeID = action.stakeID;
             }
             actions.transactionHash = result.tx.hash;
+
+            if (i % 5 == 0) {
+                divider('=');
+                await showStates();
+                console.log(
+                    `Total delta:    ${fe(totalAbsDelta)} (absolute) / ` +
+                        `${fe(netDelta)} (net)\n`,
+                );
+            }
         }
         return results;
     }

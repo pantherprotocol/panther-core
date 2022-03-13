@@ -74,10 +74,9 @@ async function deployController(hre: any, deployer: SignerWithAddress) {
 const fe = utils.formatEther;
 
 export async function showBalances(tokenContract: Contract): Promise<void> {
-    console.log(`
+    console.log(`\
 RewardMaster:   ${fe(await tokenContract.balanceOf(REWARD_MASTER))}
-RewardTreasury: ${fe(await tokenContract.balanceOf(REWARD_TREASURY))}
-`);
+RewardTreasury: ${fe(await tokenContract.balanceOf(REWARD_TREASURY))}`);
 }
 
 export async function showStates(

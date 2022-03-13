@@ -5,8 +5,9 @@ For example, run in hardhat console:
   getTest = require('./testing/polygon-fix/unstaking-scenario-module.js')
   t = getTest(hre)
   contracts = await t.init('2022-05-02T18:00Z')
-  await t.increaseTime(3600 * 24);
   txs = await t.batchUnstake(t.stakesData.slice(0, 5))
+  await t.increaseTime(3600 * 24);
+  txs = await t.batchUnstake(t.stakesData.slice(5, 10))
 
 Note that newTime parameter to init() needs to be after the end of historical
 data for saveHistoricalData() to work, but before the reward period ends for

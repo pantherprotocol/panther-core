@@ -152,7 +152,7 @@ function main() {
         r.APY = (((r.rewards / r.amountDec) * 100) / r.durationDays) * 365;
     });
 
-    const outFile = './data/actions.json';
+    const outFile = __dirname + '/data/actions.json';
     fs.writeFileSync(outFile, JSON.stringify(actions, null, 2));
     console.log(`Wrote to ${outFile}`);
 

@@ -19,6 +19,7 @@ function uuid() {
 }
 
 function main() {
+    console.log('Loading history ...');
     const stakingRecords = stakedHistory.map((rec: any) => {
         const unstakedAt =
             Number(rec.lockedTill) + getRandomInt(30 * 24 * 3600);
@@ -52,6 +53,7 @@ function main() {
         .reduce((a, b) => Math.max(a, b), 0);
 
     const simulatedStakeNum = 15;
+    console.log(`Adding ${simulatedStakeNum} simulated stakes ...`);
     const lockedPeriod = 7 * 24 * 3600;
     for (let i = 0; i < simulatedStakeNum; i++) {
         const stakedAt =
@@ -100,7 +102,9 @@ function main() {
         };
     });
 
+    console.log('Combining records ...');
     let actions = [...stakingRecords, ...unstakingRecords];
+    console.log('Sorting records ...');
     actions = actions.sort((a, b) => a.timestamp - b.timestamp);
 
     const tokenPerSecond = 2000000 / 56 / 60 / 60 / 24;
@@ -110,6 +114,7 @@ function main() {
     );
     let prevTimeStamp = startedTimestamp;
 
+    console.log('Simulating ...');
     actions.forEach((action: any) => {
         const totalAccumulatedRewards =
             (action.timestamp - prevTimeStamp) * tokenPerSecond;
@@ -142,11 +147,14 @@ function main() {
         prevTimeStamp = action.timestamp;
     });
 
+    console.log('Calculating APY ...');
     actions.map((r: any) => {
         r.APY = (((r.rewards / r.amountDec) * 100) / r.durationDays) * 365;
     });
 
-    fs.writeFileSync('actions.json', JSON.stringify(actions, null, 2));
+    const outFile = './data/actions.json';
+    fs.writeFileSync(outFile, JSON.stringify(actions, null, 2));
+    console.log(`Wrote to ${outFile}`);
 
     console.log(
         'totalRewards',

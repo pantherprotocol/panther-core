@@ -1,0 +1,19 @@
+.address-with-setting {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 15px;
+
+    .address {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .setting-icon {
+        display: flex;
+        width: 50%;
+        justify-content: end;
+        opacity: 0.6;
+    }
+}

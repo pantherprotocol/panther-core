@@ -168,8 +168,11 @@ function StakingZkpPage() {
                 chainId,
                 account,
             );
-            if (!rewardsBalance) return;
-            setRewardsBalance(rewardsBalance);
+            setRewardsBalance(
+                rewardsBalance && rewardsBalance.toNumber()
+                    ? rewardsBalance
+                    : null,
+            );
             if (chainId !== 137) {
                 console.debug(
                     'rewardsBalance:',

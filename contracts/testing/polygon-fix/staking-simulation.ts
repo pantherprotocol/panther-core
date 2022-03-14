@@ -236,14 +236,18 @@ function doSimulation(actions: StakingAction[]) {
     );
 
     let currentlyStaked: any[] = [];
-    const startTimestamp = Math.floor(
-        +new Date('Mon 7 Mar 23:59:59 UTC 2022') / 1000,
-    );
+
+    // https://docs.pantherprotocol.io/dao/governance/proposal-3-polygon-extension/staking
+    const startTimestamp = parseDate('Mon 7 Mar 23:59:59 UTC 2022');
+    const endTimestamp = parseDate('Mon 2 May 23:59:59 UTC 2022');
     let prevTimeStamp = startTimestamp;
 
     actions.forEach((action: any) => {
         const totalAccumulatedRewards =
-            (action.timestamp - prevTimeStamp) * REWARD_TOKENS_PER_SECOND;
+            prevTimeStamp > endTimestamp
+                ? 0
+                : (Math.min(endTimestamp, action.timestamp) - prevTimeStamp) *
+                  REWARD_TOKENS_PER_SECOND;
 
         if (action.action === 'staking') {
             currentlyStaked.push(action);

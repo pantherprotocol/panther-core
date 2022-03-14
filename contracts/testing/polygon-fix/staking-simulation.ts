@@ -3,7 +3,7 @@ import _ from 'lodash';
 import {Wallet, utils} from 'ethers';
 import {assert} from 'console';
 
-import {toDate} from '../../lib/units-shortcuts';
+import {parseDate, toDate} from '../../lib/units-shortcuts';
 import {getBlockTimestamp} from '../../lib/provider';
 
 import stakedHistory from './data/staking_3.json';
@@ -133,42 +133,51 @@ async function addSimulatedStakes(
     );
     console.log('Fork occurred at', forkTime, `(${toDate(forkTime)})`);
 
-    const minStakeTimeForSimulatedStake = Math.max(
+    // Can't stake before fork occurred, because fork can't go backwards in time.
+    const minStakingTime = Math.max(
         forkTime,
         ...stakingRecords.map(stakeRecord => stakeRecord.stakedAt),
     );
     console.log(
         'Earliest time for new simulated stakes:',
-        minStakeTimeForSimulatedStake,
-        `(${toDate(minStakeTimeForSimulatedStake)})`,
+        minStakingTime,
+        `(${toDate(minStakingTime)})`,
     );
 
-    const maxUnstakingTimeForSimulatedStake = stakingRecords
-        .map(stakeRecord => stakeRecord.unstakedAt)
-        .reduce((a, b) => Math.max(a, b), 0);
+    // https://docs.pantherprotocol.io/dao/governance/proposal-3-polygon-extension/staking
+    const maxStakingTime = parseDate('27 Apr 2022 00:00 UTC');
+    console.log(
+        'Latest time for new simulated stakes:',
+        maxStakingTime,
+        `(${toDate(maxStakingTime)})`,
+    );
+
+    // A few days after staking program ends
+    const maxUnstakingTime = parseDate('10 May 2022 UTC');
+    console.log(
+        'Latest time for simulated unstaking:',
+        maxUnstakingTime,
+        `(${toDate(maxUnstakingTime)})`,
+    );
 
     const existingStakers = _.uniq(stakingRecords.map(r => r.address));
 
     console.log('Adding', count, 'simulated stakes ...');
     const lockedPeriod = 7 * 24 * 3600;
+
     for (let i = 0; i < count; i++) {
         const stakedAt =
-            minStakeTimeForSimulatedStake +
-            getRandomInt(
-                maxUnstakingTimeForSimulatedStake -
-                    minStakeTimeForSimulatedStake -
-                    lockedPeriod,
-            );
+            minStakingTime + getRandomInt(maxStakingTime - minStakingTime);
 
         const lockedTill = stakedAt + lockedPeriod;
         const unstakedAt =
-            lockedTill +
-            getRandomInt(maxUnstakingTimeForSimulatedStake - lockedTill);
+            lockedTill + getRandomInt(maxUnstakingTime - lockedTill);
 
-        assert(minStakeTimeForSimulatedStake < stakedAt);
+        assert(minStakingTime <= stakedAt);
         assert(stakedAt < lockedTill);
-        assert(lockedTill < unstakedAt);
-        assert(unstakedAt < maxUnstakingTimeForSimulatedStake);
+        assert(stakedAt <= maxStakingTime);
+        assert(lockedTill <= unstakedAt);
+        assert(unstakedAt <= maxUnstakingTime);
 
         const stakedAmountDec = getRandomInt(10_000) + 100;
         const address = getStakerAddress(existingStakers, count);

@@ -1,8 +1,0 @@
-'*':
-  - 'prettier --write'
-contracts/**/*.sol:
-  - 'yarn workspace @zkp-staking/contracts lint:solhint'
-contracts/**/*.{js,ts}:
-  - 'yarn workspace @zkp-staking/contracts lint:eslint'
-dapp/**/*.{js,jsx,ts,tsx}:
-  - 'yarn workspace @zkp-staking/dapp lint:eslint'

@@ -184,7 +184,14 @@ module.exports = (hre, stakesData) => {
         }
     }
 
-    async function stake(account, amount) {
+    async function maybeMineBlock(timestamp) {
+        const now = await getBlockTimestamp();
+        if (now < timestamp) {
+            await mineBlock(timestamp);
+        }
+    }
+
+    async function stake(account, amount, timestamp) {
         await ensureMinBalance(account, MIN_BALANCE);
         const signer = await impersonate(account);
         await ensureApproval(signer, amount);
@@ -193,6 +200,7 @@ module.exports = (hre, stakesData) => {
             .stake(amount, hash4bytes(CLASSIC), 0x00);
         // await unimpersonate(account);
         // console.log(`  submitted as ${tx.hash}`);
+        await maybeMineBlock(timestamp);
         const receipt = await tx.wait();
         const event = await getEventFromReceipt(
             receipt,
@@ -209,11 +217,12 @@ module.exports = (hre, stakesData) => {
         return {tx, receipt, event, stakeID};
     }
 
-    async function unstake(account, stakeID) {
+    async function unstake(account, stakeID, timestamp) {
         await ensureMinBalance(account, MIN_BALANCE);
         const signer = await impersonate(account);
         const tx = await staking.connect(signer).unstake(stakeID, 0x00, false);
         // await unimpersonate(account);
+        await maybeMineBlock(timestamp);
         const receipt = await tx.wait();
         const event = await getEventFromReceipt(
             receipt,
@@ -259,6 +268,11 @@ module.exports = (hre, stakesData) => {
         const now = await getBlockTimestamp();
         console.log('Current block time:', now, `(${toDate(now)})`);
 
+        // Only mine manually when we do stake / unstake, to guarantee
+        // the right timestamps for those.
+        await provider.send('evm_setAutomine', [false]);
+        await provider.send('evm_setIntervalMining', [0]);
+
         const [historical, toSimulate] = _.partition(
             actions,
             a => a.type === 'real',
@@ -303,7 +317,6 @@ module.exports = (hre, stakesData) => {
                 action.amount,
             );
             // console.log('action: ', action);
-            await mineBlock(action.timestamp);
             const promise =
                 action.action === 'unstaking'
                     ? unstake(action.address, action.stakeID)

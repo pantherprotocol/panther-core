@@ -55,7 +55,7 @@ async function main() {
         return {
             ...rec,
             uuid: uuid(),
-            date: new Date(stakedAt * 1000),
+            date: toDate(stakedAt),
             action: 'staking',
             type: 'real',
             stakedAt,
@@ -63,8 +63,8 @@ async function main() {
             unstakedAt,
             amountDec: Number(utils.formatEther(rec.amount)),
             durationDays: (unstakedAt - stakedAt) / (24 * 3600),
-            stakedDate: new Date(stakedAt * 1000),
-            unstakedDate: new Date(unstakedAt * 1000),
+            stakedDate: toDate(stakedAt),
+            unstakedDate: toDate(unstakedAt),
             rewards: 0,
         };
     });
@@ -85,7 +85,7 @@ async function main() {
             action: 'unstaking',
             type: 'simulated',
             timestamp: Number(rec.unstakedAt),
-            date: new Date(rec.unstakedAt * 1000),
+            date: toDate(rec.unstakedAt),
         };
     });
 
@@ -178,7 +178,7 @@ async function addSimulatedStakes(
             address,
             uuid: uuid(),
             timestamp: stakedAt,
-            date: new Date(stakedAt * 1000),
+            date: toDate(stakedAt),
             type: 'simulated',
             stakedAt,
             lockedTill,
@@ -186,8 +186,8 @@ async function addSimulatedStakes(
             amountDec: stakedAmountDec,
             amount: utils.parseUnits(stakedAmountDec.toString(), 18).toString(),
             durationDays: (unstakedAt - stakedAt) / (24 * 3600),
-            stakedDate: new Date(stakedAt * 1000),
-            unstakedDate: new Date(unstakedAt * 1000),
+            stakedDate: toDate(stakedAt),
+            unstakedDate: toDate(unstakedAt),
             rewards: 0,
         });
     }

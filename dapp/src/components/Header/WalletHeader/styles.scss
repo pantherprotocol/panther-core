@@ -1,0 +1,87 @@
+@import '../../../variables';
+
+$address-holder-background: rgba(99, 114, 136, 0.2);
+
+.addresses-box {
+    display: flex;
+    justify-content: space-between;
+    width: 279px;
+    height: 45px;
+    margin: 0 5px;
+    padding: 8px;
+    background: $buttons-holder-background-color;
+    border-radius: 8px;
+}
+
+.addresses-box .MuiTypography-subtitle2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $dark-gray;
+    width: 75px;
+    border-radius: 8px;
+}
+
+.addresses-box .MuiInput-root {
+    margin-top: 0;
+}
+
+.addresses-box .MuiInputLabel-root {
+    top: -12px;
+    color: $white;
+}
+
+.addresses-box .MuiFilledInput-root {
+    background-color: $transparent !important;
+}
+
+.addresses-box .MuiFilledInput-root:before,
+.addresses-box .MuiFilledInput-root:after {
+    display: none;
+}
+
+.MuiSelect-select {
+    padding: 4px !important;
+    color: $white !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.MuiSvgIcon-root {
+    color: $white !important;
+}
+
+.account-avatar {
+    padding: 0 25px;
+}
+
+.address-btn {
+    max-width: 220px;
+    width: 100%;
+}
+
+.header-right-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.address-and-balance-holder {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 20px;
+    padding: 0 8px;
+    background: $address-holder-background;
+    border-radius: 8px;
+    min-height: 50px;
+}
+
+@media (max-width: 600px) {
+    .header-right-container {
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        height: 200px;
+    }
+}

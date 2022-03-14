@@ -1,0 +1,38 @@
+@import '../../../variables';
+
+.nav-bar {
+    align-items: center;
+    display: flex;
+
+    .logo {
+        margin-right: 10px;
+        width: 10%;
+    }
+
+    .nav-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-left: 20px;
+        padding-right: 5px;
+        margin: 0px 10px;
+    }
+
+    .nav-item a {
+        font-size: 18px;
+        font-weight: 400;
+        color: $grey-text;
+        cursor: pointer;
+        padding-left: 10px;
+
+        &:hover {
+            color: $white;
+        }
+    }
+
+    .nav-item.active-item a {
+        color: $white;
+        font-size: 18px;
+        font-weight: 800;
+    }
+}

@@ -1,12 +1,12 @@
 import path from 'path';
-import webpack, {Configuration} from 'webpack';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import WebpackPwaManifest from 'webpack-pwa-manifest';
-import Dotenv from 'dotenv-webpack';
 
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+import Dotenv from 'dotenv-webpack';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+import webpack, {Configuration} from 'webpack';
+import WebpackPwaManifest from 'webpack-pwa-manifest';
 
 // Set BABEL_UWC to get easy access to use-what-changed React hook debugging.
 // When enabled, this allows monitoring of when React hooks change simply by

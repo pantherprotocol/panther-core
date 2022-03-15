@@ -161,18 +161,17 @@ function StakingZkpPage() {
 
     const getUnclaimedRewardsBalance = useCallback(
         async (price: BigNumber | null) => {
-            if (!library || !chainId || !account) return;
+            if (!library || !chainId || !account) {
+                setRewardsBalance(null);
+                return;
+            }
 
             const rewardsBalance = await stakingService.getRewardsBalance(
                 library,
                 chainId,
                 account,
             );
-            setRewardsBalance(
-                rewardsBalance && rewardsBalance.toNumber()
-                    ? rewardsBalance
-                    : null,
-            );
+            setRewardsBalance(rewardsBalance);
             if (chainId !== 137) {
                 console.debug(
                     'rewardsBalance:',
@@ -245,6 +244,7 @@ function StakingZkpPage() {
 
     const fetchData = useCallback(async (): Promise<void> => {
         if (!library || !account) {
+            setRewardsBalance(null);
             return;
         }
         await fetchEthBalance();

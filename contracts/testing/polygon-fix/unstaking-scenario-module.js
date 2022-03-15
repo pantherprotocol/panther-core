@@ -313,11 +313,13 @@ module.exports = (hre, stakesData) => {
         );
 
         let totalRewardsPaid = constants.Zero;
+        let prevTimestamp = actions[0].timestamp;
 
         for await (const action of actions) {
             divider();
+            const dt = action.timestamp - prevTimestamp;
             console.log(
-                `Action #${i++} @ ${action.timestamp} ${action.date} (${
+                `Action #${i++} @ ${action.timestamp} +${dt} ${action.date} (${
                     action.type
                 })\n` +
                     `${action.action} ${utils.formatEther(action.amount)} ` +
@@ -381,6 +383,8 @@ module.exports = (hre, stakesData) => {
                 unstaking.stakeID = action.stakeID;
             }
             actions.transactionHash = result.tx.hash;
+
+            prevTimestamp = action.timestamp;
 
             if (i % 5 == 0) {
                 divider('=');

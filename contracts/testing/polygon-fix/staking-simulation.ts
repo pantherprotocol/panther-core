@@ -279,7 +279,7 @@ function doSimulation(actions: StakingAction[]) {
         prevTimeStamp = action.timestamp;
     });
 
-    return {startTimestamp, endTimestamp: prevTimeStamp};
+    return {startTimestamp, endTimestamp};
 }
 
 main();

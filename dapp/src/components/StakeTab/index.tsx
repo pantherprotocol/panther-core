@@ -1,20 +1,11 @@
 import {useCallback, useEffect, useState} from 'react';
 import * as React from 'react';
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Input from '@mui/material/Input';
-import InputAdornment from '@mui/material/InputAdornment';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import Typography from '@mui/material/Typography';
+import {Box, Card, CardContent} from '@mui/material';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import {BigNumber, utils} from 'ethers';
 
-import logo from '../../images/panther-logo.svg';
 import {useAppDispatch} from '../../redux/hooks';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
@@ -22,14 +13,16 @@ import {onWrongNetwork} from '../../services/connectors';
 import {chainHasAdvancedStaking} from '../../services/contracts';
 import {CHAIN_IDS} from '../../services/env';
 import * as stakingService from '../../services/staking';
-import {formatCurrency, safeParseUnits} from '../../utils/helpers';
+import {safeParseUnits} from '../../utils/helpers';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 
-import './styles.scss';
+import StakingBtn from './StakingBtn';
+import StakingInfo from './StakingInfo';
+import StakingInput from './StakingInput';
+import StakingMethod from './StakingMethod';
 
-// Minimum stake is fixed in classic staking terms; no need for a contract call.
-const MINIMUM_STAKE = utils.parseUnits('100');
+import './styles.scss';
 
 export default function StakeTab(props: {
     tokenBalance: BigNumber | null;
@@ -153,7 +146,7 @@ export default function StakeTab(props: {
             />
             <Card variant="outlined" className="staking-info-card">
                 <CardContent className="staking-info-card-content">
-                    <StakingInfoMSG />
+                    <StakingInfo />
                     {chainHasAdvancedStaking(chainId) && (
                         <Box display={'flex'} justifyContent={'center'}>
                             <StakingMethod
@@ -209,225 +202,3 @@ export default function StakeTab(props: {
         </Box>
     );
 }
-
-const getButtonText = (
-    amount: string | null,
-    amountBN: BigNumber | null,
-    tokenBalance: BigNumber | null,
-): [string, boolean] => {
-    if (!tokenBalance) {
-        return ["Couldn't get token balance", false];
-    }
-    if (!amount || !amountBN) {
-        return ['Enter amount to stake above', false];
-    }
-    if (amountBN.gt(tokenBalance)) {
-        console.debug(
-            'Insufficient balance:',
-            utils.formatEther(amountBN),
-            '>',
-            utils.formatEther(tokenBalance),
-        );
-        return ['Insufficient balance', false];
-    }
-    if (amountBN.gte(MINIMUM_STAKE)) {
-        console.debug(
-            'Sufficient balance:',
-            utils.formatEther(amountBN),
-            amountBN.eq(tokenBalance) ? '==' : '<=',
-            utils.formatEther(tokenBalance),
-        );
-        // We display amount rather than stringifying amountBN, because we want
-        // to make sure we display the same amount which is visible in the
-        // staking amount field, and this is not guaranteed to be the same
-        // due to rounding discrepancies, e.g. if Max button is clicked.
-        return [`STAKE ${amount} ZKP`, true];
-    }
-    console.debug('Below minimum stake amount:', utils.formatEther(amountBN));
-    return ['Stake amount must be above 100', false];
-};
-
-const StakingBtn = (props: {
-    amountToStake: string | null;
-    amountToStakeBN: BigNumber | null;
-    tokenBalance: BigNumber | null;
-    stake: (amount: BigNumber) => Promise<void>;
-}) => {
-    const [buttonText, ready] = getButtonText(
-        props.amountToStake,
-        props.amountToStakeBN,
-        props.tokenBalance,
-    );
-    const activeClass = ready ? 'active' : '';
-
-    return (
-        <Box className={`buttons-holder ${activeClass}`}>
-            <Button
-                className="staking-button"
-                onClick={() => {
-                    if (ready && props.amountToStakeBN) {
-                        props.stake(props.amountToStakeBN);
-                    }
-                }}
-            >
-                {buttonText}
-            </Button>
-        </Box>
-    );
-};
-
-const StakingInput = (props: {
-    tokenBalance: BigNumber | null;
-    amountToStake: string | null;
-    setStakingAmount: (amount: string) => void;
-    setStakingAmountBN: (amount: BigNumber) => void;
-    networkLogo?: string;
-}) => {
-    const context = useWeb3React();
-    const {account} = context;
-    const changeHandler = (e: any) => {
-        const inputTextLength = e.target.value.length;
-        if (inputTextLength > 12) {
-            return;
-        }
-
-        const regex = /^\d*\.?\d*$/; // matches floating points numbers
-        if (!regex.test(e.target.value)) {
-            return false;
-        }
-        if (props.tokenBalance && Number(props.tokenBalance)) {
-            const amount = e.target.value.toString();
-            props.setStakingAmount(amount);
-            return true;
-        } else {
-            return false;
-        }
-    };
-    return (
-        <>
-            <Box className="staking-input-header">
-                <Typography
-                    className="amount-to-stake-caption"
-                    variant="subtitle2"
-                    component="span"
-                >
-                    Amount to stake
-                </Typography>
-                <span>
-                    <Typography
-                        className="available-to-stake-caption"
-                        variant="subtitle2"
-                        component="span"
-                    >
-                        Available to stake:
-                    </Typography>
-                    <Typography
-                        className="token-balance"
-                        variant="subtitle2"
-                        component="span"
-                    >
-                        {formatCurrency(props.tokenBalance)}
-                    </Typography>
-                    <Typography
-                        className="token-balance"
-                        variant="subtitle2"
-                        component="span"
-                    >
-                        ZKP
-                    </Typography>
-                    <Typography
-                        variant="caption"
-                        component="span"
-                        className="staking-input-max"
-                        onClick={() => {
-                            if (props.tokenBalance) {
-                                props.setStakingAmountBN(props.tokenBalance);
-                            }
-                        }}
-                    >
-                        MAX
-                    </Typography>
-                </span>
-            </Box>
-            <Box className="staking-input-container">
-                <Box className="staking-input-box">
-                    <Input
-                        inputProps={{pattern: '[0-9.]*', inputMode: 'decimal'}}
-                        className="staking-input"
-                        value={props.amountToStake}
-                        onChange={changeHandler}
-                        autoComplete="off"
-                        autoFocus={true}
-                        placeholder="0"
-                        disableUnderline={true}
-                        disabled={!account}
-                        endAdornment={
-                            <InputAdornment
-                                position="end"
-                                className="staking-input-symbol"
-                            >
-                                <div className="staking-symbol-holder">
-                                    {props.networkLogo && (
-                                        <img
-                                            src={props.networkLogo}
-                                            alt="Network logo"
-                                        />
-                                    )}
-                                    <span>ZKP</span>
-                                </div>
-                            </InputAdornment>
-                        }
-                        aria-describedby="staking-value-helper-text"
-                    />
-                </Box>
-                <Box className="staking-input-box-inner">
-                    <img src={logo} height={'40px'} width={'40px'} />
-                </Box>
-            </Box>
-        </>
-    );
-};
-
-const StakingMethod = (props: {
-    stakeType: string;
-    setStakeType: (type: string) => void;
-}) => (
-    <Box className="staking-method-container">
-        <Box
-            display="flex"
-            justifyContent={'space-between'}
-            alignItems={'center'}
-        >
-            <Typography className="staking-method-title">
-                Staking Method:
-            </Typography>
-            <Select
-                labelId="staking-method-select-label"
-                id="staking-method-selectd"
-                variant="standard"
-                value={props.stakeType}
-                className="staking-method-select"
-                onChange={e => {
-                    props.setStakeType(e.target.value);
-                }}
-            >
-                <MenuItem selected value={'classic'}>
-                    Standard
-                </MenuItem>
-                <MenuItem value={'advanced'}>Advanced</MenuItem>
-            </Select>
-        </Box>
-    </Box>
-);
-
-const StakingInfoMSG = () => (
-    <Box className="staking-info-container">
-        <Typography variant="subtitle2" className="staking-info-title">
-            Staking will lock your tokens for a minimum of 7 days
-        </Typography>
-        <Typography className="staking-info-text">
-            You will need to unstake to collect your rewards. Rewards are not
-            automatically staked. Unstaking is available after 7 days.
-        </Typography>
-    </Box>
-);

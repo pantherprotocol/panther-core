@@ -1,0 +1,27 @@
+@import '../../../variables';
+
+.staking-info-container {
+    flex-direction: column;
+    text-align: start;
+    border: none;
+    background: transparent;
+    padding: 0 16px;
+
+    .staking-info-title {
+        font-weight: 800 !important;
+        font-size: 18px !important;
+        line-height: 42px;
+        display: flex;
+        align-items: center;
+        color: #ffdfbd; /* FIXME: use common variable */
+    }
+
+    .staking-info-text {
+        font-size: 16px;
+        line-height: 25px;
+        color: white;
+        opacity: 0.8;
+        padding: 20px 0;
+        text-align: start;
+    }
+}

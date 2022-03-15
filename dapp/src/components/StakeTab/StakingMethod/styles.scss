@@ -1,0 +1,43 @@
+@import '../../../variables';
+
+.staking-method-container {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    text-align: start;
+    width: 100%;
+    background: rgba(99, 114, 136, 0.2); /* FIXME: use common variable */
+    padding: 5px 16px;
+    border-radius: 10px;
+
+    .staking-method-title {
+        font-weight: 500;
+        font-style: normal;
+        font-size: 16px;
+        line-height: 42px;
+        margin-right: 18px;
+        color: #d8d8d8; /* FIXME: use common variable */
+    }
+
+    .staking-method-select {
+        min-width: 125px;
+        color: white;
+        text-align: left;
+        margin-top: 0;
+        cursor: pointer;
+
+        &:before,
+        &:after {
+            border: none !important;
+        }
+    }
+
+    .staking-method-estimated-gas-fee {
+        font-weight: 500;
+        font-style: normal;
+        font-size: 16px;
+        line-height: 42px;
+        margin-right: 18px;
+        color: white;
+    }
+}

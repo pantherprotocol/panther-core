@@ -128,9 +128,9 @@ async function addSimulatedStakes(
     count: number,
     stakingRecords: StakingAction[],
 ) {
-    const forkTime = await getBlockTimestamp(
-        Number(process.env.HARDHAT_FORKING_BLOCK),
-    );
+    const forkTime =
+        Number(process.env.HARDHAT_FORKING_BLOCK_TIME) ||
+        (await getBlockTimestamp(Number(process.env.HARDHAT_FORKING_BLOCK)));
     console.log('Fork occurred at', forkTime, `(${toDate(forkTime)})`);
 
     // Can't stake before fork occurred, because fork can't go backwards in time.

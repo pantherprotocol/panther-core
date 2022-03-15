@@ -53,7 +53,7 @@ const {
 } = require('../../lib/hardhat');
 const {replaceRewardAdviser, saveHistoricalData} = require('../../lib/staking');
 const {getEventFromReceipt} = require('../../lib/events');
-const {parseDate, toDate} = require('../../lib/units-shortcuts');
+const {pe, fe, parseDate, toDate} = require('../../lib/units-shortcuts');
 const {getBlockTimestamp} = require('../../lib/provider');
 const {
     MINTER,
@@ -70,7 +70,6 @@ const {
 module.exports = (hre, stakesData) => {
     const {ethers} = hre;
     const {constants, utils} = ethers;
-    const fe = utils.formatEther;
 
     console.log(`stakesData.length = ${stakesData.length})`);
 
@@ -92,6 +91,10 @@ module.exports = (hre, stakesData) => {
             console.log(`time-warping to ${newTime} (${newTimestamp})`);
             await mineBlock(newTimestamp);
         }
+
+        // This will be disabled later, just before start of execution
+        // of simulation data.
+        await provider.send('evm_setAutomine', [true]);
 
         ({deployer, owner, minter} = await getSigners());
         ({pzkToken, staking, rewardMaster, rewardTreasury, stakeRwdCtr} =
@@ -180,7 +183,8 @@ module.exports = (hre, stakesData) => {
             const tx = await pzkToken
                 .connect(signer)
                 .approve(staking.address, LOTS);
-            await tx.wait();
+            console.log(`   Submitted approve() as ${tx.hash}`);
+            // await tx.wait();
         }
     }
 
@@ -188,6 +192,11 @@ module.exports = (hre, stakesData) => {
         const now = await getBlockTimestamp();
         if (now < timestamp) {
             await mineBlock(timestamp);
+            console.log(`   Mined block at ${timestamp}`);
+        } else {
+            console.log(
+                `   Skipping mining since current block ${now} >= ${timestamp}`,
+            );
         }
     }
 
@@ -199,7 +208,7 @@ module.exports = (hre, stakesData) => {
             .connect(signer)
             .stake(amount, hash4bytes(CLASSIC), 0x00);
         // await unimpersonate(account);
-        // console.log(`  submitted as ${tx.hash}`);
+        console.log(`   Submitted stake() as ${tx.hash}`);
         await maybeMineBlock(timestamp);
         const receipt = await tx.wait();
         const event = await getEventFromReceipt(
@@ -220,7 +229,10 @@ module.exports = (hre, stakesData) => {
     async function unstake(account, stakeID, timestamp) {
         await ensureMinBalance(account, MIN_BALANCE);
         const signer = await impersonate(account);
+        await maybeMineBlock(timestamp - 1);
+        console.log(`   About to unstake() ...`);
         const tx = await staking.connect(signer).unstake(stakeID, 0x00, false);
+        console.log(`   Submitted unstake() as ${tx.hash}`);
         // await unimpersonate(account);
         await maybeMineBlock(timestamp);
         const receipt = await tx.wait();
@@ -319,8 +331,8 @@ module.exports = (hre, stakesData) => {
             // console.log('action: ', action);
             const promise =
                 action.action === 'unstaking'
-                    ? unstake(action.address, action.stakeID)
-                    : stake(action.address, action.amount);
+                    ? unstake(action.address, action.stakeID, action.timestamp)
+                    : stake(action.address, action.amount, action.timestamp);
             const result = await promise;
             results.push(result);
             if (action.action === 'unstaking' && result.reward) {
@@ -329,10 +341,15 @@ module.exports = (hre, stakesData) => {
                 );
                 const actualRewards = result.reward;
                 const delta = actualRewards.sub(expectedRewards);
+                const deltaPerTokenStaked = delta
+                    .mul(pe('1'))
+                    .div(action.amount);
                 totalAbsDelta = totalAbsDelta.add(delta.abs());
                 netDelta = netDelta.add(delta);
                 console.log(
-                    `   RewardPaid: ${fe(result.reward)}  delta: ${fe(delta)}`,
+                    `   RewardPaid: ${fe(result.reward)}  delta: ${fe(
+                        delta,
+                    )} ` + `(${fe(deltaPerTokenStaked)} per token)`,
                 );
             } else if (action.action === 'staking' && result.stakeID) {
                 console.log(

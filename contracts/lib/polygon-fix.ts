@@ -93,9 +93,10 @@ export async function mintTo(
     recipient: string,
     amount: BigNumber,
 ): Promise<void> {
-    await tokenContract
+    const tx = await tokenContract
         .connect(minter)
         .deposit(recipient, utils.hexZeroPad(amount.toHexString(), 32));
+    console.log(`   Submitted deposit() as ${tx.hash}`);
 }
 
 export const ensureMinTokenBalance = async (

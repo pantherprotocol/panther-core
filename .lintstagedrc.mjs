@@ -50,7 +50,14 @@ export default {
         // const match = micromatch.not(files, '**/*.cli.js');
         return run('yarn workspace @zkp-staking/contracts lint:eslint', toLint);
     },
-    'dapp/**/*.{js,jsx,ts,tsx}': files => {
-        return run('yarn workspace @zkp-staking/dapp lint:eslint', files);
+    'dapp/**/*.{js,jsx,ts,tsx}': async files => {
+        const prefix = process.cwd() + '/dapp/';
+        const toLint = await removeIgnoredFiles(
+            prefix,
+            'dapp/.eslintrc.json',
+            'dapp/.eslintignore',
+            files,
+        );
+        return run('yarn workspace @zkp-staking/dapp lint:eslint', toLint);
     },
 };

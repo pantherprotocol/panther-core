@@ -1,6 +1,5 @@
 @import '../../variables';
 $unstaking-tab-holder-background: #2b334140;
-$unstaking-tab-background: rgba(99, 114, 136, 0.2);
 
 .unstaking-tab-holder {
     width: 100%;
@@ -9,28 +8,5 @@ $unstaking-tab-background: rgba(99, 114, 136, 0.2);
     .MuiCard-root {
         background-color: $unstaking-tab-holder-background;
         border-radius: 8px;
-    }
-
-    .unstaking-info-message {
-        text-align: center;
-        padding: 16px;
-        border-radius: 8px;
-        margin-bottom: 30px;
-        background-color: $unstaking-tab-background;
-    }
-
-    .total-unclaimed-container {
-        display: flex;
-        justify-content: center;
-
-        .total-unclaimed-rewards {
-            display: flex;
-            width: 55%;
-            margin: 25px 0;
-            justify-content: center;
-            padding: 16px;
-            border-radius: 8px;
-            background-color: $unstaking-tab-background;
-        }
     }
 }

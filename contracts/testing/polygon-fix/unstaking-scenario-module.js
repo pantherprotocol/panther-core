@@ -312,6 +312,8 @@ module.exports = (hre, stakesData) => {
             'synthetic',
         );
 
+        let totalRewardsPaid = constants.Zero;
+
         for await (const action of actions) {
             divider();
             console.log(
@@ -340,16 +342,17 @@ module.exports = (hre, stakesData) => {
                     String(action.rewards),
                 );
                 const actualRewards = result.reward;
+                totalRewardsPaid = totalRewardsPaid.add(actualRewards);
                 const delta = actualRewards.sub(expectedRewards);
-                const deltaPerTokenStaked = delta
-                    .mul(pe('1'))
-                    .div(action.amount);
+                const deltaPerTokenStaked = Number(
+                    fe(delta.mul(pe('1')).div(action.amount)),
+                );
                 totalAbsDelta = totalAbsDelta.add(delta.abs());
                 netDelta = netDelta.add(delta);
                 console.log(
                     `   RewardPaid: ${fe(result.reward)}  delta: ${fe(
                         delta,
-                    )} ` + `(${fe(deltaPerTokenStaked)} per token)`,
+                    )} ` + `(${deltaPerTokenStaked.toExponential()} per token)`,
                 );
             } else if (action.action === 'staking' && result.stakeID) {
                 console.log(
@@ -384,7 +387,10 @@ module.exports = (hre, stakesData) => {
                 await showStates();
                 console.log(
                     `Total delta:    ${fe(totalAbsDelta)} (absolute) / ` +
-                        `${fe(netDelta)} (net)\n`,
+                        `${fe(netDelta)} (net)`,
+                );
+                console.log(
+                    `Total rewards paid so far: ${fe(totalRewardsPaid)}`,
                 );
             }
         }

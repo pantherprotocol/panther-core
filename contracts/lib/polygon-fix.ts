@@ -115,6 +115,6 @@ export const ensureMinTokenBalance = async (
         );
         await mintTo(tokenContract, minter, account, airdrop);
     } else {
-        console.log(`  Balance for ${account} ${fe(balance)} sufficient`);
+        console.log(`   Balance for ${account} ${fe(balance)} sufficient`);
     }
 };

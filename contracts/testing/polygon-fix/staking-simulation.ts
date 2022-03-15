@@ -1,9 +1,9 @@
 import fs from 'fs';
 import _ from 'lodash';
-import {Wallet, utils} from 'ethers';
+import {BigNumber, constants, Wallet, utils} from 'ethers';
 import {assert} from 'console';
 
-import {parseDate, toDate} from '../../lib/units-shortcuts';
+import {fe, pe, parseDate, toDate} from '../../lib/units-shortcuts';
 import {getBlockTimestamp} from '../../lib/provider';
 
 import stakedHistory from './data/staking_3.json';
@@ -40,7 +40,8 @@ interface StakingAction {
     durationDays: number;
     stakedDate: Date;
     unstakedDate: Date;
-    rewards: number;
+    rewardsBN?: BigNumber;
+    rewards?: number;
     APY?: number;
 }
 
@@ -61,11 +62,10 @@ async function main() {
             stakedAt,
             lockedTill: Number(rec.lockedTill),
             unstakedAt,
-            amountDec: Number(utils.formatEther(rec.amount)),
+            amountDec: Number(fe(rec.amount)),
             durationDays: (unstakedAt - stakedAt) / (24 * 3600),
             stakedDate: toDate(stakedAt),
             unstakedDate: toDate(unstakedAt),
-            rewards: 0,
         };
     });
     const existingStakers = _.uniq(stakingRecords.map(r => r.address));
@@ -86,6 +86,7 @@ async function main() {
             type: 'simulated',
             timestamp: Number(rec.unstakedAt),
             date: toDate(rec.unstakedAt),
+            rewardsBN: constants.Zero,
         };
     });
 
@@ -96,23 +97,30 @@ async function main() {
 
     const {startTimestamp, endTimestamp} = doSimulation(actions);
 
+    const totalRewards = actions
+        .filter(i => i.action === 'unstaking')
+        .map(i => i.rewardsBN)
+        .reduce((acc, r) => acc.add(r));
+
     console.log('Calculating APY ...');
-    actions.map((r: any) => {
-        r.APY = (((r.rewards / r.amountDec) * 100) / r.durationDays) * 365;
+    actions.forEach((r: any) => {
+        r.APY =
+            (Number(fe(r.rewardsBN.mul(pe('100')).div(r.amount))) * 365) /
+            r.durationDays;
+        r.rewards = Number(fe(r.rewardsBN));
+        delete r.rewardsBN;
     });
 
     const outFile = __dirname + '/data/actions.json';
     fs.writeFileSync(outFile, JSON.stringify(actions, null, 2));
     console.log(`Wrote to ${outFile}`);
 
-    const totalRewards = _.sumBy(actions, i => i.rewards);
-    console.log('totalRewards', totalRewards);
-
+    console.log('totalRewards', fe(totalRewards));
     const contractRewards =
         (endTimestamp - startTimestamp) * REWARD_TOKENS_PER_SECOND;
-    console.log('Contract generated rewards: ', contractRewards);
+    console.log('Vested rewards: ', contractRewards);
 
-    console.log('Delta:', contractRewards - totalRewards);
+    console.log('Delta:', fe(totalRewards.sub(pe(String(contractRewards)))));
 }
 
 function getStakerAddress(existingStakers: string[], count: number): string {
@@ -197,7 +205,6 @@ async function addSimulatedStakes(
             durationDays: (unstakedAt - stakedAt) / (24 * 3600),
             stakedDate: toDate(stakedAt),
             unstakedDate: toDate(unstakedAt),
-            rewards: 0,
         });
     }
     const finalStakers = _.uniq(stakingRecords.map(r => r.address));
@@ -236,14 +243,18 @@ function doSimulation(actions: StakingAction[]) {
     );
 
     let currentlyStaked: any[] = [];
+    let totalStaked = constants.Zero;
+    let totalStakes = 0;
 
     // https://docs.pantherprotocol.io/dao/governance/proposal-3-polygon-extension/staking
     const startTimestamp = parseDate('Mon 7 Mar 23:59:59 UTC 2022');
     const endTimestamp = parseDate('Mon 2 May 23:59:59 UTC 2022');
     let prevTimeStamp = startTimestamp;
 
+    const unstakingByUuid = _.keyBy(unstaking, a => a.uuid);
+
     actions.forEach((action: any) => {
-        const totalAccumulatedRewards =
+        const deltaVestedRewards =
             prevTimeStamp > endTimestamp
                 ? 0
                 : (Math.min(endTimestamp, action.timestamp) - prevTimeStamp) *
@@ -251,29 +262,45 @@ function doSimulation(actions: StakingAction[]) {
 
         if (action.action === 'staking') {
             currentlyStaked.push(action);
+            totalStaked = totalStaked.add(action.amount);
+            totalStakes += 1;
         }
 
-        const totalStaked = currentlyStaked
-            .map((stake: any) => {
-                return stake.amountDec;
-            })
-            .reduce((a, b) => a + b, 0);
-
-        currentlyStaked.forEach((staked: any) => {
-            const current = actions.find((s: any) => {
-                return s.uuid === staked.uuid && s.action === 'unstaking';
+        if (totalStaked.gt(constants.Zero)) {
+            currentlyStaked.forEach((staked: any) => {
+                const unstakingAction = unstakingByUuid[staked.uuid];
+                if (!unstakingAction) {
+                    throw `Couldn't find unstaking action with uuid ${staked.uuid}`;
+                }
+                if (!unstakingAction.rewardsBN) {
+                    throw `Action missing rewardsBN: ${action}`;
+                }
+                staked.rewardsBN = unstakingAction.rewardsBN =
+                    unstakingAction.rewardsBN.add(
+                        utils
+                            .parseEther(String(deltaVestedRewards))
+                            .mul(unstakingAction.amount)
+                            .div(totalStaked),
+                    );
             });
-            if (!current) {
-                throw `Couldn't find unstaking action with uuid ${staked.uuid}`;
-            }
-            current.rewards +=
-                (totalAccumulatedRewards * current.amountDec) / totalStaked;
-        });
+        }
+
+        const amount = fe(action.amount).replace(/(\.\d{2}).+/, '$1');
+        const paddedAmount = ' '.repeat(10 - amount.length) + amount;
+        const date = toDate(action.timestamp).toISOString();
+        const padAction = ' '.repeat(9 - action.action.length) + action.action;
+        console.log(
+            `${padAction} @ ${date} for ${paddedAmount}`,
+            `  ${totalStakes} staked, total: ${fe(totalStaked)}`,
+        );
 
         if (action.action === 'unstaking') {
             currentlyStaked = currentlyStaked.filter(
                 (staked: any) => staked.uuid !== action.uuid,
             );
+
+            totalStaked = totalStaked.sub(action.amount);
+            totalStakes -= 1;
         }
 
         prevTimeStamp = action.timestamp;

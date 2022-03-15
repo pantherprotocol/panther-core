@@ -394,7 +394,7 @@ module.exports = (hre, stakesData) => {
                         `${fe(netDelta)} (net)`,
                 );
                 console.log(
-                    `Total rewards paid so far: ${fe(totalRewardsPaid)}`,
+                    `Total rewards paid so far: ${fe(totalRewardsPaid)}\n`,
                 );
             }
         }

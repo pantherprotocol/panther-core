@@ -1,3 +1,5 @@
+// Run via: yarn ts-node testing/polygon-fix/staking-simulation.ts
+
 import fs from 'fs';
 import _ from 'lodash';
 import {BigNumber, constants, Wallet, utils} from 'ethers';

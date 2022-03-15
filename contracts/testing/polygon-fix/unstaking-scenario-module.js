@@ -20,7 +20,13 @@ For example, to test batch unstaking, run this in hardhat console:
   resultsAfter = await t.batchUnstake(stakesData.slice(5, 10)); resultsAfter.length
   await showBalances()
 
-Or for a full simulation:
+Or for a full simulation, first ensure that you have
+testing/polygon-fix/data/actions.json - this can be obtained from someone else,
+or generated via:
+
+  yarn ts-node testing/polygon-fix/staking-simulation.ts
+
+Then paste this in hardhat console:
 
   simulationData = require('./testing/polygon-fix/data/actions.json'); simulationData.length
   _ = require('lodash'); null

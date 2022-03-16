@@ -71,13 +71,9 @@ task('staking:list', 'Output staking events data as JSON')
         );
 
         const filter = stakingContract.filters.StakeCreated();
-        let endBlock;
-
-        if (taskArgs.end) {
-            endBlock = Number(taskArgs.end);
-        } else {
-            endBlock = (await hre.ethers.provider.getBlock('latest')).number;
-        }
+        const endBlock = taskArgs.end
+            ? Number(taskArgs.end)
+            : (await hre.ethers.provider.getBlock('latest')).number;
 
         const chunkWriter = (
             events: any[],

@@ -110,7 +110,7 @@ export const ensureMinTokenBalance = async (
     const airdrop = utils.parseEther('2000000');
     if (minBalanceBN.gt(balance)) {
         console.log(
-            `   Balance for ${account} ${fe(balance)} ` +
+            `   ZKP balance for ${account} ${fe(balance)} ` +
                 `below ${fe(minBalanceStr)}; topping up with ${fe(airdrop)}`,
         );
         await mintTo(tokenContract, minter, account, airdrop);

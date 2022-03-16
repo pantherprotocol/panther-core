@@ -388,8 +388,10 @@ module.exports = (hre, stakesData) => {
                 }
                 unstaking.stakeID = action.stakeID;
             }
-            actions.transactionHash = result.tx.hash;
+            const totalStaked = await staking.totalStaked();
+            console.log(`   Total staked: ${fe(totalStaked)}`);
 
+            actions.transactionHash = result.tx.hash;
             prevTimestamp = action.timestamp;
 
             if (i % 5 == 0) {

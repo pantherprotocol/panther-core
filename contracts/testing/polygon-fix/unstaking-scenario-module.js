@@ -387,7 +387,7 @@ module.exports = (hre, stakesData) => {
             actions.transactionHash = result.tx.hash;
             prevTimestamp = action.timestamp;
 
-            if (i % 5 == 0) {
+            if (i % 5 == 0 || i >= actions.length) {
                 divider('=');
                 await showStates();
                 console.log(

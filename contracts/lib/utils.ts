@@ -36,7 +36,7 @@ export async function filterPaginator(
         }
         console.log(`\tGot ${newEvents.length} events`);
         queryStartBlock += blockSize;
-        queryEndBlock += blockSize;
+        queryEndBlock = Math.min(queryEndBlock + blockSize, endBlock);
         idx++;
     }
     return events;

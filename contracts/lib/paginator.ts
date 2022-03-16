@@ -18,12 +18,15 @@ export async function filterPaginator(
 
     const allEvents = [];
     let queryStartBlock = startBlock;
-    let queryEndBlock = startBlock + blockSize - 1;
     let idx = 1;
-    const size = Math.ceil((endBlock - queryStartBlock) / blockSize);
+    const size = Math.ceil((endBlock + 1 - queryStartBlock) / blockSize);
 
-    while (queryStartBlock < endBlock) {
+    while (queryStartBlock <= endBlock) {
         const chunkEvents: any[] = [];
+        const queryEndBlock = Math.min(
+            queryStartBlock + blockSize - 1,
+            endBlock,
+        );
 
         console.log(
             `${idx} of ${size}: from block ${queryStartBlock} to ${queryEndBlock} ...`,
@@ -45,7 +48,6 @@ export async function filterPaginator(
             postChunkHook(chunkEvents, queryStartBlock, queryEndBlock);
         }
         queryStartBlock += blockSize;
-        queryEndBlock = Math.min(queryEndBlock + blockSize, endBlock);
         idx++;
     }
     return allEvents;

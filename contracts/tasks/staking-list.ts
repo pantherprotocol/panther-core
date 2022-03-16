@@ -2,7 +2,7 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task} from 'hardhat/config';
 import {BigNumber, Event} from 'ethers';
 import fs from 'fs';
-import {filterPaginator} from '../lib/utils';
+import {filterPaginator} from '../lib/paginator';
 
 const QUERY_BLOCKS = 1000;
 

@@ -50,6 +50,17 @@ const ALCHEMY_ENDPOINTS: {[name: string]: string} = {
     mumbai: 'https://polygon-mumbai.g.alchemy.com/v2/',
 };
 
+const INFURA_ENDPOINTS: {[name: string]: string} = {
+    mainnet: 'https://mainnet.infura.io/v3/',
+    rinkeby: 'https://rinkeby.infura.io/v3/',
+    goerli: 'https://goerli.infura.io/v3/',
+    kovan: 'https://kovan.infura.io/v3/',
+    ropsten: 'https://ropsten.infura.io/v3/',
+
+    polygon: 'https://polygon-mainnet.infura.io/v3/',
+    mumbai: 'https://polygon-mumbai.infura.io/v3/',
+};
+
 const forkingConfig = {
     url: process.env.HARDHAT_FORKING_URL || 'ts compiler hack',
     blockNumber: Number(process.env.HARDHAT_FORKING_BLOCK),
@@ -163,8 +174,8 @@ function createNetworkConfig(
 
 function getRpcUrl(network: NetworkName): string {
     if (!!process.env.HTTP_PROVIDER) return process.env.HTTP_PROVIDER;
-    if (process.env.INFURA_API_KEY)
-        return `https://${network}.infura.io/v3/` + process.env.INFURA_API_KEY;
+    if (process.env.INFURA_API_KEY && INFURA_ENDPOINTS[network])
+        return INFURA_ENDPOINTS[network] + process.env.INFURA_API_KEY;
     if (process.env.ALCHEMY_API_KEY && ALCHEMY_ENDPOINTS[network])
         return ALCHEMY_ENDPOINTS[network] + process.env.ALCHEMY_API_KEY;
     if (network === 'bsc') return 'https://bsc-dataseed1.defibit.io/';

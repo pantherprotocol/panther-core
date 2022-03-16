@@ -2,7 +2,7 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task} from 'hardhat/config';
 import {BigNumber, Event} from 'ethers';
 import fs from 'fs';
-import {filterPaginator} from '../lib/utils';
+import {filterPaginator} from '../lib/paginator';
 
 // import {abi as REWARD_POOL_ABI} from '../deployments/ARCHIVE/production/artifacts/contracts/MaticRewardPool.sol/MaticRewardPool.json';
 const REWARD_POOL_ADDRESS = '0x773d49309c4E9fc2e9254E7250F157D99eFe2d75';

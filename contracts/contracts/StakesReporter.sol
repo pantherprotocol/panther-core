@@ -31,11 +31,22 @@ contract StakesReporter is IStakingTypes {
     {
         stakes = STAKING.accountStakes(_account);
 
+        uint256 unclaimedRewardsNum;
+
+        for (uint256 i = 0; i < stakes.length; i++) {
+            if (stakes[i].claimedAt == 0) {
+                unclaimedRewardsNum++;
+            }
+        }
+
+        uint256[] memory unclaimedRewardsArray = new uint256[](
+            unclaimedRewardsNum
+        );
         uint256 index;
 
         for (uint256 i = 0; i < stakes.length; i++) {
             if (stakes[i].claimedAt == 0) {
-                unclaimedRewards[index] = getUnclaimedRewards(
+                unclaimedRewardsArray[index] = getUnclaimedRewards(
                     STAKE_REWARD_CONTROLLER.getScArptAt(uint32(0)),
                     STAKE_REWARD_CONTROLLER.getScArptAt(stakes[i].stakedAt),
                     stakes[i].amount
@@ -43,6 +54,8 @@ contract StakesReporter is IStakingTypes {
                 index++;
             }
         }
+
+        unclaimedRewards = unclaimedRewardsArray;
     }
 
     function getStakeInfo(address _account, uint256 _stakeID)

@@ -295,22 +295,22 @@ module.exports = (hre, stakesData) => {
             actions,
             a => a.type === 'real',
         );
-        const [staking, unstaking] = _.partition(
+        const [stakingActions, unstakingActions] = _.partition(
             actions,
             a => a.action === 'staking',
         );
 
         // Needed to update stakeID of unstaking action just after the
         // corresponding staking action succeeded and generated a new stakeID
-        const unstakingByUuid = _.keyBy(unstaking, a => a.uuid);
+        const unstakingByUuid = _.keyBy(unstakingActions, a => a.uuid);
 
         console.log(
             'Simulating',
             actions.length,
             'actions:',
-            staking.length,
+            stakingActions.length,
             'staking /',
-            unstaking.length,
+            unstakingActions.length,
             'unstaking /',
             historical.length,
             'historical /',

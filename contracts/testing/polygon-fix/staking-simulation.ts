@@ -254,6 +254,7 @@ function doSimulation(actions: StakingAction[]) {
     let prevTimeStamp = startTimestamp;
 
     const unstakingByUuid = _.keyBy(unstaking, a => a.uuid);
+    let isFirstStake = true;
 
     actions.forEach((action: any) => {
         const deltaVestedRewards =
@@ -262,7 +263,7 @@ function doSimulation(actions: StakingAction[]) {
                 : (Math.min(endTimestamp, action.timestamp) - prevTimeStamp) *
                   REWARD_TOKENS_PER_SECOND;
 
-        if (action.action === 'staking') {
+        if (action.action === 'staking' && isFirstStake) {
             currentlyStaked.push(action);
             totalStaked = totalStaked.add(action.amount);
             totalStakes += 1;
@@ -287,14 +288,11 @@ function doSimulation(actions: StakingAction[]) {
             });
         }
 
-        const amount = fe(action.amount).replace(/(\.\d{2}).+/, '$1');
-        const paddedAmount = ' '.repeat(10 - amount.length) + amount;
-        const date = toDate(action.timestamp).toISOString();
-        const padAction = ' '.repeat(9 - action.action.length) + action.action;
-        console.log(
-            `${padAction} @ ${date} for ${paddedAmount}`,
-            `  ${totalStakes} staked, total: ${fe(totalStaked)}`,
-        );
+        if (action.action === 'staking' && !isFirstStake) {
+            currentlyStaked.push(action);
+            totalStaked = totalStaked.add(action.amount);
+            totalStakes += 1;
+        }
 
         if (action.action === 'unstaking') {
             currentlyStaked = currentlyStaked.filter(
@@ -305,7 +303,17 @@ function doSimulation(actions: StakingAction[]) {
             totalStakes -= 1;
         }
 
+        const amount = fe(action.amount).replace(/(\.\d{2}).+/, '$1');
+        const paddedAmount = ' '.repeat(10 - amount.length) + amount;
+        const date = toDate(action.timestamp).toISOString();
+        const padAction = ' '.repeat(9 - action.action.length) + action.action;
+        console.log(
+            `${padAction} @ ${date} for ${paddedAmount}`,
+            `  ${totalStakes} staked, total: ${fe(totalStaked)}`,
+        );
+
         prevTimeStamp = action.timestamp;
+        isFirstStake = false;
     });
 
     return {startTimestamp, endTimestamp};

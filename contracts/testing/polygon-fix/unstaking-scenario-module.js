@@ -208,6 +208,7 @@ module.exports = (hre, stakesData) => {
 
     async function stake(account, amount, timestamp) {
         await ensureMinBalance(account, MIN_BALANCE);
+        await ensureMinTokenBalance(pzkToken, minter, account, amount);
         const signer = await impersonate(account);
         await ensureApproval(signer, amount);
         const tx = await staking
@@ -331,12 +332,6 @@ module.exports = (hre, stakesData) => {
                     `${action.action} ${utils.formatEther(action.amount)} ` +
                     `for ${action.address}` +
                     (action.stakeID ? '.' + action.stakeID : ''),
-            );
-            await ensureMinTokenBalance(
-                pzkToken,
-                minter,
-                action.address,
-                action.amount,
             );
             // console.log('action: ', action);
             const promise =

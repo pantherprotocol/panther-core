@@ -75,7 +75,7 @@ const {
 
 module.exports = (hre, stakesData) => {
     const {ethers} = hre;
-    const {constants, utils} = ethers;
+    const {BigNumber, constants, utils} = ethers;
 
     console.log(`stakesData.length = ${stakesData.length})`);
 
@@ -341,9 +341,7 @@ module.exports = (hre, stakesData) => {
             const result = await promise;
             results.push(result);
             if (action.action === 'unstaking' && result.reward) {
-                const expectedRewards = utils.parseEther(
-                    String(action.rewards),
-                );
+                const expectedRewards = BigNumber.from(action.rewardsBN);
                 const actualRewards = result.reward;
                 totalRewardsPaid = totalRewardsPaid.add(actualRewards);
                 const delta = actualRewards.sub(expectedRewards);

@@ -110,7 +110,7 @@ async function main() {
             (Number(fe(r.rewardsBN.mul(pe('100')).div(r.amount))) * 365) /
             r.durationDays;
         r.rewards = Number(fe(r.rewardsBN));
-        delete r.rewardsBN;
+        r.rewardsBN = r.rewardsBN.toString();
     });
 
     const outFile = __dirname + '/data/actions.json';

@@ -4,7 +4,7 @@ import {BigNumber, Event} from 'ethers';
 import fs from 'fs';
 import {filterPaginator} from '../lib/paginator';
 
-const QUERY_BLOCKS = 1000;
+const QUERY_BLOCKS = 500;
 
 async function extractLogData(
     hre: HardhatRuntimeEnvironment,
@@ -39,12 +39,26 @@ async function extractLogData(
     }
 }
 
+function writeEvents(outFile: string, events: any) {
+    if (!outFile) return;
+    fs.writeFileSync(outFile, JSON.stringify(events, null, 2));
+    console.log('Wrote to', outFile);
+}
+
 task('staking:list', 'Output staking events data as JSON')
     .addParam('address', 'Staking contract address')
     .addParam('start', 'Starting block number to look from')
-    .addParam('out', 'File to write to')
+    .addOptionalParam('out', 'File to write to')
+    .addOptionalParam('chunksPrefix', 'Prefix of files to write chunks to')
     .addOptionalParam('end', 'Ending block number to look to')
     .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
+        if (!taskArgs.out && !taskArgs.chunksPrefix) {
+            console.error(
+                'Must provide at least one of --out and --chunksPrefix.',
+            );
+            process.exit(1);
+        }
+
         const stakingContract = await hre.ethers.getContractAt(
             'Staking',
             taskArgs.address,
@@ -59,6 +73,18 @@ task('staking:list', 'Output staking events data as JSON')
             endBlock = (await hre.ethers.provider.getBlock('latest')).number;
         }
 
+        const chunkWriter = (
+            events: any[],
+            startBlock: number,
+            endBlock: number,
+        ) => {
+            process.stdout.write('\t');
+            writeEvents(
+                `${taskArgs.chunksPrefix}-${startBlock}-${endBlock}.json`,
+                events,
+            );
+        };
+
         const logs = await filterPaginator(
             Number(taskArgs.start),
             endBlock,
@@ -67,11 +93,9 @@ task('staking:list', 'Output staking events data as JSON')
             filter,
             extractLogData,
             hre,
+            chunkWriter,
         );
 
         console.log(logs);
-        if (taskArgs.out) {
-            fs.writeFileSync(taskArgs.out, JSON.stringify(logs, null, 2));
-            console.log('Wrote to', taskArgs.out);
-        }
+        writeEvents(taskArgs.out, logs);
     });

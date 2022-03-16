@@ -14,7 +14,7 @@ export async function filterPaginator(
     console.log('Querying events from the contract...');
     console.log('\tStart block:', startBlock);
     console.log('\tEnd block:', endBlock);
-    console.log(`\tChunk size: ${blockSize} blocks`);
+    console.log('\tChunk size:', blockSize, 'blocks');
 
     const allEvents = [];
     let queryStartBlock = startBlock;
@@ -29,7 +29,14 @@ export async function filterPaginator(
         );
 
         console.log(
-            `${idx} of ${size}: from block ${queryStartBlock} to ${queryEndBlock} ...`,
+            idx,
+            'of',
+            size,
+            ': from block',
+            queryStartBlock,
+            'to',
+            queryEndBlock,
+            '...',
         );
         const newEvents = await contract.queryFilter(
             filter,

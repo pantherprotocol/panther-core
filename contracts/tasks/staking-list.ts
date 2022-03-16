@@ -63,6 +63,12 @@ task('staking:list', 'Output staking events data as JSON')
             'Staking',
             taskArgs.address,
         );
+        console.log(
+            'Connecting to',
+            hre.network.name,
+            'with params:',
+            hre.network.config,
+        );
 
         const filter = stakingContract.filters.StakeCreated();
         let endBlock;

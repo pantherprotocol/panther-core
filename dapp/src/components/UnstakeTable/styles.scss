@@ -1,29 +1,59 @@
 @import '../../variables';
 
-.MuiTable-root th {
-    vertical-align: top;
-    font-size: 0.875rem !important;
-}
-.MuiTableCell-root {
-    padding: 10px 5px !important;
-    font-size: 0.775rem !important;
-}
+.MuiTable-root {
+    th {
+        vertical-align: top;
+        font-size: 0.875rem !important;
+    }
 
-.MuiTable-root .btn {
-    color: $white;
-    background: $second-blue;
-    border-radius: 6px;
-    text-transform: capitalize;
-    width: 116px;
-    height: 35px;
-    font-size: 12px !important;
+    .MuiTableCell-root {
+        padding: 10px 5px !important;
+        font-size: 0.775rem !important;
+    }
 
-    &:hover {
+    .btn {
+        color: $white;
         background: $second-blue;
+        border-radius: 6px;
+        text-transform: capitalize;
+        width: 116px;
+        height: 35px;
+        font-size: 12px !important;
+
+        &:hover {
+            background: $second-blue;
+        }
+    }
+
+    .disable.btn {
+        color: $white;
+        background: $table-background;
+    }
+
+    td.lockedTill a {
+        color: red;
+        font-weight: bold;
+        // text-decoration: underline;
+    }
+
+    td.unstake {
+        .icon,
+        img {
+            opacity: 1;
+            color: red;
+        }
     }
 }
 
-.MuiTable-root .disable.btn {
-    color: $white;
-    background: $table-background;
+.MuiTooltip-tooltip,
+.transition-tooltip {
+    background-color: #616161 !important;
+    // background-color: $card-background !important;
+    padding: 20px !important;
+
+    a {
+        color: $link-color;
+        font-weight: bold;
+        text-decoration: underline;
+    }
 }

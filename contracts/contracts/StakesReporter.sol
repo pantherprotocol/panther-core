@@ -31,27 +31,15 @@ contract StakesReporter is IStakingTypes {
     {
         stakes = STAKING.accountStakes(_account);
 
-        uint256 unclaimedRewardsNum;
+        uint256[] memory unclaimedRewardsArray = new uint256[](stakes.length);
 
         for (uint256 i = 0; i < stakes.length; i++) {
             if (stakes[i].claimedAt == 0) {
-                unclaimedRewardsNum++;
-            }
-        }
-
-        uint256[] memory unclaimedRewardsArray = new uint256[](
-            unclaimedRewardsNum
-        );
-        uint256 index;
-
-        for (uint256 i = 0; i < stakes.length; i++) {
-            if (stakes[i].claimedAt == 0) {
-                unclaimedRewardsArray[index] = getUnclaimedRewards(
-                    STAKE_REWARD_CONTROLLER.getScArptAt(uint32(0)),
+                unclaimedRewardsArray[i] = getUnclaimedRewards(
                     STAKE_REWARD_CONTROLLER.getScArptAt(stakes[i].stakedAt),
+                    STAKE_REWARD_CONTROLLER.getScArptAt(uint32(0)),
                     stakes[i].amount
                 );
-                index++;
             }
         }
 
@@ -85,8 +73,8 @@ contract StakesReporter is IStakingTypes {
 
         if (claimedAt == 0)
             unclaimedRewards = getUnclaimedRewards(
-                STAKE_REWARD_CONTROLLER.getScArptAt(uint32(0)),
                 STAKE_REWARD_CONTROLLER.getScArptAt(stakedAt),
+                STAKE_REWARD_CONTROLLER.getScArptAt(uint32(0)),
                 amount
             );
     }
@@ -96,6 +84,6 @@ contract StakesReporter is IStakingTypes {
         uint256 _scArptTill,
         uint96 amount
     ) public pure returns (uint256) {
-        return ((_scArptFrom - _scArptTill) * amount) / SCALE;
+        return ((_scArptTill - _scArptFrom) * amount) / SCALE;
     }
 }

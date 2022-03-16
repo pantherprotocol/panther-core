@@ -1,30 +1,22 @@
 import {ethers} from 'hardhat';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils as u} from 'ethers';
 import {expect} from 'chai';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {FakeContract, smock} from '@defi-wonderland/smock';
 import {
     StakesReporter,
     StakeRewardController,
     Staking,
 } from '../types/contracts';
+import {parseDate} from '../lib/units-shortcuts';
 
 describe('Stakes Reporter', () => {
     let stakesReporter: StakesReporter;
     let stakeRewardController: FakeContract<StakeRewardController>;
     let staking: FakeContract<Staking>;
-    let staker: SignerWithAddress;
 
-    const e9 = '000000000';
-    const e18 = '000000000000000000';
-
-    const scale = BigNumber.from('1' + e9);
-    const scArptFrom = BigNumber.from('987654321' + e18);
-    const scArptTill = BigNumber.from('123456789' + e18);
+    const scale = u.parseUnits('1', 9);
 
     before(async () => {
-        [staker] = await ethers.getSigners();
-
         stakeRewardController = await smock.fake('StakeRewardController');
         staking = await smock.fake('Staking');
 
@@ -37,100 +29,133 @@ describe('Stakes Reporter', () => {
         )) as StakesReporter;
     });
 
-    const getUnclaimedRewards = (amount: BigNumber) => {
-        return scArptFrom.sub(scArptTill).mul(amount).div(scale);
-    };
-
-    const mockStakes = (
-        stakedAmount: BigNumber,
+    type Stake = [
+        id: number,
+        stakeType: string,
         stakedAt: number,
+        lockedTill: number,
         claimedAt: number,
-    ) => {
-        staking.stakes.returns([
-            0, // id
+        amount: BigNumber,
+        delegatee: string,
+    ] & {stakedAt: number; claimedAt: number; amount: BigNumber};
+
+    const createStake = (
+        amount: BigNumber,
+        _stakedAt: string,
+        _claimedAt: string,
+    ): Stake => {
+        const stakedAt = parseDate(_stakedAt);
+        const claimedAt = _claimedAt === '0' ? 0 : parseDate(_claimedAt);
+        const lockedTill = stakedAt + 7 * 24 * 3600;
+        const stake: any = [
+            0, // stakeID
             '0x99999999', // stakeType
-            stakedAt, // stakedAt
-            0, // lockedTill
-            claimedAt, // claimedAt
-            stakedAmount, // amount
+            stakedAt,
+            lockedTill,
+            claimedAt,
+            amount, // amount
             ethers.constants.AddressZero, // delegatee
-        ]);
+        ];
+        stake.amount = amount;
+        stake.stakedAt = stakedAt;
+        stake.claimedAt = claimedAt;
+        return stake as Stake;
     };
-    const mockAccountStakes = (stakedAmount: BigNumber, stakedAt: number) => {
-        // Note: First stake has not been claimed yet but the second one has
-        staking.accountStakes.returns([
-            [
-                0, // id
-                '0x99999999', // stakeType
-                stakedAt, // stakedAt
-                0, // lockedTill
-                0, // claimedAt
-                stakedAmount, // amount
-                ethers.constants.AddressZero, // delegatee
-            ],
-            [
-                0, // id
-                '0x99999999', // stakeType
-                stakedAt, // stakedAt
-                0, // lockedTill
-                99, // claimedAt
-                stakedAmount, // amount
-                ethers.constants.AddressZero, // delegatee
-            ],
-        ]);
+
+    const unclaimedStake = createStake(u.parseEther('1500'), '2022-03-01', '0');
+    const claimedStake = createStake(
+        u.parseEther('4000'),
+        '2022-03-02',
+        '2022-03-09',
+    );
+    const account1 = ethers.Wallet.createRandom().address;
+    const account2 = ethers.Wallet.createRandom().address;
+
+    const mockStakes = (account: string, stakeID: number, stake: Stake) => {
+        staking.stakes
+            .whenCalledWith(account, BigNumber.from(String(stakeID)))
+            .returns(stake);
     };
-    const mockGetScArptAt = (stakedAt: number) => {
-        stakeRewardController.getScArptAt.whenCalledWith(0).returns(scArptFrom);
+
+    const mockGetScArptAt = (timestamp: number, amount: string) => {
         stakeRewardController.getScArptAt
-            .whenCalledWith(stakedAt)
-            .returns(scArptTill);
+            .whenCalledWith(timestamp)
+            .returns(u.parseEther(amount));
     };
 
-    it('should get stake info which has not been claimed', async () => {
-        const stakedAmount = BigNumber.from('1000' + e18);
-        const stakedAt = 99;
-        const claimedAt = 0;
+    const getUnclaimedRewards = (
+        scArptFrom: string,
+        scArptTill: string,
+        amount: BigNumber,
+    ) => {
+        return u
+            .parseEther(scArptTill)
+            .sub(u.parseEther(scArptFrom))
+            .mul(amount)
+            .div(scale);
+    };
 
-        mockStakes(stakedAmount, stakedAt, claimedAt);
-        mockGetScArptAt(stakedAt);
+    describe('getStakeInfo()', () => {
+        it('should get info on claimed stake', async () => {
+            const stakeID = 3;
+            mockStakes(account1, stakeID, claimedStake);
 
-        const info = await stakesReporter.getStakeInfo(staker.address, 0);
+            const info = await stakesReporter.getStakeInfo(account1, stakeID);
 
-        const unclaimedRewards = getUnclaimedRewards(stakedAmount);
+            expect(info.stake.amount, 'amount').to.equal(claimedStake.amount);
+            expect(info.unclaimedRewards, 'rewards').to.equal(0);
+        });
 
-        expect(info.stake.amount).to.equal(stakedAmount);
-        expect(info.unclaimedRewards).to.equal(unclaimedRewards);
+        it('should get info on unclaimed stake', async () => {
+            const stakeID = 5;
+            mockStakes(account2, stakeID, unclaimedStake);
+            mockGetScArptAt(unclaimedStake.stakedAt, '3');
+            mockGetScArptAt(0, '10');
+
+            const info = await stakesReporter.getStakeInfo(account2, stakeID);
+
+            expect(info.stake.amount, 'amount').to.equal(unclaimedStake.amount);
+
+            // ARPT is 10 (current time) - 3 (stakedAt time)
+            const expectedRewards = getUnclaimedRewards(
+                '3',
+                '10',
+                unclaimedStake.amount,
+            );
+            expect(info.unclaimedRewards, 'rewards').to.equal(expectedRewards);
+        });
     });
 
-    it('should get stake info which has been claimed', async () => {
-        const stakedAmount = BigNumber.from('1000' + e18);
-        const stakedAt = 99;
-        const claimedAt = 1;
+    describe('getStakesInfo()', () => {
+        const mockAccountStakes = (account: string): void => {
+            staking.accountStakes
+                .whenCalledWith(account)
+                .returns([claimedStake, unclaimedStake]);
+        };
 
-        mockStakes(stakedAmount, stakedAt, claimedAt);
-        mockGetScArptAt(stakedAt);
+        it('should get info for multiple stakes', async () => {
+            mockAccountStakes(account1);
+            mockGetScArptAt(unclaimedStake.stakedAt, '10');
+            mockGetScArptAt(0, '15');
 
-        const info = await stakesReporter.getStakeInfo(staker.address, 0);
+            const info = await stakesReporter.getStakesInfo(account1);
 
-        expect(info.stake.amount).to.equal(stakedAmount);
-        expect(info.unclaimedRewards).to.equal(0);
-    });
-
-    it('should get stakes info', async () => {
-        const stakedAmount = BigNumber.from('1000' + e18);
-        const stakedAt = 99;
-
-        // Note: First stake has not been claimed yet but the second one has
-        mockAccountStakes(stakedAmount, stakedAt);
-        mockGetScArptAt(stakedAt);
-
-        const info = await stakesReporter.getStakesInfo(staker.address);
-
-        const unclaimedRewards = getUnclaimedRewards(stakedAmount);
-
-        expect(info.stakes[0].amount).to.equal(stakedAmount);
-        expect(info.stakes[1].amount).to.equal(stakedAmount);
-        expect(info.unclaimedRewards[0]).to.equal(unclaimedRewards);
-        expect(info.unclaimedRewards.length).to.equal(1);
+            const expectedRewards = getUnclaimedRewards(
+                '10',
+                '15',
+                unclaimedStake.amount,
+            );
+            expect(info.stakes[0].amount, 'amount 0').to.equal(
+                claimedStake.amount,
+            );
+            expect(info.stakes[1].amount, 'amount 1').to.equal(
+                unclaimedStake.amount,
+            );
+            expect(info.unclaimedRewards[0], 'rewards 0').to.equal(0);
+            expect(info.unclaimedRewards[1], 'rewards 1').to.equal(
+                expectedRewards,
+            );
+            expect(info.unclaimedRewards.length, 'rewards length').to.equal(2);
+        });
     });
 });

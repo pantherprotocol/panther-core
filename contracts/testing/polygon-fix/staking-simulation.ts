@@ -8,7 +8,7 @@ import {assert} from 'console';
 import {fe, pe, parseDate, toDate} from '../../lib/units-shortcuts';
 import {getBlockTimestamp} from '../../lib/provider';
 
-import stakedHistory from './data/staking_3.json';
+import stakedHistory from './data/staking-events-till-25884010.json';
 
 const REWARD_TOKENS_PER_SECOND = 2000000 / 56 / 60 / 60 / 24;
 

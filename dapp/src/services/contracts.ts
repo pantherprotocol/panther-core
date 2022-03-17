@@ -64,11 +64,16 @@ export function getStakingContract(library: any, chainId: number): Staking {
     return getContract(ContractName.STAKING, library, chainId) as Staking;
 }
 
-export function getStakesReporterContractOnPolygon(
+export function chainHasStakesReporter(chainId?: number): boolean {
+    return !!env[`STAKES_REPORTER_CONTRACT_${chainId}`];
+}
+
+export function getStakesReporterContract(
     library: any,
+    chainId: number,
 ): StakesReporter {
     return new Contract(
-        process.env.STAKES_REPORTER_137 as string,
+        env[`STAKES_REPORTER_CONTRACT_${chainId}`] as string,
         STAKES_REPORTER_ABI,
         library,
     ) as StakesReporter;

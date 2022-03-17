@@ -15,9 +15,10 @@ import {getEventFromReceipt} from '../utils/transactions';
 
 import {
     ContractName,
+    chainHasStakesReporter,
     getContractAddress,
     getRewardMasterContract,
-    getStakesReporterContractOnPolygon,
+    getStakesReporterContract,
     getStakingContract,
     getTokenContract,
     getSignableContract,
@@ -343,8 +344,12 @@ export async function getRewardsBalance(
     account: string,
 ): Promise<BigNumber | null> {
     try {
-        if (chainId === 137) {
-            return await getRewardsBalanceOnPolygon(library, account);
+        if (chainHasStakesReporter(chainId)) {
+            return await getRewardsBalanceFromReporter(
+                library,
+                chainId,
+                account,
+            );
         } else {
             const rewardMaster = getRewardMasterContract(library, chainId);
             return await rewardMaster.entitled(account);
@@ -355,11 +360,12 @@ export async function getRewardsBalance(
     }
 }
 
-async function getRewardsBalanceOnPolygon(
+async function getRewardsBalanceFromReporter(
     library: any,
+    chainId: number,
     account: string,
 ): Promise<BigNumber> {
-    const stakesReporterContract = getStakesReporterContractOnPolygon(library);
+    const stakesReporterContract = getStakesReporterContract(library, chainId);
     const stakesInfo = await stakesReporterContract.getStakesInfo(account);
     const rewards = stakesInfo.unclaimedRewards.reduce(
         (acc, reward) => acc.add(reward),

@@ -19,6 +19,7 @@ import background from '../../images/background.png';
 import * as accountService from '../../services/account';
 import {formatAccountAddress} from '../../services/account';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
+import {chainHasStakesReporter} from '../../services/contracts';
 import {chainVar} from '../../services/env';
 import * as stakingService from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
@@ -164,6 +165,15 @@ function StakingZkpPage() {
             if (!library || !chainId || !account) {
                 setRewardsBalance(null);
                 return;
+            }
+            if (chainHasStakesReporter(chainId)) {
+                if (chainId === 137) {
+                    console.debug('Using StakesReporter on Polygon');
+                } else {
+                    console.debug('Using StakesReporter on chain', chainId);
+                }
+            } else {
+                console.debug('Not using StakesReporter; chainId', chainId);
             }
 
             const rewardsBalance = await stakingService.getRewardsBalance(

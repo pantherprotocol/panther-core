@@ -9,14 +9,13 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
+import {chainHasStakesReporter} from '../../services/contracts';
 import * as stakingService from '../../services/staking';
 import {formatTime, formatCurrency} from '../../utils/helpers';
-import {SafeLink} from '../Common/links';
 
 import './styles.scss';
 
@@ -105,7 +104,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
 
     const unstake = useCallback(
         async id => {
-            if (!library || !chainId || !account || chainId === 137) {
+            if (!library || !chainId || !account) {
                 return;
             }
 
@@ -133,54 +132,14 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         setTotalStaked();
     }, [account, library, setTotalStaked]);
 
-    const transition = chainId === 137;
-    const transitionTooltipTitle = (
-        <>
-            <Typography paragraph={true}>
-                Due to the Polygon staking bug fix, there will be a transition
-                period after{' '}
-                <SafeLink href="https://docs.pantherprotocol.io/dao/governance/proposal-4-polygon-fix#proposed-actions">
-                    DAO proposal 4
-                </SafeLink>{' '}
-                voting closes during which the fix will be applied. During this
-                time unstaking will be temporarily unavailable.
-            </Typography>
-            <Typography paragraph={true}>
-                <strong>
-                    No rewards will be lost. Rewards will continue to accrue.
-                </strong>
-            </Typography>
-            <Typography paragraph={true}>
-                The transition period end is hard to predict due to the
-                decentralised nature of proposal execution, but it is{' '}
-                <em>likely</em> (but not guaranteed) to be less than 24 hours
-                from when the vote closes at Mar 16, 2022, 2:12 PM UTC.{' '}
-            </Typography>
-        </>
-    );
-
-    const TransitionTooltip = (props: any) => (
-        <Tooltip
-            title={transitionTooltipTitle}
-            data-html="true"
-            placement="top"
-            className="transitionTooltip"
-        >
-            {props.children}
-        </Tooltip>
-    );
-
     const unstakeRow = (row: StakeRow) => {
         const unstakeButton = (
             <Button
-                className={`btn ${
-                    row.unstakable || transition ? 'disable' : ''
-                }`}
-                disabled={row.unstakable || transition}
+                className={`btn ${row.unstakable ? 'disable' : ''}`}
+                disabled={row.unstakable}
                 onClick={() => {
-                    if (!transition) unstake(row.id);
+                    unstake(row.id);
                 }}
-                endIcon={transition && <img src={infoIcon} />}
             >
                 Unstake
             </Button>
@@ -210,24 +169,9 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                         </TableCell>
                         <TableCell align="center" className="lockedTill">
                             {formatTime(row.lockedTill)} <br />
-                            {transition && (
-                                <TransitionTooltip>
-                                    <span>
-                                        <SafeLink href="https://docs.pantherprotocol.io/dao/governance/proposal-4-polygon-fix#proposed-actions">
-                                            plus transition period
-                                        </SafeLink>
-                                    </span>
-                                </TransitionTooltip>
-                            )}
                         </TableCell>
                         <TableCell align="center" className="unstake">
-                            {transition ? (
-                                <TransitionTooltip>
-                                    <div>{unstakeButton}</div>
-                                </TransitionTooltip>
-                            ) : (
-                                unstakeButton
-                            )}
+                            {unstakeButton}
                         </TableCell>
                     </TableRow>
                 )}
@@ -235,26 +179,25 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         );
     };
 
-    const rewardsTooltip =
-        chainId === 137 ? (
-            <div>
-                With the new <code>StakeRewardsController</code> contract on
-                Polygon, each stake is managed independently, rather than being
-                your account's share of the staking pool. So rewards are accrued
-                independently for each stake, rather than being distributed
-                proportionally between all of your stakes. This means that
-                unlike on Ethereum mainnet, if you unstake one stake, it will
-                not change the rewards shown for other active stakes.
-            </div>
-        ) : (
-            <div>
-                Your total rewards are accrued based on your share of the
-                staking pool. They are indicated here as being distributed
-                proportionally between all of your stakes; however as you stake
-                and unstake, the proportions available for redemption via each
-                stake will change, but the total rewards will not.
-            </div>
-        );
+    const rewardsTooltip = chainHasStakesReporter(chainId) ? (
+        <div>
+            With the new <code>StakeRewardsController</code> contract on
+            Polygon, each stake is managed independently, rather than being your
+            account's share of the staking pool. So rewards are accrued
+            independently for each stake, rather than being distributed
+            proportionally between all of your stakes. This means that unlike on
+            Ethereum mainnet, if you unstake one stake, it will not change the
+            rewards shown for other active stakes.
+        </div>
+    ) : (
+        <div>
+            Your total rewards are accrued based on your share of the staking
+            pool. They are indicated here as being distributed proportionally
+            between all of your stakes; however as you stake and unstake, the
+            proportions available for redemption via each stake will change, but
+            the total rewards will not.
+        </div>
+    );
 
     return (
         <TableContainer component={Paper}>

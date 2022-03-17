@@ -3,7 +3,6 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
-import {useWeb3React} from '@web3-react/core';
 import {BigNumber, constants} from 'ethers';
 
 import {formatCurrency} from '../../utils/helpers';
@@ -36,9 +35,6 @@ const UnstakingInfoMSG = () => (
 );
 
 const TotalUnclaimedRewards = (props: {rewardsBalance: BigNumber | null}) => {
-    const context = useWeb3React();
-    const {chainId} = context;
-
     const hasRewards =
         props.rewardsBalance && props.rewardsBalance.gt(constants.Zero);
 
@@ -49,7 +45,7 @@ const TotalUnclaimedRewards = (props: {rewardsBalance: BigNumber | null}) => {
                     <Typography variant="caption">No rewards yet</Typography>
                 </Box>
             )}
-            {chainId !== 137 && props.rewardsBalance && hasRewards && (
+            {props.rewardsBalance && hasRewards && (
                 <Box className="total-unclaimed-rewards">
                     <Typography variant="caption">
                         Total Unclaimed Rewards:{' '}

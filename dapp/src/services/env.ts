@@ -1,4 +1,4 @@
-const REQUIRED_ENV_VARS: string[] = ['CHAIN_IDS'];
+const REQUIRED_ENV_VARS: string[] = ['CHAIN_IDS', 'STAKES_REPORTER_137'];
 
 const REQUIRED_CHAIN_ENV_VAR_PREFIXES: string[] = [
     'STAKING_CONTRACT',
@@ -16,6 +16,7 @@ const REQUIRED_CHAIN_ENV_VAR_PREFIXES: string[] = [
 export const env = {
     CHAIN_IDS: process.env.CHAIN_IDS,
     TOKEN_SYMBOL: process.env.TOKEN_SYMBOL,
+    STAKES_REPORTER_137: process.env.STAKES_REPORTER_137,
 
     REWARD_MASTER_CONTRACT_1: process.env.REWARD_MASTER_CONTRACT_1,
     REWARD_MASTER_CONTRACT_4: process.env.REWARD_MASTER_CONTRACT_4,

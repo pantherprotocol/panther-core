@@ -4,7 +4,6 @@ import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
-import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 
 import ethLogo from '../../images/eth-logo.svg';
@@ -24,10 +23,6 @@ const BalanceCard = (props: {
     accountAddress: string | null;
     networkLogo: string | undefined;
 }) => {
-    const context = useWeb3React();
-
-    const {chainId} = context;
-
     const stakedUSDValue: BigNumber | null = fiatPrice(
         props.stakedBalance,
         props.pricePerToken,
@@ -69,13 +64,11 @@ const BalanceCard = (props: {
                     balance={props.stakedBalance}
                     amountUSD={stakedUSDValue}
                 />
-                {chainId !== 137 && (
-                    <AddressBalances
-                        title={'Unclaimed Reward Balance'}
-                        balance={props.rewardsBalance}
-                        amountUSD={rewardsUSDValue}
-                    />
-                )}
+                <AddressBalances
+                    title={'Unclaimed Reward Balance'}
+                    balance={props.rewardsBalance}
+                    amountUSD={rewardsUSDValue}
+                />
             </Card>
         </Box>
     );

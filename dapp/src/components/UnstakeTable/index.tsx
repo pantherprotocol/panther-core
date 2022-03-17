@@ -205,11 +205,9 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                             })}{' '}
                             ZKP
                         </TableCell>
-                        {chainId !== 137 && (
-                            <TableCell align="right">
-                                {row.calculatedReward} ZKP
-                            </TableCell>
-                        )}
+                        <TableCell align="right">
+                            {row.calculatedReward} ZKP
+                        </TableCell>
                         <TableCell align="center" className="lockedTill">
                             {formatTime(row.lockedTill)} <br />
                             {transition && (
@@ -237,6 +235,27 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         );
     };
 
+    const rewardsTooltip =
+        chainId === 137 ? (
+            <div>
+                With the new <code>StakeRewardsController</code> contract on
+                Polygon, each stake is managed independently, rather than being
+                your account's share of the staking pool. So rewards are accrued
+                independently for each stake, rather than being distributed
+                proportionally between all of your stakes. This means that
+                unlike on Ethereum mainnet, if you unstake one stake, it will
+                not change the rewards shown for other active stakes.
+            </div>
+        ) : (
+            <div>
+                Your total rewards are accrued based on your share of the
+                staking pool. They are indicated here as being distributed
+                proportionally between all of your stakes; however as you stake
+                and unstake, the proportions available for redemption via each
+                stake will change, but the total rewards will not.
+            </div>
+        );
+
     return (
         <TableContainer component={Paper}>
             <Table
@@ -248,21 +267,17 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                     <TableRow>
                         <TableCell align="left">Staked Date</TableCell>
                         <TableCell align="right">Amount Staked</TableCell>
-                        {chainId !== 137 && (
-                            <TableCell align="right">
-                                Rewards
-                                <Tooltip
-                                    title={
-                                        'Your total rewards are accrued based on your share of the staking pool. They are indicated here as being distributed proportionally between all of your stakes; however as you stake and unstake, the proportions available for redemption via each stake will change, but the total rewards will not.'
-                                    }
-                                    data-html="true"
-                                    placement="top"
-                                    className="icon"
-                                >
-                                    <img src={infoIcon} />
-                                </Tooltip>
-                            </TableCell>
-                        )}
+                        <TableCell align="right">
+                            Rewards
+                            <Tooltip
+                                title={rewardsTooltip}
+                                data-html="true"
+                                placement="top"
+                                className="icon"
+                            >
+                                <img src={infoIcon} />
+                            </Tooltip>
+                        </TableCell>
                         <TableCell align="center">Locked Till</TableCell>
                         <TableCell align="center">Action</TableCell>
                     </TableRow>

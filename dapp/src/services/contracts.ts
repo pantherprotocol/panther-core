@@ -3,15 +3,18 @@ import {Contract} from 'ethers';
 
 import {abi as PZKPTOKEN_ABI} from '../abi/PZkpToken';
 import {abi as REWARD_MASTER_ABI} from '../abi/RewardMaster';
+import {abi as STAKES_REPORTER_ABI} from '../abi/StakesReporter';
 import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as ZKPTOKEN_ABI} from '../abi/ZKPToken';
 import {RewardMaster} from '../types/contracts/RewardMaster';
+import {StakesReporter} from '../types/contracts/StakesReporter';
 import {Staking} from '../types/contracts/Staking';
 
 import {env} from './env';
 
 export enum ContractName {
     STAKING,
+    STAKES_REPORTER,
     REWARD_MASTER,
     STAKING_TOKEN,
 }
@@ -59,6 +62,16 @@ export function getTokenContract(library: any, chainId: number): Contract {
 
 export function getStakingContract(library: any, chainId: number): Staking {
     return getContract(ContractName.STAKING, library, chainId) as Staking;
+}
+
+export function getStakesReporterContractOnPolygon(
+    library: any,
+): StakesReporter {
+    return new Contract(
+        process.env.STAKES_REPORTER_137 as string,
+        STAKES_REPORTER_ABI,
+        library,
+    ) as StakesReporter;
 }
 
 export function getRewardMasterContract(

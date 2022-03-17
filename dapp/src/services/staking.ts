@@ -17,6 +17,7 @@ import {
     ContractName,
     getContractAddress,
     getRewardMasterContract,
+    getStakesReporterContractOnPolygon,
     getStakingContract,
     getTokenContract,
     getSignableContract,
@@ -341,13 +342,30 @@ export async function getRewardsBalance(
     chainId: number,
     account: string,
 ): Promise<BigNumber | null> {
-    const contract = getRewardMasterContract(library, chainId);
     try {
-        return await contract.entitled(account);
+        if (chainId === 137) {
+            return await getRewardsBalanceOnPolygon(library, account);
+        } else {
+            const rewardMaster = getRewardMasterContract(library, chainId);
+            return await rewardMaster.entitled(account);
+        }
     } catch (err: any) {
         console.warn(`Failed to fetch rewards entitled for ${account}:`, err);
         return err;
     }
+}
+
+async function getRewardsBalanceOnPolygon(
+    library: any,
+    account: string,
+): Promise<BigNumber> {
+    const stakesReporterContract = getStakesReporterContractOnPolygon(library);
+    const stakesInfo = await stakesReporterContract.getStakesInfo(account);
+    const rewards = stakesInfo.unclaimedRewards.reduce(
+        (acc, reward) => acc.add(reward),
+        constants.Zero,
+    );
+    return rewards;
 }
 
 export async function getTotalStaked(

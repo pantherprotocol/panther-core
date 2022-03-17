@@ -17,6 +17,7 @@ import {onWrongNetwork} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
 import * as stakingService from '../../services/staking';
 import {formatCurrency, safeParseUnits} from '../../utils/helpers';
+import AlertDialog from '../AlertDialog';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 
@@ -222,19 +223,40 @@ const StakingBtn = (props: {
     tokenBalance: BigNumber | null;
     stake: (amount: BigNumber) => Promise<void>;
 }) => {
+    const context = useWeb3React();
+    const {chainId} = context;
     const [buttonText, ready] = getButtonText(
         props.amountToStake,
         props.amountToStakeBN,
         props.tokenBalance,
     );
     const activeClass = ready ? 'active' : '';
+    const [openAlertDialog, setOpenAlertDialog] = React.useState(false);
+
+    const handleClose = () => {
+        setOpenAlertDialog(false);
+    };
+
+    const stake = () => {
+        props.amountToStakeBN && props.stake(props.amountToStakeBN);
+        handleClose();
+    };
+
     return (
         <Box className={`buttons-holder ${activeClass}`}>
+            {openAlertDialog && (
+                <AlertDialog handleClose={handleClose} stake={stake} />
+            )}
+
             <Button
                 className="staking-button"
                 onClick={() => {
                     if (ready && props.amountToStakeBN) {
-                        props.stake(props.amountToStakeBN);
+                        if (chainId === 137) {
+                            setOpenAlertDialog(true);
+                        } else {
+                            props.stake(props.amountToStakeBN);
+                        }
                     }
                 }}
             >

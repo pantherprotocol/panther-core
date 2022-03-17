@@ -182,15 +182,11 @@ function StakingZkpPage() {
                 account,
             );
             setRewardsBalance(rewardsBalance);
-            if (chainId !== 137) {
-                console.debug(
-                    'rewardsBalance:',
-                    formatCurrency(rewardsBalance),
-                    `(USD \$${formatCurrency(
-                        fiatPrice(rewardsBalance, price),
-                    )})`,
-                );
-            }
+            console.debug(
+                'rewardsBalance:',
+                formatCurrency(rewardsBalance),
+                `(USD \$${formatCurrency(fiatPrice(rewardsBalance, price))})`,
+            );
         },
         [library, chainId, account],
     );

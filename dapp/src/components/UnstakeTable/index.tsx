@@ -79,7 +79,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
     const {library, chainId, account} = context;
     const [stakedData, setStakedData] = useState<any[]>([]);
 
-    const setTotalStaked = useCallback(async () => {
+    const fetchStakedData = useCallback(async () => {
         if (!library || !chainId || !account) {
             return;
         }
@@ -130,10 +130,10 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                 data,
                 false,
             );
-            setTotalStaked();
+            fetchStakedData();
             props.fetchData();
         },
-        [library, chainId, account, setTotalStaked, props],
+        [library, chainId, account, fetchStakedData, props],
     );
 
     useEffect(() => {
@@ -141,8 +141,8 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
             return;
         }
 
-        setTotalStaked();
-    }, [account, library, setTotalStaked]);
+        fetchStakedData();
+    }, [account, library, fetchStakedData]);
 
     const unstakeRow = (row: StakeRow) => {
         const unstakeButton = (

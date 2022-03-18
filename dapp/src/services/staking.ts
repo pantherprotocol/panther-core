@@ -269,7 +269,7 @@ export async function unstake(
     let tx: any;
     try {
         tx = await contract.unstake(stakeID, data ? data : '0x00', isForced, {
-            gasLimit: 250000,
+            gasLimit: 350_000,
         });
     } catch (e: any) {
         openNotification(

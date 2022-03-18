@@ -104,7 +104,7 @@ module.exports = (hre, stakesData) => {
 
         ({deployer, owner, minter} = await getSigners());
         ({pzkToken, staking, rewardMaster, rewardTreasury, stakeRwdCtr} =
-            await getContracts(hre, deployer));
+            await getContracts(hre));
 
         mintTo = _.partial(_mintTo, pzkToken, minter);
         showBalances = _.partial(_showBalances, pzkToken);
@@ -168,7 +168,7 @@ module.exports = (hre, stakesData) => {
         ); // true
 
         return {
-            contracts: await getContracts(hre, deployer),
+            contracts: await getContracts(hre),
             signers: {deployer, owner, minter},
             mintTo,
             showBalances,

@@ -26,8 +26,9 @@ const createStakedDataRow = (
     calculatedReward: string,
     lockedTill: number,
     claimedAt: number,
+    now: number,
 ) => {
-    const unstakable = lockedTill * 1000 > new Date().getTime();
+    const unstakable = lockedTill * 1000 > now;
     return {
         id,
         stakedAt: stakedAt * 1000,
@@ -53,6 +54,7 @@ function buildStakedDataRows(
     stakedData: any,
     rewardsBalance: BigNumber,
     totalStaked: BigNumber,
+    now: number,
 ): StakeRow[] {
     return stakedData.map((item: StakeRow) => {
         const calculatedReward = formatCurrency(
@@ -67,6 +69,7 @@ function buildStakedDataRows(
             calculatedReward,
             item.lockedTill,
             item.claimedAt,
+            now,
         );
     });
 }
@@ -94,10 +97,19 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         );
         if (!rewardsBalance) return;
 
+        const block = await library.getBlock();
+        console.debug(
+            'Current block',
+            block.number,
+            'is at',
+            block.timestamp,
+            formatTime(block.timestamp * 1000),
+        );
         const stakeData = buildStakedDataRows(
             stakes,
             rewardsBalance,
             totalStaked,
+            block.timestamp * 1000,
         );
         setStakedData(stakeData);
     }, [library, chainId, account]);

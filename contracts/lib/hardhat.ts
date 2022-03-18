@@ -8,7 +8,8 @@ const provider = ethers.provider;
 // reverting to the snapshot taken (with revertSnapshot) after tests
 
 export const mineBlock = async (timestamp?: number) => {
-    await provider.send('evm_mine', [timestamp]);
+    await provider.send('evm_mine', timestamp ? [timestamp] : []);
+    return provider.getBlock('latest');
 };
 
 export const increaseTime = async (seconds: number) => {

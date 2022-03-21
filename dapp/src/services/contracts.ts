@@ -32,12 +32,18 @@ export function getContractAddress(
     return address;
 }
 
+export function chainHasStakesReporter(chainId?: number): boolean {
+    return !!env[`STAKES_REPORTER_CONTRACT_${chainId}`];
+}
+
 export function getContractABI(
     contractName: ContractName,
     chainId: number,
 ): any {
     if (contractName === ContractName.REWARD_MASTER) return REWARD_MASTER_ABI;
     if (contractName === ContractName.STAKING) return STAKING_ABI;
+    if (contractName === ContractName.STAKES_REPORTER)
+        return STAKES_REPORTER_ABI;
     if (contractName === ContractName.STAKING_TOKEN) {
         if ([1, 4, 31337].includes(chainId)) return ZKPTOKEN_ABI;
         if ([137, 80001].includes(chainId)) return PZKPTOKEN_ABI;
@@ -64,18 +70,14 @@ export function getStakingContract(library: any, chainId: number): Staking {
     return getContract(ContractName.STAKING, library, chainId) as Staking;
 }
 
-export function chainHasStakesReporter(chainId?: number): boolean {
-    return !!env[`STAKES_REPORTER_CONTRACT_${chainId}`];
-}
-
 export function getStakesReporterContract(
     library: any,
     chainId: number,
 ): StakesReporter {
-    return new Contract(
-        env[`STAKES_REPORTER_CONTRACT_${chainId}`] as string,
-        STAKES_REPORTER_ABI,
+    return getContract(
+        ContractName.STAKES_REPORTER,
         library,
+        chainId,
     ) as StakesReporter;
 }
 

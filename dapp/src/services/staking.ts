@@ -360,18 +360,83 @@ export async function getRewardsBalance(
     }
 }
 
+export interface StakeRow {
+    id: number;
+    stakedAt: number;
+    amount: BigNumber;
+    reward: BigNumber;
+    lockedTill: number;
+    unstakable?: boolean;
+    claimedAt: number;
+}
+
+export async function getStakesAndRewards(
+    library: any,
+    chainId: number,
+    account: string,
+): Promise<[totalStaked: BigNumber, rows: StakeRow[]]> {
+    if (chainHasStakesReporter(chainId)) {
+        const stakes = await getStakesInfoFromReporter(
+            library,
+            chainId,
+            account,
+        );
+        const totalStaked = sumActiveAccountStakes(stakes[0]);
+        const rewards = stakes[1];
+        return [
+            totalStaked,
+            stakes[0].map(
+                (stake: IStakingTypes.StakeStructOutput, i: number) => {
+                    return {
+                        ...stake,
+                        reward: rewards[i],
+                    };
+                },
+            ),
+        ];
+    }
+
+    // If we don't have StakesReporter, we have to calculate rewards per stake
+    // proportionally based on total reward balance.
+    const stakes = await getAccountStakes(library, chainId, account);
+    const totalStaked = sumActiveAccountStakes(stakes);
+    const rewardsBalance = await getRewardsBalance(library, chainId, account);
+    if (!rewardsBalance) return [totalStaked, []];
+    return [
+        totalStaked,
+        stakes.map(stake => {
+            return {
+                ...stake,
+                reward: rewardsBalance.mul(stake.amount).div(totalStaked),
+            };
+        }),
+    ];
+}
+
+export async function getStakesInfoFromReporter(
+    library: any,
+    chainId: number,
+    account: string,
+): Promise<[IStakingTypes.StakeStructOutput[], BigNumber[]]> {
+    const stakesReporterContract = getStakesReporterContract(library, chainId);
+    return await stakesReporterContract.getStakesInfo(account);
+}
+
 async function getRewardsBalanceFromReporter(
     library: any,
     chainId: number,
     account: string,
 ): Promise<BigNumber> {
-    const stakesReporterContract = getStakesReporterContract(library, chainId);
-    const stakesInfo = await stakesReporterContract.getStakesInfo(account);
-    const rewards = stakesInfo.unclaimedRewards.reduce(
+    const stakesInfo = await getStakesInfoFromReporter(
+        library,
+        chainId,
+        account,
+    );
+    const totalRewards = stakesInfo[1].reduce(
         (acc, reward) => acc.add(reward),
         constants.Zero,
     );
-    return rewards;
+    return totalRewards;
 }
 
 export async function getTotalStaked(

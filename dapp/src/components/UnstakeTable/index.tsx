@@ -10,7 +10,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber} from 'ethers';
+import {BigNumber, constants} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
 import {chainHasStakesReporter} from '../../services/contracts';
@@ -96,22 +96,25 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
             account,
         );
         if (!rewardsBalance) return;
-
-        const block = await library.getBlock();
-        console.debug(
-            'Current block',
-            block.number,
-            'is at',
-            block.timestamp,
-            formatTime(block.timestamp * 1000),
-        );
-        const stakeData = buildStakedDataRows(
-            stakes,
-            rewardsBalance,
-            totalStaked,
-            block.timestamp * 1000,
-        );
-        setStakedData(stakeData);
+        if (totalStaked.gt(constants.Zero)) {
+            const block = await library.getBlock();
+            console.debug(
+                'Current block',
+                block.number,
+                'is at',
+                block.timestamp,
+                formatTime(block.timestamp * 1000),
+            );
+            const stakeData = buildStakedDataRows(
+                stakes,
+                rewardsBalance,
+                totalStaked,
+                block.timestamp * 1000,
+            );
+            setStakedData(stakeData);
+        } else {
+            setStakedData([]);
+        }
     }, [library, chainId, account]);
 
     const unstake = useCallback(

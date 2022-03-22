@@ -1,0 +1,51 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title **Advanced Staking: early exit**
+
+'autonumber
+
+<style>
+</style>
+
+hide footbox
+actor "Staker" as staker
+
+box
+  database "Staking\n" as staking
+  database "RewardMaster\n" as rMaster
+  database "AdvancedStakeController\n" as aCtrl
+  database "MASP v.1\n(w/ proxy)" as pool
+  database "PublicLeaf\n" as pLeaf
+  database "$ZKP\nToken" as zkp
+end box
+
+note over staking
+  ""treeId, leafId, privSpendKey""
+end note
+staker -> staking ++ : ""unstake(unstakeInfo)""
+  staking -> rMaster ++ : ""onAction()""
+    rMaster -> aCtrl ++ : ""getRewardAdvice()""
+      aCtrl -> pool ++ : ""earlyUnstake(unstakeInfo)""
+        pool -> pLeaf ++ : ""genLeaf({...preimage...})""
+        return leafHash
+        pool -> pLeaf ++ : ""genNullifier({...preimage...})""
+        return nullifierHash
+        note over pool
+          Verify Merkle proof,
+          check nullifier unspent
+        end note
+        pool -> zkp ++ : ""transfer(staker, rewardAmount)""
+          pool --> staker : ""rewardAmount""
+        deactivate zkp
+      note over aCtrl
+      ""emit EarlyUnstake(...)""
+      end note
+      aCtrl -> aCtrl
+      deactivate pool
+    deactivate aCtrl
+  deactivate rMaster
+deactivate staking
+
+staker -> aCtrl : read ""EarlyUnstake"" events
+@enduml

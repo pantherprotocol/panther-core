@@ -88,6 +88,7 @@ database {
 
 note {
   FontSize 13
+  FontColor #000
   BackGroundColor #fbfb77
 }
 

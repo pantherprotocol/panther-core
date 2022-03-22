@@ -12,32 +12,32 @@ hide footbox
 actor "Staker" as staker
 
 box "Smart Contracts on Polygon"
-  database "Staking\n" as Staking
+  database "Staking\n" as staking
   database "RewardMaster\n" as rMaster
   database "AdvancedStakeController\n" as aSCtrl
-  database "MASP\n" as MASP
+  database "MASP v.1\n(w/ proxy)" as pool
   database "RewardTreasury\n" as rTreasury
-  database "$ZKP\nToken" as PZKP
+  database "$ZKP\nToken" as zkp
 end box
 
-staker -> Staking ++ : ""stake(...,""\n\t""zZKPspendPubKey, zZKPcipherText,""\n\t""PRPspendPubKey, PRPcipherText)""
-  Staking -> Staking ++ : ""_createStake()""
-    Staking -> PZKP ++ : ""transferFrom(staker, Staking, stakedAmount)""
-      staker --> Staking : ""stakedAmount""
+staker -> staking ++ : ""stake(...,""\n\t""zZKPspendPubKey, zZKPcipherText,""\n\t""PRPspendPubKey, PRPcipherText)""
+  staking -> staking ++ : ""_createStake()""
+    staking -> zkp ++ : ""transferFrom(staker, Staking, stakedAmount)""
+      staker --> staking : ""stakedAmount""
     deactivate
     opt ""if (_terms.isRewarded)""
-      Staking -> Staking ++ : ""_sendStakedMsg()""
-        'Staking -> SMP: _encodeStakeActionType()
+      staking -> staking ++ : ""_sendStakedMsg()""
+        'staking -> SMP: _encodeStakeActionType()
         'return
-        Staking -> rMaster ++ : ""onAction()""
+        staking -> rMaster ++ : ""onAction()""
           rMaster -> aSCtrl ++ : ""getRewardAdvice()""
             aSCtrl -> aSCtrl ++-- : ""checkAmount()""
-            aSCtrl -> PZKP ++ : ""transferFrom(treasury, MASP, rewardAmount)""
-              rTreasury --> MASP : ""rewardAmount""
+            aSCtrl -> zkp ++ : ""transferFrom(treasury, MASP, rewardAmount)""
+              rTreasury --> pool : ""rewardAmount""
             deactivate
-            aSCtrl -> MASP ++ : ""depositFor(""\n\t""zZKPspendPubKey,""\n\t""zZKPcipherText,""\n\t""PRPspendPubKey,""\n\t""PRPcipherText)""
-              'MASP -> MASP ++-- : ""deposit()""
-              note over MASP
+            aSCtrl -> pool ++ : ""depositFor(""\n\t""zZKPspendPubKey,""\n\t""zZKPcipherText,""\n\t""PRPspendPubKey,""\n\t""PRPcipherText)""
+              'pool -> pool ++-- : ""deposit()""
+              note over pool
                 Generates zZKP and PRP
                 UTXOs; inserts leaves
                 into tree; emits ciphertext.
@@ -48,6 +48,6 @@ staker -> Staking ++ : ""stake(...,""\n\t""zZKPspendPubKey, zZKPcipherText,""\n\
       deactivate
     deactivate
   deactivate
-  staker --> MASP : check events emitted
+  staker --> pool : check events emitted
 end
 @enduml

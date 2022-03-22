@@ -12,21 +12,21 @@ hide footbox
 actor "Staker" as staker
 
 box "Smart Contracts on Polygon"
-  database "Staking\n" as Staking
+  database "Staking\n" as staking
   database "RewardMaster\n" as rMaster
   database "AdvancedStakeController\n" as aSCtrl
-  database "MASP\n" as MASP
-  database "$ZKP\nToken" as PZKP
+  database "MASP v.1\n(w/ proxy)" as pool
+  database "$ZKP\nToken" as zkp
 end box
 
-staker -> Staking ++ : ""unstake(stakeID)""
-  Staking -> PZKP ++ : ""transfer(staker, stakedAmount)""
-    Staking --> staker
-  deactivate PZKP
-  Staking -> Staking ++ : ""_sendUnstakedMsg()""
-    'Staking -> SMP: _encodeStakeActionType()
+staker -> staking ++ : ""unstake(stakeID)""
+  staking -> zkp ++ : ""transfer(staker, stakedAmount)""
+    staking --> staker : ""stakedAmount""
+  deactivate zkp
+  staking -> staking ++ : ""_sendUnstakedMsg()""
+    'staking -> SMP: _encodeStakeActionType()
     'return
-    Staking -> rMaster ++ : ""onAction()""
+    staking -> rMaster ++ : ""onAction()""
       rMaster -> aSCtrl ++ : ""getRewardAdvice()""
 note right of aSCtrl
   No special action required
@@ -36,9 +36,9 @@ end note
 
       return ""0 rewards Advice""
     deactivate rMaster
-  deactivate Staking
-deactivate Staking
+  deactivate staking
+deactivate staking
 
-staker --> Staking : check events emitted
+staker --> staking : check events emitted
 
 @enduml

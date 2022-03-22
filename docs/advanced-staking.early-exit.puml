@@ -24,6 +24,9 @@ note over staking
   ""treeId, leafId, privSpendKey""
 end note
 staker -> staking ++ : ""unstake(unstakeInfo)""
+  staking -> zkp ++ : ""transfer(staker, stakedAmount)""
+    staking --> staker : ""stakedAmount""
+  deactivate zkp
   staking -> rMaster ++ : ""onAction()""
     rMaster -> aCtrl ++ : ""getRewardAdvice()""
       aCtrl -> pool ++ : ""earlyUnstake(unstakeInfo)""
@@ -33,7 +36,8 @@ staker -> staking ++ : ""unstake(unstakeInfo)""
         return nullifierHash
         note over pool
           Verify Merkle proof,
-          check nullifier unspent
+          check nullifier unspent,
+          mark nullifier spent,
         end note
         pool -> zkp ++ : ""transfer(staker, rewardAmount)""
           pool --> staker : ""rewardAmount""

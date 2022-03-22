@@ -9,7 +9,7 @@ root {
   LineThickness 1.0
   LineColor #A80036
   Shadowing 0.0
-  BackGroundColor white
+  BackGroundColor black
 }
 
 document {

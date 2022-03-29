@@ -14,65 +14,10 @@ import {BigNumber, constants} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
 import {chainHasStakesReporter} from '../../services/contracts';
-import * as stakingService from '../../services/staking';
+import {unstake, StakeRow, getStakesAndRewards} from '../../services/staking';
 import {formatTime, formatCurrency} from '../../utils/helpers';
 
 import './styles.scss';
-
-const createStakedDataRow = (
-    id: number,
-    stakedAt: number,
-    amount: BigNumber,
-    calculatedReward: string,
-    lockedTill: number,
-    claimedAt: number,
-    now: number,
-) => {
-    const unstakable = lockedTill * 1000 > now;
-    return {
-        id,
-        stakedAt: stakedAt * 1000,
-        amount,
-        calculatedReward,
-        lockedTill: lockedTill * 1000,
-        unstakable,
-        claimedAt,
-    };
-};
-
-interface StakeRow {
-    id: number;
-    stakedAt: number;
-    amount: BigNumber;
-    calculatedReward: BigNumber;
-    lockedTill: number;
-    unstakable: boolean;
-    claimedAt: number;
-}
-
-function buildStakedDataRows(
-    stakedData: any,
-    rewardsBalance: BigNumber,
-    totalStaked: BigNumber,
-    now: number,
-): StakeRow[] {
-    return stakedData.map((item: StakeRow) => {
-        const calculatedReward = formatCurrency(
-            rewardsBalance.mul(item.amount).div(totalStaked),
-            {decimals: 2},
-        );
-        if (!calculatedReward) return;
-        return createStakedDataRow(
-            item.id,
-            item.stakedAt,
-            item.amount,
-            calculatedReward,
-            item.lockedTill,
-            item.claimedAt,
-            now,
-        );
-    });
-}
 
 export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
     const context = useWeb3React();
@@ -83,19 +28,16 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
         if (!library || !chainId || !account) {
             return;
         }
-        const stakes = await stakingService.getAccountStakes(
+        const [totalStaked, stakeRows] = await getStakesAndRewards(
             library,
             chainId,
             account,
         );
+        if (!stakeRows) {
+            setStakedData([]);
+            return;
+        }
 
-        const totalStaked = stakingService.sumActiveAccountStakes(stakes);
-        const rewardsBalance = await stakingService.getRewardsBalance(
-            library,
-            chainId,
-            account,
-        );
-        if (!rewardsBalance) return;
         if (totalStaked.gt(constants.Zero)) {
             const block = await library.getBlock();
             console.debug(
@@ -105,19 +47,18 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                 block.timestamp,
                 formatTime(block.timestamp * 1000),
             );
-            const stakeData = buildStakedDataRows(
-                stakes,
-                rewardsBalance,
-                totalStaked,
-                block.timestamp * 1000,
-            );
-            setStakedData(stakeData);
+
+            stakeRows.forEach(row => {
+                row.unstakable = row.lockedTill > block.timestamp;
+            });
+
+            setStakedData(stakeRows);
         } else {
             setStakedData([]);
         }
     }, [library, chainId, account]);
 
-    const unstake = useCallback(
+    const unstakeById = useCallback(
         async id => {
             if (!library || !chainId || !account) {
                 return;
@@ -125,14 +66,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
 
             const stakeID = BigNumber.from(id);
             const data = '0x00';
-            await stakingService.unstake(
-                library,
-                chainId,
-                account,
-                stakeID,
-                data,
-                false,
-            );
+            await unstake(library, chainId, account, stakeID, data, false);
             fetchStakedData();
             props.fetchData();
         },
@@ -153,7 +87,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                 className={`btn ${row.unstakable ? 'disable' : ''}`}
                 disabled={row.unstakable}
                 onClick={() => {
-                    unstake(row.id);
+                    unstakeById(row.id);
                 }}
             >
                 Unstake
@@ -171,7 +105,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                         }}
                     >
                         <TableCell align="center">
-                            {formatTime(row.stakedAt)}
+                            {formatTime(row.stakedAt * 1000)}
                         </TableCell>
                         <TableCell align="right">
                             {formatCurrency(row.amount, {
@@ -180,10 +114,10 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
                             ZKP
                         </TableCell>
                         <TableCell align="right">
-                            {row.calculatedReward} ZKP
+                            {formatCurrency(row.reward)} ZKP
                         </TableCell>
                         <TableCell align="center" className="lockedTill">
-                            {formatTime(row.lockedTill)} <br />
+                            {formatTime(row.lockedTill * 1000)} <br />
                         </TableCell>
                         <TableCell align="center" className="unstake">
                             {unstakeButton}

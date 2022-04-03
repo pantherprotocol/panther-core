@@ -1,4 +1,6 @@
 @import '../../variables';
+$account-balance-background: rgba(120, 154, 205, 0.2);
+$address-holder-background: rgba(99, 114, 136, 0.2);
 
 .app-bar {
     background-color: $transparent !important;
@@ -50,7 +52,7 @@
         height: 45px;
         margin: 0 5px;
         padding: 8px;
-        background: $button-holder;
+        background: $buttons-holder-background-color;
         border-radius: 8px;
     }
 
@@ -114,8 +116,7 @@
         align-items: center;
         margin: 0 20px;
         padding: 0 8px;
-        background: #63728835;
-        background: $balance-card-background;
+        background: $address-holder-background;
         border-radius: 8px;
         min-height: 50px;
 
@@ -131,7 +132,7 @@
             margin: 0 20px;
             height: 35px;
             min-width: 115px;
-            background: rgba(120, 154, 205, 0.2);
+            background: $account-balance-background;
             border-radius: 8px;
             .currency-symbol {
                 color: $muted-text;

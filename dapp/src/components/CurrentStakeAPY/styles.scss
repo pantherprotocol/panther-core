@@ -1,20 +1,24 @@
 @import '../../variables';
+$current-stake-apy-inner-background: linear-gradient(0deg, #3f4a5f, #3f4a5f);
+$current-stake-apy-container-background: #2b334140;
+$current-stake-apy-container-border: #485267;
+
 .current-stake-apy-container {
-    background-color: #2b334140 !important;
+    background-color: $current-stake-apy-container-background !important;
     display: flex;
     justify-content: space-between;
     padding: 1rem 1rem;
     height: 130px;
     margin-bottom: 1.5rem;
 
-    border: 1px solid #485267;
+    border: 1px solid $current-stake-apy-container-border;
     box-sizing: border-box;
     border-radius: 8px;
     backdrop-filter: blur(50px);
     mix-blend-mode: normal;
 
     .current-stake-apy-inner {
-        background: linear-gradient(0deg, #3f4a5f, #3f4a5f);
+        background: $current-stake-apy-inner-background;
         width: 35%;
         flex-direction: column;
         justify-content: center;
@@ -47,7 +51,7 @@
             line-height: 16px;
             align-items: center;
             text-align: center;
-            color: #ffdfbd;
+            color: $highlighted-text;
         }
 
         .apy-title {

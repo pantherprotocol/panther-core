@@ -1,5 +1,4 @@
-import * as React from 'react';
-import {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -16,6 +15,11 @@ import governanceIcon from '../../images/governance-icon.svg';
 import logo from '../../images/panther-logo.svg';
 import refreshIcon from '../../images/refresh-icon.svg';
 import stakingIcon from '../../images/staking-icon.svg';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {
+    getChainBalance,
+    chainBalanceSelector,
+} from '../../redux/slices/chainBalance';
 import {formatAccountAddress} from '../../services/account';
 import {onWrongNetwork} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
@@ -28,14 +32,25 @@ import {SettingsButton} from '../SettingsButton';
 
 import './styles.scss';
 
-const Header = props => {
-    const {onConnect, updateEthBalance} = props;
-
+const Header = (props: {
+    onConnect: () => void;
+    networkLogo?: string;
+    networkName?: string;
+    networkSymbol?: string;
+    disconnect: () => void;
+    switchNetwork: (chainId: number) => void;
+}) => {
+    const {onConnect} = props;
+    const dispatch = useAppDispatch();
     const context = useWeb3React();
     const {account, active, error, chainId} = context;
     const [wrongNetwork, setWrongNetwork] = useState(false);
 
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
+
+    const fetchChainBalance = useCallback(() => {
+        dispatch(getChainBalance(context));
+    }, [dispatch, context]);
 
     useEffect((): void => {
         const wrongNetwork =
@@ -49,16 +64,21 @@ const Header = props => {
             '/ error',
             error,
         );
-    }, [context, active, error]);
+        if (!wrongNetwork && account) {
+            fetchChainBalance();
+        }
+    }, [context, active, account, error, fetchChainBalance]);
 
     const accountAddress = formatAccountAddress(account) || null;
 
+    const chainTokenBalance = useAppSelector(chainBalanceSelector);
+
     const AccountBalance = () => (
         <Box className="account-balance">
-            <IconButton onClick={updateEthBalance}>
+            <IconButton onClick={fetchChainBalance}>
                 <img src={refreshIcon} />
             </IconButton>
-            {formatCurrency(props.balance) || '-'}
+            {formatCurrency(chainTokenBalance) || '-'}
             <InputAdornment position="end" className="currency-symbol">
                 <span>{props.networkSymbol || '-'}</span>
             </InputAdornment>

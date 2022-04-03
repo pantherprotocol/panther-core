@@ -62,7 +62,6 @@ function StakingZkpPage() {
     const [rewardsBalance, setRewardsBalance] = useState<BigNumber | null>(
         null,
     );
-    const [ethBalance, setEthBalance] = useState<BigNumber | null>(null);
     const [currentAPY, setCurrentAPY] = useState<number | null>(null);
 
     const accountAddress = formatAccountAddress(account);
@@ -191,22 +190,6 @@ function StakingZkpPage() {
         [library, chainId, account],
     );
 
-    const fetchEthBalance = useCallback(async () => {
-        if (account && library) {
-            let stale = false;
-
-            library.getBalance(account).then((balance: any) => {
-                if (!stale) {
-                    setEthBalance(balance);
-                }
-            });
-
-            return () => {
-                stale = true;
-            };
-        }
-    }, [account, library]);
-
     const getAPY = useCallback(async () => {
         if (!library || !chainId) return;
         const totalStaked = await stakingService.getTotalStaked(
@@ -253,9 +236,8 @@ function StakingZkpPage() {
             setRewardsBalance(null);
             return;
         }
-        await fetchEthBalance();
         const price = await fetchTokenMarketPrice();
-        await fetchEthBalance();
+
         await fetchZkpTokenBalance(price);
         await fetchStakedZkpBalance(price);
         await getUnclaimedRewardsBalance(price);
@@ -266,7 +248,6 @@ function StakingZkpPage() {
         fetchZkpTokenBalance,
         fetchStakedZkpBalance,
         getUnclaimedRewardsBalance,
-        fetchEthBalance,
     ]);
 
     useEffect(() => {
@@ -292,9 +273,6 @@ function StakingZkpPage() {
                 disconnect={() => {
                     disconnect();
                 }}
-                updateEthBalance={fetchEthBalance}
-                accountAddress={accountAddress}
-                balance={ethBalance}
                 networkName={currentNetwork?.name}
                 networkSymbol={currentNetwork?.symbol}
                 networkLogo={currentNetwork?.logo}

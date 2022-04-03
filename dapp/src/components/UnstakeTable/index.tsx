@@ -13,6 +13,8 @@ import {useWeb3React} from '@web3-react/core';
 import {BigNumber, constants} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
+import {useAppDispatch} from '../../redux/hooks';
+import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {chainHasStakesReporter} from '../../services/contracts';
 import {unstake, StakeRow, getStakesAndRewards} from '../../services/staking';
 import {formatTime, formatCurrency} from '../../utils/helpers';
@@ -23,6 +25,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
     const context = useWeb3React();
     const {library, chainId, account} = context;
     const [stakedData, setStakedData] = useState<any[]>([]);
+    const dispatch = useAppDispatch();
 
     const fetchStakedData = useCallback(async () => {
         if (!library || !chainId || !account) {
@@ -67,10 +70,11 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
             const stakeID = BigNumber.from(id);
             const data = '0x00';
             await unstake(library, chainId, account, stakeID, data, false);
-            fetchStakedData();
+
+            dispatch(getTotalStaked(context));
             props.fetchData();
         },
-        [library, chainId, account, fetchStakedData, props],
+        [library, chainId, account, props, context, dispatch],
     );
 
     useEffect(() => {

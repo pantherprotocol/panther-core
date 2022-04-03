@@ -16,6 +16,11 @@ import Header from '../../components/Header';
 import StakingUnstakingCard from '../../components/StakingUnstakingCard';
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
 import background from '../../images/background.png';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {
+    getTotalStaked,
+    totalStakedSelector,
+} from '../../redux/slices/totalStaked';
 import * as accountService from '../../services/account';
 import {formatAccountAddress} from '../../services/account';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
@@ -35,6 +40,8 @@ import './styles.scss';
 
 function StakingZkpPage() {
     const context = useWeb3React();
+    const dispatch = useAppDispatch();
+    const totalStaked = useAppSelector(totalStakedSelector);
 
     const {
         connector,
@@ -55,9 +62,7 @@ function StakingZkpPage() {
         null,
     );
     const [pricePerToken, setPricePerToken] = useState<BigNumber | null>(null);
-    const [totalZKPStaked, setTotalZKPStaked] = useState<BigNumber | null>(
-        null,
-    );
+
     const [stakedBalance, setStakedBalance] = useState<BigNumber | null>(null);
     const [rewardsBalance, setRewardsBalance] = useState<BigNumber | null>(
         null,
@@ -192,19 +197,13 @@ function StakingZkpPage() {
 
     const getAPY = useCallback(async () => {
         if (!library || !chainId) return;
-        const totalStaked = await stakingService.getTotalStaked(
-            library,
-            chainId,
-        );
-        if (!totalStaked || totalStaked instanceof Error) {
-            return;
-        }
+
         console.log('Total ZKP staked:', formatCurrency(totalStaked));
-        setTotalZKPStaked(totalStaked);
 
         const rewardsAvailable = chainVar('REWARD_POOL_SIZE', chainId);
         const rewardsAvailableBN = BigNumber.from(rewardsAvailable).mul(E18);
         const programDays = chainVar('STAKING_PROGRAM_DURATION', chainId);
+
         console.log(
             'Staking program:',
             rewardsAvailable,
@@ -216,12 +215,12 @@ function StakingZkpPage() {
         console.log('Annual rewards:', formatCurrency(annualRewards));
 
         // Calculate as a percentage with healthy dose of precision
-        const APY = totalStaked.gt(constants.Zero)
+        const APY = totalStaked?.gt(constants.Zero)
             ? Number(annualRewards.mul(10000000).div(totalStaked)) / 10000000
             : 0;
         setCurrentAPY(APY);
         console.log(`Calculated APY as ${formatPercentage(APY)} (${APY})`);
-    }, [library, chainId]);
+    }, [library, chainId, totalStaked]);
 
     useEffect(() => {
         if (!library) {
@@ -229,7 +228,7 @@ function StakingZkpPage() {
             return;
         }
         getAPY();
-    }, [library, getAPY, stakedBalance]);
+    }, [library, getAPY, context]);
 
     const fetchData = useCallback(async (): Promise<void> => {
         if (!library || !account) {
@@ -251,8 +250,10 @@ function StakingZkpPage() {
     ]);
 
     useEffect(() => {
+        dispatch(getTotalStaked(context));
+
         fetchData();
-    }, [fetchData]);
+    }, [fetchData, dispatch, context]);
 
     return (
         <Box
@@ -303,7 +304,6 @@ function StakingZkpPage() {
                                     <CurrentStakeAPY
                                         networkName={currentNetwork?.name}
                                         currentAPY={currentAPY}
-                                        totalZKPStaked={totalZKPStaked}
                                     />
                                     <StakingUnstakingCard
                                         tokenBalance={tokenBalance}

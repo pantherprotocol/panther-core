@@ -22,7 +22,7 @@
     "lib": ["esnext", "dom", "dom.iterable"],
     "noEmit": true,
     "sourceMap": true,
-    "noImplicitAny": false
+    "noImplicitAny": true
   },
   "exclude": ["node_modules", "build"],
   "include": [

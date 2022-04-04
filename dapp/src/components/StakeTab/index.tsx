@@ -307,14 +307,22 @@ const StakingInput = (props: {
                     >
                         ZKP
                     </Typography>
+                    <Typography
+                        variant="caption"
+                        component="span"
+                        className="staking-input-max"
+                        onClick={() => {
+                            if (props.tokenBalance) {
+                                props.setStakingAmountBN(props.tokenBalance);
+                            }
+                        }}
+                    >
+                        MAX
+                    </Typography>
                 </span>
             </Box>
             <Box className="staking-input-container">
                 <Box className="staking-input-box">
-                    <Box className="staking-input-box-inner">
-                        <img src={logo} height={'40px'} width={'40px'} />
-                    </Box>
-
                     <Input
                         inputProps={{pattern: '[0-9.]*', inputMode: 'decimal'}}
                         className="staking-input"
@@ -344,19 +352,9 @@ const StakingInput = (props: {
                         aria-describedby="staking-value-helper-text"
                     />
                 </Box>
-
-                <Typography
-                    variant="caption"
-                    component="span"
-                    className="staking-input-max"
-                    onClick={() => {
-                        if (props.tokenBalance) {
-                            props.setStakingAmountBN(props.tokenBalance);
-                        }
-                    }}
-                >
-                    MAX
-                </Typography>
+                <Box className="staking-input-box-inner">
+                    <img src={logo} height={'40px'} width={'40px'} />
+                </Box>
             </Box>
         </>
     );

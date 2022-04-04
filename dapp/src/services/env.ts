@@ -16,7 +16,11 @@ const REQUIRED_CHAIN_ENV_VAR_PREFIXES: string[] = [
 // dotenv-webpack, process.env[envVar] doesn't actually work:
 // https://github.com/mrsteele/dotenv-webpack/issues/70#issuecomment-392525509
 
-export const env = {
+interface EnvVariables {
+    [key: string]: string | undefined;
+}
+
+export const env: EnvVariables = {
     CHAIN_IDS: process.env.CHAIN_IDS,
     TOKEN_SYMBOL: process.env.TOKEN_SYMBOL,
 
@@ -84,7 +88,7 @@ if (!CHAIN_IDS.length) {
     supported networks; got: '${CHAIN_IDS}'`;
 }
 
-export function chainVar(varName: string, chainId: number): string {
+export function chainVar(varName: string, chainId: number): string | undefined {
     return env[`${varName}_${chainId}`];
 }
 

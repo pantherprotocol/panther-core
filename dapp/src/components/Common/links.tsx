@@ -27,7 +27,7 @@ export const SafeMuiLink = (props: {
 
 function getBlockExplorerURL(chainId: number): string {
     const varName = `BLOCK_EXPLORER_${chainId}`;
-    const explorerURL = env[varName];
+    const explorerURL: string | undefined = env[varName];
     if (!explorerURL) {
         throw `${varName} not defined`;
     }

@@ -154,7 +154,7 @@ export function useBlockNumber() {
     return blockNumber;
 }
 
-export function useContract(contractJson) {
+export function useContract(contractJson: any): Contract | null {
     const {chainId, library, account} = useWeb3React();
     if (!chainId || !contractJson.networks || !contractJson.networks[chainId]) {
         return null;
@@ -167,7 +167,11 @@ export function useContract(contractJson) {
     );
 }
 
-export function useContractCallData(contract, methodName, args) {
+export function useContractCallData(
+    contract: any,
+    methodName: string,
+    args: any[],
+) {
     const blockNumber = useBlockNumber();
     const [result, setResult] = useState(null);
     // @ts-ignore

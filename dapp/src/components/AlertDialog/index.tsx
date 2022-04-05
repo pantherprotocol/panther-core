@@ -12,6 +12,8 @@ import Typography from '@mui/material/Typography';
 
 import warningIcon from '../../images/warning-icon.svg';
 import xIcon from '../../images/x-icon.svg';
+import {useAppDispatch} from '../../redux/hooks';
+import {setBlur} from '../../redux/slices/blur';
 import {SafeLink} from '../Common/links';
 
 import './styles.scss';
@@ -20,6 +22,9 @@ export default function AlertDialog(props: {
     handleClose: any;
     stake: any;
 }): ReactElement {
+    const dispatch = useAppDispatch();
+    dispatch(setBlur());
+
     return (
         <div>
             <Dialog

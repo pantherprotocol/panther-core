@@ -16,7 +16,8 @@ import Header from '../../components/Header';
 import StakingUnstakingCard from '../../components/StakingUnstakingCard';
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
 import background from '../../images/background.png';
-import {useAppDispatch} from '../../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {blurSelector} from '../../redux/slices/blur';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import * as accountService from '../../services/account';
@@ -211,9 +212,11 @@ function StakingZkpPage() {
         fetchData();
     }, [fetchData, context, dispatch]);
 
+    const isBlur = useAppSelector(blurSelector);
+
     return (
         <Box
-            className="main-app"
+            className={`main-app ${isBlur && 'isBlur'}`}
             sx={{
                 backgroundImage: `url(${background})`,
             }}

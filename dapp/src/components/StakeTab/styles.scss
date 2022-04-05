@@ -11,6 +11,7 @@ $staking-input-max-button-color: #ffdfbd;
 
 .staking-tab-holder {
     width: 100%;
+
     .staking-info-card {
         padding: 0 !important;
         background: $staking-info-background !important;
@@ -140,7 +141,6 @@ $staking-input-max-button-color: #ffdfbd;
             font-weight: 500;
             font-size: 16px;
             line-height: 42px;
-
             align-items: center;
             text-align: right;
             color: white;
@@ -154,6 +154,18 @@ $staking-input-max-button-color: #ffdfbd;
             align-items: center;
             color: $token-balance-color;
             margin-left: 10px;
+        }
+
+        .staking-input-max {
+            color: $staking-input-max-button-color;
+            font-size: 16px;
+            width: 20%;
+            cursor: pointer;
+            line-height: initial;
+            margin: 0 15px;
+            background: $staking-info-background;
+            border-radius: 8px;
+            padding: 5px 15px;
         }
     }
 
@@ -174,11 +186,13 @@ $staking-input-max-button-color: #ffdfbd;
             line-height: 46px;
             color: white;
             padding: 0px 15px;
-            width: 380px;
+            width: 100%;
         }
+
         input {
-            text-align: end !important;
+            text-align: start;
         }
+
         .MuiInputBase-input.MuiInput-input.Mui-disabled {
             -webkit-text-fill-color: $input-disabled-color;
         }
@@ -220,15 +234,6 @@ $staking-input-max-button-color: #ffdfbd;
                     line-height: 42px;
                 }
             }
-        }
-
-        .staking-input-max {
-            color: $staking-input-max-button-color;
-            font-weight: 800;
-            font-size: 16px;
-            width: 20%;
-            cursor: pointer;
-            line-height: initial;
         }
     }
 

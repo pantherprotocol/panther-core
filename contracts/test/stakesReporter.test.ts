@@ -100,10 +100,13 @@ describe('Stakes Reporter', () => {
             const stakeID = 3;
             mockStakes(account1, stakeID, claimedStake);
 
-            const info = await stakesReporter.getStakeInfo(account1, stakeID);
+            const [stake, unclaimedRewards] = await stakesReporter.getStakeInfo(
+                account1,
+                stakeID,
+            );
 
-            expect(info.stake.amount, 'amount').to.equal(claimedStake.amount);
-            expect(info.unclaimedRewards, 'rewards').to.equal(0);
+            expect(stake.amount, 'amount').to.equal(claimedStake.amount);
+            expect(unclaimedRewards, 'rewards').to.equal(0);
         });
 
         it('should get info on unclaimed stake', async () => {
@@ -112,9 +115,12 @@ describe('Stakes Reporter', () => {
             mockGetScArptAt(unclaimedStake.stakedAt, '3');
             mockGetScArptAt(0, '10');
 
-            const info = await stakesReporter.getStakeInfo(account2, stakeID);
+            const [stake, unclaimedRewards] = await stakesReporter.getStakeInfo(
+                account2,
+                stakeID,
+            );
 
-            expect(info.stake.amount, 'amount').to.equal(unclaimedStake.amount);
+            expect(stake.amount, 'amount').to.equal(unclaimedStake.amount);
 
             // ARPT is 10 (current time) - 3 (stakedAt time)
             const expectedRewards = getUnclaimedRewards(
@@ -122,7 +128,7 @@ describe('Stakes Reporter', () => {
                 '10',
                 unclaimedStake.amount,
             );
-            expect(info.unclaimedRewards, 'rewards').to.equal(expectedRewards);
+            expect(unclaimedRewards, 'rewards').to.equal(expectedRewards);
         });
     });
 
@@ -138,24 +144,21 @@ describe('Stakes Reporter', () => {
             mockGetScArptAt(unclaimedStake.stakedAt, '10');
             mockGetScArptAt(0, '15');
 
-            const info = await stakesReporter.getStakesInfo(account1);
+            const [stakes, unclaimedRewards] =
+                await stakesReporter.getStakesInfo(account1);
 
             const expectedRewards = getUnclaimedRewards(
                 '10',
                 '15',
                 unclaimedStake.amount,
             );
-            expect(info.stakes[0].amount, 'amount 0').to.equal(
-                claimedStake.amount,
-            );
-            expect(info.stakes[1].amount, 'amount 1').to.equal(
+            expect(stakes[0].amount, 'amount 0').to.equal(claimedStake.amount);
+            expect(stakes[1].amount, 'amount 1').to.equal(
                 unclaimedStake.amount,
             );
-            expect(info.unclaimedRewards[0], 'rewards 0').to.equal(0);
-            expect(info.unclaimedRewards[1], 'rewards 1').to.equal(
-                expectedRewards,
-            );
-            expect(info.unclaimedRewards.length, 'rewards length').to.equal(2);
+            expect(unclaimedRewards[0], 'rewards 0').to.equal(0);
+            expect(unclaimedRewards[1], 'rewards 1').to.equal(expectedRewards);
+            expect(unclaimedRewards.length, 'rewards length').to.equal(2);
         });
     });
 });

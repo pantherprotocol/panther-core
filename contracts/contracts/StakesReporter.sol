@@ -4,13 +4,53 @@
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.0;
 
-import "./interfaces/IStakingTypes.sol";
-import "./Staking.sol";
-import "./StakeRewardController.sol";
+interface IArptHistory {
+    function getScArptAt(uint32 timestamp)
+        external
+        view
+        returns (uint256 scArpt);
+}
 
-contract StakesReporter is IStakingTypes {
-    Staking public immutable STAKING;
-    StakeRewardController public immutable STAKE_REWARD_CONTROLLER;
+interface IStakeRegister {
+    function stakes(address _account, uint256 _stakeId)
+        external
+        view
+        returns (Stake memory);
+
+    function accountStakes(address _account)
+        external
+        view
+        returns (Stake[] memory);
+}
+
+struct Stake {
+    // index in the `Stake[]` array of `stakes`
+    uint32 id;
+    // defines Terms
+    bytes4 stakeType;
+    // time this stake was created at
+    uint32 stakedAt;
+    // time this stake can be claimed at
+    uint32 lockedTill;
+    // time this stake was claimed at (unclaimed if 0)
+    uint32 claimedAt;
+    // amount of tokens on this stake (assumed to be less 1e27)
+    uint96 amount;
+    // address stake voting power is delegated to
+    address delegatee;
+}
+
+/**
+ * @title StakesReporter
+ * @notice It simplifies getting stakes and rewards info for the UI.
+ * it calls the `Staking` contract for getting the stakes
+ * and the `StakeRewardController` contract for calculating the rewards.
+ * @dev the contract is expected to use the `StakeRewardController.sol`
+ * and `Staking.sol` on Polygon as IArptHistory as IStakeRegister
+ */
+contract StakesReporter {
+    IStakeRegister public immutable STAKE_REGISTER;
+    IArptHistory public immutable ARPT_HISTORY;
 
     uint256 private constant SCALE = 1e9;
 
@@ -20,70 +60,64 @@ contract StakesReporter is IStakingTypes {
             "StakesReporter: Zero address passed"
         );
 
-        STAKING = Staking(_staking);
-        STAKE_REWARD_CONTROLLER = StakeRewardController(_stakeRewardController);
+        STAKE_REGISTER = IStakeRegister(_staking);
+        ARPT_HISTORY = IArptHistory(_stakeRewardController);
     }
 
     function getStakesInfo(address _account)
         external
         view
-        returns (Stake[] memory stakes, uint256[] memory unclaimedRewards)
+        returns (Stake[] memory, uint256[] memory)
     {
-        stakes = STAKING.accountStakes(_account);
+        Stake[] memory stakes = STAKE_REGISTER.accountStakes(_account);
 
-        uint256[] memory unclaimedRewardsArray = new uint256[](stakes.length);
+        uint256[] memory unclaimedRewards = new uint256[](stakes.length);
 
-        for (uint256 i = 0; i < stakes.length; i++) {
-            if (stakes[i].claimedAt == 0) {
-                unclaimedRewardsArray[i] = getUnclaimedRewards(
-                    STAKE_REWARD_CONTROLLER.getScArptAt(stakes[i].stakedAt),
-                    STAKE_REWARD_CONTROLLER.getScArptAt(uint32(0)),
-                    stakes[i].amount
-                );
+        for (uint256 i = 0; i < stakes.length; ) {
+            unclaimedRewards[i] = getUnclaimedRewards(stakes[i]);
+
+            unchecked {
+                ++i;
             }
         }
 
-        unclaimedRewards = unclaimedRewardsArray;
+        return (stakes, unclaimedRewards);
     }
 
     function getStakeInfo(address _account, uint256 _stakeID)
         external
         view
-        returns (Stake memory stake, uint256 unclaimedRewards)
+        returns (Stake memory, uint256)
     {
-        (
-            uint32 id,
-            bytes4 stakeType,
-            uint32 stakedAt,
-            uint32 lockedTill,
-            uint32 claimedAt,
-            uint96 amount,
-            address delegatee
-        ) = STAKING.stakes(_account, _stakeID);
+        Stake memory stake = STAKE_REGISTER.stakes(_account, _stakeID);
 
-        stake = Stake(
-            id,
-            stakeType,
-            stakedAt,
-            lockedTill,
-            claimedAt,
-            amount,
-            delegatee
-        );
+        uint256 unclaimedRewards = getUnclaimedRewards(stake);
 
-        if (claimedAt == 0)
-            unclaimedRewards = getUnclaimedRewards(
-                STAKE_REWARD_CONTROLLER.getScArptAt(stakedAt),
-                STAKE_REWARD_CONTROLLER.getScArptAt(uint32(0)),
-                amount
-            );
+        return (stake, unclaimedRewards);
     }
 
-    function getUnclaimedRewards(
+    function getRewards(
         uint256 _scArptFrom,
         uint256 _scArptTill,
         uint96 amount
     ) public pure returns (uint256) {
         return ((_scArptTill - _scArptFrom) * amount) / SCALE;
+    }
+
+    function getUnclaimedRewards(Stake memory stake)
+        internal
+        view
+        returns (uint256)
+    {
+        uint256 unclaimedRewards = 0;
+
+        if (stake.claimedAt == 0)
+            unclaimedRewards = getRewards(
+                ARPT_HISTORY.getScArptAt(stake.stakedAt),
+                ARPT_HISTORY.getScArptAt(uint32(0)),
+                stake.amount
+            );
+
+        return unclaimedRewards;
     }
 }

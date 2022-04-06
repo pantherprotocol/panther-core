@@ -34,6 +34,7 @@
     "import/namespace": "warn",
     "import/no-named-as-default": "off",
     "import/export": "warn",
+    "import/newline-after-import": ["error", {"count": 1}],
     "import/order": [
       "error",
       {

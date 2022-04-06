@@ -21,6 +21,7 @@ import {
     getTotalStaked,
     totalStakedSelector,
 } from '../../redux/slices/totalStaked';
+import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import * as accountService from '../../services/account';
 import {formatAccountAddress} from '../../services/account';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
@@ -251,7 +252,7 @@ function StakingZkpPage() {
 
     useEffect(() => {
         dispatch(getTotalStaked(context));
-
+        dispatch(getZKPTokenMarketPrice());
         fetchData();
     }, [fetchData, dispatch, context]);
 

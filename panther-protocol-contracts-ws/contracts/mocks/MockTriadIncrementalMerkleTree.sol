@@ -20,7 +20,11 @@ contract MockTriadIncrementalMerkleTrees is TriadIncrementalMerkleTrees {
         return isFullTree(nextLeafId);
     }
 
-    function _timeNow() internal view override returns (uint256) {
-        return block.timestamp;
+    function internalNextLeafId2LeavesNum(uint256 nextId)
+        external
+        pure
+        returns (uint256)
+    {
+        return _nextLeafId2LeavesNum(nextId);
     }
 }

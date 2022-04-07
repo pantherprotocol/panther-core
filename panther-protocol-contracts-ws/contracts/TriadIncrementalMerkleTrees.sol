@@ -31,24 +31,24 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros {
     // level index => hash
     mapping(uint256 => bytes32) private filledSubtrees;
 
-    // Timestamps (when last leaves inserted) of fully populated trees
-    // root => timestamp
-    mapping(bytes32 => uint256) private rootHistory;
+    /// @notice Roots of fully populated trees
+    /// @dev treeId => root
+    mapping(uint256 => bytes32) public finalRoots;
 
     // Recent roots of trees seen
-    // cacheIndex => root
-    mapping(uint256 => bytes32) private cachedRoots;
+    // cacheIndex => root ^ treeId
+    mapping(uint256 => uint256) private cachedRoots;
 
-    // @dev Root permanently added to the `rootHistory`
+    // @dev Root permanently added to the `finalRoots`
     event AnchoredRoot(uint256 indexed treeId, bytes32 root);
 
     // @dev Root temporarily saved in the `cachedRoots`
-    event CachedRoot(bytes32 root);
+    event CachedRoot(uint256 treeId, bytes32 root);
 
     // NOTE: No `constructor` (initialization) function needed
 
-    // Bitmask for max number of roots cached (96 = 128/iTRIAD_SIZE*TRIAD_SIZE)
-    uint256 internal constant CACHE_SIZE_MASK = 127;
+    // Max number of latest roots to cache (must be a power of 2)
+    uint256 internal constant CACHED_ROOTS_NUM = 4;
 
     // Number of leaves in a modified triad used for leaf ID calculation
     uint256 private constant iTRIAD_SIZE = 4;
@@ -61,6 +61,8 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros {
     uint256 private constant iLEAVES_NUM_MASK = iLEAVES_NUM - 1;
     uint256 private constant iLEAVES_NUM_BITS =
         TREE_DEPTH - 1 + iTRIAD_SIZE_BITS;
+    uint256 private constant CACHE_SIZE_MASK =
+        CACHED_ROOTS_NUM * iTRIAD_SIZE - 1;
 
     /**
      * @notice Returns the number of leaves inserted in all trees so far
@@ -88,27 +90,41 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros {
      * @notice Returns the root of the current tree
      */
     function curRoot() external view returns (bytes32) {
-        return cachedRoots[_nextLeafId2CacheIndex(_nextLeafId)];
+        uint256 nextLeafId = _nextLeafId;
+        uint256 leavesInTreeNum = nextLeafId & iLEAVES_NUM_MASK;
+        if (leavesInTreeNum == 0) return ZERO_ROOT;
+
+        uint256 treeId = getTreeId(nextLeafId);
+        uint256 v = cachedRoots[_nextLeafId2CacheIndex(nextLeafId)];
+        return bytes32(v ^ treeId);
     }
 
     /**
-     * @notice Returns `true` if the given root is known
-     * @param root The root queried
-     * @return True if known
+     * @notice Returns `true` if the given root of the given tree is known
      */
-    function isKnownRoot(bytes32 root) public view returns (bool) {
+    function isKnownRoot(uint256 treeId, bytes32 root)
+        public
+        view
+        returns (bool)
+    {
         require(root != 0, ERR_ZERO_ROOT);
 
-        if (rootHistory[root] != 0) return true;
+        // first, check the history
+        bytes32 _root = finalRoots[treeId];
+        if (_root == root) return true;
 
-        // TODO: modify to iterate trough cache
-        uint256 rootIndex = _nextLeafId2CacheIndex(_nextLeafId);
-        return root == cachedRoots[rootIndex];
+        // then, look in cache
+        for (uint256 i = 0; i < CACHED_ROOTS_NUM; i++) {
+            uint256 cacheIndex = i * iTRIAD_SIZE;
+            uint256 v = cachedRoots[cacheIndex];
+            if (v == treeId ^ uint256(root)) return true;
+        }
+        return false;
     }
 
     /**
      * @dev Inserts 3 leaves into the current tree, or a new one, if that's full
-     * @param leaves The 3 leaves to insert (must be less than FIELD_SIZE)
+     * @param leaves The 3 leaves to insert (must be less than SNARK_SCALAR_FIELD)
      * @return leftLeafId The `leafId` of the first leaf from 3 inserted
      */
     function insertBatch(bytes32[TRIAD_SIZE] memory leaves)
@@ -159,41 +175,45 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros {
         uint256 nextLeafId = leftLeafId + iTRIAD_SIZE;
         _nextLeafId = nextLeafId;
 
-        if (isFullTree(nextLeafId)) {
+        uint256 treeId = getTreeId(leftLeafId);
+        if (isFullTree(leftLeafId)) {
             // Switch to a new tree
             // Ignore `filledSubtrees` old values as they are never re-used
-            rootHistory[nodeHash] = _timeNow();
-            emit AnchoredRoot(getTreeId(leftLeafId), nodeHash);
+            finalRoots[treeId] = nodeHash;
+            emit AnchoredRoot(treeId, nodeHash);
         } else {
-            cachedRoots[_nextLeafId2CacheIndex(nextLeafId)] = nodeHash;
-            emit CachedRoot(nodeHash);
+            uint256 cacheIndex = _nextLeafId2CacheIndex(nextLeafId);
+            cachedRoots[cacheIndex] = uint256(nodeHash) ^ treeId;
+            emit CachedRoot(treeId, nodeHash);
         }
     }
 
     /// internal and private functions follow
 
-    function isFullTree(uint256 nextLeafId) internal pure returns (bool) {
-        return (iLEAVES_NUM - (nextLeafId & iLEAVES_NUM_MASK)) <= iTRIAD_SIZE;
+    function getNextLeafId() internal view returns (uint256) {
+        return _nextLeafId;
     }
 
-    function _nextLeafId2LeavesNum(uint256 nextId)
-        internal
-        pure
-        returns (uint256)
-    {
-        // equiv to `nextId / iTRIAD_SIZE * TRIAD_SIZE + nextId % iTRIAD_SIZE`
+    function isFullTree(uint256 leftLeafId) internal pure returns (bool) {
+        return (iLEAVES_NUM - (leftLeafId & iLEAVES_NUM_MASK)) <= iTRIAD_SIZE;
+    }
+
+    function _nextLeafId2LeavesNum(
+        uint256 nextLeafId // declared as `internal` to facilitate testing
+    ) internal pure returns (uint256) {
+        // equiv to `nextLeafId / iTRIAD_SIZE * TRIAD_SIZE + nextLeafId % iTRIAD_SIZE`
         return
-            (nextId >> iTRIAD_SIZE_BITS) *
+            (nextLeafId >> iTRIAD_SIZE_BITS) *
             TRIAD_SIZE +
-            (nextId & iTRIAD_SIZE_MASK);
+            (nextLeafId & iTRIAD_SIZE_MASK);
     }
 
-    function _nextLeafId2CacheIndex(uint256 nextId)
+    function _nextLeafId2CacheIndex(uint256 nextLeafId)
         private
         pure
         returns (uint256)
     {
-        return nextId & CACHE_SIZE_MASK;
+        return nextLeafId & CACHE_SIZE_MASK;
     }
 
     function poseidon(bytes32 left, bytes32 right)
@@ -217,11 +237,6 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros {
         input[1] = mid;
         input[2] = right;
         return PoseidonT4.poseidon(input);
-    }
-
-    // Declared `virtual view` to facilitate tests
-    function _timeNow() internal view virtual returns (uint256) {
-        return block.timestamp;
     }
 
     // NOTE: The contract is supposed to run behind a proxy DELEGATECALLing it.

@@ -134,6 +134,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
     }
 
     function processNullifiers(
+        uint256[IN_UTXOs] calldata inputTreeIds,
         bytes32[IN_UTXOs] calldata inputMerkleRoots,
         bytes32[IN_UTXOs] calldata inputNullifiers
     ) internal {
@@ -142,7 +143,10 @@ contract PantherPool is CommitmentsTrees, Verifier {
             require(uint256(nullifier) < FIELD_SIZE, ERR_TOO_LARGE_NULLIFIER);
             require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);
 
-            require(isKnownRoot(inputMerkleRoots[i]), ERR_UNKNOWN_MERKLE_ROOT);
+            require(
+                isKnownRoot(inputTreeIds[i], inputMerkleRoots[i]),
+                ERR_UNKNOWN_MERKLE_ROOT
+            );
 
             isSpent[nullifier] = true;
             emit Nullifier(nullifier);
@@ -329,7 +333,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
             ERR_INVALID_JOIN_INPUT
         );
 
-        processNullifiers(inputMerkleRoots, inputNullifiers);
+        // processNullifiers(inputTreeIds, inputMerkleRoots, inputNullifiers);
 
         // Horrible hack to avoid "Stack too deep" errors
         {

@@ -16,7 +16,7 @@ const initialState: ChainBalanceState = {
 };
 
 export const getChainBalance = createAsyncThunk(
-    'balance/getTokenBalance',
+    'balance/getChainBalance',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
     ): Promise<string | null> => {
@@ -29,7 +29,7 @@ export const getChainBalance = createAsyncThunk(
     },
 );
 
-export const tokenBalanceSlice = createSlice({
+const chainBalanceSlice = createSlice({
     name: 'chainBalance',
     initialState,
     reducers: {
@@ -58,8 +58,5 @@ export const tokenBalanceSlice = createSlice({
 export const chainBalanceSelector = (state: RootState) =>
     BigNumber.from(state.chainBalance.value ?? '0');
 
-export const statusETHTokenBalanceSelector = (state: RootState) =>
-    state.chainBalance.status;
-
-export const {resetChainBalance} = tokenBalanceSlice.actions;
-export default tokenBalanceSlice.reducer;
+export const {resetChainBalance} = chainBalanceSlice.actions;
+export default chainBalanceSlice.reducer;

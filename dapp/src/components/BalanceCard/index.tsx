@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {ReactElement} from 'react';
 
 import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
@@ -90,13 +91,18 @@ const AddressWithSetting = () => {
     );
 };
 
-const TotalBalance = ({title, tooltip, tokenBalance, tokenMarketPrice}) => {
+const TotalBalance = (props: {
+    title: string | null;
+    tooltip: string;
+    tokenBalance: BigNumber | null;
+    tokenMarketPrice: BigNumber | null;
+}): ReactElement => {
     return (
         <Box className="total-balance">
             <Box className="title-box">
-                <Typography className="title">{title}</Typography>
-                {false && tooltip && (
-                    <Tooltip title={tooltip} placement="top">
+                <Typography className="title">{props.title}</Typography>
+                {false && props.tooltip && (
+                    <Tooltip title={props.tooltip} placement="top">
                         <IconButton>
                             <img src={infoIcon} />
                         </IconButton>
@@ -106,15 +112,17 @@ const TotalBalance = ({title, tooltip, tokenBalance, tokenMarketPrice}) => {
 
             <Box className="amount-box">
                 <Typography component="div" className="token-balance">
-                    {tokenBalance ? formatCurrency(tokenBalance) : '-'}
+                    {props.tokenBalance
+                        ? formatCurrency(props.tokenBalance)
+                        : '-'}
                 </Typography>
                 <Typography className="zkp-symbol main-symbol">ZKP</Typography>
             </Box>
-            {tokenMarketPrice && (
+            {props.tokenMarketPrice && (
                 <Box className="amount-box">
                     <Typography className="token-market-price">
-                        {tokenMarketPrice
-                            ? `~$ ${formatCurrency(tokenMarketPrice)} USD`
+                        {props.tokenMarketPrice
+                            ? `~$ ${formatCurrency(props.tokenMarketPrice)} USD`
                             : '-'}
                     </Typography>
                 </Box>

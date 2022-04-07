@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {ReactElement} from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -15,12 +16,15 @@ import {SafeLink} from '../Common/links';
 
 import './styles.scss';
 
-export default function AlertDialog({handleClose, stake}) {
+export default function AlertDialog(props: {
+    handleClose: any;
+    stake: any;
+}): ReactElement {
     return (
         <div>
             <Dialog
                 open={true}
-                onClose={handleClose}
+                onClose={props.handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -30,14 +34,14 @@ export default function AlertDialog({handleClose, stake}) {
                             title={'Click to close Dialog box'}
                             placement="top"
                         >
-                            <IconButton onClick={handleClose}>
+                            <IconButton onClick={props.handleClose}>
                                 <img src={xIcon} />
                             </IconButton>
                         </Tooltip>
                     </Box>
 
                     <Box className="warning-header">
-                        <IconButton onClick={handleClose}>
+                        <IconButton onClick={props.handleClose}>
                             <img src={warningIcon} />
                         </IconButton>
                         <Typography component="div" className="warning-text">
@@ -65,14 +69,14 @@ export default function AlertDialog({handleClose, stake}) {
                             <Button
                                 variant="outlined"
                                 className="button cancel-button"
-                                onClick={handleClose}
+                                onClick={props.handleClose}
                             >
                                 Cancel
                             </Button>
                             <Button
                                 variant="contained"
                                 className="button confirm-button"
-                                onClick={stake}
+                                onClick={props.stake}
                             >
                                 Stake anyway
                             </Button>

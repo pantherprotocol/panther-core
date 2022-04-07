@@ -24,6 +24,6 @@ export const openNotification = (
     });
 };
 
-export const removeNotification = id => {
+export const removeNotification = (id: string) => {
     Store.removeNotification(id);
 };

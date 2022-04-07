@@ -204,6 +204,7 @@ function StakingZkpPage() {
         const rewardsAvailable = chainVar('REWARD_POOL_SIZE', chainId);
         const rewardsAvailableBN = BigNumber.from(rewardsAvailable).mul(E18);
         const programDays = chainVar('STAKING_PROGRAM_DURATION', chainId);
+        if (!programDays) return;
 
         console.log(
             'Staking program:',

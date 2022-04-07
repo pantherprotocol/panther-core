@@ -57,7 +57,9 @@ export const stakedBalanceSlice = createSlice({
     },
 });
 
-export const totalStakedSelector = (state: RootState) =>
-    BigNumber.from(state.totalStaked.value ?? '0');
-
+export const totalStakedSelector = (state: RootState) => {
+    return state.totalStaked.value
+        ? BigNumber.from(state.totalStaked.value)
+        : null;
+};
 export default stakedBalanceSlice.reducer;

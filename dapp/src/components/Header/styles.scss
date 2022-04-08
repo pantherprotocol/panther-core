@@ -8,6 +8,10 @@ $address-holder-background: rgba(99, 114, 136, 0.2);
     color: $white;
     padding-top: 16px;
 
+    .main-toolbar {
+        padding: 0 16px;
+    }
+
     .nav-bar {
         align-items: center;
         display: flex;

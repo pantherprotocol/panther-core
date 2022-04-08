@@ -1,5 +1,5 @@
 {
-  "name": "@zkp-staking/dapp",
+  "name": "@panther-core/dapp",
   "description": "dApp frontend for Panther Protocol Staking",
   "version": "0.1.0",
   "license": "MIT",

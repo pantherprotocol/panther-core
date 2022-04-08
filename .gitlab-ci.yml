@@ -44,7 +44,7 @@ combined-job:
   script:
     - yarn lint
     - HARDHAT_NO_MNEMONIC=yes yarn run build:contracts && yarn test
-    - yarn workspace @zkp-staking/contracts build:types
+    - yarn workspace @panther-core/contracts build:types
     - yarn run build:dapp
     - |
       apt-get update

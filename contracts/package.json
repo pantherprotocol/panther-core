@@ -1,5 +1,5 @@
 {
-  "name": "@zkp-staking/contracts",
+  "name": "@panther-core/contracts",
   "version": "0.0.1",
   "author": "Panther Protocol Team (see contributors.md)",
   "description": "Panther Protocol initial staking contracts",

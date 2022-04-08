@@ -37,7 +37,10 @@ export default {
         return run('prettier --write', files);
     },
     'contracts/**/*.sol': files => {
-        return run('yarn workspace @zkp-staking/contracts lint:solhint', files);
+        return run(
+            'yarn workspace @panther-core/contracts lint:solhint',
+            files,
+        );
     },
     'contracts/**/*.{js,ts}': async files => {
         const prefix = process.cwd() + '/contracts/';
@@ -48,7 +51,10 @@ export default {
             files,
         );
         // const match = micromatch.not(files, '**/*.cli.js');
-        return run('yarn workspace @zkp-staking/contracts lint:eslint', toLint);
+        return run(
+            'yarn workspace @panther-core/contracts lint:eslint',
+            toLint,
+        );
     },
     'dapp/**/*.{js,jsx,ts,tsx}': async files => {
         const prefix = process.cwd() + '/dapp/';
@@ -58,6 +64,6 @@ export default {
             'dapp/.eslintignore',
             files,
         );
-        return run('yarn workspace @zkp-staking/dapp lint:eslint', toLint);
+        return run('yarn workspace @panther-core/dapp lint:eslint', toLint);
     },
 };

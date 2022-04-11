@@ -251,3 +251,13 @@ $staking-input-max-button-color: #ffdfbd;
         }
     }
 }
+
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiMenu-paper {
+    ul[aria-labelledby='staking-method-select-label'] {
+        background: $button-group-item !important;
+
+        li {
+            color: white !important;
+        }
+    }
+}

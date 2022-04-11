@@ -7,6 +7,8 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
@@ -47,6 +49,7 @@ export default function StakeTab(props: {
         null,
     );
     const [, setStakedId] = useState<number | null>(null);
+    const [stakeType, setStakeType] = useState<string>('classic');
     // For use when user types input
     const setStakingAmount = useCallback((amount: string) => {
         setAmountToStake(amount);
@@ -63,19 +66,27 @@ export default function StakeTab(props: {
         setAmountToStakeBN(amountBN);
     }, []);
 
+    const setStakeMethodType = useCallback(
+        async (selectedStakeMethod: string): Promise<void> => {
+            await setStakeType(selectedStakeMethod);
+        },
+        [setStakeType],
+    );
+
     const stake = useCallback(
         async (amount: BigNumber) => {
             if (!chainId || !account || !props.tokenBalance) {
                 return;
             }
-
-            const stakeType = '0x4ab0941a';
+            const stakingTypeHex = utils.keccak256(
+                utils.toUtf8Bytes(stakeType),
+            );
             const stakingResponse = await stakingService.stake(
                 library,
                 chainId,
                 account,
                 amount,
-                stakeType,
+                stakingTypeHex.slice(0, 10),
             );
 
             if (stakingResponse instanceof Error) {
@@ -87,7 +98,16 @@ export default function StakeTab(props: {
             dispatch(getZkpStakedBalance(context));
             props.fetchData();
         },
-        [library, account, chainId, props, setStakingAmount, context, dispatch],
+        [
+            library,
+            account,
+            chainId,
+            props,
+            setStakingAmount,
+            context,
+            dispatch,
+            stakeType,
+        ],
     );
 
     useEffect((): any => {
@@ -133,9 +153,12 @@ export default function StakeTab(props: {
             <Card variant="outlined" className="staking-info-card">
                 <CardContent className="staking-info-card-content">
                     <StakingInfoMSG />
-                    {/* <Box display={'flex'} justifyContent={'center'}> */}
-                    {/* <StakingMethod /> */}
-                    {/* </Box> */}
+                    <Box display={'flex'} justifyContent={'center'}>
+                        <StakingMethod
+                            stakeType={stakeType}
+                            setStakeType={setStakeMethodType}
+                        />
+                    </Box>
                 </CardContent>
             </Card>
 
@@ -362,35 +385,37 @@ const StakingInput = (props: {
     );
 };
 
-// Reintroduce when advanced staking is supported.
-//
-// const StakingMethod = () => (
-//     <Box className="staking-method-container">
-//         <Box
-//             display="flex"
-//             justifyContent={'space-between'}
-//             alignItems={'center'}
-//         >
-//             <Typography className="staking-method-title">
-//                 Staking Method:
-//             </Typography>
-//             <Select
-//                 labelId="staking-method-select-label"
-//                 id="staking-method-selectd"
-//                 variant="standard"
-//                 value={'Standard'}
-//                 className="staking-method-select"
-//             >
-//                 <MenuItem selected value={'Standard'}>
-//                     Standard
-//                 </MenuItem>
-//                 <MenuItem value={'Advanced'} disabled={true}>
-//                     Advanced
-//                 </MenuItem>
-//             </Select>
-//         </Box>
-//     </Box>
-// );
+const StakingMethod = (props: {
+    stakeType: string;
+    setStakeType: (type: string) => void;
+}) => (
+    <Box className="staking-method-container">
+        <Box
+            display="flex"
+            justifyContent={'space-between'}
+            alignItems={'center'}
+        >
+            <Typography className="staking-method-title">
+                Staking Method:
+            </Typography>
+            <Select
+                labelId="staking-method-select-label"
+                id="staking-method-selectd"
+                variant="standard"
+                value={props.stakeType}
+                className="staking-method-select"
+                onChange={e => {
+                    props.setStakeType(e.target.value);
+                }}
+            >
+                <MenuItem selected value={'classic'}>
+                    Standard
+                </MenuItem>
+                <MenuItem value={'advanced'}>Advanced</MenuItem>
+            </Select>
+        </Box>
+    </Box>
+);
 
 const StakingInfoMSG = () => (
     <Box className="staking-info-container">

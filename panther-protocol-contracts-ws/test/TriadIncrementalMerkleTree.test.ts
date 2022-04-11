@@ -1,22 +1,26 @@
 // SPDX-License-Identifier: MIT
 import { expect } from 'chai';
-// TODO: make code code compile w/o ts-ignore
+
 // @ts-ignore
 import { ethers } from 'hardhat';
 import {
     toBigNum,
-    toBytes32,
     zeroLeaf,
     zeroTriadTreeRoot,
+    triads,
+    rootsSeen,
+    zeroLeavesTriad,
 } from '../lib/utilities';
+import {
+    MockTriadIncrementalMerkleTrees,
+    MockTriadIncrementalMerkleTrees__factory,
+} from './../contracts/types/';
 
 const BuildPoseidon = require('../scripts/buildPoseidon');
-const getZeroLeavesTriad = () => [zeroLeaf, zeroLeaf, zeroLeaf];
 
 describe('IncrementalMerkleTree', () => {
-    // @ts-ignore
-    let trees: ethers.Contract;
-    let TriadIncrementalMerkleTrees;
+    let trees: MockTriadIncrementalMerkleTrees;
+    let TriadIncrementalMerkleTrees: MockTriadIncrementalMerkleTrees__factory;
 
     before(async () => {
         const PoseidonT3 = await BuildPoseidon.getPoseidonT3Contract();
@@ -38,14 +42,35 @@ describe('IncrementalMerkleTree', () => {
                 },
             },
         );
+
+        trees = await TriadIncrementalMerkleTrees.deploy();
+        await trees.deployed();
+    });
+
+    describe('`getTreeId` method', () => {
+        // function getTreeId(uint256 leafId) returns (uint256)
+        it('should return 0 if called w/ `leafId` of 0', async () => {
+            expect(await trees.getTreeId(0)).to.equal(0);
+        });
+
+        it('should return 0 if called w/ `leafId` of 2047', async () => {
+            expect(await trees.getTreeId(2047)).to.equal(0);
+        });
+
+        it('should return 1 if called w/ `leafId` of 65536', async () => {
+            expect(await trees.getTreeId(65536)).to.equal(1);
+        });
+
+        it('should return 31 if called w/ `leafId` of 2031616', async () => {
+            expect(await trees.getTreeId(2031616)).to.equal(31);
+        });
+
+        it('should return 32 if called w/ `leafId` of 2097152', async () => {
+            expect(await trees.getTreeId(2097152)).to.equal(32);
+        });
     });
 
     describe('an empty tree', function () {
-        before(async () => {
-            trees = await TriadIncrementalMerkleTrees.deploy();
-            await trees.deployed();
-        });
-
         it('should have the depth of 15', async () => {
             expect(await trees.TREE_DEPTH()).to.equal(15);
         });
@@ -62,23 +87,26 @@ describe('IncrementalMerkleTree', () => {
             expect(await trees.leavesNum()).to.equal(0);
         });
 
-        it('should return 0 as the current root', async () => {
-            expect(await trees.curRoot()).to.equal(toBytes32(0));
+        it('should return empty tree as the current root', async () => {
+            expect(await trees.curRoot()).to.equal(toBigNum(zeroTriadTreeRoot));
         });
 
         it('should not "know" the empty tree root', async () => {
-            expect(await trees.isKnownRoot(zeroTriadTreeRoot)).to.equal(false);
+            expect(await trees.isKnownRoot(0, zeroTriadTreeRoot)).to.equal(
+                false,
+            );
         });
     });
 
     describe('internal `insertBatch` method', function () {
-        describe('a call inserting 3 zero leaves', () => {
-            let promises;
+        let promises: Promise<any>;
 
+        describe('a call inserting 3 zero leaves', () => {
             beforeEach(async () => {
                 trees = await TriadIncrementalMerkleTrees.deploy();
                 await trees.deployed();
-                promises = trees.internalInsertBatch(getZeroLeavesTriad());
+
+                promises = trees.internalInsertBatch(zeroLeavesTriad);
                 await promises;
             });
 
@@ -89,7 +117,7 @@ describe('IncrementalMerkleTree', () => {
             it('should emit the `CachedRoot` event', async () => {
                 await expect(promises)
                     .to.emit(trees, 'CachedRoot')
-                    .withArgs(zeroTriadTreeRoot);
+                    .withArgs(0, zeroTriadTreeRoot);
             });
 
             it('should set the empty tree root as the current root', async () => {
@@ -99,7 +127,7 @@ describe('IncrementalMerkleTree', () => {
             });
 
             it('should "get known" the empty tree root', async () => {
-                expect(await trees.isKnownRoot(zeroTriadTreeRoot)).to.equal(
+                expect(await trees.isKnownRoot(0, zeroTriadTreeRoot)).to.equal(
                     true,
                 );
             });
@@ -112,19 +140,19 @@ describe('IncrementalMerkleTree', () => {
             });
 
             it('the 1st call should return `leftLeafIds` of 0', async () => {
-                await expect(trees.internalInsertBatch(getZeroLeavesTriad()))
+                await expect(trees.internalInsertBatch(zeroLeavesTriad))
                     .to.emit(trees, 'InternalInsertBatch')
                     .withArgs(0);
             });
 
             it('the 2nd call should return `leftLeafIds` of 4', async () => {
-                await expect(trees.internalInsertBatch(getZeroLeavesTriad()))
+                await expect(trees.internalInsertBatch(zeroLeavesTriad))
                     .to.emit(trees, 'InternalInsertBatch')
                     .withArgs(4);
             });
 
             it('the 3rd call should return `leftLeafIds` of 8', async () => {
-                await expect(trees.internalInsertBatch(getZeroLeavesTriad()))
+                await expect(trees.internalInsertBatch(zeroLeavesTriad))
                     .to.emit(trees, 'InternalInsertBatch')
                     .withArgs(8);
             });
@@ -141,51 +169,192 @@ describe('IncrementalMerkleTree', () => {
         });
 
         describe('when called 8 times with non-zero leaves', () => {
-            let shift = 0;
-            const getNewTriad = () => [
-                toBytes32(shift++),
-                toBytes32(shift++),
-                toBytes32(shift++),
-            ];
-
             before(async () => {
                 trees = await TriadIncrementalMerkleTrees.deploy();
                 await trees.deployed();
             });
 
-            it('the 3rd call should set the `leftLeafIds` of 8', async () => {
-                await trees.internalInsertBatch(getNewTriad());
-                await trees.internalInsertBatch(getNewTriad());
-                await expect(trees.internalInsertBatch(getNewTriad()))
-                    .to.emit(trees, 'InternalInsertBatch')
-                    .withArgs(8);
+            describe('the 1st call', () => {
+                it('should return the `leftLeafId` of 0', async () => {
+                    await expect(trees.internalInsertBatch(triads[0]))
+                        .to.emit(trees, 'InternalInsertBatch')
+                        .withArgs(0);
+                });
+
+                it('should insert 3 leaves', async () => {
+                    expect(await trees.leavesNum()).to.equal(3);
+                });
+
+                it('should set expected tree root', async () => {
+                    expect(await trees.curRoot()).to.equal(
+                        toBigNum(rootsSeen[0]),
+                    );
+                });
             });
 
-            it('the 8th call should set the `leftLeafIds` of 28', async () => {
-                await trees.internalInsertBatch(getNewTriad());
-                await trees.internalInsertBatch(getNewTriad());
-                await trees.internalInsertBatch(getNewTriad());
-                await trees.internalInsertBatch(getNewTriad());
-                await expect(trees.internalInsertBatch(getNewTriad()))
-                    .to.emit(trees, 'InternalInsertBatch')
-                    .withArgs(28);
+            describe('the 2nd call', () => {
+                it('should return the `leftLeafId` of 4', async () => {
+                    await expect(trees.internalInsertBatch(triads[1]))
+                        .to.emit(trees, 'InternalInsertBatch')
+                        .withArgs(4);
+                });
+
+                it('should result in 6 leaves inserted', async () => {
+                    expect(await trees.leavesNum()).to.equal(6);
+                });
+
+                it('should set expected tree root', async () => {
+                    expect(await trees.curRoot()).to.equal(
+                        toBigNum(rootsSeen[1]),
+                    );
+                });
             });
 
-            it('should insert 24 leaves', async () => {
-                expect(await trees.leavesNum()).to.equal(24);
+            describe('the 3rd call', () => {
+                it('should return the `leftLeafId` of 8', async () => {
+                    await expect(trees.internalInsertBatch(triads[2]))
+                        .to.emit(trees, 'InternalInsertBatch')
+                        .withArgs(8);
+                });
+
+                it('should result in 9 leaves inserted', async () => {
+                    expect(await trees.leavesNum()).to.equal(9);
+                });
+
+                it('should set expected tree root', async () => {
+                    expect(await trees.curRoot()).to.equal(
+                        toBigNum(rootsSeen[2]),
+                    );
+                });
             });
 
-            it('should set non-empty tree root', async () => {
-                expect(await trees.curRoot()).not.to.equal(
-                    toBigNum(zeroTriadTreeRoot),
-                );
+            describe('the 8th call', () => {
+                it('should return the `leftLeafId` of 28', async () => {
+                    await trees.internalInsertBatch(triads[3]);
+                    await trees.internalInsertBatch(triads[4]);
+                    await trees.internalInsertBatch(triads[5]);
+                    await trees.internalInsertBatch(triads[6]);
+                    await expect(trees.internalInsertBatch(triads[7]))
+                        .to.emit(trees, 'InternalInsertBatch')
+                        .withArgs(28);
+                });
+
+                it('should result in 24 leaves inserted', async () => {
+                    expect(await trees.leavesNum()).to.equal(24);
+                });
+
+                it('should set expected tree root', async () => {
+                    expect(await trees.curRoot()).to.equal(
+                        toBigNum(rootsSeen[7]),
+                    );
+                });
+
+                it('should set the empty tree root as unknown', async () => {
+                    expect(
+                        await trees.isKnownRoot(0, zeroTriadTreeRoot),
+                    ).to.equal(false);
+                });
+
+                it('should make "known" the tree roots after the four latest calls', async () => {
+                    expect(await trees.isKnownRoot(0, rootsSeen[7])).to.equal(
+                        true,
+                    );
+                    expect(await trees.isKnownRoot(0, rootsSeen[6])).to.equal(
+                        true,
+                    );
+                    expect(await trees.isKnownRoot(0, rootsSeen[5])).to.equal(
+                        true,
+                    );
+                    expect(await trees.isKnownRoot(0, rootsSeen[4])).to.equal(
+                        true,
+                    );
+                });
+
+                it('should make "unknown" the tree root after the 4th call', async () => {
+                    expect(await trees.isKnownRoot(0, rootsSeen[3])).to.equal(
+                        false,
+                    );
+                });
             });
         });
+    });
 
-        describe('`isKnownRoot` method', () => {
-            // leafNum to nextLeafId: n2nli = (n) => Math.floor(n/3)*4 + n%3
-            // nextLeafId to leafNum: nli2n = (i) => Math.floor(i/4)*3 + i%4
-            xit('FIXME: should be tested');
+    describe('`internalIsFullTree` method', () => {
+        // function internalIsFullTree(uint256 nextLeafId) returns (bool)
+        it('should return `false`  if called w/ `nextLeafId` of 0', async () => {
+            expect(await trees.internalIsFullTree(0)).to.equal(false);
+        });
+
+        it('should return `false`  if called w/ `nextLeafId` of 1', async () => {
+            expect(await trees.internalIsFullTree(1)).to.equal(false);
+        });
+
+        it('should return `false`  if called w/ `nextLeafId` of 1535', async () => {
+            expect(await trees.internalIsFullTree(1535)).to.equal(false);
+        });
+
+        it('should return `false`  if called w/ `nextLeafId` of 2043', async () => {
+            expect(await trees.internalIsFullTree(2043)).to.equal(false);
+        });
+
+        it('should return `true`  if called w/ `nextLeafId` of 2044', async () => {
+            expect(await trees.internalIsFullTree(65533)).to.equal(true);
+        });
+
+        it('should return `true`  if called w/ `nextLeafId` of 2045', async () => {
+            expect(await trees.internalIsFullTree(65534)).to.equal(true);
+        });
+
+        it('should return `true`  if called w/ `nextLeafId` of 2046', async () => {
+            expect(await trees.internalIsFullTree(65535)).to.equal(true);
+        });
+
+        it('should return `false`  if called w/ `nextLeafId` of 2048', async () => {
+            expect(await trees.internalIsFullTree(2048)).to.equal(false);
+        });
+
+        it('should return `false`  if called w/ `nextLeafId` of 2049', async () => {
+            expect(await trees.internalIsFullTree(2049)).to.equal(false);
+        });
+
+        it('should return `false`  if called w/ `nextLeafId` of 65531', async () => {
+            expect(await trees.internalIsFullTree(65531)).to.equal(false);
+        });
+
+        it('should return `true`  if called w/ `nextLeafId` of 65532', async () => {
+            expect(await trees.internalIsFullTree(65532)).to.equal(true);
+        });
+
+        it('should return `false`  if called w/ `nextLeafId` of 65536', async () => {
+            expect(await trees.internalIsFullTree(65536)).to.equal(false);
+        });
+    });
+
+    describe('`internalNextLeafId2LeavesNum` method', () => {
+        it('should return 0  if called w/ `nextLeafId` of 0', async () => {
+            expect(await trees.internalNextLeafId2LeavesNum(0)).to.equal(0);
+        });
+
+        it('should return 1  if called w/ `nextLeafId` of 1', async () => {
+            expect(await trees.internalNextLeafId2LeavesNum(1)).to.equal(1);
+        });
+
+        it('should return 2  if called w/ `nextLeafId` of 2', async () => {
+            expect(await trees.internalNextLeafId2LeavesNum(2)).to.equal(2);
+        });
+
+        it('should return 3  if called w/ `nextLeafId` of 3', async () => {
+            expect(await trees.internalNextLeafId2LeavesNum(3)).to.equal(3);
+        });
+
+        it('should return 3  if called w/ `nextLeafId` of 4', async () => {
+            expect(await trees.internalNextLeafId2LeavesNum(4)).to.equal(3);
+        });
+
+        it('should return 1536  if called w/ `nextLeafId` of 2048', async () => {
+            expect(await trees.internalNextLeafId2LeavesNum(2048)).to.equal(
+                1536,
+            );
         });
     });
 });

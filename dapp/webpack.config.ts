@@ -44,7 +44,7 @@ const babelConfig = process.env.BABEL_UWC
 
 const webpackConfig = (): Configuration | any => ({
     entry: ['babel-polyfill', './src/index.tsx'],
-    ...(true || process.env.NODE_ENV === 'production'
+    ...(process.env.NODE_ENV === 'production'
         ? {}
         : {
               devtool: 'source-map', // 'eval-cheap-source-map'

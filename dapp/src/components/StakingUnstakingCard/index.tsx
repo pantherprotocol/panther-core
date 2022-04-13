@@ -16,7 +16,6 @@ import './styles.scss';
 export default function StakingUnstakingCard(props: {
     rewardsBalance: BigNumber | null;
     tokenBalance: BigNumber | null;
-    stakedBalance: BigNumber | null;
     fetchData: () => Promise<void>;
     onConnect: any;
     networkLogo?: string;
@@ -61,7 +60,6 @@ export default function StakingUnstakingCard(props: {
                     {toggle == 'stake' || toggle == null ? (
                         <StakeTab
                             tokenBalance={props.tokenBalance}
-                            stakedBalance={props.stakedBalance}
                             rewardsBalance={props.rewardsBalance}
                             fetchData={props.fetchData}
                             onConnect={props.onConnect}

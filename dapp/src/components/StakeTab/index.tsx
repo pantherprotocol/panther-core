@@ -15,6 +15,7 @@ import {BigNumber, utils} from 'ethers';
 import logo from '../../images/panther-logo.svg';
 import {useAppDispatch} from '../../redux/hooks';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
+import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {onWrongNetwork} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
 import * as stakingService from '../../services/staking';
@@ -30,13 +31,14 @@ const MINIMUM_STAKE = utils.parseUnits('100');
 export default function StakeTab(props: {
     rewardsBalance: BigNumber | null;
     tokenBalance: BigNumber | null;
-    stakedBalance: BigNumber | null;
     fetchData: () => Promise<void>;
     onConnect: any;
     networkLogo?: string;
     switchNetwork: any;
 }) {
     const context = useWeb3React();
+    const dispatch = useAppDispatch();
+
     const {account, library, chainId, active, error} = context;
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
@@ -45,7 +47,6 @@ export default function StakeTab(props: {
         null,
     );
     const [, setStakedId] = useState<number | null>(null);
-    const dispatch = useAppDispatch();
     // For use when user types input
     const setStakingAmount = useCallback((amount: string) => {
         setAmountToStake(amount);
@@ -83,6 +84,7 @@ export default function StakeTab(props: {
             setStakedId(Number(stakingResponse));
             setStakingAmount('');
             dispatch(getTotalStaked(context));
+            dispatch(getZkpStakedBalance(context));
             props.fetchData();
         },
         [library, account, chainId, props, setStakingAmount, context, dispatch],

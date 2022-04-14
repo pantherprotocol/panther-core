@@ -2,7 +2,7 @@ import {
     deriveKeypairFromSeed,
     // generateKeypair
 } from './crypto';
-import {IKeypair} from './interfaces';
+import {IKeypair} from './types';
 
 export default class Keychain {
     // eslint-disable-next-line @typescript-eslint/no-empty-function

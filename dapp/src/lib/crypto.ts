@@ -1,11 +1,11 @@
-import * as assert from 'assert';
+import assert from 'assert';
 import * as crypto from 'crypto';
 
-import * as createBlakeHash from 'blake-hash';
+import createBlakeHash from 'blake-hash';
 import {babyjub, eddsa, mimc7} from 'circomlibjs';
 import * as ff from 'ffjavascript';
 
-import {ICiphertext, IKeypair} from './interfaces';
+import {ICiphertext, IKeypair} from './types';
 
 const FIELD_SIZE = BigInt(
     '21888242871839275222246405745257275088548364400416034343698204186575808495617',

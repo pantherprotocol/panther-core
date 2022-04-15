@@ -6,3 +6,6 @@ export interface IKeypair {
     publicKey: bigint[];
     privateKey: bigint;
 }
+export type PrivateKey = bigint;
+export type PublicKey = bigint[];
+export type EcdhSharedKey = bigint;

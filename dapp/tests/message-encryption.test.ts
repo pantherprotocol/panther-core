@@ -3,7 +3,7 @@ import {describe, expect} from '@jest/globals';
 import {
     generateRandomKeypair,
     deriveKeypairFromSeed,
-    FIELD_SIZE,
+    SNARK_FIELD_SIZE,
 } from '../src/lib/keychain';
 import {
     encryptMessage,
@@ -34,7 +34,7 @@ describe('Cryptographic operations', () => {
 
     describe('Private key', () => {
         it('should be smaller than the snark field size', () => {
-            expect(keypair1.privateKey < FIELD_SIZE).toBeTruthy();
+            expect(keypair1.privateKey < SNARK_FIELD_SIZE).toBeTruthy();
             // TODO: add tests to ensure that the prune buffer step worked
         });
     });
@@ -42,8 +42,8 @@ describe('Cryptographic operations', () => {
     describe("Public key's constituent values ", () => {
         it('should be smaller than the snark field size', () => {
             // TODO: Figure out if these checks are correct and enough
-            expect(keypair1.publicKey[0] < FIELD_SIZE).toBeTruthy();
-            expect(keypair1.publicKey[1] < FIELD_SIZE).toBeTruthy();
+            expect(keypair1.publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair1.publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
         });
     });
 
@@ -56,7 +56,7 @@ describe('Cryptographic operations', () => {
 
         it('should be smaller than the snark field size', () => {
             // TODO: Figure out if this check is correct and enough
-            expect(ecdhSharedKey12 < FIELD_SIZE).toBeTruthy();
+            expect(ecdhSharedKey12 < SNARK_FIELD_SIZE).toBeTruthy();
         });
     });
 
@@ -75,10 +75,10 @@ describe('Cryptographic operations', () => {
         });
 
         it('should be smaller than the snark field size', () => {
-            expect(ciphertext.iv < FIELD_SIZE).toBeTruthy();
+            expect(ciphertext.iv < SNARK_FIELD_SIZE).toBeTruthy();
             for (let i = 0; i < ciphertext.data.length; i++) {
                 // TODO: Figure out if this check is correct and enough
-                expect(ciphertext.data[i] < FIELD_SIZE).toBeTruthy();
+                expect(ciphertext.data[i] < SNARK_FIELD_SIZE).toBeTruthy();
             }
         });
     });

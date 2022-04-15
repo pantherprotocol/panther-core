@@ -36,6 +36,10 @@ export function chainHasStakesReporter(chainId?: number): boolean {
     return !!env[`STAKES_REPORTER_CONTRACT_${chainId}`];
 }
 
+export function chainHasAdvancedStaking(chainId?: number): boolean {
+    return env[`HAS_ADVANCED_STAKING_${chainId}`] === 'true';
+}
+
 export function getContractABI(
     contractName: ContractName,
     chainId: number,

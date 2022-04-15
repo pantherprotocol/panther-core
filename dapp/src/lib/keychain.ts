@@ -27,6 +27,11 @@ export const deriveKeypairFromSeed = (
     };
 };
 
+export const deriveKeypairFromSignature = (signature: string): IKeypair => {
+    const pKey = derivePrivateKeyFromSignature(signature);
+    return deriveKeypairFromSeed(pKey);
+};
+
 export const generateRandomKeypair = (): IKeypair => {
     const seed = generateRandomBabyJubValue();
     return deriveKeypairFromSeed(seed);

@@ -3,6 +3,7 @@ import {Wallet} from 'ethers';
 
 import {
     deriveKeypairFromSignature,
+    generateRandomKeypair,
     derivePrivateKeyFromSignature,
     extractSecretsPair,
     SNARK_FIELD_SIZE,
@@ -64,6 +65,22 @@ describe('Keychain', () => {
             const keypairTwo = deriveKeypairFromSignature(signature);
             expect(keypairOne.privateKey).toEqual(keypairTwo.privateKey);
             expect(keypairOne.publicKey).toEqual(keypairTwo.publicKey);
+        });
+    });
+
+    describe('Random keypair', () => {
+        it('should be smaller than snark FIELD_SIZE', () => {
+            const keypair = generateRandomKeypair();
+            expect(keypair.privateKey < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair.publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair.publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
+        });
+
+        it('should not be deterministic', () => {
+            const keypairOne = generateRandomKeypair();
+            const keypairTwo = generateRandomKeypair();
+            expect(keypairOne.privateKey).not.toEqual(keypairTwo.privateKey);
+            expect(keypairOne.publicKey).not.toEqual(keypairTwo.publicKey);
         });
     });
 });

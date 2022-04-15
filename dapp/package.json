@@ -8,6 +8,7 @@
     "start": "webpack-cli serve --mode=development --env development --hot",
     "start:prod": "webpack-cli serve --mode=production --env production --hot",
     "build": "webpack --mode=development --env development --progress",
+    "build:types": "./scripts/gen-types.sh",
     "build:prod": "webpack --mode=production --env production --progress",
     "lint": "yarn lint:ts && yarn run prettier:list-different",
     "lint:eslint": "eslint --max-warnings 0",

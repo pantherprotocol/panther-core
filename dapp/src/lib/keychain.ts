@@ -22,7 +22,7 @@ export const deriveKeypairFromSeed = (
     };
 };
 
-export const generateKeypair = (): IKeypair => {
+export const generateRandomKeypair = (): IKeypair => {
     const seed = generateRandomBabyJubValue();
     return deriveKeypairFromSeed(seed);
 };

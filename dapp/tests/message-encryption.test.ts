@@ -1,7 +1,7 @@
 import {describe, expect} from '@jest/globals';
 
 import {
-    generateKeypair,
+    generateRandomKeypair,
     deriveKeypairFromSeed,
     FIELD_SIZE,
 } from '../src/lib/keychain';
@@ -12,8 +12,8 @@ import {
 } from '../src/lib/message-encryption';
 
 describe('Cryptographic operations', () => {
-    const keypair1 = generateKeypair();
-    const keypair2 = generateKeypair();
+    const keypair1 = generateRandomKeypair();
+    const keypair2 = generateRandomKeypair();
 
     const ecdhSharedKey12 = generateEcdhSharedKey(
         keypair1.privateKey,

@@ -1,15 +1,9 @@
-import {
-    ICommitment,
+export type {IKeypair, PrivateKey, PublicKey, EcdhSharedKey} from './keypair';
+export type {Plaintext} from './message';
+export type {
     ICiphertext,
-    ICommitmentsEvent,
+    ICommitment,
     ICommitmentPlaintext,
+    ICommitmentSecrets,
+    ICommitmentsEvent,
 } from './event';
-import {IKeypair} from './keypair';
-
-export {
-    IKeypair,
-    ICommitment,
-    ICiphertext,
-    ICommitmentsEvent,
-    ICommitmentPlaintext,
-};

@@ -3,8 +3,8 @@ import {Wallet} from 'ethers';
 
 import {
     deriveKeypairFromSignature,
-    generateRandomKeypair,
     derivePrivateKeyFromSignature,
+    deriveKeypairFromSeed,
     extractSecretsPair,
     SNARK_FIELD_SIZE,
 } from '../src/lib/keychain';
@@ -70,15 +70,15 @@ describe('Keychain', () => {
 
     describe('Random keypair', () => {
         it('should be smaller than snark FIELD_SIZE', () => {
-            const keypair = generateRandomKeypair();
+            const keypair = deriveKeypairFromSeed();
             expect(keypair.privateKey < SNARK_FIELD_SIZE).toBeTruthy();
             expect(keypair.publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
             expect(keypair.publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
         });
 
         it('should not be deterministic', () => {
-            const keypairOne = generateRandomKeypair();
-            const keypairTwo = generateRandomKeypair();
+            const keypairOne = deriveKeypairFromSeed();
+            const keypairTwo = deriveKeypairFromSeed();
             expect(keypairOne.privateKey).not.toEqual(keypairTwo.privateKey);
             expect(keypairOne.publicKey).not.toEqual(keypairTwo.publicKey);
         });

@@ -1,20 +1,25 @@
+/*
+Some of the functions are modified version or inspired by this code:
+https://github.com/appliedzkp/maci/blob/master/crypto/ts/index.ts
+*/
+
 import assert from 'assert';
 import crypto from 'crypto';
 
 import createBlakeHash from 'blake-hash';
-import {babyjub, eddsa} from 'circomlibjs';
+import {babyjub, eddsa, poseidon} from 'circomlibjs';
 import * as ff from 'ffjavascript';
 
 import {IKeypair, PrivateKey, PublicKey} from './types';
 
-export const FIELD_SIZE = BigInt(
+export const SNARK_FIELD_SIZE = BigInt(
     '21888242871839275222246405745257275088548364400416034343698204186575808495617',
 );
 
 export const deriveKeypairFromSeed = (
     seed = generateRandomBabyJubValue(),
 ): IKeypair => {
-    const privateKey = generatePrivateKeyBabyJubJubFromSeed(seed); //
+    const privateKey = truncateToSnarkField(seed); //
     const publicKey = generatePublicKey(privateKey);
     return {
         privateKey: privateKey,
@@ -27,17 +32,12 @@ export const generateRandomKeypair = (): IKeypair => {
     return deriveKeypairFromSeed(seed);
 };
 
-export const generatePrivateKeyBabyJubJubFromSeed = (
-    seed: bigint,
-): PrivateKey => {
-    const privateKey: PrivateKey = seed % FIELD_SIZE;
-    assert(privateKey < FIELD_SIZE);
-    return privateKey;
+export const truncateToSnarkField = (v: bigint): bigint => {
+    return v % SNARK_FIELD_SIZE;
 };
 
 export const generatePublicKey = (privateKey: PrivateKey): PublicKey => {
-    privateKey = BigInt(privateKey.toString());
-    assert(privateKey < FIELD_SIZE);
+    assert(privateKey < SNARK_FIELD_SIZE);
     return babyjub.mulPointEscalar(
         babyjub.Base8,
         formatPrivateKeyForBabyJub(privateKey),
@@ -79,13 +79,47 @@ const bigIntToBuffer = (i: BigInt): Buffer => {
 
 const generateRandomBabyJubValue = (): bigint => {
     const random = generateRandomness();
-    const privateKey: PrivateKey = random % FIELD_SIZE;
-    assert(privateKey < FIELD_SIZE);
+    const privateKey: PrivateKey = random % SNARK_FIELD_SIZE;
+    assert(privateKey < SNARK_FIELD_SIZE);
     return privateKey;
 };
 
-// const hashPoseidon = (seed: string): string => {
-//     const hash = '';
-//     // TODO: any string converted to 32 byte hash -> SHA256 or Poseidon
-//     return hash;
-// };
+export const extractSecretsPair = (
+    signature: string,
+): [r: bigint, s: bigint] => {
+    if (!signature) {
+        throwKeychainError('Signature must be provided');
+    }
+    if (signature.length !== 132) {
+        throwKeychainError(
+            `Tried to create keypair from signature of length '${signature.length}'`,
+        );
+    }
+    if (signature.slice(0, 2) !== '0x') {
+        throwKeychainError(
+            `Tried to create keypair from signature without 0x prefix`,
+        );
+    }
+    // We will never verify this signature; we're only using it as a
+    // deterministic source of entropy which can be used in a ZK proof.
+    // So we can discard the LSB v which has the least entropy.
+    const r = signature.slice(2, 66);
+    const s = signature.slice(66, 130);
+    return [
+        BigInt('0x' + r) % SNARK_FIELD_SIZE,
+        BigInt('0x' + s) % SNARK_FIELD_SIZE,
+    ];
+};
+
+export const derivePrivateKeyFromSignature = (signature: string): bigint => {
+    const pair = extractSecretsPair(signature);
+    if (!pair) {
+        throwKeychainError('Failed to extract secrets pair from signature');
+    }
+    return poseidon(pair);
+};
+
+const throwKeychainError = (err: string) => {
+    const keychainError = new Error(`Keychain error: ${err}`);
+    throw keychainError;
+};

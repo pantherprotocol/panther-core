@@ -17,7 +17,7 @@ const initialState: ZkpStakedBalanceState = {
 };
 
 export const getZkpStakedBalance = createAsyncThunk(
-    'balance/getTotalStakedForAccount',
+    'balance/getZkpStaked',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
     ): Promise<string | null> => {

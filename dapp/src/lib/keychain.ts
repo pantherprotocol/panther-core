@@ -27,9 +27,9 @@ export const deriveKeypairFromSeed = (
     };
 };
 
-export const generateRandomKeypair = (): IKeypair => {
-    const seed = generateRandomBabyJubValue();
-    return deriveKeypairFromSeed(seed);
+export const deriveKeypairFromSignature = (signature: string): IKeypair => {
+    const pKey = derivePrivateKeyFromSignature(signature);
+    return deriveKeypairFromSeed(pKey);
 };
 
 export const truncateToSnarkField = (v: bigint): bigint => {
@@ -119,7 +119,6 @@ export const derivePrivateKeyFromSignature = (signature: string): bigint => {
     return poseidon(pair);
 };
 
-const throwKeychainError = (err: string) => {
-    const keychainError = new Error(`Keychain error: ${err}`);
-    throw keychainError;
+const throwKeychainError = (errMsg: string) => {
+    throw new Error(`Keychain error: ${errMsg}`);
 };

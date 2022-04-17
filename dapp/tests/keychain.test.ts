@@ -2,7 +2,9 @@ import {describe, expect} from '@jest/globals';
 import {Wallet} from 'ethers';
 
 import {
+    deriveKeypairFromSignature,
     derivePrivateKeyFromSignature,
+    deriveKeypairFromSeed,
     extractSecretsPair,
     SNARK_FIELD_SIZE,
 } from '../src/lib/keychain';
@@ -47,6 +49,38 @@ describe('Keychain', () => {
             expect(() => extractSecretsPair('0'.repeat(132))).toThrow(
                 'Keychain error: Tried to create keypair from signature without 0x prefix',
             );
+        });
+    });
+
+    describe('Keypair', () => {
+        it('should be smaller than snark FIELD_SIZE', () => {
+            const keypair = deriveKeypairFromSignature(signature);
+            expect(keypair.privateKey < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair.publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair.publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
+        });
+
+        it('should be deterministically generated', () => {
+            const keypairOne = deriveKeypairFromSignature(signature);
+            const keypairTwo = deriveKeypairFromSignature(signature);
+            expect(keypairOne.privateKey).toEqual(keypairTwo.privateKey);
+            expect(keypairOne.publicKey).toEqual(keypairTwo.publicKey);
+        });
+    });
+
+    describe('Random keypair', () => {
+        it('should be smaller than snark FIELD_SIZE', () => {
+            const keypair = deriveKeypairFromSeed();
+            expect(keypair.privateKey < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair.publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair.publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
+        });
+
+        it('should not be deterministic', () => {
+            const keypairOne = deriveKeypairFromSeed();
+            const keypairTwo = deriveKeypairFromSeed();
+            expect(keypairOne.privateKey).not.toEqual(keypairTwo.privateKey);
+            expect(keypairOne.publicKey).not.toEqual(keypairTwo.publicKey);
         });
     });
 });

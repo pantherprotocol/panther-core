@@ -5,6 +5,8 @@ import {
     deriveKeypairFromSignature,
     derivePrivateKeyFromSignature,
     deriveKeypairFromSeed,
+    generateRandomBabyJubValue,
+    multiplyPrivateKeys,
     extractSecretsPair,
     SNARK_FIELD_SIZE,
 } from '../src/lib/keychain';
@@ -81,6 +83,19 @@ describe('Keychain', () => {
             const keypairTwo = deriveKeypairFromSeed();
             expect(keypairOne.privateKey).not.toEqual(keypairTwo.privateKey);
             expect(keypairOne.publicKey).not.toEqual(keypairTwo.publicKey);
+        });
+    });
+
+    describe('Multiplication of private key', () => {
+        it('should be commutative', () => {
+            const a = generateRandomBabyJubValue();
+            const b = generateRandomBabyJubValue();
+            const c = generateRandomBabyJubValue();
+            multiplyPrivateKeys(a, b);
+            expect(
+                multiplyPrivateKeys(multiplyPrivateKeys(a, b), c) ===
+                    multiplyPrivateKeys(a, multiplyPrivateKeys(b, c)),
+            ).toBeTruthy();
         });
     });
 });

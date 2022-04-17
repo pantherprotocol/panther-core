@@ -27,6 +27,10 @@ export const deriveKeypairFromSeed = (
     };
 };
 
+export const multiplyScalars = (a: bigint, b: bigint): bigint => {
+    return truncateToSnarkField(a * b);
+};
+
 export const deriveKeypairFromSignature = (signature: string): IKeypair => {
     const pKey = derivePrivateKeyFromSignature(signature);
     return deriveKeypairFromSeed(pKey);

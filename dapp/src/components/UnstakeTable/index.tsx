@@ -26,9 +26,7 @@ export default function UnstakeTable(props: {fetchData: () => Promise<void>}) {
     const context = useWeb3React();
     const {library, chainId, account} = context;
     const dispatch = useAppDispatch();
-
     const [stakedData, setStakedData] = useState<any[]>([]);
-
     const fetchStakedData = useCallback(async () => {
         if (!library || !chainId || !account) {
             return;

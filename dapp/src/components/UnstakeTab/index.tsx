@@ -3,23 +3,22 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
-import {BigNumber, constants} from 'ethers';
+import {constants} from 'ethers';
 
+import {useAppSelector} from '../../redux/hooks';
+import {unclaimedRewardsSelector} from '../../redux/slices/unclaimedRewards';
 import {formatCurrency} from '../../utils/helpers';
 import UnstakeTable from '../UnstakeTable';
 
 import './styles.scss';
 
-export default function UnstakingTab(props: {
-    rewardsBalance: BigNumber | null;
-    fetchData: () => Promise<void>;
-}) {
+export default function UnstakingTab(props: {fetchData: () => Promise<void>}) {
     return (
         <Box className="unstaking-tab-holder">
             <Card variant="outlined">
                 <UnstakingInfoMSG />
                 <UnstakeTable fetchData={props.fetchData} />
-                <TotalUnclaimedRewards rewardsBalance={props.rewardsBalance} />
+                <TotalUnclaimedRewards />
             </Card>
         </Box>
     );
@@ -34,9 +33,9 @@ const UnstakingInfoMSG = () => (
     </Box>
 );
 
-const TotalUnclaimedRewards = (props: {rewardsBalance: BigNumber | null}) => {
-    const hasRewards =
-        props.rewardsBalance && props.rewardsBalance.gt(constants.Zero);
+const TotalUnclaimedRewards = () => {
+    const rewardsBalance = useAppSelector(unclaimedRewardsSelector);
+    const hasRewards = rewardsBalance && rewardsBalance.gt(constants.Zero);
 
     return (
         <Box className="total-unclaimed-container">
@@ -45,11 +44,11 @@ const TotalUnclaimedRewards = (props: {rewardsBalance: BigNumber | null}) => {
                     <Typography variant="caption">No rewards yet</Typography>
                 </Box>
             )}
-            {props.rewardsBalance && hasRewards && (
+            {rewardsBalance && hasRewards && (
                 <Box className="total-unclaimed-rewards">
                     <Typography variant="caption">
                         Total Unclaimed Rewards:{' '}
-                        {formatCurrency(props.rewardsBalance)}
+                        {formatCurrency(rewardsBalance)}
                     </Typography>
                 </Box>
             )}

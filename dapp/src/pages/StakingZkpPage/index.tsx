@@ -20,6 +20,10 @@ import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {blurSelector} from '../../redux/slices/blur';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {
+    getUnclaimedRewards,
+    resetUnclaimedRewards,
+} from '../../redux/slices/unclaimedRewards';
+import {
     getZKPTokenMarketPrice,
     marketPriceSelector,
 } from '../../redux/slices/zkpMarketPrice';
@@ -30,8 +34,6 @@ import {
 import * as accountService from '../../services/account';
 import {formatAccountAddress} from '../../services/account';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
-import {chainHasStakesReporter} from '../../services/contracts';
-import * as stakingService from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
 import {fiatPrice, formatCurrency, formatEther} from '../../utils/helpers';
 
@@ -57,9 +59,6 @@ function StakingZkpPage() {
     const [, setChainError] = useState('');
     const [tokenBalance, setTokenBalance] = useState<BigNumber | null>(null);
     const [tokenBalanceUSD, setTokenBalanceUSD] = useState<BigNumber | null>(
-        null,
-    );
-    const [rewardsBalance, setRewardsBalance] = useState<BigNumber | null>(
         null,
     );
     const accountAddress = formatAccountAddress(account);
@@ -102,7 +101,7 @@ function StakingZkpPage() {
             deactivate();
             setTokenBalance(null);
             dispatch(resetZkpStakedBalance());
-            setRewardsBalance(null);
+            dispatch(resetUnclaimedRewards());
         }
     }, [active, chainId, deactivate, dispatch]);
 
@@ -130,52 +129,15 @@ function StakingZkpPage() {
         [library, chainId, account],
     );
 
-    const getUnclaimedRewardsBalance = useCallback(
-        async (price: BigNumber | null) => {
-            if (!library || !chainId || !account) {
-                setRewardsBalance(null);
-                return;
-            }
-            if (chainHasStakesReporter(chainId)) {
-                if (chainId === 137) {
-                    console.debug('Using StakesReporter on Polygon');
-                } else {
-                    console.debug('Using StakesReporter on chain', chainId);
-                }
-            } else {
-                console.debug('Not using StakesReporter; chainId', chainId);
-            }
-
-            const rewardsBalance = await stakingService.getRewardsBalance(
-                library,
-                chainId,
-                account,
-            );
-            setRewardsBalance(rewardsBalance);
-            console.debug(
-                'rewardsBalance:',
-                formatCurrency(rewardsBalance),
-                `(USD \$${formatCurrency(fiatPrice(rewardsBalance, price))})`,
-            );
-        },
-        [library, chainId, account],
-    );
-
     const fetchData = useCallback(async (): Promise<void> => {
         if (!library || !account) {
-            setRewardsBalance(null);
+            dispatch(resetUnclaimedRewards());
+
             return;
         }
 
         await fetchZkpTokenBalance(price);
-        await getUnclaimedRewardsBalance(price);
-    }, [
-        library,
-        account,
-        price,
-        fetchZkpTokenBalance,
-        getUnclaimedRewardsBalance,
-    ]);
+    }, [library, account, price, dispatch, fetchZkpTokenBalance]);
 
     useEffect(() => {
         fetchData();
@@ -185,6 +147,7 @@ function StakingZkpPage() {
         dispatch(getTotalStaked(context));
         dispatch(getZKPTokenMarketPrice());
         dispatch(getZkpStakedBalance(context));
+        dispatch(getUnclaimedRewards(context));
     }, [context, dispatch]);
 
     const isBlur = useAppSelector(blurSelector);
@@ -223,7 +186,6 @@ function StakingZkpPage() {
                                     <BalanceCard
                                         tokenBalance={tokenBalance}
                                         tokenBalanceUSD={tokenBalanceUSD}
-                                        rewardsBalance={rewardsBalance}
                                         accountAddress={accountAddress}
                                         networkLogo={currentNetwork?.logo}
                                     />
@@ -243,7 +205,6 @@ function StakingZkpPage() {
                                     />
                                     <StakingUnstakingCard
                                         tokenBalance={tokenBalance}
-                                        rewardsBalance={rewardsBalance}
                                         fetchData={fetchData}
                                         networkLogo={currentNetwork?.logo}
                                         onConnect={() => {

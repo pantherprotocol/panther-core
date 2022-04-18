@@ -31,7 +31,6 @@ import './styles.scss';
 const MINIMUM_STAKE = utils.parseUnits('100');
 
 export default function StakeTab(props: {
-    rewardsBalance: BigNumber | null;
     tokenBalance: BigNumber | null;
     fetchData: () => Promise<void>;
     onConnect: any;

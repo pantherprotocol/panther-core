@@ -19,6 +19,7 @@ import {useAppDispatch} from '../../redux/hooks';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {onWrongNetwork} from '../../services/connectors';
+import {chainHasAdvancedStaking} from '../../services/contracts';
 import {CHAIN_IDS} from '../../services/env';
 import * as stakingService from '../../services/staking';
 import {formatCurrency, safeParseUnits} from '../../utils/helpers';
@@ -49,6 +50,7 @@ export default function StakeTab(props: {
     );
     const [, setStakedId] = useState<number | null>(null);
     const [stakeType, setStakeType] = useState<string>('classic');
+
     // For use when user types input
     const setStakingAmount = useCallback((amount: string) => {
         setAmountToStake(amount);
@@ -152,12 +154,14 @@ export default function StakeTab(props: {
             <Card variant="outlined" className="staking-info-card">
                 <CardContent className="staking-info-card-content">
                     <StakingInfoMSG />
-                    <Box display={'flex'} justifyContent={'center'}>
-                        <StakingMethod
-                            stakeType={stakeType}
-                            setStakeType={setStakeMethodType}
-                        />
-                    </Box>
+                    {chainHasAdvancedStaking(chainId) && (
+                        <Box display={'flex'} justifyContent={'center'}>
+                            <StakingMethod
+                                stakeType={stakeType}
+                                setStakeType={setStakeMethodType}
+                            />
+                        </Box>
+                    )}
                 </CardContent>
             </Card>
 

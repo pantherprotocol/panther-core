@@ -77,7 +77,7 @@ const bigIntToBuffer = (i: BigInt): Buffer => {
     return Buffer.from(hexStr, 'hex');
 };
 
-const generateRandomBabyJubValue = (): bigint => {
+export const generateRandomBabyJubValue = (): bigint => {
     const random = generateRandomness();
     const privateKey: PrivateKey = random % SNARK_FIELD_SIZE;
     assert(privateKey < SNARK_FIELD_SIZE);

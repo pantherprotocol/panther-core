@@ -8,7 +8,6 @@ import {
     deriveKeypairFromSignature,
     derivePrivateKeyFromSignature,
     extractSecretsPair,
-    formatPrivateKeyForBabyJub,
     generateRandomBabyJubValue,
     multiplyScalars,
 } from '../../src/lib/keychain';
@@ -91,29 +90,29 @@ describe('Keychain', () => {
     describe('Multiplication of private key', () => {
         const r = generateRandomBabyJubValue();
         const s = generateRandomBabyJubValue();
-        const V = babyjub.Base8;
-        const sV = babyjub.mulPointEscalar(V, formatPrivateKeyForBabyJub(s));
-        const r_sV = babyjub.mulPointEscalar(sV, formatPrivateKeyForBabyJub(r));
-        const rV = babyjub.mulPointEscalar(V, formatPrivateKeyForBabyJub(r));
-        const s_rB = babyjub.mulPointEscalar(rV, formatPrivateKeyForBabyJub(s));
+        const B = babyjub.Base8;
+        const sB = babyjub.mulPointEscalar(B, s);
+        const rB = babyjub.mulPointEscalar(B, r);
+        const r_sB = babyjub.mulPointEscalar(sB, r);
+        const s_rB = babyjub.mulPointEscalar(rB, s);
 
         const rs = multiplyScalars(r, s);
-        const rs_B = babyjub.mulPointEscalar(V, formatPrivateKeyForBabyJub(rs));
+        const rs_B = babyjub.mulPointEscalar(B, rs);
 
         describe('should be associative', () => {
-            it.skip('(rs)V == r(sV)', () => {
-                expect(rs_B[0].toString()).toEqual(r_sV[0].toString());
-                expect(rs_B[1].toString()).toEqual(r_sV[1].toString());
+            it('(rs)B == r(sB)', () => {
+                expect(rs_B[0].toString()).toEqual(r_sB[0].toString());
+                expect(rs_B[1].toString()).toEqual(r_sB[1].toString());
             });
 
-            it.skip('(rs)V == s(rV)', () => {
+            it('(rs)B == s(rB)', () => {
                 expect(rs_B[0].toString()).toEqual(s_rB[0].toString());
                 expect(rs_B[1].toString()).toEqual(s_rB[1].toString());
             });
 
-            it('r(sV) == s(rV)', () => {
-                expect(s_rB[0].toString()).toEqual(r_sV[0].toString());
-                expect(s_rB[1].toString()).toEqual(r_sV[1].toString());
+            it('r(sB) == s(rB)', () => {
+                expect(s_rB[0].toString()).toEqual(r_sB[0].toString());
+                expect(s_rB[1].toString()).toEqual(r_sB[1].toString());
             });
         });
     });

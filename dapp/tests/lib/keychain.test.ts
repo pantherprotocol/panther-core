@@ -1,15 +1,17 @@
 import {describe, expect} from '@jest/globals';
+import {babyjub} from 'circomlibjs';
 import {Wallet} from 'ethers';
 
 import {
+    SNARK_FIELD_SIZE,
+    deriveKeypairFromSeed,
     deriveKeypairFromSignature,
     derivePrivateKeyFromSignature,
-    deriveKeypairFromSeed,
-    generateRandomBabyJubValue,
-    multiplyPrivateKeys,
     extractSecretsPair,
-    SNARK_FIELD_SIZE,
-} from '../src/lib/keychain';
+    formatPrivateKeyForBabyJub,
+    generateRandomBabyJubValue,
+    multiplyScalars,
+} from '../../src/lib/keychain';
 
 describe('Keychain', () => {
     const randomAccount = Wallet.createRandom();
@@ -87,15 +89,32 @@ describe('Keychain', () => {
     });
 
     describe('Multiplication of private key', () => {
-        it('should be commutative', () => {
-            const a = generateRandomBabyJubValue();
-            const b = generateRandomBabyJubValue();
-            const c = generateRandomBabyJubValue();
-            multiplyPrivateKeys(a, b);
-            expect(
-                multiplyPrivateKeys(multiplyPrivateKeys(a, b), c) ===
-                    multiplyPrivateKeys(a, multiplyPrivateKeys(b, c)),
-            ).toBeTruthy();
+        const r = generateRandomBabyJubValue();
+        const s = generateRandomBabyJubValue();
+        const V = babyjub.Base8;
+        const sV = babyjub.mulPointEscalar(V, formatPrivateKeyForBabyJub(s));
+        const r_sV = babyjub.mulPointEscalar(sV, formatPrivateKeyForBabyJub(r));
+        const rV = babyjub.mulPointEscalar(V, formatPrivateKeyForBabyJub(r));
+        const s_rB = babyjub.mulPointEscalar(rV, formatPrivateKeyForBabyJub(s));
+
+        const rs = multiplyScalars(r, s);
+        const rs_B = babyjub.mulPointEscalar(V, formatPrivateKeyForBabyJub(rs));
+
+        describe('should be associative', () => {
+            it('(rs)V == r(sV)', () => {
+                expect(rs_B[0].toString()).toEqual(r_sV[0].toString());
+                expect(rs_B[1].toString()).toEqual(r_sV[1].toString());
+            });
+
+            it('(rs)V == s(rV)', () => {
+                expect(rs_B[0].toString()).toEqual(s_rB[0].toString());
+                expect(rs_B[1].toString()).toEqual(s_rB[1].toString());
+            });
+
+            it('r(sV) == s(rV)', () => {
+                expect(s_rB[0].toString()).toEqual(r_sV[0].toString());
+                expect(s_rB[1].toString()).toEqual(r_sV[1].toString());
+            });
         });
     });
 });

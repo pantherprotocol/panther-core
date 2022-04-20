@@ -1,11 +1,11 @@
 import {describe, expect} from '@jest/globals';
 
-import {deriveKeypairFromSeed, SNARK_FIELD_SIZE} from '../src/lib/keychain';
+import {deriveKeypairFromSeed, SNARK_FIELD_SIZE} from '../../src/lib/keychain';
 import {
     encryptMessage,
     generateEcdhSharedKey,
     decryptMessage,
-} from '../src/lib/message-encryption';
+} from '../../src/lib/message-encryption';
 
 describe('Cryptographic operations', () => {
     const keypair1 = deriveKeypairFromSeed();

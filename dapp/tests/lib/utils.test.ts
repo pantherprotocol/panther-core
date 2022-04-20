@@ -7,7 +7,7 @@ import {
     getDecimalSeparator,
     safeParseUnits,
     _setLocale,
-} from '../src/utils/helpers';
+} from '../../src/utils/helpers';
 
 describe('formatPercentage', () => {
     type TEST_CASE = [number, string, string];

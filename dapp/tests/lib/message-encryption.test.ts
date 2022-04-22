@@ -2,8 +2,8 @@ import {describe, expect} from '@jest/globals';
 
 import {deriveKeypairFromSeed, SNARK_FIELD_SIZE} from '../../src/lib/keychain';
 import {
-    encryptMessage,
     generateEcdhSharedKey,
+    encryptMessage,
     decryptMessage,
 } from '../../src/lib/message-encryption';
 
@@ -60,22 +60,21 @@ describe('Cryptographic operations', () => {
         it('should be of the correct format', () => {
             expect(ciphertext).toHaveProperty('iv');
             expect(ciphertext).toHaveProperty('data');
-            expect(ciphertext.data).toHaveLength(plaintext.length);
+            expect(ciphertext.data.length).toBeGreaterThan(0);
         });
 
         it('should differ from the plaintext', () => {
-            expect.assertions(plaintext.length);
-            for (let i = 0; i < plaintext.length; i++) {
-                expect(plaintext[i] !== ciphertext.data[i + 1]).toBeTruthy();
-            }
+            const stringifyPlainTest = JSON.stringify(plaintext, (key, value) =>
+                typeof value === 'bigint' ? value.toString() + 'n' : value,
+            );
+
+            expect(stringifyPlainTest !== ciphertext.data).toBeTruthy();
         });
 
         it('should be smaller than the snark field size', () => {
-            expect(ciphertext.iv < SNARK_FIELD_SIZE).toBeTruthy();
-            for (let i = 0; i < ciphertext.data.length; i++) {
-                // TODO: Figure out if this check is correct and enough
-                expect(ciphertext.data[i] < SNARK_FIELD_SIZE).toBeTruthy();
-            }
+            expect(
+                BigInt(`0x${ciphertext.iv.toString('hex')}`) < SNARK_FIELD_SIZE,
+            ).toBeTruthy();
         });
     });
 
@@ -96,13 +95,9 @@ describe('Cryptographic operations', () => {
                 randomKeypair.publicKey,
             );
 
-            const invalidPlaintext = decryptMessage(ciphertext, differentKey);
-
-            expect.assertions(invalidPlaintext.length);
-
-            for (let i = 0; i < decryptedCiphertext.length; i++) {
-                expect(invalidPlaintext[i] === plaintext[i]).toBeFalsy();
-            }
+            expect(() => decryptMessage(ciphertext, differentKey)).toThrow(
+                'Failed to decrypt message',
+            );
         });
     });
 });

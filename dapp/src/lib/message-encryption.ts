@@ -1,4 +1,7 @@
-import {mimc7, babyjub} from 'circomlibjs';
+import crypto from 'node:crypto';
+
+import {babyjub} from 'circomlibjs';
+import {ethers} from 'ethers';
 
 import {formatPrivateKeyForBabyJub} from './keychain';
 import {
@@ -19,29 +22,57 @@ export const generateEcdhSharedKey = (
     )[0];
 };
 
-export const encryptMessage = (
+export function encryptMessage(
     plaintext: Plaintext,
     sharedKey: EcdhSharedKey,
-): ICiphertext => {
-    const iv = mimc7.multiHash(plaintext, BigInt(0));
+): ICiphertext {
+    const iv = crypto.randomBytes(16);
 
-    const ciphertext: ICiphertext = {
-        iv,
-        data: plaintext.map((e: BigInt, i: number): bigint => {
-            return e + mimc7.hash(sharedKey, iv + BigInt(i));
-        }),
-    };
-    return ciphertext;
-};
+    const key = ethers.utils.arrayify(
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(sharedKey), 32),
+    );
 
-export const decryptMessage = (
+    const data = JSON.stringify(plaintext, (key, value) =>
+        typeof value === 'bigint' ? value.toString() + 'n' : value,
+    );
+
+    try {
+        const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+        const firstChunk = cipher.update(data);
+        const secondChunk = cipher.final();
+
+        return {
+            iv,
+            data: Buffer.concat([firstChunk, secondChunk]).toString('hex'),
+        };
+    } catch (error) {
+        throw Error(`Failed to encrypt message: ${error}`);
+    }
+}
+
+export function decryptMessage(
     ciphertext: ICiphertext,
     sharedKey: EcdhSharedKey,
-): Plaintext => {
-    return ciphertext.data.map((e: bigint, i: number): BigInt => {
-        return (
-            BigInt(e) -
-            BigInt(mimc7.hash(sharedKey, BigInt(ciphertext.iv) + BigInt(i)))
-        );
-    });
-};
+): Plaintext {
+    const iv = ciphertext.iv;
+
+    const key = ethers.utils.arrayify(
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(sharedKey), 32),
+    );
+
+    try {
+        const cipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+        const firstChunk = cipher.update(Buffer.from(ciphertext.data, 'hex'));
+        const secondChunk = cipher.final();
+        const result = Buffer.concat([firstChunk, secondChunk]);
+
+        return JSON.parse(result.toString(), (key, value) => {
+            if (typeof value === 'string' && /^\d+n$/.test(value)) {
+                return BigInt(value.substr(0, value.length - 1));
+            }
+            return value;
+        });
+    } catch (error) {
+        throw Error(`Failed to decrypt message`);
+    }
+}

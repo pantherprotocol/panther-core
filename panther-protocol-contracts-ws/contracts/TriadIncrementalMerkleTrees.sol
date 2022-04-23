@@ -1,7 +1,6 @@
-// SPDX-License-Identifier: MIT
-// Inspired by MACI project
-// (https://github.com/appliedzkp/maci/blob/master/contracts/sol/IncrementalMerkleTree.sol)
-
+// SPDX-License-Identifier: BUSL-1.1
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+// solhint-disable var-name-mixedcase
 pragma solidity ^0.8.4;
 
 import { PoseidonT3, PoseidonT4 } from "./Poseidon.sol";
@@ -13,6 +12,8 @@ import { ERR_ZERO_ROOT, ERR_CANT_DEL_ROOT } from "./ErrorMsgs.sol";
  * @author Pantherprotocol Contributors
  * @notice Incremental Merkle trees with batch insertion of 3 leaves at once
  * @dev Refer to {TriadMerkleZeros} for comments on "triad trees" used
+ * Inspired by MACI project
+ * https://github.com/appliedzkp/maci/blob/master/contracts/sol/IncrementalMerkleTree.sol
  */
 contract TriadIncrementalMerkleTrees is TriadMerkleZeros {
     /**

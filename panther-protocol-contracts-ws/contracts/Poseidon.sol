@@ -5,17 +5,15 @@ pragma solidity ^0.8.4;
 // using poseidon_gencontract.js from circomlibjs.
 
 library PoseidonT3 {
-    // solhint-disable-next-line no-unused-vars
     function poseidon(bytes32[2] memory input) external pure returns (bytes32) {
-        revert("FAKE");
+        require(input.length == 99, "FAKE"); // always reverts
         return 0;
     }
 }
 
 library PoseidonT4 {
-    // solhint-disable-next-line no-unused-vars
     function poseidon(bytes32[3] memory input) external pure returns (bytes32) {
-        revert("FAKE");
+        require(input.length == 99, "FAKE"); // always reverts
         return 0;
     }
 }

@@ -3,7 +3,7 @@
 // solhint-disable var-name-mixedcase
 pragma solidity ^0.8.4;
 
-import { PoseidonT3, PoseidonT4 } from "../crypto/Poseidon.sol";
+import "./Hasher.sol";
 import "./TriadMerkleZeros.sol";
 import { ERR_ZERO_ROOT, ERR_CANT_DEL_ROOT } from "../common/ErrorMsgs.sol";
 
@@ -15,7 +15,7 @@ import { ERR_ZERO_ROOT, ERR_CANT_DEL_ROOT } from "../common/ErrorMsgs.sol";
  * Inspired by MACI project
  * https://github.com/appliedzkp/maci/blob/master/contracts/sol/IncrementalMerkleTree.sol
  */
-contract TriadIncrementalMerkleTrees is TriadMerkleZeros {
+contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
     /**
      * @dev {treeId} is a consecutive number of trees, starting from 0.
      * @dev {leafId} of a leaf is a "modified" number of leaves inserted in all
@@ -145,7 +145,7 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros {
         uint256 level;
 
         // subtree from 3 leaves being inserted on `level = 0`
-        nodeHash = poseidon(leaves[0], leaves[1], leaves[2]);
+        nodeHash = hash(leaves[0], leaves[1], leaves[2]);
         // ... to be placed under this index on `level = 1`
         // (equivalent to `(leftLeafId % iLEAVES_NUM) / iTRIAD_SIZE`)
         nodeIndex = (leftLeafId & iLEAVES_NUM_MASK) >> iTRIAD_SIZE_BITS;
@@ -167,7 +167,7 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros {
                 right = nodeHash;
             }
 
-            nodeHash = poseidon(left, right);
+            nodeHash = hash(left, right);
 
             // equivalent to `nodeIndex /= 2`
             nodeIndex >>= 1;
@@ -215,29 +215,6 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros {
         returns (uint256)
     {
         return nextLeafId & CACHE_SIZE_MASK;
-    }
-
-    function poseidon(bytes32 left, bytes32 right)
-        private
-        pure
-        returns (bytes32)
-    {
-        bytes32[2] memory input;
-        input[0] = left;
-        input[1] = right;
-        return PoseidonT3.poseidon(input);
-    }
-
-    function poseidon(
-        bytes32 left,
-        bytes32 mid,
-        bytes32 right
-    ) private pure returns (bytes32) {
-        bytes32[3] memory input;
-        input[0] = left;
-        input[1] = mid;
-        input[2] = right;
-        return PoseidonT4.poseidon(input);
     }
 
     // NOTE: The contract is supposed to run behind a proxy DELEGATECALLing it.

@@ -296,18 +296,6 @@ describe('IncrementalMerkleTree', () => {
             expect(await trees.internalIsFullTree(2043)).to.equal(false);
         });
 
-        it('should return `true`  if called w/ `nextLeafId` of 2044', async () => {
-            expect(await trees.internalIsFullTree(65533)).to.equal(true);
-        });
-
-        it('should return `true`  if called w/ `nextLeafId` of 2045', async () => {
-            expect(await trees.internalIsFullTree(65534)).to.equal(true);
-        });
-
-        it('should return `true`  if called w/ `nextLeafId` of 2046', async () => {
-            expect(await trees.internalIsFullTree(65535)).to.equal(true);
-        });
-
         it('should return `false`  if called w/ `nextLeafId` of 2048', async () => {
             expect(await trees.internalIsFullTree(2048)).to.equal(false);
         });
@@ -324,8 +312,44 @@ describe('IncrementalMerkleTree', () => {
             expect(await trees.internalIsFullTree(65532)).to.equal(true);
         });
 
+        it('should return `true`  if called w/ `nextLeafId` of 65533', async () => {
+            expect(await trees.internalIsFullTree(65533)).to.equal(true);
+        });
+
+        it('should return `true`  if called w/ `nextLeafId` of 65534', async () => {
+            expect(await trees.internalIsFullTree(65534)).to.equal(true);
+        });
+
+        it('should return `true`  if called w/ `nextLeafId` of 65535', async () => {
+            expect(await trees.internalIsFullTree(65535)).to.equal(true);
+        });
+
         it('should return `false`  if called w/ `nextLeafId` of 65536', async () => {
             expect(await trees.internalIsFullTree(65536)).to.equal(false);
+        });
+
+        it('should return `false`  if called w/ `nextLeafId` of 262139', async () => {
+            expect(await trees.internalIsFullTree(262139)).to.equal(false);
+        });
+
+        it('should return `true`  if called w/ `nextLeafId` of 262140', async () => {
+            expect(await trees.internalIsFullTree(262140)).to.equal(true);
+        });
+
+        it('should return `true`  if called w/ `nextLeafId` of 262141', async () => {
+            expect(await trees.internalIsFullTree(262141)).to.equal(true);
+        });
+
+        it('should return `true`  if called w/ `nextLeafId` of 262142', async () => {
+            expect(await trees.internalIsFullTree(262142)).to.equal(true);
+        });
+
+        it('should return `true`  if called w/ `nextLeafId` of 262143', async () => {
+            expect(await trees.internalIsFullTree(262143)).to.equal(true);
+        });
+
+        it('should return `false`  if called w/ `nextLeafId` of 262144', async () => {
+            expect(await trees.internalIsFullTree(262144)).to.equal(false);
         });
     });
 
@@ -353,6 +377,18 @@ describe('IncrementalMerkleTree', () => {
         it('should return 1536  if called w/ `nextLeafId` of 2048', async () => {
             expect(await trees.internalNextLeafId2LeavesNum(2048)).to.equal(
                 1536,
+            );
+        });
+
+        it('should return 49152  if called w/ `nextLeafId` of 65536', async () => {
+            expect(await trees.internalNextLeafId2LeavesNum(65536)).to.equal(
+                49152,
+            );
+        });
+
+        it('should return 786432  if called w/ `nextLeafId` of 1048576', async () => {
+            expect(await trees.internalNextLeafId2LeavesNum(1048576)).to.equal(
+                786432,
             );
         });
     });

@@ -14,9 +14,9 @@ import {
 import {
     MockTriadIncrementalMerkleTrees,
     MockTriadIncrementalMerkleTrees__factory,
-} from './../contracts/types/';
+} from '../contracts/types';
 
-const BuildPoseidon = require('../scripts/buildPoseidon');
+const BuildPoseidon = require('../lib/buildPoseidon');
 
 describe('IncrementalMerkleTree', () => {
     let trees: MockTriadIncrementalMerkleTrees;

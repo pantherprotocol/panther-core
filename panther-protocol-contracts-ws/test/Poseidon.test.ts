@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import { toBigNum, toBytes32, zeroLeaf } from '../lib/utilities';
 
-const BuildPoseidon = require('../scripts/buildPoseidon');
+const BuildPoseidon = require('../lib/buildPoseidon');
 
 describe('PoseidonT3 contract', function () {
     let contract;

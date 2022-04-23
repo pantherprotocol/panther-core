@@ -3,9 +3,9 @@
 // solhint-disable var-name-mixedcase
 pragma solidity ^0.8.4;
 
-import { PoseidonT3, PoseidonT4 } from "./Poseidon.sol";
+import { PoseidonT3, PoseidonT4 } from "../crypto/Poseidon.sol";
 import "./TriadMerkleZeros.sol";
-import { ERR_ZERO_ROOT, ERR_CANT_DEL_ROOT } from "./ErrorMsgs.sol";
+import { ERR_ZERO_ROOT, ERR_CANT_DEL_ROOT } from "../common/ErrorMsgs.sol";
 
 /**
  * @title TriadIncrementalMerkleTrees

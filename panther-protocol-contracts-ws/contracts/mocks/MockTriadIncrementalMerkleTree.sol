@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import "../TriadIncrementalMerkleTrees.sol";
+import "../triadTree/TriadIncrementalMerkleTrees.sol";
 
 contract MockTriadIncrementalMerkleTrees is TriadIncrementalMerkleTrees {
     event InternalInsertBatch(uint256 leftLeafId);

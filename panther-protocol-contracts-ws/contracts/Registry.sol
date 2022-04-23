@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import { ERR_INVALID_PUBKEYS } from "./ErrorMsgs.sol";
+import { ERR_INVALID_PUBKEYS } from "./common/ErrorMsgs.sol";
 
 contract Register {
     event PublicKeys(address indexed owner, bytes keys, uint256 expiryTime);

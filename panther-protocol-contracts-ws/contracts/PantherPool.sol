@@ -2,15 +2,15 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { PoseidonT4 } from "./Poseidon.sol";
-import "./CommitmentsTrees.sol";
+import { PoseidonT4 } from "./crypto/Poseidon.sol";
+import "./pantherPool/CommitmentsTrees.sol";
 import "./verifier/Verifier.sol";
-import { IN_UTXOs, MAX_EXT_AMOUNT, MAX_TIMESTAMP, OUT_UTXOs } from "./Constants.sol";
+import { IN_UTXOs, MAX_EXT_AMOUNT, MAX_TIMESTAMP, OUT_UTXOs } from "./common/Constants.sol";
 uint256 constant NUM_PACKED_BYTES32_PROOF_INPUTS = IN_UTXOs * 2 + OUT_UTXOs;
 uint256 constant NUM_PACKED_UINT256_PROOF_INPUTS = 5;
 uint256 constant NUM_PACKED_ADDRESS_PROOF_INPUTS = 4;
-import { PluginData, SnarkProof } from "./Types.sol";
-import "./ErrorMsgs.sol";
+import { PluginData, SnarkProof } from "./common/Types.sol";
+import "./common/ErrorMsgs.sol";
 
 /**
  * @title PantherPool

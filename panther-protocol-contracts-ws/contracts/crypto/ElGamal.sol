@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 import "./BabyJubJub.sol";
-import "./Types.sol";
+import "../common/Types.sol";
 
 contract ElGamalEncryption {
     function add(ElGamalCiphertext memory ct1, ElGamalCiphertext memory ct2)

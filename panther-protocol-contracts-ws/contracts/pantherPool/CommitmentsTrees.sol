@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.4;
 
-import "./TriadIncrementalMerkleTrees.sol";
-import { OUT_UTXOs, UTXO_SECRETS } from "./Constants.sol";
-import { ERR_TOO_LARGE_COMMITMENTS } from "./ErrorMsgs.sol";
+import "../triadTree/TriadIncrementalMerkleTrees.sol";
+import { OUT_UTXOs, UTXO_SECRETS } from "../common/Constants.sol";
+import { ERR_TOO_LARGE_COMMITMENTS } from "../common/ErrorMsgs.sol";
 
 /**
  * @title CommitmentsTrees

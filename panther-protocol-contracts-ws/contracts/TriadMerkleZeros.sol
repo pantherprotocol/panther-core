@@ -54,7 +54,7 @@ abstract contract TriadMerkleZeros {
     // Number of leaves in the fully populated tree
     uint256 internal constant LEAVES_NUM = (2**(TREE_DEPTH - 1)) * TRIAD_SIZE;
 
-    // @dev Leaf zero value (`keccak256("Pantherprotocol")%SNARK_SCALAR_FIELD`)
+    // @dev Leaf zero value (`keccak256("Pantherprotocol")%FIELD_SIZE`)
     bytes32 public constant ZERO_VALUE =
         bytes32(
             uint256(

@@ -7,14 +7,13 @@ import {
     toBigNum,
     zeroLeaf,
     zeroTriadTreeRoot,
-    triads,
-    rootsSeen,
     zeroLeavesTriad,
 } from '../lib/utilities';
 import {
     MockTriadIncrementalMerkleTrees,
     MockTriadIncrementalMerkleTrees__factory,
 } from '../contracts/types';
+import { triads, rootsSeen } from './data/triadTreeSample';
 
 const BuildPoseidon = require('../lib/buildPoseidon');
 

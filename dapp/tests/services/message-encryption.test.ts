@@ -1,6 +1,6 @@
 import {describe, expect} from '@jest/globals';
 
-import {deriveKeypairFromSeed, SNARK_FIELD_SIZE} from '../../src/lib/keychain';
+import {deriveKeypairFromSeed} from '../../src/lib/keychain';
 import {generateEcdhSharedKey} from '../../src/lib/message-encryption';
 import {ICiphertext, ICommitmentPlaintext} from '../../src/lib/types';
 import {
@@ -35,31 +35,20 @@ describe('Cryptographic operations', () => {
             commitmentPlainText,
             ecdhSharedKey12,
         );
-        decryptedCiphertext = await decryptCommitment(
-            ciphertext,
-            ecdhSharedKey12,
-        );
+        decryptedCiphertext = decryptCommitment(ciphertext, ecdhSharedKey12);
     });
 
     describe('Ciphertext', () => {
         it('should be of the correct format', () => {
             expect(ciphertext).toHaveProperty('iv');
             expect(ciphertext).toHaveProperty('data');
-            expect(ciphertext.data).toHaveLength(plaintext.length);
+            expect(ciphertext.data).toHaveLength(64);
         });
 
         it('should differ from the plaintext', () => {
             expect.assertions(plaintext.length);
             for (let i = 0; i < plaintext.length; i++) {
                 expect(plaintext[i] !== ciphertext.data[i]).toBeTruthy();
-            }
-        });
-
-        it('should be smaller than the snark field size', () => {
-            expect(ciphertext.iv < SNARK_FIELD_SIZE).toBeTruthy();
-            for (const word of ciphertext.data) {
-                // TODO: Figure out if this check is correct and enough
-                expect(word < SNARK_FIELD_SIZE).toBeTruthy();
             }
         });
     });
@@ -81,7 +70,7 @@ describe('Cryptographic operations', () => {
             );
         });
 
-        it('should be incorrect if decrypted with a different key', () => {
+        it('should fail to decrypt with a different key', () => {
             const sk = BigInt(1);
             const randomKeypair = deriveKeypairFromSeed(sk);
             const differentKey = generateEcdhSharedKey(
@@ -89,19 +78,9 @@ describe('Cryptographic operations', () => {
                 randomKeypair.publicKey,
             );
 
-            const invalidPlaintext = decryptCommitment(
-                ciphertext,
-                differentKey,
-            );
-            expect(
-                invalidPlaintext.amount === commitmentPlainText.amount,
-            ).toBeFalsy();
-            expect(
-                invalidPlaintext.token === commitmentPlainText.token,
-            ).toBeFalsy();
-            expect(
-                invalidPlaintext.random === commitmentPlainText.random,
-            ).toBeFalsy();
+            expect(() =>
+                decryptCommitment(ciphertext, differentKey),
+            ).toThrowError(/bad decrypt/);
         });
     });
 });

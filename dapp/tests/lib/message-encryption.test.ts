@@ -64,11 +64,11 @@ describe('Cryptographic operations', () => {
         });
 
         it('should differ from the plaintext', () => {
-            const stringifyPlainTest = JSON.stringify(plaintext, (key, value) =>
+            const stringifyPlainText = JSON.stringify(plaintext, (key, value) =>
                 typeof value === 'bigint' ? value.toString() + 'n' : value,
             );
 
-            expect(stringifyPlainTest !== ciphertext.data).toBeTruthy();
+            expect(stringifyPlainText !== ciphertext.data).toBeTruthy();
         });
 
         it('should be smaller than the snark field size', () => {
@@ -96,7 +96,7 @@ describe('Cryptographic operations', () => {
             );
 
             expect(() => decryptMessage(ciphertext, differentKey)).toThrow(
-                'Failed to decrypt message',
+                /bad decrypt/,
             );
         });
     });

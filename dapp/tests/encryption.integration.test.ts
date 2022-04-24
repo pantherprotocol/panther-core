@@ -39,13 +39,17 @@ describe('Message encryption and decryption', () => {
             BigInt(999),
         ];
 
-        const cipherText = encryptMessage(plaintext, spendingEcdhSharedKey);
+        const ciphertext = encryptMessage(plaintext, spendingEcdhSharedKey);
 
-        const decryptedCipherText = decryptMessage(
-            cipherText,
+        const decryptedCiphertext = decryptMessage(
+            ciphertext,
             readingEcdhSharedKey,
         );
 
-        expect(decryptedCipherText).toEqual(plaintext);
+        expect(decryptedCiphertext).toEqual(plaintext);
+
+        for (let i = 0; i < decryptedCiphertext.length; i++) {
+            expect(decryptedCiphertext[i]).toEqual(plaintext[i]);
+        }
     });
 });

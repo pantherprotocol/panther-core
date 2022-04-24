@@ -26,6 +26,6 @@ export interface ICommitmentPlaintext {
 }
 
 export interface ICiphertext {
-    iv: bigint;
-    data: bigint[];
+    iv: Buffer;
+    data: string;
 }

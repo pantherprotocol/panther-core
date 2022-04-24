@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: MIT
 import { expect } from 'chai';
+import {
+    getPoseidonT3Contract,
+    getPoseidonT4Contract,
+} from '../lib/poseidonBuilder';
 import { toBigNum, toBytes32, zeroLeaf } from '../lib/utilities';
-
-const BuildPoseidon = require('../lib/buildPoseidon');
 
 describe('PoseidonT3 contract', function () {
     let contract;
 
     before(async function () {
-        const PoseidonT3 = await BuildPoseidon.getPoseidonT3Contract();
+        const PoseidonT3 = await getPoseidonT3Contract();
         contract = await PoseidonT3.deploy();
         await contract.deployed();
     });
@@ -69,7 +71,7 @@ describe('PoseidonT4 contract', function () {
     let contract;
 
     before(async function () {
-        const PoseidonT4 = await BuildPoseidon.getPoseidonT4Contract();
+        const PoseidonT4 = await getPoseidonT4Contract();
         contract = await PoseidonT4.deploy();
         await contract.deployed();
     });

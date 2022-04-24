@@ -14,19 +14,21 @@ import {
     MockTriadIncrementalMerkleTrees__factory,
 } from '../contracts/types';
 import { triads, rootsSeen } from './data/triadTreeSample';
-
-const BuildPoseidon = require('../lib/buildPoseidon');
+import {
+    getPoseidonT3Contract,
+    getPoseidonT4Contract,
+} from '../lib/poseidonBuilder';
 
 describe('IncrementalMerkleTree', () => {
     let trees: MockTriadIncrementalMerkleTrees;
     let TriadIncrementalMerkleTrees: MockTriadIncrementalMerkleTrees__factory;
 
     before(async () => {
-        const PoseidonT3 = await BuildPoseidon.getPoseidonT3Contract();
+        const PoseidonT3 = await getPoseidonT3Contract();
         const poseidonT3 = await PoseidonT3.deploy();
         await poseidonT3.deployed();
 
-        const PoseidonT4 = await BuildPoseidon.getPoseidonT4Contract();
+        const PoseidonT4 = await getPoseidonT4Contract();
         const poseidonT4 = await PoseidonT4.deploy();
         await poseidonT4.deployed();
 

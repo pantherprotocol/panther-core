@@ -6,7 +6,7 @@ import { BigNumber } from 'ethers';
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
-} from '../lib/buildPoseidon';
+} from '../lib/poseidonBuilder';
 
 import { toBytes32 } from '../lib/utilities';
 

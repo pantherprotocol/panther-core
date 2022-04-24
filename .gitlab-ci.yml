@@ -32,56 +32,76 @@ stages: # List of stages for jobs, and their order of execution
     - '**/node_modules/'
   policy: pull
 
-# These jobs are run in parallel within the test stage:
-combined-job:
+.base_scripts: &base_scripts
+  - yarn lint
+  - HARDHAT_NO_MNEMONIC=yes yarn run build:contracts && yarn test
+  - yarn build:types
+  - yarn run build:dapp
+  - yarn run test:dapp
+
+.preview_script: &preview_script
+  - |
+    apt-get update
+    apt-get -y install jq
+    if [ -n "$CI_MERGE_REQUEST_IID" ]; then
+      threadsBodies=$(
+          curl \
+              --request GET \
+              --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+              "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions" \
+              | jq -r '.[].notes[].body' )
+
+      if [[ "$threadsBodies" != *"${AMPLIFY_APP_ID}"* ]]; then
+        echo "Didn't find existing comment in MR about Amplify preview"
+
+        thread_id=$(
+          curl \
+              --data-urlencode "body=## After build, preview will 🚀[be here!](https://pr-${CI_MERGE_REQUEST_IID}.${AMPLIFY_APP_ID}.amplifyapp.com/)" \
+              --request POST \
+              --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+              "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions" \
+          | jq -r .id
+        )
+
+        echo "Posted Amplify preview link comment with thread id $thread_id"
+
+        curl -v -X PUT \
+          --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+          "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions/$thread_id?resolved=true" \
+        | jq .
+
+        echo "Marked Amplify preview link comment as resolved"
+      else
+        echo "Amplify preview comment already exists in this MR"
+      fi
+    fi
+
+.combined_job_template:
   stage: test
-  only:
-    - merge_requests
   cache:
     <<: *yarn_cache_template
   before_script:
     - yarn install --cache-folder .yarn-cache
+
+# This job is executed on merge requests and any `push`` where commit title does not start with `Merge`
+combined-job-MRs:
+  extends: .combined_job_template
+  rules:
+    - if: $CI_COMMIT_TITLE !~ /^Merge branch/ && $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
   script:
-    - yarn lint
-    - HARDHAT_NO_MNEMONIC=yes yarn run build:contracts && yarn test
-    - yarn build:types
-    - yarn run build:dapp
-    - |
-      apt-get update
-      apt-get -y install jq
-      if [ -n "$CI_MERGE_REQUEST_IID" ]; then
-        threadsBodies=$(
-            curl \
-                --request GET \
-                --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-                "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions" \
-                | jq -r '.[].notes[].body' )
+    - *base_scripts
+    - *preview_script
 
-        if [[ "$threadsBodies" != *"${AMPLIFY_APP_ID}"* ]]; then
-          echo "Didn't find existing comment in MR about Amplify preview"
-
-          thread_id=$(
-            curl \
-                --data-urlencode "body=## After build, preview will 🚀[be here!](https://pr-${CI_MERGE_REQUEST_IID}.${AMPLIFY_APP_ID}.amplifyapp.com/)" \
-                --request POST \
-                --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-                "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions" \
-            | jq -r .id
-          )
-
-          echo "Posted Amplify preview link comment with thread id $thread_id"
-
-          curl -v -X PUT \
-            --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-            "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions/$thread_id?resolved=true" \
-          | jq .
-
-          echo "Marked Amplify preview link comment as resolved"
-        else
-          echo "Amplify preview comment already exists in this MR"
-        fi
-      fi
-    - yarn run test:dapp
+# This job is executed on a `push` where commit title starts with `Merge branch`
+combined-job-integration:
+  stage: test
+  extends: .combined_job_template
+  rules:
+    - if: $CI_COMMIT_TITLE =~ /^Merge branch/
+      when: always
+  script:
+    - *base_scripts
 
 build-cache:
   stage: cache

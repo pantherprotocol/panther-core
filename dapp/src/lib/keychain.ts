@@ -28,7 +28,7 @@ export const deriveKeypairFromSeed = (
 };
 
 export const multiplyScalars = (a: bigint, b: bigint): bigint => {
-    return truncateToSnarkField(a * b);
+    return (a * b) % babyjub.subOrder;
 };
 
 export const deriveKeypairFromSignature = (signature: string): IKeypair => {

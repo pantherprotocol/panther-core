@@ -60,19 +60,15 @@ export function decryptMessage(
         ethers.utils.hexZeroPad(ethers.utils.hexlify(sharedKey), 32),
     );
 
-    try {
-        const cipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-        const firstChunk = cipher.update(Buffer.from(ciphertext.data, 'hex'));
-        const secondChunk = cipher.final();
-        const result = Buffer.concat([firstChunk, secondChunk]);
+    const cipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const firstChunk = cipher.update(Buffer.from(ciphertext.data, 'hex'));
+    const secondChunk = cipher.final();
+    const result = Buffer.concat([firstChunk, secondChunk]);
 
-        return JSON.parse(result.toString(), (key, value) => {
-            if (typeof value === 'string' && /^\d+n$/.test(value)) {
-                return BigInt(value.substr(0, value.length - 1));
-            }
-            return value;
-        });
-    } catch (error) {
-        throw Error(`Failed to decrypt message`);
-    }
+    return JSON.parse(result.toString(), (key, value) => {
+        if (typeof value === 'string' && /^\d+n$/.test(value)) {
+            return BigInt(value.substr(0, value.length - 1));
+        }
+        return value;
+    });
 }

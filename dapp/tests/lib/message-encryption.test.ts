@@ -96,7 +96,7 @@ describe('Cryptographic operations', () => {
             );
 
             expect(() => decryptMessage(ciphertext, differentKey)).toThrow(
-                'Failed to decrypt message',
+                /bad decrypt/,
             );
         });
     });

@@ -4,24 +4,22 @@ import { expect } from 'chai';
 // @ts-ignore
 import { ethers } from 'hardhat';
 import {
+    getPoseidonT3Contract,
+    getPoseidonT4Contract,
+} from '../lib/poseidonBuilder';
+import {
     toBigNum,
     zeroLeaf,
     zeroTriadTreeRoot,
     zeroLeavesTriad,
 } from '../lib/utilities';
-import {
-    MockTriadIncrementalMerkleTrees,
-    MockTriadIncrementalMerkleTrees__factory,
-} from '../contracts/types';
+import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
+import { MockTriadIncrementalMerkleTrees } from '../contracts/types';
 import { triads, rootsSeen } from './data/triadTreeSample';
-import {
-    getPoseidonT3Contract,
-    getPoseidonT4Contract,
-} from '../lib/poseidonBuilder';
 
 describe('IncrementalMerkleTree', () => {
     let trees: MockTriadIncrementalMerkleTrees;
-    let TriadIncrementalMerkleTrees: MockTriadIncrementalMerkleTrees__factory;
+    let snapshot: number;
 
     before(async () => {
         const PoseidonT3 = await getPoseidonT3Contract();
@@ -34,7 +32,7 @@ describe('IncrementalMerkleTree', () => {
 
         // Link Poseidon contracts
         // @ts-ignore
-        TriadIncrementalMerkleTrees = await ethers.getContractFactory(
+        const TriadIncrementalMerkleTrees = await ethers.getContractFactory(
             'MockTriadIncrementalMerkleTrees',
             {
                 libraries: {
@@ -44,7 +42,8 @@ describe('IncrementalMerkleTree', () => {
             },
         );
 
-        trees = await TriadIncrementalMerkleTrees.deploy();
+        trees =
+            (await TriadIncrementalMerkleTrees.deploy()) as MockTriadIncrementalMerkleTrees;
         await trees.deployed();
     });
 
@@ -88,7 +87,7 @@ describe('IncrementalMerkleTree', () => {
             expect(await trees.leavesNum()).to.equal(0);
         });
 
-        it('should return empty tree as the current root with cache index 0', async () => {
+        it('should return empty tree root as the current root with cache index 0', async () => {
             await expectCurRootAndIndexAsExpected(zeroTriadTreeRoot, 0);
         });
 
@@ -100,25 +99,23 @@ describe('IncrementalMerkleTree', () => {
     });
 
     describe('internal `insertBatch` method', function () {
-        let promises: Promise<any>;
-
         describe('a call inserting 3 zero leaves', () => {
-            beforeEach(async () => {
-                trees = await TriadIncrementalMerkleTrees.deploy();
-                await trees.deployed();
+            before(async () => {
+                snapshot = await takeSnapshot();
+            });
 
-                promises = trees.internalInsertBatch(zeroLeavesTriad);
-                await promises;
+            after(async () => {
+                await revertSnapshot(snapshot);
+            });
+
+            it('should emit the `CachedRoot` event', async () => {
+                await expect(await trees.internalInsertBatch(zeroLeavesTriad))
+                    .to.emit(trees, 'CachedRoot')
+                    .withArgs(0, zeroTriadTreeRoot);
             });
 
             it('should insert 3 leaves at once', async () => {
                 expect(await trees.leavesNum()).to.equal(3);
-            });
-
-            it('should emit the `CachedRoot` event', async () => {
-                await expect(promises)
-                    .to.emit(trees, 'CachedRoot')
-                    .withArgs(0, zeroTriadTreeRoot);
             });
 
             it('should set the empty tree root as the current root with cache index 5', async () => {
@@ -134,8 +131,11 @@ describe('IncrementalMerkleTree', () => {
 
         describe('when called 3 times with zero leaves', () => {
             before(async () => {
-                trees = await TriadIncrementalMerkleTrees.deploy();
-                await trees.deployed();
+                snapshot = await takeSnapshot();
+            });
+
+            after(async () => {
+                await revertSnapshot(snapshot);
             });
 
             it('the 1st call should return `leftLeafIds` of 0', async () => {
@@ -172,8 +172,11 @@ describe('IncrementalMerkleTree', () => {
             let after6thCallRoot, after7thCallRoot;
 
             before(async () => {
-                trees = await TriadIncrementalMerkleTrees.deploy();
-                await trees.deployed();
+                snapshot = await takeSnapshot();
+            });
+
+            after(async () => {
+                await revertSnapshot(snapshot);
             });
 
             describe('the 1st call', () => {

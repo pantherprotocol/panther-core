@@ -28,9 +28,7 @@ export function encryptMessage(
 ): ICiphertext {
     const iv = crypto.randomBytes(16);
 
-    const key = ethers.utils.arrayify(
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(sharedKey), 32),
-    );
+    const key = ethers.utils.zeroPad(ethers.utils.hexlify(sharedKey), 32);
 
     const data = JSON.stringify(plaintext, (key, value) =>
         typeof value === 'bigint' ? value.toString() + 'n' : value,
@@ -56,9 +54,7 @@ export function decryptMessage(
 ): Plaintext {
     const iv = ciphertext.iv;
 
-    const key = ethers.utils.arrayify(
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(sharedKey), 32),
-    );
+    const key = ethers.utils.zeroPad(ethers.utils.hexlify(sharedKey), 32);
 
     const cipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
     const firstChunk = cipher.update(Buffer.from(ciphertext.data, 'hex'));

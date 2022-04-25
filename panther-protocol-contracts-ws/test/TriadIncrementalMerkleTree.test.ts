@@ -14,7 +14,7 @@ import {
     zeroLeavesTriad,
 } from '../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MockTriadIncrementalMerkleTrees } from '../contracts/types';
+import { MockTriadIncrementalMerkleTrees } from '../types';
 import { triads, rootsSeen } from './data/triadTreeSample';
 
 describe('IncrementalMerkleTree', () => {

@@ -1,16 +1,11 @@
 import crypto from 'crypto';
 
 import {babyjub} from 'circomlibjs';
-import {ethers} from 'ethers';
+import {utils} from 'ethers';
 
+import {bigintToBytes32} from './conversions';
 import {formatPrivateKeyForBabyJub} from './keychain';
-import {
-    ICiphertext,
-    Plaintext,
-    PrivateKey,
-    PublicKey,
-    EcdhSharedKey,
-} from './types';
+import {ICiphertext, PrivateKey, PublicKey, EcdhSharedKey} from './types';
 
 export const generateEcdhSharedKey = (
     privateKey: PrivateKey,
@@ -23,25 +18,20 @@ export const generateEcdhSharedKey = (
 };
 
 export function encryptMessage(
-    plaintext: Plaintext,
+    plaintext: string,
     sharedKey: EcdhSharedKey,
 ): ICiphertext {
     const iv = crypto.randomBytes(16);
 
-    const key = ethers.utils.zeroPad(ethers.utils.hexlify(sharedKey), 32);
-
-    const data = JSON.stringify(plaintext, (key, value) =>
-        typeof value === 'bigint' ? value.toString() + 'n' : value,
-    );
-
     try {
-        const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-        const firstChunk = cipher.update(data);
-        const secondChunk = cipher.final();
-
-        return {
+        const cipher = crypto.createCipheriv(
+            'aes-256-cbc',
+            utils.arrayify(bigintToBytes32(sharedKey)),
             iv,
-            data: Buffer.concat([firstChunk, secondChunk]).toString('hex'),
+        );
+        return {
+            iv: iv.toString('hex'),
+            data: cipher.update(plaintext, 'utf8', 'hex') + cipher.final('hex'),
         };
     } catch (error) {
         throw Error(`Failed to encrypt message: ${error}`);
@@ -51,20 +41,14 @@ export function encryptMessage(
 export function decryptMessage(
     ciphertext: ICiphertext,
     sharedKey: EcdhSharedKey,
-): Plaintext {
-    const iv = ciphertext.iv;
+): string {
+    const decipher = crypto.createDecipheriv(
+        'aes-256-cbc',
+        utils.arrayify(bigintToBytes32(sharedKey)),
+        Buffer.from(ciphertext.iv, 'hex'),
+    );
 
-    const key = ethers.utils.zeroPad(ethers.utils.hexlify(sharedKey), 32);
-
-    const cipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-    const firstChunk = cipher.update(Buffer.from(ciphertext.data, 'hex'));
-    const secondChunk = cipher.final();
-    const result = Buffer.concat([firstChunk, secondChunk]);
-
-    return JSON.parse(result.toString(), (key, value) => {
-        if (typeof value === 'string' && /^\d+n$/.test(value)) {
-            return BigInt(value.substr(0, value.length - 1));
-        }
-        return value;
-    });
+    return (
+        decipher.update(ciphertext.data, 'hex', 'utf8') + decipher.final('utf8')
+    );
 }

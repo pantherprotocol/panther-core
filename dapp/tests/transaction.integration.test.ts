@@ -55,7 +55,7 @@ describe('Transaction integration test', () => {
         );
 
         const K = generateEcdhSharedKey(rR.privateKey, vV.publicKey);
-        const plainText: any[] = [rR.privateKey];
+        const plainText = rR.privateKey.toString(16);
         const C = encryptMessage(plainText, K);
 
         // sender calls the contract with data

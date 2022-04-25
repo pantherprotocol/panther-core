@@ -42,7 +42,7 @@ describe('Cryptographic operations', () => {
         it('should be of the correct format', () => {
             expect(ciphertext).toHaveProperty('iv');
             expect(ciphertext).toHaveProperty('data');
-            expect(ciphertext.data).toHaveLength(64);
+            expect(ciphertext.data).toHaveLength(32);
         });
 
         it('should differ from the plaintext', () => {

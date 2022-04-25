@@ -88,12 +88,12 @@ describe('IncrementalMerkleTree', () => {
             expect(await trees.leavesNum()).to.equal(0);
         });
 
-        it('should return empty tree as the current root', async () => {
-            expect(await trees.curRoot()).to.equal(toBigNum(zeroTriadTreeRoot));
+        it('should return empty tree as the current root with cache index 0', async () => {
+            await expectCurRootAndIndexAsExpected(zeroTriadTreeRoot, 0);
         });
 
         it('should not "know" the empty tree root', async () => {
-            expect(await trees.isKnownRoot(0, zeroTriadTreeRoot)).to.equal(
+            expect(await trees.isKnownRoot(0, zeroTriadTreeRoot, 0)).to.equal(
                 false,
             );
         });
@@ -121,16 +121,14 @@ describe('IncrementalMerkleTree', () => {
                     .withArgs(0, zeroTriadTreeRoot);
             });
 
-            it('should set the empty tree root as the current root', async () => {
-                expect(await trees.curRoot()).to.equal(
-                    toBigNum(zeroTriadTreeRoot),
-                );
+            it('should set the empty tree root as the current root with cache index 5', async () => {
+                await expectCurRootAndIndexAsExpected(zeroTriadTreeRoot, 4 + 1);
             });
 
             it('should "get known" the empty tree root', async () => {
-                expect(await trees.isKnownRoot(0, zeroTriadTreeRoot)).to.equal(
-                    true,
-                );
+                expect(
+                    await trees.isKnownRoot(0, zeroTriadTreeRoot, 0),
+                ).to.equal(true);
             });
         });
 
@@ -162,14 +160,17 @@ describe('IncrementalMerkleTree', () => {
                 expect(await trees.leavesNum()).to.equal(9);
             });
 
-            it('should set the empty tree root as the current root', async () => {
-                expect(await trees.curRoot()).to.equal(
-                    toBigNum(zeroTriadTreeRoot),
+            it('should set the empty tree root as the current root with cache index 13', async () => {
+                await expectCurRootAndIndexAsExpected(
+                    zeroTriadTreeRoot,
+                    3 * 4 + 1,
                 );
             });
         });
 
         describe('when called 8 times with non-zero leaves', () => {
+            let after6thCallRoot, after7thCallRoot;
+
             before(async () => {
                 trees = await TriadIncrementalMerkleTrees.deploy();
                 await trees.deployed();
@@ -186,10 +187,8 @@ describe('IncrementalMerkleTree', () => {
                     expect(await trees.leavesNum()).to.equal(3);
                 });
 
-                it('should set expected tree root', async () => {
-                    expect(await trees.curRoot()).to.equal(
-                        toBigNum(rootsSeen[0]),
-                    );
+                it('should set expected tree root with root cache index 5', async () => {
+                    await expectCurRootAndIndexAsExpected(rootsSeen[0], 4 + 1);
                 });
             });
 
@@ -204,9 +203,10 @@ describe('IncrementalMerkleTree', () => {
                     expect(await trees.leavesNum()).to.equal(6);
                 });
 
-                it('should set expected tree root', async () => {
-                    expect(await trees.curRoot()).to.equal(
-                        toBigNum(rootsSeen[1]),
+                it('should set expected tree root with root cache index 9', async () => {
+                    await expectCurRootAndIndexAsExpected(
+                        rootsSeen[1],
+                        2 * 4 + 1,
                     );
                 });
             });
@@ -222,9 +222,10 @@ describe('IncrementalMerkleTree', () => {
                     expect(await trees.leavesNum()).to.equal(9);
                 });
 
-                it('should set expected tree root', async () => {
-                    expect(await trees.curRoot()).to.equal(
-                        toBigNum(rootsSeen[2]),
+                it('should set expected tree root with root cache index 13', async () => {
+                    await expectCurRootAndIndexAsExpected(
+                        rootsSeen[2],
+                        3 * 4 + 1,
                     );
                 });
             });
@@ -234,7 +235,9 @@ describe('IncrementalMerkleTree', () => {
                     await trees.internalInsertBatch(triads[3]);
                     await trees.internalInsertBatch(triads[4]);
                     await trees.internalInsertBatch(triads[5]);
+                    after6thCallRoot = (await trees.curRoot())[0];
                     await trees.internalInsertBatch(triads[6]);
+                    after7thCallRoot = (await trees.curRoot())[0];
                     await expect(trees.internalInsertBatch(triads[7]))
                         .to.emit(trees, 'InternalInsertBatch')
                         .withArgs(28);
@@ -244,37 +247,93 @@ describe('IncrementalMerkleTree', () => {
                     expect(await trees.leavesNum()).to.equal(24);
                 });
 
-                it('should set expected tree root', async () => {
-                    expect(await trees.curRoot()).to.equal(
-                        toBigNum(rootsSeen[7]),
+                it('should set expected tree root with root cache index 17', async () => {
+                    await expectCurRootAndIndexAsExpected(
+                        rootsSeen[7],
+                        8 * 4 + 1,
                     );
                 });
 
                 it('should set the empty tree root as unknown', async () => {
                     expect(
-                        await trees.isKnownRoot(0, zeroTriadTreeRoot),
+                        await trees.isKnownRoot(0, zeroTriadTreeRoot, 0),
                     ).to.equal(false);
                 });
 
+                // TODO: update tests for CACHED_ROOTS_NUM of 256 (not 4)
                 it('should make "known" the tree roots after the four latest calls', async () => {
-                    expect(await trees.isKnownRoot(0, rootsSeen[7])).to.equal(
-                        true,
-                    );
-                    expect(await trees.isKnownRoot(0, rootsSeen[6])).to.equal(
-                        true,
-                    );
-                    expect(await trees.isKnownRoot(0, rootsSeen[5])).to.equal(
-                        true,
-                    );
-                    expect(await trees.isKnownRoot(0, rootsSeen[4])).to.equal(
-                        true,
-                    );
+                    expect(
+                        await trees.isKnownRoot(0, rootsSeen[7], 0),
+                    ).to.equal(true);
+                    expect(
+                        await trees.isKnownRoot(
+                            0,
+                            rootsSeen[6],
+                            (6 + 1) * 4 + 1,
+                        ),
+                    ).to.equal(true);
+                    expect(
+                        await trees.isKnownRoot(0, rootsSeen[5], 0),
+                    ).to.equal(true);
+                    expect(
+                        await trees.isKnownRoot(0, rootsSeen[4], 0),
+                    ).to.equal(true);
                 });
 
-                it('should make "unknown" the tree root after the 4th call', async () => {
-                    expect(await trees.isKnownRoot(0, rootsSeen[3])).to.equal(
-                        false,
-                    );
+                // TODO: write tests for CACHED_ROOTS_NUM of 256 (not 4)
+                xit('Update needed: should make "unknown" the tree root after the 4th call', async () => {
+                    expect(
+                        await trees.isKnownRoot(0, rootsSeen[3], 0),
+                    ).to.equal(false);
+                });
+            });
+
+            describe('the tree root set by 6th call', () => {
+                it('should be as expected', () => {
+                    expect(after6thCallRoot).to.equal(rootsSeen[5]);
+                });
+
+                it('should be "known" under cache index 0', async () => {
+                    expect(
+                        await trees.isKnownRoot(0, rootsSeen[5], 0),
+                    ).to.equal(true);
+                });
+
+                it('should be "known" under cache index 25', async () => {
+                    expect(
+                        await trees.isKnownRoot(0, rootsSeen[5], 6 * 4 + 1),
+                    ).to.equal(true);
+                });
+
+                it('should be "unknown" under cache index 29', async () => {
+                    expect(
+                        await trees.isKnownRoot(0, rootsSeen[5], 29),
+                    ).to.equal(false);
+                });
+            });
+
+            // TODO: write tests for cache index when it wraps from 260 to 1
+            describe('the tree root set by 7th call', () => {
+                it('should be as expected', () => {
+                    expect(after7thCallRoot).to.equal(rootsSeen[6]);
+                });
+
+                it('should be "known" under cache index 0', async () => {
+                    expect(
+                        await trees.isKnownRoot(0, rootsSeen[6], 0),
+                    ).to.equal(true);
+                });
+
+                it('should be "known" under cache index 29', async () => {
+                    expect(
+                        await trees.isKnownRoot(0, rootsSeen[6], 7 * 4 + 1),
+                    ).to.equal(true);
+                });
+
+                it('should be "unknown" under cache index 25', async () => {
+                    expect(
+                        await trees.isKnownRoot(0, rootsSeen[6], 25),
+                    ).to.equal(false);
                 });
             });
         });
@@ -394,4 +453,12 @@ describe('IncrementalMerkleTree', () => {
             );
         });
     });
+
+    async function expectCurRootAndIndexAsExpected(
+        expRoot: string,
+        expIndex: number,
+    ) {
+        expect((await trees.curRoot())[0]).to.equal(expRoot);
+        expect((await trees.curRoot())[1]).to.equal(toBigNum(expIndex));
+    }
 });

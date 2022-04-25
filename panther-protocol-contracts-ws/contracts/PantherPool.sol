@@ -144,7 +144,8 @@ contract PantherPool is CommitmentsTrees, Verifier {
             require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);
 
             require(
-                isKnownRoot(inputTreeIds[i], inputMerkleRoots[i]),
+                // TODO: add cache index hints
+                isKnownRoot(inputTreeIds[i], inputMerkleRoots[i], 0),
                 ERR_UNKNOWN_MERKLE_ROOT
             );
 

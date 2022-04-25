@@ -26,11 +26,12 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
      */
 
     // `leafId` of the next leaf to insert
-    uint256 private _nextLeafId;
+    // !!! NEVER access it directly from child contracts: `internal` to ease testing only
+    uint256 internal _nextLeafId;
 
     // Right-most elements (hashes) in the current tree per level
     // level index => hash
-    mapping(uint256 => bytes32) private filledSubtrees;
+    mapping(uint256 => bytes32) private _filledSubtrees;
 
     /// @notice Roots of fully populated trees
     /// @dev treeId => root
@@ -38,12 +39,12 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
 
     // Recent roots of trees seen
     // cacheIndex => root ^ treeId
-    mapping(uint256 => uint256) private cachedRoots;
+    mapping(uint256 => uint256) private _cachedRoots;
 
     // @dev Root permanently added to the `finalRoots`
     event AnchoredRoot(uint256 indexed treeId, bytes32 root);
 
-    // @dev Root temporarily saved in the `cachedRoots`
+    // @dev Root temporarily saved in the `_cachedRoots`
     event CachedRoot(uint256 indexed treeId, bytes32 root);
 
     // NOTE: No `constructor` (initialization) function needed
@@ -103,7 +104,7 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
         // Return cached values otherwise
         uint256 treeId = getTreeId(nextLeafId);
         cacheIndex = _nextLeafId2CacheIndex(nextLeafId);
-        uint256 v = cachedRoots[cacheIndex];
+        uint256 v = _cachedRoots[cacheIndex];
         root = bytes32(v ^ treeId);
     }
 
@@ -176,11 +177,11 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
             if (nodeIndex % 2 == 0) {
                 left = nodeHash;
                 right = zeros[level];
-                filledSubtrees[level] = nodeHash;
+                _filledSubtrees[level] = nodeHash;
             } else {
                 // for a new tree, "than" block always run before "else" block
-                // so `filledSubtrees[level]` gets updated before its use
-                left = filledSubtrees[level];
+                // so `_filledSubtrees[level]` gets updated before its use
+                left = _filledSubtrees[level];
                 right = nodeHash;
             }
 
@@ -196,17 +197,17 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
         uint256 treeId = getTreeId(leftLeafId);
         if (_isFullTree(leftLeafId)) {
             // Switch to a new tree
-            // Ignore `filledSubtrees` old values as they are never re-used
+            // Ignore `_filledSubtrees` old values as they are never re-used
             finalRoots[treeId] = nodeHash;
             emit AnchoredRoot(treeId, nodeHash);
         } else {
             uint256 cacheIndex = _nextLeafId2CacheIndex(nextLeafId);
-            cachedRoots[cacheIndex] = uint256(nodeHash) ^ treeId;
+            _cachedRoots[cacheIndex] = uint256(nodeHash) ^ treeId;
             emit CachedRoot(treeId, nodeHash);
         }
     }
 
-    /// internal and private functions follow
+    /// private functions follow (some of them made `internal` to ease testing)
 
     function _isFullTree(uint256 leftLeafId) internal pure returns (bool) {
         unchecked {
@@ -241,8 +242,8 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
         uint256 treeId,
         bytes32 root,
         uint256 cacheIndex
-    ) internal view returns (bool) {
-        uint256 v = cachedRoots[cacheIndex];
+    ) private view returns (bool) {
+        uint256 v = _cachedRoots[cacheIndex];
         return v == (uint256(root) ^ treeId);
     }
 

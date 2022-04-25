@@ -339,7 +339,7 @@ describe('IncrementalMerkleTree', () => {
         });
     });
 
-    describe('`internalIsFullTree` method', () => {
+    describe('internal `_isFullTree` method', () => {
         // function internalIsFullTree(uint256 nextLeafId) returns (bool)
         it('should return `false`  if called w/ `nextLeafId` of 0', async () => {
             expect(await trees.internalIsFullTree(0)).to.equal(false);
@@ -414,7 +414,7 @@ describe('IncrementalMerkleTree', () => {
         });
     });
 
-    describe('`internalNextLeafId2LeavesNum` method', () => {
+    describe('internal `_nextLeafId2LeavesNum` method', () => {
         it('should return 0  if called w/ `nextLeafId` of 0', async () => {
             expect(await trees.internalNextLeafId2LeavesNum(0)).to.equal(0);
         });

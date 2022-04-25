@@ -1,4 +1,4 @@
-import crypto from 'node:crypto';
+import crypto from 'crypto';
 
 import {babyjub} from 'circomlibjs';
 import {ethers} from 'ethers';

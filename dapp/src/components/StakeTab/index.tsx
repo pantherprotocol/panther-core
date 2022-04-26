@@ -15,7 +15,6 @@ import {
     zkpTokenBalanceSelector,
 } from '../../redux/slices/zkpTokenBalance';
 import {onWrongNetwork} from '../../services/connectors';
-import {chainHasAdvancedStaking} from '../../services/contracts';
 import {CHAIN_IDS} from '../../services/env';
 import * as stakingService from '../../services/staking';
 import {chainHasStakingOpen} from '../../services/staking';
@@ -26,7 +25,6 @@ import {ConnectButton} from '../ConnectButton';
 import StakingBtn from './StakingBtn';
 import StakingInfo from './StakingInfo';
 import StakingInput from './StakingInput';
-import StakingMethod from './StakingMethod';
 
 import './styles.scss';
 
@@ -47,7 +45,6 @@ export default function StakeTab(props: {
         null,
     );
     const [, setStakedId] = useState<number | null>(null);
-    const [stakeType, setStakeType] = useState<string>('classic');
 
     // For use when user types input
     const setStakingAmount = useCallback((amount: string) => {
@@ -65,27 +62,17 @@ export default function StakeTab(props: {
         setAmountToStakeBN(amountBN);
     }, []);
 
-    const setStakeMethodType = useCallback(
-        async (selectedStakeMethod: string): Promise<void> => {
-            await setStakeType(selectedStakeMethod);
-        },
-        [setStakeType],
-    );
-
     const stake = useCallback(
         async (amount: BigNumber) => {
             if (!chainId || !account || !tokenBalance) {
                 return;
             }
-            const stakingTypeHex = utils.keccak256(
-                utils.toUtf8Bytes(stakeType),
-            );
-            const stakingResponse = await stakingService.stake(
+
+            const stakingResponse = await stakingService.advancedStake(
                 library,
                 chainId,
                 account,
                 amount,
-                stakingTypeHex.slice(0, 10),
             );
 
             if (stakingResponse instanceof Error) {
@@ -105,7 +92,6 @@ export default function StakeTab(props: {
             setStakingAmount,
             context,
             dispatch,
-            stakeType,
             tokenBalance,
         ],
     );
@@ -154,15 +140,6 @@ export default function StakeTab(props: {
             <Card variant="outlined" className="staking-info-card">
                 <CardContent className="staking-info-card-content">
                     <StakingInfo />
-                    {chainHasStakingOpen(chainId) &&
-                        chainHasAdvancedStaking(chainId) && (
-                            <Box display={'flex'} justifyContent={'center'}>
-                                <StakingMethod
-                                    stakeType={stakeType}
-                                    setStakeType={setStakeMethodType}
-                                />
-                            </Box>
-                        )}
                 </CardContent>
             </Card>
 

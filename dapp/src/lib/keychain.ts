@@ -27,6 +27,15 @@ export const deriveKeypairFromSeed = (
     };
 };
 
+export const generateEphemeralKeypair = deriveKeypairFromSeed;
+
+export const generateChildPublicKey = (
+    rootPublicKey: PublicKey,
+    scalar: bigint,
+): PublicKey => {
+    return babyjub.mulPointEscalar(rootPublicKey, scalar);
+};
+
 export const multiplyScalars = (a: bigint, b: bigint): bigint => {
     return (a * b) % babyjub.subOrder;
 };

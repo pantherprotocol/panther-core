@@ -1,36 +1,39 @@
 import type {TypedDataDomain} from '@ethersproject/abstract-signer';
-import type {BytesLike} from '@ethersproject/bytes';
-import {JsonRpcSigner} from '@ethersproject/providers';
 import type {TransactionResponse} from '@ethersproject/providers';
+import {JsonRpcSigner} from '@ethersproject/providers';
 import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
+import type {ContractTransaction, Signer} from 'ethers';
 import {BigNumber, constants, utils} from 'ethers';
-import type {ContractTransaction} from 'ethers';
 
 import {MessageWithTx} from '../components/Common/MessageWithTx';
-import {Staking, IStakingTypes} from '../types/contracts/Staking';
+import {bigintToBytes32} from '../lib/conversions';
+import {
+    generateEphemeralKeypair,
+    generateChildPublicKey,
+} from '../lib/keychain';
+import type {IStakingTypes, Staking} from '../types/contracts/Staking';
 import {CONFIRMATIONS_NUM} from '../utils/constants';
 import {parseTxErrorMessage} from '../utils/errors';
 import {getEventFromReceipt} from '../utils/transactions';
 
 import {
     ContractName,
+    chainHasAdvancedStaking,
     chainHasStakesReporter,
     getContractAddress,
     getRewardMasterContract,
+    getSignableContract,
     getStakesReporterContract,
     getStakingContract,
     getTokenContract,
-    getSignableContract,
 } from './contracts';
 import {env} from './env';
+import {deriveRootKeypairs} from './keychain';
+import {encryptEphemeralKey} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
 
 const CoinGeckoClient = new CoinGecko();
-
-export function toBytes32(data: BytesLike): string {
-    return utils.hexZeroPad(data, 32);
-}
 
 const EIP712_TYPES = {
     Permit: [
@@ -95,13 +98,95 @@ function txError(msg: string, diagnostics: any): Error {
     return new Error(msg);
 }
 
+// craftAdvancedStakeData is a helper function to create the bytes data argument for
+// stake() function in Staking.sol smart contract with 'advanced' stake type.
+async function craftAdvancedStakeData(signer: Signer): Promise<string> {
+    /*
+    returned value is hex string in the following format:
+    const advStakeData: string =
+    '0x' + (
+        S’[0].x, S’[0].y,
+        S’[1].x, S’[1].y,
+        S’[2].x, S’[2].y,
+        IV[0],
+        R[0].x,
+        encrypted(prolog, r[0])),
+        IV[1],
+        R[1].x,
+        encrypted(prolog, r[1])),
+        IV[2],
+        R[2].x,
+        encrypted(prolog, r[2])),
+    ).join('')
+    */
+    const [rootSpendingKeypair, rootReadingKeypair] = await deriveRootKeypairs(
+        signer,
+    );
+
+    const publicSpendingKeys: string[] = [];
+    const secretMsgs: string[] = [];
+
+    // generate 3 spending pubKeys and secret messages:
+    // one for each reward in zZKP, PRP, and NFT
+    for (let index = 0; index < 3; index++) {
+        const ephemeralKeypair = generateEphemeralKeypair();
+        const publicSpendingKey = generateChildPublicKey(
+            rootSpendingKeypair.publicKey,
+            ephemeralKeypair.privateKey,
+        );
+        const msg = encryptEphemeralKey(
+            ephemeralKeypair,
+            rootReadingKeypair.publicKey,
+        );
+
+        publicSpendingKey.forEach((key: bigint) => {
+            publicSpendingKeys.push(bigintToBytes32(key).slice(2));
+        });
+
+        secretMsgs.push(msg);
+    }
+
+    const advStakeData: string = [
+        '0x',
+        ...publicSpendingKeys,
+        ...secretMsgs,
+    ].join('');
+
+    if (advStakeData.length % 2 !== 0) {
+        const msg = `Advanced stake data has odd length of ${advStakeData.length}`;
+        console.error(msg, {advStakeData, publicSpendingKeys, secretMsgs});
+        throw new Error(msg);
+    }
+
+    return advStakeData;
+}
+
+export async function advancedStake(
+    library: any,
+    chainId: number,
+    account: string,
+    amount: BigNumber, // assumes already validated as <= tokenBalance
+): Promise<BigNumber | Error> {
+    if (!chainHasAdvancedStaking(chainId)) {
+        return txError('Advanced staking is not supported on this chain', {
+            chainId,
+        });
+    }
+
+    const signer = library.getSigner(account);
+    const data = await craftAdvancedStakeData(signer);
+    console.debug(`advanced stake data: ${data}`);
+
+    return stake(library, chainId, account, amount, 'advanced', data);
+}
+
 export async function stake(
     library: any,
     chainId: number,
     account: string,
     amount: BigNumber, // assumes already validated as <= tokenBalance
     stakeType: string,
-    data?: any,
+    data: string,
 ): Promise<BigNumber | Error> {
     const {signer, contract} = getSignableContract(
         library,
@@ -109,6 +194,10 @@ export async function stake(
         account,
         getStakingContract,
     );
+
+    const stakingTypeHex = utils
+        .keccak256(utils.toUtf8Bytes(stakeType))
+        .slice(0, 10);
 
     let tx: any;
     try {
@@ -119,7 +208,7 @@ export async function stake(
             signer,
             contract,
             amount,
-            stakeType,
+            stakingTypeHex,
             data,
         );
     } catch (err) {

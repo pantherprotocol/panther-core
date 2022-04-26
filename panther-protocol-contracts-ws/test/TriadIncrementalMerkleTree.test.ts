@@ -2,11 +2,6 @@
 import { expect } from 'chai';
 
 // @ts-ignore
-import { ethers } from 'hardhat';
-import {
-    getPoseidonT3Contract,
-    getPoseidonT4Contract,
-} from '../lib/poseidonBuilder';
 import {
     toBigNum,
     zeroLeaf,
@@ -15,6 +10,7 @@ import {
 } from '../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
 import { MockTriadIncrementalMerkleTrees } from '../types';
+import { deployMockTrees } from './helpers/mockTriadTrees';
 import { triads, rootsSeen } from './data/triadTreeSample';
 
 describe('IncrementalMerkleTree', () => {
@@ -22,29 +18,7 @@ describe('IncrementalMerkleTree', () => {
     let snapshot: number;
 
     before(async () => {
-        const PoseidonT3 = await getPoseidonT3Contract();
-        const poseidonT3 = await PoseidonT3.deploy();
-        await poseidonT3.deployed();
-
-        const PoseidonT4 = await getPoseidonT4Contract();
-        const poseidonT4 = await PoseidonT4.deploy();
-        await poseidonT4.deployed();
-
-        // Link Poseidon contracts
-        // @ts-ignore
-        const TriadIncrementalMerkleTrees = await ethers.getContractFactory(
-            'MockTriadIncrementalMerkleTrees',
-            {
-                libraries: {
-                    PoseidonT3: poseidonT3.address,
-                    PoseidonT4: poseidonT4.address,
-                },
-            },
-        );
-
-        trees =
-            (await TriadIncrementalMerkleTrees.deploy()) as MockTriadIncrementalMerkleTrees;
-        await trees.deployed();
+        trees = await deployMockTrees();
     });
 
     describe('`getTreeId` method', () => {
@@ -263,7 +237,6 @@ describe('IncrementalMerkleTree', () => {
                     ).to.equal(false);
                 });
 
-                // TODO: update tests for CACHED_ROOTS_NUM of 256 (not 4)
                 it('should make "known" the tree roots after the four latest calls', async () => {
                     expect(
                         await trees.isKnownRoot(0, rootsSeen[7], 0),
@@ -281,13 +254,6 @@ describe('IncrementalMerkleTree', () => {
                     expect(
                         await trees.isKnownRoot(0, rootsSeen[4], 0),
                     ).to.equal(true);
-                });
-
-                // TODO: write tests for CACHED_ROOTS_NUM of 256 (not 4)
-                xit('Update needed: should make "unknown" the tree root after the 4th call', async () => {
-                    expect(
-                        await trees.isKnownRoot(0, rootsSeen[3], 0),
-                    ).to.equal(false);
                 });
             });
 
@@ -315,7 +281,6 @@ describe('IncrementalMerkleTree', () => {
                 });
             });
 
-            // TODO: write tests for cache index when it wraps from 260 to 1
             describe('the tree root set by 7th call', () => {
                 it('should be as expected', () => {
                     expect(after7thCallRoot).to.equal(rootsSeen[6]);

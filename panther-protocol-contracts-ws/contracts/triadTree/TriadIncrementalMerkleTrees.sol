@@ -127,15 +127,15 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
 
         // finally, look in cache, starting from the current root
         uint256 leafId = _nextLeafId;
-        uint256 i = CACHED_ROOTS_NUM;
-        while ((leafId >= iTRIAD_SIZE) && (i > 0)) {
-            // Skip the last triad in a tree (i.e. the full tree root)
-            if (leafId & iLEAVES_NUM_MASK == 0) continue;
-            uint256 cacheIndex = _nextLeafId2CacheIndex(leafId);
-            if (_isCorrectCachedRoot(treeId, root, cacheIndex)) return true;
-            unchecked {
-                leafId -= iTRIAD_SIZE;
+        unchecked {
+            uint256 i = CACHED_ROOTS_NUM - 1;
+            while ((leafId >= iTRIAD_SIZE) && (i != 0)) {
                 i -= 1;
+                // Skip the last triad in a tree (i.e. the full tree root)
+                if (leafId & iLEAVES_NUM_MASK == 0) continue;
+                uint256 cacheIndex = _nextLeafId2CacheIndex(leafId);
+                if (_isCorrectCachedRoot(treeId, root, cacheIndex)) return true;
+                leafId -= iTRIAD_SIZE;
             }
         }
         return false;
@@ -234,7 +234,7 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
         pure
         returns (uint256)
     {
-        // equiv to `nextLeafId / CACHED_ROOTS_NUM + 1`
+        // equiv to `nextLeafId % (CACHED_ROOTS_NUM * iTRIAD_SIZE) + 1`
         return (nextLeafId & CACHE_SIZE_MASK) | 1;
     }
 

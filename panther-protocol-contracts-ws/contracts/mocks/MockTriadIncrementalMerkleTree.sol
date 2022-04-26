@@ -27,4 +27,11 @@ contract MockTriadIncrementalMerkleTrees is TriadIncrementalMerkleTrees {
     {
         return _nextLeafId2LeavesNum(nextId);
     }
+
+    // This function fakes just the '_nextLeafId', but it does not update the history of roots.
+    // If applied to the empty tree, equivalent to inserting ZERO leaves (but the history is empty).
+    function fakeNextLeafId(uint256 fakeId) external {
+        require((fakeId % 4) == 0, "fakeId must be a multiple of 4");
+        _nextLeafId = fakeId;
+    }
 }

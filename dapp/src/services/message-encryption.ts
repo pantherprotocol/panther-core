@@ -1,26 +1,27 @@
-import {decryptMessage, encryptMessage} from '../lib/message-encryption';
-import {ICommitmentPlaintext, EcdhSharedKey, ICiphertext} from '../lib/types';
+import {bigintToBytes32} from '../lib/conversions';
+import {encryptMessage, generateEcdhSharedKey} from '../lib/message-encryption';
+import {IKeypair, PublicKey} from '../lib/types';
 
-export const encryptCommitment = async (
-    plaintext: ICommitmentPlaintext,
-    key: EcdhSharedKey,
-) => {
-    const plaintextMessage = [
-        plaintext.token,
-        plaintext.amount,
-        plaintext.random,
-    ];
-    return encryptMessage(plaintextMessage, key);
-};
+export const PROLOG = 'eeffeeff';
 
-export const decryptCommitment = (
-    ciphertext: ICiphertext,
-    key: EcdhSharedKey,
-): ICommitmentPlaintext => {
-    const decryptedText = decryptMessage(ciphertext, key);
-    return {
-        token: decryptedText[0].valueOf(),
-        amount: decryptedText[1].valueOf(),
-        random: decryptedText[2].valueOf(),
-    };
-};
+// encryptEphemeralKey creates a message with encrypted ephemeral key
+// of the following format:
+// msg = [IV, R.x, ...encrypted(prolog, r)]
+export function encryptEphemeralKey(
+    ephemeralKeypair: IKeypair,
+    readingPublicKey: PublicKey,
+): string {
+    const ecdhKey = generateEcdhSharedKey(
+        ephemeralKeypair.privateKey,
+        readingPublicKey,
+    );
+
+    const plaintext = PROLOG + ephemeralKeypair.privateKey.toString(16);
+    const ciphertext = encryptMessage(plaintext, ecdhKey);
+
+    return (
+        bigintToBytes32(ephemeralKeypair.publicKey[0]).slice(2) +
+        ciphertext.iv +
+        ciphertext.data
+    );
+}

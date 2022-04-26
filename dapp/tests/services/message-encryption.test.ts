@@ -1,86 +1,64 @@
 import {describe, expect} from '@jest/globals';
 
+import {bigintToBytes32} from '../../src/lib/conversions';
 import {deriveKeypairFromSeed} from '../../src/lib/keychain';
-import {generateEcdhSharedKey} from '../../src/lib/message-encryption';
-import {ICiphertext, ICommitmentPlaintext} from '../../src/lib/types';
 import {
-    decryptCommitment,
-    encryptCommitment,
+    generateEcdhSharedKey,
+    decryptMessage,
+} from '../../src/lib/message-encryption';
+import {EcdhSharedKey} from '../../src/lib/types';
+import {
+    encryptEphemeralKey,
+    PROLOG,
 } from '../../src/services/message-encryption';
 
-describe('Cryptographic operations', () => {
-    const keypair1 = deriveKeypairFromSeed();
-    const keypair2 = deriveKeypairFromSeed();
+function decryptEphemeralKey(encrypted: string, ecdhKey: EcdhSharedKey): any {
+    const ephemeralPublicKeyX = encrypted.slice(0, 64);
+    const iv = encrypted.slice(64, 96);
+    const data = encrypted.slice(96);
 
-    const ecdhSharedKey12 = generateEcdhSharedKey(
-        keypair1.privateKey,
-        keypair2.publicKey,
+    return {
+        ephemeralPublicKeyX,
+        iv,
+        data,
+        msg: decryptMessage({iv, data}, ecdhKey),
+    };
+}
+
+describe('Ephemeral key encryption', () => {
+    const readingKeypair = deriveKeypairFromSeed();
+    const ephemeralKeypair = deriveKeypairFromSeed();
+
+    const ciphertext = encryptEphemeralKey(
+        ephemeralKeypair,
+        readingKeypair.publicKey,
     );
 
-    const plaintext: any[] = [];
-    for (let i = 0; i < 3; i++) {
-        plaintext.push(BigInt(Math.floor(Math.random() * 50)));
-    }
+    const ecdh = generateEcdhSharedKey(
+        ephemeralKeypair.privateKey,
+        readingKeypair.publicKey,
+    );
 
-    const commitmentPlainText: ICommitmentPlaintext = {
-        token: plaintext[0],
-        amount: plaintext[1],
-        random: plaintext[2],
-    };
+    const decrypted = decryptEphemeralKey(ciphertext, ecdh);
 
-    let ciphertext: ICiphertext;
-    let decryptedCiphertext: ICommitmentPlaintext;
-    beforeAll(async () => {
-        ciphertext = await encryptCommitment(
-            commitmentPlainText,
-            ecdhSharedKey12,
+    it('should have correct R', () => {
+        expect('0x' + decrypted.ephemeralPublicKeyX).toEqual(
+            bigintToBytes32(ephemeralKeypair.publicKey[0]),
         );
-        decryptedCiphertext = decryptCommitment(ciphertext, ecdhSharedKey12);
     });
 
-    describe('Ciphertext', () => {
-        it('should be of the correct format', () => {
-            expect(ciphertext).toHaveProperty('iv');
-            expect(ciphertext).toHaveProperty('data');
-            expect(ciphertext.data).toHaveLength(32);
-        });
-
-        it('should differ from the plaintext', () => {
-            expect.assertions(plaintext.length);
-            for (let i = 0; i < plaintext.length; i++) {
-                expect(plaintext[i] !== ciphertext.data[i]).toBeTruthy();
-            }
-        });
+    it('should be decrypted and have correct message', () => {
+        expect(decrypted.msg).toEqual(
+            PROLOG + ephemeralKeypair.privateKey.toString(16),
+        );
     });
 
-    describe('The decrypted ciphertext', () => {
-        it('should have the correct amount', () => {
-            expect(decryptedCiphertext.amount).toEqual(
-                commitmentPlainText.amount,
-            );
-        });
-        it('should have the correct token', () => {
-            expect(decryptedCiphertext.token).toEqual(
-                commitmentPlainText.token,
-            );
-        });
-        it('should have the correct random scalar', () => {
-            expect(decryptedCiphertext.random).toEqual(
-                commitmentPlainText.random,
-            );
-        });
-
-        it('should fail to decrypt with a different key', () => {
-            const sk = BigInt(1);
-            const randomKeypair = deriveKeypairFromSeed(sk);
-            const differentKey = generateEcdhSharedKey(
-                sk,
-                randomKeypair.publicKey,
-            );
-
-            expect(() =>
-                decryptCommitment(ciphertext, differentKey),
-            ).toThrowError(/bad decrypt/);
-        });
+    it('should fail to decrypt with a different key', () => {
+        const sk = BigInt(1);
+        const randomKeypair = deriveKeypairFromSeed(sk);
+        const differentKey = generateEcdhSharedKey(sk, randomKeypair.publicKey);
+        expect(() =>
+            decryptEphemeralKey(ciphertext, differentKey),
+        ).toThrowError(/bad decrypt/);
     });
 });

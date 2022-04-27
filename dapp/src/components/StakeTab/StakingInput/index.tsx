@@ -7,6 +7,7 @@ import {BigNumber} from 'ethers';
 import logo from '../../../images/panther-logo.svg';
 import {useAppSelector} from '../../../redux/hooks';
 import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
+import {chainHasStakingOpen} from '../../../services/staking';
 import {formatCurrency} from '../../../utils/helpers';
 
 import './styles.scss';
@@ -20,7 +21,9 @@ export default function StakingInput(props: {
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
 
     const context = useWeb3React();
-    const {account} = context;
+    const {account, chainId} = context;
+    const disabled = !account || !chainHasStakingOpen(chainId);
+
     const changeHandler = (e: any) => {
         const inputTextLength = e.target.value.length;
         if (inputTextLength > 12) {
@@ -39,6 +42,7 @@ export default function StakingInput(props: {
             return false;
         }
     };
+
     return (
         <>
             <Box className="staking-input-header">
@@ -76,7 +80,7 @@ export default function StakingInput(props: {
                         component="span"
                         className="staking-input-max"
                         onClick={() => {
-                            if (tokenBalance) {
+                            if (tokenBalance && !disabled) {
                                 props.setStakingAmountBN(tokenBalance);
                             }
                         }}
@@ -96,7 +100,7 @@ export default function StakingInput(props: {
                         autoFocus={true}
                         placeholder="0"
                         disableUnderline={true}
-                        disabled={!account}
+                        disabled={disabled}
                         endAdornment={
                             <InputAdornment
                                 position="end"

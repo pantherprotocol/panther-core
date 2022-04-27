@@ -18,6 +18,7 @@ import {onWrongNetwork} from '../../services/connectors';
 import {chainHasAdvancedStaking} from '../../services/contracts';
 import {CHAIN_IDS} from '../../services/env';
 import * as stakingService from '../../services/staking';
+import {chainHasStakingOpen} from '../../services/staking';
 import {safeParseUnits} from '../../utils/helpers';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
@@ -142,23 +143,26 @@ export default function StakeTab(props: {
 
     return (
         <Box className="staking-tab-holder">
-            <StakingInput
-                setStakingAmount={setStakingAmount}
-                setStakingAmountBN={setStakingAmountBN}
-                amountToStake={amountToStake}
-                networkLogo={props.networkLogo}
-            />
+            {chainHasStakingOpen(chainId) && (
+                <StakingInput
+                    setStakingAmount={setStakingAmount}
+                    setStakingAmountBN={setStakingAmountBN}
+                    amountToStake={amountToStake}
+                    networkLogo={props.networkLogo}
+                />
+            )}
             <Card variant="outlined" className="staking-info-card">
                 <CardContent className="staking-info-card-content">
                     <StakingInfo />
-                    {chainHasAdvancedStaking(chainId) && (
-                        <Box display={'flex'} justifyContent={'center'}>
-                            <StakingMethod
-                                stakeType={stakeType}
-                                setStakeType={setStakeMethodType}
-                            />
-                        </Box>
-                    )}
+                    {chainHasStakingOpen(chainId) &&
+                        chainHasAdvancedStaking(chainId) && (
+                            <Box display={'flex'} justifyContent={'center'}>
+                                <StakingMethod
+                                    stakeType={stakeType}
+                                    setStakeType={setStakeMethodType}
+                                />
+                            </Box>
+                        )}
                 </CardContent>
             </Card>
 
@@ -195,7 +199,7 @@ export default function StakeTab(props: {
                 </div>
             )}
 
-            {active && !wrongNetwork && (
+            {chainHasStakingOpen(chainId) && active && !wrongNetwork && (
                 <StakingBtn
                     amountToStake={amountToStake}
                     amountToStakeBN={amountToStakeBN}

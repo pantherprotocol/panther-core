@@ -128,7 +128,7 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
         // finally, look in cache, starting from the current root
         uint256 leafId = _nextLeafId;
         unchecked {
-            uint256 i = CACHED_ROOTS_NUM - 1;
+            uint256 i = CACHED_ROOTS_NUM;
             while ((leafId >= iTRIAD_SIZE) && (i != 0)) {
                 i -= 1;
                 // Skip the last triad in a tree (i.e. the full tree root)

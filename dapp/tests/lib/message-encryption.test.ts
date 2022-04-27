@@ -77,7 +77,7 @@ describe('Cryptographic operations', () => {
             );
         });
 
-        it('should be incorrect if decrypted with a different key', () => {
+        it('should throw error if decryption is attempted with incorrect key', () => {
             const sk = BigInt(1);
             const randomKeypair = deriveKeypairFromSeed(sk);
             const differentKey = generateEcdhSharedKey(
@@ -85,9 +85,18 @@ describe('Cryptographic operations', () => {
                 randomKeypair.publicKey,
             );
 
-            expect(() => decryptMessage(ciphertext, differentKey)).toThrow(
-                /bad decrypt/,
-            );
+            expect(() => {
+                const decrypted = decryptMessage(ciphertext, differentKey);
+                // this part only for debugging purposes:
+                console.log('Diagnostics for sometimes failing test:', {
+                    decrypted,
+                    plaintext,
+                    isTheSame: decrypted === plaintext,
+                    differentKey,
+                    ecdhSharedKey12,
+                    decryptedCiphertext,
+                });
+            }).toThrow(/bad decrypt/);
         });
     });
 });

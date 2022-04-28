@@ -3,6 +3,9 @@ import * as React from 'react';
 import {Box, Button} from '@mui/material';
 import {BigNumber, utils} from 'ethers';
 
+import {useAppSelector} from '../../../redux/hooks';
+import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
+
 import './styles.scss';
 
 // Minimum stake is fixed in classic staking terms; no need for a contract call.
@@ -48,13 +51,14 @@ const getButtonText = (
 const StakingBtn = (props: {
     amountToStake: string | null;
     amountToStakeBN: BigNumber | null;
-    tokenBalance: BigNumber | null;
     stake: (amount: BigNumber) => Promise<void>;
 }) => {
+    const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
+
     const [buttonText, ready] = getButtonText(
         props.amountToStake,
         props.amountToStakeBN,
-        props.tokenBalance,
+        tokenBalance,
     );
     const activeClass = ready ? 'active' : '';
 

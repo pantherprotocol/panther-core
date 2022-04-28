@@ -10,12 +10,12 @@ import UnstakingInfoMSG from './UnstakingInfoMSG';
 
 import './styles.scss';
 
-export default function UnstakingTab(props: {fetchData: () => Promise<void>}) {
+export default function UnstakingTab() {
     return (
         <Box className="unstaking-tab-holder">
             <Card variant="outlined">
                 <UnstakingInfoMSG />
-                <UnstakeTable fetchData={props.fetchData} />
+                <UnstakeTable />
                 <TotalUnclaimedRewards />
             </Card>
         </Box>

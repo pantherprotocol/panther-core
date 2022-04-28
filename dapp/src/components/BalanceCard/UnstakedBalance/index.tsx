@@ -1,17 +1,21 @@
 import * as React from 'react';
 
-import {BigNumber} from '@ethersproject/bignumber';
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 
 import infoIcon from '../../../images/info-icon.svg';
+import {useAppSelector} from '../../../redux/hooks';
+import {
+    zkpTokenBalanceSelector,
+    zkpUnstakedUSDMarketPriceSelector,
+} from '../../../redux/slices/zkpTokenBalance';
 import {formatCurrency} from '../../../utils/helpers';
 
 import './styles.scss';
 
-export default function UnstakedBalance(props: {
-    tokenBalance: BigNumber | null;
-    tokenMarketPrice: BigNumber | null;
-}) {
+export default function UnstakedBalance() {
+    const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
+    const tokenMarketPrice = useAppSelector(zkpUnstakedUSDMarketPriceSelector);
+
     return (
         <Box className="total-balance">
             <Box className="title-box">
@@ -30,17 +34,15 @@ export default function UnstakedBalance(props: {
 
             <Box className="amount-box">
                 <Typography component="div" className="token-balance">
-                    {props.tokenBalance
-                        ? formatCurrency(props.tokenBalance)
-                        : '-'}
+                    {tokenBalance ? formatCurrency(tokenBalance) : '-'}
                 </Typography>
                 <Typography className="zkp-symbol main-symbol">ZKP</Typography>
             </Box>
-            {props.tokenMarketPrice && (
+            {tokenMarketPrice && (
                 <Box className="amount-box">
                     <Typography className="token-market-price">
-                        {props.tokenMarketPrice
-                            ? `~$ ${formatCurrency(props.tokenMarketPrice)} USD`
+                        {tokenMarketPrice
+                            ? `~$ ${formatCurrency(tokenMarketPrice)} USD`
                             : '-'}
                     </Typography>
                 </Box>

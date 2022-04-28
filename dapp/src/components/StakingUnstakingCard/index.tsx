@@ -6,7 +6,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import {BigNumber} from 'ethers';
 
 import StakeTab from '../../components/StakeTab';
 import UnstakingTab from '../../components/UnstakeTab';
@@ -14,8 +13,6 @@ import UnstakingTab from '../../components/UnstakeTab';
 import './styles.scss';
 
 export default function StakingUnstakingCard(props: {
-    tokenBalance: BigNumber | null;
-    fetchData: () => Promise<void>;
     onConnect: any;
     networkLogo?: string;
     switchNetwork: any;
@@ -58,14 +55,12 @@ export default function StakingUnstakingCard(props: {
                 <CardContent>
                     {toggle == 'stake' || toggle == null ? (
                         <StakeTab
-                            tokenBalance={props.tokenBalance}
-                            fetchData={props.fetchData}
                             onConnect={props.onConnect}
                             networkLogo={props.networkLogo}
                             switchNetwork={props.switchNetwork}
                         />
                     ) : (
-                        <UnstakingTab fetchData={props.fetchData} />
+                        <UnstakingTab />
                     )}
                 </CardContent>
             </Card>

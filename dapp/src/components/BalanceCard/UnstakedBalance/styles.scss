@@ -1,0 +1,40 @@
+@import '../../../variables';
+$main-balance-card-background: linear-gradient(0deg, #3f4a5f, #3f4a5f);
+
+.total-balance {
+    background: $main-balance-card-background;
+    border-radius: 8px;
+    padding: 10px 10px 10px 25px;
+
+    .title-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        img {
+            opacity: 0.8;
+        }
+    }
+
+    .amount-box {
+        display: flex;
+        align-items: center;
+
+        .token-balance {
+            font-weight: bold;
+            font-style: normal;
+            font-size: 39px;
+            line-height: 19px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
+
+        .token-market-price {
+            font-weight: normal;
+            font-style: normal;
+            font-size: 18px;
+            line-height: 42px;
+            opacity: 0.8;
+        }
+    }
+}

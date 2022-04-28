@@ -1,0 +1,10 @@
+@import '../../../variables';
+$balance-card-background: rgba(99, 114, 136, 0.2);
+
+.unstaking-info-message {
+    text-align: center;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    background-color: $balance-card-background;
+}

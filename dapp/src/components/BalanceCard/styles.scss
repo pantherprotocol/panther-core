@@ -47,13 +47,6 @@ $balance-card-background: rgba(99, 114, 136, 0.2);
             }
         }
 
-        .token-balance {
-            font-size: 16px;
-            font-weight: 600;
-            padding-top: 10px;
-            padding-bottom: 30px;
-        }
-
         .not-connected-balance-container {
             display: flex;
             align-items: flex-start;
@@ -65,86 +58,6 @@ $balance-card-background: rgba(99, 114, 136, 0.2);
             font-weight: normal;
             padding-top: 12px;
         }
-
-        .total-balance {
-            background: $main-balance-card-background;
-            border-radius: 8px;
-            padding: 10px 10px 10px 25px;
-
-            .title-box {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-
-                img {
-                    opacity: 0.8;
-                }
-            }
-
-            .amount-box {
-                display: flex;
-                align-items: center;
-
-                .token-balance {
-                    font-weight: bold;
-                    font-style: normal;
-                    font-size: 39px;
-                    line-height: 19px;
-                    padding-top: 15px;
-                    padding-bottom: 15px;
-                }
-
-                .token-market-price {
-                    font-weight: normal;
-                    font-style: normal;
-                    font-size: 18px;
-                    line-height: 42px;
-                    opacity: 0.8;
-                }
-            }
-        }
-
-        .address-balance {
-            padding: 24px 15px 0;
-
-            .title-box {
-                display: flex;
-                align-items: center;
-            }
-
-            .amount-box {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-
-                .balance-box {
-                    display: flex;
-                    justify-content: center;
-
-                    .balance {
-                        font-weight: 800;
-                        font-style: normal;
-                        font-size: 21px;
-                        line-height: 42px;
-                    }
-                }
-
-                .token-balance {
-                    font-weight: 800;
-                    font-style: normal;
-                    font-size: 21px;
-                    line-height: 42px;
-                }
-
-                .amount-usd {
-                    font-weight: normal;
-                    font-style: normal;
-                    font-size: 16px;
-                    line-height: 42px;
-                    opacity: 0.8;
-                }
-            }
-        }
     }
 
     .title {
@@ -153,26 +66,6 @@ $balance-card-background: rgba(99, 114, 136, 0.2);
         display: flex;
         align-items: center;
         opacity: 0.6;
-    }
-
-    .address-with-setting {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        margin-bottom: 15px;
-
-        .address {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .setting-icon {
-            display: flex;
-            width: 50%;
-            justify-content: end;
-            opacity: 0.6;
-        }
     }
 
     @media (max-width: 600px) {

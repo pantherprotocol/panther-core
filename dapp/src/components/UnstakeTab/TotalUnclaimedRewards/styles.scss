@@ -1,0 +1,23 @@
+@import '../../../variables';
+$balance-card-background: rgba(99, 114, 136, 0.2);
+
+.total-unclaimed-container {
+    display: flex;
+    justify-content: center;
+    text-align: start;
+
+    .total-unclaimed-rewards {
+        display: flex;
+        width: 55%;
+        margin: 25px 0;
+        justify-content: center;
+        padding: 16px;
+        border-radius: 8px;
+        background-color: $balance-card-background;
+        opacity: 0.5;
+
+        &.no-unclaimed-rewards {
+            justify-content: center;
+        }
+    }
+}

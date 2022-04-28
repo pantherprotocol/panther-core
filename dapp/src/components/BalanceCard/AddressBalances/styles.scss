@@ -1,0 +1,41 @@
+.address-balance {
+    padding: 24px 15px 0;
+
+    .title-box {
+        display: flex;
+        align-items: center;
+    }
+
+    .amount-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .balance-box {
+            display: flex;
+            justify-content: center;
+
+            .balance {
+                font-weight: 800;
+                font-style: normal;
+                font-size: 21px;
+                line-height: 42px;
+            }
+        }
+
+        .token-balance {
+            font-weight: 800;
+            font-style: normal;
+            font-size: 21px;
+            line-height: 42px;
+        }
+
+        .amount-usd {
+            font-weight: normal;
+            font-style: normal;
+            font-size: 16px;
+            line-height: 42px;
+            opacity: 0.8;
+        }
+    }
+}

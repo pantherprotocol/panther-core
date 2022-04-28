@@ -2,6 +2,7 @@ import {BigNumber} from '@ethersproject/bignumber';
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
+import {constants} from 'ethers';
 
 import {chainHasStakesReporter} from '../../services/contracts';
 import * as stakingService from '../../services/staking';
@@ -45,12 +46,13 @@ export const getUnclaimedRewards = createAsyncThunk(
             ? BigNumber.from(state.zkpMarketPrice.value)
             : null;
 
-        console.debug(
-            'rewardsBalance:',
-            formatCurrency(rewardsBalance),
-            `(USD \$${formatCurrency(fiatPrice(rewardsBalance, price))})`,
-        );
-
+        if (rewardsBalance && rewardsBalance.gt(constants.Zero)) {
+            console.debug(
+                'rewardsBalance:',
+                formatCurrency(rewardsBalance),
+                `(USD \$${formatCurrency(fiatPrice(rewardsBalance, price))})`,
+            );
+        }
         return rewardsBalance?.toString() ?? null;
     },
 );
@@ -97,11 +99,13 @@ export const zkpTokenUSDMarketPriceSelector = (
         ? BigNumber.from(state.unclaimedRewards.value)
         : null;
     const rewardsUSDValue: BigNumber | null = fiatPrice(balance, price);
-    console.debug(
-        'rewardsBalance:',
-        formatCurrency(balance),
-        `(USD \$${formatCurrency(rewardsUSDValue)})`,
-    );
+    if (balance) {
+        console.debug(
+            'rewardsBalance:',
+            formatCurrency(balance),
+            `(USD \$${formatCurrency(rewardsUSDValue)})`,
+        );
+    }
     return rewardsUSDValue;
 };
 

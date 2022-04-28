@@ -2,6 +2,7 @@ import {BigNumber} from '@ethersproject/bignumber';
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
+import {constants} from 'ethers';
 
 import * as stakingService from '../../services/staking';
 import {fiatPrice, formatCurrency} from '../../utils/helpers';
@@ -72,11 +73,13 @@ export const zkpUSDStakedBalanceSelector = (
         : null;
     const stakedBalance: BigNumber | null = zkpStakedBalanceSelector(state);
     const stakedUSDValue: BigNumber | null = fiatPrice(stakedBalance, price);
-    console.debug(
-        'stakedBalance:',
-        formatCurrency(stakedBalance),
-        `(USD \$${formatCurrency(stakedUSDValue)})`,
-    );
+    if (stakedBalance && stakedBalance.gt(constants.Zero)) {
+        console.debug(
+            'stakedBalance:',
+            formatCurrency(stakedBalance),
+            `(USD \$${formatCurrency(stakedUSDValue)})`,
+        );
+    }
     return stakedUSDValue;
 };
 export const {resetZkpStakedBalance} = stakedBalanceSlice.actions;

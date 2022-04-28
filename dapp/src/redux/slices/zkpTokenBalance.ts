@@ -78,12 +78,12 @@ export const zkpUnstakedUSDMarketPriceSelector = (
     let tokenUSDMarketPrice: BigNumber | null = null;
     if (price && balance && balance.gte(constants.Zero)) {
         tokenUSDMarketPrice = fiatPrice(balance, price);
+        console.debug(
+            'tokenBalance:',
+            formatEther(balance),
+            `(USD \$${formatCurrency(tokenUSDMarketPrice)})`,
+        );
     }
-    console.debug(
-        'tokenBalance:',
-        formatEther(balance),
-        `(USD \$${formatCurrency(tokenUSDMarketPrice)})`,
-    );
     return tokenUSDMarketPrice;
 };
 export const {resetZkpTokenBalance} = tokenBalanceSlice.actions;

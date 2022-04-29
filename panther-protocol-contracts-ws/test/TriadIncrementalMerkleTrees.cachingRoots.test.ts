@@ -30,7 +30,7 @@ const {
     for512thCallTriad,
 } = dataForCacheTest.triads;
 
-describe('TriadIncrementalMerkleTree: Caching Roots', () => {
+describe('TriadIncrementalMerkleTrees: Caching Roots', () => {
     let trees: MockTriadIncrementalMerkleTrees;
     let snapshot: number;
 

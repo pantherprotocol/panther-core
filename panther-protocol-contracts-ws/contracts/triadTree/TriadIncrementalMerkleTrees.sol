@@ -6,6 +6,7 @@ pragma solidity ^0.8.4;
 import "./Hasher.sol";
 import "./TriadMerkleZeros.sol";
 import { ERR_ZERO_ROOT, ERR_CANT_DEL_ROOT } from "../common/ErrorMsgs.sol";
+import "../interfaces/IRootsHistory.sol";
 
 /**
  * @title TriadIncrementalMerkleTrees
@@ -15,7 +16,11 @@ import { ERR_ZERO_ROOT, ERR_CANT_DEL_ROOT } from "../common/ErrorMsgs.sol";
  * Inspired by MACI project
  * https://github.com/appliedzkp/maci/blob/master/contracts/sol/IncrementalMerkleTree.sol
  */
-contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
+contract TriadIncrementalMerkleTrees is
+    TriadMerkleZeros,
+    Hasher,
+    IRootsHistory
+{
     /**
      * @dev {treeId} is a consecutive number of trees, starting from 0.
      * @dev {leafId} of a leaf is a "modified" number of leaves inserted in all
@@ -81,11 +86,23 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
     }
 
     /**
-     * @notice Returns `treeId` of the given leaf tree
+     * @notice Returns `treeId` of the given leaf's tree
      */
     function getTreeId(uint256 leafId) public pure returns (uint256) {
         // equivalent to `leafId / iLEAVES_NUM`
         return leafId >> iLEAVES_NUM_BITS;
+    }
+
+    /**
+     * @notice Returns `leafIndex` (index in the tree) of the given leaf
+     */
+    function getLeafIndex(uint256 leafId) public pure returns (uint256) {
+        unchecked {
+            // equiv to `leafId % LEAVES_NUM`
+            uint256 iIndex = leafId & iLEAVES_NUM_MASK;
+            uint256 fullTriadsNum = (iIndex + 1) >> iTRIAD_SIZE_BITS;
+            return iIndex - fullTriadsNum;
+        }
     }
 
     /**
@@ -98,8 +115,7 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
     {
         // Return zero root and index if the current tree is empty
         uint256 nextLeafId = _nextLeafId;
-        uint256 leavesInTreeNum = nextLeafId & iLEAVES_NUM_MASK;
-        if (leavesInTreeNum == 0) return (ZERO_ROOT, 0);
+        if (_isEmptyTree(nextLeafId)) return (ZERO_ROOT, 0);
 
         // Return cached values otherwise
         uint256 treeId = getTreeId(nextLeafId);
@@ -108,14 +124,12 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
         root = bytes32(v ^ treeId);
     }
 
-    /**
-     * @notice Returns `true` if the given root of the given tree is known
-     */
+    /// @inheritdoc IRootsHistory
     function isKnownRoot(
         uint256 treeId,
         bytes32 root,
         uint256 cacheIndexHint
-    ) public view returns (bool) {
+    ) public view override returns (bool) {
         require(root != 0, ERR_ZERO_ROOT);
 
         // if hint provided, use hint
@@ -214,6 +228,10 @@ contract TriadIncrementalMerkleTrees is TriadMerkleZeros, Hasher {
             return
                 (iLEAVES_NUM - (leftLeafId & iLEAVES_NUM_MASK)) <= iTRIAD_SIZE;
         }
+    }
+
+    function _isEmptyTree(uint256 nextLeafId) internal pure returns (bool) {
+        return (nextLeafId & iLEAVES_NUM_MASK) == 0;
     }
 
     function _nextLeafId2LeavesNum(

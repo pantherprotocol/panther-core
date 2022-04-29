@@ -31,3 +31,8 @@ struct PluginData {
     address contractAddress;
     bytes callData;
 }
+
+struct ElGamalCiphertext {
+    G1Point c1;
+    G1Point c2;
+}

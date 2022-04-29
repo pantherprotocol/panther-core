@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import { SnarkProof } from "../Types.sol";
+import { SnarkProof } from "../common/Types.sol";
 
 // FIXME: this is currently used; see TODO in Verifier.sol.
 

@@ -2,15 +2,15 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { PoseidonT4 } from "./Poseidon.sol";
-import "./CommitmentsTrees.sol";
+import { PoseidonT4 } from "./crypto/Poseidon.sol";
+import "./pantherPool/CommitmentsTrees.sol";
 import "./verifier/Verifier.sol";
-import { IN_UTXOs, MAX_EXT_AMOUNT, MAX_TIMESTAMP, OUT_UTXOs } from "./Constants.sol";
+import { IN_UTXOs, MAX_EXT_AMOUNT, MAX_TIMESTAMP, OUT_UTXOs } from "./common/Constants.sol";
 uint256 constant NUM_PACKED_BYTES32_PROOF_INPUTS = IN_UTXOs * 2 + OUT_UTXOs;
 uint256 constant NUM_PACKED_UINT256_PROOF_INPUTS = 5;
 uint256 constant NUM_PACKED_ADDRESS_PROOF_INPUTS = 4;
-import { PluginData, SnarkProof } from "./Types.sol";
-import "./ErrorMsgs.sol";
+import { PluginData, SnarkProof } from "./common/Types.sol";
+import "./common/ErrorMsgs.sol";
 
 /**
  * @title PantherPool
@@ -76,7 +76,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
 
     event Nullifier(bytes32 nullifier);
 
-    // constructor: require(BATCH_SIZE == OUT_UTXOs)
+    // constructor: require(TRIAD_SIZE == OUT_UTXOs)
 
     function checkValidTimeLimits(Period calldata timeLimit) internal view {
         uint256 currentTime = block.timestamp;
@@ -134,6 +134,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
     }
 
     function processNullifiers(
+        uint256[IN_UTXOs] calldata inputTreeIds,
         bytes32[IN_UTXOs] calldata inputMerkleRoots,
         bytes32[IN_UTXOs] calldata inputNullifiers
     ) internal {
@@ -142,7 +143,11 @@ contract PantherPool is CommitmentsTrees, Verifier {
             require(uint256(nullifier) < FIELD_SIZE, ERR_TOO_LARGE_NULLIFIER);
             require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);
 
-            require(isKnownRoot(inputMerkleRoots[i]), ERR_UNKNOWN_MERKLE_ROOT);
+            require(
+                // TODO: add cache index hints
+                isKnownRoot(inputTreeIds[i], inputMerkleRoots[i], 0),
+                ERR_UNKNOWN_MERKLE_ROOT
+            );
 
             isSpent[nullifier] = true;
             emit Nullifier(nullifier);
@@ -150,30 +155,49 @@ contract PantherPool is CommitmentsTrees, Verifier {
     }
 
     /* TODO: remove these in-line dev notes
+       Recipient reading key V = vB
+       Recipient master spending key S = sB
+
+       Sender's ephemeral key  R = rB
+       Sender derives a shared key K=ECDH(V, r)  = rV = rvB
+       Sender derives new spending key for recipient as S' = rS
+       Sender uses K to encrypt the tx opening values M= (r, amount, token, ...)
+       Ciphertext C = Enc(M, K).
+       The sender publishes R and C
+
+       The recipient derives shared key K = vR= vrB
+       The recipient decrypts ciphertext M = Dec(C, K)
+
         // recipient generates
         spendRootPrivKey: = fn(seed)
         readPrivKey: = fn(seed)
-        // recipient calculates and emits, sender reads
         spendRootPubKey := BabyPubKey(spendRootPrivKey)
         readPubKey: = BabyPubKey(readPrivKey)
+        // recipient emits, sender reads
+        spendRootPubKey, readPubKey
 
         // for output UTXOs, sender generates
         random
-        // for output UTXOs, smart contract encrypts emits
         encodedMessage := fn((token, amount, random), readPubKey)
-        // for output UTXOs, sender calculates
-        spendPubKey := spendRootPubKey + BabyPubKey(random)
+        spendPubKey := fn(spendRootPubKey,random)
         // for output UTXOs, circuit verifies
-        !!! REMOVED: spendPubKey := spendRootPubKey + BabyPubKey(random)
-        Leaf := Poseidon(spendPubKey.Ax, spendPubKey.Ay, value, token, timestamp)
+        spendPubKey := BabyPubKey(spendPrivKey)
+        Leaf := Poseidon(spendPubKey.Ax, spendPubKey.Ay, amount, token, createTime)
+        // for output UTXOs, smart contract emits
+        encodedMessage, leafId, createTime
 
-        // for input UTXOs, recipient reads and decrypts
-        (token, amount, random) = decrypt(encodedMessage, readPrivKey)
-        // for input UTXOs, recipient calculates
-        spendPrivKey := spendRootPrivKey + random
+        // for new UTXOs, recipient reads and decrypts
+        - 1x (1 or 1/8) words - leftLeafId
+        - 1x (1 or 1/8) words - createTime
+        - (3 or 2)x (2 or 1) words - Sender's ephemeral key  R
+        - (3 or 2)x (1 or 1/2) words - iv
+        - (3 or 2)x (2 or 3) words - (token, amount, random) = decrypt(encodedMessage, readPrivKey)
+        // to spend UTXOs, recipient calculates
+        spendPrivKey := fn(random, spendRootPrivKey)
         // for input UTXOs, circuit verifies
         spendPubKey := BabyPubKey(spendPrivKey)
         Nullifier := Poseidon(spendPrivKey, leafId)
+        .. and tokenWeightLeaf
     */
 
     function getExtraInputsHash(
@@ -310,7 +334,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
             ERR_INVALID_JOIN_INPUT
         );
 
-        processNullifiers(inputMerkleRoots, inputNullifiers);
+        // processNullifiers(inputTreeIds, inputMerkleRoots, inputNullifiers);
 
         // Horrible hack to avoid "Stack too deep" errors
         {

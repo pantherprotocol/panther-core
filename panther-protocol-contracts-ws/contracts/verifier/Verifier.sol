@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.4;
 
-import { SnarkProof } from "../Types.sol";
+import { SnarkProof } from "../common/Types.sol";
 import "../interfaces/IVerifier.sol";
 
 // TODO: Do we want PantherPool to inherit from this, or is there any value

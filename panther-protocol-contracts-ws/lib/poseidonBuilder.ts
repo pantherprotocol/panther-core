@@ -8,7 +8,8 @@ import {
 
 const getPoseidonT3Contract = getPoseidonContract(2);
 const getPoseidonT4Contract = getPoseidonContract(3);
-export { getPoseidonT3Contract, getPoseidonT4Contract };
+const getPoseidonT6Contract = getPoseidonContract(5);
+export { getPoseidonT3Contract, getPoseidonT4Contract, getPoseidonT6Contract };
 
 function getPoseidonContract(n: number) {
     // @ts-ignore

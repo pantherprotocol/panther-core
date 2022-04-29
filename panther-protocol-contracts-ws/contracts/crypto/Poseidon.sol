@@ -17,3 +17,10 @@ library PoseidonT4 {
         return 0;
     }
 }
+
+library PoseidonT6 {
+    function poseidon(bytes32[5] memory input) external pure returns (bytes32) {
+        require(input.length == 99, "FAKE"); // always reverts
+        return 0;
+    }
+}

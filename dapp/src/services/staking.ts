@@ -481,3 +481,9 @@ export async function getZKPMarketPrice(): Promise<BigNumber | null> {
     const price = utils.parseUnits(String(priceData.data[symbol]['usd']), 18);
     return price;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function chainHasStakingOpen(chainId?: number): boolean {
+    // FIXME: make dependent on staking terms
+    return false;
+}

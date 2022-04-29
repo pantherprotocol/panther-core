@@ -32,6 +32,7 @@ import {
 } from '../../redux/slices/zkpTokenBalance';
 import {formatAccountAddress} from '../../services/account';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
+// import {chainHasStakingOpen} from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
 
 import './styles.scss';

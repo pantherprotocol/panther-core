@@ -36,3 +36,31 @@ struct ElGamalCiphertext {
     G1Point c1;
     G1Point c2;
 }
+
+// For MASP V0 and V1
+struct ZAsset {
+    // reserved (for networkId, tokenIdPolicy. etc..)
+    uint72 _unused;
+    // 0x01 - enabled, 0x02 - disabled, 0x00 - unknown
+    uint8 status;
+    // 0x00 - ERC-20, 0x10 - ERC-721, or 0x20 - ERC-1155, 0xFE - PRP (quasi-token)
+    // ... or, 0xFF - defined for every tokenId rather than for all tokens on the contract
+    uint8 tokenType;
+    // 0x00 - no scaling
+    uint8 scale;
+    // token contract address
+    address token;
+}
+
+struct LockData {
+    // 0x00 - ERC-20, 0x10 - ERC-721, or 0x11 - ERC-1155, 0xFF - PRP (quasi-token)
+    uint8 tokenType;
+    // Token contract address
+    address token;
+    // For ERC-721, ERC-1155 tokens
+    uint256 tokenId;
+    // The account to transfer the token from/to (on `lock`/`unlock`)
+    address extAccount;
+    // The token amount to transfer to/from the Vault (on `lock`/`unlock`)
+    uint96 extAmount;
+}

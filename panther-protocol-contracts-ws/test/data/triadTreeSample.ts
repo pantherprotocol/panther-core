@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { toBytes32, Triad } from '../../lib/utilities';
+import { toBytes32, Triad, zeroLeavesTriad } from '../../lib/utilities';
 
 export function getTriadAt(index: number): Triad {
     return [
@@ -45,3 +45,37 @@ export const rootsSeen = [
     return "0x" + tree.root.toString(16);
     });
 */
+
+export const dataForCacheTest = {
+    triads: {
+        for1stCallTriad: getTriadAt(0),
+        for2ndCallTriad: getTriadAt(1),
+        forCalls3rdTo254thTriad: zeroLeavesTriad,
+        for255thCallTriad: getTriadAt(254),
+        for256thCallTriad: getTriadAt(255),
+        for257thCallTriad: getTriadAt(256),
+        for258thCallTriad: getTriadAt(257),
+        forCalls258thTo510thTriad: zeroLeavesTriad,
+        for511thCallTriad: getTriadAt(510),
+        for512thCallTriad: getTriadAt(511),
+    },
+    // TODO: recalculate roots w/ `TriadMerkleTree` from `preZkp/`crypto`
+    roots: {
+        after1stCallRoot:
+            '0x0cf1bd613b64b20a77f4d625296451f5f2600615560a4caa3b2c7c418c56787f',
+        after2ndCallRoot:
+            '0x19b2d668d60e341944c345863d8a6fb01e9f763a71db0a30d2db863a7ff853f5',
+        after255thCallRoot:
+            '0x087a86bf423519ffdba55ffea55d3f8739739dd6b3093e46eea3652ed5626199',
+        after256thCallRoot:
+            '0x15324ee1b21cca5675c6331c9f41fddae4b8e987ec717fa14c0cebf7bcd77722',
+        after257thCallRoot:
+            '0x1ace98ffec6c60fbd89b28b6199446afbdcbce2ed48a7a2106c0ca2928412486',
+        after258thCallRoot:
+            '0x0c3f820c34ff5358fcffc2fe6b393b64242e2c6c37c4e87a14ea08caefa4e9de',
+        after511thCallRoot:
+            '0x0af8d80c2c1f482970d065ba8d5e1a1a2b00b3adb11af7d90d2462127ef9b173',
+        after512thCallRoot:
+            '0x0f7d9e87507fa0cd0ebbb28ac18d654818210054688f5149694825bbd45a318c',
+    },
+};

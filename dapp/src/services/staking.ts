@@ -32,8 +32,12 @@ import {env} from './env';
 import {deriveRootKeypairs} from './keychain';
 import {encryptEphemeralKey} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
+import {Rewards, calculateRewardsForStake} from './rewards';
 
 const CoinGeckoClient = new CoinGecko();
+
+export const CLASSIC_TYPE_HEX = utils.id('classic').slice(0, 10);
+export const ADVANCED_TYPE_HEX = utils.id('advanced').slice(0, 10);
 
 const EIP712_TYPES = {
     Permit: [
@@ -454,9 +458,10 @@ export async function getRewardsBalance(
 
 export interface StakeRow {
     id: number;
+    stakeType: string;
     stakedAt: number;
     amount: BigNumber;
-    reward: BigNumber;
+    reward: Rewards;
     lockedTill: number;
     unstakable?: boolean;
     claimedAt: number;
@@ -467,6 +472,8 @@ export async function getStakesAndRewards(
     chainId: number,
     account: string,
 ): Promise<[totalStaked: BigNumber, rows: StakeRow[]]> {
+    const rewardsBalance = await getRewardsBalance(library, chainId, account);
+
     if (chainHasStakesReporter(chainId)) {
         const stakes = await getStakesInfoFromReporter(
             library,
@@ -481,7 +488,12 @@ export async function getStakesAndRewards(
                 (stake: IStakingTypes.StakeStructOutput, i: number) => {
                     return {
                         ...stake,
-                        reward: rewards[i],
+                        reward: calculateRewardsForStake(
+                            stake,
+                            rewardsBalance,
+                            totalStaked,
+                            rewards[i],
+                        ),
                     };
                 },
             ),
@@ -492,14 +504,18 @@ export async function getStakesAndRewards(
     // proportionally based on total reward balance.
     const stakes = await getAccountStakes(library, chainId, account);
     const totalStaked = sumActiveAccountStakes(stakes);
-    const rewardsBalance = await getRewardsBalance(library, chainId, account);
     if (!rewardsBalance) return [totalStaked, []];
     return [
         totalStaked,
         stakes.map(stake => {
             return {
                 ...stake,
-                reward: rewardsBalance.mul(stake.amount).div(totalStaked),
+                reward: calculateRewardsForStake(
+                    stake,
+                    rewardsBalance,
+                    totalStaked,
+                    null,
+                ),
             };
         }),
     ];

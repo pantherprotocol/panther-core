@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 import "../triadTree/TriadIncrementalMerkleTrees.sol";
-import { OUT_UTXOs, UTXO_SECRETS } from "../common/Constants.sol";
+import { OUT_UTXOs, UTXO_SECRETS_T0 } from "../common/Constants.sol";
 import { ERR_TOO_LARGE_COMMITMENTS } from "../common/ErrorMsgs.sol";
 
 /**
@@ -11,7 +11,7 @@ import { ERR_TOO_LARGE_COMMITMENTS } from "../common/ErrorMsgs.sol";
  * @author Pantherprotocol Contributors
  * @notice Incremental Merkle trees of commitments for the `PantherPool` contract
  */
-contract CommitmentsTrees is TriadIncrementalMerkleTrees {
+abstract contract CommitmentsTrees is TriadIncrementalMerkleTrees {
     /**
      * @dev Emitted on a new batch of Commitments
      * @param leftLeafId ID of the first leaf in the batch
@@ -22,18 +22,16 @@ contract CommitmentsTrees is TriadIncrementalMerkleTrees {
         uint256 indexed leftLeafId,
         uint256 creationTime,
         bytes32[OUT_UTXOs] hashes,
-        uint256[UTXO_SECRETS][OUT_UTXOs] secrets
+        uint256[UTXO_SECRETS_T0][OUT_UTXOs] secrets
     );
-
-    // NOTE: No `constructor` (initialization) function needed
 
     /**
      * @notice Adds commitments to merkle tree(s) and emits events
      * @param commitments Commitments (leaves hashes) to be inserted into merkle tree(s)
      */
     function addAndEmitCommitments(
-        bytes32[OUT_UTXOs] calldata commitments,
-        uint256[UTXO_SECRETS][OUT_UTXOs] calldata secrets,
+        bytes32[OUT_UTXOs] memory commitments,
+        uint256[UTXO_SECRETS_T0][OUT_UTXOs] calldata secrets,
         uint256 timestamp
     ) internal {
         // Prepare hashes to insert

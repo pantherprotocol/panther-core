@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.4;
+
+import { PoseidonT3 } from "../../crypto/Poseidon.sol";
+import { FIELD_SIZE } from "../../crypto/SnarkConstants.sol";
+import { ERR_TOO_LARGE_LEAFID } from "../../common/ErrorMsgs.sol";
+
+abstract contract NullifierGenerator {
+    function generateNullifier(uint256 privSpendingKey, uint256 leafId)
+        internal
+        pure
+        returns (bytes32 nullifier)
+    {
+        require(leafId < FIELD_SIZE, ERR_TOO_LARGE_LEAFID);
+        nullifier = PoseidonT3.poseidon(
+            [bytes32(privSpendingKey), bytes32(leafId)]
+        );
+    }
+}

@@ -33,6 +33,11 @@ string constant ERR_ZERO_FEE_PAYER = "PP:E19";
 string constant ERR_ZERO_TOKEN_EXPECTED = "PP:E20";
 string constant ERR_ZERO_TOKEN_UNEXPECTED = "PP:E21";
 
+// (Specific to) PantherPoolV0 contract
+string constant ERR_TOO_EARLY_EXIT = "P0:E1";
+string constant ERR_TOO_LARGE_LEAFID = "P0:E2";
+string constant ERR_TOO_LARGE_PRIVKEY = "P0:E3";
+
 // TriadIncrementalMerkleTrees contract
 string constant ERR_ZERO_ROOT = "TT:E1"; // merkle tree root can not be zero
 string constant ERR_CANT_DEL_ROOT = "TT:E2"; // failed to delete a root from history

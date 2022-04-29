@@ -21,7 +21,7 @@ const AdvancedStakingComingSoon = () => {
             <Typography className="card-text">
                 This will showcase the first elements of the full protocol
                 involving zAssets and cross-chain interoperability.{' '}
-                <SafeLink href="https://blog.pantherprotocol.io/zkp-staking-will-be-available-this-wednesday-c73c7c98b5f2">
+                <SafeLink href="https://blog.pantherprotocol.io/advanced-staking-is-on-its-way-heres-how-to-prepare-for-it-b14cd01e4cc4">
                     Learn&nbsp;more
                 </SafeLink>
             </Typography>

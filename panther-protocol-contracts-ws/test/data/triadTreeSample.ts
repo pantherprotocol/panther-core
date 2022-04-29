@@ -59,7 +59,12 @@ export const dataForCacheTest = {
         for511thCallTriad: getTriadAt(510),
         for512thCallTriad: getTriadAt(511),
     },
-    // TODO: recalculate roots w/ `TriadMerkleTree` from `preZkp/`crypto`
+    // TODO: calculate correct roots after refactoring of "fake insertion"
+    // !!! The following roots are incorrect Merkle roots.
+    // These roots are returned by the `MockTriadIncrementalMerkleTrees` contract
+    // for this test-suite.
+    // The code of the test-suite uses "fake" insertions of leaves. But the smart
+    // contract can't calculate roots correctly after "fake" insertions.
     roots: {
         after1stCallRoot:
             '0x0cf1bd613b64b20a77f4d625296451f5f2600615560a4caa3b2c7c418c56787f',
@@ -77,5 +82,32 @@ export const dataForCacheTest = {
             '0x0af8d80c2c1f482970d065ba8d5e1a1a2b00b3adb11af7d90d2462127ef9b173',
         after512thCallRoot:
             '0x0f7d9e87507fa0cd0ebbb28ac18d654818210054688f5149694825bbd45a318c',
+    },
+};
+
+export const dataForTreeChangeTest = {
+    triads: {
+        forFirst16382CallsTriad: zeroLeavesTriad,
+        for16383thCallTriad: getTriadAt(16382),
+        for16384thCallTriad: getTriadAt(16383),
+        forMore16382CallsTriad: zeroLeavesTriad,
+        for32767thCallTriad: getTriadAt(32766),
+        for32768thCallTriad: getTriadAt(32767),
+    },
+    // TODO: calculate correct roots after refactoring of "fake insertion"
+    // !!! The following roots are incorrect Merkle roots.
+    // These roots are returned by the `MockTriadIncrementalMerkleTrees` contract
+    // for this test-suite.
+    // The code of the test-suite uses "fake" insertions of leaves. But the smart
+    // contract can't calculate roots correctly after "fake" insertions.
+    roots: {
+        after16383thTriadFirstTreeRoot:
+            '0x078ee0e2f31767c029eac1e7f69cb7d8b5489fc301a5af52a48a9804ed2a598f',
+        after16384thTriadFirstTreeRoot:
+            '0x1bb6b3e461afe8cf652f110070c7b5786a51e25a5f6a879fd0be15b355499fde',
+        after32767thTriadSecondTreeRoot:
+            '0x2da0a3a671e20f5d532d62359d8ea95878a3bece613199f1f4c622613d3b21e7',
+        after32768thTriadSecondTreeRoot:
+            '0x0102c7f852f40b58b5a8dc70f0a4e23e767f564f3f5aa6f08617cdd62be6f7d4',
     },
 };

@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import {IconButton, Box, Card, Typography} from '@mui/material';
+import {useWeb3React} from '@web3-react/core';
 
 import ethLogo from '../../images/eth-logo.svg';
 import {useAppSelector} from '../../redux/hooks';
@@ -19,10 +20,9 @@ import UnstakedBalance from './UnstakedBalance';
 
 import './styles.scss';
 
-const BalanceCard = (props: {
-    accountAddress: string | null;
-    networkLogo: string | undefined;
-}) => {
+const BalanceCard = () => {
+    const context = useWeb3React();
+    const {account} = context;
     const stakedBalance = useAppSelector(zkpStakedBalanceSelector);
     const stakedUSDValue = useAppSelector(zkpUSDStakedBalanceSelector);
     const rewardsUSDValue = useAppSelector(zkpTokenUSDMarketPriceSelector);
@@ -31,8 +31,8 @@ const BalanceCard = (props: {
     return (
         <Box className="balance-card-holder">
             <Card className="balance-card">
-                {props.accountAddress && <AddressWithSetting />}
-                {!props.accountAddress && (
+                {account && <AddressWithSetting />}
+                {!account && (
                     <div className="not-connected-balance-container">
                         <IconButton>
                             <img src={ethLogo} />

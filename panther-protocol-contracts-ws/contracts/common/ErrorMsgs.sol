@@ -38,6 +38,16 @@ string constant ERR_TOO_EARLY_EXIT = "P0:E1";
 string constant ERR_TOO_LARGE_LEAFID = "P0:E2";
 string constant ERR_TOO_LARGE_PRIVKEY = "P0:E3";
 
+// PrpGrantor contract
+string constant ERR_ZERO_CURATOR_ADDR = "GR:E1";
+string constant ERR_ZERO_GRANTEE_ADDR = "GR:E2";
+string constant ERR_GRANT_TYPE_EXISTS = "GR:E3";
+string constant ERR_UNEXPECTED_GRANT_RECEIPIENT = "GR:E4";
+string constant ERR_LOW_GRANT_BALANCE = "GR:E5";
+string constant ERR_UKNOWN_GRANT_TYPE = "GR:E6";
+string constant ERR_TOO_LARGE_GRANT_AMOUNT = "GR:E6";
+string constant ERR_UNDEF_GRANT = "GR:E7";
+string constant ERR_UNAUTHORIZED_CALL = "GR:Unauthorized";
+
 // TriadIncrementalMerkleTrees contract
 string constant ERR_ZERO_ROOT = "TT:E1"; // merkle tree root can not be zero
-string constant ERR_CANT_DEL_ROOT = "TT:E2"; // failed to delete a root from history

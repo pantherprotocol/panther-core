@@ -41,10 +41,9 @@ struct ElGamalCiphertext {
 struct ZAsset {
     // reserved (for networkId, tokenIdPolicy. etc..)
     uint72 _unused;
-    // 0x01 - enabled, 0x02 - disabled, 0x00 - unknown
+    // Refer to constant.sol
     uint8 status;
-    // 0x00 - ERC-20, 0x10 - ERC-721, or 0x20 - ERC-1155, 0xFE - PRP (quasi-token)
-    // ... or, 0xFF - defined for every tokenId rather than for all tokens on the contract
+    // Refer to constant.sol
     uint8 tokenType;
     // 0x00 - no scaling
     uint8 scale;
@@ -53,7 +52,7 @@ struct ZAsset {
 }
 
 struct LockData {
-    // 0x00 - ERC-20, 0x10 - ERC-721, or 0x11 - ERC-1155, 0xFF - PRP (quasi-token)
+    // Refer to constant.sol
     uint8 tokenType;
     // Token contract address
     address token;

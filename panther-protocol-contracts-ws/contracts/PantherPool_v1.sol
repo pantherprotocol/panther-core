@@ -204,7 +204,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
         address deposit,
         address withdrawal,
         PluginData memory plugin,
-        uint256[UTXO_SECRETS_T0][OUT_UTXOs] memory secrets
+        uint256[UTXO_SECRETS][OUT_UTXOs] memory secrets
     ) internal pure returns (uint256) {
         return
             uint256(
@@ -271,7 +271,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
         bytes32[NUM_PACKED_BYTES32_PROOF_INPUTS] memory bytes32ProofInputs,
         uint256[NUM_PACKED_UINT256_PROOF_INPUTS] memory uint256ProofInputs,
         address[NUM_PACKED_ADDRESS_PROOF_INPUTS] memory addressProofInputs,
-        uint256[UTXO_SECRETS_T0][OUT_UTXOs] memory secrets,
+        uint256[UTXO_SECRETS][OUT_UTXOs] memory secrets,
         SnarkProof calldata proof
     ) internal pure {
         uint256 extraInputsHash = getExtraInputsHash(
@@ -309,7 +309,7 @@ contract PantherPool is CommitmentsTrees, Verifier {
         bytes32[IN_UTXOs] calldata inputNullifiers,
         // Commitments to "output" UTXOs - both zAssets and PRP (reward points)
         bytes32[OUT_UTXOs] calldata commitments,
-        uint256[UTXO_SECRETS_T0][OUT_UTXOs] calldata secrets,
+        uint256[UTXO_SECRETS][OUT_UTXOs] calldata secrets,
         SnarkProof calldata proof
     ) external payable {
         checkValidTimeLimits(timeLimit);

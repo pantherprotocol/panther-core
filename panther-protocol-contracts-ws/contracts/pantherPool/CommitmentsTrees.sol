@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 import "../triadTree/TriadIncrementalMerkleTrees.sol";
-import { OUT_UTXOs, UTXO_SECRETS_T0 } from "../common/Constants.sol";
+import { OUT_UTXOs, UTXO_SECRETS } from "../common/Constants.sol";
 import { ERR_TOO_LARGE_COMMITMENTS } from "../common/ErrorMsgs.sol";
 
 /**
@@ -14,15 +14,16 @@ import { ERR_TOO_LARGE_COMMITMENTS } from "../common/ErrorMsgs.sol";
 abstract contract CommitmentsTrees is TriadIncrementalMerkleTrees {
     /**
      * @dev Emitted on a new batch of Commitments
-     * @param leftLeafId ID of the first leaf in the batch
+     * @param leftLeafId The `leafId` of the first leaf in the batch
+     * @dev `leafId = leftLeafId + 1` for the 2nd leaf (`leftLeafId + 2` for the 3rd leaf)
      * @param hashes Commitments hashes
-     * @param secrets Encoded messages for commitments receivers
+     * @param secretMsgs Messages for receivers with encrypted UTXO opening values
      */
     event NewCommitments(
         uint256 indexed leftLeafId,
         uint256 creationTime,
         bytes32[OUT_UTXOs] hashes,
-        uint256[UTXO_SECRETS_T0][OUT_UTXOs] secrets
+        uint256[UTXO_SECRETS][OUT_UTXOs] secretMsgs
     );
 
     /**
@@ -31,10 +32,9 @@ abstract contract CommitmentsTrees is TriadIncrementalMerkleTrees {
      */
     function addAndEmitCommitments(
         bytes32[OUT_UTXOs] memory commitments,
-        uint256[UTXO_SECRETS_T0][OUT_UTXOs] calldata secrets,
+        uint256[UTXO_SECRETS][OUT_UTXOs] memory secretMsgs,
         uint256 timestamp
     ) internal {
-        // Prepare hashes to insert
         for (uint256 i = 0; i < OUT_UTXOs; i++) {
             require(
                 uint256(commitments[i]) < FIELD_SIZE,
@@ -45,8 +45,7 @@ abstract contract CommitmentsTrees is TriadIncrementalMerkleTrees {
         // Insert hashes into Merkle tree(s)
         uint256 leftLeafId = insertBatch(commitments);
 
-        // Notify UI (wallets) on new commitments
-        emit NewCommitments(leftLeafId, timestamp, commitments, secrets);
+        emit NewCommitments(leftLeafId, timestamp, commitments, secretMsgs);
     }
 
     // NOTE: The contract is supposed to run behind a proxy DELEGATECALLing it.

@@ -72,12 +72,21 @@ contract PantherPoolV0 is
         VAULT = vault;
     }
 
+    /// @notice Transfer assets from the msg.sender to the VAULT and generate UTXOs in the MASP
+    /// @param tokens Address of the token contract for every UTXO
+    /// @dev For PRP granted the address ot this contract (proxy) is supposed to be used
+    /// @param tokenIds For ERC-721 and ERC-1155 - token ID or subId of the token, 0 for ERC-20
+    /// @param extAmounts Token amounts (external) to be deposited
+    /// @param pubSpendingKeys Public Spending Key for every UTXO
+    /// @param secrets Encrypted opening values for every UTXO
+    /// @param  createdAt Optional, if 0 network time used
+    /// @dev createdAt must be less (or equal) the network time
     function generateDeposits(
         address[OUT_UTXOs] calldata tokens,
         uint256[OUT_UTXOs] calldata tokenIds,
-        uint256[OUT_UTXOs] calldata amounts,
+        uint256[OUT_UTXOs] calldata extAmounts,
         G1Point[OUT_UTXOs] calldata pubSpendingKeys,
-        uint256[UTXO_SECRETS_T0][OUT_UTXOs] calldata secrets,
+        uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
         uint256 createdAt
     ) external nonReentrant {
         uint256 timestamp = timeNow();
@@ -87,16 +96,17 @@ contract PantherPoolV0 is
         }
 
         bytes32[OUT_UTXOs] memory commitments;
-        for (uint256 i = 0; i > OUT_UTXOs; i++) {
+        uint256[UTXO_SECRETS][OUT_UTXOs] memory secretMsgs;
+        for (uint256 i = 0; i < OUT_UTXOs; i++) {
             (ZAsset memory asset, uint160 zAssetId) = getZAssetAndId(
                 tokens[i],
                 tokenIds[i]
             );
             require(asset.status == 1, ERR_WRONG_ASSET);
 
-            if (amounts[i] != 0) {
+            if (extAmounts[i] != 0) {
                 if (asset.tokenType == PRP_TOKEN_TYPE)
-                    useGrant(msg.sender, amounts[i]);
+                    useGrant(msg.sender, extAmounts[i]);
                 else
                     IVault(VAULT).lockAsset(
                         LockData(
@@ -104,12 +114,12 @@ contract PantherPoolV0 is
                             asset.token,
                             tokenIds[i],
                             msg.sender,
-                            safe96(amounts[i])
+                            safe96(extAmounts[i])
                         )
                     );
             }
 
-            uint96 scaledAmount = scaleAmount(amounts[i], asset.scale);
+            uint96 scaledAmount = scaleAmount(extAmounts[i], asset.scale);
             commitments[i] = generateCommitment(
                 pubSpendingKeys[i].x,
                 pubSpendingKeys[i].y,
@@ -117,10 +127,17 @@ contract PantherPoolV0 is
                 uint256(zAssetId),
                 timestamp
             );
+            // Copy ciphertext in first words of the message for the receiver
+            for (uint256 k = 0; i < CIPHERTEXT1_WORDS; i++) {
+                secretMsgs[k][i] = secrets[k][i];
+            }
+            // Pack zAssetId and scaledAmount as the last word of the message for the receiver
+            secretMsgs[CIPHERTEXT1_WORDS][i] =
+                (uint256(zAssetId) << 96) |
+                scaledAmount;
         }
 
-        addAndEmitCommitments(commitments, secrets, timestamp);
-        // TODO: emit event with SECRET
+        addAndEmitCommitments(commitments, secretMsgs, timestamp);
     }
 
     function exit(

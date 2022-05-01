@@ -9,8 +9,12 @@ uint256 constant IN_UTXOs = 2 + IN_PRP_UTXOs;
 uint256 constant OUT_PRP_UTXOs = 1;
 uint256 constant OUT_UTXOs = 2 + OUT_PRP_UTXOs;
 
-uint256 constant UTXO_SECRETS_T0 = 4;
-uint256 constant UTXO_SECRETS_T1 = 3;
+// Number of 32-bit words in the `secrets` of the `NewCommitment` events
+uint256 constant UTXO_SECRETS = 4;
+// Number of 32-bit words in the ciphertext in the "type 0" message
+uint256 constant CIPERTEXT0_WORDS = 4;
+// Number of 32-bit words in the ciphertext in the "type 1" message
+uint256 constant CIPHERTEXT1_WORDS = 3;
 
 // For overflow protection and circuits optimization
 uint256 constant MAX_EXT_AMOUNT = 2**96;

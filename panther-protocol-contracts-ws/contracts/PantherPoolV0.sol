@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "./common/ErrorMsgs.sol";
-import "./common/Types.sol";
 import "./common/Constants.sol";
+import "./common/ErrorMsgs.sol";
+import "./common/ImmutableOwnable.sol";
+import "./common/NonReentrant.sol";
+import "./common/Types.sol";
 import "./interfaces/IVault.sol";
-import "./pantherPool/CommitmentsTrees.sol";
-import "./pantherPool/ZAssetsRegistry.sol";
+import "./common/Claimable.sol";
 import "./pantherPool/CommitmentGenerator.sol";
+import "./pantherPool/CommitmentsTrees.sol";
+import "./pantherPool/PrpGrantor.sol";
+import "./pantherPool/ZAssetsRegistry.sol";
 import "./pantherPool/v0/MerkleProofVerifier.sol";
 import "./pantherPool/v0/NullifierGenerator.sol";
 import "./pantherPool/v0/PubKeyGenerator.sol";
@@ -16,23 +20,32 @@ import "./pantherPool/v0/PubKeyGenerator.sol";
  * @title PantherPool
  * @author Pantherprotocol Contributors
  * @notice Shielded Pool main contract v0
- * @dev This contract is the "version 0" of the Panther Protocol Multi-Asset Shielded Pool (aka "MASP").
- * It locks assets and generates UTXO's in the Shielded Pool (i.e. builds commitment trees), but it does not
- * implement the functionality for spending these UTXOs.
- * This contract is supposed to run behind an upgradable proxy and be upgraded with the new contact, the MASP
- * "version 1".
- * The version 1 is supposed to implement the spending functionality and lets holders spend their UTXOs.
- * To protect holders against lost of assets in case the version 1 is not deployed, this contract implements
- * a mechanism of the "early exit" through which holders may withdraw their locked assets.
+ * @dev It is the "version 0" of the Panther Protocol Multi-Asset Shielded Pool ("MASP").
+ * It locks assets and generates UTXO's in the MASP (i.e. builds commitment trees), but
+ * it does not implement the functionality for spending these UTXOs.
+ * This contract is supposed to be upgraded with the new one, which is the MASP "v.1".
+ * The "v.1" is supposed to implement the spending and lets holders spend their UTXOs.
+ * To be upgradable, this contract is assumed to run as an "implementation" for a proxy
+ * that DELEGATECALL's the implementation.
+ * To protect holders against lost of assets in case this contract is not upgraded, it
+ * implements the "early exit", through which holders may withdraw their locked assets.
  */
 contract PantherPoolV0 is
+    ImmutableOwnable,
+    NonReentrant,
+    Claimable,
     CommitmentsTrees,
     ZAssetsRegistry,
+    PrpGrantor,
     CommitmentGenerator,
     MerkleProofVerifier,
     NullifierGenerator,
     PubKeyGenerator
 {
+    // NOTE: The contract is supposed to run behind a proxy DELEGATECALLing it.
+    // For compatibility on upgrades, decrease `__gap` if new variables added.
+    uint256[50] private __gap;
+
     // solhint-disable var-name-mixedcase
     uint256 public immutable EXIT_TIME;
     address public immutable VAULT;
@@ -44,7 +57,11 @@ contract PantherPoolV0 is
 
     event Nullifier(bytes32 nullifier);
 
-    constructor(uint256 exitTime, address vault) {
+    constructor(
+        address _owner,
+        uint256 exitTime,
+        address vault
+    ) ImmutableOwnable(_owner) {
         require(TRIAD_SIZE == OUT_UTXOs, "E0");
         require(exitTime > timeNow() && exitTime < MAX_TIMESTAMP, "E1");
         revertZeroAddress(vault);
@@ -62,7 +79,7 @@ contract PantherPoolV0 is
         G1Point[OUT_UTXOs] calldata pubSpendingKeys,
         uint256[UTXO_SECRETS_T0][OUT_UTXOs] calldata secrets,
         uint256 createdAt
-    ) external {
+    ) external nonReentrant {
         uint256 timestamp = timeNow();
         if (createdAt != 0) {
             require(createdAt <= timestamp, ERR_TOO_EARLY_CREATED_AT);
@@ -78,16 +95,18 @@ contract PantherPoolV0 is
             require(asset.status == 1, ERR_WRONG_ASSET);
 
             if (amounts[i] != 0) {
-                uint96 amount = safe96(amounts[i]);
-                IVault(VAULT).lockAsset(
-                    LockData(
-                        asset.tokenType,
-                        asset.token,
-                        tokenIds[i],
-                        msg.sender,
-                        amount
-                    )
-                );
+                if (asset.tokenType == PRP_TOKEN_TYPE)
+                    useGrant(msg.sender, amounts[i]);
+                else
+                    IVault(VAULT).lockAsset(
+                        LockData(
+                            asset.tokenType,
+                            asset.token,
+                            tokenIds[i],
+                            msg.sender,
+                            safe96(amounts[i])
+                        )
+                    );
             }
 
             uint96 scaledAmount = scaleAmount(amounts[i], asset.scale);
@@ -114,7 +133,7 @@ contract PantherPoolV0 is
         bytes32[TREE_DEPTH + 1] calldata pathElements,
         bytes32 merkleRoot,
         uint256 cacheIndexHint
-    ) external {
+    ) external nonReentrant {
         require(timeNow() >= EXIT_TIME, ERR_TOO_EARLY_EXIT);
         require(amount < MAX_EXT_AMOUNT, ERR_TOO_LARGE_AMOUNT);
         {
@@ -167,5 +186,35 @@ contract PantherPoolV0 is
         IVault(VAULT).unlockAsset(
             LockData(tokenType, token, tokenId, msg.sender, safe96(amount))
         );
+    }
+
+    /// @notice Add a new "grant type", with the specified amount (in PRPs) of the grant,
+    /// and allow the specified "curator" to issue grants of this type
+    /// @dev The "owner" may call only
+    function enableGrants(
+        address curator,
+        bytes4 grantType,
+        uint256 prpAmount
+    ) external onlyOwner {
+        enableGrantType(curator, grantType, prpAmount);
+    }
+
+    /// @notice Disable previously enabled "grant type"
+    /// @dev The "owner" may call only
+    function disableGrants(address curator, bytes4 grantType)
+        external
+        onlyOwner
+    {
+        disableGrantType(curator, grantType);
+    }
+
+    /// @notice Withdraw accidentally sent tokens or ETH from this contract
+    /// @dev The "owner" may call only
+    function claimEthOrErc20(
+        address token,
+        address to,
+        uint256 amount
+    ) external onlyOwner nonReentrant {
+        _claimEthOrErc20(token, to, amount);
     }
 }

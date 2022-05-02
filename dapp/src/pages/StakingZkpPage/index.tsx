@@ -17,19 +17,10 @@ import background from '../../images/background.png';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {blurSelector} from '../../redux/slices/blur';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
-import {
-    getUnclaimedRewards,
-    resetUnclaimedRewards,
-} from '../../redux/slices/unclaimedRewards';
+import {getUnclaimedRewards} from '../../redux/slices/unclaimedRewards';
 import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
-import {
-    getZkpStakedBalance,
-    resetZkpStakedBalance,
-} from '../../redux/slices/zkpStakedBalance';
-import {
-    getZkpTokenBalance,
-    resetZkpTokenBalance,
-} from '../../redux/slices/zkpTokenBalance';
+import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
+import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
 // import {chainHasStakingOpen} from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
@@ -39,7 +30,7 @@ import './styles.scss';
 function StakingZkpPage() {
     const context = useWeb3React();
     const dispatch = useAppDispatch();
-    const {connector, chainId, activate, deactivate, active, error} = context;
+    const {connector, chainId, activate, deactivate, error} = context;
 
     // Logic to recognize the connector currently being activated
     const [activatingConnector, setActivatingConnector] = useState<any>();
@@ -78,15 +69,6 @@ function StakingZkpPage() {
         }
     }, [error, chainId, activate, deactivate]);
 
-    const disconnect = useCallback(async () => {
-        if (active && chainId) {
-            deactivate();
-            dispatch(resetZkpTokenBalance());
-            dispatch(resetZkpStakedBalance());
-            dispatch(resetUnclaimedRewards());
-        }
-    }, [active, chainId, deactivate, dispatch]);
-
     useEffect(() => {
         dispatch(getZKPTokenMarketPrice());
         dispatch(getZkpTokenBalance(context));
@@ -112,9 +94,6 @@ function StakingZkpPage() {
                 }}
                 switchNetwork={(chainId: number) => {
                     switchNetwork(chainId, setChainError);
-                }}
-                disconnect={() => {
-                    disconnect();
                 }}
                 networkName={currentNetwork?.name}
                 networkSymbol={currentNetwork?.symbol}

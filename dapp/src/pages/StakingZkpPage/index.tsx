@@ -30,7 +30,6 @@ import {
     getZkpTokenBalance,
     resetZkpTokenBalance,
 } from '../../redux/slices/zkpTokenBalance';
-import {formatAccountAddress} from '../../services/account';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
 // import {chainHasStakingOpen} from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
@@ -40,13 +39,11 @@ import './styles.scss';
 function StakingZkpPage() {
     const context = useWeb3React();
     const dispatch = useAppDispatch();
-    const {connector, chainId, activate, deactivate, active, account, error} =
-        context;
+    const {connector, chainId, activate, deactivate, active, error} = context;
 
     // Logic to recognize the connector currently being activated
     const [activatingConnector, setActivatingConnector] = useState<any>();
     const [, setChainError] = useState('');
-    const accountAddress = formatAccountAddress(account);
 
     // Handle logic to eagerly connect to the injected ethereum provider, if it
     // exists and has granted access already
@@ -131,10 +128,7 @@ function StakingZkpPage() {
                         <Grid item container spacing={2} md={10} xs={12}>
                             <Grid item xs={12} md={5}>
                                 <Box width={'100%'}>
-                                    <BalanceCard
-                                        accountAddress={accountAddress}
-                                        networkLogo={currentNetwork?.logo}
-                                    />
+                                    <BalanceCard />
                                     <AdvancedStakingComingSoon />
                                 </Box>
                                 <Footer />

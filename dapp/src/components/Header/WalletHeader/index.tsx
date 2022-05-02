@@ -7,6 +7,7 @@ import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
 import {useAppDispatch} from '../../../redux/hooks';
 import {getChainBalance} from '../../../redux/slices/chainBalance';
+import {formatAccountAddress} from '../../../services/account';
 import {onWrongNetwork} from '../../../services/connectors';
 import {CHAIN_IDS} from '../../../services/env';
 import Address from '../../Address';
@@ -53,6 +54,8 @@ export default function WalletHeader(props: {
             fetchChainBalance();
         }
     }, [context, active, account, error, fetchChainBalance]);
+
+    const accountAddress = formatAccountAddress(account) || null;
 
     return (
         <Grid item lg={6} md={12} xs={12} className="header-right-container">
@@ -101,7 +104,11 @@ export default function WalletHeader(props: {
                         />
                     )}
                     <Box className="address-and-balance-holder">
-                        <Address />
+                        {accountAddress && (
+                            <Box>
+                                <Address />
+                            </Box>
+                        )}
                         <Box>
                             <AccountBalance
                                 networkSymbol={props.networkSymbol}

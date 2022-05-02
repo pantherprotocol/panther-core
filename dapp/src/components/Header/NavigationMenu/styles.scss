@@ -4,9 +4,19 @@
     align-items: center;
     display: flex;
 
+    @media (max-width: 768px) {
+        flex-direction: column !important;
+        gap: 20px !important;
+        margin-bottom: 20px !important;
+    }
+
     .logo {
         margin-right: 10px;
         width: 10%;
+
+        @media (max-width: 768px) {
+            margin-right: 0 !important;
+        }
     }
 
     .nav-item {
@@ -15,7 +25,17 @@
         align-items: center;
         padding-left: 20px;
         padding-right: 5px;
-        margin: 0px 10px;
+        margin: 0 10px;
+
+        @media (max-width: 768px) {
+            padding: 0 !important;
+        }
+
+        &.selected {
+            a {
+                color: $white;
+            }
+        }
     }
 
     .nav-item a {

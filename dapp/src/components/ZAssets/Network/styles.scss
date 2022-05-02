@@ -1,0 +1,25 @@
+$network-logo-background-color: #232d46;
+
+.asset-network {
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    place-items: center;
+
+    @media (max-width: 768px) {
+        width: 100%;
+    }
+
+    .network-logo {
+        padding: 7px 7px 1px 7px;
+        background-color: $network-logo-background-color;
+        border-radius: 8px;
+        margin-right: 5px;
+    }
+
+    .asset-name {
+        @media (max-width: 768px) {
+            font-size: 12px;
+        }
+    }
+}

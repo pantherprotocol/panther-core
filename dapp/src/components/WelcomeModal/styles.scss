@@ -1,0 +1,88 @@
+@import '../../variables';
+
+.welcome-modal-holder {
+    padding: 20px 0 0 0;
+
+    @media (max-width: 680px) {
+        padding: 10px 16px;
+    }
+
+    .welcome-modal-container {
+        max-width: 683px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        border-radius: 30px;
+        position: relative;
+        background: linear-gradient(
+            0deg,
+            rgba(1, 2, 2, 0.05),
+            rgba(1, 2, 2, 0.05)
+        );
+        justify-content: center;
+        margin: 0 auto;
+        border: 1px solid rgba(51, 75, 110, 1);
+
+        .welcome-modal {
+            align-items: center;
+            padding: 0 22px 49px 22px;
+
+            .graphic-placeholder {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding-top: 95px;
+                padding-bottom: 70px;
+                img {
+                    max-width: 288px;
+                    width: 100%;
+                }
+            }
+
+            h2 {
+                color: $white;
+                font-size: 28px;
+                font-weight: 700;
+                margin-top: 0;
+                margin-bottom: 20px;
+                @media (max-width: 575px) {
+                    font-size: 16px;
+                }
+            }
+
+            .welcome-text {
+                p {
+                    color: $white;
+                    font-size: 18px;
+                    line-height: 25px;
+                    font-weight: 400;
+                    margin: 0;
+                    opacity: 0.5;
+                    @media (max-width: 575px) {
+                        font-size: 13px;
+                        line-height: 1.3;
+                    }
+                }
+                .welcome-first {
+                    margin-bottom: 30px;
+                }
+                .welcome-second {
+                    margin-bottom: 40px;
+                }
+            }
+
+            .welcome-step {
+                display: flex;
+                justify-content: center;
+                .wallet-modal-btn-holder {
+                    max-width: 618px;
+                    .wallet-modal-btn {
+                        max-width: 618px;
+                        height: 57px;
+                        background: $blue-linear;
+                    }
+                }
+            }
+        }
+    }
+}

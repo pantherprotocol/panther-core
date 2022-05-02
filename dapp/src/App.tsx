@@ -7,6 +7,8 @@ import {Route} from 'react-router';
 import {BrowserRouter as Router} from 'react-router-dom';
 
 import StakingZkpPage from './pages/StakingZkpPage';
+import WelcomePage from './pages/WelcomePage';
+import ZAssetsPage from './pages/ZAssetsPage';
 import {getMissingEnvVars} from './services/env';
 
 import './styles.scss';
@@ -51,6 +53,16 @@ function App() {
             <div className="App">
                 <Router>
                     <Route path={'/'} exact={true} component={StakingZkpPage} />
+                    <Route
+                        path={'/zAssets'}
+                        exact={true}
+                        component={ZAssetsPage}
+                    />
+                    <Route
+                        path={'/welcome'}
+                        exact={true}
+                        component={WelcomePage}
+                    />
                 </Router>
             </div>
         </ThemeProvider>

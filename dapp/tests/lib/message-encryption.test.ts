@@ -20,13 +20,9 @@ describe('Cryptographic operations', () => {
         keypair1.publicKey,
     );
 
-    const plaintext: any[] = [];
-    for (let i = 0; i < 5; i++) {
-        plaintext.push(BigInt(Math.floor(Math.random() * 50)));
-    }
-
+    const plaintext = deriveKeypairFromSeed().privateKey.toString(16);
     const ciphertext = encryptMessage(plaintext, ecdhSharedKey12);
-    const decryptedCiphertext = decryptMessage(ciphertext, ecdhSharedKey12);
+    const decryptedCiphertext = decryptMessage(ciphertext, ecdhSharedKey21);
 
     describe('Private key', () => {
         it('should be smaller than the snark field size', () => {
@@ -64,30 +60,24 @@ describe('Cryptographic operations', () => {
         });
 
         it('should differ from the plaintext', () => {
-            const stringifyPlainText = JSON.stringify(plaintext, (key, value) =>
-                typeof value === 'bigint' ? value.toString() + 'n' : value,
-            );
-
-            expect(stringifyPlainText !== ciphertext.data).toBeTruthy();
+            expect(plaintext.toString() !== ciphertext.data).toBeTruthy();
         });
 
         it('should be smaller than the snark field size', () => {
             expect(
-                BigInt(`0x${ciphertext.iv.toString('hex')}`) < SNARK_FIELD_SIZE,
+                BigInt(`0x${ciphertext.iv}`) < SNARK_FIELD_SIZE,
             ).toBeTruthy();
         });
     });
 
     describe('The decrypted ciphertext', () => {
         it('should be correct', () => {
-            expect.assertions(decryptedCiphertext.length);
-
-            for (let i = 0; i < decryptedCiphertext.length; i++) {
-                expect(decryptedCiphertext[i]).toEqual(plaintext[i]);
-            }
+            expect(decryptedCiphertext.toString()).toEqual(
+                plaintext.toString(),
+            );
         });
 
-        it('should be incorrect if decrypted with a different key', () => {
+        it('should throw error if decryption is attempted with incorrect key', () => {
             const sk = BigInt(1);
             const randomKeypair = deriveKeypairFromSeed(sk);
             const differentKey = generateEcdhSharedKey(
@@ -95,9 +85,18 @@ describe('Cryptographic operations', () => {
                 randomKeypair.publicKey,
             );
 
-            expect(() => decryptMessage(ciphertext, differentKey)).toThrow(
-                /bad decrypt/,
-            );
+            expect(() => {
+                const decrypted = decryptMessage(ciphertext, differentKey);
+                // this part only for debugging purposes:
+                console.log('Diagnostics for sometimes failing test:', {
+                    decrypted,
+                    plaintext,
+                    isTheSame: decrypted === plaintext,
+                    differentKey,
+                    ecdhSharedKey12,
+                    decryptedCiphertext,
+                });
+            }).toThrow(/bad decrypt/);
         });
     });
 });

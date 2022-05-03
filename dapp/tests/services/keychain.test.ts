@@ -7,7 +7,10 @@ import {
     SNARK_FIELD_SIZE,
 } from '../../src/lib/keychain';
 import {IKeypair} from '../../src/lib/types';
-import {generateSpendingChildKeypair} from '../../src/services/keychain';
+import {
+    deriveRootKeypairs,
+    generateSpendingChildKeypair,
+} from '../../src/services/keychain';
 
 describe('Spending child keypair', () => {
     let spendingChildKeypair: IKeypair;
@@ -41,5 +44,36 @@ describe('Spending child keypair', () => {
         expect(
             spendingChildKeypair.publicKey[1] < SNARK_FIELD_SIZE,
         ).toBeTruthy();
+    });
+});
+
+describe('Keychain', () => {
+    const randomAccount = Wallet.createRandom();
+
+    describe('Root keypairs', () => {
+        it('should be smaller than snark FIELD_SIZE', async () => {
+            const keypairs: IKeypair[] = await deriveRootKeypairs(
+                randomAccount,
+            );
+            expect(keypairs[0].privateKey < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[0].publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[0].publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[1].privateKey < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[1].publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[1].publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
+        });
+
+        it('should be deterministic', async () => {
+            const keypairsOne = await deriveRootKeypairs(randomAccount);
+            const keypairsTwo = await deriveRootKeypairs(randomAccount);
+            expect(keypairsOne[0].privateKey).toEqual(
+                keypairsTwo[0].privateKey,
+            );
+            expect(keypairsOne[0].publicKey).toEqual(keypairsTwo[0].publicKey);
+            expect(keypairsOne[1].privateKey).toEqual(
+                keypairsTwo[1].privateKey,
+            );
+            expect(keypairsOne[1].publicKey).toEqual(keypairsTwo[1].publicKey);
+        });
     });
 });

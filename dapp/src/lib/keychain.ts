@@ -27,6 +27,15 @@ export const deriveKeypairFromSeed = (
     };
 };
 
+export const generateEphemeralKeypair = deriveKeypairFromSeed;
+
+export const generateChildPublicKey = (
+    rootPublicKey: PublicKey,
+    scalar: bigint,
+): PublicKey => {
+    return babyjub.mulPointEscalar(rootPublicKey, scalar);
+};
+
 export const multiplyScalars = (a: bigint, b: bigint): bigint => {
     return (a * b) % babyjub.subOrder;
 };
@@ -48,6 +57,11 @@ export const generatePublicKey = (privateKey: PrivateKey): PublicKey => {
     );
 };
 
+/*
+ * An internal function which formats a random private key to be compatible
+ * with the BabyJub curve. This is the format which should be passed into the
+ * PublicKey and other circuits.
+ */
 export const formatPrivateKeyForBabyJub = (privateKey: PrivateKey) => {
     const sBuff = eddsa.pruneBuffer(
         createBlakeHash('blake512')
@@ -83,7 +97,9 @@ const bigIntToBuffer = (i: BigInt): Buffer => {
 
 export const generateRandomBabyJubValue = (): bigint => {
     const random = generateRandomness();
-    const privateKey: PrivateKey = random % SNARK_FIELD_SIZE;
+    const privateKey: PrivateKey = formatPrivateKeyForBabyJub(
+        random % SNARK_FIELD_SIZE,
+    );
     assert(privateKey < SNARK_FIELD_SIZE);
     return privateKey;
 };

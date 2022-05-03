@@ -1,7 +1,12 @@
-export type {IKeypair, PrivateKey, PublicKey, EcdhSharedKey} from './keypair';
-export type {Plaintext} from './message';
 export type {
-    ICiphertext,
+    IKeypair,
+    PrivateKey,
+    PublicKey,
+    PublicKeyX,
+    EcdhSharedKey,
+} from './keypair';
+export type {Plaintext, ICiphertext} from './message';
+export type {
     ICommitment,
     ICommitmentPlaintext,
     ICommitmentSecrets,

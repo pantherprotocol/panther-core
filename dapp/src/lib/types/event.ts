@@ -24,8 +24,3 @@ export interface ICommitmentPlaintext {
     amount: bigint;
     random: bigint;
 }
-
-export interface ICiphertext {
-    iv: Buffer;
-    data: string;
-}

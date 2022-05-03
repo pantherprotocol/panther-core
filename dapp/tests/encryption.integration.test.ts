@@ -33,11 +33,11 @@ describe('Message encryption and decryption', () => {
             childRandomKeypair.publicKey,
         );
 
-        const plaintext: any[] = [
-            childRandomKeypair.privateKey,
-            BigInt(99),
-            BigInt(999),
-        ];
+        const plaintext = [
+            childRandomKeypair.privateKey.toString(16),
+            BigInt(99).toString(16),
+            BigInt(999).toString(16),
+        ].join('');
 
         const ciphertext = encryptMessage(plaintext, spendingEcdhSharedKey);
 

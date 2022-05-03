@@ -97,42 +97,51 @@ contract PantherPoolV0 is
 
         bytes32[OUT_UTXOs] memory commitments;
         uint256[UTXO_SECRETS][OUT_UTXOs] memory secretMsgs;
-        for (uint256 i = 0; i < OUT_UTXOs; i++) {
+        for (uint256 utxoIndex = 0; utxoIndex < OUT_UTXOs; utxoIndex++) {
             (ZAsset memory asset, uint160 zAssetId) = getZAssetAndId(
-                tokens[i],
-                tokenIds[i]
+                tokens[utxoIndex],
+                tokenIds[utxoIndex]
             );
             require(asset.status == 1, ERR_WRONG_ASSET);
 
-            if (extAmounts[i] != 0) {
+            if (extAmounts[utxoIndex] != 0) {
                 if (asset.tokenType == PRP_TOKEN_TYPE)
-                    useGrant(msg.sender, extAmounts[i]);
+                    useGrant(msg.sender, extAmounts[utxoIndex]);
                 else
                     IVault(VAULT).lockAsset(
                         LockData(
                             asset.tokenType,
                             asset.token,
-                            tokenIds[i],
+                            tokenIds[utxoIndex],
                             msg.sender,
-                            safe96(extAmounts[i])
+                            safe96(extAmounts[utxoIndex])
                         )
                     );
             }
 
-            uint96 scaledAmount = scaleAmount(extAmounts[i], asset.scale);
-            commitments[i] = generateCommitment(
-                pubSpendingKeys[i].x,
-                pubSpendingKeys[i].y,
+            uint96 scaledAmount = scaleAmount(
+                extAmounts[utxoIndex],
+                asset.scale
+            );
+            commitments[utxoIndex] = generateCommitment(
+                pubSpendingKeys[utxoIndex].x,
+                pubSpendingKeys[utxoIndex].y,
                 uint256(scaledAmount),
                 uint256(zAssetId),
                 timestamp
             );
-            // Copy ciphertext in first words of the message for the receiver
-            for (uint256 k = 0; i < CIPHERTEXT1_WORDS; i++) {
-                secretMsgs[k][i] = secrets[k][i];
+            // Copy ciphertext into the first words of the message to the receiver
+            for (
+                uint256 wordIndex = 0;
+                wordIndex < CIPHERTEXT1_WORDS;
+                wordIndex++
+            ) {
+                secretMsgs[utxoIndex][wordIndex] = secrets[utxoIndex][
+                    wordIndex
+                ];
             }
-            // Pack zAssetId and scaledAmount as the last word of the message for the receiver
-            secretMsgs[CIPHERTEXT1_WORDS][i] =
+            // Pack zAssetId and scaledAmount as the last word of the message to the receiver
+            secretMsgs[utxoIndex][CIPHERTEXT1_WORDS] =
                 (uint256(zAssetId) << 96) |
                 scaledAmount;
         }

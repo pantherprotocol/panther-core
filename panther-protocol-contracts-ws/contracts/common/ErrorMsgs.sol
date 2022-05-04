@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-// AssetRegistry contract
-string constant ERR_WRONG_ASSET_STATUS = "AR:E1";
+// ZAssetRegistry contract
+string constant ERR_ASSET_ALREADY_REGISTERED = "AR:E1";
+string constant ERR_UNKNOWN_ASSET = "AR:E2";
+string constant ERR_WRONG_ASSET_STATUS = "AR:E3";
+string constant ERR_ZERO_TOKEN_ADDRESS = "AR:E4";
 
 // CommitmentsTrees contract
 string constant ERR_TOO_LARGE_COMMITMENTS = "CT:E1"; // commitment exceeds maximum scalar field size

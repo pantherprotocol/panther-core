@@ -2,8 +2,10 @@
 
 pragma solidity ^0.8.4;
 
-import "../common/Utils.sol";
+import { BY_ID_TOKEN_TYPE, zASSET_ENABLED } from "../common/Constants.sol";
+import { ERR_ASSET_ALREADY_REGISTERED, ERR_UNKNOWN_ASSET, ERR_WRONG_ASSET_STATUS, ERR_ZERO_TOKEN_ADDRESS } from "../common/ErrorMsgs.sol";
 import { ZAsset } from "../common/Types.sol";
+import "../common/Utils.sol";
 import "../interfaces/IZAssetsRegistry.sol";
 
 /**
@@ -29,7 +31,7 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
         override
         returns (uint160)
     {
-        require(token != address(0), "ERR_ZERO_TOKEN_ADDRESS");
+        require(token != address(0), ERR_ZERO_TOKEN_ADDRESS);
         return
             uint160(
                 uint256(
@@ -58,7 +60,7 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
         uint160 zAssetRootId = getZAssetRootId(token);
         asset = _zAssets[zAssetRootId];
         zAssetId = getZAssetId(token, tokenId);
-        if (asset.tokenType != 0xFF) asset = _zAssets[zAssetId];
+        if (asset.tokenType != BY_ID_TOKEN_TYPE) asset = _zAssets[zAssetId];
     }
 
     function isRootIdWhitelisted(uint160 zAssetId)
@@ -68,7 +70,7 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
         returns (bool)
     {
         ZAsset memory asset = _zAssets[zAssetId];
-        return asset.status & 0x01 == 1;
+        return asset.status == zASSET_ENABLED;
     }
 
     function scaleAmount(uint256 amount, uint8 scale)
@@ -106,9 +108,9 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
         uint160 zAssetId = getZAssetId(asset.token, 0);
         require(
             _zAssets[zAssetId].token == address(0),
-            "ERR_ASSET_ALREADY_REGISTERED"
+            ERR_ASSET_ALREADY_REGISTERED
         );
-        require(asset.token != address(0), "ERR_ZERO_TOKEN_ADDRESS");
+        require(asset.token != address(0), ERR_ZERO_TOKEN_ADDRESS);
         // Checks on other fields skipped to allow for protocol updates.
         _zAssets[zAssetId] = asset;
         emit AssetAdded(zAssetId, asset);
@@ -116,11 +118,11 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
 
     /// @dev Ensure only an owner may call it (from a child contact)
     function changeAssetStatus(uint160 zAssetId, uint8 newStatus) internal {
-        require(_zAssets[zAssetId].token != address(0), "ERR_UNKNOWN_ASSET");
+        require(_zAssets[zAssetId].token != address(0), ERR_UNKNOWN_ASSET);
         // Check of the status value skipped to allow for protocol updates.
         uint8 oldStatus = _zAssets[zAssetId].status;
         _zAssets[zAssetId].status = newStatus;
-        require(oldStatus != newStatus, "ERR_WRONG_ASSET_STATUS");
+        require(oldStatus != newStatus, ERR_WRONG_ASSET_STATUS);
         emit AssetStatusChanged(uint256(zAssetId), newStatus, oldStatus);
     }
 

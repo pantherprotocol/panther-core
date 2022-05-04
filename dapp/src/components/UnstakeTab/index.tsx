@@ -6,7 +6,7 @@ import Card from '@mui/material/Card';
 import UnstakeTable from '../UnstakeTable';
 
 import TotalUnclaimedRewards from './TotalUnclaimedRewards';
-import UnstakingInfoMSG from './UnstakingInfoMSG';
+import UnstakingInfo from './UnstakingInfo';
 
 import './styles.scss';
 
@@ -14,7 +14,7 @@ export default function UnstakingTab() {
     return (
         <Box className="unstaking-tab-holder">
             <Card variant="outlined">
-                <UnstakingInfoMSG />
+                <UnstakingInfo />
                 <UnstakeTable />
                 <TotalUnclaimedRewards />
             </Card>

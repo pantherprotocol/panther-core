@@ -4,7 +4,7 @@ import {Box, Typography} from '@mui/material';
 
 import './styles.scss';
 
-export default function UnstakingInfoMSG() {
+export default function UnstakingInfo() {
     return (
         <Box className="unstaking-info-message">
             <Typography variant="caption">

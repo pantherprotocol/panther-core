@@ -1,19 +1,32 @@
 import React from 'react';
 
 import {Button} from '@mui/material';
+import {useWeb3React} from '@web3-react/core';
+import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
-import './styles.scss';
+import {safeOpenMetamask} from '../../components/Common/links';
+import '../Common/buttons.scss';
 
-export const ConnectButton = (props: {text: string | null; onClick: any}) => {
+export const ConnectButton = (props: {onConnect: any}) => {
+    const context = useWeb3React();
+    const {error} = context;
+    const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
+
     return (
-        <div className="wallet-btn-holder">
+        <div className="primary-action-button-holder">
             <Button
-                className="wallet-btn"
+                className="primary-action-button"
                 onClick={() => {
-                    props.onClick();
+                    if (isNoEthereumProviderError) {
+                        safeOpenMetamask();
+                    } else {
+                        props.onConnect();
+                    }
                 }}
             >
-                {props?.text || 'Connect Wallet'}
+                {isNoEthereumProviderError
+                    ? 'Install MetaMask'
+                    : 'Connect Wallet'}
             </Button>
         </div>
     );

@@ -3,20 +3,17 @@ import React, {useCallback, useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
-import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
 import {useOnConnect} from '../../../hooks/web3';
 import {useAppDispatch} from '../../../redux/hooks';
 import {getChainBalance} from '../../../redux/slices/chainBalance';
 import {formatAccountAddress} from '../../../services/account';
 import {currentNetwork, onWrongNetwork} from '../../../services/connectors';
-import {CHAIN_IDS} from '../../../services/env';
-import {switchNetwork} from '../../../services/wallet';
 import Address from '../../Address';
-import {safeOpenMetamask} from '../../Common/links';
 import {ConnectButton} from '../../ConnectButton';
 import {NetworkButton} from '../../NetworkButton';
 import {SettingsButton} from '../../SettingsButton';
+import {SwitchNetworkButton} from '../../SwitchNetworkButton';
 import AccountBalance from '../AccountBalance';
 
 import './styles.scss';
@@ -27,7 +24,6 @@ export default function WalletHeader() {
     const {account, active, error, chainId} = context;
     const [wrongNetwork, setWrongNetwork] = useState(false);
 
-    const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const network = currentNetwork(chainId);
 
     const fetchChainBalance = useCallback(() => {
@@ -60,34 +56,13 @@ export default function WalletHeader() {
             {/* connection button */}
             {!active && !wrongNetwork && (
                 <Box className="address-btn">
-                    <ConnectButton
-                        text={
-                            isNoEthereumProviderError
-                                ? 'Install MetaMask'
-                                : 'Connect Wallet'
-                        }
-                        onClick={() => {
-                            if (isNoEthereumProviderError) {
-                                safeOpenMetamask();
-                            } else {
-                                onConnect();
-                            }
-                        }}
-                    />
+                    <ConnectButton onConnect={onConnect} />
                 </Box>
             )}
 
             {wrongNetwork && (
                 <Box className="address-btn">
-                    <ConnectButton
-                        text={'Switch network'}
-                        onClick={() => {
-                            const chainIdToSwitch = chainId
-                                ? chainId
-                                : CHAIN_IDS[0];
-                            switchNetwork(chainIdToSwitch);
-                        }}
-                    />
+                    <SwitchNetworkButton />
                 </Box>
             )}
 

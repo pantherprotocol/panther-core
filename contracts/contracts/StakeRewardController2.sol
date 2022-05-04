@@ -45,8 +45,6 @@ contract StakeRewardController2 is IRewardAdviser {
 
     // bytes4(keccak256("classic"))
     bytes4 private constant STAKE_TYPE = 0x4ab0941a;
-    // bytes4(keccak256(abi.encodePacked(bytes4(keccak256("stake")), STAKE_TYPE)))
-    bytes4 private constant STAKE = 0x1e4d02b5;
     // bytes4(keccak256(abi.encodePacked(bytes4(keccak256("unstake"), STAKE_TYPE)))
     bytes4 private constant UNSTAKE = 0x493bdf45;
 
@@ -72,7 +70,7 @@ contract StakeRewardController2 is IRewardAdviser {
         uint256 _unclaimedRewards
     ) {
         require(
-            unclaimedRewards != 0 &&
+            _unclaimedRewards != 0 &&
                 _owner != address(0) &&
                 token != address(0) &&
                 stakingContract != address(0) &&

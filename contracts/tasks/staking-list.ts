@@ -1,28 +1,28 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task} from 'hardhat/config';
-import {BigNumber, Event} from 'ethers';
+import {Event} from 'ethers';
 import fs from 'fs';
 import {filterPaginator} from '../lib/paginator';
 
 const QUERY_BLOCKS = 500;
 
+export type Stake = {
+    name: string | undefined;
+    blockNumber: number;
+    timestamp: number;
+    date: string;
+    transactionHash: string;
+    address: string;
+    stakeID: string;
+    amount: string;
+    lockedTill: string;
+    reward?: string;
+};
+
 async function extractLogData(
     hre: HardhatRuntimeEnvironment,
     event: Event,
-): Promise<
-    | {
-          name: string | undefined;
-          blockNumber: number;
-          timestamp: number;
-          date: string;
-          transactionHash: string;
-          address: string;
-          stakeID: BigNumber;
-          amount: BigNumber;
-          lockedTill: BigNumber;
-      }
-    | undefined
-> {
+): Promise<Stake | undefined> {
     const block = await hre.ethers.provider.getBlock(event.blockNumber);
     const date = new Date(block.timestamp * 1000);
     const args = event?.args;

@@ -54,7 +54,8 @@ export default function UnstakeTable() {
             );
 
             stakeRows.forEach(row => {
-                row.unstakable = row.lockedTill > block.timestamp;
+                row.unstakable =
+                    row.lockedTill > block.timestamp || chainId === 1;
             });
 
             setStakedData(stakeRows);

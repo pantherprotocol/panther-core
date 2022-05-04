@@ -1,12 +1,11 @@
 @import '../../variables';
-@import './variables';
 
 .staking-tab-holder {
     width: 100%;
 
     .staking-info-card {
         padding: 0 !important;
-        background: $staking-info-background !important;
+        background: $card-background !important;
         border-radius: 8px !important;
         mix-blend-mode: normal;
         backdrop-filter: blur(45px);

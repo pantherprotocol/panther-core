@@ -11,6 +11,7 @@ async function extractLogData(
     event: Event,
 ): Promise<
     | {
+          name: string | undefined;
           blockNumber: number;
           timestamp: number;
           date: string;
@@ -27,6 +28,7 @@ async function extractLogData(
     const args = event?.args;
     if (args) {
         return {
+            name: event.event,
             blockNumber: event.blockNumber,
             timestamp: block.timestamp,
             date: date.toString(),
@@ -48,6 +50,7 @@ function writeEvents(outFile: string, events: any) {
 task('staking:list', 'Output staking events data as JSON')
     .addParam('address', 'Staking contract address')
     .addParam('start', 'Starting block number to look from')
+    .addParam('filter', 'Event name to filter on: StakeCreated or StakeClaimed')
     .addOptionalParam('out', 'File to write to')
     .addOptionalParam('chunksPrefix', 'Prefix of files to write chunks to')
     .addOptionalParam('end', 'Ending block number to look to')
@@ -70,7 +73,7 @@ task('staking:list', 'Output staking events data as JSON')
             hre.network.config,
         );
 
-        const filter = stakingContract.filters.StakeCreated();
+        const filter = stakingContract.filters[taskArgs.filter]();
         const endBlock = taskArgs.end
             ? Number(taskArgs.end)
             : (await hre.ethers.provider.getBlock('latest')).number;
@@ -80,6 +83,7 @@ task('staking:list', 'Output staking events data as JSON')
             startBlock: number,
             endBlock: number,
         ) => {
+            if (!taskArgs.chunksPrefix) return;
             process.stdout.write('\t');
             writeEvents(
                 `${taskArgs.chunksPrefix}-${startBlock}-${endBlock}.json`,

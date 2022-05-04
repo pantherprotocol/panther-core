@@ -147,6 +147,24 @@ contract PantherPoolV0 is
         addAndEmitCommitments(commitments, secretMsgs, timestamp);
     }
 
+    bool verifiedProof;
+    function testMerkleProof(
+        uint256 leafId,
+        bytes32 merkleRoot,
+        bytes32 commitment,
+        bytes32[TREE_DEPTH + 1] calldata pathElements
+    ) external {
+        verifiedProof = false;
+        verifyMerkleProof(
+            merkleRoot,
+            getTriadIndex(leafId),
+            getTriadNodeIndex(leafId),
+            commitment,
+            pathElements
+        );
+        verifiedProof = true;
+    }
+
     function exit(
         address token,
         uint256 tokenId,
@@ -202,8 +220,8 @@ contract PantherPoolV0 is
 
         verifyMerkleProof(
             merkleRoot,
-            cacheIndexHint,
-            getLeafIndex(leafId),
+            getTriadIndex(leafId),
+            getTriadNodeIndex(leafId),
             commitment,
             pathElements
         );
@@ -212,6 +230,8 @@ contract PantherPoolV0 is
             LockData(tokenType, token, tokenId, msg.sender, safe96(amount))
         );
     }
+
+
 
     /// @notice Add a new "grant type", with the specified amount (in PRPs) of the grant,
     /// and allow the specified "curator" to issue grants of this type

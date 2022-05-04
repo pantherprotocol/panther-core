@@ -99,9 +99,29 @@ contract TriadIncrementalMerkleTrees is
     function getLeafIndex(uint256 leafId) public pure returns (uint256) {
         unchecked {
             // equiv to `leafId % LEAVES_NUM`
-            uint256 iIndex = leafId & iLEAVES_NUM_MASK;
-            uint256 fullTriadsNum = (iIndex + 1) >> iTRIAD_SIZE_BITS;
-            return iIndex - fullTriadsNum;
+            uint256 iIndex = leafId & iLEAVES_NUM_MASK; // throws away tree-id bits
+            uint256 fullTriadsNum = (iIndex + 1) >> iTRIAD_SIZE_BITS; // computes index of triad node in the tree
+            return iIndex - fullTriadsNum; // start index of first leaf in the triad
+        }
+    }
+
+    /**
+     * @notice Returns `triadIndex` index in the thriad-node of the given leaf
+     */
+    function getTriadIndex(uint256 leafId) public pure returns (uint256) {
+        return getLeafIndex(leafId) % TRIAD_SIZE;
+    }
+
+    /**
+     * @notice Returns `triadNodeIndex` index of the thriad-node of the given leaf
+     * This index is the path to this node - used by anyone who needs the path
+     */
+    function getTriadNodeIndex(uint256 leafId) public pure returns (uint256) {
+        unchecked {
+            // equiv to `leafId % LEAVES_NUM`
+            uint256 iIndex = leafId & iLEAVES_NUM_MASK; // throws away tree-id bits
+            uint256 fullTriadsNum = (iIndex + 1) >> iTRIAD_SIZE_BITS; // computes index of triad node in the tree
+            return fullTriadsNum;
         }
     }
 

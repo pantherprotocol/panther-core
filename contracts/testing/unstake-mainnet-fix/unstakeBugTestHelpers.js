@@ -3,23 +3,24 @@ These helpers are specifically  written for testing the walk-around for the bug
 with `unstake` on the Ethereum mainnet after May 4th, 2022.
 (refer to comments in StakeRewardController2.sol for more info).
 
-!!! Run it with `export HARDHAT_FORKING_BLOCK=14718275`
+!!! Run it with 
+!!! export HARDHAT_FORKING_BLOCK=14718275
+!!! export HARDHAT_FORKING_ENABLED=true
 
-Usage exmple:
+Usage example:
 ```
 const {
     defineContracts,
     deployStakeRewardController2,
     initializeStakeRewardController2,
-    testUnstake
+    testUnstakeMultiple
 } = require("./testing/unstake-mainnet-fix/unstakeBugTestHelpers")
 
 await defineContracts();
 await deployStakeRewardController2();
 await initializeStakeRewardController2();
+await testUnstakeMultiple();
 
-await testUnstake('0x05bd4c867bc95ec76c242f007b3716ab539d6db1', 0);
-await testUnstake('0x6407faa0dbcf9eb9a8897d27890133915549782d', 0);
 ```
 */
 
@@ -28,6 +29,7 @@ module.exports = {
     deployStakeRewardController2,
     initializeStakeRewardController2,
     testUnstake,
+    testUnstakeMultiple,
 };
 
 const {
@@ -300,4 +302,24 @@ function getErc20BalanceOfAbi() {
             stateMutability: 'view',
         },
     ];
+}
+
+async function testUnstakeMultiple() {
+    const stakes = JSON.parse(
+        fs.readFileSync(
+            './testing/unstake-mainnet-fix/unclaimed-stakes-rewards-mainnet.json',
+        ),
+    );
+
+    console.log('Stakes length: ', stakes.length);
+
+    for (let i = 0; i < stakes.length; i++) {
+        for (let j = 0; j < stakes[i].length; j++) {
+            await testUnstake(
+                stakes[i][j].address,
+                stakes[i][j].stakeID,
+                !+stakes[i][j].stakeID, // true for "0" and false for other numbers
+            );
+        }
+    }
 }

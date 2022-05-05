@@ -10,22 +10,6 @@ abstract contract MerkleProofVerifier {
     // (also defined in scripts/generateTriadMerkleZeroesContracts.sh)
     uint256 private constant TREE_DEPTH = 15;
 
-    // Number of levels in a tree including both leaf and root levels
-    uint256 private constant TREE_LEVELS = TREE_DEPTH + 1;
-
-    // Number of leaves in a branch with the root on the level 1
-    uint256 private constant TRIAD_SIZE = 3;
-
-    // Number of leaves in the fully populated tree
-    uint256 private constant LEAVES_NUM = (2**(TREE_DEPTH - 1)) * TRIAD_SIZE;
-
-    // Number of leaves in a modified triad used for leaf ID calculation
-    uint256 private constant iTRIAD_SIZE = 4;
-    // Bitmasks and numbers of bits for "cheaper" arithmetics
-    uint256 private constant iTRIAD_SIZE_MASK = iTRIAD_SIZE - 1;
-    // Number of bits for triad count
-    uint256 private constant iTRIAD_SIZE_BITS = 2;
-
     //t |bH  bL| Subtree
     //--|------|------------
     //0 | 0  0 | hash(C,L,R)
@@ -56,7 +40,7 @@ abstract contract MerkleProofVerifier {
     ) internal view {
         // revert if verification fails
         if ( processProof ( pathElements, leaf, triadNodeIndex, triadIndex ) != merkleRoot ) {
-            revert();
+            revert("Incorrect Merkle Proof");
         }
     }
 
@@ -75,35 +59,24 @@ abstract contract MerkleProofVerifier {
         require( triadIndex != iTRIAD_INDEX_FORBIDDEN, "Triad index can't be b`11`" );
 
         // [1] - Compute zero level hash
-        bytes32[3] memory pT4Input;
+        bytes32 nodeHash;
         if( triadIndex == iTRIAD_INDEX_LEFT) {
-            pT4Input[0] = leaf;
-            pT4Input[1] = proof[0];
-            pT4Input[2] = proof[1];
+            nodeHash = PoseidonT4.poseidon([leaf,proof[0],proof[1]]);
         } else if ( triadIndex == iTRIAD_INDEX_MIDDLE ) {
-            pT4Input[0] = proof[0];
-            pT4Input[1] = leaf;
-            pT4Input[2] = proof[1];
+            nodeHash = PoseidonT4.poseidon([proof[0],leaf,proof[1]]);
         } else if ( triadIndex == iTRIAD_INDEX_RIGHT ) {
-            pT4Input[0] = proof[0];
-            pT4Input[1] = proof[1];
-            pT4Input[2] = leaf;
+            nodeHash = PoseidonT4.poseidon([proof[0],proof[1],leaf]);
         }
-        bytes32 nodeHash = PoseidonT4.poseidon(pT3Input);
 
         // [2] - Compute root
-        bytes32[2] memory pT3Input;
-        for (uint256 i = 0; i < proof.length-2; i++) {
-            if ( (path & ( 0x1 << i ) ) == 0 ) { // computed node from left side
+        for (uint256 level = 2; level < proof.length; level++) {
+            if ( (path & ( 0x1 << ( level - 2 ) ) ) == 0 ) { // computed node from left side
                 // Hash(left = nodeHash, right = proofElement)
-                pT3Input[0] = nodeHash;
-                pT3Input[1] = proof[i+2];
+                nodeHash = PoseidonT3.poseidon([nodeHash,proof[level]]);
             } else { // computed node from right side
                 // Hash(left = proofElement, right = nodeHash)
-                pT3Input[0] = proof[i+2];
-                pT3Input[1] = nodeHash;
+                nodeHash = PoseidonT3.poseidon([proof[level],nodeHash]);
             }
-            nodeHash = PoseidonT3.poseidon(pT3Input);
         }
         return nodeHash;
     }

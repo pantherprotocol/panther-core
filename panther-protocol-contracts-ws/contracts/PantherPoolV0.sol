@@ -147,23 +147,6 @@ contract PantherPoolV0 is
         addAndEmitCommitments(commitments, secretMsgs, timestamp);
     }
 
-    bool verifiedProof;
-    function testMerkleProof(
-        uint256 leafId,
-        bytes32 merkleRoot,
-        bytes32 commitment,
-        bytes32[TREE_DEPTH + 1] calldata pathElements
-    ) external {
-        verifiedProof = false;
-        verifyMerkleProof(
-            merkleRoot,
-            getTriadIndex(leafId),
-            getTriadNodeIndex(leafId),
-            commitment,
-            pathElements
-        );
-        verifiedProof = true;
-    }
 
     function exit(
         address token,

@@ -10,8 +10,10 @@ type Tuple<T, N extends number, A extends any[] = []> = A extends {
     : Tuple<T, N, [...A, T]>;
 
 type Tuple3<T> = Tuple<T, 3>;
+type Tuple16<T> = Tuple<T, 16>;
 
 export type Triad = Tuple3<BytesLike>;
+export type PathElementsType = Tuple16<BytesLike>;
 
 // (also defined in ../contracts/TriadMerkleZeros.sol)
 export const zeroLeaf =

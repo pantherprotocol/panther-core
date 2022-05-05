@@ -1,4 +1,3 @@
-import {BigNumber} from '@ethersproject/bignumber';
 import {createSlice} from '@reduxjs/toolkit';
 
 import {RootState} from '../store';
@@ -27,7 +26,7 @@ export const blurSlice = createSlice({
 export const {setBlur, removeBlur} = blurSlice.actions;
 
 export const blurSelector = (state: RootState) => {
-    return state.blur?.value ? BigNumber.from(state.blur.value) : null;
+    return state.blur?.value;
 };
 
 export default blurSlice.reducer;

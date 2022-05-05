@@ -16,25 +16,27 @@ export default function UnstakingInfo() {
                         variant="subtitle2"
                         className="unstaking-info-title"
                     >
-                        Unstaking is temporarily disabled due to a bug
+                        All rewards are now redeemed on first unstake
                     </Typography>
                     <Typography className="unstaking-info-text">
-                        We have discovered a bug in the unstaking process on
-                        Ethereum.{' '}
+                        As part of the fix for the unstaking bug on Ethereum
+                        mainnet, the mechanism for claiming rewards has changed
+                        slightly:
+                    </Typography>
+                    <Typography className="unstaking-info-text">
+                        If you have multiple stakes on mainnet, you will receive{' '}
+                        <strong>all</strong> of your rewards on the first
+                        unstake. Any subsequent unstake will return the staked
+                        amount, but no further rewards, since you will have
+                        already received all the rewards.
+                    </Typography>
+                    <Typography className="unstaking-info-text">
                         <strong>
-                            Rest assured all funds are safe and no rewards will
-                            be lost!
+                            The amount of rewards you will receive is (of
+                            course!) not changed in any way,
                         </strong>{' '}
-                        The Panther team is working hard on a fix.
-                    </Typography>
-                    <Typography className="unstaking-info-text">
-                        In the meantime, unstaking has been temporarily disabled
-                        in this app, to protect users from wasting gas on
-                        unstaking transactions which would fail.
-                    </Typography>
-                    <Typography className="unstaking-info-text">
-                        Further communications will be provided soon. Many
-                        apologies for the inconvenience.
+                        only <em>when</em> you receive them. If you only have
+                        one stake, this change will not affect you at all.
                     </Typography>
                 </CardContent>
             </Card>

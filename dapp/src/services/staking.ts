@@ -22,7 +22,7 @@ import {
     chainHasAdvancedStaking,
     chainHasStakesReporter,
     getContractAddress,
-    getRewardMasterContract,
+    getStakeRewardController2Contract,
     getSignableContract,
     getStakesReporterContract,
     getStakingContract,
@@ -440,8 +440,11 @@ export async function getRewardsBalance(
                 account,
             );
         } else {
-            const rewardMaster = getRewardMasterContract(library, chainId);
-            return await rewardMaster.entitled(account);
+            const stakesRewardController2 = getStakeRewardController2Contract(
+                library,
+                chainId,
+            );
+            return await stakesRewardController2.entitled(account);
         }
     } catch (err: any) {
         console.warn(`Failed to fetch rewards entitled for ${account}:`, err);

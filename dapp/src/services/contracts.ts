@@ -2,7 +2,7 @@ import {JsonRpcSigner} from '@ethersproject/providers';
 import {Contract} from 'ethers';
 
 import {abi as PZKPTOKEN_ABI} from '../abi/PZkpToken';
-import {abi as REWARD_MASTER_ABI} from '../abi/RewardMaster';
+import {abi as STAKE_REWARD_CONTROLLER_2_ABI} from '../abi/StakeRewardController2';
 import {abi as STAKES_REPORTER_ABI} from '../abi/StakesReporter';
 import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as ZKPTOKEN_ABI} from '../abi/ZKPToken';
@@ -15,7 +15,7 @@ import {env} from './env';
 export enum ContractName {
     STAKING,
     STAKES_REPORTER,
-    REWARD_MASTER,
+    STAKE_REWARD_CONTROLLER_2,
     STAKING_TOKEN,
 }
 
@@ -44,15 +44,18 @@ export function getContractABI(
     contractName: ContractName,
     chainId: number,
 ): any {
-    if (contractName === ContractName.REWARD_MASTER) return REWARD_MASTER_ABI;
-    if (contractName === ContractName.STAKING) return STAKING_ABI;
-    if (contractName === ContractName.STAKES_REPORTER)
-        return STAKES_REPORTER_ABI;
-    if (contractName === ContractName.STAKING_TOKEN) {
-        if ([1, 4, 31337].includes(chainId)) return ZKPTOKEN_ABI;
-        if ([137, 80001].includes(chainId)) return PZKPTOKEN_ABI;
-        throw `Unsupported network ${chainId} when looking up token ABI`;
+    switch (contractName) {
+        case ContractName.STAKE_REWARD_CONTROLLER_2:
+            return STAKE_REWARD_CONTROLLER_2_ABI;
+        case ContractName.STAKING:
+            return STAKING_ABI;
+        case ContractName.STAKES_REPORTER:
+            return STAKES_REPORTER_ABI;
+        case ContractName.STAKING_TOKEN:
+            if ([1, 4, 31337].includes(chainId)) return ZKPTOKEN_ABI;
+            if ([137, 80001].includes(chainId)) return PZKPTOKEN_ABI;
     }
+    throw `Unsupported contract ${contractName} on chainId ${chainId}`;
 }
 
 export function getContract(
@@ -85,12 +88,12 @@ export function getStakesReporterContract(
     ) as StakesReporter;
 }
 
-export function getRewardMasterContract(
+export function getStakeRewardController2Contract(
     library: any,
     chainId: number,
 ): RewardMaster {
     return getContract(
-        ContractName.REWARD_MASTER,
+        ContractName.STAKE_REWARD_CONTROLLER_2,
         library,
         chainId,
     ) as RewardMaster;

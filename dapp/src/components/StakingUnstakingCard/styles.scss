@@ -1,7 +1,29 @@
 @import '../../variables';
 
-.balance-card-holder {
-    .balance-card {
+$advanced-balance-card-holder-background: linear-gradient(
+        180deg,
+        rgba(152, 195, 245, 0.05) 0%,
+        rgba(152, 195, 245, 0) 72%
+    ),
+    rgba(164, 183, 219, 0.1);
+$advanced-balance-card-holder-border-color: 1px solid rgba(102, 141, 198, 0.4);
+$toogle-buttons-background: rgba(99, 114, 136, 0.2);
+$selected-toogle-button-background: rgba(99, 114, 136, 0.4);
+$selected-toogle-button-color: #1e2539;
+$selected-toogle-button-hover-color: #1e2539;
+$selected-toogle-button-border-color: #ffdfbd;
+
+.advanced-balance-card-holder {
+    background: $advanced-balance-card-holder-background;
+    border: 1px solid $advanced-balance-card-holder-border-color;
+    mix-blend-mode: normal;
+    box-sizing: border-box;
+    box-shadow: 0px 3.58957px 13.4609px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(1000px);
+    border-radius: 22px;
+    // width: 80%;
+
+    .advanced-balance-card {
         margin: auto;
         border-radius: 16px;
         min-height: 135px;
@@ -14,18 +36,23 @@
     .MuiToggleButtonGroup-root {
         display: inline-flex;
         justify-content: center;
-        background: $toggle-button-group-color;
+        background: $toogle-buttons-background;
         mix-blend-mode: normal;
         backdrop-filter: blur(50px);
-        border-radius: 8px !important;
+        border-radius: 13px;
 
         .Mui-selected {
-            background-color: $selected-item-color;
+            border-left: 2px solid $selected-toogle-button-border-color !important;
+            border-radius: 13px !important;
+            background-color: $selected-toogle-button-color;
+            border: 2px solid $selected-toogle-button-border-color;
             opacity: 1;
+
             &:hover {
-                background: $selected-item-color;
+                background: $selected-toogle-button-hover-color;
             }
         }
+
         button {
             font-size: 14px;
             min-width: 150px;
@@ -33,13 +60,14 @@
             text-transform: capitalize;
             color: $white;
             background-color: transparent;
-            border-radius: 8px !important;
-            opacity: 0.5;
+            opacity: 0.7;
+
             &::hover {
-                background-color: $selected-item-color !important;
+                background-color: $selected-item-color;
             }
         }
     }
+
     @media (max-width: 600px) {
         min-width: 120px;
     }

@@ -1,60 +1,87 @@
 @import '../../variables';
 $transition-tooltip-background-color: #616161;
+$table-header-color: #ffdfbd;
+$table-row-background-color: rgba(99, 114, 136, 0.2);
+$unstake-button-background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0) 100%
+    ),
+    rgba(175, 184, 208, 0.3);
+
+.MuiPaper-root.MuiTableContainer-root {
+    box-shadow: none !important;
+}
 
 .MuiTable-root {
-    th {
-        vertical-align: top;
-        font-size: 0.875rem !important;
+    min-width: 400px;
+
+    thead {
+        th {
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            color: $table-header-color !important;
+            opacity: 1 !important;
+        }
     }
 
-    .MuiTableCell-root {
-        padding: 10px 5px !important;
-        font-size: 0.775rem !important;
+    .MuiTableBody-root .MuiTableRow-root {
+        background: $table-row-background-color;
+        mix-blend-mode: normal;
+        border-radius: 13px;
+        margin: 15px 0 !important;
+    }
+
+    .unstake-row-description {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+
+        .title {
+            align-items: start;
+            font-weight: 400;
+            font-size: 14px;
+            color: #9e9e9e;
+            text-align: left;
+        }
+
+        .date {
+            font-weight: 400;
+            font-size: 14px;
+            color: $white;
+            text-align: left;
+        }
     }
 
     .btn {
-        color: $white;
-        background: $second-blue;
-        border-radius: 6px;
+        color: $white !important;
         text-transform: capitalize;
-        width: 116px;
-        height: 35px;
-        font-size: 12px !important;
+        width: 100% !important;
+        min-width: 173px !important;
+        height: 43px !important;
+        font-size: 13px !important;
+        background: $unstake-button-background !important;
+        mix-blend-mode: normal;
+        backdrop-filter: blur(400px);
+        border-radius: 22px !important;
 
         &:hover {
             background: $second-blue;
         }
-    }
 
-    .disable.btn {
-        color: $white;
-        background: $table-background;
-    }
+        &.locked {
+            line-height: 16px;
+            text-align: center;
+            color: #9e9e9e !important;
+            padding: 5px !important;
+            border: 1px solid #9e9e9e;
+            background: transparent !important;
 
-    td.lockedTill a {
-        color: red;
-        font-weight: bold;
-        // text-decoration: underline;
-    }
-
-    td.unstake {
-        .icon,
-        img {
-            opacity: 1;
-            color: red;
+            p {
+                font-weight: 400 !important;
+                font-size: 13px !important;
+                line-height: 16px !important;
+            }
         }
-    }
-}
-
-.MuiTooltip-tooltip,
-.transition-tooltip {
-    background-color: $transition-tooltip-background-color !important;
-    // background-color: $card-background !important;
-    padding: 20px !important;
-
-    a {
-        color: $link-color;
-        font-weight: bold;
-        text-decoration: underline;
     }
 }

@@ -6,13 +6,14 @@ import Grid from '@mui/material/Grid';
 import {Box} from '@mui/system';
 import {useWeb3React} from '@web3-react/core';
 
+import AdvancedStakingRewards from '../../components/AdvancedStakingRewards';
 import BalanceCard from '../../components/BalanceCard';
 import CurrentStakeAPY from '../../components/CurrentStakeAPY';
 import {Footer} from '../../components/Footer';
 import Header from '../../components/Header';
 import StakingUnstakingCard from '../../components/StakingUnstakingCard';
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
-import background from '../../images/background.png';
+import background from '../../images/background-adv.png';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {blurSelector} from '../../redux/slices/blur';
 import {getStakeTerms} from '../../redux/slices/stakeTerms';
@@ -22,6 +23,7 @@ import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
+import {chainHasAdvancedStaking} from '../../services/contracts';
 import {switchNetwork} from '../../services/wallet';
 
 import './styles.scss';
@@ -31,6 +33,8 @@ function StakingZkpPage() {
     const dispatch = useAppDispatch();
 
     const {connector, chainId, activate, deactivate, error} = context;
+
+    const stakeType = chainHasAdvancedStaking(chainId) ? 'advanced' : 'classic';
 
     // Logic to recognize the connector currently being activated
     const [activatingConnector, setActivatingConnector] = useState<any>();
@@ -82,7 +86,9 @@ function StakingZkpPage() {
 
     return (
         <Box
-            className={`main-app ${isBlur && 'isBlur'}`}
+            className={`main-app advanced-staking-main-page ${
+                isBlur && 'isBlur'
+            }`}
             sx={{
                 backgroundImage: `url(${background})`,
             }}
@@ -100,7 +106,6 @@ function StakingZkpPage() {
                 networkSymbol={currentNetwork?.symbol}
                 networkLogo={currentNetwork?.logo}
             />
-
             <Box className="main-box-holder">
                 <Container className="main-container">
                     <Grid container>
@@ -110,7 +115,6 @@ function StakingZkpPage() {
                                 <Box width={'100%'}>
                                     <BalanceCard />
                                 </Box>
-                                <Footer />
                             </Grid>
                             <Grid
                                 item
@@ -119,9 +123,13 @@ function StakingZkpPage() {
                                 className="apy-staking-right-panel"
                             >
                                 <Box width={'100%'}>
-                                    <CurrentStakeAPY
-                                        networkName={currentNetwork?.name}
-                                    />
+                                    {chainHasAdvancedStaking(chainId) ? (
+                                        <AdvancedStakingRewards />
+                                    ) : (
+                                        <CurrentStakeAPY
+                                            networkName={currentNetwork?.name}
+                                        />
+                                    )}
                                     <StakingUnstakingCard
                                         networkLogo={currentNetwork?.logo}
                                         onConnect={() => {
@@ -133,14 +141,17 @@ function StakingZkpPage() {
                                                 setChainError,
                                             );
                                         }}
+                                        stakeType={stakeType}
                                     />
                                 </Box>
+                                <Grid item xs={12} md={3}></Grid>
                             </Grid>
                         </Grid>
                         <Grid item md={1} xs={12} />
                     </Grid>
                 </Container>
             </Box>
+            <Footer />
         </Box>
     );
 }

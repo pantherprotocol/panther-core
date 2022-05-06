@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import * as React from 'react';
 
-import {Tooltip, Button} from '@mui/material';
+import {Button, Typography, Box} from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,20 +12,25 @@ import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, constants} from 'ethers';
 
-import infoIcon from '../../images/info-icon.svg';
 import {useAppDispatch} from '../../redux/hooks';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {resetUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
-import {chainHasStakesReporter} from '../../services/contracts';
+import {chainHasAdvancedStaking} from '../../services/contracts';
+import {
+    isClassic,
+    TokenID,
+    AdvancedRewards,
+    ClassicRewards,
+} from '../../services/rewards';
 import {
     unstake,
     StakeRow,
     getStakesAndRewards,
     CLASSIC_TYPE_HEX,
 } from '../../services/staking';
-import {formatTime, formatCurrency} from '../../utils/helpers';
+import {formatCurrency, formatTime} from '../../utils/helpers';
 
 import './styles.scss';
 
@@ -34,6 +39,7 @@ export default function UnstakeTable() {
     const {library, chainId, account} = context;
     const dispatch = useAppDispatch();
     const [stakedData, setStakedData] = useState<any[]>([]);
+
     const fetchStakedData = useCallback(async () => {
         if (!library || !chainId || !account) {
             return;
@@ -59,7 +65,7 @@ export default function UnstakeTable() {
             );
 
             stakeRows.forEach(row => {
-                row.unstakable = row.lockedTill > block.timestamp;
+                row.unstakable = block.timestamp > row.lockedTill;
             });
 
             setStakedData(stakeRows);
@@ -94,106 +100,103 @@ export default function UnstakeTable() {
         fetchStakedData();
     }, [account, library, fetchStakedData]);
 
-    const unstakeRow = (row: StakeRow): React.ReactElement => {
+    const unstakeRow = (row: StakeRow) => {
         const unstakeButton = (
             <Button
-                className={`btn ${row.unstakable ? 'disable' : ''}`}
-                disabled={row.unstakable}
+                className={`btn ${!row.unstakable ? 'locked' : ''}`}
+                disabled={
+                    chainHasAdvancedStaking(chainId) ? !row.unstakable : true
+                }
                 onClick={() => {
                     unstakeById(row.id);
                 }}
             >
-                Unstake
+                {row.unstakable ? (
+                    'Unstake'
+                ) : (
+                    <Box>
+                        <Typography>Locked Until:</Typography>
+                        <Typography>
+                            {formatTime(row.lockedTill * 1000)}
+                        </Typography>
+                    </Box>
+                )}
             </Button>
         );
 
         return (
             <React.Fragment key={row.stakedAt}>
-                <TableRow
-                    sx={{
-                        '&:last-child td, &:last-child th': {
-                            border: 0,
-                        },
-                    }}
-                >
-                    <TableCell align="center">
-                        {formatTime(row.stakedAt * 1000)}
-                    </TableCell>
-                    <TableCell align="right">
-                        {formatCurrency(row.amount, {
-                            decimals: 2,
-                        })}{' '}
-                        ZKP
-                    </TableCell>
-                    <TableCell align="right">
-                        {formatCurrency(BigNumber.from(row.reward))} ZKP
-                    </TableCell>
-                    <TableCell align="center" className="lockedTill">
-                        {formatTime(row.lockedTill * 1000)} <br />
-                    </TableCell>
-                    <TableCell align="center" className="unstake">
-                        {unstakeButton}
-                    </TableCell>
-                </TableRow>
+                {row.claimedAt === 0 && (
+                    <TableRow
+                        sx={{
+                            '&:last-child td, &:last-child th': {
+                                border: 0,
+                            },
+                        }}
+                    >
+                        <TableCell
+                            align="center"
+                            className="unstake-row-description"
+                        >
+                            <Typography className="title">
+                                {row.stakeType === CLASSIC_TYPE_HEX
+                                    ? 'Classic Staking'
+                                    : 'Advanced Staking'}
+                            </Typography>
+                            <Typography className="date">
+                                {formatTime(row.stakedAt * 1000)}
+                            </Typography>
+                        </TableCell>
+
+                        <TableCell align="left">
+                            <Typography>
+                                {formatCurrency(row.amount, {
+                                    decimals: 2,
+                                })}{' '}
+                            </Typography>
+                            <Typography>ZKP</Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                            <Typography>
+                                {formatCurrency(
+                                    row.stakeType === CLASSIC_TYPE_HEX &&
+                                        isClassic(row.reward)
+                                        ? (row.reward as ClassicRewards)
+                                        : (row.reward as AdvancedRewards)[
+                                              TokenID.zZKP
+                                          ],
+                                )}
+                            </Typography>
+                            <Typography>
+                                {row.stakeType === CLASSIC_TYPE_HEX
+                                    ? 'ZKP'
+                                    : 'zZKP'}
+                            </Typography>
+                        </TableCell>
+                        <TableCell align="left" className="unstake">
+                            {unstakeButton}
+                        </TableCell>
+                    </TableRow>
+                )}
             </React.Fragment>
         );
     };
 
-    const rewardsTooltip = chainHasStakesReporter(chainId) ? (
-        <div>
-            With the new <code>StakeRewardsController</code> contract on
-            Polygon, each stake is managed independently, rather than being your
-            account's share of the staking pool. So rewards are accrued
-            independently for each stake, rather than being distributed
-            proportionally between all of your stakes. This means that unlike on
-            Ethereum mainnet, if you unstake one stake, it will not change the
-            rewards shown for other active stakes.
-        </div>
-    ) : (
-        <div>
-            Your total rewards are accrued based on your share of the staking
-            pool. They are indicated here as being distributed proportionally
-            between all of your stakes; however as you stake and unstake, the
-            proportions available for redemption via each stake will change, but
-            the total rewards will not.
-        </div>
-    );
-
     return (
         <TableContainer component={Paper}>
             <Table
-                sx={{minWidth: 400}}
                 size="small"
+                sx={{minWidth: 400}}
                 aria-label="unstaking table"
             >
-                <TableHead>
+                <TableHead className="table-head">
                     <TableRow>
-                        <TableCell align="left">Staked Date</TableCell>
-                        <TableCell align="right">Amount Staked</TableCell>
-                        <TableCell align="right">
-                            Rewards
-                            <Tooltip
-                                title={rewardsTooltip}
-                                data-html="true"
-                                placement="top"
-                                className="icon"
-                            >
-                                <img src={infoIcon} />
-                            </Tooltip>
-                        </TableCell>
-                        <TableCell align="center">Locked Till</TableCell>
-                        <TableCell align="center">Action</TableCell>
+                        <TableCell align="left">Description:</TableCell>
+                        <TableCell align="left">Amount:</TableCell>
+                        <TableCell align="left">Rewards:</TableCell>
                     </TableRow>
                 </TableHead>
-                <TableBody>
-                    {stakedData
-                        .filter(
-                            (row: StakeRow) =>
-                                row.claimedAt == 0 &&
-                                row.stakeType === CLASSIC_TYPE_HEX,
-                        )
-                        .map(unstakeRow)}
-                </TableBody>
+                <TableBody>{stakedData.map(unstakeRow)}</TableBody>
             </Table>
         </TableContainer>
     );

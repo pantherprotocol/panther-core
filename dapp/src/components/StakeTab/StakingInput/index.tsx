@@ -79,18 +79,6 @@ export default function StakingInput(props: {
                     >
                         ZKP
                     </Typography>
-                    <Typography
-                        variant="caption"
-                        component="span"
-                        className="staking-input-max"
-                        onClick={() => {
-                            if (tokenBalance && !disabled) {
-                                props.setStakingAmountBN(tokenBalance);
-                            }
-                        }}
-                    >
-                        MAX
-                    </Typography>
                 </span>
             </Box>
             <Box className="staking-input-container">
@@ -102,7 +90,7 @@ export default function StakingInput(props: {
                         onChange={changeHandler}
                         autoComplete="off"
                         autoFocus={true}
-                        placeholder="0"
+                        placeholder="0.0"
                         disableUnderline={true}
                         disabled={disabled}
                         endAdornment={
@@ -110,7 +98,7 @@ export default function StakingInput(props: {
                                 position="end"
                                 className="staking-input-symbol"
                             >
-                                <div className="staking-symbol-holder">
+                                <span className="staking-symbol-holder">
                                     {props.networkLogo && (
                                         <img
                                             src={props.networkLogo}
@@ -118,14 +106,26 @@ export default function StakingInput(props: {
                                         />
                                     )}
                                     <span>ZKP</span>
-                                </div>
+                                </span>
                             </InputAdornment>
                         }
                         aria-describedby="staking-value-helper-text"
                     />
                 </Box>
+                <Typography
+                    variant="caption"
+                    component="span"
+                    className="staking-input-max"
+                    onClick={() => {
+                        if (tokenBalance) {
+                            props.setStakingAmountBN(tokenBalance);
+                        }
+                    }}
+                >
+                    MAX
+                </Typography>
                 <Box className="staking-input-box-inner">
-                    <img src={logo} height={'40px'} width={'40px'} />
+                    <img src={logo} />
                 </Box>
             </Box>
         </>

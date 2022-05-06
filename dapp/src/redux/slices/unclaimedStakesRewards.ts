@@ -5,7 +5,7 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {constants} from 'ethers';
 
 import {chainHasStakesReporter} from '../../services/contracts';
-import {TokenID, isClassic} from '../../services/rewards';
+import {TokenID, isClassic, AdvancedRewards} from '../../services/rewards';
 import * as stakingService from '../../services/staking';
 import {formatCurrency, fiatPrice} from '../../utils/helpers';
 import {RootState} from '../store';
@@ -63,10 +63,11 @@ function sumTokens(rows: stakingService.StakeRow[], tid: TokenID): BigNumber {
     for (const row of rows) {
         if (tid === TokenID.ZKP && isClassic(row.reward)) {
             accumulated = accumulated.add(row.reward as BigNumber);
-        } else if (tid === TokenID.zZKP || tid === TokenID.PRP) {
-            if (!isClassic(row.reward)) {
-                accumulated = accumulated.add(row.reward[tid]);
-            }
+        } else if (
+            (tid === TokenID.zZKP || tid === TokenID.PRP) &&
+            !isClassic(row.reward)
+        ) {
+            accumulated = accumulated.add((row.reward as AdvancedRewards)[tid]);
         }
     }
 

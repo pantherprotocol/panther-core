@@ -1,12 +1,72 @@
 @import '../../variables';
 $unstaking-tab-holder-background: #2b334140;
+$unstaking-tab-background: rgba(99, 114, 136, 0.2);
+$total-rewards-earned-amount-background: linear-gradient(
+    92.53deg,
+    #ffdfbd 0%,
+    #d0a7a8 95.77%
+);
+$balance-card-background: rgba(99, 114, 136, 0.2);
 
 .unstaking-tab-holder {
     width: 100%;
-    margin: 0px 5px;
+    margin: 20px 5px;
 
-    .MuiCard-root {
-        background-color: $unstaking-tab-holder-background;
-        border-radius: 8px;
+    .unstaking-info-message {
+        padding: 20px;
+        margin-bottom: 30px;
+        background-color: $unstaking-tab-background;
+        border-radius: 13px;
+        text-align: start;
+
+        span {
+            display: flex;
+            line-height: 23px;
+            color: $white;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+    }
+
+    .total-unclaimed-container {
+        display: flex;
+        justify-content: center;
+        text-align: start;
+
+        .total-unclaimed-rewards {
+            display: flex;
+            width: 55%;
+            margin: 25px 0;
+            justify-content: center;
+            padding: 16px;
+            border-radius: 8px;
+            background-color: $balance-card-background;
+            opacity: 0.5;
+
+            &.no-unclaimed-rewards {
+                justify-content: center;
+            }
+        }
+
+        .total-rewards-earned {
+            margin-top: 25px;
+            padding: 16px;
+
+            .title {
+                font-size: 14px;
+                font-weight: 500;
+                color: $white;
+            }
+
+            .amount {
+                margin-left: 10px;
+                font-weight: 800;
+                font-size: 14px;
+                background: $total-rewards-earned-amount-background;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+        }
     }
 }

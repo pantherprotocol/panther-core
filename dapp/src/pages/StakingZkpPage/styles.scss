@@ -1,6 +1,6 @@
 @import '../../variables';
 
-.main-app {
+.advanced-staking-main-page {
     padding-left: 0 !important;
     padding-right: 0 !important;
     width: 100%;
@@ -9,13 +9,8 @@
     background-size: cover;
     min-height: 100vh;
     padding-bottom: 100px !important;
-
-    .main-container {
-        .apy-staking-right-panel {
-            padding-left: 25px;
-        }
-    }
 }
+
 .isBlur {
     flex-grow: 1;
     filter: blur(4px);

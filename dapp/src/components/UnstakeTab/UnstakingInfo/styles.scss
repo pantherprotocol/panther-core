@@ -1,5 +1,4 @@
 @import '../../../variables';
-$unstaking-info-background: rgba(99, 114, 136, 0.2);
 
 .unstaking-info-container {
     background: $card-background !important;
@@ -14,7 +13,8 @@ $unstaking-info-background: rgba(99, 114, 136, 0.2);
         line-height: 42px;
         display: flex;
         align-items: center;
-        color: #ffdfbd; /* FIXME: use common variable */
+        color: #ffdfbd;
+        /* FIXME: use common variable */
     }
 
     .unstaking-info-text {
@@ -36,5 +36,5 @@ $unstaking-info-background: rgba(99, 114, 136, 0.2);
     padding: 16px;
     border-radius: 8px;
     margin-bottom: 30px;
-    background-color: $unstaking-info-background;
+    background-color: rgba(99, 114, 136, 0.2);
 }

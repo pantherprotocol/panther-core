@@ -3,12 +3,14 @@ import React from 'react';
 import {Box, Card, CardContent, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
+import {chainHasAdvancedStaking} from '../../../services/contracts';
+
 import './styles.scss';
 
 export default function UnstakingInfo() {
     const {chainId} = useWeb3React();
 
-    if (chainId === 1) {
+    if (chainId === 1 && !chainHasAdvancedStaking(chainId)) {
         return (
             <Card variant="outlined" className="unstaking-info-container">
                 <CardContent className="unstaking-info-card-content">
@@ -16,27 +18,25 @@ export default function UnstakingInfo() {
                         variant="subtitle2"
                         className="unstaking-info-title"
                     >
-                        All rewards are now redeemed on first unstake
+                        Unstaking is temporarily disabled due to a bug
                     </Typography>
                     <Typography className="unstaking-info-text">
-                        As part of the fix for the unstaking bug on Ethereum
-                        mainnet, the mechanism for claiming rewards has changed
-                        slightly:
-                    </Typography>
-                    <Typography className="unstaking-info-text">
-                        If you have multiple stakes on mainnet, you will receive{' '}
-                        <strong>all</strong> of your rewards on the first
-                        unstake. Any subsequent unstake will return the staked
-                        amount, but no further rewards, since you will have
-                        already received all the rewards.
-                    </Typography>
-                    <Typography className="unstaking-info-text">
+                        We have discovered a bug in the unstaking process on
+                        Ethereum.{' '}
                         <strong>
-                            The amount of rewards you will receive is (of
-                            course!) not changed in any way,
+                            Rest assured all funds are safe and no rewards will
+                            be lost!
                         </strong>{' '}
-                        only <em>when</em> you receive them. If you only have
-                        one stake, this change will not affect you at all.
+                        The Panther team is working hard on a fix.
+                    </Typography>
+                    <Typography className="unstaking-info-text">
+                        In the meantime, unstaking has been temporarily disabled
+                        in this app, to protect users from wasting gas on
+                        unstaking transactions which would fail.
+                    </Typography>
+                    <Typography className="unstaking-info-text">
+                        Further communications will be provided soon. Many
+                        apologies for the inconvenience.
                     </Typography>
                 </CardContent>
             </Card>

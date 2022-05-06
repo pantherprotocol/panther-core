@@ -1,0 +1,100 @@
+@import '../../variables.scss';
+
+$advanced-staking-rewards-background: rgba(202, 223, 255, 0.1);
+$claimed-progress-title-color: #ffdfbd;
+$progress-foreground-color: linear-gradient(
+    92.53deg,
+    #ffdfbd 0%,
+    #d0a7a8 95.77%
+);
+$progress-background-color: rgba(99, 114, 136, 0.2);
+$remaining-days-card-background: rgba(99, 114, 136, 0.2);
+$remaining-days-text-color: #ffdfbd;
+.advanced-staking-rewards {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background: $advanced-staking-rewards-background;
+    border-radius: 15px;
+    margin-bottom: 15px;
+
+    .claimed-progress {
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        flex-direction: column;
+
+        .title {
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            color: $claimed-progress-title-color;
+        }
+
+        .progress-holder {
+            width: 100%;
+
+            .progress {
+                margin: 13px 0;
+                background: $progress-background-color;
+                height: 7px;
+                border-radius: 13px;
+
+                span {
+                    width: 50%;
+                    height: 3px;
+                    top: 2px;
+                    left: 2px;
+                    background: $progress-foreground-color;
+                    border-radius: 13px;
+                    animation: none;
+                }
+            }
+        }
+
+        .claimed-value {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 17px;
+            display: flex;
+            align-items: center;
+            color: $white;
+            opacity: 0.7;
+        }
+    }
+
+    .remaining-days,
+    .staking-apr {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background: $remaining-days-card-background;
+        border-radius: 15px;
+        width: 180px;
+        height: 76px;
+        padding: 10px 0;
+        margin: 15px 0;
+
+        .value {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            font-weight: 700;
+            font-size: 31px;
+            color: $white;
+
+            span {
+                font-size: 22px;
+                padding-left: 5px;
+            }
+        }
+
+        .text {
+            font-weight: 500;
+            font-size: 14px;
+            color: $remaining-days-text-color;
+        }
+    }
+}

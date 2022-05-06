@@ -1,5 +1,4 @@
 @import '../../../variables';
-@import '../variables';
 
 $staking-input-container-color: #ffdfbd;
 $staking-input-max-button-color: #ffdfbd;
@@ -48,7 +47,7 @@ $token-balance-color: #ffdfbd;
         cursor: pointer;
         line-height: initial;
         margin: 0 15px;
-        background: $staking-info-background;
+        background: rgba(99, 114, 136, 0.15);
         border-radius: 8px;
         padding: 5px 15px;
     }

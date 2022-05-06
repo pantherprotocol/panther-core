@@ -1,5 +1,11 @@
 @import '../../../variables';
+
 $balance-card-background: rgba(99, 114, 136, 0.2);
+$total-rewards-earned-amount-background: linear-gradient(
+    92.53deg,
+    #ffdfbd 0%,
+    #d0a7a8 95.77%
+);
 
 .total-unclaimed-container {
     display: flex;
@@ -18,6 +24,27 @@ $balance-card-background: rgba(99, 114, 136, 0.2);
 
         &.no-unclaimed-rewards {
             justify-content: center;
+        }
+    }
+
+    .total-rewards-earned {
+        margin-top: 25px;
+        padding: 16px;
+
+        .title {
+            font-size: 14px;
+            font-weight: 500;
+            color: $white;
+        }
+
+        .amount {
+            margin-left: 10px;
+            font-weight: 800;
+            font-size: 14px;
+            background: $total-rewards-earned-amount-background;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
     }
 }

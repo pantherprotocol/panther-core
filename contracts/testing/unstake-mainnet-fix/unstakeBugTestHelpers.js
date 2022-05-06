@@ -39,6 +39,7 @@ module.exports = {
         getConstants,
         getVestingPoolsMiniAbi,
         getErc20BalanceOfAbi,
+        isStakeRewardController2ProdDeployed,
     },
 };
 
@@ -57,6 +58,7 @@ const daoAddr = '0x505796f5bc290269d2522cf19135ad7aa60dfd77';
 const deployerAddr = '0xe14d84b1DF1C205E33420ffE00bA44F85e35f791';
 const rewardMassterAddr = '0x347a58878D04951588741d4d16d54B742c7f60fC';
 const stakingAddr = '0xf4d06d72dACdD8393FA4eA72FdcC10049711F899';
+const stakeRewardController2Addr = '0x1B316635a9Ed279995c78e5a630e13aaD7C0086b';
 const zkpAddr = '0x909E34d3f6124C324ac83DccA84b74398a6fa173';
 const vestingPoolsAddr = '0xb476104aa9D1f30180a01987FB09b1e96dDCF14B';
 
@@ -72,6 +74,7 @@ function getConstants() {
         deployerAddr,
         rewardMassterAddr,
         stakingAddr,
+        stakeRewardController2Addr,
         vestingPoolsAddr,
         zkpAddr,
     };
@@ -87,9 +90,21 @@ async function defineContracts() {
     const RewardMaster = await ethers.getContractFactory('RewardMaster');
     rewardMaster = await RewardMaster.attach(rewardMassterAddr, provider);
 
+    const StakeRewardController2 = await ethers.getContractFactory(
+        'StakeRewardController2',
+    );
+
+    if (isStakeRewardController2ProdDeployed()) {
+        stakeRewardController2 = await StakeRewardController2.attach(
+            stakeRewardController2Addr,
+            provider,
+        );
+    }
+
     return {
         rewardMaster,
         staking,
+        stakeRewardController2,
         zkp,
     };
 }
@@ -371,4 +386,16 @@ async function testUnstakeMultiple() {
             );
         }
     }
+}
+
+let _isStakeRewardController2ProdDeployed;
+async function isStakeRewardController2ProdDeployed() {
+    if (typeof _isStakeRewardController2ProdDeployed != 'boolean') {
+        _isStakeRewardController2ProdDeployed =
+            (await ethers.provider.getCode(stakeRewardController2Addr)).replace(
+                '0x',
+                '',
+            ).length > 0;
+    }
+    return Promise.resolve(_isStakeRewardController2ProdDeployed);
 }

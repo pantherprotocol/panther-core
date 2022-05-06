@@ -48,6 +48,9 @@ contract StakeRewardController2 is IRewardAdviser {
     // bytes4(keccak256(abi.encodePacked(bytes4(keccak256("unstake"), STAKE_TYPE)))
     bytes4 private constant UNSTAKE = 0x493bdf45;
 
+    // 2022-08-15T00:00:00.000Z
+    uint256 private constant ZKP_RESCUE_ALLOWED_SINCE = 1660521600;
+
     // solhint-enable var-name-mixedcase
 
     uint256 public unclaimedRewards;
@@ -126,17 +129,13 @@ contract StakeRewardController2 is IRewardAdviser {
         _reentrancyStatus = 1;
 
         require(OWNER == msg.sender, "SRC: unauthorized");
+        require(
+            (token != REWARD_TOKEN) ||
+                (block.timestamp >= ZKP_RESCUE_ALLOWED_SINCE),
+            "SRC: too early withdrawal"
+        );
 
-        if (token == REWARD_TOKEN) {
-            // trusted contract - reentrancy guard unneeded
-            uint256 balance = _balanceOfErc20(REWARD_TOKEN, address(this));
-            require(
-                balance >= unclaimedRewards + amount,
-                "SRC: too large amount"
-            );
-        }
         _transferErc20(token, to, amount);
-
         _reentrancyStatus = 2;
     }
 
@@ -199,18 +198,5 @@ contract StakeRewardController2 is IRewardAdviser {
             success && (data.length == 0 || abi.decode(data, (bool))),
             "SRC: transferErc20 failed"
         );
-    }
-
-    function _balanceOfErc20(address token, address account)
-        internal
-        returns (uint256)
-    {
-        // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory data) = token.call(
-            // bytes4(keccak256(bytes('balanceOf(address)')));
-            abi.encodeWithSelector(0x70a08231, account)
-        );
-        require(success && (data.length != 0), "SRC: balanceOf call failed");
-        return abi.decode(data, (uint256));
     }
 }

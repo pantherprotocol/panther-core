@@ -10,12 +10,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await deploy('StakeRewardController2', {
         from: deployer,
         args: [
-            deployer, // owner
+            process.env.DAO_MULTISIG_ADDRESS, // owner
             process.env.TOKEN_ADDRESS,
             process.env.STAKING_CONTRACT,
             process.env.REWARD_MASTER,
-            utils.parseEther(String(3.555e6)),
+            utils.parseEther(String(3.555666824442e6)),
         ],
+        gasLimit: 1e6,
         log: true,
         autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
     });

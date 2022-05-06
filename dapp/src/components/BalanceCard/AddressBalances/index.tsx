@@ -7,16 +7,19 @@ import {BigNumber} from 'ethers';
 
 import infoIcon from '../../../images/info-icon.svg';
 import {formatCurrency} from '../../../utils/helpers';
+import {SmallButton} from '../../SmallButton';
 
 import './styles.scss';
 
 export default function AddressBalances(props: {
     title: string;
-    tooltip?: string;
-    amountUSD: BigNumber | null;
+    rewardsTokenSymbol: string;
     balance: BigNumber | null;
+    amountUSD?: BigNumber | null;
+    redeem?: () => void;
+    tooltip?: string;
 }) {
-    const {title, tooltip, amountUSD, balance} = props;
+    const {title, tooltip, amountUSD, balance, rewardsTokenSymbol} = props;
 
     return (
         <Box className="address-balance">
@@ -38,12 +41,17 @@ export default function AddressBalances(props: {
                     <Typography className="balance" component="div">
                         {balance ? formatCurrency(balance) : '-'}
                     </Typography>
-                    <Typography className="zkp-symbol">ZKP</Typography>
+                    <Typography className="zkp-symbol">
+                        {rewardsTokenSymbol}
+                    </Typography>
                 </Box>
                 {amountUSD && (
                     <Typography className="amount-usd">
                         {`~$ ${formatCurrency(amountUSD)} USD`}
                     </Typography>
+                )}
+                {props.redeem && (
+                    <SmallButton onClick={props.redeem} text={'Redeem'} />
                 )}
             </Box>
         </Box>

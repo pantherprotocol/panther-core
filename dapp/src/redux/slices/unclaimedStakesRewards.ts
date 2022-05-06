@@ -5,27 +5,32 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {constants} from 'ethers';
 
 import {chainHasStakesReporter} from '../../services/contracts';
+import {TokenID, isClassic} from '../../services/rewards';
 import * as stakingService from '../../services/staking';
 import {formatCurrency, fiatPrice} from '../../utils/helpers';
 import {RootState} from '../store';
 
-interface UnclaimedRewardsState {
-    value: string | null;
+type UnclaimedStakesRewards = {
+    [key in TokenID]: string | null;
+};
+interface UnclaimedStakesRewardsState {
+    value: UnclaimedStakesRewards;
     status: 'idle' | 'loading' | 'failed';
 }
-const initialState: UnclaimedRewardsState = {
-    value: null,
+
+const initialState: UnclaimedStakesRewardsState = {
+    value: {} as UnclaimedStakesRewards,
     status: 'idle',
 };
 
 export const getUnclaimedRewards = createAsyncThunk(
-    'balance/getUnclaimedRewards',
+    'balance/getUnclaimedStakesRewards',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
-        {getState},
-    ): Promise<string | null> => {
+    ): Promise<UnclaimedStakesRewards> => {
         const {account, library, chainId} = context;
-        if (!library || !chainId || !account) return null;
+        if (!library || !chainId || !account)
+            return {} as UnclaimedStakesRewards;
         if (chainHasStakesReporter(chainId)) {
             if (chainId === 137) {
                 console.debug('Using StakesReporter on Polygon');
@@ -36,29 +41,40 @@ export const getUnclaimedRewards = createAsyncThunk(
             console.debug('Not using StakesReporter; chainId', chainId);
         }
 
-        const rewardsBalance = await stakingService.getRewardsBalance(
+        const reward = await stakingService.getStakesAndRewards(
             library,
             chainId,
             account,
         );
-        const state = getState() as RootState;
-        const price = state.zkpMarketPrice.value
-            ? BigNumber.from(state.zkpMarketPrice.value)
-            : null;
 
-        if (rewardsBalance && rewardsBalance.gt(constants.Zero)) {
-            console.debug(
-                'rewardsBalance:',
-                formatCurrency(rewardsBalance),
-                `(USD \$${formatCurrency(fiatPrice(rewardsBalance, price))})`,
-            );
+        const reduxRewards = {} as UnclaimedStakesRewards;
+
+        for (const tid of [TokenID.PRP, TokenID.ZKP, TokenID.zZKP]) {
+            reduxRewards[tid] = sumTokens(reward[1], tid).toString();
         }
-        return rewardsBalance?.toString() ?? null;
+
+        return reduxRewards;
     },
 );
 
+function sumTokens(rows: stakingService.StakeRow[], tid: TokenID): BigNumber {
+    let accumulated = constants.Zero;
+
+    for (const row of rows) {
+        if (tid === TokenID.ZKP && isClassic(row.reward)) {
+            accumulated = accumulated.add(row.reward as BigNumber);
+        } else if (tid === TokenID.zZKP || tid === TokenID.PRP) {
+            if (!isClassic(row.reward)) {
+                accumulated = accumulated.add(row.reward[tid]);
+            }
+        }
+    }
+
+    return accumulated;
+}
+
 export const unclaimedRewardsSlice = createSlice({
-    name: 'zkpUnclaimedReward',
+    name: 'unclaimedStakesRewards',
     initialState,
     reducers: {
         resetUnclaimedRewards: state => {
@@ -78,26 +94,49 @@ export const unclaimedRewardsSlice = createSlice({
             })
             .addCase(getUnclaimedRewards.rejected, state => {
                 state.status = 'failed';
-                state.value = null;
+                state.value = {} as UnclaimedStakesRewards;
             });
     },
 });
 
-export const unclaimedRewardsSelector = (state: RootState) => {
-    return state.unclaimedRewards.value
-        ? BigNumber.from(state.unclaimedRewards.value)
+const rewardsSelector = (state: RootState, tid: TokenID) => {
+    return state.unclaimedStakesRewards.value[tid]
+        ? BigNumber.from(state.unclaimedStakesRewards.value[tid])
         : null;
+};
+
+export const zZkpUnclaimedRewardsSelector = (state: RootState) => {
+    return rewardsSelector(state, TokenID.zZKP);
+};
+
+export const prpUnclaimedRewardsSelector = (state: RootState) => {
+    return rewardsSelector(state, TokenID.PRP);
+};
+
+export const zkpUnclaimedRewardsSelector = (state: RootState) => {
+    return rewardsSelector(state, TokenID.ZKP);
+};
+
+export const zZkpTokenUSDMarketPriceSelector = (
+    state: RootState,
+): BigNumber | null => {
+    return tokenUSDMarketPriceSelector(state, TokenID.zZKP);
 };
 
 export const zkpTokenUSDMarketPriceSelector = (
     state: RootState,
 ): BigNumber | null => {
+    return tokenUSDMarketPriceSelector(state, TokenID.ZKP);
+};
+
+const tokenUSDMarketPriceSelector = (
+    state: RootState,
+    tid: TokenID,
+): BigNumber | null => {
     const price = state.zkpMarketPrice.value
         ? BigNumber.from(state.zkpMarketPrice.value)
         : null;
-    const balance = state.unclaimedRewards.value
-        ? BigNumber.from(state.unclaimedRewards.value)
-        : null;
+    const balance = rewardsSelector(state, tid);
     const rewardsUSDValue: BigNumber | null = fiatPrice(balance, price);
     if (balance) {
         console.debug(

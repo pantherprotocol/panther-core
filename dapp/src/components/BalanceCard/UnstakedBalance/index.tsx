@@ -1,9 +1,12 @@
 import * as React from 'react';
 
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
+import {useWeb3React} from '@web3-react/core';
 
 import infoIcon from '../../../images/info-icon.svg';
-import {useAppSelector} from '../../../redux/hooks';
+import refreshIcon from '../../../images/refresh-icon.svg';
+import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
+import {getChainBalance} from '../../../redux/slices/chainBalance';
 import {
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
@@ -13,13 +16,19 @@ import {formatCurrency} from '../../../utils/helpers';
 import './styles.scss';
 
 export default function UnstakedBalance() {
+    const context = useWeb3React();
+    const dispatch = useAppDispatch();
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const tokenMarketPrice = useAppSelector(zkpUnstakedUSDMarketPriceSelector);
+
+    const refreshChainBalance = () => {
+        dispatch(getChainBalance(context));
+    };
 
     return (
         <Box className="total-balance">
             <Box className="title-box">
-                <Typography className="title">Unstaked Balance</Typography>
+                <Typography className="title">Total Balance</Typography>
                 {false && (
                     <Tooltip
                         title="This is the amount of ZKP you have available for staking."
@@ -30,6 +39,9 @@ export default function UnstakedBalance() {
                         </IconButton>
                     </Tooltip>
                 )}
+                <IconButton onClick={refreshChainBalance}>
+                    <img src={refreshIcon} />
+                </IconButton>
             </Box>
 
             <Box className="amount-box">

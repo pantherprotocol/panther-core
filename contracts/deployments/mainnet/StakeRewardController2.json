@@ -1,0 +1,379 @@
+{
+  "address": "0x1B316635a9Ed279995c78e5a630e13aaD7C0086b",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "stakingContract",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "rewardMaster",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_unclaimedRewards",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_activeSince",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_totalStaked",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "scArpt",
+          "type": "uint256"
+        }
+      ],
+      "name": "Activated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "staker",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "reward",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardPaid",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "OWNER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "REWARD_MASTER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "REWARD_TOKEN",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "STAKING",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "staker",
+          "type": "address"
+        }
+      ],
+      "name": "entitled",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "rewards",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "action",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "bytes",
+          "name": "message",
+          "type": "bytes"
+        }
+      ],
+      "name": "getRewardAdvice",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "createSharesFor",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "sharesToCreate",
+              "type": "uint96"
+            },
+            {
+              "internalType": "address",
+              "name": "redeemSharesFrom",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "sharesToRedeem",
+              "type": "uint96"
+            },
+            {
+              "internalType": "address",
+              "name": "sendRewardTo",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IRewardAdviser.Advice",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "rescueErc20",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "rewardsClaimed",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "unclaimedRewards",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xaac41e45108884d2f8898d58dd21e7fd7468dc5590fc4183c78c5ff3e72a368f",
+  "receipt": {
+    "to": null,
+    "from": "0xe14d84b1DF1C205E33420ffE00bA44F85e35f791",
+    "contractAddress": "0x1B316635a9Ed279995c78e5a630e13aaD7C0086b",
+    "transactionIndex": 119,
+    "gasUsed": "654737",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xe6bea5b604491f1128d62c1dea83196d2e1461d484a784f1c9f544e71eefe178",
+    "transactionHash": "0xaac41e45108884d2f8898d58dd21e7fd7468dc5590fc4183c78c5ff3e72a368f",
+    "logs": [],
+    "blockNumber": 14723109,
+    "cumulativeGasUsed": "9685835",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x505796f5bc290269d2522cf19135ad7aa60dfd77",
+    "0x909E34d3f6124C324ac83DccA84b74398a6fa173",
+    "0xf4d06d72dACdD8393FA4eA72FdcC10049711F899",
+    "0x347a58878D04951588741d4d16d54B742c7f60fC",
+    "3555666824442000000000000"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "9441d307950f241abadb711a0e8af782",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"stakingContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"rewardMaster\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_unclaimedRewards\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_activeSince\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_totalStaked\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"scArpt\",\"type\":\"uint256\"}],\"name\":\"Activated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"reward\",\"type\":\"uint256\"}],\"name\":\"RewardPaid\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"OWNER\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"REWARD_MASTER\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"REWARD_TOKEN\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"STAKING\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"}],\"name\":\"entitled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"rewards\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"action\",\"type\":\"bytes4\"},{\"internalType\":\"bytes\",\"name\":\"message\",\"type\":\"bytes\"}],\"name\":\"getRewardAdvice\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"createSharesFor\",\"type\":\"address\"},{\"internalType\":\"uint96\",\"name\":\"sharesToCreate\",\"type\":\"uint96\"},{\"internalType\":\"address\",\"name\":\"redeemSharesFrom\",\"type\":\"address\"},{\"internalType\":\"uint96\",\"name\":\"sharesToRedeem\",\"type\":\"uint96\"},{\"internalType\":\"address\",\"name\":\"sendRewardTo\",\"type\":\"address\"}],\"internalType\":\"struct IRewardAdviser.Advice\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"rescueErc20\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"rewardsClaimed\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unclaimedRewards\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"On `unstake` method call on the Staking (eth:0xf4d06d72dACdD8393FA4eA72FdcC10049711F899), the later calls the RewardMaster, which then calls `getRewardAdvice` method on this contract to process the `UNSTAKED` messages. This contract returns the \\\"advice\\\" for the RewardMaster with zero `sharesToRedeem`. On the zero advice received, the RewardMaster skips sending reward tokens to the staker, so the buggy code `require(timeNow() < endTime` in the `RewardPool::vestRewards` method does not get called. Furthermore, this contract transfers reward tokens to a staker instead of the RewardMaster as follows. As a part of the `getRewardAdvice` call, this contract: - requests the RewardMaster on the amount of rewards that the staker is already entitled to (there are no mare rewards expected, as the rewarded period ended) - sends the reward amount from this its balance to the staker As a prerequisite, this contract: - shall be authorized as the \\\"RewardAdviser\\\" with the RewardMaster for \\\"classic\\\" stakes - shall hold reward tokens on its balance\",\"events\":{\"Activated(uint256,uint256,uint256)\":{\"details\":\"Emitted on activation of this contract\"},\"RewardPaid(address,uint256)\":{\"details\":\"Emitted when reward paid to a staker\"}},\"kind\":\"dev\",\"methods\":{\"rescueErc20(address,address,uint256)\":{\"details\":\"May be only called by the {OWNER}\"}},\"title\":\"StakeRewardController2\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"OWNER()\":{\"notice\":\"The owner who has privileged rights\"},\"REWARD_MASTER()\":{\"notice\":\"RewardMaster instance authorized to call `getRewardAdvice` on this contract\"},\"REWARD_TOKEN()\":{\"notice\":\"The ERC20 token to pay rewards in\"},\"STAKING()\":{\"notice\":\"Staking contract instance that handles stakes\"},\"entitled(address)\":{\"notice\":\"Returns reward token amount entitled to the given user/account\"},\"rescueErc20(address,address,uint256)\":{\"notice\":\"Withdraws unclaimed rewards or accidentally sent token from this contract\"},\"rewardsClaimed(address)\":{\"notice\":\"Mapping from staker to claimed reward amount\"}},\"notice\":\"A bug in RewardPool contract at eth:0xcF463713521Af5cE31AD18F6914f3706493F10e5, after the `endTime`, prevents the RewardMaster (eth:0x347a58878D04951588741d4d16d54B742c7f60fC) from sending staking reward tokens to stakers. This contract implements a work-around.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/StakeRewardController2.sol\":\"StakeRewardController2\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":800},\"remappings\":[]},\"sources\":{\"contracts/StakeRewardController2.sol\":{\"content\":\"// SPDX-License-Identifier: UNLICENSED\\n// solhint-disable-next-line compiler-fixed, compiler-gt-0_8\\npragma solidity ^0.8.0;\\n\\nimport \\\"./interfaces/IRewardAdviser.sol\\\";\\n\\ninterface IEntitled {\\n    function entitled(address) external view returns (uint256);\\n}\\n\\n/**\\n * @title StakeRewardController2\\n * @notice A bug in RewardPool contract at eth:0xcF463713521Af5cE31AD18F6914f3706493F10e5, after\\n * the `endTime`, prevents the RewardMaster (eth:0x347a58878D04951588741d4d16d54B742c7f60fC) from\\n * sending staking reward tokens to stakers. This contract implements a work-around.\\n * @dev On `unstake` method call on the Staking (eth:0xf4d06d72dACdD8393FA4eA72FdcC10049711F899),\\n * the later calls the RewardMaster, which then calls `getRewardAdvice` method on this contract\\n * to process the `UNSTAKED` messages.\\n * This contract returns the \\\"advice\\\" for the RewardMaster with zero `sharesToRedeem`. On the zero\\n * advice received, the RewardMaster skips sending reward tokens to the staker, so the buggy code\\n * `require(timeNow() < endTime` in the `RewardPool::vestRewards` method does not get called.\\n * Furthermore, this contract transfers reward tokens to a staker instead of the RewardMaster as\\n * follows. As a part of the `getRewardAdvice` call, this contract:\\n * - requests the RewardMaster on the amount of rewards that the staker is already entitled to\\n * (there are no mare rewards expected, as the rewarded period ended)\\n * - sends the reward amount from this its balance to the staker\\n * As a prerequisite, this contract:\\n * - shall be authorized as the \\\"RewardAdviser\\\" with the RewardMaster for \\\"classic\\\" stakes\\n * - shall hold reward tokens on its balance\\n */\\ncontract StakeRewardController2 is IRewardAdviser {\\n    // solhint-disable var-name-mixedcase\\n\\n    /// @notice The owner who has privileged rights\\n    address public immutable OWNER;\\n\\n    /// @notice The ERC20 token to pay rewards in\\n    address public immutable REWARD_TOKEN;\\n\\n    /// @notice Staking contract instance that handles stakes\\n    address public immutable STAKING;\\n\\n    /// @notice RewardMaster instance authorized to call `getRewardAdvice` on this contract\\n    address public immutable REWARD_MASTER;\\n\\n    // bytes4(keccak256(\\\"classic\\\"))\\n    bytes4 private constant STAKE_TYPE = 0x4ab0941a;\\n    // bytes4(keccak256(abi.encodePacked(bytes4(keccak256(\\\"unstake\\\"), STAKE_TYPE)))\\n    bytes4 private constant UNSTAKE = 0x493bdf45;\\n\\n    // 2022-08-15T00:00:00.000Z\\n    uint256 private constant ZKP_RESCUE_ALLOWED_SINCE = 1660521600;\\n\\n    // solhint-enable var-name-mixedcase\\n\\n    uint256 public unclaimedRewards;\\n    /// @notice Mapping from staker to claimed reward amount\\n    mapping(address => uint256) public rewardsClaimed;\\n\\n    uint256 private _reentrancyStatus;\\n\\n    /// @dev Emitted when reward paid to a staker\\n    event RewardPaid(address indexed staker, uint256 reward);\\n\\n    /// @dev Emitted on activation of this contract\\n    event Activated(uint256 _activeSince, uint256 _totalStaked, uint256 scArpt);\\n\\n    constructor(\\n        address _owner,\\n        address token,\\n        address stakingContract,\\n        address rewardMaster,\\n        uint256 _unclaimedRewards\\n    ) {\\n        require(\\n            _unclaimedRewards != 0 &&\\n                _owner != address(0) &&\\n                token != address(0) &&\\n                stakingContract != address(0) &&\\n                rewardMaster != address(0),\\n            \\\"SRC: E1\\\"\\n        );\\n\\n        OWNER = _owner;\\n        REWARD_TOKEN = token;\\n        STAKING = stakingContract;\\n        REWARD_MASTER = rewardMaster;\\n        unclaimedRewards = _unclaimedRewards;\\n    }\\n\\n    function getRewardAdvice(bytes4 action, bytes memory message)\\n        external\\n        override\\n        returns (Advice memory)\\n    {\\n        require(msg.sender == REWARD_MASTER, \\\"SRC: unauthorized\\\");\\n        require(action == UNSTAKE, \\\"SRC: unexpected action\\\");\\n\\n        address staker = _decodeStakerFromMsg(message);\\n        require(staker != address(0), \\\"SRC: unexpected zero staker\\\");\\n\\n        _payRewardIfNotYetPaid(staker);\\n\\n        return\\n            Advice(\\n                address(0), // createSharesFor\\n                0, // sharesToCreate\\n                address(0), // redeemSharesFrom\\n                0, // sharesToRedeem\\n                address(this) // sendRewardTo\\n            );\\n    }\\n\\n    /// @notice Returns reward token amount entitled to the given user/account\\n    function entitled(address staker) external view returns (uint256 rewards) {\\n        rewards = (rewardsClaimed[staker] == 0)\\n            ? _getEntitledReward(staker)\\n            : 0;\\n    }\\n\\n    /// @notice Withdraws unclaimed rewards or accidentally sent token from this contract\\n    /// @dev May be only called by the {OWNER}\\n    function rescueErc20(\\n        address token,\\n        address to,\\n        uint256 amount\\n    ) external {\\n        require(_reentrancyStatus != 1, \\\"SRC: can't be re-entered\\\");\\n        _reentrancyStatus = 1;\\n\\n        require(OWNER == msg.sender, \\\"SRC: unauthorized\\\");\\n        require(\\n            (token != REWARD_TOKEN) ||\\n                (block.timestamp >= ZKP_RESCUE_ALLOWED_SINCE),\\n            \\\"SRC: too early withdrawal\\\"\\n        );\\n\\n        _transferErc20(token, to, amount);\\n        _reentrancyStatus = 2;\\n    }\\n\\n    function _payRewardIfNotYetPaid(address staker) internal {\\n        // Do nothing if already paid\\n        if (rewardsClaimed[staker] != 0) return;\\n\\n        uint256 reward = _getEntitledReward(staker);\\n        if (reward == 0) return;\\n\\n        uint256 _unclaimedRewards = unclaimedRewards;\\n\\n        // Precaution against imprecise calculations/roundings\\n        if (reward > _unclaimedRewards) reward = _unclaimedRewards;\\n\\n        rewardsClaimed[staker] = reward;\\n        unclaimedRewards = _unclaimedRewards - reward;\\n\\n        // trusted contract - reentrancy guard unneeded\\n        _transferErc20(REWARD_TOKEN, staker, reward);\\n        emit RewardPaid(staker, reward);\\n    }\\n\\n    function _decodeStakerFromMsg(bytes memory message)\\n        internal\\n        pure\\n        returns (address staker)\\n    {\\n        uint256 stakerAndAmount;\\n        // solhint-disable-next-line no-inline-assembly\\n        assembly {\\n            // the 1st word (32 bytes) contains the `message.length`\\n            // we need the (entire) 2nd word ..\\n            stakerAndAmount := mload(add(message, 0x20))\\n        }\\n        staker = address(uint160(stakerAndAmount >> 96));\\n    }\\n\\n    // Declared as `internal` to ease testing\\n    function _getEntitledReward(address staker)\\n        internal\\n        view\\n        returns (uint256 reward)\\n    {\\n        // trusted contract - reentrancy guard unneeded\\n        reward = IEntitled(REWARD_MASTER).entitled(staker);\\n    }\\n\\n    function _transferErc20(\\n        address token,\\n        address to,\\n        uint256 value\\n    ) internal {\\n        // solhint-disable-next-line avoid-low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256(bytes('transfer(address,uint256)')));\\n            abi.encodeWithSelector(0xa9059cbb, to, value)\\n        );\\n        require(\\n            success && (data.length == 0 || abi.decode(data, (bool))),\\n            \\\"SRC: transferErc20 failed\\\"\\n        );\\n    }\\n}\\n\",\"keccak256\":\"0x450d73783e917d61abeae9d1cef7e075fa95f99b3fce611728b3fbb3964a0139\",\"license\":\"UNLICENSED\"},\"contracts/interfaces/IRewardAdviser.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\ninterface IRewardAdviser {\\n    struct Advice {\\n        // advice on new \\\"shares\\\" (in the reward pool) to create\\n        address createSharesFor;\\n        uint96 sharesToCreate;\\n        // advice on \\\"shares\\\" to redeem\\n        address redeemSharesFrom;\\n        uint96 sharesToRedeem;\\n        // advice on address the reward against redeemed shares to send to\\n        address sendRewardTo;\\n    }\\n\\n    function getRewardAdvice(bytes4 action, bytes memory message)\\n        external\\n        returns (Advice memory);\\n}\\n\",\"keccak256\":\"0x9ecf725af20a11f29d94406fc335d3b20afd60dfb9e398a409966e0568ac1bbb\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x61010060405234801561001157600080fd5b50604051610c34380380610c348339810160408190526100309161010b565b801580159061004757506001600160a01b03851615155b801561005b57506001600160a01b03841615155b801561006f57506001600160a01b03831615155b801561008357506001600160a01b03821615155b6100bd5760405162461bcd60e51b81526020600482015260076024820152665352433a20453160c81b604482015260640160405180910390fd5b6001600160601b0319606095861b811660805293851b841660a05291841b831660c05290921b1660e052600055610168565b80516001600160a01b038116811461010657600080fd5b919050565b600080600080600060a08688031215610122578081fd5b61012b866100ef565b9450610139602087016100ef565b9350610147604087016100ef565b9250610155606087016100ef565b9150608086015190509295509295909350565b60805160601c60a05160601c60c05160601c60e05160601c610a656101cf600039600081816101060152818161041c01526106f60152600061014e0152600081816101750152818161030f01526107e501526000818160ad01526102970152610a656000f3fe608060405234801561001057600080fd5b50600436106100a35760003560e01c806397610f3011610076578063d3f730fd1161005b578063d3f730fd14610197578063e9cb0324146101b7578063f85f91b41461022f57600080fd5b806397610f301461014957806399248ea71461017057600080fd5b8063117803e3146100a8578063243feb99146100ec578063576eadd2146101015780636e1ede7214610128575b600080fd5b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b6100ff6100fa366004610890565b610238565b005b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b61013b61013636600461086f565b6103b2565b6040519081526020016100e3565b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b61013b6101a536600461086f565b60016020526000908152604090205481565b6101ca6101c53660046108eb565b6103e6565b6040516100e39190600060a0820190506001600160a01b0380845116835260208401516bffffffffffffffffffffffff808216602086015282604087015116604086015280606087015116606086015250508060808501511660808401525092915050565b61013b60005481565b600254600114156102905760405162461bcd60e51b815260206004820152601860248201527f5352433a2063616e27742062652072652d656e7465726564000000000000000060448201526064015b60405180910390fd5b60016002557f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461030d5760405162461bcd60e51b815260206004820152601160248201527f5352433a20756e617574686f72697a65640000000000000000000000000000006044820152606401610287565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316836001600160a01b031614158061035257506362f98c804210155b61039e5760405162461bcd60e51b815260206004820152601960248201527f5352433a20746f6f206561726c79207769746864726177616c000000000000006044820152606401610287565b6103a98383836105a4565b50506002805550565b6001600160a01b038116600090815260016020526040812054156103d75760006103e0565b6103e0826106d4565b92915050565b6040805160a081018252600080825260208201819052918101829052606081018290526080810191909152336001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016146104895760405162461bcd60e51b815260206004820152601160248201527f5352433a20756e617574686f72697a65640000000000000000000000000000006044820152606401610287565b7fffffffff00000000000000000000000000000000000000000000000000000000831663493bdf4560e01b146105015760405162461bcd60e51b815260206004820152601660248201527f5352433a20756e657870656374656420616374696f6e000000000000000000006044820152606401610287565b6000610511836020015160601c90565b90506001600160a01b0381166105695760405162461bcd60e51b815260206004820152601b60248201527f5352433a20756e6578706563746564207a65726f207374616b657200000000006044820152606401610287565b61057281610772565b50506040805160a081018252600080825260208201819052918101829052606081019190915230608082015292915050565b604080516001600160a01b038481166024830152604480830185905283518084039091018152606490920183526020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1663a9059cbb60e01b179052915160009283929087169161061591906109e6565b6000604051808303816000865af19150503d8060008114610652576040519150601f19603f3d011682016040523d82523d6000602084013e610657565b606091505b509150915081801561068157508051158061068157508080602001905181019061068191906108cb565b6106cd5760405162461bcd60e51b815260206004820152601960248201527f5352433a207472616e736665724572633230206661696c6564000000000000006044820152606401610287565b5050505050565b60405163370f6f3960e11b81526001600160a01b0382811660048301526000917f000000000000000000000000000000000000000000000000000000000000000090911690636e1ede729060240160206040518083038186803b15801561073a57600080fd5b505afa15801561074e573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103e091906109ce565b6001600160a01b038116600090815260016020526040902054156107935750565b600061079e826106d4565b9050806107a9575050565b600054808211156107b8578091505b6001600160a01b03831660009081526001602052604090208290556107dd8282610a1f565b60005561080b7f000000000000000000000000000000000000000000000000000000000000000084846105a4565b826001600160a01b03167fe2403640ba68fed3a2f88b7557551d1993f84b99bb10ff833f0cf8db0c5e04868360405161084691815260200190565b60405180910390a2505050565b80356001600160a01b038116811461086a57600080fd5b919050565b600060208284031215610880578081fd5b61088982610853565b9392505050565b6000806000606084860312156108a4578182fd5b6108ad84610853565b92506108bb60208501610853565b9150604084013590509250925092565b6000602082840312156108dc578081fd5b81518015158114610889578182fd5b600080604083850312156108fd578182fd5b82357fffffffff000000000000000000000000000000000000000000000000000000008116811461092c578283fd5b9150602083013567ffffffffffffffff80821115610948578283fd5b818501915085601f83011261095b578283fd5b81358181111561096d5761096d610a42565b604051601f8201601f19908116603f0116810190838211818310171561099557610995610a42565b816040528281528860208487010111156109ad578586fd5b82602086016020830137856020848301015280955050505050509250929050565b6000602082840312156109df578081fd5b5051919050565b60008251815b81811015610a0657602081860181015185830152016109ec565b81811115610a145782828501525b509190910192915050565b600082821015610a3d57634e487b7160e01b81526011600452602481fd5b500390565b634e487b7160e01b600052604160045260246000fdfea164736f6c6343000804000a",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100a35760003560e01c806397610f3011610076578063d3f730fd1161005b578063d3f730fd14610197578063e9cb0324146101b7578063f85f91b41461022f57600080fd5b806397610f301461014957806399248ea71461017057600080fd5b8063117803e3146100a8578063243feb99146100ec578063576eadd2146101015780636e1ede7214610128575b600080fd5b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b6100ff6100fa366004610890565b610238565b005b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b61013b61013636600461086f565b6103b2565b6040519081526020016100e3565b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b6100cf7f000000000000000000000000000000000000000000000000000000000000000081565b61013b6101a536600461086f565b60016020526000908152604090205481565b6101ca6101c53660046108eb565b6103e6565b6040516100e39190600060a0820190506001600160a01b0380845116835260208401516bffffffffffffffffffffffff808216602086015282604087015116604086015280606087015116606086015250508060808501511660808401525092915050565b61013b60005481565b600254600114156102905760405162461bcd60e51b815260206004820152601860248201527f5352433a2063616e27742062652072652d656e7465726564000000000000000060448201526064015b60405180910390fd5b60016002557f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461030d5760405162461bcd60e51b815260206004820152601160248201527f5352433a20756e617574686f72697a65640000000000000000000000000000006044820152606401610287565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316836001600160a01b031614158061035257506362f98c804210155b61039e5760405162461bcd60e51b815260206004820152601960248201527f5352433a20746f6f206561726c79207769746864726177616c000000000000006044820152606401610287565b6103a98383836105a4565b50506002805550565b6001600160a01b038116600090815260016020526040812054156103d75760006103e0565b6103e0826106d4565b92915050565b6040805160a081018252600080825260208201819052918101829052606081018290526080810191909152336001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016146104895760405162461bcd60e51b815260206004820152601160248201527f5352433a20756e617574686f72697a65640000000000000000000000000000006044820152606401610287565b7fffffffff00000000000000000000000000000000000000000000000000000000831663493bdf4560e01b146105015760405162461bcd60e51b815260206004820152601660248201527f5352433a20756e657870656374656420616374696f6e000000000000000000006044820152606401610287565b6000610511836020015160601c90565b90506001600160a01b0381166105695760405162461bcd60e51b815260206004820152601b60248201527f5352433a20756e6578706563746564207a65726f207374616b657200000000006044820152606401610287565b61057281610772565b50506040805160a081018252600080825260208201819052918101829052606081019190915230608082015292915050565b604080516001600160a01b038481166024830152604480830185905283518084039091018152606490920183526020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1663a9059cbb60e01b179052915160009283929087169161061591906109e6565b6000604051808303816000865af19150503d8060008114610652576040519150601f19603f3d011682016040523d82523d6000602084013e610657565b606091505b509150915081801561068157508051158061068157508080602001905181019061068191906108cb565b6106cd5760405162461bcd60e51b815260206004820152601960248201527f5352433a207472616e736665724572633230206661696c6564000000000000006044820152606401610287565b5050505050565b60405163370f6f3960e11b81526001600160a01b0382811660048301526000917f000000000000000000000000000000000000000000000000000000000000000090911690636e1ede729060240160206040518083038186803b15801561073a57600080fd5b505afa15801561074e573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103e091906109ce565b6001600160a01b038116600090815260016020526040902054156107935750565b600061079e826106d4565b9050806107a9575050565b600054808211156107b8578091505b6001600160a01b03831660009081526001602052604090208290556107dd8282610a1f565b60005561080b7f000000000000000000000000000000000000000000000000000000000000000084846105a4565b826001600160a01b03167fe2403640ba68fed3a2f88b7557551d1993f84b99bb10ff833f0cf8db0c5e04868360405161084691815260200190565b60405180910390a2505050565b80356001600160a01b038116811461086a57600080fd5b919050565b600060208284031215610880578081fd5b61088982610853565b9392505050565b6000806000606084860312156108a4578182fd5b6108ad84610853565b92506108bb60208501610853565b9150604084013590509250925092565b6000602082840312156108dc578081fd5b81518015158114610889578182fd5b600080604083850312156108fd578182fd5b82357fffffffff000000000000000000000000000000000000000000000000000000008116811461092c578283fd5b9150602083013567ffffffffffffffff80821115610948578283fd5b818501915085601f83011261095b578283fd5b81358181111561096d5761096d610a42565b604051601f8201601f19908116603f0116810190838211818310171561099557610995610a42565b816040528281528860208487010111156109ad578586fd5b82602086016020830137856020848301015280955050505050509250929050565b6000602082840312156109df578081fd5b5051919050565b60008251815b81811015610a0657602081860181015185830152016109ec565b81811115610a145782828501525b509190910192915050565b600082821015610a3d57634e487b7160e01b81526011600452602481fd5b500390565b634e487b7160e01b600052604160045260246000fdfea164736f6c6343000804000a",
+  "devdoc": {
+    "details": "On `unstake` method call on the Staking (eth:0xf4d06d72dACdD8393FA4eA72FdcC10049711F899), the later calls the RewardMaster, which then calls `getRewardAdvice` method on this contract to process the `UNSTAKED` messages. This contract returns the \"advice\" for the RewardMaster with zero `sharesToRedeem`. On the zero advice received, the RewardMaster skips sending reward tokens to the staker, so the buggy code `require(timeNow() < endTime` in the `RewardPool::vestRewards` method does not get called. Furthermore, this contract transfers reward tokens to a staker instead of the RewardMaster as follows. As a part of the `getRewardAdvice` call, this contract: - requests the RewardMaster on the amount of rewards that the staker is already entitled to (there are no mare rewards expected, as the rewarded period ended) - sends the reward amount from this its balance to the staker As a prerequisite, this contract: - shall be authorized as the \"RewardAdviser\" with the RewardMaster for \"classic\" stakes - shall hold reward tokens on its balance",
+    "events": {
+      "Activated(uint256,uint256,uint256)": {
+        "details": "Emitted on activation of this contract"
+      },
+      "RewardPaid(address,uint256)": {
+        "details": "Emitted when reward paid to a staker"
+      }
+    },
+    "kind": "dev",
+    "methods": {
+      "rescueErc20(address,address,uint256)": {
+        "details": "May be only called by the {OWNER}"
+      }
+    },
+    "title": "StakeRewardController2",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "OWNER()": {
+        "notice": "The owner who has privileged rights"
+      },
+      "REWARD_MASTER()": {
+        "notice": "RewardMaster instance authorized to call `getRewardAdvice` on this contract"
+      },
+      "REWARD_TOKEN()": {
+        "notice": "The ERC20 token to pay rewards in"
+      },
+      "STAKING()": {
+        "notice": "Staking contract instance that handles stakes"
+      },
+      "entitled(address)": {
+        "notice": "Returns reward token amount entitled to the given user/account"
+      },
+      "rescueErc20(address,address,uint256)": {
+        "notice": "Withdraws unclaimed rewards or accidentally sent token from this contract"
+      },
+      "rewardsClaimed(address)": {
+        "notice": "Mapping from staker to claimed reward amount"
+      }
+    },
+    "notice": "A bug in RewardPool contract at eth:0xcF463713521Af5cE31AD18F6914f3706493F10e5, after the `endTime`, prevents the RewardMaster (eth:0x347a58878D04951588741d4d16d54B742c7f60fC) from sending staking reward tokens to stakers. This contract implements a work-around.",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 2743,
+        "contract": "contracts/StakeRewardController2.sol:StakeRewardController2",
+        "label": "unclaimedRewards",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 2748,
+        "contract": "contracts/StakeRewardController2.sol:StakeRewardController2",
+        "label": "rewardsClaimed",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_address,t_uint256)"
+      },
+      {
+        "astId": 2750,
+        "contract": "contracts/StakeRewardController2.sol:StakeRewardController2",
+        "label": "_reentrancyStatus",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

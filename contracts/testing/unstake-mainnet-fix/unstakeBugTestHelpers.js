@@ -3,7 +3,7 @@ These helpers are specifically  written for testing the walk-around for the bug
 with `unstake` on the Ethereum mainnet after May 4th, 2022.
 (refer to comments in StakeRewardController2.sol for more info).
 
-!!! Run it with 
+!!! Run it with
 !!! export HARDHAT_FORKING_BLOCK=14718275
 !!! export HARDHAT_FORKING_ENABLED=true
 
@@ -19,17 +19,27 @@ const {
 await defineContracts();
 await deployStakeRewardController2();
 await initializeStakeRewardController2();
+// either ...
+await testUnstake('0x05bd4c867bc95ec76c242f007b3716ab539d6db1', 0);
+await testUnstake('0x6407faa0dbcf9eb9a8897d27890133915549782d', 0);
+// .. or
 await testUnstakeMultiple();
-
 ```
 */
 
 module.exports = {
     defineContracts,
     deployStakeRewardController2,
+    getConstants,
+    getVestingPoolsWithDaoSigner,
     initializeStakeRewardController2,
     testUnstake,
     testUnstakeMultiple,
+    misc: {
+        getConstants,
+        getVestingPoolsMiniAbi,
+        getErc20BalanceOfAbi,
+    },
 };
 
 const {
@@ -52,10 +62,24 @@ const vestingPoolsAddr = '0xb476104aa9D1f30180a01987FB09b1e96dDCF14B';
 
 const provider = ethers.provider;
 
-let rewardMaster, stakeRewardController2, staking, zkp;
+let dao, rewardMaster, stakeRewardController2, staking, vestingPools, zkp;
+
+function getConstants() {
+    return {
+        unstakeAction,
+        stuckUnclaimed,
+        daoAddr,
+        deployerAddr,
+        rewardMassterAddr,
+        stakingAddr,
+        vestingPoolsAddr,
+        zkpAddr,
+    };
+}
 
 async function defineContracts() {
     zkp = new ethers.Contract(zkpAddr, getErc20BalanceOfAbi(), provider);
+    await zkp.deployed();
 
     const Staking = await ethers.getContractFactory('Staking');
     staking = await Staking.attach(stakingAddr, provider);
@@ -74,34 +98,21 @@ async function deployStakeRewardController2() {
     await impersonate(deployerAddr);
     await ensureMinBalance(deployerAddr, '0x2c68af0bb140000'); // 0.2 ETH
     const deployer = await ethers.getSigner(deployerAddr);
-    const StakeRewardController2 = await await ethers.getContractFactory(
+    const StakeRewardController2 = await ethers.getContractFactory(
         'StakeRewardController2',
         provider,
     );
     stakeRewardController2 = await StakeRewardController2.connect(
         deployer,
-    ).deploy(
-        deployer.address,
-        zkpAddr,
-        stakingAddr,
-        rewardMassterAddr,
-        stuckUnclaimed,
-    );
+    ).deploy(daoAddr, zkpAddr, stakingAddr, rewardMassterAddr, stuckUnclaimed);
     await unimpersonate(deployerAddr);
     return stakeRewardController2;
 }
 
 async function initializeStakeRewardController2() {
-    await impersonate(daoAddr);
-    await ensureMinBalance(daoAddr, '0x2c68af0bb140000'); // 0.2 ETH
-    const dao = await ethers.getSigner(daoAddr);
+    await getVestingPoolsWithDaoSigner();
 
     // Mint and vest tokens to the StakeRewardController2
-    const vestingPools = new ethers.Contract(
-        vestingPoolsAddr,
-        getVestingPoolsMiniAbi(),
-        dao,
-    );
     let start = 1653868800; // 2022-05-30T00:00:00.000Z
     let vestingDays = 30;
     const sAllocation = stuckUnclaimed.div(1e12);
@@ -164,8 +175,6 @@ async function initializeStakeRewardController2() {
         ).toLowerCase() == stakeRewardController2.address.toLowerCase(),
         'Error: unexpected "replaced" adviser',
     );
-
-    await unimpersonate(daoAddr);
 }
 
 async function testUnstake(
@@ -236,6 +245,25 @@ async function testUnstake(
     );
 }
 
+async function getVestingPoolsWithDaoSigner() {
+    if (!vestingPools) {
+        // not yet instantinated - let's do that
+        await impersonate(daoAddr);
+        await ensureMinBalance(daoAddr, '0x2c68af0bb140000'); // 0.2 ETH
+        dao = await ethers.getSigner(daoAddr);
+
+        vestingPools = new ethers.Contract(
+            vestingPoolsAddr,
+            getVestingPoolsMiniAbi(),
+            dao,
+        );
+    }
+    // Moved outside `if` to always return promise
+    await vestingPools.deployed();
+
+    return {vestingPools, dao};
+}
+
 function getVestingPoolsMiniAbi() {
     return [
         {
@@ -259,6 +287,27 @@ function getVestingPoolsMiniAbi() {
             ],
             outputs: [],
             stateMutability: 'nonpayable',
+        },
+        {
+            type: 'function',
+            name: 'getPool',
+            inputs: [{name: 'poolId', type: 'uint256'}],
+            outputs: [
+                {
+                    components: [
+                        {name: 'isPreMinted', type: 'bool'},
+                        {name: 'isAdjustable', type: 'bool'},
+                        {name: 'start', type: 'uint32'},
+                        {name: 'vestingDays', type: 'uint16'},
+                        {name: 'sAllocation', type: 'uint48'},
+                        {name: 'sUnlocked', type: 'uint48'},
+                        {name: 'vested', type: 'uint96'},
+                    ],
+                    name: '',
+                    type: 'tuple[]',
+                },
+            ],
+            stateMutability: 'view',
         },
         {
             type: 'function',

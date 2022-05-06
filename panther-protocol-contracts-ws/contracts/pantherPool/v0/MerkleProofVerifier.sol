@@ -26,6 +26,11 @@ abstract contract MerkleProofVerifier {
     // Forbidden triad value
     uint256 private constant iTRIAD_INDEX_FORBIDDEN = 0x3;
 
+    /// @param merkleRoot
+    /// @param triadIndex - index inside triad = { 0, 1, 2 }
+    /// @param triadNodeIndex - index of triad hash ( c0,c1,c2 ) in the tree
+    /// @param leaf - commitment leaf value
+    /// @param pathElements - TREE_DEPTH + 1 elements - c1,c2 & path-elements
     /**
      * @dev Returns true if a `leaf` can be proved to be a part of a Merkle tree
      * defined by `root`. For this, a `proof` must be provided, containing
@@ -69,8 +74,12 @@ abstract contract MerkleProofVerifier {
         }
 
         // [2] - Compute root
-        for (uint256 level = 2; level < proof.length; level++) {
-            if ( (path & ( 0x1 << ( level - 2 ) ) ) == 0 ) { // computed node from left side
+        for (uint8 level = 2; level < proof.length; level++) {
+            bool isLeftNode;
+            unchecked {
+                isLeftNode = ((path & ( 0x1 << ( level - 2 ) ) ) == 0);
+            }
+            if ( isLeftNode ) { // computed node from left side
                 // Hash(left = nodeHash, right = proofElement)
                 nodeHash = PoseidonT3.poseidon([nodeHash,proof[level]]);
             } else { // computed node from right side

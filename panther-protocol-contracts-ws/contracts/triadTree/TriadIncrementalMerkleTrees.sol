@@ -106,7 +106,7 @@ contract TriadIncrementalMerkleTrees is
     }
 
     /**
-     * @notice Returns `triadIndex` index in the thriad-node of the given leaf
+     * @notice Returns `triadIndex` index in the thriad-node of the given leaf = { 0, 1, 2 }
      */
     function getTriadIndex(uint256 leafId) public pure returns (uint256) {
         return getLeafIndex(leafId) % TRIAD_SIZE;
@@ -175,7 +175,7 @@ contract TriadIncrementalMerkleTrees is
         return false;
     }
 
-    /* DONT remove - can be used in tests
+    // DONT remove - can be used in tests
     function insertBatchZkp(bytes32[TRIAD_SIZE] memory leaves)
     internal
     returns (uint256 leftLeafId, bytes32[TREE_DEPTH] memory pathElements)
@@ -240,7 +240,6 @@ contract TriadIncrementalMerkleTrees is
             emit CachedRoot(treeId, nodeHash);
         }
     }
-    */
 
     /**
      * @dev Inserts 3 leaves into the current tree, or a new one, if that's full

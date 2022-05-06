@@ -71,14 +71,14 @@ contract MockTriadIncrementalMerkleTrees is TriadIncrementalMerkleTrees, MerkleP
 
     uint256 leftLeafId;
 
-    /* DONT remove - it can be used
+    // DONT remove - it can be used
     function internalInsertBatchZkp(bytes32[TRIAD_SIZE] memory leaves) external {
         (leftLeafId,pathElements) = insertBatchZkp(leaves);
     }
     function LeafId()
     external
     view
-    returns (uint256 leftLeafId)
+    returns (uint256)
     {
         return leftLeafId;
     }
@@ -90,5 +90,4 @@ contract MockTriadIncrementalMerkleTrees is TriadIncrementalMerkleTrees, MerkleP
     {
         return pathElements;
     }
-    */
 }

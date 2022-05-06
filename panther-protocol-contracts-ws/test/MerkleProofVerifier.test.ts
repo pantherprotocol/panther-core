@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 // @ts-ignore
 import {
-    toBytes32, PathElementsType, toBigNum, Triad
+    toBytes32, PathElementsType, toBigNum, Triad, PathElementsTypeSend
 } from '../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
 import { MockTriadIncrementalMerkleTrees } from '../types';
@@ -11,6 +11,7 @@ import { deployMockTrees } from './helpers/mockTriadTrees';
 import { poseidon } from 'circomlibjs';
 import {TriadMerkleTree} from '../lib/tree';
 import assert from 'assert';
+import { BytesLike } from 'ethers/lib/ethers';
 
 describe('MerkleProofVerifier', () => {
     let trees: MockTriadIncrementalMerkleTrees;
@@ -181,7 +182,7 @@ describe('MerkleProofVerifier', () => {
             return poseidon(inputs);
         };
 
-        describe('FIRST TEST', function () {
+        describe('should be equality between ts & solidity path elements', function () {
             let tree: TriadMerkleTree;
             const PANTHER_CORE_ZERO_VALUE = BigInt('2896678800030780677881716886212119387589061708732637213728415628433288554509');
             const PANTHER_CORE_TREE_DEPTH_SIZE = 15;
@@ -298,8 +299,8 @@ describe('MerkleProofVerifier', () => {
                 let computed = merkleProofThirdInsert[0].pathElements[i][0];
                 expect(BigInt(computed) == ShouldBeMerklePathElementsAfterThirdInsert[i], "Must Be Equal");
             }
-            /* DONT REMOVE THIS CODE - Its used to make tests on MT solidity version
-            it('should `PathElements` be equal to precomputed', async () => {
+            // DONT REMOVE THIS CODE - Its used to make tests on MT solidity version
+            it('should solidity `PathElements` be proofed by solidity verifier', async () => {
                 const commitment0 = poseidon([pubKey[0], pubKey[1], amountsOut[0], token, createTime]);
                 const commitment1 = poseidon([pubKey[0], pubKey[1], amountsOut[1], token, createTime]);
                 const commitment2 = poseidon([pubKey[0], pubKey[1], amountsOut[2], token, createTime]);
@@ -307,30 +308,43 @@ describe('MerkleProofVerifier', () => {
                 const c2 = toBytes32(commitment1);
                 const c3 = toBytes32(commitment2);
                 const commitmentsLeavesTriadNumber = [c1,c2,c3] as Triad;
-                console.log("Commitments:", toBigNum(c1), toBigNum(c2), toBigNum(c3));
-                await trees.internalInsertBatchZkp(commitmentsLeavesTriadNumber);
-                let elements = await trees.PathElements();
-                let index = await  trees.LeafId();
-                console.log("LeafID:", index);
-                for (let i = 0; i < PANTHER_CORE_TREE_DEPTH_SIZE; i++) {
-                    console.log("Solidity 1 insert Path Element [", i, "]", toBigNum(elements[i]));
-                }
-                await trees.internalInsertBatchZkp(commitmentsLeavesTriadNumber);
-                elements = await trees.PathElements();
-                index = await  trees.LeafId();
-                console.log("LeafID:", index);
-                for (let i = 0; i < PANTHER_CORE_TREE_DEPTH_SIZE; i++) {
-                    console.log("Solidity 2 insert Path Element [", i, "]", toBigNum(elements[i]));
-                }
-                await trees.internalInsertBatchZkp(commitmentsLeavesTriadNumber);
-                elements = await trees.PathElements();
-                index = await  trees.LeafId();
-                console.log("LeafID:", index);
-                for (let i = 0; i < PANTHER_CORE_TREE_DEPTH_SIZE; i++) {
-                    console.log("Solidity 3 insert Path Element [", i, "]", toBigNum(elements[i]));
+
+                for( let trys = 0; trys < 64; ++ trys) {
+                    await trees.internalInsertBatchZkp(commitmentsLeavesTriadNumber);
+                    let elements = await trees.PathElements();
+                    let leafID = await trees.LeafId();
+                    let merkleRoot = elements[14];
+                    it('should be proved', async () => {
+                        let PathElements: PathElementsType = [
+                            <BytesLike>commitment1,
+                            <BytesLike>commitment2,
+                            <BytesLike>elements[0],
+                            <BytesLike>elements[1],
+                            <BytesLike>elements[2],
+                            <BytesLike>elements[3],
+                            <BytesLike>elements[4],
+                            <BytesLike>elements[5],
+                            <BytesLike>elements[6],
+                            <BytesLike>elements[7],
+                            <BytesLike>elements[8],
+                            <BytesLike>elements[9],
+                            <BytesLike>elements[10],
+                            <BytesLike>elements[11],
+                            <BytesLike>elements[12],
+                            <BytesLike>elements[13]
+                        ];
+                        await trees.testMerkleProof(
+                            leafID,
+                            merkleRoot,
+                            commitment0,
+                            PathElements
+                        );
+                        let check = await trees.isProofVerified();
+                        expect(check == true, "NOT PROVED");
+                    });
                 }
             });
-            */
+
         });
     });
 

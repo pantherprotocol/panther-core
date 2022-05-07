@@ -18,9 +18,14 @@ export function generateSpendingChildKeypair(
     return deriveKeypairFromSeed(spendingChildPrivKey);
 }
 
-//TODO: Derivation message content to be defined in https://app.clickup.com/t/26gtpr4
 export async function deriveRootKeypairs(signer: Signer): Promise<IKeypair[]> {
-    const derivationMessage = `I'm creating a spending and reading keypairs for ${await signer.getAddress()}`;
+    const derivationMessage = `Greetings from Panther Protocol!
+
+Sign this message in order to obtain the keys to your Panther wallet.
+
+This signature will not cost you any fees.
+
+Keypair version: 1`;
     const signature = await signer.signMessage(derivationMessage);
     const hashedSignature = poseidon([signature]);
     return [

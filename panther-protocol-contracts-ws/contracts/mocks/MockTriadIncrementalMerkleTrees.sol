@@ -4,8 +4,9 @@ pragma solidity ^0.8.4;
 
 import "../triadTree/TriadIncrementalMerkleTrees.sol";
 import "../pantherPool/v0/MerkleProofVerifier.sol";
+import "../pantherPool/v0/PubKeyGenerator.sol";
 
-contract MockTriadIncrementalMerkleTrees is TriadIncrementalMerkleTrees, MerkleProofVerifier {
+contract MockTriadIncrementalMerkleTrees is TriadIncrementalMerkleTrees, MerkleProofVerifier, PubKeyGenerator {
     event InternalInsertBatch(uint256 leftLeafId);
 
     function internalInsertBatch(bytes32[TRIAD_SIZE] memory leaves) external {
@@ -89,5 +90,12 @@ contract MockTriadIncrementalMerkleTrees is TriadIncrementalMerkleTrees, MerkleP
     returns (bytes32[TREE_DEPTH] memory)
     {
         return pathElements;
+    }
+
+    function GeneratePublicSpendingKey(uint256 privKey) external view returns(uint256[2] memory xy) {
+        G1Point memory p; // = G1Point();
+        p = generatePubSpendingKey(privKey);
+        xy[0] = p.x;
+        xy[1] = p.y;
     }
 }

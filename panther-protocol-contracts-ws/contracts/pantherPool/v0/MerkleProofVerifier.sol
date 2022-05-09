@@ -44,9 +44,10 @@ abstract contract MerkleProofVerifier {
         bytes32[TREE_DEPTH + 1] calldata pathElements
     ) internal view {
         // revert if verification fails
-        if ( processProof ( pathElements, leaf, triadNodeIndex, triadIndex ) != merkleRoot ) {
-            revert("Incorrect Merkle Proof");
-        }
+        require (
+            processProof ( pathElements, leaf, triadNodeIndex, triadIndex ) == merkleRoot,
+            ERR_UNKNOWN_MERKLE_ROOT
+        );
     }
 
     /**

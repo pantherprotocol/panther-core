@@ -4,7 +4,7 @@ import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
 } from '../../lib/poseidonBuilder';
-import { MockTriadIncrementalMerkleTrees } from '../../types';
+import { BabyJubJub, MockTriadIncrementalMerkleTrees } from '../../types';
 
 export { deployMockTrees };
 
@@ -17,6 +17,9 @@ async function deployMockTrees(): Promise<MockTriadIncrementalMerkleTrees> {
     const poseidonT4 = await PoseidonT4.deploy();
     await poseidonT4.deployed();
 
+    const BabyJubJubLib = await ethers.getContractFactory('BabyJubJub');
+    const babyJubJub = await BabyJubJubLib.deploy();
+    await babyJubJub.deployed();
     // Link Poseidon contracts
     // @ts-ignore
     const TriadIncrementalMerkleTrees = await ethers.getContractFactory(
@@ -25,6 +28,7 @@ async function deployMockTrees(): Promise<MockTriadIncrementalMerkleTrees> {
             libraries: {
                 PoseidonT3: poseidonT3.address,
                 PoseidonT4: poseidonT4.address,
+                BabyJubJub: babyJubJub.address,
             },
         },
     );
@@ -33,3 +37,4 @@ async function deployMockTrees(): Promise<MockTriadIncrementalMerkleTrees> {
         await TriadIncrementalMerkleTrees.deploy()
     ).deployed() as Promise<MockTriadIncrementalMerkleTrees>;
 }
+

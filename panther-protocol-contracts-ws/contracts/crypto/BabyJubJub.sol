@@ -15,6 +15,10 @@ library BabyJubJub {
     uint256 public constant Q =
         0x30644E72E131A029B85045B68181585D2833E84879B9709143E1F593F0000001;
 
+    // @dev Base point generates the subgroup of points P of Baby Jubjub satisfying l * P = O.
+    // That is, it generates the set of points of order l and origin O.
+    uint256 public constant BASE8_X = 5299619240641551281634865583518297030282874472190772894086521144482721001553;
+    uint256 public constant BASE8_Y = 16950150798460657717958625567821834550301663161624707787222815936182638968203;
     /**
      * @dev Add 2 points on baby jubjub curve
      * Formulae for adding 2 points on a twisted Edwards curve:
@@ -100,5 +104,25 @@ library BabyJubJub {
                 o := mload(memPtr)
             }
         }
+    }
+
+    function mulPointEscalar(G1Point memory point, uint256 scalar) public view returns (G1Point memory r) {
+        r.x = 0;
+        r.y = 1;
+
+        uint256 rem = scalar;
+        G1Point memory exp = point;
+
+        while (rem != uint256(0)) {
+            if ((rem & 1) == 1) {
+                r = pointAdd(r, exp);
+            }
+            exp = pointAdd(exp, exp);
+            rem = rem >> 1;
+        }
+        r.x = r.x % Q;
+        r.y = r.y % Q;
+
+        return r;
     }
 }

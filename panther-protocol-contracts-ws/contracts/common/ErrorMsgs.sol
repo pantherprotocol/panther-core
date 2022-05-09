@@ -66,3 +66,6 @@ string constant ERR_TOO_LARGE_PUBKEY_SIZE = "CG:E1";
 string constant ERR_TOO_LARGE_AMOUNT_SIZE = "CG:E2";
 string constant ERR_TOO_LARGE_ZASSET_ID_SIZE = "CG:E3";
 string constant ERR_TOO_LARGE_CREATION_TIME_SIZE = "CG:E4";
+
+// MerkleProofVerifier
+string constant ERR_MERKLE_PROOF_VERIFICATION_FAILED = "MP:E1";

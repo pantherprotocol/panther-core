@@ -121,7 +121,7 @@ export default function UnstakeTable() {
                             ZKP
                         </TableCell>
                         <TableCell align="right">
-                            {formatCurrency(row.reward)} ZKP
+                            {formatCurrency(BigNumber.from(row.reward))} ZKP
                         </TableCell>
                         <TableCell align="center" className="lockedTill">
                             {formatTime(row.lockedTill * 1000)} <br />

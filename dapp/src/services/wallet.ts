@@ -11,34 +11,50 @@ export const switchNetwork = async (
     const switchToChainId = utils.hexValue(chainId);
     const requiredNetwork = supportedNetworks[chainId];
     try {
+        console.debug('Trying wallet_switchEthereumChain');
         await ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{chainId: switchToChainId}],
         });
+        console.debug('wallet_switchEthereumChain succeeded');
     } catch (switchError: any) {
         // This error code indicates that the chain has not been added to MetaMask.
         if (switchError.code === 4902) {
             try {
+                // https://docs.metamask.io/guide/rpc-api.html#unrestricted-methods
+                const chainParams = {
+                    chainId: switchToChainId,
+                    rpcUrls: [requiredNetwork.rpcURL],
+                    chainName: requiredNetwork.name,
+                    nativeCurrency: {
+                        name: requiredNetwork.name,
+                        symbol: requiredNetwork.symbol,
+                        decimals: requiredNetwork.decimals,
+                    },
+                    blockExplorerUrls: requiredNetwork.explorerURLs,
+                };
                 await ethereum.request({
                     method: 'wallet_addEthereumChain',
-                    params: [
-                        {
-                            chainId: switchToChainId,
-                            rpcUrls: [requiredNetwork.rpcURL],
-                            chainName: requiredNetwork.name,
-                            nativeCurrency: {
-                                name: requiredNetwork.name,
-                                symbol: requiredNetwork.symbol,
-                                decimals: requiredNetwork.decimals,
-                            },
-                            blockExplorerUrls: requiredNetwork.explorerURLs,
-                        },
-                    ],
+                    params: [chainParams],
                 });
             } catch (addError: any) {
-                console.error(addError);
-                openNotification('Add token error', addError, 'danger');
-                if (errorHandler) errorHandler(addError.message);
+                console.error(
+                    'Got error from wallet_addEthereumChain:',
+                    addError,
+                );
+                let errorMsg = addError.message;
+                if (
+                    errorMsg.includes(
+                        'Expected an array with at least one valid string HTTPS url',
+                    ) &&
+                    requiredNetwork.rpcURL.startsWith('http://')
+                ) {
+                    errorMsg =
+                        'You have hit a MetaMask bug! ' +
+                        'See https://github.com/MetaMask/metamask-extension/issues/14416';
+                }
+                openNotification('Add token error', errorMsg, 'danger');
+                if (errorHandler) errorHandler(errorMsg);
             }
         }
     }

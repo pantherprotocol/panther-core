@@ -5,7 +5,8 @@ import {utils} from 'ethers';
 
 import {bigintToBytes32} from './conversions';
 import {formatPrivateKeyForBabyJub} from './keychain';
-import {ICiphertext, PrivateKey, PublicKey, EcdhSharedKey} from './types';
+import {ICiphertext} from './types/message';
+import {PrivateKey, PublicKey, EcdhSharedKey} from './types/keypair';
 
 export const generateEcdhSharedKey = (
     privateKey: PrivateKey,

@@ -25,23 +25,26 @@ export default function StakingInfo() {
         </>
     ) : (
         <>
-            The classic staking rewards program ends on May 4th, so new stakes
-            were automatically disabled by the smart contracts on April 27th as{' '}
-            <SafeMuiLink
-                href="https://docs.pantherprotocol.io/launchdao/voting-proposals/3-launch/staking"
-                underline="always"
-                color="inherit"
-            >
-                previously
-            </SafeMuiLink>{' '}
-            <SafeMuiLink
-                href="https://docs.pantherprotocol.io/dao/governance/proposal-3-polygon-extension/staking"
-                underline="always"
-                color="inherit"
-            >
-                scheduled
-            </SafeMuiLink>
-            .
+            <Typography>
+                The classic staking rewards program ends on May 4th, so new
+                stakes were automatically disabled by the smart contracts on
+                April 27th as{' '}
+                <SafeMuiLink
+                    href="https://docs.pantherprotocol.io/launchdao/voting-proposals/3-launch/staking"
+                    underline="always"
+                    color="inherit"
+                >
+                    previously
+                </SafeMuiLink>{' '}
+                <SafeMuiLink
+                    href="https://docs.pantherprotocol.io/dao/governance/proposal-3-polygon-extension/staking"
+                    underline="always"
+                    color="inherit"
+                >
+                    scheduled
+                </SafeMuiLink>
+                .
+            </Typography>
             <p>
                 You can still unstake{' '}
                 <SafeMuiLink
@@ -73,7 +76,7 @@ export default function StakingInfo() {
             <Typography variant="subtitle2" className="staking-info-title">
                 {subtitle}
             </Typography>
-            <Typography className="staking-info-text">{text}</Typography>
+            <Box className="staking-info-text">{text}</Box>
         </Box>
     );
 }

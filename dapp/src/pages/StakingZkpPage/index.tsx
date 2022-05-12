@@ -6,7 +6,6 @@ import Grid from '@mui/material/Grid';
 import {Box} from '@mui/system';
 import {useWeb3React} from '@web3-react/core';
 
-import AdvancedStakingComingSoon from '../../components/AdvancedStakingComingSoon';
 import BalanceCard from '../../components/BalanceCard';
 import CurrentStakeAPY from '../../components/CurrentStakeAPY';
 import {Footer} from '../../components/Footer';
@@ -17,7 +16,7 @@ import background from '../../images/background.png';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {blurSelector} from '../../redux/slices/blur';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
-import {getUnclaimedRewards} from '../../redux/slices/unclaimedRewards';
+import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
 import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
@@ -108,7 +107,6 @@ function StakingZkpPage() {
                             <Grid item xs={12} md={5}>
                                 <Box width={'100%'}>
                                     <BalanceCard />
-                                    <AdvancedStakingComingSoon />
                                 </Box>
                                 <Footer />
                             </Grid>

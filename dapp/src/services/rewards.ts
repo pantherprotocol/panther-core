@@ -8,14 +8,16 @@ export type Rewards = ClassicRewards | AdvancedRewards;
 
 export type ClassicRewards = BigNumber;
 
-export interface AdvancedRewards {
-    [tokenId: string]: BigNumber;
-}
+export type AdvancedRewards = {
+    [key in AdvancedTokenIDs]: BigNumber;
+};
+
+type AdvancedTokenIDs = 'PRP' | 'zZKP';
 
 export enum TokenID {
-    ZKP,
-    zZKP,
-    PRP,
+    ZKP = 'ZKP',
+    zZKP = 'zZKP',
+    PRP = 'PRP',
 }
 
 /* Constants are described in Advanced Staking Rewards document:
@@ -142,4 +144,8 @@ export function calculateRewardsForAdvancedStake(
         [TokenID.zZKP]: zZkpReward(stake.amount, stake.stakedAt * 1000),
         [TokenID.PRP]: prpReward(stake.amount),
     };
+}
+
+export function isClassic(rewards: Rewards): rewards is ClassicRewards {
+    return rewards instanceof BigNumber;
 }

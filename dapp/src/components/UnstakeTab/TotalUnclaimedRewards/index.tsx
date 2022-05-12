@@ -4,13 +4,13 @@ import {Box, Typography} from '@mui/material';
 import {constants} from 'ethers';
 
 import {useAppSelector} from '../../../redux/hooks';
-import {unclaimedRewardsSelector} from '../../../redux/slices/unclaimedRewards';
+import {zkpUnclaimedRewardsSelector} from '../../../redux/slices/unclaimedStakesRewards';
 import {formatCurrency} from '../../../utils/helpers';
 
 import './styles.scss';
 
 const TotalUnclaimedRewards = () => {
-    const rewardsBalance = useAppSelector(unclaimedRewardsSelector);
+    const rewardsBalance = useAppSelector(zkpUnclaimedRewardsSelector);
     const hasRewards = rewardsBalance && rewardsBalance.gt(constants.Zero);
 
     return (

@@ -15,11 +15,16 @@ import {BigNumber, constants} from 'ethers';
 import infoIcon from '../../images/info-icon.svg';
 import {useAppDispatch} from '../../redux/hooks';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
-import {resetUnclaimedRewards} from '../../redux/slices/unclaimedRewards';
+import {resetUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 import {chainHasStakesReporter} from '../../services/contracts';
-import {unstake, StakeRow, getStakesAndRewards} from '../../services/staking';
+import {
+    unstake,
+    StakeRow,
+    getStakesAndRewards,
+    CLASSIC_TYPE_HEX,
+} from '../../services/staking';
 import {formatTime, formatCurrency} from '../../utils/helpers';
 
 import './styles.scss';
@@ -89,7 +94,7 @@ export default function UnstakeTable() {
         fetchStakedData();
     }, [account, library, fetchStakedData]);
 
-    const unstakeRow = (row: StakeRow) => {
+    const unstakeRow = (row: StakeRow): React.ReactElement => {
         const unstakeButton = (
             <Button
                 className={`btn ${row.unstakable ? 'disable' : ''}`}
@@ -104,34 +109,32 @@ export default function UnstakeTable() {
 
         return (
             <React.Fragment key={row.stakedAt}>
-                {row.claimedAt == 0 && (
-                    <TableRow
-                        sx={{
-                            '&:last-child td, &:last-child th': {
-                                border: 0,
-                            },
-                        }}
-                    >
-                        <TableCell align="center">
-                            {formatTime(row.stakedAt * 1000)}
-                        </TableCell>
-                        <TableCell align="right">
-                            {formatCurrency(row.amount, {
-                                decimals: 2,
-                            })}{' '}
-                            ZKP
-                        </TableCell>
-                        <TableCell align="right">
-                            {formatCurrency(BigNumber.from(row.reward))} ZKP
-                        </TableCell>
-                        <TableCell align="center" className="lockedTill">
-                            {formatTime(row.lockedTill * 1000)} <br />
-                        </TableCell>
-                        <TableCell align="center" className="unstake">
-                            {unstakeButton}
-                        </TableCell>
-                    </TableRow>
-                )}
+                <TableRow
+                    sx={{
+                        '&:last-child td, &:last-child th': {
+                            border: 0,
+                        },
+                    }}
+                >
+                    <TableCell align="center">
+                        {formatTime(row.stakedAt * 1000)}
+                    </TableCell>
+                    <TableCell align="right">
+                        {formatCurrency(row.amount, {
+                            decimals: 2,
+                        })}{' '}
+                        ZKP
+                    </TableCell>
+                    <TableCell align="right">
+                        {formatCurrency(BigNumber.from(row.reward))} ZKP
+                    </TableCell>
+                    <TableCell align="center" className="lockedTill">
+                        {formatTime(row.lockedTill * 1000)} <br />
+                    </TableCell>
+                    <TableCell align="center" className="unstake">
+                        {unstakeButton}
+                    </TableCell>
+                </TableRow>
             </React.Fragment>
         );
     };
@@ -182,7 +185,15 @@ export default function UnstakeTable() {
                         <TableCell align="center">Action</TableCell>
                     </TableRow>
                 </TableHead>
-                <TableBody>{stakedData.map(unstakeRow)}</TableBody>
+                <TableBody>
+                    {stakedData
+                        .filter(
+                            (row: StakeRow) =>
+                                row.claimedAt == 0 &&
+                                row.stakeType === CLASSIC_TYPE_HEX,
+                        )
+                        .map(unstakeRow)}
+                </TableBody>
             </Table>
         </TableContainer>
     );

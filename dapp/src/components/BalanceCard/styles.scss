@@ -13,6 +13,18 @@ $balance-card-background: rgba(99, 114, 136, 0.2);
         backdrop-filter: blur(50px);
         padding: 16px 16px 24px;
 
+        .balance-card-address-holder {
+            display: flex;
+            align-content: center;
+            justify-content: space-between;
+
+            .address-and-balance-holder {
+                background: transparent;
+                margin: 0;
+                padding: 0 0 20px;
+            }
+        }
+
         &-account-holder {
             display: flex;
             justify-content: space-between;

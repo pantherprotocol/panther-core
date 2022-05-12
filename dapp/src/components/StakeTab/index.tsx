@@ -8,7 +8,7 @@ import {BigNumber, utils} from 'ethers';
 
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
-import {resetUnclaimedRewards} from '../../redux/slices/unclaimedRewards';
+import {resetUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {
     getZkpTokenBalance,

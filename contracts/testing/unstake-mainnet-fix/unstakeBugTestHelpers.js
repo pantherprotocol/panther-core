@@ -62,7 +62,7 @@ const stakeRewardController2Addr = '0x1B316635a9Ed279995c78e5a630e13aaD7C0086b';
 const zkpAddr = '0x909E34d3f6124C324ac83DccA84b74398a6fa173';
 const vestingPoolsAddr = '0xb476104aa9D1f30180a01987FB09b1e96dDCF14B';
 
-const provider = ethers.provider;
+const {provider, utils} = ethers;
 
 let dao, rewardMaster, stakeRewardController2, staking, vestingPools, zkp;
 
@@ -111,7 +111,7 @@ async function defineContracts() {
 
 async function deployStakeRewardController2() {
     await impersonate(deployerAddr);
-    await ensureMinBalance(deployerAddr, '0x2c68af0bb140000'); // 0.2 ETH
+    await ensureMinBalance(deployerAddr, utils.parseEther('0.2'));
     const deployer = await ethers.getSigner(deployerAddr);
     const StakeRewardController2 = await ethers.getContractFactory(
         'StakeRewardController2',
@@ -208,7 +208,7 @@ async function testUnstake(
     const stakeAndRewardAmount = entitledBefore.add(stake.amount);
 
     await impersonate(stakerAddr);
-    await ensureMinBalance(stakerAddr, '0x2c68af0bb140000'); // 0.2 ETH
+    await ensureMinBalance(stakerAddr, utils.parseEther('0.2'));
     const staker = await ethers.getSigner(stakerAddr);
     await staking
         .connect(staker)
@@ -264,7 +264,7 @@ async function getVestingPoolsWithDaoSigner() {
     if (!vestingPools) {
         // not yet instantinated - let's do that
         await impersonate(daoAddr);
-        await ensureMinBalance(daoAddr, '0x2c68af0bb140000'); // 0.2 ETH
+        await ensureMinBalance(daoAddr, utils.parseEther('0.2'));
         dao = await ethers.getSigner(daoAddr);
 
         vestingPools = new ethers.Contract(

@@ -82,8 +82,7 @@ module.exports = (hre, stakesData) => {
     const ACTION_STAKE = classicActionHash(STAKE);
     const ACTION_UNSTAKE = classicActionHash(UNSTAKE);
     const oneMatic = utils.parseEther('1');
-
-    const MIN_BALANCE = '0x1000000000000000';
+    const MIN_BALANCE = oneMatic;
 
     const provider = ethers.provider;
 

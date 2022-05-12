@@ -1,5 +1,6 @@
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {ethers, network} from 'hardhat';
+import {BigNumber, utils} from 'ethers';
 
 const provider = ethers.provider;
 
@@ -41,11 +42,28 @@ export const unimpersonate = async (addr: string): Promise<void> => {
 
 export const ensureMinBalance = async (
     account: string,
-    minBalanceStr: string,
+    minBalance: BigNumber,
 ): Promise<void> => {
     const balance = await provider.getBalance(account);
-    const minBalanceBN = ethers.BigNumber.from(minBalanceStr);
-    if (minBalanceBN.gt(balance)) {
-        await provider.send('hardhat_setBalance', [account, minBalanceStr]);
+    if (balance.lt(minBalance)) {
+        console.log(
+            'balance',
+            utils.formatEther(minBalance),
+            '< minBalance',
+            utils.formatEther(balance),
+            '- topping up',
+        );
+        await provider.send('hardhat_setBalance', [
+            account,
+            minBalance.toHexString().replace('0x0', '0x'),
+        ]);
+    } else {
+        console.log(
+            'balance',
+            utils.formatEther(minBalance),
+            '>= minBalance',
+            utils.formatEther(balance),
+            '- nothing to do',
+        );
     }
 };

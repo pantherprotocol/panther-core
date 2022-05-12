@@ -119,6 +119,10 @@ export function calculateRewardsForClassicStake(
         throw new Error('Something went wrong with calculating rewards');
     }
 
+    if (totalStaked.isZero()) {
+        return constants.Zero;
+    }
+
     return rewardsBalance.mul(stake.amount).div(totalStaked);
 }
 

@@ -76,8 +76,9 @@ export default function UnstakeTable() {
             dispatch(getZkpStakedBalance(context));
             dispatch(resetUnclaimedRewards());
             dispatch(getZkpTokenBalance(context));
+            fetchStakedData();
         },
-        [library, chainId, account, context, dispatch],
+        [library, chainId, account, context, dispatch, fetchStakedData],
     );
 
     useEffect(() => {

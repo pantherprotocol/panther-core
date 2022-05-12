@@ -23,7 +23,6 @@ export default function WalletHeader(props: {
     networkLogo?: string;
     networkName?: string;
     networkSymbol?: string;
-    disconnect: () => void;
     switchNetwork: (chainId: number) => void;
 }) {
     const {onConnect} = props;
@@ -115,7 +114,7 @@ export default function WalletHeader(props: {
             {/* disconnection button */}
             {active && !wrongNetwork && (
                 <Box>
-                    <SettingsButton disconnect={props.disconnect} />
+                    <SettingsButton />
                 </Box>
             )}
         </Grid>

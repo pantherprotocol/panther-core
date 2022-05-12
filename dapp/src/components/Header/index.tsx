@@ -15,7 +15,6 @@ const Header = (props: {
     networkLogo?: string;
     networkName?: string;
     networkSymbol?: string;
-    disconnect: () => void;
     switchNetwork: (chainId: number) => void;
 }) => {
     return (
@@ -27,7 +26,6 @@ const Header = (props: {
                         <WalletHeader
                             onConnect={props.onConnect}
                             switchNetwork={props.switchNetwork}
-                            disconnect={props.disconnect}
                             networkName={props.networkName}
                             networkSymbol={props.networkSymbol}
                             networkLogo={props.networkLogo}

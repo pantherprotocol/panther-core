@@ -96,9 +96,9 @@ export async function generatePermitSignature(
     return signature;
 }
 
-function txError(msg: string, diagnostics: any): Error {
-    console.error(msg, diagnostics);
-    openNotification('Transaction error', msg, 'danger', 60000);
+function notifyError(title: string, msg: string, diagnostics: any): Error {
+    console.error(`${title}: ${msg}. Diagnostics info:`, diagnostics);
+    openNotification(title, msg, 'danger', 60000);
     return new Error(msg);
 }
 
@@ -172,9 +172,13 @@ export async function advancedStake(
     amount: BigNumber, // assumes already validated as <= tokenBalance
 ): Promise<BigNumber | Error> {
     if (!chainHasAdvancedStaking(chainId)) {
-        return txError('Advanced staking is not supported on this chain', {
-            chainId,
-        });
+        return notifyError(
+            'Error during stake',
+            'Advanced staking is not supported on this chain',
+            {
+                chainId,
+            },
+        );
     }
 
     const signer = library.getSigner(account);
@@ -216,7 +220,7 @@ export async function stake(
             data,
         );
     } catch (err) {
-        return txError(parseTxErrorMessage(err), err);
+        return notifyError('Transaction error', parseTxErrorMessage(err), err);
     }
 
     const inProgress = openNotification(
@@ -230,7 +234,11 @@ export async function stake(
 
     const event = await getEventFromReceipt(receipt, 'StakeCreated');
     if (event instanceof Error) {
-        return event;
+        return notifyError(
+            'Transaction error',
+            `Cannot find event in receipt. ${parseTxErrorMessage(event)}`,
+            event,
+        );
     }
 
     openNotification(
@@ -387,7 +395,11 @@ export async function unstake(
 
     const event = await getEventFromReceipt(receipt, 'StakeClaimed');
     if (event instanceof Error) {
-        return event;
+        return notifyError(
+            'Transaction error',
+            `Cannot find event in receipt. ${parseTxErrorMessage(event)}`,
+            event,
+        );
     }
 
     openNotification(

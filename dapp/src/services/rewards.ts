@@ -21,8 +21,8 @@ export enum TokenID {
 /* Constants are described in Advanced Staking Rewards document:
 https://docs.google.com/document/d/1lsZlE3RsUlk-Dx_dXAqKxXKWZD18ZuuNA-DKoEsArm4/edit
 */
-export const T_START = Math.floor(new Date('2022-05-12T12:00:00Z').getTime());
-export const T_END = Math.floor(new Date('2022-06-30T12:00:00Z').getTime());
+export const T_START = Number(process.env.ADVANCED_STAKING_T_START);
+export const T_END = Number(process.env.ADVANCED_STAKING_T_END);
 const APY_START = 70;
 const APY_END = 45;
 const DAPY_DT = (APY_END - APY_START) / (T_END - T_START);
@@ -115,8 +115,16 @@ export function calculateRewardsForClassicStake(
         return classicReward;
     }
 
-    if (!rewardsBalance || !totalStaked) {
-        throw new Error('Something went wrong with calculating rewards');
+    if (!rewardsBalance) {
+        throw new Error(
+            'Cannot estimate rewards: rewardsBalance should be defined',
+        );
+    }
+
+    if (!totalStaked) {
+        throw new Error(
+            'Cannot estimate rewards: totalStaked should be defined',
+        );
     }
 
     if (totalStaked.isZero()) {
@@ -131,7 +139,7 @@ export function calculateRewardsForAdvancedStake(
 ): AdvancedRewards {
     return {
         // x1000 is conversion to ms as in Date.getTime() method.
-        zZKP: zZkpReward(stake.amount, stake.stakedAt * 1000),
-        PRP: prpReward(stake.amount),
+        [TokenID.zZKP]: zZkpReward(stake.amount, stake.stakedAt * 1000),
+        [TokenID.PRP]: prpReward(stake.amount),
     };
 }

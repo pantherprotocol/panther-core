@@ -1,18 +1,23 @@
 import {describe, expect} from '@jest/globals';
 import {BigNumber} from 'ethers';
 
-import {
-    getAdvStakingAPY,
-    T_START,
-    T_END,
-    zZkpReward,
-    prpReward,
-} from '../../src/services/rewards';
+describe('Advanced stakes', () => {
+    process.env.ADVANCED_STAKING_T_START = '1652356800000';
+    process.env.ADVANCED_STAKING_T_END = '1656590400000';
 
-describe('Advanced stakes rewards calculation', () => {
+    // Next line produces the following lint error, therefore disabled:
+    // "Require statement not part of import statement
+    // @typescript-eslint/no-var-requires"
+    const {
+        getAdvStakingAPY,
+        zZkpReward,
+        prpReward,
+        T_START,
+        T_END,
+    } = require('../../src/services/rewards'); // eslint-disable-line
+
     const currentTime = new Date('2022-05-17T12:00:00Z');
     const tenDays = 3600 * 24 * 10 * 1000;
-
     const beforeStart = T_START - tenDays;
     const start = T_START;
     const afterStart = T_START + tenDays;

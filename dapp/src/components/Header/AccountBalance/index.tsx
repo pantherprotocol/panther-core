@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {InputAdornment, Typography, IconButton} from '@mui/material';
+import {InputAdornment, IconButton, Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
 import refreshIcon from '../../../images/refresh-icon.svg';
@@ -25,7 +25,7 @@ export default function AccountBalance(props: {
     };
 
     return (
-        <Typography className="account-balance">
+        <Box className="account-balance">
             <IconButton onClick={refreshChainBalance}>
                 <img src={refreshIcon} />
             </IconButton>
@@ -33,6 +33,6 @@ export default function AccountBalance(props: {
             <InputAdornment position="end" className="currency-symbol">
                 <span>{props.networkSymbol || '-'}</span>
             </InputAdornment>
-        </Typography>
+        </Box>
     );
 }

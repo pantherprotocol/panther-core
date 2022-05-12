@@ -6,8 +6,9 @@ import {BigNumber} from 'ethers';
 
 import logo from '../../../images/panther-logo.svg';
 import {useAppSelector} from '../../../redux/hooks';
+import {isStakingOpenSelector} from '../../../redux/slices/stakeTerms';
 import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
-import {chainHasStakingOpen} from '../../../services/staking';
+import {StakeType} from '../../../types/staking';
 import {formatCurrency} from '../../../utils/helpers';
 
 import './styles.scss';
@@ -18,11 +19,14 @@ export default function StakingInput(props: {
     setStakingAmountBN: (amount: BigNumber) => void;
     networkLogo?: string;
 }) {
-    const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
-
     const context = useWeb3React();
     const {account, chainId} = context;
-    const disabled = !account || !chainHasStakingOpen(chainId);
+
+    const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
+    const isStakingOpen = useAppSelector(
+        isStakingOpenSelector(chainId, StakeType.Advanced),
+    );
+    const disabled = !account || !isStakingOpen;
 
     const changeHandler = (e: any) => {
         const inputTextLength = e.target.value.length;

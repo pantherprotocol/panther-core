@@ -15,13 +15,13 @@ import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
 import background from '../../images/background.png';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {blurSelector} from '../../redux/slices/blur';
+import {getStakeTerms} from '../../redux/slices/stakeTerms';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
 import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 import {injected, supportedNetworks, Network} from '../../services/connectors';
-// import {chainHasStakingOpen} from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
 
 import './styles.scss';
@@ -75,6 +75,7 @@ function StakingZkpPage() {
         dispatch(getZkpTokenBalance, context);
         dispatch(getZkpStakedBalance, context);
         dispatch(getUnclaimedRewards, context);
+        dispatch(getStakeTerms, context);
     }, [context, dispatch]);
 
     const isBlur = useAppSelector(blurSelector);

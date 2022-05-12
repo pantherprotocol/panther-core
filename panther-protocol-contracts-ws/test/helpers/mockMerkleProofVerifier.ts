@@ -4,11 +4,11 @@ import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
 } from '../../lib/poseidonBuilder';
-import { BabyJubJub, MockTriadIncrementalMerkleTrees } from '../../types';
+import { BabyJubJub, MockMerkleProofVerifier} from '../../types';
 
-export { deployMockTrees };
+export { deployMockMerkleProofVerifier };
 
-async function deployMockTrees(): Promise<MockTriadIncrementalMerkleTrees> {
+async function deployMockMerkleProofVerifier(): Promise<MockMerkleProofVerifier> {
     const PoseidonT3 = await getPoseidonT3Contract();
     const poseidonT3 = await PoseidonT3.deploy();
     await poseidonT3.deployed();
@@ -17,24 +17,24 @@ async function deployMockTrees(): Promise<MockTriadIncrementalMerkleTrees> {
     const poseidonT4 = await PoseidonT4.deploy();
     await poseidonT4.deployed();
 
-    //const BabyJubJubLib = await ethers.getContractFactory('BabyJubJub');
-    //const babyJubJub = await BabyJubJubLib.deploy();
-    //await babyJubJub.deployed();
+    const BabyJubJubLib = await ethers.getContractFactory('BabyJubJub');
+    const babyJubJub = await BabyJubJubLib.deploy();
+    await babyJubJub.deployed();
     // Link Poseidon contracts
     // @ts-ignore
-    const TriadIncrementalMerkleTrees = await ethers.getContractFactory(
-        'MockTriadIncrementalMerkleTrees',
+    const MerkleProofVerifier = await ethers.getContractFactory(
+        'MockMerkleProofVerifier',
         {
             libraries: {
                 PoseidonT3: poseidonT3.address,
                 PoseidonT4: poseidonT4.address,
-                //BabyJubJub: babyJubJub.address,
+                BabyJubJub: babyJubJub.address,
             },
         },
     );
 
     return (
-        await TriadIncrementalMerkleTrees.deploy()
-    ).deployed() as Promise<MockTriadIncrementalMerkleTrees>;
+        await MerkleProofVerifier.deploy()
+    ).deployed() as Promise<MockMerkleProofVerifier>;
 }
 

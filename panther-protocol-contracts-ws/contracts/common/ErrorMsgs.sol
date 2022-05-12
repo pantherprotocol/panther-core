@@ -69,3 +69,5 @@ string constant ERR_TOO_LARGE_CREATION_TIME_SIZE = "CG:E4";
 
 // MerkleProofVerifier
 string constant ERR_MERKLE_PROOF_VERIFICATION_FAILED = "MP:E1";
+string constant ERR_TRIAD_INDEX_MIN_VALUE = "MP:E2";
+string constant ERR_TRIAD_INDEX_MAX_VALUE = "MP:E3";

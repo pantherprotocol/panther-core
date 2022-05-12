@@ -2,8 +2,11 @@
 pragma solidity ^0.8.4;
 
 import { PoseidonT3, PoseidonT4 } from "../../crypto/Poseidon.sol";
-import { ERR_UNKNOWN_MERKLE_ROOT } from "../../common/ErrorMsgs.sol";
-import "../../triadTree/TriadMerkleZeros.sol";
+import {
+    ERR_UNKNOWN_MERKLE_ROOT,
+    ERR_MERKLE_PROOF_VERIFICATION_FAILED,
+    ERR_TRIAD_INDEX_MIN_VALUE,
+    ERR_TRIAD_INDEX_MAX_VALUE } from "../../common/ErrorMsgs.sol";
 
 abstract contract MerkleProofVerifier {
     // @dev Number of levels in a tree excluding the root level
@@ -17,25 +20,23 @@ abstract contract MerkleProofVerifier {
     //2 | 1  0 | hash(L,R,C)
     //3 | 1  1 | Not allowed
     //--|------|------------
-    // Current leaf index in thiad is (C,L,R)
+    // Current leaf index in triad is (C,L,R)
     uint256 private constant iTRIAD_INDEX_LEFT = 0x0;
-    // Current leaf index in thiad is (L,C,R)
+    // Current leaf index in triad is (L,C,R)
     uint256 private constant iTRIAD_INDEX_MIDDLE = 0x1;
-    // Current leaf index in thiad is (L,R,C)
+    // Current leaf index in triad is (L,R,C)
     uint256 private constant iTRIAD_INDEX_RIGHT = 0x2;
-    // Forbidden triad value
+    // Forbidden triad value in tria is `11`
     uint256 private constant iTRIAD_INDEX_FORBIDDEN = 0x3;
 
-    /// @param merkleRoot
+    /// @param merkleRoot - verify checked to this hash
     /// @param triadIndex - index inside triad = { 0, 1, 2 }
-    /// @param triadNodeIndex - index of triad hash ( c0,c1,c2 ) in the tree
+    /// @param triadNodeIndex - index of triad hash ( c0,c1,c2 ) in the tree - Triad contract insures its is in range
     /// @param leaf - commitment leaf value
     /// @param pathElements - TREE_DEPTH + 1 elements - c1,c2 & path-elements
-    /**
-     * @dev Returns true if a `leaf` can be proved to be a part of a Merkle tree
-     * defined by `root`. For this, a `proof` must be provided, containing
-     * sibling hashes on the branch from the leaf to the root of the tree.
-     */
+    /// @dev Returns true if a `leaf` can be proved to be a part of a Merkle tree
+    /// defined by `root`. For this, a `proof` must be provided, containing
+    /// sibling hashes on the branch from the leaf to the root of the tree.
     function verifyMerkleProof(
         bytes32 merkleRoot,
         uint256 triadIndex,
@@ -43,51 +44,43 @@ abstract contract MerkleProofVerifier {
         bytes32 leaf,
         bytes32[TREE_DEPTH + 1] calldata pathElements
     ) internal view {
-        // revert if verification fails
-        require (
-            processProof ( pathElements, leaf, triadNodeIndex, triadIndex ) == merkleRoot,
-            ERR_UNKNOWN_MERKLE_ROOT
-        );
-    }
-
-    /**
-     * @dev Returns the rebuilt hash obtained by traversing a Merklee tree up
-     * from `leaf` using `proof`. A `proof` is valid if and only if the rebuilt
-     * hash matches the root of the tree.
-     */
-    function processProof(
-        bytes32[TREE_DEPTH+1] memory proof,
-        bytes32 leaf,
-        uint256 path,
-        uint256 triadIndex
-    ) private pure returns (bytes32) {
         // [0] - Require
-        require( triadIndex != iTRIAD_INDEX_FORBIDDEN, "Triad index can't be b`11`" );
+        //require( iTRIAD_INDEX_LEFT <= triadIndex, "Triad index must be in range 0..2"); //ERR_TRIAD_INDEX_MIN_VALUE );
+        //require( triadIndex < iTRIAD_INDEX_FORBIDDEN, "Triad index must be in range 0..2");// ERR_TRIAD_INDEX_MAX_VALUE );
+        //require( iTRIAD_INDEX_LEFT <= triadIndex, ERR_TRIAD_INDEX_MIN_VALUE );
+        //require( triadIndex < iTRIAD_INDEX_FORBIDDEN, ERR_TRIAD_INDEX_MAX_VALUE );
 
         // [1] - Compute zero level hash
         bytes32 nodeHash;
+        // NOTE: no else-case needed since this code executed after require at step [0]
         if( triadIndex == iTRIAD_INDEX_LEFT) {
-            nodeHash = PoseidonT4.poseidon([leaf,proof[0],proof[1]]);
+            nodeHash = PoseidonT4.poseidon( [ leaf, pathElements[0], pathElements[1] ] );
         } else if ( triadIndex == iTRIAD_INDEX_MIDDLE ) {
-            nodeHash = PoseidonT4.poseidon([proof[0],leaf,proof[1]]);
+            nodeHash = PoseidonT4.poseidon( [ pathElements[0], leaf, pathElements[1] ] );
         } else if ( triadIndex == iTRIAD_INDEX_RIGHT ) {
-            nodeHash = PoseidonT4.poseidon([proof[0],proof[1],leaf]);
+            nodeHash = PoseidonT4.poseidon( [ pathElements[0], pathElements[1], leaf ] );
         }
 
         // [2] - Compute root
-        for (uint8 level = 2; level < proof.length; level++) {
+        for (uint256 level = 2; level < pathElements.length; level++) {
             bool isLeftNode;
             unchecked {
-                isLeftNode = ((path & ( 0x1 << ( level - 2 ) ) ) == 0);
+                // triadNodeIndex is actually a path to triad-node in merkle-tree
+                // each LSB bit of this number is left or right path
+                // it means for example: path = b111 , zero leaf will be from right size of hash
+                // and path element[2] will be from right side of hash, all other path elements [3,4] will be from
+                // left side of the next hashes till root.
+                isLeftNode = ((triadNodeIndex & ( 0x1 << ( level - 2 ) ) ) == 0);
             }
             if ( isLeftNode ) { // computed node from left side
-                // Hash(left = nodeHash, right = proofElement)
-                nodeHash = PoseidonT3.poseidon([nodeHash,proof[level]]);
+                // Hash(left = nodeHash, right = pathElement)
+                nodeHash = PoseidonT3.poseidon( [ nodeHash, pathElements [ level ] ] );
             } else { // computed node from right side
-                // Hash(left = proofElement, right = nodeHash)
-                nodeHash = PoseidonT3.poseidon([proof[level],nodeHash]);
+                // Hash(left = pathElement, right = nodeHash)
+                nodeHash = PoseidonT3.poseidon( [ pathElements [ level ], nodeHash ] );
             }
         }
-        return nodeHash;
+        // [3] - revert if verification fails
+        require ( merkleRoot == nodeHash, ERR_MERKLE_PROOF_VERIFICATION_FAILED );
     }
 }

@@ -14,7 +14,7 @@ import { deployMockTrees } from './helpers/mockTriadTrees';
 import { triads, rootsSeen } from './data/triadTreeSample';
 
 describe('IncrementalMerkleTree', () => {
-    console.log("ZeroLeaf ", toBigNum(zeroLeaf));
+
     let trees: MockTriadIncrementalMerkleTrees;
     let snapshot: number;
 

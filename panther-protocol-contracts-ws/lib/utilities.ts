@@ -9,11 +9,19 @@ type Tuple<T, N extends number, A extends any[] = []> = A extends {
     ? A
     : Tuple<T, N, [...A, T]>;
 
+
+type Tuple2<T> = Tuple<T, 2>;
 type Tuple3<T> = Tuple<T, 3>;
 type Tuple14<T> = Tuple<T, 14>;
 type Tuple16<T> = Tuple<T, 16>;
 
+export type Pair = Tuple2<BytesLike>;
 export type Triad = Tuple3<BytesLike>;
+
+export type Pair2of2<T> = Tuple<Tuple2<T>, 2>;
+export type Triad3of3<T> = Tuple<Tuple3<T>, 3>;
+export type Triad3of2<T> = Tuple<Tuple2<T>, 3>;
+
 export type PathElementsType = Tuple16<BytesLike>;
 export type PathElementsTypeSend = Tuple14<BytesLike>;
 

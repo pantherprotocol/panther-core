@@ -6,7 +6,7 @@ import {
     toBytes32, PathElementsType, toBigNum, Triad, PathElementsTypeSend
 } from '../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MockTriadIncrementalMerkleTrees } from '../types';
+import { MockMerkleProofVerifier, MockTriadIncrementalMerkleTrees } from '../types';
 import { deployMockTrees } from './helpers/mockTriadTrees';
 import { poseidon, babyjub } from 'circomlibjs';
 import {TriadMerkleTree} from '../lib/tree';
@@ -18,15 +18,16 @@ import crypto from 'crypto';
 import { utils } from 'ethers';
 import { bigintToBytes32 } from '../lib/conversions';
 import { text } from 'stream/consumers';
+import { deployMockMerkleProofVerifier } from './helpers/mockMerkleProofVerifier';
 
-'../lib/keychain';
+import '../lib/keychain';
 
 describe('MerkleProofVerifier', () => {
-    let trees: MockTriadIncrementalMerkleTrees;
+    let trees: MockMerkleProofVerifier;
     let snapshot: number;
 
     before(async () => {
-        trees = await deployMockTrees();
+        trees = await deployMockMerkleProofVerifier();
     });
 
     describe('internal `testVerifyMerkleProof` method - by using circom zkp-input test values', function () {
@@ -151,28 +152,6 @@ describe('MerkleProofVerifier', () => {
                 let check = await trees.isProofVerified();
                 expect(check == true, "NOT PROVED");
             });
-            /*
-            it('should emit the `PathElements` event', async () => {
-                await trees.internalInsertBatchZkp(commitmentsLeavesTriadNumber);
-                const elements = await trees.PathElementsV();
-                console.log("Solidity NodeHash(3):", elements[0], " vs TypeScript NodeHash(3):", "0x" + BigInt(NodeHash).toString(16));
-                const indexes = await trees.PathIndexesV();
-                console.log("Elements:", elements);
-                console.log("Indexes:", indexes);
-                for(let i = 0; i < 15; ++i) {
-                    console.log("PathElement[", i , "]:", toBigNum(elements[i]), toBigNum(elements[i]));
-                }
-                console.log("MT-Root", toBigNum(elements[15]));
-                let indexesBigInts : BigInt[] = [];
-                for(let i = 1; i < 16; ++i) {
-                    indexesBigInts.push(BigInt(indexes[i] ? 1:0 ));
-                }
-                console.log("Path-Indexes:", indexesBigInts);
-                expect(true);
-                let CurrentRoot = await trees.curRoot();
-                let CurrentRootNum = toBigNum(CurrentRoot.root);
-                console.log("Current Root:", CurrentRootNum);
-             */
         });
     });
 
@@ -216,9 +195,6 @@ describe('MerkleProofVerifier', () => {
                 tree.genMerklePath(1),
                 tree.genMerklePath(2)
             ];
-            //console.log("Merkle Proofs for 0 leaf after first insert:", merkleProof[0]);
-            //console.log("Merkle Proofs for 1 leaf after first insert:", merkleProof[1]);
-            //console.log("Merkle Proofs for 2 leaf after first insert:", merkleProof[2]);
 
             // These values were extracted from solidity code
             const ShouldBeMerklePathElementsAfterFirstInsert = [
@@ -456,7 +432,7 @@ describe('MerkleProofVerifier', () => {
                 const K = babyjub.mulPointEscalar(S,r)[0]; // Sender generates Shared Ephemeral Key = rsB = rS
                 const R = babyjub.mulPointEscalar(babyjub.Base8, r); // This key is shared in open form = rB
                 // [2] - Encrypt text - Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
-                const textToBeCiphered = new Uint8Array( [/*...[0,0,0,0,0,0,0,0,0,0,0,0],*/...bnToBuf(prolog), ...(bnToBuf(r))]);
+                const textToBeCiphered = new Uint8Array( [...bnToBuf(prolog), ...(bnToBuf(r))]);
                 expect(textToBeCiphered.length, "cipher text before encryption").equal(36);
                 // ***********************************************
                 // This is encryption function *******************

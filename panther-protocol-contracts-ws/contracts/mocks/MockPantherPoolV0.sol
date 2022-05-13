@@ -4,21 +4,51 @@ pragma solidity ^0.8.4;
 
 import "../PantherPoolV0.sol";
 import "../Vault.sol";
+import "../common/Types.sol";
 
 contract MockPantherPoolV0 is PantherPoolV0 {
 
     Vault vault;
-    constructor() PantherPoolV0(msg.sender,0,address(vault)) public {
-
+    constructor() PantherPoolV0(msg.sender,timeNow()+100,address(vault = new Vault())) public {
+        ZAsset memory z1;
+        z1.tokenType = ERC20_TOKEN_TYPE;
+        z1.scale = 0;
+        z1.token = address(uint160(111));
+        z1.status = zASSET_ENABLED;
+        addAsset(z1);
     }
+
+    function GetZAssetId(uint256 token, uint256 tokenId) external pure returns (uint256){
+        return getZAssetId(address(uint160(token)), tokenId);
+    }
+
+    function GenerateCommitments(
+        uint256 pubSpendingKeyX,
+        uint256 pubSpendingKeyY,
+        uint256 amount,
+        uint256 zAssetId,
+        uint256 creationTime
+    ) external pure returns (uint256) {
+        return uint256(generateCommitment(pubSpendingKeyX,pubSpendingKeyX,amount,zAssetId,creationTime));
+    }
+
+    function GenerateDepositsFullApi(
+        uint256[OUT_UTXOs] calldata tokens,
+        uint256[OUT_UTXOs] calldata tokenIds,
+        uint256[OUT_UTXOs] calldata extAmounts,
+        uint256[2][OUT_UTXOs] calldata pubKeys,
+        uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
+        uint256 createdAt
+    ) external {
+    }
+
     function GenerateDepositsExtended(
         uint256[OUT_UTXOs] calldata tokens,
         uint256[OUT_UTXOs] calldata extAmounts,
         uint256[2] calldata pubKeys,
-        uint256[CIPHERTEXT1_WORDS] calldata secrets
-//uint256[2][OUT_UTXOs] calldata pubKeys,
-//uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets
-) external {
+        uint256[CIPHERTEXT1_WORDS] calldata secrets,
+        uint256 createdAt
+    ) external {
 
         address[OUT_UTXOs] memory tokenss;
         tokenss[0] = address(uint160(tokens[0]));
@@ -50,20 +80,32 @@ contract MockPantherPoolV0 is PantherPoolV0 {
 
         uint256 creationTime = 0;
 
-        this.generateDeposits(tokenss,tokenIds,extAmounts,pubKeyss,secretss, creationTime);
+        this.generateDeposits(tokenss,tokenIds,extAmounts,pubKeyss,secretss, createdAt);
     }
 
     function GenerateDeposits() external {
 
         address[OUT_UTXOs] memory tokens;
-        tokens[0] = address(1);
-        tokens[1] = address(2);
-        tokens[2] = address(3);
+        tokens[0] = address(111);
+        tokens[1] = address(111);
+        tokens[2] = address(111);
+
 
         uint256[OUT_UTXOs] memory tokenIds;
         tokenIds[0] = 1;
         tokenIds[1] = 2;
         tokenIds[2] = 3;
+
+        ZAsset memory z1;
+        z1.tokenType = ERC20_TOKEN_TYPE;
+        z1.scale = 0;
+        z1.token = tokens[0];
+        z1.status = zASSET_ENABLED;
+        addAsset(z1);
+        z1.token = tokens[1];
+        addAsset(z1);
+        z1.token = tokens[2];
+        addAsset(z1);
 
         uint256[OUT_UTXOs] memory extAmounts;
         extAmounts[0] = 1;

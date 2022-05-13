@@ -15,13 +15,14 @@ import { BytesLike } from 'ethers/lib/ethers';
 import {generateRandomBabyJubValue,multiplyScalars} from '../lib/keychain';
 import { encryptMessage, generateEcdhSharedKey } from '../lib/message-encryption';
 import crypto from 'crypto';
-import { utils } from 'ethers';
+import { ethers, utils } from 'ethers';
 import { bigintToBytes32 } from '../lib/conversions';
 import { text } from 'stream/consumers';
 import { deployMockMerkleProofVerifier } from './helpers/mockMerkleProofVerifier';
 
 import '../lib/keychain';
 import { deployMockPantherPoolV0 } from './helpers/mockPantherPoolV0';
+import { defaultAbiCoder, keccak256 } from 'ethers/lib/utils';
 
 describe('PantherPoolV0', () => {
     let trees: MockPantherPoolV0;
@@ -31,7 +32,7 @@ describe('PantherPoolV0', () => {
         trees = await deployMockPantherPoolV0();
     });
 
-    describe('verify proof using zero panther-core tree & solidity verifier', () => {
+    describe('TEST', () => {
         before(async () => {
             snapshot = await takeSnapshot();
         });
@@ -45,7 +46,7 @@ describe('PantherPoolV0', () => {
             return poseidon(inputs);
         };
 
-        describe('TEST-0', async () => {
+        describe('TEST-0', function () {
             let tree: TriadMerkleTree;
             const PANTHER_CORE_ZERO_VALUE = BigInt('2896678800030780677881716886212119387589061708732637213728415628433288554509');
             const PANTHER_CORE_TREE_DEPTH_SIZE = 15;
@@ -200,29 +201,72 @@ describe('PantherPoolV0', () => {
             const r_from_chain = decrypted_from_chain.slice(4,4+32);
             expect(bufToBn(r_from_chain),"extracted from chain random must be equal").equal(r);
             // [4] - TODO: call generateDeposits - with R & cipherTextMessageV1 for each OUT_UTXOs = 3
-            await trees.GenerateDeposits();
-
+            /*
+            it('GenerateDeposits', async () => {
+                await trees.GenerateDeposits();
+            });
+            */
+            const Token = BigInt(111);
             const tokens = [
-                toBytes32(BigInt(111).toString()),
-                toBytes32(BigInt(111).toString()),
-                toBytes32(BigInt(111).toString()),
+                toBytes32(Token.toString()),
+                toBytes32(Token.toString()),
+                toBytes32(Token.toString()),
             ] as Triad;
-
+            const Amounts = [BigInt(7),BigInt(8),BigInt(9)];
             const amounts = [
-                toBytes32(BigInt(7).toString()),
-                toBytes32(BigInt(8).toString()),
-                toBytes32(BigInt(9).toString()),
+                toBytes32(Amounts[0].toString()),
+                toBytes32(Amounts[1].toString()),
+                toBytes32(Amounts[2].toString()),
             ] as Triad;
 
-            const spendingPublicKey = [toBytes32(K[0].toString()),toBytes32(K[1].toString())] as Pair;
+            const spendingPublicKey = [toBytes32(K[0].toString()), toBytes32(K[1].toString())] as Pair;
             const secrets = [
-                toBytes32(bufToBn(cipherTextMessageV1.slice(0,32)).toString()),
-                toBytes32(bufToBn(cipherTextMessageV1.slice(32,64)).toString()),
-                toBytes32(bufToBn(cipherTextMessageV1.slice(64,96)).toString()),
+                toBytes32(bufToBn(cipherTextMessageV1.slice(0, 32)).toString()),
+                toBytes32(bufToBn(cipherTextMessageV1.slice(32, 64)).toString()),
+                toBytes32(bufToBn(cipherTextMessageV1.slice(64, 96)).toString()),
             ] as Triad;
 
-            await trees.GenerateDepositsExtended( tokens, amounts, spendingPublicKey, secrets );
+            const createdAtNum = BigInt('1652375774');
+            const createdAt = toBytes32(createdAtNum.toString());
+            const leftLeafID = 0;
 
+            function concat(arrays) {
+                // sum of individual array lengths
+                let totalLength = arrays.reduce((acc, value) => acc + value.length, 0);
+
+                let result = new Uint8Array(totalLength);
+
+                if (!arrays.length) return result;
+
+                // for each array - copy it over result
+                // next array is copied right after the previous one
+                let length = 0;
+                for(let array of arrays) {
+                    result.set(array, length);
+                    length += array.length;
+                }
+
+                return result;
+            }
+
+            it('GenerateDepositsExt', async () => {
+                // This is real token number that will be used inside circom
+                const zAssetIdSol = await trees.GetZAssetId(toBytes32(BigInt(111).toString()),toBytes32(BigInt(0).toString()));
+                const zAssetIdTs = keccak256(defaultAbiCoder.encode(["uint256","uint256"],[BigInt(111),BigInt(0)]));
+                // const zAssetIdTs = defaultAbiCoder.encode(["uint160"],[keccak256(defaultAbiCoder.encode(["uint256","uint256"],[BigInt(111),BigInt(0)]))]);
+                // TODO: cast zAssetIdTs to uint160
+                // const z = toBigNum(zAssetIdTs);
+                // const z1 = Number(z) >> 96;
+                // expect(zAssetIdSol, "Solidity token is equal to typescript token").equal( z1 );
+                // TODO: uze zAssetIdTs to generate commitment inside TS
+                const commitment = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], zAssetIdSol, amounts[0], createdAt);
+
+
+                // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
+                await expect(await trees.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).
+                to.emit(trees, 'NewCommitments').
+                withArgs(leftLeafID,createdAtNum,[commitment,commitment,commitment],3);
+            });
             /*
             const s1 = generateRandomBabyJubValue();
             const S1 = babyjub.mulPointEscalar(babyjub.Base8, s1);

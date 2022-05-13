@@ -36,6 +36,20 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         return bytes32(n);
     }
 
+    function Exit(
+        uint256 token,
+        uint256 tokenId,
+        uint256 amount,
+        uint256 creationTime,
+        uint256 privSpendingKey,
+        uint256 leafId,
+        bytes32[TREE_DEPTH + 1] calldata pathElements,
+        bytes32 merkleRoot,
+        uint256 cacheIndexHint
+    ) external {
+        this.exit(address(uint160(token)),tokenId,amount,creationTime,privSpendingKey,leafId,pathElements,merkleRoot,cacheIndexHint);
+    }
+
     function GenerateDepositsFullApi(
         uint256[OUT_UTXOs] calldata tokens,
         uint256[OUT_UTXOs] calldata tokenIds,

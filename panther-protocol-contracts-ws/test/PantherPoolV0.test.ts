@@ -48,32 +48,6 @@ describe('PantherPoolV0', () => {
         };
 
         describe('TEST-0', function () {
-            let tree: TriadMerkleTree;
-            const PANTHER_CORE_ZERO_VALUE = BigInt('2896678800030780677881716886212119387589061708732637213728415628433288554509');
-            const PANTHER_CORE_TREE_DEPTH_SIZE = 15;
-            tree = new TriadMerkleTree(PANTHER_CORE_TREE_DEPTH_SIZE, PANTHER_CORE_ZERO_VALUE, poseidon2or3);
-
-            const amountsOut = [BigInt('7'), BigInt('8'), BigInt('9')];
-            const token: BigInt = BigInt('111');
-            const createTime: BigInt = BigInt('1651062006');
-            const pubKey: BigInt[] = [
-                BigInt('18387562449515087847139054493296768033506512818644357279697022045358977016147'),
-                BigInt('2792662591747231738854329419102915533513463924144922287150280827153219249810')
-            ];
-            const commitments = [
-                poseidon([pubKey[0], pubKey[1], amountsOut[0], token, createTime]),
-                poseidon([pubKey[0], pubKey[1], amountsOut[1], token, createTime]),
-                poseidon([pubKey[0], pubKey[1], amountsOut[2], token, createTime])
-            ];
-            // [0] - First insert
-            tree.insertBatch([BigInt(commitments[0]), BigInt(commitments[1]), BigInt(commitments[2])]);
-
-            let merkleProof = [
-                tree.genMerklePath(0),
-                tree.genMerklePath(1),
-                tree.genMerklePath(2)
-            ];
-
             function bnToBuf(bn) {
                 // The handy-dandy `toString(base)` works!!
                 var hex = BigInt(bn).toString(16);
@@ -118,9 +92,6 @@ describe('PantherPoolV0', () => {
                 return BigInt('0x' + hex.join(''));
             }
 
-            //let amount = [BigInt('7'),BigInt('8'),BigInt('9')];
-            //let token  = [BigInt('111'),BigInt('112'), BigInt('113')];
-            const prolog = 0xEEFFEEFF;
             // [0] - Recipient side
             const s = generateRandomBabyJubValue(); // Spender Private Key
             const S = babyjub.mulPointEscalar(babyjub.Base8, s); // Spender Public Key - Shared & known to sender
@@ -130,6 +101,7 @@ describe('PantherPoolV0', () => {
             const K = babyjub.mulPointEscalar(S,r); // Sender generates Shared Ephemeral Key = rsB = rS
             const R = babyjub.mulPointEscalar(babyjub.Base8, r); // This key is shared in open form = rB
             // [2] - Encrypt text - Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
+            const prolog = 0xEEFFEEFF; // THIS prolog must be used as is, according to specs
             const textToBeCiphered = new Uint8Array( [...bnToBuf(prolog).slice(0,4), ...(bnToBuf(r))]);
             expect(textToBeCiphered.length, "cipher text before encryption").equal(36);
             // ***********************************************
@@ -206,11 +178,6 @@ describe('PantherPoolV0', () => {
             const r_from_chain = decrypted_from_chain.slice(4,4+32);
             expect(bufToBn(r_from_chain),"extracted from chain random must be equal").equal(r);
             // [4] - TODO: call generateDeposits - with R & cipherTextMessageV1 for each OUT_UTXOs = 3
-            /*
-            it('GenerateDeposits', async () => {
-                await trees.GenerateDeposits();
-            });
-            */
             const Token = BigInt(111);
             const tokens = [
                 toBytes32(Token.toString()),
@@ -234,6 +201,7 @@ describe('PantherPoolV0', () => {
             const createdAtNum = BigInt('1652375774');
             const createdAt = toBytes32(createdAtNum.toString());
             const leftLeafID = 0;
+            let zAsset_from_chain = BigNumber.from(0);
 
             function concat(arrays) {
                 // sum of individual array lengths
@@ -254,14 +222,13 @@ describe('PantherPoolV0', () => {
                 return result;
             }
 
-            it('GenerateDepositsExt', async () => {
+            it('GenerateDepositsExtended', async () => {
                 // This is real token number that will be used inside circom
-                const zAssetIdSol = await poolV0.GetZAssetId(Token,BigInt(0));
-
+                const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
+                zAsset_from_chain = zAssetIdSol;
                 const zAssetIdBuf1 = bnToBuf(zAssetIdSol);
                 const amountBuf1 = bnToBuf(Amounts[0]);
-                const merged1 = new Uint8Array([...zAssetIdBuf1.slice(0,20), ...amountBuf1.slice(0,12).reverse()]);
-                // console.log("m:", merged1);
+                const merged1 = new Uint8Array([...zAssetIdBuf1.slice(0, 20), ...amountBuf1.slice(0, 12).reverse()]);
                 const secrets_from_chain1 = [
                     {
                         "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(0, 32)).toString()),
@@ -272,7 +239,7 @@ describe('PantherPoolV0', () => {
                         "_isBigNumber": true
                     },
                     {
-                        "_hex":  toBytes32(bufToBn(cipherTextMessageV1.slice(64, 96)).toString()),
+                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(64, 96)).toString()),
                         "_isBigNumber": true
                     },
                     {
@@ -283,7 +250,7 @@ describe('PantherPoolV0', () => {
 
                 const zAssetIdBuf2 = bnToBuf(zAssetIdSol);
                 const amountBuf2 = bnToBuf(Amounts[1]);
-                const merged2 = new Uint8Array([...zAssetIdBuf2.slice(0,20), ...amountBuf2.slice(0,12)]);
+                const merged2 = new Uint8Array([...zAssetIdBuf2.slice(0, 20), ...amountBuf2.slice(0, 12)]);
                 const secrets_from_chain2 = [
                     {
                         "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(0, 32)).toString()),
@@ -294,7 +261,7 @@ describe('PantherPoolV0', () => {
                         "_isBigNumber": true
                     },
                     {
-                        "_hex":  toBytes32(bufToBn(cipherTextMessageV1.slice(64, 96)).toString()),
+                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(64, 96)).toString()),
                         "_isBigNumber": true
                     },
                     {
@@ -305,7 +272,7 @@ describe('PantherPoolV0', () => {
 
                 const zAssetIdBuf3 = bnToBuf(zAssetIdSol);
                 const amountBuf3 = bnToBuf(Amounts[2]);
-                const merged3 = new Uint8Array([...zAssetIdBuf3.slice(0,20), ...amountBuf3.slice(0,12)]);
+                const merged3 = new Uint8Array([...zAssetIdBuf3.slice(0, 20), ...amountBuf3.slice(0, 12)]);
                 const secrets_from_chain3 = [
                     {
                         "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(0, 32)).toString()),
@@ -316,15 +283,14 @@ describe('PantherPoolV0', () => {
                         "_isBigNumber": true
                     },
                     {
-                        "_hex":  toBytes32(bufToBn(cipherTextMessageV1.slice(64, 96)).toString()),
+                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(64, 96)).toString()),
                         "_isBigNumber": true
                     },
                     {
                         "_hex": toBytes32(bufToBn(merged3).toString()),
                         "_isBigNumber": true
                     },
-                ];
-
+                ]
                 // const zAssetIdTs = keccak256(defaultAbiCoder.encode(["uint256","uint256"],[Token,BigInt(0)]));
                 // const zAssetIdTs = defaultAbiCoder.encode(["uint160"],[keccak256(defaultAbiCoder.encode(["uint256","uint256"],[BigInt(111),BigInt(0)]))]);
                 // TODO: cast zAssetIdTs to uint160
@@ -347,26 +313,18 @@ describe('PantherPoolV0', () => {
                     zAssetIdSol,
                     createdAtNum
                 ]);
-                expect(commitment1,"Solidity commitment-1 must be equal to TS commitment").equal(commitment1_internal);
+                expect(commitment1, "Solidity commitment-1 must be equal to TS commitment").equal(commitment1_internal);
 
                 const commitment2 = await poolV0.GenerateCommitments(K[0], K[1], Amounts[1], zAssetIdSol, createdAtNum);
-                const commitment2_internal = poseidon([K[0],K[1],Amounts[1],zAssetIdSol,createdAtNum]);
-                expect(commitment2,"Solidity commitment-2 must be equal to TS commitment").equal(commitment2_internal);
+                const commitment2_internal = poseidon([K[0], K[1], Amounts[1], zAssetIdSol, createdAtNum]);
+                expect(commitment2, "Solidity commitment-2 must be equal to TS commitment").equal(commitment2_internal);
 
                 const commitment3 = await poolV0.GenerateCommitments(K[0], K[1], Amounts[2], zAssetIdSol, createdAtNum);
-                const commitment3_internal = poseidon([K[0],K[1],Amounts[2],zAssetIdSol,createdAtNum]);
-                expect(commitment3,"Solidity commitment-3 must be equal to TS commitment").equal(commitment3_internal);
-
-                //const tx = await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt);
-                //let receipt = await tx.wait();
-                //for ( const event of receipt.events ) {
-                //    console.log(`Event ${event.event} with args ${event.args}`);
-                //}
+                const commitment3_internal = poseidon([K[0], K[1], Amounts[2], zAssetIdSol, createdAtNum]);
+                expect(commitment3, "Solidity commitment-3 must be equal to TS commitment").equal(commitment3_internal);
 
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
-                await expect(await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).
-                to.emit(poolV0, 'NewCommitments').
-                withArgs(
+                await expect(await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).to.emit(poolV0, 'NewCommitments').withArgs(
                     leftLeafID,
                     createdAtNum,
                     [
@@ -381,39 +339,64 @@ describe('PantherPoolV0', () => {
                     ]
                 );
             });
-            /*
-            const s1 = generateRandomBabyJubValue();
-            const S1 = babyjub.mulPointEscalar(babyjub.Base8, s1);
-            const r1 = generateRandomBabyJubValue();
-            const K1 = babyjub.mulPointEscalar(S1,r1)[0];
-            const R1 = babyjub.mulPointEscalar(babyjub.Base8, r1); //
+            let tree: TriadMerkleTree;
+            const PANTHER_CORE_ZERO_VALUE = BigInt('2896678800030780677881716886212119387589061708732637213728415628433288554509');
+            const PANTHER_CORE_TREE_DEPTH_SIZE = 15;
+            tree = new TriadMerkleTree(PANTHER_CORE_TREE_DEPTH_SIZE, PANTHER_CORE_ZERO_VALUE, poseidon2or3);
 
-            const s2 = generateRandomBabyJubValue();
-            const S2 = babyjub.mulPointEscalar(babyjub.Base8, s2);
-            const r2 = generateRandomBabyJubValue();
-            const K2 = babyjub.mulPointEscalar(S2,r2)[0];
-            const R2 = babyjub.mulPointEscalar(babyjub.Base8, r2);
-            */
+            const amountsOut = [BigInt('7'), BigInt('8'), BigInt('9')];
+            const token = BigInt(zAsset_from_chain.toString()); //BigInt('111');
+            const createTime = createdAtNum;
+            const pubKey: BigInt[] = [
+                K[0],
+                K[1]
+                //BigInt('18387562449515087847139054493296768033506512818644357279697022045358977016147'),
+                //BigInt('2792662591747231738854329419102915533513463924144922287150280827153219249810')
+            ];
+            const commitments = [
+                poseidon([pubKey[0], pubKey[1], amountsOut[0], token, createTime]),
+                poseidon([pubKey[0], pubKey[1], amountsOut[1], token, createTime]),
+                poseidon([pubKey[0], pubKey[1], amountsOut[2], token, createTime])
+            ];
+            // Insert to MT in order to get pathes to be used @ exit
+            tree.insertBatch([BigInt(commitments[0]), BigInt(commitments[1]), BigInt(commitments[2])]);
 
-            /* function generateDeposits(
-                address[OUT_UTXOs] calldata tokens,
-                uint256[OUT_UTXOs] calldata tokenIds,
-                uint256[OUT_UTXOs] calldata extAmounts,
-                G1Point[OUT_UTXOs] calldata pubSpendingKeys, <------------- its `R` [ UTXOs ]
-                uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets, <-- its  `cipherTextMessageV1` [ UTXOs ]
-                uint256 createdAt) */
+            let merkleProof = [
+                tree.genMerklePath(0),
+                tree.genMerklePath(1),
+                tree.genMerklePath(2)
+            ];
 
             // [5] - TODO: get event secretMsg = cipherTextMessageV1 = 3x256bit, token = 160bit, amount = 32bit = 4x256bit
+            // Since we checked equality when we got emitted event we will just use what we already have
             // [6] - TODO: unpack them
+            // Since we checked equality when we got emitted event we will just use what we already have
             // [7] - TODO: from events extract R_packed -> unpack to R
+            // Since we checked equality when we got emitted event we will just use what we already have
             // [8] - TODO: try to decrypt cipher-msg & test for `prolog` prefix if it there this message is for uu - Measure time of this step please
+            // Since we checked equality when we got emitted event we will just use what we already have
             // [9] - TODO: extract 'r' & you are ready to execute `exit`
+            // Since we checked equality when we got emitted event we will just use what we already have
             // [10]- TODO: execute `exit` function to see if you can use locked funds
             // This private key must be used inside `exit` function
             const sr = multiplyScalars(s, r); // spender derived private key
+
             // This public key must be used in panther-core V1
             const SpenderDerivedPubKey = babyjub.mulPointEscalar(babyjub.Base8, sr); // S = sB S' = srB
-
+            const lId = 0;
+            const tId = 0;
+            /*
+            poolV0.Exit(
+                token,
+                tId,
+                amountsOut[0],
+                createTime,
+                sr,
+                lId,
+                merkleProof[0].pathElements,
+                merkleProof[0].root,
+                0);
+             */
         });
     });
 });

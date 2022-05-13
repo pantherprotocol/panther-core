@@ -259,13 +259,15 @@ describe('PantherPoolV0', () => {
                 // const z1 = Number(z) >> 96;
                 // expect(zAssetIdSol, "Solidity token is equal to typescript token").equal( z1 );
                 // TODO: uze zAssetIdTs to generate commitment inside TS
-                const commitment = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], zAssetIdSol, amounts[0], createdAt);
+                const commitment1 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], zAssetIdSol, amounts[0], createdAt);
+                const commitment2 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], zAssetIdSol, amounts[1], createdAt);
+                const commitment3 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], zAssetIdSol, amounts[2], createdAt);
 
 
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
                 await expect(await trees.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).
                 to.emit(trees, 'NewCommitments').
-                withArgs(leftLeafID,createdAtNum,[commitment,commitment,commitment],3);
+                withArgs(leftLeafID,createdAtNum,[commitment1,commitment2,commitment3],3);
             });
             /*
             const s1 = generateRandomBabyJubValue();

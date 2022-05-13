@@ -32,6 +32,10 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         return uint256(generateCommitment(pubSpendingKeyX,pubSpendingKeyX,amount,zAssetId,creationTime));
     }
 
+    function Convert(uint256 n) external pure returns(bytes32) {
+        return bytes32(n);
+    }
+
     function GenerateDepositsFullApi(
         uint256[OUT_UTXOs] calldata tokens,
         uint256[OUT_UTXOs] calldata tokenIds,

@@ -23,13 +23,14 @@ import { deployMockMerkleProofVerifier } from './helpers/mockMerkleProofVerifier
 import '../lib/keychain';
 import { deployMockPantherPoolV0 } from './helpers/mockPantherPoolV0';
 import { defaultAbiCoder, keccak256 } from 'ethers/lib/utils';
+import exp = require('constants');
 
 describe('PantherPoolV0', () => {
-    let trees: MockPantherPoolV0;
+    let poolV0: MockPantherPoolV0;
     let snapshot: number;
 
     before(async () => {
-        trees = await deployMockPantherPoolV0();
+        poolV0 = await deployMockPantherPoolV0();
     });
 
     describe('TEST', () => {
@@ -251,22 +252,83 @@ describe('PantherPoolV0', () => {
 
             it('GenerateDepositsExt', async () => {
                 // This is real token number that will be used inside circom
-                const zAssetIdSol = await trees.GetZAssetId(toBytes32(BigInt(111).toString()),toBytes32(BigInt(0).toString()));
-                const zAssetIdTs = keccak256(defaultAbiCoder.encode(["uint256","uint256"],[BigInt(111),BigInt(0)]));
+                const zAssetIdSol = await poolV0.GetZAssetId(Token,BigInt(0));
+                // const zAssetIdTs = keccak256(defaultAbiCoder.encode(["uint256","uint256"],[Token,BigInt(0)]));
                 // const zAssetIdTs = defaultAbiCoder.encode(["uint160"],[keccak256(defaultAbiCoder.encode(["uint256","uint256"],[BigInt(111),BigInt(0)]))]);
                 // TODO: cast zAssetIdTs to uint160
                 // const z = toBigNum(zAssetIdTs);
                 // const z1 = Number(z) >> 96;
                 // expect(zAssetIdSol, "Solidity token is equal to typescript token").equal( z1 );
                 // TODO: uze zAssetIdTs to generate commitment inside TS
-                const commitment1 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], Amounts[0], zAssetIdSol,createdAtNum);
-                const commitment2 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], Amounts[1], zAssetIdSol,createdAtNum);
-                const commitment3 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], Amounts[2], zAssetIdSol,createdAtNum);
+                const commitment1 = await poolV0.GenerateCommitments(
+                    K[0],
+                    K[1],
+                    Amounts[0],
+                    zAssetIdSol,
+                    createdAtNum
+                );
+
+                const commitment1_internal = poseidon([
+                    K[0],
+                    K[1],
+                    Amounts[0],
+                    zAssetIdSol,
+                    createdAtNum
+                ]);
+                console.log("c1:", commitment1, " c1_i:", commitment1_internal);
+                //const C = await poolV0.Convert(K[0]);
+                //console.log("C:",C);
+                //expect(toBigNum(C),"Expect solidity convertion").equal(K[0]);
+
+
+                const c1 = await poolV0.GenerateCommitments(
+                    toBytes32(BigInt('1').toString()),
+                    toBytes32(BigInt('2').toString()),
+                    toBytes32(BigInt('3').toString()),
+                    toBytes32(BigInt('4').toString()),
+                    toBytes32(BigInt('5').toString()),
+                );
+                const c1_i = poseidon([
+                    toBytes32(BigInt('1').toString()),
+                    toBytes32(BigInt('2').toString()),
+                    toBytes32(BigInt('3').toString()),
+                    toBytes32(BigInt('4').toString()),
+                    toBytes32(BigInt('5').toString()),
+                ]);
+                console.log("c1:", c1, ", c1_i:", c1_i);
+
+                //const c11 = await poolV0.GenerateCommitments(1,0,0,0,0);
+                //const c11_i = poseidon([0,0,0,0,0]);
+                const c11 = await poolV0.GenerateCommitments(
+                    BigInt('1'),
+                    BigInt('0'),
+                    BigInt('0'),
+                    BigInt('0'),
+                    BigInt('0'),
+                );
+                const c11_i = poseidon([
+                    BigInt('1'),
+                    BigInt('0'),
+                    BigInt('0'),
+                    BigInt('0'),
+                    BigInt('0'),
+                ]);
+                console.log("c11:", c11, ", c11_i:", c11_i);
+
+                expect(commitment1,"Solidity commitment-1 must be equal to TS commitment").equal(commitment1_internal);
+
+                const commitment2 = await poolV0.GenerateCommitments(K[0], K[1], Amounts[1], zAssetIdSol, createdAtNum);
+                const commitment2_internal = poseidon([K[0],K[1],Amounts[1],zAssetIdSol,createdAtNum]);
+                expect(commitment2,"Solidity commitment-2 must be equal to TS commitment").equal(commitment2_internal);
+
+                const commitment3 = await poolV0.GenerateCommitments(K[0], K[1], Amounts[2], zAssetIdSol, createdAtNum);
+                const commitment3_internal = poseidon([K[0],K[1],Amounts[2],zAssetIdSol,createdAtNum]);
+                expect(commitment3,"Solidity commitment-3 must be equal to TS commitment").equal(commitment3_internal);
 
 
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
-                await expect(await trees.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).
-                to.emit(trees, 'NewCommitments').
+                await expect(await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).
+                to.emit(poolV0, 'NewCommitments').
                 withArgs(leftLeafID,createdAtNum,[toBigNum(commitment1.toString()),toBigNum(commitment2.toString()),toBigNum(commitment3.toString())],3);
             });
             /*

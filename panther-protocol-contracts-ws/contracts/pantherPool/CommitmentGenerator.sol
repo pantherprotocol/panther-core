@@ -29,6 +29,7 @@ abstract contract CommitmentGenerator {
         require(pubSpendingKeyX <= FIELD_SIZE, ERR_TOO_LARGE_PUBKEY_SIZE);
         require(pubSpendingKeyY <= FIELD_SIZE, ERR_TOO_LARGE_PUBKEY_SIZE);
 
+        // TODO: somehow it doesn't work - CHECK
         require(amount <= MAX_AMOUNT_SIZE, ERR_TOO_LARGE_AMOUNT_SIZE);
         require(zAssetId <= MAX_ZASSET_ID_SIZE, ERR_TOO_LARGE_ZASSET_ID_SIZE);
         require(creationTime <= MAX_CREATION_TIME_SIZE, ERR_TOO_LARGE_CREATION_TIME_SIZE);

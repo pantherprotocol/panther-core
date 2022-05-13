@@ -259,15 +259,15 @@ describe('PantherPoolV0', () => {
                 // const z1 = Number(z) >> 96;
                 // expect(zAssetIdSol, "Solidity token is equal to typescript token").equal( z1 );
                 // TODO: uze zAssetIdTs to generate commitment inside TS
-                const commitment1 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], zAssetIdSol, amounts[0], createdAt);
-                const commitment2 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], zAssetIdSol, amounts[1], createdAt);
-                const commitment3 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], zAssetIdSol, amounts[2], createdAt);
+                const commitment1 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], Amounts[0], zAssetIdSol,createdAtNum);
+                const commitment2 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], Amounts[1], zAssetIdSol,createdAtNum);
+                const commitment3 = await trees.GenerateCommitments(spendingPublicKey[0], spendingPublicKey[1], Amounts[2], zAssetIdSol,createdAtNum);
 
 
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
                 await expect(await trees.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).
                 to.emit(trees, 'NewCommitments').
-                withArgs(leftLeafID,createdAtNum,[commitment1,commitment2,commitment3],3);
+                withArgs(leftLeafID,createdAtNum,[toBigNum(commitment1.toString()),toBigNum(commitment2.toString()),toBigNum(commitment3.toString())],3);
             });
             /*
             const s1 = generateRandomBabyJubValue();

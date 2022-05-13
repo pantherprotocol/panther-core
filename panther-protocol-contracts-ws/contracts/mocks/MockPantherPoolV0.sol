@@ -28,8 +28,8 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         uint256 amount,
         uint256 zAssetId,
         uint256 creationTime
-    ) external pure returns (uint256) {
-        return uint256(generateCommitment(pubSpendingKeyX,pubSpendingKeyX,amount,zAssetId,creationTime));
+    ) external view returns (uint256) {
+        return uint256(generateCommitment(pubSpendingKeyX,pubSpendingKeyY,amount,zAssetId,creationTime));
     }
 
     function Convert(uint256 n) external pure returns(bytes32) {

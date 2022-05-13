@@ -203,29 +203,46 @@ describe('PantherPoolV0', () => {
             const leftLeafID = 0;
             let zAsset_from_chain = BigNumber.from(0);
 
-            function concat(arrays) {
-                // sum of individual array lengths
-                let totalLength = arrays.reduce((acc, value) => acc + value.length, 0);
-
-                let result = new Uint8Array(totalLength);
-
-                if (!arrays.length) return result;
-
-                // for each array - copy it over result
-                // next array is copied right after the previous one
-                let length = 0;
-                for(let array of arrays) {
-                    result.set(array, length);
-                    length += array.length;
-                }
-
-                return result;
-            }
-
-            it('GenerateDepositsExtended', async () => {
+            it('Get ZAssetId test - Still no TS part to check equality TODO:::::', async () => {
                 // This is real token number that will be used inside circom
                 const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
                 zAsset_from_chain = zAssetIdSol;
+                expect(zAssetIdSol,"Check zAsset equality BigNumber vs BigInt").equal(zAsset_from_chain);
+                // const zAssetIdTs = keccak256(defaultAbiCoder.encode(["uint256","uint256"],[Token,BigInt(0)]));
+                // const zAssetIdTs = defaultAbiCoder.encode(["uint160"],[keccak256(defaultAbiCoder.encode(["uint256","uint256"],[BigInt(111),BigInt(0)]))]);
+                // TODO: cast zAssetIdTs to uint160
+                // const z = toBigNum(zAssetIdTs);
+                // const z1 = Number(z) >> 96;
+                // expect(zAssetIdSol, "Solidity token is equal to typescript token").equal( z1 );
+                // TODO: uze zAssetIdTs to generate commitment inside TS
+            });
+
+
+
+            let CommitmentsFromSolidity = [BigNumber.from(0),BigNumber.from(0),BigNumber.from(0)];
+
+            it('GenerateCommitment Check - TS equal to solidity', async () => {
+
+                const commitment1 = await poolV0.GenerateCommitments(K[0],K[1],Amounts[0],zAsset_from_chain,createdAtNum);
+                const commitment1_internal = poseidon([K[0],K[1],Amounts[0],zAsset_from_chain,createdAtNum]);
+                expect(commitment1, "Solidity commitment-1 must be equal to TS commitment").equal(commitment1_internal);
+                CommitmentsFromSolidity[0] = commitment1;
+
+                const commitment2 = await poolV0.GenerateCommitments(K[0], K[1], Amounts[1], zAsset_from_chain, createdAtNum);
+                const commitment2_internal = poseidon([K[0], K[1], Amounts[1], zAsset_from_chain, createdAtNum]);
+                expect(commitment2, "Solidity commitment-2 must be equal to TS commitment").equal(commitment2_internal);
+                CommitmentsFromSolidity[1] = commitment2;
+
+                const commitment3 = await poolV0.GenerateCommitments(K[0], K[1], Amounts[2], zAsset_from_chain, createdAtNum);
+                const commitment3_internal = poseidon([K[0], K[1], Amounts[2], zAsset_from_chain, createdAtNum]);
+                expect(commitment3, "Solidity commitment-3 must be equal to TS commitment").equal(commitment3_internal);
+                CommitmentsFromSolidity[2] = commitment3;
+            });
+
+            // [5] - Get event secretMsg = cipherTextMessageV1 = 3x256bit, token = 160bit, amount = 32bit = 4x256bit
+            it('GenerateDepositsExtended', async () => {
+
+                const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
                 const zAssetIdBuf1 = bnToBuf(zAssetIdSol);
                 const amountBuf1 = bnToBuf(Amounts[0]);
                 const merged1 = new Uint8Array([...zAssetIdBuf1.slice(0, 20), ...amountBuf1.slice(0, 12).reverse()]);
@@ -290,48 +307,18 @@ describe('PantherPoolV0', () => {
                         "_hex": toBytes32(bufToBn(merged3).toString()),
                         "_isBigNumber": true
                     },
-                ]
-                // const zAssetIdTs = keccak256(defaultAbiCoder.encode(["uint256","uint256"],[Token,BigInt(0)]));
-                // const zAssetIdTs = defaultAbiCoder.encode(["uint160"],[keccak256(defaultAbiCoder.encode(["uint256","uint256"],[BigInt(111),BigInt(0)]))]);
-                // TODO: cast zAssetIdTs to uint160
-                // const z = toBigNum(zAssetIdTs);
-                // const z1 = Number(z) >> 96;
-                // expect(zAssetIdSol, "Solidity token is equal to typescript token").equal( z1 );
-                // TODO: uze zAssetIdTs to generate commitment inside TS
-                const commitment1 = await poolV0.GenerateCommitments(
-                    K[0],
-                    K[1],
-                    Amounts[0],
-                    zAssetIdSol,
-                    createdAtNum
-                );
-
-                const commitment1_internal = poseidon([
-                    K[0],
-                    K[1],
-                    Amounts[0],
-                    zAssetIdSol,
-                    createdAtNum
-                ]);
-                expect(commitment1, "Solidity commitment-1 must be equal to TS commitment").equal(commitment1_internal);
-
-                const commitment2 = await poolV0.GenerateCommitments(K[0], K[1], Amounts[1], zAssetIdSol, createdAtNum);
-                const commitment2_internal = poseidon([K[0], K[1], Amounts[1], zAssetIdSol, createdAtNum]);
-                expect(commitment2, "Solidity commitment-2 must be equal to TS commitment").equal(commitment2_internal);
-
-                const commitment3 = await poolV0.GenerateCommitments(K[0], K[1], Amounts[2], zAssetIdSol, createdAtNum);
-                const commitment3_internal = poseidon([K[0], K[1], Amounts[2], zAssetIdSol, createdAtNum]);
-                expect(commitment3, "Solidity commitment-3 must be equal to TS commitment").equal(commitment3_internal);
+                ];
 
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
                 await expect(await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).to.emit(poolV0, 'NewCommitments').withArgs(
                     leftLeafID,
                     createdAtNum,
-                    [
-                        commitment1,
-                        commitment2,
-                        commitment3
-                    ],
+                    CommitmentsFromSolidity,
+                    //[
+                        //commitment1,
+                        //commitment2,
+                        //commitment3
+                    //],
                     [
                         secrets_from_chain1,
                         secrets_from_chain2,
@@ -339,6 +326,17 @@ describe('PantherPoolV0', () => {
                     ]
                 );
             });
+
+            // [6] - TODO: unpack them
+            // Since we checked equality when we got emitted event we will just use what we already have
+            // [7] - TODO: from events extract R_packed -> unpack to R
+            // Since we checked equality when we got emitted event we will just use what we already have
+            // [8] - TODO: try to decrypt cipher-msg & test for `prolog` prefix if it there this message is for uu - Measure time of this step please
+            // Since we checked equality when we got emitted event we will just use what we already have
+            // [9] - TODO: extract 'r' & you are ready to execute `exit`
+            // Since we checked equality when we got emitted event we will just use what we already have
+            // [10]- Execute `exit` function to see if you can use locked funds
+            // Prepare tree to get merkle proof
             let tree: TriadMerkleTree;
             const PANTHER_CORE_ZERO_VALUE = BigInt('2896678800030780677881716886212119387589061708732637213728415628433288554509');
             const PANTHER_CORE_TREE_DEPTH_SIZE = 15;
@@ -367,17 +365,6 @@ describe('PantherPoolV0', () => {
                 tree.genMerklePath(2)
             ];
 
-            // [5] - TODO: get event secretMsg = cipherTextMessageV1 = 3x256bit, token = 160bit, amount = 32bit = 4x256bit
-            // Since we checked equality when we got emitted event we will just use what we already have
-            // [6] - TODO: unpack them
-            // Since we checked equality when we got emitted event we will just use what we already have
-            // [7] - TODO: from events extract R_packed -> unpack to R
-            // Since we checked equality when we got emitted event we will just use what we already have
-            // [8] - TODO: try to decrypt cipher-msg & test for `prolog` prefix if it there this message is for uu - Measure time of this step please
-            // Since we checked equality when we got emitted event we will just use what we already have
-            // [9] - TODO: extract 'r' & you are ready to execute `exit`
-            // Since we checked equality when we got emitted event we will just use what we already have
-            // [10]- TODO: execute `exit` function to see if you can use locked funds
             // This private key must be used inside `exit` function
             const sr = multiplyScalars(s, r); // spender derived private key
 

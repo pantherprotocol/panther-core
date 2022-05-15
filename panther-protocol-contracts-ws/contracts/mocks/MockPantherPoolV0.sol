@@ -9,7 +9,7 @@ import "../common/Types.sol";
 contract MockPantherPoolV0 is PantherPoolV0 {
 
     Vault vault;
-    constructor() PantherPoolV0(msg.sender,timeNow()+100,address(vault = new Vault())) public {
+    constructor() PantherPoolV0(msg.sender,timeNow()+1,address(vault = new Vault())) public {
         ZAsset memory z1;
         z1.tokenType = ERC20_TOKEN_TYPE;
         z1.scale = 0;
@@ -47,7 +47,6 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         bytes32 merkleRoot,
         uint256 cacheIndexHint
     ) external {
-        /*
         this.exit(
             address(uint160(token)),
             tokenId,
@@ -59,7 +58,6 @@ contract MockPantherPoolV0 is PantherPoolV0 {
             merkleRoot,
             cacheIndexHint
         );
-        */
     }
 
 

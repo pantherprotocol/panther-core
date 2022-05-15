@@ -325,7 +325,7 @@ describe('PantherPoolV0', () => {
                         secrets_from_chain3
                     ]
                 );
-            });
+            })
 
             // [6] - TODO: unpack them
             // Since we checked equality when we got emitted event we will just use what we already have
@@ -370,20 +370,41 @@ describe('PantherPoolV0', () => {
 
             // This public key must be used in panther-core V1
             const SpenderDerivedPubKey = babyjub.mulPointEscalar(babyjub.Base8, sr); // S = sB S' = srB
+            const pathElements = [
+                <BytesLike>toBytes32(merkleProof[0].pathElements[0][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[0][1].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[1][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[2][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[3][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[4][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[5][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[6][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[7][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[8][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[9][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[10][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[11][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[12][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[13][0].toString()),
+                <BytesLike>toBytes32(merkleProof[0].pathElements[14][0].toString()),
+            ] as PathElementsType;
             const lId = 0;
             const tId = 0;
-            /*
-            poolV0.Exit(
-                token,
-                tId,
-                amountsOut[0],
-                createTime,
-                sr,
-                lId,
-                merkleProof[0].pathElements,
-                merkleProof[0].root,
-                0);
-             */
+            const cacheIndexHint = 0;
+
+            it('Try to test for successfull exit fn', async () => {
+                await poolV0.Exit(
+                    token,
+                    tId,
+                    amountsOut[0],
+                    createTime,
+                    sr,
+                    lId,
+                    pathElements,
+                    toBytes32(BigInt(merkleProof[0].root).toString()),
+                    cacheIndexHint
+                );
+            });
         });
     });
 });

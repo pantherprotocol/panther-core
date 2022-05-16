@@ -269,10 +269,18 @@ describe('PantherPoolV0', () => {
                         "_isBigNumber": true
                     },
                 ];
+                const secrets_from_chain11 : BigNumber[] =
+                    [
+                    BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                    BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                    BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
+                    BigNumber.from(Buffer32ToBigInt(merged1).toString())
+                ];
+                console.log("SS:", toBytes32(secrets_from_chain11[3].toString()));
 
                 const zAssetIdBuf2 = BigIntToBuffer32(zAssetIdSol);
                 const amountBuf2 = BigIntToBuffer32(Amounts[1]);
-                const merged2 = new Uint8Array([...zAssetIdBuf2.slice(0, 20), ...amountBuf2.slice(0, 12)]);
+                const merged2 = new Uint8Array([...zAssetIdBuf2.slice(0, 20), ...amountBuf2.slice(0, 12).reverse()]);
                 const secrets_from_chain2 = [
                     {
                         "_hex": toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
@@ -291,10 +299,17 @@ describe('PantherPoolV0', () => {
                         "_isBigNumber": true
                     },
                 ];
+                const secrets_from_chain22 : BigNumber[] = [
+                    BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                    BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                    BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
+                    BigNumber.from(Buffer32ToBigInt(merged2).toString())
+                ];
+                console.log("SS:", toBytes32(secrets_from_chain22[3].toString()));
 
                 const zAssetIdBuf3 = BigIntToBuffer32(zAssetIdSol);
                 const amountBuf3 = BigIntToBuffer32(Amounts[2]);
-                const merged3 = new Uint8Array([...zAssetIdBuf3.slice(0, 20), ...amountBuf3.slice(0, 12)]);
+                const merged3 = new Uint8Array([...zAssetIdBuf3.slice(0, 20), ...amountBuf3.slice(0, 12).reverse()]);
                 const secrets_from_chain3 = [
                     {
                         "_hex": toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
@@ -313,25 +328,67 @@ describe('PantherPoolV0', () => {
                         "_isBigNumber": true
                     },
                 ];
-
+                const secrets_from_chain33 : BigNumber[] = [
+                    BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                    BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                    BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
+                    BigNumber.from(Buffer32ToBigInt(merged3).toString())
+                ];
                 // TODO: Add call to GenerateDepositsExtended with check of events parameters, see example ---
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
-                await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt);
-                /* Pay attention something inside [secrets] type not working - values are OK, but wrapping-type is not what is expected
+                const tx = await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt);
+                const rcp = await tx.wait();
+                //console.log("rcp.logs[0]:" , rcp.events[0]);
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // Pay attention something inside [secrets] type not working - values are OK, but wrapping-type is not what is expected //
+                // In order to make await expect(await poolV0.GenerateDepositsExtended(...).to.emit(...).withArgs() work                //
+                // One need to patch ethers-waffle lib to support correct equality applied to arrays, otherwise beside the fact
+                // that arrays are equal still it will fail... to match it.
+                // This code must be patched: node_modules/@ethereum-waffle/chai/dist/cjs/matchers/emit.js line 48
+                // if(Array.isArray(actualArgs[index][j]) || Array.isArray(expectedArgs[index][j])) {
+                //     new Assertion(actualArgs[index][j]).to.deep.equal(expectedArgs[index][j]);
+                // } else {
+                //     new Assertion(actualArgs[index][j]).equal(expectedArgs[index][j]);
+                // }
+                // I also don't understand why there is no problem with commitments array but there is problem with
+                // secrets array of arrays
+                /*
+                const Secrets = [
+                    [
+                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
+                        BigNumber.from(Buffer32ToBigInt(merged1).toString())
+                    ] as const,
+                    [
+                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
+                        BigNumber.from(Buffer32ToBigInt(merged2).toString())
+                    ] as const,
+                    [
+                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
+                        BigNumber.from(Buffer32ToBigInt(merged3).toString())
+                    ] as const,
+                ] as const;
+                const leftLeafID = 0;
                 await expect(await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).to.emit(poolV0, 'NewCommitments').withArgs(
                     leftLeafID,
                     createdAtNum,
                     CommitmentsFromSolidity,
+                    Secrets
                     //[
                         //commitment1,
                         //commitment2,
                         //commitment3
                     //],
-                    [
-                        secrets_from_chain1,
-                        secrets_from_chain2,
-                        secrets_from_chain3
-                    ]
+                    //[
+                    //    secrets_from_chain11,
+                    //    secrets_from_chain22,
+                    //    secrets_from_chain33
+                    //]
                 );
                 */
 
@@ -376,7 +433,7 @@ describe('PantherPoolV0', () => {
                 ];
 
                 // This private key must be used inside `exit` function
-                const sr = multiplyScalars(s, r); // spender derived private key
+                const sr = multiplyScalars(s, Buffer32ToBigInt(r_from_chain)); // spender derived private key
 
                 // This public key must be used in panther-core V1
                 const SpenderDerivedPubKey = babyjub.mulPointEscalar(babyjub.Base8, sr); // S = sB S' = srB

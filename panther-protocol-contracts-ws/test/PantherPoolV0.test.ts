@@ -47,7 +47,13 @@ describe('PantherPoolV0', () => {
             return poseidon(inputs);
         };
 
-        describe('TEST-0', function () {
+        // TODO: This flow must be re-factored to functions
+        // 1) - All related to crytography must be double checked in code: all `expects` must hold in production code,
+        //      and if not, re-try procedure must be taken, for example:
+        // Create Keys and encrypts message and pack to be send on-chain -> try to extract & decrypt & recreate-commitments
+        // If it fails re-try procedure will be re-creation of all created-keys
+        // In production new-key can't be used without this double-test
+        describe('Flow of key-generation, commitments creation, generate-deposits + exit && double checks on every-step', function () {
             function bnToBuf(bn) {
                 // The handy-dandy `toString(base)` works!!
                 var hex = BigInt(bn).toString(16);
@@ -176,6 +182,7 @@ describe('PantherPoolV0', () => {
             const prolog_from_chain = decrypted_from_chain.slice(0,0+4);
             expect(prolog_from_chain,"extracted from chain prolog must be equal").to.deep.equal(bnToBuf(prolog).slice(0,4));
             const r_from_chain = decrypted_from_chain.slice(4,4+32);
+            // TODO: something here sometimes not plays correctly - it must be wrapped inside "if" and if not log everything & re-try recreating all keys.
             expect(bufToBn(r_from_chain),"extracted from chain random must be equal").equal(r);
             // [4] - TODO: call generateDeposits - with R & cipherTextMessageV1 for each OUT_UTXOs = 3
             const Token = BigInt(111);
@@ -308,9 +315,10 @@ describe('PantherPoolV0', () => {
                 ];
 
                 console.log("B==========================================");
+                // TODO: Add call to GenerateDepositsExtended with check of events parameters, see example ---
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
                 await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt);
-                /*
+                /* Pay attention something inside [secrets] type not working - values are OK, but wrapping-type is not what is expected
                 await expect(await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).to.emit(poolV0, 'NewCommitments').withArgs(
                     leftLeafID,
                     createdAtNum,
@@ -345,13 +353,14 @@ describe('PantherPoolV0', () => {
 
                 //const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
                 const amountsOut = [BigInt('7'), BigInt('8'), BigInt('9')];
-                const token = zAssetIdSol;//BigInt(zAsset_from_chain.toString()); //BigInt('111');
+                // NOTE: use here zAssetId and not Token since this is what actually inserted into poseidon
+                // same must be done inside circom
+                const token = zAssetIdSol;
                 const createTime = createdAtNum;
+                // TODO: re-generate K by using data sended on-chain
                 const pubKey: BigInt[] = [
                     K[0],
                     K[1]
-                    //BigInt('18387562449515087847139054493296768033506512818644357279697022045358977016147'),
-                    //BigInt('2792662591747231738854329419102915533513463924144922287150280827153219249810')
                 ];
                 const commitments = [
                     poseidon([pubKey[0], pubKey[1], amountsOut[0], token, createTime]),
@@ -393,12 +402,7 @@ describe('PantherPoolV0', () => {
                 ] as PathElementsType;
                 const lId = 0;
                 const tId = 0;
-                const cacheIndexHint = 0;
-                console.log("MerkleRoot:", toBytes32(BigInt(merkleProof[0].root).toString()));
-                //console.log("PE:", pathElements);
-                //console.log("PE:", merkleProof[0].pathElements);
-                // const C = await poolV0.GenerateCommitments(BigNumber.from(pubKey[0]), BigNumber.from(pubKey[1]), amountsOut[0], token, createTime);
-                //console.log("CCCCCC:", C, ", CCCCC-STR:", toBytes32(C.toString()));
+                const cacheIndexHint = 0; // don't use cache
                 const checkRoot = await poolV0.isKnownRoot(0,toBytes32(BigInt(merkleProof[0].root).toString()),0);
                 expect(checkRoot, "isKnownRoot must be true").equal(true);
                 const checkZAsset = await poolV0.IsKnownZAsset(Token,tId);

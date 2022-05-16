@@ -46,6 +46,13 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         return bytes32(n);
     }
 
+    function GeneratePublicSpendingKey(uint256 privKey) external view returns(uint256[2] memory xy) {
+        G1Point memory p;
+        p = generatePubSpendingKey(privKey);
+        xy[0] = p.x;
+        xy[1] = p.y;
+    }
+
     function Exit(
         uint256 token,
         uint256 tokenId,

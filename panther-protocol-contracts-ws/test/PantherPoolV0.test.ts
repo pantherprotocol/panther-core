@@ -33,7 +33,7 @@ describe('PantherPoolV0', () => {
         poolV0 = await deployMockPantherPoolV0();
     });
 
-    describe('TEST', () => {
+    describe('Test GenerateDeposits & Exit with all token-types', () => {
         before(async () => {
             snapshot = await takeSnapshot();
         });
@@ -53,10 +53,11 @@ describe('PantherPoolV0', () => {
         // Create Keys and encrypts message and pack to be send on-chain -> try to extract & decrypt & recreate-commitments
         // If it fails re-try procedure will be re-creation of all created-keys
         // In production new-key can't be used without this double-test
-        describe('Flow of key-generation, commitments creation, generate-deposits + exit && double checks on every-step', function () {
-            function bnToBuf(bn) {
+        describe('Flow of key-generation, commitments creation (ERC20), generate-deposits + exit && double checks on every-step', function () {
+            // TODO: move it to utils or lib since its related to pack-unpack operation
+            function BigIntToBuffer32(bn) {
                 // The handy-dandy `toString(base)` works!!
-                var hex = BigInt(bn).toString(16);
+                let hex = BigInt(bn).toString(16);
 
                 // But it still follows the old behavior of giving
                 // invalid hex strings (due to missing padding),
@@ -64,13 +65,13 @@ describe('PantherPoolV0', () => {
                 if (hex.length % 2) { hex = '0' + hex; }
 
                 // The byteLength will be half of the hex string length
-                var len = hex.length / 2;
-                var u8 = new Uint8Array(32); //len);
+                let len = hex.length / 2;
+                let u8 = new Uint8Array(32); //len);
 
                 // And then we can iterate each element by one
                 // and each hex segment by two
-                var i = 0;
-                var j = 0;
+                let i = 0;
+                let j = 0;
                 while (i < len) {
                     u8[i] = parseInt(hex.slice(j, j+2), 16);
                     i += 1;
@@ -81,16 +82,16 @@ describe('PantherPoolV0', () => {
                     u8[i] = parseInt(BigInt(0).toString(16).slice(0, 2), 16);
                     i += 1;
                 }
-                // Tada!!
                 return u8;
             }
 
-            function bufToBn(buf) {
-                var hex : string[] = [];
-                var u8 = Uint8Array.from(buf);
+            // TODO: move it to utils or lib since its related to pack-unpack operation
+            function Buffer32ToBigInt(buf) {
+                let hex : string[] = [];
+                let u8 = Uint8Array.from(buf);
 
                 u8.forEach(function (i) {
-                    var h = i.toString(16);
+                    let h = i.toString(16);
                     if (h.length % 2) { h = '0' + h; }
                     hex.push(h);
                 });
@@ -101,14 +102,15 @@ describe('PantherPoolV0', () => {
             // [0] - Recipient side
             const s = generateRandomBabyJubValue(); // Spender Private Key
             const S = babyjub.mulPointEscalar(babyjub.Base8, s); // Spender Public Key - Shared & known to sender
-            // [1] - Sender side
+            // [1] - Sender side - NOTE: 2 different randoms can be created - One for Ephemeral Key and one for speding
+            // We use here same random for both for simplicity
             const r = generateRandomBabyJubValue(); // Sender generates random value
             // This key used to create commitments with `generateDeposits` solidity call
             const K = babyjub.mulPointEscalar(S,r); // Sender generates Shared Ephemeral Key = rsB = rS
             const R = babyjub.mulPointEscalar(babyjub.Base8, r); // This key is shared in open form = rB
             // [2] - Encrypt text - Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
             const prolog = 0xEEFFEEFF; // THIS prolog must be used as is, according to specs
-            const textToBeCiphered = new Uint8Array( [...bnToBuf(prolog).slice(0,4), ...(bnToBuf(r))]);
+            const textToBeCiphered = new Uint8Array( [...BigIntToBuffer32(prolog).slice(0,4), ...(BigIntToBuffer32(r))]);
             expect(textToBeCiphered.length, "cipher text before encryption").equal(36);
             // ***********************************************
             // This is encryption function *******************
@@ -180,10 +182,10 @@ describe('PantherPoolV0', () => {
             const decrypted_from_chain = new Uint8Array([...decrypted1_from_chain,...decrypted2_from_chain]);
             expect(decrypted_from_chain.length).equal(36);
             const prolog_from_chain = decrypted_from_chain.slice(0,0+4);
-            expect(prolog_from_chain,"extracted from chain prolog must be equal").to.deep.equal(bnToBuf(prolog).slice(0,4));
+            expect(prolog_from_chain,"extracted from chain prolog must be equal").to.deep.equal(BigIntToBuffer32(prolog).slice(0,4));
             const r_from_chain = decrypted_from_chain.slice(4,4+32);
             // TODO: something here sometimes not plays correctly - it must be wrapped inside "if" and if not log everything & re-try recreating all keys.
-            expect(bufToBn(r_from_chain),"extracted from chain random must be equal").equal(r);
+            expect(Buffer32ToBigInt(r_from_chain),"extracted from chain random must be equal").equal(r);
             // [4] - TODO: call generateDeposits - with R & cipherTextMessageV1 for each OUT_UTXOs = 3
             const Token = BigInt(111);
             const tokens = [
@@ -200,14 +202,13 @@ describe('PantherPoolV0', () => {
 
             const spendingPublicKey = [toBytes32(K[0].toString()), toBytes32(K[1].toString())] as Pair;
             const secrets = [
-                toBytes32(bufToBn(cipherTextMessageV1.slice(0, 32)).toString()),
-                toBytes32(bufToBn(cipherTextMessageV1.slice(32, 64)).toString()),
-                toBytes32(bufToBn(cipherTextMessageV1.slice(64, 96)).toString()),
+                toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
             ] as Triad;
 
             const createdAtNum = BigInt('1652375774');
             const createdAt = toBytes32(createdAtNum.toString());
-            const leftLeafID = 0;
             let zAsset_from_chain = BigNumber.from(0);
 
             it('GenerateDeposits and try to Exit', async () => {
@@ -226,8 +227,8 @@ describe('PantherPoolV0', () => {
                 let CommitmentsFromSolidity = [BigNumber.from(0),BigNumber.from(0),BigNumber.from(0)];
                 let CommitmentsInternal = [BigNumber.from(0),BigNumber.from(0),BigNumber.from(0)];
 
-                //const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
-                //zAsset_from_chain = zAssetIdSol;
+                // Double check commitments vs solidity side
+                // TODO: implement same check by calling web-assembly of circom
                 const commitment1 = await poolV0.GenerateCommitments(K[0],K[1],Amounts[0],zAsset_from_chain,createdAtNum);
                 const commitment1_internal = poseidon([K[0],K[1],Amounts[0],zAsset_from_chain,createdAtNum]);
                 expect(commitment1, "Solidity commitment-1 must be equal to TS commitment").equal(commitment1_internal);
@@ -247,74 +248,72 @@ describe('PantherPoolV0', () => {
                 CommitmentsInternal[1] = commitment1;
 
                 // [5] - Get event secretMsg = cipherTextMessageV1 = 3x256bit, token = 160bit, amount = 32bit = 4x256bit
-                //const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
-                const zAssetIdBuf1 = bnToBuf(zAssetIdSol);
-                const amountBuf1 = bnToBuf(Amounts[0]);
+                const zAssetIdBuf1 = BigIntToBuffer32(zAssetIdSol);
+                const amountBuf1 = BigIntToBuffer32(Amounts[0]);
                 const merged1 = new Uint8Array([...zAssetIdBuf1.slice(0, 20), ...amountBuf1.slice(0, 12).reverse()]);
                 const secrets_from_chain1 = [
                     {
-                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(0, 32)).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
                         "_isBigNumber": true
                     },
                     {
-                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(32, 64)).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
                         "_isBigNumber": true
                     },
                     {
-                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(64, 96)).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
                         "_isBigNumber": true
                     },
                     {
-                        "_hex": toBytes32(bufToBn(merged1).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(merged1).toString()),
                         "_isBigNumber": true
                     },
                 ];
 
-                const zAssetIdBuf2 = bnToBuf(zAssetIdSol);
-                const amountBuf2 = bnToBuf(Amounts[1]);
+                const zAssetIdBuf2 = BigIntToBuffer32(zAssetIdSol);
+                const amountBuf2 = BigIntToBuffer32(Amounts[1]);
                 const merged2 = new Uint8Array([...zAssetIdBuf2.slice(0, 20), ...amountBuf2.slice(0, 12)]);
                 const secrets_from_chain2 = [
                     {
-                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(0, 32)).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
                         "_isBigNumber": true
                     },
                     {
-                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(32, 64)).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
                         "_isBigNumber": true
                     },
                     {
-                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(64, 96)).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
                         "_isBigNumber": true
                     },
                     {
-                        "_hex": toBytes32(bufToBn(merged2).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(merged2).toString()),
                         "_isBigNumber": true
                     },
                 ];
 
-                const zAssetIdBuf3 = bnToBuf(zAssetIdSol);
-                const amountBuf3 = bnToBuf(Amounts[2]);
+                const zAssetIdBuf3 = BigIntToBuffer32(zAssetIdSol);
+                const amountBuf3 = BigIntToBuffer32(Amounts[2]);
                 const merged3 = new Uint8Array([...zAssetIdBuf3.slice(0, 20), ...amountBuf3.slice(0, 12)]);
                 const secrets_from_chain3 = [
                     {
-                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(0, 32)).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
                         "_isBigNumber": true
                     },
                     {
-                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(32, 64)).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
                         "_isBigNumber": true
                     },
                     {
-                        "_hex": toBytes32(bufToBn(cipherTextMessageV1.slice(64, 96)).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
                         "_isBigNumber": true
                     },
                     {
-                        "_hex": toBytes32(bufToBn(merged3).toString()),
+                        "_hex": toBytes32(Buffer32ToBigInt(merged3).toString()),
                         "_isBigNumber": true
                     },
                 ];
 
-                console.log("B==========================================");
                 // TODO: Add call to GenerateDepositsExtended with check of events parameters, see example ---
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
                 await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt);
@@ -351,7 +350,6 @@ describe('PantherPoolV0', () => {
                 const PANTHER_CORE_TREE_DEPTH_SIZE = 15;
                 tree = new TriadMerkleTree(PANTHER_CORE_TREE_DEPTH_SIZE, PANTHER_CORE_ZERO_VALUE, poseidon2or3);
 
-                //const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
                 const amountsOut = [BigInt('7'), BigInt('8'), BigInt('9')];
                 // NOTE: use here zAssetId and not Token since this is what actually inserted into poseidon
                 // same must be done inside circom
@@ -382,6 +380,9 @@ describe('PantherPoolV0', () => {
 
                 // This public key must be used in panther-core V1
                 const SpenderDerivedPubKey = babyjub.mulPointEscalar(babyjub.Base8, sr); // S = sB S' = srB
+                const SpenderDerivedPubKey_from_chain = await poolV0.GeneratePublicSpendingKey(sr);
+                expect(SpenderDerivedPubKey[0],"Generated Public Key TS must be equal to solidity version").equal(SpenderDerivedPubKey_from_chain[0]);
+                expect(SpenderDerivedPubKey[1],"Generated Public Key TS must be equal to solidity version").equal(SpenderDerivedPubKey_from_chain[1]);
                 const pathElements = [
                     <BytesLike>toBytes32(merkleProof[0].pathElements[0][0].toString()),
                     <BytesLike>toBytes32(merkleProof[0].pathElements[0][1].toString()),
@@ -400,20 +401,22 @@ describe('PantherPoolV0', () => {
                     <BytesLike>toBytes32(merkleProof[0].pathElements[13][0].toString()),
                     <BytesLike>toBytes32(merkleProof[0].pathElements[14][0].toString()),
                 ] as PathElementsType;
-                const lId = 0;
-                const tId = 0;
+                // TODO: get real-left-leaf-id from chain & check to computed by merkle-tree ts.
+                const lefLeafId = 0;
+                // TODO: use different token-id & token & token type in order to simulate not only ERC-20
+                const tokenId = 0;
                 const cacheIndexHint = 0; // don't use cache
                 const checkRoot = await poolV0.isKnownRoot(0,toBytes32(BigInt(merkleProof[0].root).toString()),0);
                 expect(checkRoot, "isKnownRoot must be true").equal(true);
-                const checkZAsset = await poolV0.IsKnownZAsset(Token,tId);
+                const checkZAsset = await poolV0.IsKnownZAsset(Token,tokenId);
                 expect(checkZAsset, "IsKnownZAsset must be true").equal(true);
                 await poolV0.Exit(
                     Token,
-                    tId,
+                    tokenId,
                     amountsOut[0],
                     createTime,
                     sr,
-                    lId,
+                    lefLeafId,
                     pathElements,
                     toBytes32(BigInt(merkleProof[0].root).toString()),
                     cacheIndexHint

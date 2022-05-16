@@ -34,7 +34,7 @@ export default function WalletHeader(props: {
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
 
     const fetchChainBalance = useCallback(() => {
-        dispatch(getChainBalance(context));
+        dispatch(getChainBalance, context);
     }, [dispatch, context]);
 
     useEffect((): void => {

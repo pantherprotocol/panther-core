@@ -21,7 +21,7 @@ export default function AccountBalance(props: {
     const dispatch = useAppDispatch();
 
     const refreshChainBalance = () => {
-        dispatch(getChainBalance(context));
+        dispatch(getChainBalance, context);
     };
 
     return (

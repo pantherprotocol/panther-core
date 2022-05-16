@@ -18,9 +18,9 @@ export const LogoutButton = () => {
     const disconnect = useCallback(async () => {
         if (active && chainId) {
             deactivate();
-            dispatch(resetZkpTokenBalance());
-            dispatch(resetZkpStakedBalance());
-            dispatch(resetUnclaimedRewards());
+            dispatch(resetZkpTokenBalance);
+            dispatch(resetZkpStakedBalance);
+            dispatch(resetUnclaimedRewards);
         }
     }, [active, chainId, deactivate, dispatch]);
 

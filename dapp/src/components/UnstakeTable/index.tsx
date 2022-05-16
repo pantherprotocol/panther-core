@@ -77,10 +77,10 @@ export default function UnstakeTable() {
             const stakeID = BigNumber.from(id);
             const data = '0x00';
             await unstake(library, chainId, account, stakeID, data, false);
-            dispatch(getTotalStaked(context));
-            dispatch(getZkpStakedBalance(context));
-            dispatch(resetUnclaimedRewards());
-            dispatch(getZkpTokenBalance(context));
+            dispatch(getTotalStaked, context);
+            dispatch(getZkpStakedBalance, context);
+            dispatch(resetUnclaimedRewards);
+            dispatch(getZkpTokenBalance, context);
             fetchStakedData();
         },
         [library, chainId, account, context, dispatch, fetchStakedData],

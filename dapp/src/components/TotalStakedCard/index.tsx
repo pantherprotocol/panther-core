@@ -16,7 +16,7 @@ const TotalStakedCard = () => {
     const dispatch = useAppDispatch();
 
     const refreshChainBalance = () => {
-        dispatch(getChainBalance(context));
+        dispatch(getChainBalance, context);
     };
     return (
         <Card className="total-staked-card" variant="outlined">

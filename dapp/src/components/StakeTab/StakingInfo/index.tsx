@@ -26,7 +26,7 @@ export default function StakingInfo() {
     ) : (
         <>
             <Typography>
-                The classic staking rewards program ends on May 4th, so new
+                The classic staking rewards program ended on May 4th, so new
                 stakes were automatically disabled by the smart contracts on
                 April 27th as{' '}
                 <SafeMuiLink
@@ -54,8 +54,8 @@ export default function StakingInfo() {
                 >
                     at any time
                 </SafeMuiLink>
-                , and there is no deadline for claiming rewards. On May 4th, the
-                only change will be that rewards stop accruing.
+                , and there is no deadline for claiming rewards. However active
+                stakes have ceased to earn further rewards.
             </p>
             <p>
                 Also, advanced staking is now close!{' '}

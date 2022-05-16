@@ -203,7 +203,7 @@ describe('PantherPoolV0', () => {
             const leftLeafID = 0;
             let zAsset_from_chain = BigNumber.from(0);
 
-            it('Get ZAssetId test - Still no TS part to check equality TODO:::::', async () => {
+            it('GenerateDeposits and try to Exit', async () => {
                 // This is real token number that will be used inside circom
                 const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
                 zAsset_from_chain = zAssetIdSol;
@@ -215,34 +215,32 @@ describe('PantherPoolV0', () => {
                 // const z1 = Number(z) >> 96;
                 // expect(zAssetIdSol, "Solidity token is equal to typescript token").equal( z1 );
                 // TODO: uze zAssetIdTs to generate commitment inside TS
-            });
 
+                let CommitmentsFromSolidity = [BigNumber.from(0),BigNumber.from(0),BigNumber.from(0)];
+                let CommitmentsInternal = [BigNumber.from(0),BigNumber.from(0),BigNumber.from(0)];
 
-
-            let CommitmentsFromSolidity = [BigNumber.from(0),BigNumber.from(0),BigNumber.from(0)];
-
-            it('GenerateCommitment Check - TS equal to solidity', async () => {
-
+                //const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
+                //zAsset_from_chain = zAssetIdSol;
                 const commitment1 = await poolV0.GenerateCommitments(K[0],K[1],Amounts[0],zAsset_from_chain,createdAtNum);
                 const commitment1_internal = poseidon([K[0],K[1],Amounts[0],zAsset_from_chain,createdAtNum]);
                 expect(commitment1, "Solidity commitment-1 must be equal to TS commitment").equal(commitment1_internal);
                 CommitmentsFromSolidity[0] = commitment1;
+                CommitmentsInternal[0] = commitment1;
 
                 const commitment2 = await poolV0.GenerateCommitments(K[0], K[1], Amounts[1], zAsset_from_chain, createdAtNum);
                 const commitment2_internal = poseidon([K[0], K[1], Amounts[1], zAsset_from_chain, createdAtNum]);
                 expect(commitment2, "Solidity commitment-2 must be equal to TS commitment").equal(commitment2_internal);
                 CommitmentsFromSolidity[1] = commitment2;
+                CommitmentsInternal[1] = commitment1;
 
                 const commitment3 = await poolV0.GenerateCommitments(K[0], K[1], Amounts[2], zAsset_from_chain, createdAtNum);
                 const commitment3_internal = poseidon([K[0], K[1], Amounts[2], zAsset_from_chain, createdAtNum]);
                 expect(commitment3, "Solidity commitment-3 must be equal to TS commitment").equal(commitment3_internal);
                 CommitmentsFromSolidity[2] = commitment3;
-            });
+                CommitmentsInternal[1] = commitment1;
 
-            // [5] - Get event secretMsg = cipherTextMessageV1 = 3x256bit, token = 160bit, amount = 32bit = 4x256bit
-            it('GenerateDepositsExtended', async () => {
-
-                const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
+                // [5] - Get event secretMsg = cipherTextMessageV1 = 3x256bit, token = 160bit, amount = 32bit = 4x256bit
+                //const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
                 const zAssetIdBuf1 = bnToBuf(zAssetIdSol);
                 const amountBuf1 = bnToBuf(Amounts[0]);
                 const merged1 = new Uint8Array([...zAssetIdBuf1.slice(0, 20), ...amountBuf1.slice(0, 12).reverse()]);
@@ -309,7 +307,10 @@ describe('PantherPoolV0', () => {
                     },
                 ];
 
+                console.log("B==========================================");
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
+                await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt);
+                /*
                 await expect(await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).to.emit(poolV0, 'NewCommitments').withArgs(
                     leftLeafID,
                     createdAtNum,
@@ -325,76 +326,85 @@ describe('PantherPoolV0', () => {
                         secrets_from_chain3
                     ]
                 );
-            })
+                */
 
-            // [6] - TODO: unpack them
-            // Since we checked equality when we got emitted event we will just use what we already have
-            // [7] - TODO: from events extract R_packed -> unpack to R
-            // Since we checked equality when we got emitted event we will just use what we already have
-            // [8] - TODO: try to decrypt cipher-msg & test for `prolog` prefix if it there this message is for uu - Measure time of this step please
-            // Since we checked equality when we got emitted event we will just use what we already have
-            // [9] - TODO: extract 'r' & you are ready to execute `exit`
-            // Since we checked equality when we got emitted event we will just use what we already have
-            // [10]- Execute `exit` function to see if you can use locked funds
-            // Prepare tree to get merkle proof
-            let tree: TriadMerkleTree;
-            const PANTHER_CORE_ZERO_VALUE = BigInt('2896678800030780677881716886212119387589061708732637213728415628433288554509');
-            const PANTHER_CORE_TREE_DEPTH_SIZE = 15;
-            tree = new TriadMerkleTree(PANTHER_CORE_TREE_DEPTH_SIZE, PANTHER_CORE_ZERO_VALUE, poseidon2or3);
+                // [6] - TODO: unpack them
+                // Since we checked equality when we got emitted event we will just use what we already have
+                // [7] - TODO: from events extract R_packed -> unpack to R
+                // Since we checked equality when we got emitted event we will just use what we already have
+                // [8] - TODO: try to decrypt cipher-msg & test for `prolog` prefix if it there this message is for uu - Measure time of this step please
+                // Since we checked equality when we got emitted event we will just use what we already have
+                // [9] - TODO: extract 'r' & you are ready to execute `exit`
+                // Since we checked equality when we got emitted event we will just use what we already have
+                // [10]- Execute `exit` function to see if you can use locked funds
+                // Prepare tree to get merkle proof
+                let tree: TriadMerkleTree;
+                const PANTHER_CORE_ZERO_VALUE = BigInt('2896678800030780677881716886212119387589061708732637213728415628433288554509');
+                const PANTHER_CORE_TREE_DEPTH_SIZE = 15;
+                tree = new TriadMerkleTree(PANTHER_CORE_TREE_DEPTH_SIZE, PANTHER_CORE_ZERO_VALUE, poseidon2or3);
 
-            const amountsOut = [BigInt('7'), BigInt('8'), BigInt('9')];
-            const token = BigInt(zAsset_from_chain.toString()); //BigInt('111');
-            const createTime = createdAtNum;
-            const pubKey: BigInt[] = [
-                K[0],
-                K[1]
-                //BigInt('18387562449515087847139054493296768033506512818644357279697022045358977016147'),
-                //BigInt('2792662591747231738854329419102915533513463924144922287150280827153219249810')
-            ];
-            const commitments = [
-                poseidon([pubKey[0], pubKey[1], amountsOut[0], token, createTime]),
-                poseidon([pubKey[0], pubKey[1], amountsOut[1], token, createTime]),
-                poseidon([pubKey[0], pubKey[1], amountsOut[2], token, createTime])
-            ];
-            // Insert to MT in order to get pathes to be used @ exit
-            tree.insertBatch([BigInt(commitments[0]), BigInt(commitments[1]), BigInt(commitments[2])]);
+                //const zAssetIdSol = await poolV0.GetZAssetId(Token, BigInt(0));
+                const amountsOut = [BigInt('7'), BigInt('8'), BigInt('9')];
+                const token = zAssetIdSol;//BigInt(zAsset_from_chain.toString()); //BigInt('111');
+                const createTime = createdAtNum;
+                const pubKey: BigInt[] = [
+                    K[0],
+                    K[1]
+                    //BigInt('18387562449515087847139054493296768033506512818644357279697022045358977016147'),
+                    //BigInt('2792662591747231738854329419102915533513463924144922287150280827153219249810')
+                ];
+                const commitments = [
+                    poseidon([pubKey[0], pubKey[1], amountsOut[0], token, createTime]),
+                    poseidon([pubKey[0], pubKey[1], amountsOut[1], token, createTime]),
+                    poseidon([pubKey[0], pubKey[1], amountsOut[2], token, createTime])
+                ];
+                // console.log("3 leaves - Commitments:", commitments);
+                // Insert to MT in order to get pathes to be used @ exit
+                tree.insertBatch([BigInt(commitments[0]), BigInt(commitments[1]), BigInt(commitments[2])]);
 
-            let merkleProof = [
-                tree.genMerklePath(0),
-                tree.genMerklePath(1),
-                tree.genMerklePath(2)
-            ];
+                let merkleProof = [
+                    tree.genMerklePath(0),
+                    tree.genMerklePath(1),
+                    tree.genMerklePath(2)
+                ];
 
-            // This private key must be used inside `exit` function
-            const sr = multiplyScalars(s, r); // spender derived private key
+                // This private key must be used inside `exit` function
+                const sr = multiplyScalars(s, r); // spender derived private key
 
-            // This public key must be used in panther-core V1
-            const SpenderDerivedPubKey = babyjub.mulPointEscalar(babyjub.Base8, sr); // S = sB S' = srB
-            const pathElements = [
-                <BytesLike>toBytes32(merkleProof[0].pathElements[0][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[0][1].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[1][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[2][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[3][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[4][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[5][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[6][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[7][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[8][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[9][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[10][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[11][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[12][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[13][0].toString()),
-                <BytesLike>toBytes32(merkleProof[0].pathElements[14][0].toString()),
-            ] as PathElementsType;
-            const lId = 0;
-            const tId = 0;
-            const cacheIndexHint = 0;
-
-            it('Try to test for successfull exit fn', async () => {
+                // This public key must be used in panther-core V1
+                const SpenderDerivedPubKey = babyjub.mulPointEscalar(babyjub.Base8, sr); // S = sB S' = srB
+                const pathElements = [
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[0][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[0][1].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[1][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[2][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[3][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[4][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[5][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[6][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[7][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[8][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[9][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[10][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[11][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[12][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[13][0].toString()),
+                    <BytesLike>toBytes32(merkleProof[0].pathElements[14][0].toString()),
+                ] as PathElementsType;
+                const lId = 0;
+                const tId = 0;
+                const cacheIndexHint = 0;
+                console.log("MerkleRoot:", toBytes32(BigInt(merkleProof[0].root).toString()));
+                //console.log("PE:", pathElements);
+                //console.log("PE:", merkleProof[0].pathElements);
+                // const C = await poolV0.GenerateCommitments(BigNumber.from(pubKey[0]), BigNumber.from(pubKey[1]), amountsOut[0], token, createTime);
+                //console.log("CCCCCC:", C, ", CCCCC-STR:", toBytes32(C.toString()));
+                const checkRoot = await poolV0.isKnownRoot(0,toBytes32(BigInt(merkleProof[0].root).toString()),0);
+                expect(checkRoot, "isKnownRoot must be true").equal(true);
+                const checkZAsset = await poolV0.IsKnownZAsset(Token,tId);
+                expect(checkZAsset, "IsKnownZAsset must be true").equal(true);
                 await poolV0.Exit(
-                    token,
+                    Token,
                     tId,
                     amountsOut[0],
                     createTime,

@@ -22,6 +22,16 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         return getZAssetId(address(uint160(token)), tokenId);
     }
 
+    function IsKnownZAsset(uint256 token, uint256 tokenId) external view returns(bool) {
+        ZAsset memory asset;
+        uint160 zAssetId;
+        (asset, zAssetId) = getZAssetAndId(address(uint160(token)), tokenId);
+        if(asset.status == 1 || asset.status == 2) {
+            return true;
+        }
+        return false;
+    }
+
     function GenerateCommitments(
         uint256 pubSpendingKeyX,
         uint256 pubSpendingKeyY,

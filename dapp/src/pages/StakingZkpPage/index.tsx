@@ -29,6 +29,7 @@ import './styles.scss';
 function StakingZkpPage() {
     const context = useWeb3React();
     const dispatch = useAppDispatch();
+
     const {connector, chainId, activate, deactivate, error} = context;
 
     // Logic to recognize the connector currently being activated
@@ -69,11 +70,11 @@ function StakingZkpPage() {
     }, [error, chainId, activate, deactivate]);
 
     useEffect(() => {
-        dispatch(getZKPTokenMarketPrice());
-        dispatch(getZkpTokenBalance(context));
-        dispatch(getZkpStakedBalance(context));
-        dispatch(getUnclaimedRewards(context));
-        dispatch(getTotalStaked(context));
+        dispatch(getZKPTokenMarketPrice);
+        dispatch(getTotalStaked, context);
+        dispatch(getZkpTokenBalance, context);
+        dispatch(getZkpStakedBalance, context);
+        dispatch(getUnclaimedRewards, context);
     }, [context, dispatch]);
 
     const isBlur = useAppSelector(blurSelector);

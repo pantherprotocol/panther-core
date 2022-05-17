@@ -22,7 +22,7 @@ export default function UnstakedBalance() {
     const tokenMarketPrice = useAppSelector(zkpUnstakedUSDMarketPriceSelector);
 
     const refreshChainBalance = () => {
-        dispatch(getChainBalance(context));
+        dispatch(getChainBalance, context);
     };
 
     return (

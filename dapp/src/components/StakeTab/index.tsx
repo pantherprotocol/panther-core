@@ -8,7 +8,7 @@ import {BigNumber, utils} from 'ethers';
 
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
-import {resetUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
+import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {
     getZkpTokenBalance,
@@ -80,10 +80,10 @@ export default function StakeTab(props: {
             }
             setStakedId(Number(stakingResponse));
             setStakingAmount('');
-            dispatch(getTotalStaked(context));
-            dispatch(getZkpStakedBalance(context));
-            dispatch(getZkpTokenBalance(context));
-            dispatch(resetUnclaimedRewards());
+            dispatch(getTotalStaked, context);
+            dispatch(getZkpStakedBalance, context);
+            dispatch(getZkpTokenBalance, context);
+            dispatch(getUnclaimedRewards, context);
         },
         [
             library,

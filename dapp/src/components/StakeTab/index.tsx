@@ -4,17 +4,13 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import {BigNumber, utils} from 'ethers';
 
 import StakingInfo from '../../components/StakeTab/StakingInfo';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {
-    calculateRewards,
-    calculatedRewardsSelector,
-} from '../../redux/slices/calculateRewards';
+import {calculateRewards} from '../../redux/slices/calculateRewards';
 import {
     isStakingOpenSelector,
     termsSelector,
@@ -30,10 +26,11 @@ import {onWrongNetwork} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
 import {advancedStake} from '../../services/staking';
 import {StakeType} from '../../types/staking';
-import {formatCurrency, safeParseUnits} from '../../utils/helpers';
+import {safeParseUnits} from '../../utils/helpers';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 
+import {ExpectedRewardsCard} from './ExpectedRewardsCard';
 import StakingBtn from './StakingBtn';
 import StakingInput from './StakingInput';
 
@@ -163,7 +160,7 @@ export default function StakeTab(props: {
                         <CardContent className="staking-info-card-content">
                             <StakingInfo />
 
-                            <AdvancedStakingRewards />
+                            <ExpectedRewardsCard />
                         </CardContent>
                     </Card>
                 </>
@@ -216,35 +213,3 @@ export default function StakeTab(props: {
         </Box>
     );
 }
-
-const AdvancedStakingRewards = () => {
-    const rewards = useAppSelector(calculatedRewardsSelector);
-    const prp = rewards?.[TokenID.PRP];
-    const zZkp = rewards?.[TokenID.zZKP];
-
-    return (
-        <Box className="advanced-staking-rewards">
-            <Typography className="advanced-staking-rewards-title">
-                Your Expected Advanced Staking Rewards:
-            </Typography>
-            <Box className="advanced-staking-rewards-container">
-                <Box className="advanced-staking-rewards-content">
-                    <Typography className="title">
-                        ZKP Staking Reward:
-                    </Typography>
-                    <Typography className="amount">
-                        {zZkp ? formatCurrency(zZkp) : '-'} zZKP
-                    </Typography>
-                </Box>
-                <Box className="advanced-staking-rewards-content">
-                    <Typography className="title">
-                        Privacy Reward Points:
-                    </Typography>
-                    <Typography className="amount">
-                        {prp ? formatCurrency(prp) : '-'} PRP
-                    </Typography>
-                </Box>
-            </Box>
-        </Box>
-    );
-};

@@ -53,11 +53,10 @@ string constant ERR_UNDEF_GRANT = "GR:E7";
 string constant ERR_UNAUTHORIZED_CALL = "GR:Unauthorized";
 
 // Vault contract
-string constant INVALID_LOCK_TOKEN_TYPE = "VA:E1";
+string constant ERR_INVALID_TOKEN_TYPE = "VA:E1";
 string constant ERR_ZERO_LOCK_TOKEN_ADDR = "VA:E2";
 string constant ERR_ZERO_EXT_ACCOUNT_ADDR = "VA:E3";
 string constant ERR_ZERO_EXT_AMOUNT = "VA:E4";
-string constant ERR_ZERO_TOKEN_TYPE = "VA:E5";
 
 // TriadIncrementalMerkleTrees contract
 string constant ERR_ZERO_ROOT = "TT:E1"; // merkle tree root can not be zero

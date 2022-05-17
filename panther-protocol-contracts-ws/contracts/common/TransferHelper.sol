@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+// solhint-disable avoid-low-level-calls
 pragma solidity >=0.6.0;
 
 /// @title TransferHelper library
@@ -11,7 +12,7 @@ library TransferHelper {
         address to,
         uint256 value
     ) internal {
-        // bytes4(keccak256(bytes('approve(address,uint256)')));
+        // bytes4(keccak256('approve(address,uint256)'));
         (bool success, bytes memory data) = token.call(
             abi.encodeWithSelector(0x095ea7b3, to, value)
         );
@@ -27,7 +28,7 @@ library TransferHelper {
         address to,
         uint256 value
     ) internal {
-        // bytes4(keccak256(bytes('transfer(address,uint256)')));
+        // bytes4(keccak256('transfer(address,uint256)'));
         (bool success, bytes memory data) = token.call(
             abi.encodeWithSelector(0xa9059cbb, to, value)
         );
@@ -44,59 +45,41 @@ library TransferHelper {
         address to,
         uint256 value
     ) internal {
-        // bytes4(keccak256(bytes('transferFrom(address,address,uint256)')));
+        // bytes4(keccak256('transferFrom(address,address,uint256)'));
         (bool success, bytes memory data) = token.call(
             abi.encodeWithSelector(0x23b872dd, from, to, value)
         );
-        require(
-            success && (data.length == 0 || abi.decode(data, (bool))),
-            "TransferHelper::transferFrom: transferFrom failed"
-        );
+        _requireTransferSuccess(success, data);
     }
 
     /// @dev Transfer an ERC721 token with id of `tokenId` on behalf of `from` to `to`.
-    function safeTransferFrom(
+    function erc721SafeTransferFrom(
         address token,
         uint256 tokenId,
         address from,
         address to
     ) internal {
-        // bytes4(keccak256(bytes("safeTransferFrom(address,address,uint256)")));
+        // bytes4(keccak256('safeTransferFrom(address,address,uint256)'));
         (bool success, bytes memory data) = token.call(
             abi.encodeWithSelector(0x42842e0e, from, to, tokenId)
         );
-
-        require(
-            success && (data.length == 0 || abi.decode(data, (bool))),
-            "TransferHelper::transferFrom: transferFrom failed"
-        );
+        _requireTransferSuccess(success, data);
     }
 
     /// @dev Transfer `amount` ERC1155 token with id of `tokenId` on behalf of `from` to `to`.
-    function safeTransferFrom(
+    function erc1155SafeTransferFrom(
         address token,
         address from,
         address to,
         uint256 tokenId,
-        uint256 amount
+        uint256 amount,
+        bytes memory _data
     ) internal {
-        // bytes4(keccak256(bytes("safeTransferFrom(address,address,uint256,uint256,bytes")));
-
+        // bytes4(keccak256('safeTransferFrom(address,address,uint256,uint256,bytes)'));
         (bool success, bytes memory data) = token.call(
-            abi.encodeWithSelector(
-                0xf242432a,
-                from,
-                to,
-                tokenId,
-                amount,
-                new bytes(0)
-            )
+            abi.encodeWithSelector(0xf242432a, from, to, tokenId, amount, _data)
         );
-
-        require(
-            success && (data.length == 0 || abi.decode(data, (bool))),
-            "TransferHelper::transferFrom: transferFrom failed"
-        );
+        _requireTransferSuccess(success, data);
     }
 
     /// @dev Transfer `value` Ether from caller to `to`.
@@ -105,6 +88,16 @@ library TransferHelper {
         require(
             success,
             "TransferHelper::safeTransferETH: ETH transfer failed"
+        );
+    }
+
+    function _requireTransferSuccess(bool success, bytes memory res)
+        private
+        pure
+    {
+        require(
+            success && (res.length == 0 || abi.decode(res, (bool))),
+            "TransferHelper::transferFrom: transferFrom failed"
         );
     }
 }

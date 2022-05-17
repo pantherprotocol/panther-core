@@ -2,14 +2,15 @@
 
 pragma solidity ^0.8.4;
 
-import { NonReentrant } from "../common/NonReentrant.sol";
-import { LockData } from "../common/Types.sol";
-import "../common/ErrorMsgs.sol";
-import "../common/Constants.sol";
-import "../common/ImmutableOwnable.sol";
-import "../common/TransferHelper.sol";
-import "./OnERC1155Received.sol";
-import "../interfaces/IVault.sol";
+import { ERC20_TOKEN_TYPE, ERC721_TOKEN_TYPE, ERC1155_TOKEN_TYPE } from "./common/Constants.sol";
+import { ERR_INVALID_TOKEN_TYPE, ERR_ZERO_LOCK_TOKEN_ADDR } from "./common/ErrorMsgs.sol";
+import { ERR_ZERO_EXT_ACCOUNT_ADDR, ERR_ZERO_EXT_AMOUNT } from "./common/ErrorMsgs.sol";
+import "./common/ImmutableOwnable.sol";
+import "./common/TransferHelper.sol";
+import { LockData } from "./common/Types.sol";
+import "./interfaces/IVault.sol";
+import "./vault/OnERC1155Received.sol";
+import "./vault/OnERC721Received.sol";
 
 /**
  * @title Vault
@@ -19,11 +20,20 @@ import "../interfaces/IVault.sol";
  * itself(Lock) and vice versa(Unlock). it uses
  * TransferHelper library to interact with tokens.
  */
-contract Vault is IVault, OnERC1155Received, NonReentrant, ImmutableOwnable {
+contract Vault is
+    ImmutableOwnable,
+    OnERC721Received,
+    OnERC1155Received,
+    IVault
+{
     using TransferHelper for address;
 
-    constructor(address _owner) ImmutableOwnable(_owner) {} // solhint-disable-line no-empty-blocks
+    // solhint-disable-next-line no-empty-blocks
+    constructor(address _owner) ImmutableOwnable(_owner) {
+        // Proxy-friendly: no storage initialization
+    }
 
+    // The caller (i.e. Owner) must guard against reentrancy
     function lockAsset(LockData calldata data)
         external
         override
@@ -37,49 +47,51 @@ contract Vault is IVault, OnERC1155Received, NonReentrant, ImmutableOwnable {
                 data.extAmount
             );
         } else if (data.tokenType == ERC721_TOKEN_TYPE) {
-            data.token.safeTransferFrom(
+            data.token.erc721SafeTransferFrom(
                 data.tokenId,
                 data.extAccount,
                 address(this)
             );
         } else if (data.tokenType == ERC1155_TOKEN_TYPE) {
-            data.token.safeTransferFrom(
+            data.token.erc1155SafeTransferFrom(
                 data.extAccount,
                 address(this),
                 data.tokenId,
-                data.extAmount
+                uint256(data.extAmount),
+                new bytes(0)
             );
         } else {
-            revert(INVALID_LOCK_TOKEN_TYPE);
+            revert(ERR_INVALID_TOKEN_TYPE);
         }
 
         emit Locked(data);
     }
 
+    // The caller (i.e. Owner) must guard against reentrancy
     function unlockAsset(LockData calldata data)
         external
         override
-        nonReentrant
         onlyOwner
         checkLockData(data)
     {
         if (data.tokenType == ERC20_TOKEN_TYPE) {
             data.token.safeTransfer(data.extAccount, data.extAmount);
         } else if (data.tokenType == ERC721_TOKEN_TYPE) {
-            data.token.safeTransferFrom(
+            data.token.erc721SafeTransferFrom(
                 data.tokenId,
                 address(this),
                 data.extAccount
             );
         } else if (data.tokenType == ERC1155_TOKEN_TYPE) {
-            data.token.safeTransferFrom(
+            data.token.erc1155SafeTransferFrom(
                 address(this),
                 data.extAccount,
                 data.tokenId,
-                data.extAmount
+                data.extAmount,
+                new bytes(0)
             );
         } else {
-            revert(INVALID_LOCK_TOKEN_TYPE);
+            revert(ERR_INVALID_TOKEN_TYPE);
         }
 
         emit Unlocked(data);
@@ -91,8 +103,4 @@ contract Vault is IVault, OnERC1155Received, NonReentrant, ImmutableOwnable {
         require(data.extAmount > 0, ERR_ZERO_EXT_AMOUNT);
         _;
     }
-
-    // NOTE: The contract is supposed to run behind a proxy DELEGATECALLing it.
-    // For compatibility on upgrades, decrease `__gap` if new variables added.
-    uint256[50] private __gap;
 }

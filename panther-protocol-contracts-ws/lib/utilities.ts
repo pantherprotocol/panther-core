@@ -9,7 +9,6 @@ type Tuple<T, N extends number, A extends any[] = []> = A extends {
     ? A
     : Tuple<T, N, [...A, T]>;
 
-
 type Tuple2<T> = Tuple<T, 2>;
 type Tuple3<T> = Tuple<T, 3>;
 type Tuple4<T> = Tuple<T, 3>;

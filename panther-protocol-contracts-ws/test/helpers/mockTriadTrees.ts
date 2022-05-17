@@ -4,7 +4,7 @@ import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
 } from '../../lib/poseidonBuilder';
-import { BabyJubJub, MockTriadIncrementalMerkleTrees } from '../../types';
+import { MockTriadIncrementalMerkleTrees } from '../../types';
 
 export { deployMockTrees };
 
@@ -17,6 +17,7 @@ async function deployMockTrees(): Promise<MockTriadIncrementalMerkleTrees> {
     const poseidonT4 = await PoseidonT4.deploy();
     await poseidonT4.deployed();
 
+    // Example of using library: DON'T REMOVE
     //const BabyJubJubLib = await ethers.getContractFactory('BabyJubJub');
     //const babyJubJub = await BabyJubJubLib.deploy();
     //await babyJubJub.deployed();
@@ -37,4 +38,3 @@ async function deployMockTrees(): Promise<MockTriadIncrementalMerkleTrees> {
         await TriadIncrementalMerkleTrees.deploy()
     ).deployed() as Promise<MockTriadIncrementalMerkleTrees>;
 }
-

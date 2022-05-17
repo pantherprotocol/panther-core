@@ -6,9 +6,7 @@ https://github.com/appliedzkp/maci/blob/master/crypto/ts/index.ts
 import assert from 'assert';
 import crypto from 'crypto';
 
-import createBlakeHash from 'blake-hash';
-import { babyjub, eddsa, poseidon } from 'circomlibjs';
-import * as ff from 'ffjavascript';
+import { babyjub, poseidon } from 'circomlibjs';
 import { IKeypair, PrivateKey, PublicKey } from './types/keypair';
 
 export const SNARK_FIELD_SIZE = BigInt(
@@ -27,7 +25,7 @@ export const deriveKeypairFromSeed = (
 };
 
 export const multiplyScalars = (a: BigInt, b: BigInt): BigInt => {
-    return ( (a as bigint) * (b as bigint)) % babyjub.subOrder;
+    return ((a as bigint) * (b as bigint)) % babyjub.subOrder;
 };
 
 export const deriveKeypairFromSignature = (signature: string): IKeypair => {
@@ -67,6 +65,7 @@ const generateRandomness = (): bigint => {
     );
     let randomness;
     while (true) {
+        // eslint-disable-line no-constant-condition
         randomness = BigInt('0x' + crypto.randomBytes(32).toString('hex'));
         if (randomness >= min) {
             break;
@@ -76,6 +75,7 @@ const generateRandomness = (): bigint => {
 };
 
 const bigIntToBuffer = (i: BigInt): Buffer => {
+    // eslint-disable-line no-unused-vars
     let hexStr = i.toString(16);
     while (hexStr.length < 64) {
         hexStr = '0' + hexStr;

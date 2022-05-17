@@ -6,7 +6,7 @@ import {
     toBigNum,
     zeroLeaf,
     zeroTriadTreeRoot,
-    zeroLeavesTriad, toBytes32, Triad,
+    zeroLeavesTriad,
 } from '../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
 import { MockTriadIncrementalMerkleTrees } from '../types';
@@ -14,7 +14,6 @@ import { deployMockTrees } from './helpers/mockTriadTrees';
 import { triads, rootsSeen } from './data/triadTreeSample';
 
 describe('IncrementalMerkleTree', () => {
-
     let trees: MockTriadIncrementalMerkleTrees;
     let snapshot: number;
 

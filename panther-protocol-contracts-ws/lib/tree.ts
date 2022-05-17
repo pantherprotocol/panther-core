@@ -10,14 +10,9 @@ This code is modified version of incrementalquintree:
 https://github.com/appliedzkp/incrementalquintree
 */
 
-// import {compressString, decompressString, toBytes32} from './utilities';
- import {toBytes32} from './utilities';
-
-// import LZString from 'lz-string';
 import assert from 'assert';
-import fs from 'fs';
 // @ts-ignore
-import {poseidon} from 'circomlibjs';
+import { poseidon } from 'circomlibjs';
 
 type PathElements = bigint[][];
 type Indices = number[];
@@ -34,11 +29,12 @@ const calcInitialVals = (
     internalNodeSize: number,
     depth: number,
     zeroValue: bigint,
-    hashFunc: (leaves: bigint[]) => bigint,
+    // @ts-ignore
+    hashFunc: (leaves: bigint[]) => bigint, // eslint-disable-line no-unused-vars
 ) => {
     const zeros: bigint[] = [zeroValue];
     const filledSubtrees: bigint[][] = [[zeroValue, zeroValue, zeroValue]];
-    const filledPaths: any = {0: []};
+    const filledPaths: any = { 0: [] };
 
     let currentLevelHash = hashFunc(filledSubtrees[0]);
     for (let i = 1; i < depth; i++) {
@@ -58,7 +54,7 @@ const calcInitialVals = (
 
     const root = hashFunc(filledSubtrees[depth - 1]);
 
-    return {zeros, filledSubtrees, filledPaths, root};
+    return { zeros, filledSubtrees, filledPaths, root };
 };
 
 const poseidon2or3 = (inputs: bigint[]): bigint => {
@@ -81,7 +77,7 @@ const _insertBatch = (
     filledPaths: any,
     leaves: bigint[],
     zeros: bigint[],
-    hashFunc: (leaves: bigint[]) => bigint,
+    hashFunc: (leaves: bigint[]) => bigint, // eslint-disable-line no-unused-vars
 ) => {
     filledSubtrees[0] = newLeaves;
 
@@ -218,7 +214,7 @@ const _genMerklePath = (
 
 const _verifyMerklePath = (
     _proof: MerkleProof,
-    _hashFunc: (leaves: bigint[]) => bigint,
+    _hashFunc: (leaves: bigint[]) => bigint, // eslint-disable-line no-unused-vars
 ) => {
     assert(_proof.pathElements);
 
@@ -287,12 +283,12 @@ class TriadMerkleTree {
     public filledPaths: any = {};
 
     // The hash function to use
-    private hashFunc: (leaves: bigint[]) => bigint;
+    private hashFunc: (leaves: bigint[]) => bigint; // eslint-disable-line no-unused-vars
 
     constructor(
         _depth: number,
         _zeroValue: bigint,
-        _hashFunc: (leaves: bigint[]) => bigint,
+        _hashFunc: (leaves: bigint[]) => bigint, // eslint-disable-line no-unused-vars
     ) {
         this.internalNodeSize = Number(BigInt(2));
         this.leafNodeSize = Number(BigInt(3));
@@ -379,7 +375,7 @@ class TriadMerkleTree {
      */
     public static verifyMerklePath(
         _proof: MerkleProof,
-        _hashFunc: (leaves: bigint[]) => bigint,
+        _hashFunc: (leaves: bigint[]) => bigint, // eslint-disable-line no-unused-vars
     ): boolean {
         return _verifyMerklePath(_proof, _hashFunc);
     }
@@ -503,4 +499,4 @@ class TriadMerkleTree {
     */
 }
 
-export {poseidon2or3, TriadMerkleTree, MerkleProof};
+export { poseidon2or3, TriadMerkleTree, MerkleProof };

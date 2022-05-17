@@ -4,7 +4,7 @@ import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
 } from '../../lib/poseidonBuilder';
-import { BabyJubJub, MockMerkleProofVerifier} from '../../types';
+import { MockMerkleProofVerifier } from '../../types';
 
 export { deployMockMerkleProofVerifier };
 
@@ -37,4 +37,3 @@ async function deployMockMerkleProofVerifier(): Promise<MockMerkleProofVerifier>
         await MerkleProofVerifier.deploy()
     ).deployed() as Promise<MockMerkleProofVerifier>;
 }
-

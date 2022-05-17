@@ -5,7 +5,7 @@ import {
     getPoseidonT4Contract,
     getPoseidonT6Contract,
 } from '../../lib/poseidonBuilder';
-import { BabyJubJub, MockPantherPoolV0, MockTriadIncrementalMerkleTrees } from '../../types';
+import { MockPantherPoolV0 } from '../../types';
 
 export { deployMockPantherPoolV0 };
 
@@ -27,20 +27,16 @@ async function deployMockPantherPoolV0(): Promise<MockPantherPoolV0> {
     await babyJubJub.deployed();
     // Link Poseidon contracts
     // @ts-ignore
-    const PantherPoolV0 = await ethers.getContractFactory(
-        'MockPantherPoolV0',
-        {
-            libraries: {
-                PoseidonT3: poseidonT3.address,
-                PoseidonT4: poseidonT4.address,
-                PoseidonT6: poseidonT6.address,
-                BabyJubJub: babyJubJub.address,
-            },
+    const PantherPoolV0 = await ethers.getContractFactory('MockPantherPoolV0', {
+        libraries: {
+            PoseidonT3: poseidonT3.address,
+            PoseidonT4: poseidonT4.address,
+            PoseidonT6: poseidonT6.address,
+            BabyJubJub: babyJubJub.address,
         },
-    );
+    });
 
     return (
         await PantherPoolV0.deploy()
     ).deployed() as Promise<MockPantherPoolV0>;
 }
-

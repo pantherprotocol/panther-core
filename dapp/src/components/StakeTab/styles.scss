@@ -43,7 +43,7 @@ $staking-input-max-button-color: #ffdfbd;
         width: 100%;
         color: $white !important;
         font-weight: bold !important;
-        font-size: 18px !important;
+        font-size: $title-font-size !important;
         text-transform: none !important;
         display: flex;
         align-items: center;
@@ -59,8 +59,8 @@ $staking-input-max-button-color: #ffdfbd;
         padding: 0 16px;
 
         .staking-info-title {
-            font-weight: 700 !important;
-            font-size: 16px !important;
+            font-weight: $semi-bold-font-weight !important;
+            font-size: $normal-font-size !important;
             display: flex;
             align-items: center;
             color: $white;
@@ -76,8 +76,7 @@ $staking-input-max-button-color: #ffdfbd;
         }
 
         .staking-info-text {
-            font-size: 16px;
-            line-height: 25px;
+            font-size: $normal-font-size;
             color: $white;
             line-height: 22px;
             opacity: 0.8;
@@ -98,8 +97,8 @@ $staking-input-max-button-color: #ffdfbd;
         }
 
         .advanced-staking-rewards-title {
-            font-weight: 800;
-            font-size: 16px;
+            font-weight: $bold-font-weight;
+            font-size: $normal-font-size;
             padding: 10px 16px;
             background: linear-gradient(92.53deg, #ffdfbd 0%, #d0a7a8 95.77%);
             -webkit-background-clip: text;
@@ -120,8 +119,8 @@ $staking-input-max-button-color: #ffdfbd;
                 align-items: center;
 
                 .title {
-                    font-weight: 500;
-                    font-size: 16px;
+                    font-weight: $normal-font-weight;
+                    font-size: $normal-font-size;
                     line-height: 38px;
                     display: flex;
                     align-items: center;
@@ -144,8 +143,8 @@ $staking-input-max-button-color: #ffdfbd;
                 }
 
                 .amount {
-                    font-weight: 800;
-                    font-size: 16px;
+                    font-weight: $bold-font-weight;
+                    font-size: $normal-font-size;
                     text-align: right;
                     background: linear-gradient(
                         92.53deg,
@@ -167,8 +166,8 @@ $staking-input-max-button-color: #ffdfbd;
         margin: 10px 0;
 
         .amount-to-stake-caption {
-            font-weight: 500;
-            font-size: 16px;
+            font-weight: $normal-font-weight;
+            font-size: $normal-font-size;
             color: white;
             line-height: 42px;
             display: flex;
@@ -177,8 +176,8 @@ $staking-input-max-button-color: #ffdfbd;
 
         .available-to-stake-caption {
             color: white;
-            font-weight: 500;
-            font-size: 16px;
+            font-weight: $normal-font-weight;
+            font-size: $normal-font-size;
             line-height: 42px;
             align-items: center;
             text-align: right;
@@ -186,8 +185,8 @@ $staking-input-max-button-color: #ffdfbd;
         }
 
         .token-balance {
-            font-weight: 800;
-            font-size: 16px;
+            font-weight: $bold-font-weight;
+            font-size: $normal-font-size;
             line-height: 42px;
             align-items: center;
             color: $token-balance-color;
@@ -207,8 +206,8 @@ $staking-input-max-button-color: #ffdfbd;
 
         .staking-input {
             border: 0;
-            font-weight: 800;
-            font-size: 36px;
+            font-weight: $bold-font-weight;
+            font-size: $larger-font-size;
             color: white;
             padding: 0;
             width: 100%;
@@ -222,7 +221,7 @@ $staking-input-max-button-color: #ffdfbd;
         .staking-input-max {
             color: #ffdfbd;
             border: 2px solid #ffdfbd;
-            font-size: 16px;
+            font-size: $normal-font-size;
             cursor: pointer;
             line-height: initial;
             margin: 0 15px;
@@ -265,8 +264,8 @@ $staking-input-max-button-color: #ffdfbd;
 
                 span {
                     color: #999999;
-                    font-weight: 500;
-                    font-size: 20px;
+                    font-weight: $normal-font-weight;
+                    font-size: $header-font-size;
                     line-height: 42px;
                 }
             }

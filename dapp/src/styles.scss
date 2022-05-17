@@ -5,7 +5,7 @@
 @font-face {
     font-family: 'Inter';
     font-style: normal;
-    font-weight: 400;
+    font-weight: $light-font-weight;
     src: local(''),
         url('../public/fonts/Inter/inter-v7-latin-regular.woff2')
             format('woff2'),
@@ -18,7 +18,7 @@
 @font-face {
     font-family: 'Inter';
     font-style: normal;
-    font-weight: 500;
+    font-weight: $normal-font-weight;
     src: local(''),
         url('../public/fonts/Inter/inter-v7-latin-500.woff2') format('woff2'),
         /* Chrome 26+, Opera 23+, Firefox 39+ */
@@ -28,7 +28,7 @@
 @font-face {
     font-family: 'Inter';
     font-style: normal;
-    font-weight: 600;
+    font-weight: $semi-normal-font-weight;
     src: local(''),
         url('../public/fonts/Inter/inter-v7-latin-600.woff2') format('woff2'),
         /* Chrome 26+, Opera 23+, Firefox 39+ */
@@ -38,7 +38,7 @@
 @font-face {
     font-family: 'Inter';
     font-style: normal;
-    font-weight: 700;
+    font-weight: $semi-bold-font-weight;
     src: local(''),
         url('../public/fonts/Inter/inter-v7-latin-700.woff2') format('woff2'),
         /* Chrome 26+, Opera 23+, Firefox 39+ */
@@ -48,7 +48,7 @@
 @font-face {
     font-family: 'Inter';
     font-style: normal;
-    font-weight: 800;
+    font-weight: $bold-font-weight;
     src: local(''),
         url('../public/fonts/Inter/inter-v7-latin-800.woff2') format('woff2'),
         /* Chrome 26+, Opera 23+, Firefox 39+ */
@@ -142,9 +142,8 @@ a {
 }
 
 .subtitle {
-    font-size: 18px !important;
-    font-style: normal;
-    font-weight: 800;
+    font-size: $title-font-size !important;
+    font-weight: $bold-font-weight;
     line-height: 42px;
     letter-spacing: 0;
     text-align: left;
@@ -155,14 +154,14 @@ a {
 }
 
 .big-number {
-    font-weight: 800 !important;
-    font-size: 31px !important;
+    font-weight: $bold-font-weight !important;
+    font-size: $large-font-size !important;
     margin-inline-end: 8px !important;
 }
 
 .subtitle-light {
     color: $light-gray;
-    font-size: 14px !important;
+    font-size: $small-font-size !important;
     margin-inline-end: 16px !important;
     line-height: 30px !important;
 }
@@ -170,7 +169,7 @@ a {
 .secondary-dark {
     color: $white;
     opacity: 0.5;
-    font-weight: 700;
+    font-weight: $semi-bold-font-weight;
 }
 
 .full-width-btn {
@@ -185,7 +184,7 @@ a {
 
 .subtitle-summary {
     color: $white;
-    font-weight: 700;
+    font-weight: $semi-bold-font-weight;
 }
 
 .warning-box {
@@ -219,7 +218,7 @@ a {
 
 #price-unit {
     color: $price-unit !important;
-    font-size: 14px;
+    font-size: $small-font-size;
 }
 
 .MuiTable-root {
@@ -233,8 +232,8 @@ a {
 }
 
 .MuiTableRow-head th {
-    font-weight: 500;
-    font-size: 14px;
+    font-weight: $normal-font-weight;
+    font-size: $small-font-size;
     color: $white;
     opacity: 0.5;
 }
@@ -242,8 +241,8 @@ a {
 .MuiTableCell-root {
     border-bottom: none !important;
     color: $white !important;
-    font-weight: 500;
-    font-size: 16px;
+    font-weight: $normal-font-weight;
+    font-size: $normal-font-size;
 }
 
 .MuiTableBody-root .MuiTableRow-root {
@@ -266,7 +265,7 @@ a {
     text-transform: capitalize;
     width: 116px;
     height: 35px;
-    font-size: 12px !important;
+    font-size: $tiny-font-size !important;
 
     &:hover {
         background: $second-blue;

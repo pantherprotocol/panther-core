@@ -18,8 +18,8 @@ $unstake-button-background: linear-gradient(
 
     thead {
         th {
-            font-weight: 500 !important;
-            font-size: 14px !important;
+            font-weight: $normal-font-weight !important;
+            font-size: $small-font-size !important;
             color: $table-header-color !important;
             opacity: 1 !important;
         }
@@ -39,15 +39,15 @@ $unstake-button-background: linear-gradient(
 
         .title {
             align-items: start;
-            font-weight: 400;
-            font-size: 14px;
+            font-weight: $light-font-weight;
+            font-size: $small-font-size;
             color: #9e9e9e;
             text-align: left;
         }
 
         .date {
-            font-weight: 400;
-            font-size: 14px;
+            font-weight: $light-font-weight;
+            font-size: $small-font-size;
             color: $white;
             text-align: left;
         }
@@ -59,7 +59,7 @@ $unstake-button-background: linear-gradient(
         width: 100% !important;
         min-width: 173px !important;
         height: 43px !important;
-        font-size: 13px !important;
+        font-size: $smaller-font-size !important;
         background: $unstake-button-background !important;
         mix-blend-mode: normal;
         backdrop-filter: blur(400px);
@@ -78,8 +78,8 @@ $unstake-button-background: linear-gradient(
             background: transparent !important;
 
             p {
-                font-weight: 400 !important;
-                font-size: 13px !important;
+                font-weight: $light-font-weight !important;
+                font-size: $smaller-font-size !important;
                 line-height: 16px !important;
             }
         }

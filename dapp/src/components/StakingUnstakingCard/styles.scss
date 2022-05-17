@@ -54,7 +54,7 @@ $selected-toogle-button-border-color: #ffdfbd;
         }
 
         button {
-            font-size: 14px;
+            font-size: $small-font-size;
             min-width: 150px;
             height: 45px;
             text-transform: capitalize;

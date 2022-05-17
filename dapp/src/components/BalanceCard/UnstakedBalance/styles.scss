@@ -22,17 +22,14 @@ $main-balance-card-background: linear-gradient(0deg, #3f4a5f, #3f4a5f);
 
         .token-balance {
             font-weight: bold;
-            font-style: normal;
-            font-size: 39px;
+            font-size: $huge-font-size;
             line-height: 19px;
             padding-top: 15px;
             padding-bottom: 15px;
         }
 
         .token-market-price {
-            font-weight: normal;
-            font-style: normal;
-            font-size: 18px;
+            font-size: $title-font-size;
             line-height: 42px;
             opacity: 0.8;
         }

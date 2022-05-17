@@ -12,18 +12,16 @@ $token-balance-color: #ffdfbd;
 
     .amount-to-stake-caption {
         color: white;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 16px;
+        font-weight: $normal-font-weight;
+        font-size: $normal-font-size;
         line-height: 42px;
         display: flex;
         align-items: center;
     }
 
     .available-to-stake-caption {
-        font-style: normal;
-        font-weight: 500;
-        font-size: 16px;
+        font-weight: $normal-font-weight;
+        font-size: $normal-font-size;
         line-height: 42px;
         align-items: center;
         text-align: right;
@@ -32,8 +30,8 @@ $token-balance-color: #ffdfbd;
     }
 
     .token-balance {
-        font-weight: 800;
-        font-size: 16px;
+        font-weight: $bold-font-weight;
+        font-size: $normal-font-size;
         line-height: 42px;
         align-items: center;
         color: $token-balance-color;
@@ -42,7 +40,7 @@ $token-balance-color: #ffdfbd;
 
     .staking-input-max {
         color: $staking-input-max-button-color;
-        font-size: 16px;
+        font-size: $normal-font-size;
         width: 20%;
         cursor: pointer;
         line-height: initial;
@@ -65,8 +63,8 @@ $token-balance-color: #ffdfbd;
 
     .staking-input {
         border: 0;
-        font-weight: 800;
-        font-size: 36px;
+        font-weight: $bold-font-weight;
+        font-size: $larger-font-size;
         line-height: 46px;
         color: white;
         padding: 0px 15px;
@@ -113,8 +111,8 @@ $token-balance-color: #ffdfbd;
 
             span {
                 color: $white;
-                font-weight: 500;
-                font-size: 20px;
+                font-weight: $normal-font-weight;
+                font-size: $header-font-size;
                 line-height: 42px;
             }
         }

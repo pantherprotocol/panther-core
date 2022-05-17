@@ -8,7 +8,6 @@
 
     p {
         padding: 0 15px;
-        font-style: normal;
         text-align: left;
     }
 
@@ -19,7 +18,7 @@
 
     .card-title {
         font-weight: bold;
-        font-size: 18px;
+        font-size: $title-font-size;
         line-height: 42px;
         color: $white;
         display: flex;
@@ -29,7 +28,7 @@
 
     .card-text {
         margin: 10px 0;
-        font-size: 16px;
+        font-size: $normal-font-size;
         line-height: 26px;
         color: $white;
         opacity: 0.7;

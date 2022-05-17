@@ -24,7 +24,7 @@ $balance-card-background: rgba(99, 114, 136, 0.2);
             line-height: 23px;
             color: $white;
             opacity: 0.8;
-            font-size: 14px;
+            font-size: $small-font-size;
         }
     }
 
@@ -53,15 +53,15 @@ $balance-card-background: rgba(99, 114, 136, 0.2);
             padding: 16px;
 
             .title {
-                font-size: 14px;
-                font-weight: 500;
+                font-size: $small-font-size;
+                font-weight: $normal-font-weight;
                 color: $white;
             }
 
             .amount {
                 margin-left: 10px;
-                font-weight: 800;
-                font-size: 14px;
+                font-weight: $bold-font-weight;
+                font-size: $small-font-size;
                 background: $total-rewards-earned-amount-background;
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;

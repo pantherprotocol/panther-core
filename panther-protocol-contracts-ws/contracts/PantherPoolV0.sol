@@ -102,8 +102,9 @@ contract PantherPoolV0 is
                 tokens[utxoIndex],
                 tokenIds[utxoIndex]
             );
-            require(asset.status == 1, ERR_WRONG_ASSET);
+            require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);
 
+            uint96 scaledAmount = 0;
             if (extAmounts[utxoIndex] != 0) {
                 if (asset.tokenType == PRP_TOKEN_TYPE)
                     useGrant(msg.sender, extAmounts[utxoIndex]);
@@ -117,12 +118,9 @@ contract PantherPoolV0 is
                             safe96(extAmounts[utxoIndex])
                         )
                     );
+                scaledAmount = scaleAmount(extAmounts[utxoIndex], asset.scale);
             }
 
-            uint96 scaledAmount = scaleAmount(
-                extAmounts[utxoIndex],
-                asset.scale
-            );
             commitments[utxoIndex] = generateCommitment(
                 pubSpendingKeys[utxoIndex].x,
                 pubSpendingKeys[utxoIndex].y,
@@ -182,7 +180,8 @@ contract PantherPoolV0 is
                 ZAsset memory asset;
                 (asset, zAssetId) = getZAssetAndId(token, tokenId);
                 require(
-                    asset.status == 1 || asset.status == 2,
+                    asset.status == zASSET_ENABLED ||
+                        asset.status == zASSET_DISABLED,
                     ERR_WRONG_ASSET
                 );
                 tokenType = asset.tokenType;

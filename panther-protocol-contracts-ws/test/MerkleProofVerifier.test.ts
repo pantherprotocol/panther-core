@@ -603,13 +603,100 @@ describe('MerkleProofVerifier', () => {
                 const commitmentsLeavesTriadNumber = [c1, c2, c3] as Triad;
                 // TODO: increase this to few millions and move to long test
                 for (let trys = 0; trys < 16; ++trys) {
-                    await trees.internalInsertBatchZkp(
+                    await trees.internalInsertBatch(
+                        //Zkp(
                         commitmentsLeavesTriadNumber,
                     );
-                    let elements = await trees.PathElements();
+                    // When insertBatchZkp is used ( un-comment )
+                    // let elements = await trees.PathElements();
                     let leafID = await trees.LeafId();
-                    let merkleRoot = elements[14];
+                    // let merkleRoot = elements[14];
                     it('should be proved', async () => {
+                        const pathElements = [
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[0][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[0][1].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[1][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[2][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[3][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[4][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[5][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[6][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[7][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[8][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[9][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[10][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[11][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[12][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[13][0].toString(),
+                                )
+                            ),
+                            <BytesLike>(
+                                toBytes32(
+                                    merkleProof[0].pathElements[14][0].toString(),
+                                )
+                            ),
+                        ] as PathElementsType;
+
+                        // eslint-disable-next-line no-unused-vars
+                        /*
                         let PathElements: PathElementsType = [
                             <BytesLike>commitment1,
                             <BytesLike>commitment2,
@@ -628,11 +715,13 @@ describe('MerkleProofVerifier', () => {
                             <BytesLike>elements[12],
                             <BytesLike>elements[13],
                         ];
+                        */
                         await trees.testMerkleProof(
                             leafID,
-                            merkleRoot,
+                            //merkleRoot,
+                            toBytes32(merkleProof[0].root.toString()),
                             commitment0,
-                            PathElements,
+                            pathElements,
                         );
                         let check = await trees.isProofVerified();
                         expect(check, 'NOT PROVED').equal(true);

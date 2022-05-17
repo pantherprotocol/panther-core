@@ -31,15 +31,15 @@ abstract contract MerkleProofVerifier {
     /// @param leaf - commitment leaf value
     /// @param pathElements - TREE_DEPTH + 1 elements - c1,c2 & path-elements
     /// @dev Returns true if a `leaf` can be proved to be a part of a Merkle tree
-    /// defined by `root`. For this, a `proof` must be provided, containing
-    /// sibling hashes on the branch from the leaf to the root of the tree.
+    /// @dev defined by `root`. For this, a `proof` must be provided, containing
+    /// @dev sibling hashes on the branch from the leaf to the root of the tree.
     function verifyMerkleProof(
         bytes32 merkleRoot,
         uint256 triadIndex,
         uint256 triadNodeIndex,
         bytes32 leaf,
         bytes32[TREE_DEPTH + 1] calldata pathElements
-    ) internal view {
+    ) internal pure {
         // [0] - Require
         //require( iTRIAD_INDEX_LEFT <= triadIndex, "Triad index must be in range 0..2"); //ERR_TRIAD_INDEX_MIN_VALUE );
         //require( triadIndex < iTRIAD_INDEX_FORBIDDEN, "Triad index must be in range 0..2");// ERR_TRIAD_INDEX_MAX_VALUE );

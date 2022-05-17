@@ -10,7 +10,6 @@ contract MockPantherPoolV0 is PantherPoolV0 {
     Vault vault;
 
     constructor()
-        public
         PantherPoolV0(msg.sender, timeNow() + 1, address(vault = new Vault()))
     {
         ZAsset memory z1;
@@ -49,7 +48,7 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         uint256 amount,
         uint256 zAssetId,
         uint256 creationTime
-    ) external view returns (uint256) {
+    ) external pure returns (uint256) {
         return
             uint256(
                 generateCommitment(
@@ -144,8 +143,6 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         secretss[2][0] = secrets[0];
         secretss[2][1] = secrets[1];
         secretss[2][2] = secrets[2];
-
-        uint256 creationTime = 0;
 
         this.generateDeposits(
             tokenss,

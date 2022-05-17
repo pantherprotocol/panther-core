@@ -1,9 +1,5 @@
 @import '../../../variables';
 
-$staking-input-container-color: #ffdfbd;
-$staking-input-max-button-color: #ffdfbd;
-$token-balance-color: #ffdfbd;
-
 .staking-input-header {
     display: flex;
     justify-content: space-between;
@@ -34,18 +30,18 @@ $token-balance-color: #ffdfbd;
         font-size: $normal-font-size;
         line-height: 42px;
         align-items: center;
-        color: $token-balance-color;
+        color: $color-beige;
         margin-left: 10px;
     }
 
     .staking-input-max {
-        color: $staking-input-max-button-color;
+        color: $color-beige;
         font-size: $normal-font-size;
         width: 20%;
         cursor: pointer;
         line-height: initial;
         margin: 0 15px;
-        background: rgba(99, 114, 136, 0.15);
+        background: $card-background;
         border-radius: 8px;
         padding: 5px 15px;
     }
@@ -58,7 +54,7 @@ $token-balance-color: #ffdfbd;
     align-items: center;
     justify-content: space-between;
     padding: 16px;
-    border: 1px solid $staking-input-container-color;
+    border: 1px solid $color-beige;
     border-radius: 15px;
 
     .staking-input {

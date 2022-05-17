@@ -13,7 +13,7 @@
         line-height: 42px;
         display: flex;
         align-items: center;
-        color: #ffdfbd; /* FIXME: use common variable */
+        color: $color-beige;
     }
 
     .staking-info-text {

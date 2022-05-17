@@ -17,7 +17,7 @@ $staking-tab-background: rgba(99, 114, 136, 0.2);
         font-weight: $bold-font-weight;
         font-size: $normal-font-size;
         padding: 10px 16px;
-        background: linear-gradient(92.53deg, #ffdfbd 0%, #d0a7a8 95.77%);
+        background: linear-gradient(92.53deg, $color-beige 0%, #d0a7a8 95.77%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -65,7 +65,7 @@ $staking-tab-background: rgba(99, 114, 136, 0.2);
                 text-align: right;
                 background: linear-gradient(
                     92.53deg,
-                    #ffdfbd 0%,
+                    $color-beige 0%,
                     #d0a7a8 95.77%
                 );
                 -webkit-background-clip: text;

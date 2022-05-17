@@ -1,15 +1,14 @@
 @import '../../variables.scss';
 
 $advanced-staking-rewards-background: rgba(202, 223, 255, 0.1);
-$claimed-progress-title-color: #ffdfbd;
 $progress-foreground-color: linear-gradient(
     92.53deg,
-    #ffdfbd 0%,
+    $color-beige 0%,
     #d0a7a8 95.77%
 );
 $progress-background-color: rgba(99, 114, 136, 0.2);
 $remaining-days-card-background: rgba(99, 114, 136, 0.2);
-$remaining-days-text-color: #ffdfbd;
+$remaining-days-text-color: $color-beige;
 .advanced-staking-rewards {
     display: flex;
     justify-content: space-evenly;
@@ -29,7 +28,7 @@ $remaining-days-text-color: #ffdfbd;
             font-size: $small-font-size;
             display: flex;
             align-items: center;
-            color: $claimed-progress-title-color;
+            color: $color-beige;
         }
 
         .progress-holder {

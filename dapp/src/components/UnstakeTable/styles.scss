@@ -1,6 +1,5 @@
 @import '../../variables';
 $transition-tooltip-background-color: #616161;
-$table-header-color: #ffdfbd;
 $table-row-background-color: rgba(99, 114, 136, 0.2);
 $unstake-button-background: linear-gradient(
         180deg,
@@ -20,7 +19,7 @@ $unstake-button-background: linear-gradient(
         th {
             font-weight: $normal-font-weight !important;
             font-size: $small-font-size !important;
-            color: $table-header-color !important;
+            color: $color-beige !important;
             opacity: 1 !important;
         }
     }

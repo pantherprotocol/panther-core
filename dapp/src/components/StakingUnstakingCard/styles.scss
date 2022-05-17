@@ -11,7 +11,6 @@ $toggle-buttons-background: rgba(99, 114, 136, 0.2);
 $selected-toggle-button-background: rgba(99, 114, 136, 0.4);
 $selected-toggle-button-color: #1e2539;
 $selected-toggle-button-hover-color: #1e2539;
-$selected-toggle-button-border-color: #ffdfbd;
 
 .advanced-balance-card-holder {
     background: $advanced-balance-card-holder-background;
@@ -44,7 +43,7 @@ $selected-toggle-button-border-color: #ffdfbd;
         .Mui-selected {
             border-radius: 13px !important;
             background-color: $selected-toggle-button-color;
-            border: 2px solid $selected-toggle-button-border-color;
+            border: 2px solid $color-beige;
             opacity: 1;
 
             &:hover {

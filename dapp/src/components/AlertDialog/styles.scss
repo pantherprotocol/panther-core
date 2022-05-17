@@ -2,7 +2,7 @@
 $dialog-confirm-button: rgba(32, 91, 234, 1);
 $dialog-cancel-button: rgba(168, 179, 202, 1);
 $dialog-background-color: #303c54;
-$dialog-message-color: #ffdfbd;
+
 .css-e53awj-MuiStack-root {
     justify-content: center;
 }
@@ -39,7 +39,7 @@ $dialog-message-color: #ffdfbd;
         line-height: 27px;
         &.message {
             font-weight: $semi-bold-font-weight;
-            color: $dialog-message-color;
+            color: $color-beige;
             margin: 20px 0px;
         }
 

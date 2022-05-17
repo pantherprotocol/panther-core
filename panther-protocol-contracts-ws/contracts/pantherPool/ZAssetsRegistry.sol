@@ -60,7 +60,7 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
         uint160 zAssetRootId = getZAssetRootId(token);
         asset = _zAssets[zAssetRootId];
         zAssetId = getZAssetId(token, tokenId);
-        if (asset.tokenType != BY_ID_TOKEN_TYPE) asset = _zAssets[zAssetId];
+        if (asset.tokenType == BY_ID_TOKEN_TYPE) asset = _zAssets[zAssetId];
     }
 
     function isRootIdWhitelisted(uint160 zAssetId)

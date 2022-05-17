@@ -41,7 +41,8 @@ describe('PantherPoolV0', () => {
             return poseidon(inputs);
         };
 
-        describe('Keys generation & other cryptography used in advanced-staking', function () {
+        // TODO: Continue from [9]..
+        describe('GenerateDeposits -> Exit flow with randoms - BAD-PATH - TO BE CONTINUED', function () {
             // [0] - Spender side generation - one time - Root public key will be shared
             const spenderSeed = BigInt("0xAABBCCDDEEFF");
             const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
@@ -72,6 +73,82 @@ describe('PantherPoolV0', () => {
             it("Sent random is equal to received random", () => {
                 expect(txIn.spenderRandom).equal(tx.spenderRandom);
             })
+            // [9] - Generate bad commitments - out-of-bounds 2**96
+            // [10] - Try to execute GenerateDeposits ... -> MUST FAIL
+            // [11] - Try to execute Exit ... -> MUST FAIL
+        });
+
+        // TODO: Continue from [9]..
+        describe('GenerateDeposits -> Exit flow with randoms - TO BE CONTINUED', function () {
+            // [0] - Spender side generation - one time - Root public key will be shared
+            const spenderSeed = BigInt("0xAABBCCDDEEFF");
+            const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
+            // [1] - Sender side generation - for every new tx
+            const tx = new SenderTransaction(spenderRootKeys.publicKey);
+            // [2] - Encrypt ( can throw ... )
+            tx.encryptMessageV1();
+            // [3] - Pack & Serialize - after this step data can be sent on chain
+            tx.packCipheredText();
+            // [4] - Send on-chain -> extract event etc ...
+            // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
+            const txIn = new RecipientTransaction(spenderRootKeys);
+            // [5] - Deserialize --- we actually will first get this text from chain
+            txIn.unpackMessageV1(tx.cipheredTextMessageV1);
+            // [6] - Decrypt ( try... )
+            try {
+                txIn.decryptMessageV1();
+            } catch (e) {
+                // can't decrypt - this message is not for us
+            }
+            // [7] - Extract random ( try ... )
+            try {
+                txIn.unpackRandomAndCheckProlog();
+            } catch (e) {
+                // prolog is not equal to expected
+            }
+            // [8] - We ready to use random in spend flow
+            it("Sent random is equal to received random", () => {
+                expect(txIn.spenderRandom).equal(tx.spenderRandom);
+            })
+            // [9] - Commitments creation - TODO: max commitment 2*96 , min commitment 0 ? & random
+            // [10] - Double check zAssetId solidity vs TS versions
+            // [11] - Execute GenerateDeposits
+            // [12] - Execute Exit
+            // [13] - Try to Exit once more -> must not succeed
+        });
+
+        describe('Keys generation & other cryptography used in advanced-staking', function () {
+            // [0] - Spender side generation - one time - Root public key will be shared
+            const spenderSeed = BigInt("0xAABBCCDDEEFF");
+            const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
+            // [1] - Sender side generation - for every new tx
+            const tx = new SenderTransaction(spenderRootKeys.publicKey);
+            // [2] - Encrypt ( can throw ... )
+            tx.encryptMessageV1();
+            // [3] - Pack & Serialize - after this step data can be sent on chain
+            tx.packCipheredText();
+            // [4] - Send on-chain -> extract event etc ...
+            // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
+            const txIn = new RecipientTransaction(spenderRootKeys);
+            // [5] - Deserialize --- we actually will first get this text from chain
+            txIn.unpackMessageV1(tx.cipheredTextMessageV1);
+            // [6] - Decrypt ( try... )
+            try {
+                txIn.decryptMessageV1();
+            } catch (e) {
+                // can't decrypt - this message is not for us
+            }
+            // [7] - Extract random ( try ... )
+            try {
+                txIn.unpackRandomAndCheckProlog();
+            } catch (e) {
+                // prolog is not equal to expected
+            }
+            // [8] - We ready to use random in spend flow
+            it("Sent random is equal to received random", () => {
+                expect(txIn.spenderRandom).equal(tx.spenderRandom);
+            });
+
         });
 
 

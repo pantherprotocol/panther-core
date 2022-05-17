@@ -25,7 +25,7 @@ abstract contract CommitmentGenerator {
         uint256 amount,
         uint256 zAssetId,
         uint256 creationTime
-    ) internal view returns (bytes32 commitment) {
+    ) internal pure returns (bytes32 commitment) {
         require(pubSpendingKeyX <= FIELD_SIZE, ERR_TOO_LARGE_PUBKEY_SIZE);
         require(pubSpendingKeyY <= FIELD_SIZE, ERR_TOO_LARGE_PUBKEY_SIZE);
 
@@ -36,13 +36,6 @@ abstract contract CommitmentGenerator {
             ERR_TOO_LARGE_CREATION_TIME_SIZE
         );
 
-        /*
-        console.logBytes32(bytes32(pubSpendingKeyX));
-        console.logBytes32(bytes32(pubSpendingKeyY));
-        console.logBytes32(bytes32(amount));
-        console.logBytes32(bytes32(zAssetId));
-        console.logBytes32(bytes32(creationTime));
-        */
         commitment = PoseidonT6.poseidon(
             [
                 bytes32(pubSpendingKeyX),

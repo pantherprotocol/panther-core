@@ -10,16 +10,10 @@ import * as stakingService from '../../services/staking';
 import {formatCurrency, fiatPrice} from '../../utils/helpers';
 import {RootState} from '../store';
 
-type UnclaimedStakesRewards = {
-    [key in TokenID]: string | null;
-};
-interface UnclaimedStakesRewardsState {
-    value: UnclaimedStakesRewards;
-    status: 'idle' | 'loading' | 'failed';
-}
+import {StakeRewards, StakesRewardsState} from './types';
 
-const initialState: UnclaimedStakesRewardsState = {
-    value: {} as UnclaimedStakesRewards,
+const initialState: StakesRewardsState = {
+    value: null,
     status: 'idle',
 };
 
@@ -27,10 +21,9 @@ export const getUnclaimedRewards = createAsyncThunk(
     'balance/getUnclaimedStakesRewards',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
-    ): Promise<UnclaimedStakesRewards> => {
+    ): Promise<StakeRewards | null> => {
         const {account, library, chainId} = context;
-        if (!library || !chainId || !account)
-            return {} as UnclaimedStakesRewards;
+        if (!library || !chainId || !account) return null;
         if (chainHasStakesReporter(chainId)) {
             if (chainId === 137) {
                 console.debug('Using StakesReporter on Polygon');
@@ -47,7 +40,7 @@ export const getUnclaimedRewards = createAsyncThunk(
             account,
         );
 
-        const reduxRewards = {} as UnclaimedStakesRewards;
+        const reduxRewards = {} as StakeRewards;
 
         for (const tid of [TokenID.PRP, TokenID.ZKP, TokenID.zZKP]) {
             reduxRewards[tid] = sumTokens(reward[1], tid).toString();
@@ -94,13 +87,13 @@ export const unclaimedRewardsSlice = createSlice({
             })
             .addCase(getUnclaimedRewards.rejected, state => {
                 state.status = 'failed';
-                state.value = {} as UnclaimedStakesRewards;
+                state.value = {} as StakeRewards;
             });
     },
 });
 
 const rewardsSelector = (state: RootState, tid: TokenID) => {
-    return state.unclaimedStakesRewards.value[tid]
+    return state.unclaimedStakesRewards.value?.[tid]
         ? BigNumber.from(state.unclaimedStakesRewards.value[tid])
         : null;
 };

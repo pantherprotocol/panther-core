@@ -9,15 +9,18 @@ import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import {BigNumber, utils} from 'ethers';
 
-import {safeOpenMetamask} from '../../components/Common/links';
-import {ConnectButton} from '../../components/ConnectButton';
 import StakingInfo from '../../components/StakeTab/StakingInfo';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {
+    calculateRewards,
+    calculatedRewardsSelector,
+} from '../../redux/slices/calculateRewards';
 import {
     isStakingOpenSelector,
     termsSelector,
 } from '../../redux/slices/stakeTerms';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
+import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {
     zkpTokenBalanceSelector,
@@ -27,10 +30,10 @@ import {onWrongNetwork} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
 import {advancedStake} from '../../services/staking';
 import {StakeType} from '../../types/staking';
-import {prpReward, zZkpReward} from '../../services/rewards';
 import {formatCurrency, safeParseUnits} from '../../utils/helpers';
+import {safeOpenMetamask} from '../Common/links';
+import {ConnectButton} from '../ConnectButton';
 
-import {getUnclaimedRewards} from './../../redux/slices/unclaimedStakesRewards';
 import StakingBtn from './StakingBtn';
 import StakingInput from './StakingInput';
 
@@ -59,22 +62,7 @@ export default function StakeTab(props: {
     const [amountToStakeBN, setAmountToStakeBN] = useState<BigNumber | null>(
         null,
     );
-    const [zZkp, setZZkp] = useState<BigNumber | null>(null);
-    const [prp, setPrp] = useState<BigNumber | null>(null);
     const [, setStakedId] = useState<number | null>(null);
-
-    const fetchStakingRewards = useCallback(async () => {
-        if (amountToStakeBN) {
-            const timeStaked = Math.floor(new Date().getTime());
-            const zZkpRewards = zZkpReward(amountToStakeBN, timeStaked);
-            const prpRewards = prpReward(amountToStakeBN);
-            setZZkp(zZkpRewards);
-            setPrp(prpRewards);
-        } else {
-            setZZkp(null);
-            setPrp(null);
-        }
-    }, [amountToStakeBN]);
 
     // For use when user types input
     const setStakingAmount = useCallback(
@@ -83,11 +71,10 @@ export default function StakeTab(props: {
             const bn = safeParseUnits(amount);
             if (bn) {
                 setAmountToStakeBN(bn);
-            } else {
-                fetchStakingRewards();
+                dispatch(calculateRewards, bn);
             }
         },
-        [fetchStakingRewards],
+        [dispatch],
     );
 
     // For use when user clicks Max button
@@ -162,13 +149,6 @@ export default function StakeTab(props: {
         }
     }, [context, active, account, library, error]);
 
-    useEffect(() => {
-        if (!library || !account) {
-            return;
-        }
-        fetchStakingRewards();
-    }, [account, library, fetchStakingRewards]);
-
     return (
         <Box className="staking-tab-holder">
             {isStakingOpen ? (
@@ -183,7 +163,7 @@ export default function StakeTab(props: {
                         <CardContent className="staking-info-card-content">
                             <StakingInfo />
 
-                            <AdvancedStakingRewards zZkp={zZkp} prp={prp} />
+                            <AdvancedStakingRewards />
                         </CardContent>
                     </Card>
                 </>
@@ -237,10 +217,11 @@ export default function StakeTab(props: {
     );
 }
 
-const AdvancedStakingRewards = (props: {
-    zZkp?: BigNumber | null;
-    prp?: BigNumber | null;
-}) => {
+const AdvancedStakingRewards = () => {
+    const rewards = useAppSelector(calculatedRewardsSelector);
+    const prp = rewards?.[TokenID.PRP];
+    const zZkp = rewards?.[TokenID.zZKP];
+
     return (
         <Box className="advanced-staking-rewards">
             <Typography className="advanced-staking-rewards-title">
@@ -252,7 +233,7 @@ const AdvancedStakingRewards = (props: {
                         ZKP Staking Reward:
                     </Typography>
                     <Typography className="amount">
-                        {props.zZkp ? formatCurrency(props.zZkp) : '-'} zZKP
+                        {zZkp ? formatCurrency(zZkp) : '-'} zZKP
                     </Typography>
                 </Box>
                 <Box className="advanced-staking-rewards-content">
@@ -260,7 +241,7 @@ const AdvancedStakingRewards = (props: {
                         Privacy Reward Points:
                     </Typography>
                     <Typography className="amount">
-                        {props.prp ? formatCurrency(props.prp) : '-'} PRP
+                        {prp ? formatCurrency(prp) : '-'} PRP
                     </Typography>
                 </Box>
             </Box>

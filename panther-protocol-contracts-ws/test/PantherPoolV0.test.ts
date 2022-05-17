@@ -2,28 +2,22 @@
 import { expect } from 'chai';
 
 // @ts-ignore
-import {
-    toBytes32, PathElementsType, toBigNum, Triad, PathElementsTypeSend, Pair, Triad3of2, Triad3of3, Pair2of2, Quad
-} from '../lib/utilities';
+import { toBytes32, PathElementsType, Triad, Pair } from '../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MockMerkleProofVerifier, MockPantherPoolV0, MockTriadIncrementalMerkleTrees } from '../types';
-import { deployMockTrees } from './helpers/mockTriadTrees';
+import { MockPantherPoolV0 } from '../types';
 import { poseidon, babyjub } from 'circomlibjs';
-import {TriadMerkleTree} from '../lib/tree';
+import { TriadMerkleTree } from '../lib/tree';
 import assert from 'assert';
 import { BytesLike } from 'ethers/lib/ethers';
-import {generateRandomBabyJubValue,multiplyScalars} from '../lib/keychain';
-import { encryptMessage, generateEcdhSharedKey } from '../lib/message-encryption';
+import { deriveKeypairFromSeed, generatePublicKey, generateRandomBabyJubValue, multiplyScalars } from '../lib/keychain';
+import { generateEcdhSharedKeyPoint } from '../lib/message-encryption';
 import crypto from 'crypto';
-import { BigNumber, ethers, utils } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import { bigintToBytes32 } from '../lib/conversions';
-import { text } from 'stream/consumers';
-import { deployMockMerkleProofVerifier } from './helpers/mockMerkleProofVerifier';
-
 import '../lib/keychain';
 import { deployMockPantherPoolV0 } from './helpers/mockPantherPoolV0';
-import { defaultAbiCoder, keccak256 } from 'ethers/lib/utils';
-import exp = require('constants');
+import { Buffer } from 'buffer';
+import { IKeypair } from '../lib/types/keypair';
 
 describe('PantherPoolV0', () => {
     let poolV0: MockPantherPoolV0;
@@ -47,58 +41,238 @@ describe('PantherPoolV0', () => {
             return poseidon(inputs);
         };
 
+        // TODO: move it to utils or lib since its related to pack-unpack operation
+        function BigIntToBuffer32(bn) {
+            // The handy-dandy `toString(base)` works!!
+            let hex = BigInt(bn).toString(16);
+
+            // But it still follows the old behavior of giving
+            // invalid hex strings (due to missing padding),
+            // but we can easily add that back
+            if (hex.length % 2) { hex = '0' + hex; }
+
+            // The byteLength will be half of the hex string length
+            let len = hex.length / 2;
+            let u8 = new Uint8Array(32); //len);
+
+            // And then we can iterate each element by one
+            // and each hex segment by two
+            let i = 0;
+            let j = 0;
+            while (i < len) {
+                u8[i] = parseInt(hex.slice(j, j+2), 16);
+                i += 1;
+                j += 2;
+            }
+            // zeros - since we want 32 bytes
+            while ( i < 32 ) {
+                u8[i] = parseInt(BigInt(0).toString(16).slice(0, 2), 16);
+                i += 1;
+            }
+            return u8;
+        }
+
+        // TODO: move it to utils or lib since its related to pack-unpack operation
+        function Buffer32ToBigInt(buf) {
+            let hex : string[] = [];
+            let u8 = Uint8Array.from(buf);
+
+            u8.forEach(function (i) {
+                let h = i.toString(16);
+                if (h.length % 2) { h = '0' + h; }
+                hex.push(h);
+            });
+
+            return BigInt('0x' + hex.join(''));
+        }
+
+        class TransactionOut {
+            // This value is used to be packed inside cipher text
+            readonly spenderRandom : BigInt;
+            // This value is used to create commitments that only user that knows `s-private` & spenderRandom can spend
+            // Its equal to spenderRandom * S = S'
+            readonly spenderPubKey : BigInt[];
+            // This value is used to create ephemeral public Key and use this key as key to cipher text
+            readonly ephemeralRandom : BigInt;
+            // This value is ephemeralRandom * S - used to cipher text
+            readonly ephemeralPubKey : BigInt[];
+            // Packed version
+            readonly ephemeralPubKeyPacked : Buffer;
+            // This value is used to be shared in open form - ephemeralRandom * B
+            // Since spender side knows 's' -> s * ephemeralRandom * B = s * B * ephemeralRandom
+            readonly ephemeralSharedPubKey : BigInt[];
+            // Packed version
+            readonly ephemeralSharedPubKeyPacked : Buffer;
+            // IV 16 bytes - 128 bit for encryption
+            readonly iv : Buffer;
+            // Text to be ciphered
+            cipheredText : Uint8Array;
+            // Text to be send on-chain
+            cipheredTextMessageV1 : Uint8Array;
+
+            public constructor (spenderRootPubKey) {
+                this.spenderRandom = generateRandomBabyJubValue();
+                this.spenderPubKey = generatePublicKey(this.spenderRandom);
+                this.ephemeralRandom = generateRandomBabyJubValue();
+                this.ephemeralPubKey = generateEcdhSharedKeyPoint(this.ephemeralRandom,spenderRootPubKey);
+                this.ephemeralPubKeyPacked = babyjub.packPoint(this.ephemeralPubKey);
+                this.ephemeralSharedPubKey = generatePublicKey(this.ephemeralRandom);
+                this.ephemeralSharedPubKeyPacked = babyjub.packPoint(this.ephemeralSharedPubKey);
+                this.iv = crypto.randomBytes(16);
+                this.cipheredText = crypto.randomBytes(48);
+                this.cipheredTextMessageV1 = crypto.randomBytes(96);
+            }
+
+            public encryptMessageV1() {
+                // [0] - Pack prolog & random
+                // Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
+                const prolog = 0xEEFFEEFF; // THIS prolog must be used as is, according to specs
+                const textToBeCiphered = new Uint8Array( [...BigIntToBuffer32(prolog).slice(0,4), ...(BigIntToBuffer32(this.spenderRandom))]);
+                if ( textToBeCiphered.length != 36 ) {
+                    throw "Size of text to be ciphered V1 must be equal to 36 bytes";
+                }
+                // [1] - cipher
+                // const iv = crypto.randomBytes(16);
+                const cipher = crypto.createCipheriv(
+                    'aes-256-cbc',
+                    this.ephemeralPubKeyPacked,
+                    this.iv
+                );
+                const cipheredText1 = cipher.update(textToBeCiphered);
+                const cipheredText2 = cipher.final();
+                // [2] - semi-pack
+                this.cipheredText = new Uint8Array([...cipheredText1,...cipheredText2]);
+                if ( this.cipheredText.length != 48 ) {
+                    throw "Size of ciphered text V1 must be equal to 48 bytes";
+                }
+            }
+
+            public packCipheredText() {
+                this.cipheredTextMessageV1 = new Uint8Array([...this.iv, ...this.ephemeralSharedPubKeyPacked, ...this.cipheredText]);
+            }
+
+        };
+
+        class TransactionIn {
+            // Only spender have it
+            readonly spenderRootKeys : IKeypair;
+            // Value that must be extracted from ciphered-text
+            spenderRandom : BigInt;
+            // Value that must be derived from random & root priv-key in order to be able to spend
+            spenderPubKey : BigInt[];
+            // Value that must be derived in order to decrypt ciphered text
+            ephemeralPubKey : BigInt[];
+            ephemeralPubKeyPacked : Uint8Array;
+            // Value that used to reconstruct ephemeralPubKey in order to be able to decrypt
+            ephemeralSharedPubKey : BigInt[];
+            ephemeralSharedPubKeyPacked : Uint8Array;
+            iv : Uint8Array;
+            cipheredTextMessageV1 : Uint8Array;
+            cipheredText : Uint8Array;
+            decryptedText: Uint8Array;
+
+            constructor(spenderRootKeys : IKeypair) {
+                // [0] - Real keys
+                this.spenderRootKeys = spenderRootKeys;
+                // [1] - Random values to be on safe side
+                this.spenderRandom = generateRandomBabyJubValue();
+                this.spenderPubKey = generatePublicKey(generateRandomBabyJubValue());
+                this.ephemeralPubKey = generatePublicKey(generateRandomBabyJubValue());
+                this.ephemeralPubKeyPacked = BigIntToBuffer32(generateRandomBabyJubValue());
+                this.ephemeralSharedPubKey = generatePublicKey(generateRandomBabyJubValue());
+                this.ephemeralSharedPubKeyPacked = BigIntToBuffer32(generateRandomBabyJubValue());
+                this.iv = crypto.randomBytes(16);
+                this.cipheredTextMessageV1 = crypto.randomBytes(96);
+                this.cipheredText = crypto.randomBytes(48);
+                this.decryptedText = crypto.randomBytes(32);
+            }
+
+            unpackRandomAndCheckProlog() {
+                // [0] - Prolog check
+                const prolog = BigInt(0xEEFFEEFF);
+                const prolog_from_chain = Buffer32ToBigInt(this.decryptedText.slice(0,0+4));
+                if( prolog_from_chain != prolog ) {
+                    throw "Prolog V1 is not equal";
+                }
+                // [1] - Unpack random - from now on funds can be spent
+                this.spenderRandom = Buffer32ToBigInt(this.decryptedText.slice(4,4+32));
+            }
+
+            public decryptMessageV1() {
+                // [0] - decipher - if fails it will throw
+                const decipher = crypto.createDecipheriv(
+                    'aes-256-cbc',
+                    this.ephemeralPubKeyPacked,
+                    this.iv
+                );
+                const decrypted1 = decipher.update(this.cipheredText);
+                const decrypted2 = decipher.final();
+                // [2] - semi-unpack
+                this.decryptedText = new Uint8Array([...decrypted1,...decrypted2]);
+                if ( this.decryptedText.length != 36 ) {
+                    throw "decrypted text V1 must be equal to 36 bytes";
+                }
+            }
+
+            public unpackMessageV1(cipheredTextMessageV1 : Uint8Array) {
+                // [0] - check size
+                if(cipheredTextMessageV1.length != this.cipheredTextMessageV1.length) {
+                    throw "CipheredTextMessageV1 must be equal to 96";
+                }
+                this.cipheredTextMessageV1 = cipheredTextMessageV1;
+                // [1] - IV
+                this.iv = this.cipheredTextMessageV1.slice(0,0+16);
+                // [2] - Keys
+                this.ephemeralSharedPubKeyPacked = this.cipheredTextMessageV1.slice(16,16+32);
+                this.ephemeralSharedPubKey = babyjub.unpackPoint(this.ephemeralSharedPubKeyPacked);
+                this.ephemeralPubKey = babyjub.mulPointEscalar(this.ephemeralSharedPubKey,this.spenderRootKeys.privateKey);
+                this.ephemeralPubKeyPacked = babyjub.packPoint(this.ephemeralPubKey);
+                // [3] - Ciphered text
+                this.cipheredText = this.cipheredTextMessageV1.slice(48,48+48);
+            }
+        };
+
+        describe('Keys generation & other cryptography used in advanced-staking', function () {
+            // [0] - Spender side generation - one time - Root public key will be shared
+            const spenderSeed = BigInt("0xAABBCCDDEEFF");
+            const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
+            // [1] - Sender side generation - for every new tx
+            const tx = new TransactionOut(spenderRootKeys.publicKey);
+            // [2] - Encrypt ( can throw ... )
+            tx.encryptMessageV1();
+            // [3] - Pack & Serialize - after this step data can be sent on chain
+            tx.packCipheredText();
+            // [4] - Send on-chain -> extract event etc ...
+            // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
+            const txIn = new TransactionIn(spenderRootKeys);
+            // [5] - Deserialize --- we actually will first get this text from chain
+            txIn.unpackMessageV1(tx.cipheredTextMessageV1);
+            // [6] - Decrypt ( try... )
+            try {
+                txIn.decryptMessageV1();
+            } catch (e) {
+                // can't decrypt - this message is not for us
+            }
+            // [7] - Extract random ( try ... )
+            try {
+                txIn.unpackRandomAndCheckProlog();
+            } catch (e) {
+                // prolog is not equal to expected
+            }
+            // [8] - We ready to use random in spend flow
+            it("Sent random is equal to received random", () => {
+                expect(txIn.spenderRandom).equal(tx.spenderRandom);
+            })
+        });
+
+
         // TODO: This flow must be re-factored to functions
-        // 1) - All related to crytography must be double checked in code: all `expects` must hold in production code,
-        //      and if not, re-try procedure must be taken, for example:
+        // All related to crytography must be double checked in code: all `expects` must hold in production code,
+        //     and if not, re-try procedure must be taken, for example:
         // Create Keys and encrypts message and pack to be send on-chain -> try to extract & decrypt & recreate-commitments
         // If it fails re-try procedure will be re-creation of all created-keys
         // In production new-key can't be used without this double-test
         describe('Flow of key-generation, commitments creation (ERC20), generate-deposits + exit && double checks on every-step', function () {
-            // TODO: move it to utils or lib since its related to pack-unpack operation
-            function BigIntToBuffer32(bn) {
-                // The handy-dandy `toString(base)` works!!
-                let hex = BigInt(bn).toString(16);
-
-                // But it still follows the old behavior of giving
-                // invalid hex strings (due to missing padding),
-                // but we can easily add that back
-                if (hex.length % 2) { hex = '0' + hex; }
-
-                // The byteLength will be half of the hex string length
-                let len = hex.length / 2;
-                let u8 = new Uint8Array(32); //len);
-
-                // And then we can iterate each element by one
-                // and each hex segment by two
-                let i = 0;
-                let j = 0;
-                while (i < len) {
-                    u8[i] = parseInt(hex.slice(j, j+2), 16);
-                    i += 1;
-                    j += 2;
-                }
-                // zeros - since we want 32 bytes
-                while ( i < 32 ) {
-                    u8[i] = parseInt(BigInt(0).toString(16).slice(0, 2), 16);
-                    i += 1;
-                }
-                return u8;
-            }
-
-            // TODO: move it to utils or lib since its related to pack-unpack operation
-            function Buffer32ToBigInt(buf) {
-                let hex : string[] = [];
-                let u8 = Uint8Array.from(buf);
-
-                u8.forEach(function (i) {
-                    let h = i.toString(16);
-                    if (h.length % 2) { h = '0' + h; }
-                    hex.push(h);
-                });
-
-                return BigInt('0x' + hex.join(''));
-            }
-
             // [0] - Recipient side
             const s = generateRandomBabyJubValue(); // Spender Private Key
             const S = babyjub.mulPointEscalar(babyjub.Base8, s); // Spender Public Key - Shared & known to sender
@@ -276,7 +450,6 @@ describe('PantherPoolV0', () => {
                     BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
                     BigNumber.from(Buffer32ToBigInt(merged1).toString())
                 ];
-                console.log("SS:", toBytes32(secrets_from_chain11[3].toString()));
 
                 const zAssetIdBuf2 = BigIntToBuffer32(zAssetIdSol);
                 const amountBuf2 = BigIntToBuffer32(Amounts[1]);
@@ -305,7 +478,6 @@ describe('PantherPoolV0', () => {
                     BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
                     BigNumber.from(Buffer32ToBigInt(merged2).toString())
                 ];
-                console.log("SS:", toBytes32(secrets_from_chain22[3].toString()));
 
                 const zAssetIdBuf3 = BigIntToBuffer32(zAssetIdSol);
                 const amountBuf3 = BigIntToBuffer32(Amounts[2]);
@@ -437,7 +609,7 @@ describe('PantherPoolV0', () => {
 
                 // This public key must be used in panther-core V1
                 const SpenderDerivedPubKey = babyjub.mulPointEscalar(babyjub.Base8, sr); // S = sB S' = srB
-                const SpenderDerivedPubKey_from_chain = await poolV0.GeneratePublicSpendingKey(sr);
+                const SpenderDerivedPubKey_from_chain = await poolV0.GeneratePublicSpendingKey(sr as bigint);
                 expect(SpenderDerivedPubKey[0],"Generated Public Key TS must be equal to solidity version").equal(SpenderDerivedPubKey_from_chain[0]);
                 expect(SpenderDerivedPubKey[1],"Generated Public Key TS must be equal to solidity version").equal(SpenderDerivedPubKey_from_chain[1]);
                 const pathElements = [
@@ -472,7 +644,7 @@ describe('PantherPoolV0', () => {
                     tokenId,
                     amountsOut[0],
                     createTime,
-                    sr,
+                    sr as bigint,
                     lefLeafId,
                     pathElements,
                     toBytes32(BigInt(merkleProof[0].root).toString()),

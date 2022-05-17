@@ -7,17 +7,9 @@ import assert from 'assert';
 import crypto from 'crypto';
 
 import createBlakeHash from 'blake-hash';
-import {babyjub, eddsa, poseidon} from 'circomlibjs';
+import { babyjub, eddsa, poseidon } from 'circomlibjs';
 import * as ff from 'ffjavascript';
-
-export interface IKeypair {
-    publicKey: bigint[];
-    privateKey: bigint;
-}
-export type PrivateKey = bigint;
-export type PublicKey = bigint[];
-export type EcdhSharedKey = bigint;
-//import {IKeypair, PrivateKey, PublicKey} from './types';
+import { IKeypair, PrivateKey, PublicKey } from './types/keypair';
 
 export const SNARK_FIELD_SIZE = BigInt(
     '21888242871839275222246405745257275088548364400416034343698204186575808495617',
@@ -34,8 +26,8 @@ export const deriveKeypairFromSeed = (
     };
 };
 
-export const multiplyScalars = (a: bigint, b: bigint): bigint => {
-    return (a * b) % babyjub.subOrder;
+export const multiplyScalars = (a: BigInt, b: BigInt): BigInt => {
+    return ( (a as bigint) * (b as bigint)) % babyjub.subOrder;
 };
 
 export const deriveKeypairFromSignature = (signature: string): IKeypair => {
@@ -43,8 +35,8 @@ export const deriveKeypairFromSignature = (signature: string): IKeypair => {
     return deriveKeypairFromSeed(pKey);
 };
 
-export const truncateToSnarkField = (v: bigint): bigint => {
-    return v % SNARK_FIELD_SIZE;
+export const truncateToSnarkField = (v: BigInt): BigInt => {
+    return (v as bigint) % SNARK_FIELD_SIZE;
 };
 
 export const generatePublicKey = (privateKey: PrivateKey): PublicKey => {
@@ -56,6 +48,8 @@ export const generatePublicKey = (privateKey: PrivateKey): PublicKey => {
 };
 
 export const formatPrivateKeyForBabyJub = (privateKey: PrivateKey) => {
+    return (privateKey as bigint) % babyjub.subOrder;
+    /* THIS CODE IS NOT IN USE - Steve & Roman
     const sBuff = eddsa.pruneBuffer(
         createBlakeHash('blake512')
             .update(bigIntToBuffer(privateKey))
@@ -64,6 +58,7 @@ export const formatPrivateKeyForBabyJub = (privateKey: PrivateKey) => {
     );
     const s = ff.utils.leBuff2int(sBuff);
     return ff.Scalar.shr(s, 3);
+    */
 };
 
 const generateRandomness = (): bigint => {
@@ -88,7 +83,7 @@ const bigIntToBuffer = (i: BigInt): Buffer => {
     return Buffer.from(hexStr, 'hex');
 };
 
-export const generateRandomBabyJubValue = (): bigint => {
+export const generateRandomBabyJubValue = (): BigInt => {
     const random = generateRandomness();
     const privateKey: PrivateKey = random % SNARK_FIELD_SIZE;
     assert(privateKey < SNARK_FIELD_SIZE);
@@ -122,7 +117,7 @@ export const extractSecretsPair = (
     ];
 };
 
-export const derivePrivateKeyFromSignature = (signature: string): bigint => {
+export const derivePrivateKeyFromSignature = (signature: string): BigInt => {
     const pair = extractSecretsPair(signature);
     if (!pair) {
         throwKeychainError('Failed to extract secrets pair from signature');

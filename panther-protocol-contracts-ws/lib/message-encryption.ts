@@ -1,12 +1,12 @@
 import crypto from 'crypto';
 
-import {babyjub} from 'circomlibjs';
-import {utils} from 'ethers';
+import { babyjub } from 'circomlibjs';
+import { utils } from 'ethers';
 
-import {bigintToBytes32} from './conversions';
-import {formatPrivateKeyForBabyJub} from './keychain';
-import {ICiphertext} from './types/message';
-import {PrivateKey, PublicKey, EcdhSharedKey} from './types/keypair';
+import { bigintToBytes32 } from './conversions';
+import { formatPrivateKeyForBabyJub } from './keychain';
+import { ICiphertext } from './types/message';
+import { PrivateKey, PublicKey, EcdhSharedKey, EcdhSharedKeyPoint } from './types/keypair';
 
 export const generateEcdhSharedKey = (
     privateKey: PrivateKey,
@@ -18,6 +18,16 @@ export const generateEcdhSharedKey = (
     )[0];
 };
 
+export const generateEcdhSharedKeyPoint = (
+    privateKey: PrivateKey,
+    publicKey: PublicKey,
+): EcdhSharedKeyPoint => {
+    return babyjub.mulPointEscalar(
+        publicKey,
+        formatPrivateKeyForBabyJub(privateKey),
+    );
+};
+
 export function encryptMessage(
     plaintext: string,
     sharedKey: EcdhSharedKey,
@@ -27,7 +37,7 @@ export function encryptMessage(
     try {
         const cipher = crypto.createCipheriv(
             'aes-256-cbc',
-            utils.arrayify(bigintToBytes32(sharedKey)),
+            utils.arrayify(bigintToBytes32(sharedKey as bigint)),
             iv,
         );
         return {
@@ -45,7 +55,7 @@ export function decryptMessage(
 ): string {
     const decipher = crypto.createDecipheriv(
         'aes-256-cbc',
-        utils.arrayify(bigintToBytes32(sharedKey)),
+        utils.arrayify(bigintToBytes32(sharedKey as bigint)),
         Buffer.from(ciphertext.iv, 'hex'),
     );
 

@@ -11,7 +11,7 @@ import { deployMockTrees } from './helpers/mockTriadTrees';
 import { poseidon, babyjub } from 'circomlibjs';
 import {TriadMerkleTree} from '../lib/tree';
 import assert from 'assert';
-import { BytesLike } from 'ethers/lib/ethers';
+import { BigNumberish, BytesLike } from 'ethers/lib/ethers';
 import {generateRandomBabyJubValue,multiplyScalars} from '../lib/keychain';
 import { encryptMessage, generateEcdhSharedKey } from '../lib/message-encryption';
 import crypto from 'crypto';
@@ -504,7 +504,7 @@ describe('MerkleProofVerifier', () => {
                     const S = babyjub.mulPointEscalar(babyjub.Base8, s);
                     it('SpenderDerivedPubKeyTypeScript == SpenderDerivedPubKeySolidity', async () => {
                         // [1] - Solidity code
-                        const Ssol = await trees.GeneratePublicSpendingKey(s);
+                        const Ssol = await trees.GeneratePublicSpendingKey(s as bigint);
                         // [2] - Check
                         expect(S[0]).equal(Ssol[0]);
                         expect(S[1]).equal(Ssol[1]);

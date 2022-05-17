@@ -177,8 +177,8 @@ contract TriadIncrementalMerkleTrees is
 
     // DONT remove - can be used in tests
     function insertBatchZkp(bytes32[TRIAD_SIZE] memory leaves)
-    internal
-    returns (uint256 leftLeafId, bytes32[TREE_DEPTH] memory pathElements)
+        internal
+        returns (uint256 leftLeafId, bytes32[TREE_DEPTH] memory pathElements)
     {
         leftLeafId = _nextLeafId;
 
@@ -208,13 +208,13 @@ contract TriadIncrementalMerkleTrees is
                 left = nodeHash;
                 right = zeros[level];
                 _filledSubtrees[level] = nodeHash;
-                pathElements[level-1] = right;
+                pathElements[level - 1] = right;
             } else {
                 // for a new tree, "than" block always run before "else" block
                 // so `_filledSubtrees[level]` gets updated before its use
                 left = _filledSubtrees[level];
                 right = nodeHash;
-                pathElements[level-1] = left;
+                pathElements[level - 1] = left;
             }
 
             nodeHash = hash(left, right);
@@ -223,7 +223,7 @@ contract TriadIncrementalMerkleTrees is
             nodeIndex >>= 1;
         }
 
-        pathElements[TREE_DEPTH-1] = nodeHash; // root
+        pathElements[TREE_DEPTH - 1] = nodeHash; // root
 
         uint256 nextLeafId = leftLeafId + iTRIAD_SIZE;
         _nextLeafId = nextLeafId;

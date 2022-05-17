@@ -427,8 +427,8 @@ describe('PantherPoolV0', () => {
                     ...zAssetIdBuf1.slice(0, 20),
                     ...amountBuf1.slice(0, 12).reverse(),
                 ]);
+                // eslint-disable-next-line no-unused-vars
                 const secrets_from_chain1 = [
-                    // eslint-disable-line no-unused-vars
                     {
                         _hex: toBytes32(
                             buffer32ToBigInt(
@@ -458,8 +458,8 @@ describe('PantherPoolV0', () => {
                         _isBigNumber: true,
                     },
                 ];
+                // eslint-disable-next-line no-unused-vars
                 const secrets_from_chain11: BigNumber[] = [
-                    // eslint-disable-line no-unused-vars
                     BigNumber.from(
                         buffer32ToBigInt(
                             cipherTextMessageV1.slice(0, 32),
@@ -484,8 +484,8 @@ describe('PantherPoolV0', () => {
                     ...zAssetIdBuf2.slice(0, 20),
                     ...amountBuf2.slice(0, 12).reverse(),
                 ]);
+                // eslint-disable-next-line no-unused-vars
                 const secrets_from_chain2 = [
-                    // eslint-disable-line no-unused-vars
                     {
                         _hex: toBytes32(
                             buffer32ToBigInt(
@@ -515,8 +515,8 @@ describe('PantherPoolV0', () => {
                         _isBigNumber: true,
                     },
                 ];
+                // eslint-disable-next-line no-unused-vars
                 const secrets_from_chain22: BigNumber[] = [
-                    // eslint-disable-line no-unused-vars
                     BigNumber.from(
                         buffer32ToBigInt(
                             cipherTextMessageV1.slice(0, 32),
@@ -541,8 +541,8 @@ describe('PantherPoolV0', () => {
                     ...zAssetIdBuf3.slice(0, 20),
                     ...amountBuf3.slice(0, 12).reverse(),
                 ]);
+                // eslint-disable-next-line no-unused-vars
                 const secrets_from_chain3 = [
-                    // eslint-disable-line no-unused-vars
                     {
                         _hex: toBytes32(
                             buffer32ToBigInt(
@@ -572,8 +572,8 @@ describe('PantherPoolV0', () => {
                         _isBigNumber: true,
                     },
                 ];
+                // eslint-disable-next-line no-unused-vars
                 const secrets_from_chain33: BigNumber[] = [
-                    // eslint-disable-line no-unused-vars
                     BigNumber.from(
                         buffer32ToBigInt(
                             cipherTextMessageV1.slice(0, 32),

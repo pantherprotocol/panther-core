@@ -64,8 +64,8 @@ const generateRandomness = (): bigint => {
         '6350874878119819312338956282401532410528162663560392320966563075034087161851',
     );
     let randomness;
+    // eslint-disable-next-line no-constant-condition
     while (true) {
-        // eslint-disable-line no-constant-condition
         randomness = BigInt('0x' + crypto.randomBytes(32).toString('hex'));
         if (randomness >= min) {
             break;
@@ -73,9 +73,8 @@ const generateRandomness = (): bigint => {
     }
     return randomness;
 };
-
+// eslint-disable-next-line no-unused-vars
 const bigIntToBuffer = (i: BigInt): Buffer => {
-    // eslint-disable-line no-unused-vars
     let hexStr = i.toString(16);
     while (hexStr.length < 64) {
         hexStr = '0' + hexStr;

@@ -6,6 +6,7 @@ import { PoseidonT6 } from "../crypto/Poseidon.sol";
 import "../common/ErrorMsgs.sol";
 import "../crypto/SnarkConstants.sol";
 import "hardhat/console.sol";
+
 abstract contract CommitmentGenerator {
     // @dev Child contract must ensure the input params are less than the FIELD_SIZE
     uint256 constant MAX_AMOUNT_SIZE = 2**120;
@@ -25,13 +26,15 @@ abstract contract CommitmentGenerator {
         uint256 zAssetId,
         uint256 creationTime
     ) internal view returns (bytes32 commitment) {
-
         require(pubSpendingKeyX <= FIELD_SIZE, ERR_TOO_LARGE_PUBKEY_SIZE);
         require(pubSpendingKeyY <= FIELD_SIZE, ERR_TOO_LARGE_PUBKEY_SIZE);
 
         require(amount <= MAX_AMOUNT_SIZE, ERR_TOO_LARGE_AMOUNT_SIZE);
         require(zAssetId <= MAX_ZASSET_ID_SIZE, ERR_TOO_LARGE_ZASSET_ID_SIZE);
-        require(creationTime <= MAX_CREATION_TIME_SIZE, ERR_TOO_LARGE_CREATION_TIME_SIZE);
+        require(
+            creationTime <= MAX_CREATION_TIME_SIZE,
+            ERR_TOO_LARGE_CREATION_TIME_SIZE
+        );
 
         /*
         console.logBytes32(bytes32(pubSpendingKeyX));
@@ -42,11 +45,11 @@ abstract contract CommitmentGenerator {
         */
         commitment = PoseidonT6.poseidon(
             [
-            bytes32(pubSpendingKeyX),
-            bytes32(pubSpendingKeyY),
-            bytes32(amount),
-            bytes32(zAssetId),
-            bytes32(creationTime)
+                bytes32(pubSpendingKeyX),
+                bytes32(pubSpendingKeyY),
+                bytes32(amount),
+                bytes32(zAssetId),
+                bytes32(creationTime)
             ]
         );
     }

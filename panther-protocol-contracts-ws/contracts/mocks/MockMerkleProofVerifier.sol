@@ -6,8 +6,11 @@ import "../triadTree/TriadIncrementalMerkleTrees.sol";
 import "../pantherPool/v0/MerkleProofVerifier.sol";
 import "../pantherPool/v0/PubKeyGenerator.sol";
 
-contract MockMerkleProofVerifier is MerkleProofVerifier, TriadIncrementalMerkleTrees, PubKeyGenerator {
-
+contract MockMerkleProofVerifier is
+    MerkleProofVerifier,
+    TriadIncrementalMerkleTrees,
+    PubKeyGenerator
+{
     bool _verifiedProof;
 
     function testMerkleProof(
@@ -27,15 +30,15 @@ contract MockMerkleProofVerifier is MerkleProofVerifier, TriadIncrementalMerkleT
         _verifiedProof = true;
     }
 
-    function isProofVerified()
-    external
-    view
-    returns (bool)
-    {
+    function isProofVerified() external view returns (bool) {
         return _verifiedProof;
     }
 
-    function GeneratePublicSpendingKey(uint256 privKey) external view returns(uint256[2] memory xy) {
+    function GeneratePublicSpendingKey(uint256 privKey)
+        external
+        view
+        returns (uint256[2] memory xy)
+    {
         G1Point memory p;
         p = generatePubSpendingKey(privKey);
         xy[0] = p.x;
@@ -47,22 +50,17 @@ contract MockMerkleProofVerifier is MerkleProofVerifier, TriadIncrementalMerkleT
     uint256 leftLeafId;
 
     // DONT remove - it can be used
-    function internalInsertBatchZkp(bytes32[TRIAD_SIZE] memory leaves) external {
-        (leftLeafId,pathElements) = insertBatchZkp(leaves);
-    }
-    function LeafId()
-    external
-    view
-    returns (uint256)
+    function internalInsertBatchZkp(bytes32[TRIAD_SIZE] memory leaves)
+        external
     {
+        (leftLeafId, pathElements) = insertBatchZkp(leaves);
+    }
+
+    function LeafId() external view returns (uint256) {
         return leftLeafId;
     }
 
-    function PathElements()
-    external
-    view
-    returns (bytes32[TREE_DEPTH] memory)
-    {
+    function PathElements() external view returns (bytes32[TREE_DEPTH] memory) {
         return pathElements;
     }
 }

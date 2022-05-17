@@ -147,7 +147,6 @@ contract PantherPoolV0 is
         addAndEmitCommitments(commitments, secretMsgs, timestamp);
     }
 
-
     function exit(
         address token,
         uint256 tokenId,
@@ -213,8 +212,6 @@ contract PantherPoolV0 is
             LockData(tokenType, token, tokenId, msg.sender, safe96(amount))
         );
     }
-
-
 
     /// @notice Add a new "grant type", with the specified amount (in PRPs) of the grant,
     /// and allow the specified "curator" to issue grants of this type

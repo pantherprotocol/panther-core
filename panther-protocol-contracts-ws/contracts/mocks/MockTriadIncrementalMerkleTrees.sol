@@ -5,7 +5,6 @@ pragma solidity ^0.8.4;
 import "../triadTree/TriadIncrementalMerkleTrees.sol";
 
 contract MockTriadIncrementalMerkleTrees is TriadIncrementalMerkleTrees {
-
     event InternalInsertBatch(uint256 leftLeafId);
 
     function internalInsertBatch(bytes32[TRIAD_SIZE] memory leaves) external {

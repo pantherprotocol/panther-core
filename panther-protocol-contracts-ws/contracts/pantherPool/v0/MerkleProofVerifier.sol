@@ -2,11 +2,7 @@
 pragma solidity ^0.8.4;
 
 import { PoseidonT3, PoseidonT4 } from "../../crypto/Poseidon.sol";
-import {
-    ERR_UNKNOWN_MERKLE_ROOT,
-    ERR_MERKLE_PROOF_VERIFICATION_FAILED,
-    ERR_TRIAD_INDEX_MIN_VALUE,
-    ERR_TRIAD_INDEX_MAX_VALUE } from "../../common/ErrorMsgs.sol";
+import { ERR_UNKNOWN_MERKLE_ROOT, ERR_MERKLE_PROOF_VERIFICATION_FAILED, ERR_TRIAD_INDEX_MIN_VALUE, ERR_TRIAD_INDEX_MAX_VALUE } from "../../common/ErrorMsgs.sol";
 
 abstract contract MerkleProofVerifier {
     // @dev Number of levels in a tree excluding the root level
@@ -53,12 +49,18 @@ abstract contract MerkleProofVerifier {
         // [1] - Compute zero level hash
         bytes32 nodeHash;
         // NOTE: no else-case needed since this code executed after require at step [0]
-        if( triadIndex == iTRIAD_INDEX_LEFT) {
-            nodeHash = PoseidonT4.poseidon( [ leaf, pathElements[0], pathElements[1] ] );
-        } else if ( triadIndex == iTRIAD_INDEX_MIDDLE ) {
-            nodeHash = PoseidonT4.poseidon( [ pathElements[0], leaf, pathElements[1] ] );
-        } else if ( triadIndex == iTRIAD_INDEX_RIGHT ) {
-            nodeHash = PoseidonT4.poseidon( [ pathElements[0], pathElements[1], leaf ] );
+        if (triadIndex == iTRIAD_INDEX_LEFT) {
+            nodeHash = PoseidonT4.poseidon(
+                [leaf, pathElements[0], pathElements[1]]
+            );
+        } else if (triadIndex == iTRIAD_INDEX_MIDDLE) {
+            nodeHash = PoseidonT4.poseidon(
+                [pathElements[0], leaf, pathElements[1]]
+            );
+        } else if (triadIndex == iTRIAD_INDEX_RIGHT) {
+            nodeHash = PoseidonT4.poseidon(
+                [pathElements[0], pathElements[1], leaf]
+            );
         }
 
         // [2] - Compute root
@@ -70,17 +72,19 @@ abstract contract MerkleProofVerifier {
                 // it means for example: path = b111 , zero leaf will be from right size of hash
                 // and path element[2] will be from right side of hash, all other path elements [3,4] will be from
                 // left side of the next hashes till root.
-                isLeftNode = ((triadNodeIndex & ( 0x1 << ( level - 2 ) ) ) == 0);
+                isLeftNode = ((triadNodeIndex & (0x1 << (level - 2))) == 0);
             }
-            if ( isLeftNode ) { // computed node from left side
+            if (isLeftNode) {
+                // computed node from left side
                 // Hash(left = nodeHash, right = pathElement)
-                nodeHash = PoseidonT3.poseidon( [ nodeHash, pathElements [ level ] ] );
-            } else { // computed node from right side
+                nodeHash = PoseidonT3.poseidon([nodeHash, pathElements[level]]);
+            } else {
+                // computed node from right side
                 // Hash(left = pathElement, right = nodeHash)
-                nodeHash = PoseidonT3.poseidon( [ pathElements [ level ], nodeHash ] );
+                nodeHash = PoseidonT3.poseidon([pathElements[level], nodeHash]);
             }
         }
         // [3] - revert if verification fails
-        require ( merkleRoot == nodeHash, ERR_MERKLE_PROOF_VERIFICATION_FAILED );
+        require(merkleRoot == nodeHash, ERR_MERKLE_PROOF_VERIFICATION_FAILED);
     }
 }

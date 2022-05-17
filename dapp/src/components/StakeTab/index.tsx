@@ -7,6 +7,10 @@ import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import {BigNumber, utils} from 'ethers';
 
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {
+    isStakingOpenSelector,
+    termsSelector,
+} from '../../redux/slices/stakeTerms';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
@@ -16,8 +20,8 @@ import {
 } from '../../redux/slices/zkpTokenBalance';
 import {onWrongNetwork} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
-import * as stakingService from '../../services/staking';
-import {chainHasStakingOpen} from '../../services/staking';
+import {advancedStake} from '../../services/staking';
+import {StakeType} from '../../types/staking';
 import {safeParseUnits} from '../../utils/helpers';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
@@ -34,10 +38,16 @@ export default function StakeTab(props: {
     switchNetwork: any;
 }) {
     const context = useWeb3React();
-    const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
-    const dispatch = useAppDispatch();
-
     const {account, library, chainId, active, error} = context;
+    const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
+    const minStake = useAppSelector(
+        termsSelector(chainId, StakeType.Advanced, 'minAmountScaled'),
+    );
+    const isStakingOpen = useAppSelector(
+        isStakingOpenSelector(chainId, StakeType.Advanced),
+    );
+
+    const dispatch = useAppDispatch();
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
     const [amountToStake, setAmountToStake] = useState<string>('');
@@ -68,7 +78,7 @@ export default function StakeTab(props: {
                 return;
             }
 
-            const stakingResponse = await stakingService.advancedStake(
+            const stakingResponse = await advancedStake(
                 library,
                 chainId,
                 account,
@@ -129,7 +139,7 @@ export default function StakeTab(props: {
 
     return (
         <Box className="staking-tab-holder">
-            {chainHasStakingOpen(chainId) && (
+            {isStakingOpen && (
                 <StakingInput
                     setStakingAmount={setStakingAmount}
                     setStakingAmountBN={setStakingAmountBN}
@@ -176,11 +186,13 @@ export default function StakeTab(props: {
                 </div>
             )}
 
-            {chainHasStakingOpen(chainId) && active && !wrongNetwork && (
+            {isStakingOpen && active && !wrongNetwork && (
                 <StakingBtn
                     amountToStake={amountToStake}
                     amountToStakeBN={amountToStakeBN}
                     stake={stake}
+                    tokenBalance={tokenBalance}
+                    minStake={minStake as number}
                 />
             )}
         </Box>

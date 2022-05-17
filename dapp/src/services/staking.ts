@@ -13,6 +13,7 @@ import {
     generateChildPublicKey,
 } from '../lib/keychain';
 import type {IStakingTypes, Staking} from '../types/contracts/Staking';
+import {StakeTypes} from '../types/staking';
 import {CONFIRMATIONS_NUM} from '../utils/constants';
 import {parseTxErrorMessage} from '../utils/errors';
 import {getEventFromReceipt} from '../utils/transactions';
@@ -602,8 +603,12 @@ export async function getZKPMarketPrice(): Promise<BigNumber | null> {
     return price;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function chainHasStakingOpen(chainId?: number): boolean {
-    // FIXME: make dependent on staking terms
-    return false;
+export async function getStakingTermsFromContract(
+    library: any,
+    chainId: number,
+    stakeType: StakeTypes,
+): Promise<IStakingTypes.TermsStructOutput> {
+    const stakingContract = getStakingContract(library, chainId);
+    const stakingTypeHex = utils.id(stakeType).slice(0, 10);
+    return await stakingContract.terms(stakingTypeHex);
 }

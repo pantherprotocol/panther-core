@@ -3,7 +3,9 @@ import React from 'react';
 import {Box, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
-import {chainHasStakingOpen} from '../../../services/staking';
+import {useAppSelector} from '../../../redux/hooks';
+import {isStakingOpenSelector} from '../../../redux/slices/stakeTerms';
+import {StakeType} from '../../../types/staking';
 import {SafeMuiLink} from '../../Common/links';
 
 import './styles.scss';
@@ -11,14 +13,17 @@ import './styles.scss';
 export default function StakingInfo() {
     const context = useWeb3React();
     const {chainId} = context;
+    const isStakingOpen = useAppSelector(
+        isStakingOpenSelector(chainId!, StakeType.Advanced),
+    );
 
-    const subtitle = chainHasStakingOpen(chainId) ? (
+    const subtitle = isStakingOpen ? (
         <>Staking will lock your tokens for a minimum of 7 days </>
     ) : (
         <>Classic staking is closed for new stakes</>
     );
 
-    const text = chainHasStakingOpen(chainId) ? (
+    const text = isStakingOpen ? (
         <>
             You will need to unstake to collect your rewards. Rewards are not
             automatically staked. Unstaking is available after 7 days.

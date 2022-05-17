@@ -3,19 +3,17 @@ import * as React from 'react';
 import {Box, Button} from '@mui/material';
 import {BigNumber, utils} from 'ethers';
 
-import {useAppSelector} from '../../../redux/hooks';
-import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
-
 import './styles.scss';
-
-// Minimum stake is fixed in classic staking terms; no need for a contract call.
-const MINIMUM_STAKE = utils.parseUnits('100');
 
 const getButtonText = (
     amount: string | null,
     amountBN: BigNumber | null,
+    minStake: number | null,
     tokenBalance: BigNumber | null,
 ): [string, boolean] => {
+    if (minStake === null) {
+        return ["Couldn't get minimum stake", false];
+    }
     if (!tokenBalance) {
         return ["Couldn't get token balance", false];
     }
@@ -31,7 +29,8 @@ const getButtonText = (
         );
         return ['Insufficient balance', false];
     }
-    if (amountBN.gte(MINIMUM_STAKE)) {
+
+    if (amountBN.gte(utils.parseEther(minStake.toString()))) {
         console.debug(
             'Sufficient balance:',
             utils.formatEther(amountBN),
@@ -51,14 +50,15 @@ const getButtonText = (
 const StakingBtn = (props: {
     amountToStake: string | null;
     amountToStakeBN: BigNumber | null;
+    minStake: number | null;
+    tokenBalance: BigNumber | null;
     stake: (amount: BigNumber) => Promise<void>;
 }) => {
-    const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
-
     const [buttonText, ready] = getButtonText(
         props.amountToStake,
         props.amountToStakeBN,
-        tokenBalance,
+        props.minStake,
+        props.tokenBalance,
     );
     const activeClass = ready ? 'active' : '';
 

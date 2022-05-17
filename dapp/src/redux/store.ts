@@ -2,6 +2,7 @@ import {configureStore} from '@reduxjs/toolkit';
 
 import blurReducer from './slices/blur';
 import chainBalanceReducer from './slices/chainBalance';
+import stakeTermsReducer from './slices/stakeTerms';
 import totalStakedReducer from './slices/totalStaked';
 import rewardsReducer from './slices/unclaimedStakesRewards';
 import zkpMarketPriceReducer from './slices/zkpMarketPrice';
@@ -17,6 +18,7 @@ export const store = configureStore({
         zkpTokenBalance: zkpTokenBalanceReducer,
         zkpStakedBalance: zkpStakedBalanceReducer,
         unclaimedStakesRewards: rewardsReducer,
+        stakeTerms: stakeTermsReducer,
     },
 });
 

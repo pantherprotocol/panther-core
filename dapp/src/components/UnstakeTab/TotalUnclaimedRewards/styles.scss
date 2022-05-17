@@ -1,6 +1,5 @@
 @import '../../../variables';
 
-$balance-card-background: rgba(99, 114, 136, 0.2);
 $total-rewards-earned-amount-background: linear-gradient(
     92.53deg,
     $color-beige 0%,
@@ -19,7 +18,7 @@ $total-rewards-earned-amount-background: linear-gradient(
         justify-content: center;
         padding: 16px;
         border-radius: 8px;
-        background-color: $balance-card-background;
+        background-color: $card-background-darker;
         opacity: 0.5;
 
         &.no-unclaimed-rewards {

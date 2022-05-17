@@ -1,18 +1,8 @@
 @import '../../variables';
 
-$staking-tab-background: rgba(99, 114, 136, 0.2);
-$staking-info-background: rgba(99, 114, 136, 0.15);
-$buttons-holder-background-color: #4c5873;
-$staking-info-title-background-color: #ffdfbd;
-$staking-method-title-color: #d8d8d8;
-$token-balance-color: #ffdfbd;
-$staking-input-container-color: #ffdfbd;
-$input-disabled-color: #6c757e;
-$staking-input-max-button-color: #ffdfbd;
-
 .staking-tab-holder {
     .staking-info-card {
-        background: $staking-info-background !important;
+        background: $card-background !important;
         border-radius: 8px !important;
         mix-blend-mode: normal;
         backdrop-filter: blur(45px);
@@ -99,14 +89,18 @@ $staking-input-max-button-color: #ffdfbd;
             font-weight: $bold-font-weight;
             font-size: $normal-font-size;
             padding: 10px 16px;
-            background: linear-gradient(92.53deg, #ffdfbd 0%, #d0a7a8 95.77%);
+            background: linear-gradient(
+                92.53deg,
+                $color-beige 0%,
+                #d0a7a8 95.77%
+            );
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .advanced-staking-rewards-container {
-            background: $staking-tab-background;
+            background: $card-background-darker;
             padding: 5px 16px;
             border-radius: 10px;
             flex-direction: column;
@@ -147,7 +141,7 @@ $staking-input-max-button-color: #ffdfbd;
                     text-align: right;
                     background: linear-gradient(
                         92.53deg,
-                        #ffdfbd 0%,
+                        $color-beige 0%,
                         #d0a7a8 95.77%
                     );
                     -webkit-background-clip: text;
@@ -165,7 +159,7 @@ $staking-input-max-button-color: #ffdfbd;
         align-items: center;
         justify-content: space-between;
         padding: 16px;
-        border: 1px solid $staking-input-container-color;
+        border: 1px solid $color-beige;
         border-radius: 15px;
 
         .staking-input {
@@ -183,8 +177,8 @@ $staking-input-max-button-color: #ffdfbd;
         }
 
         .staking-input-max {
-            color: #ffdfbd;
-            border: 2px solid #ffdfbd;
+            color: $color-beige;
+            border: 2px solid $color-beige;
             font-size: $normal-font-size;
             cursor: pointer;
             line-height: initial;

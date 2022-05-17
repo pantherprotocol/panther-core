@@ -1,6 +1,5 @@
 @import '../../variables';
 $transition-tooltip-background-color: #616161;
-$table-row-background-color: rgba(99, 114, 136, 0.2);
 $unstake-button-background: linear-gradient(
         180deg,
         rgba(255, 255, 255, 0.1) 0%,
@@ -25,7 +24,7 @@ $unstake-button-background: linear-gradient(
     }
 
     .MuiTableBody-root .MuiTableRow-root {
-        background: $table-row-background-color;
+        background: $card-background-darker;
         mix-blend-mode: normal;
         border-radius: 13px;
         margin: 15px 0 !important;

@@ -1,7 +1,5 @@
 @import '../../../variables';
 
-$staking-tab-background: rgba(99, 114, 136, 0.2);
-
 .expected-rewards-card {
     flex-direction: column;
     align-items: flex-start;
@@ -24,7 +22,7 @@ $staking-tab-background: rgba(99, 114, 136, 0.2);
     }
 
     .expected-rewards-card-container {
-        background: $staking-tab-background;
+        background: $card-background-darker;
         padding: 5px 16px;
         border-radius: 10px;
         flex-direction: column;

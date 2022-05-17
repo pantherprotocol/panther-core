@@ -1,7 +1,5 @@
 @import '../../variables';
 
-$unstaking-tab-background: rgba(99, 114, 136, 0.2);
-
 .unstaking-tab-holder {
     width: 100%;
     margin: 20px 5px;
@@ -9,7 +7,7 @@ $unstaking-tab-background: rgba(99, 114, 136, 0.2);
     .unstaking-info-message {
         padding: 20px;
         margin-bottom: 30px;
-        background-color: $unstaking-tab-background;
+        background-color: $card-background-darker;
         border-radius: 13px;
         text-align: start;
 

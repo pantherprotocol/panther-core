@@ -6,7 +6,7 @@ $progress-foreground-color: linear-gradient(
     $color-beige 0%,
     #d0a7a8 95.77%
 );
-$progress-background-color: rgba(99, 114, 136, 0.2);
+
 $remaining-days-card-background: rgba(99, 114, 136, 0.2);
 $remaining-days-text-color: $color-beige;
 .advanced-staking-rewards {
@@ -36,7 +36,7 @@ $remaining-days-text-color: $color-beige;
 
             .progress {
                 margin: 13px 0;
-                background: $progress-background-color;
+                background: $card-background-darker;
                 height: 7px;
                 border-radius: 13px;
 

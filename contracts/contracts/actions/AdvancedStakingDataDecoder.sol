@@ -2,21 +2,14 @@
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.0;
 
+import { CIPHERTEXT1_WORDS, OUT_UTXOs, PUBKEY_WORDS } from "../common/Constants.sol";
+import { G1Point } from "../common/Types.sol";
+
 /***
  * @title AdvancedStakingDataDecoder
  * @dev It decodes (unpack) `bytes data` of the 'STAKED' message for "advanced staking"
  */
 abstract contract AdvancedStakingDataDecoder {
-    struct G1Point {
-        uint256 x;
-        uint256 y;
-    }
-
-    // Number of output UTXOs
-    uint256 private constant OUT_UTXOs = 3;
-    // in 32-bit words
-    uint256 private constant PUBKEY_WORDS = 2;
-    uint256 private constant CIPHERTEXT1_WORDS = 3;
     // in bytes
     uint256 private constant DATA_LENGTH =
         OUT_UTXOs * (PUBKEY_WORDS + CIPHERTEXT1_WORDS) * 32;

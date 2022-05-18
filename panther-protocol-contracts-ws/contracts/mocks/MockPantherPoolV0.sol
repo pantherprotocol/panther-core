@@ -23,8 +23,13 @@ contract MockPantherPoolV0 is PantherPoolV0 {
     MockVault vault;
 
     address _owner;
+
     constructor()
-        PantherPoolV0(address(this), timeNow() + 1, address(vault = new MockVault()))
+        PantherPoolV0(
+            address(this),
+            timeNow() + 1,
+            address(vault = new MockVault())
+        )
     {
         _owner = msg.sender;
         ZAsset memory z1;

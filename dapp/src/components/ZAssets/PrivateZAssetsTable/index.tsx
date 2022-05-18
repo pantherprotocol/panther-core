@@ -12,13 +12,17 @@ import {
 } from '@mui/material';
 
 import infoIcon from '../../../images/info-icon.svg';
-import {ZAsset} from '../../../services/assets';
+import {useAppSelector} from '../../../redux/hooks';
+import {assetsSelector} from '../../../redux/slices/assets';
+import {ZAsset} from '../../../types/assets';
 
 import PrivateZAsset from './PrivateZAsset';
 
 import './styles.scss';
 
-export default function PrivateZAssetsTable(props: {assets: ZAsset[]}) {
+export default function PrivateZAssetsTable() {
+    const assets = useAppSelector(assetsSelector);
+
     return (
         <TableContainer className="private-zasset-container" component={Paper}>
             <Table aria-label="unstaking table">
@@ -29,7 +33,7 @@ export default function PrivateZAssetsTable(props: {assets: ZAsset[]}) {
                             colSpan={2}
                             className="column-title"
                         >
-                            Private zAssets:
+                            Private zAssets
                             <Tooltip
                                 title={'Private zAssets:'}
                                 data-html="true"
@@ -39,11 +43,11 @@ export default function PrivateZAssetsTable(props: {assets: ZAsset[]}) {
                                 <img src={infoIcon} />
                             </Tooltip>
                         </TableCell>
-                        <TableCell align="left">Network:</TableCell>
+                        <TableCell align="left">Network</TableCell>
                         <TableCell align="left" colSpan={2}>
-                            Pending Rewards:
+                            Privacy Rewards
                             <Tooltip
-                                title={'Pending Rewards:'}
+                                title={'Privacy Rewards'}
                                 data-html="true"
                                 placement="top"
                                 className="icon"
@@ -54,9 +58,10 @@ export default function PrivateZAssetsTable(props: {assets: ZAsset[]}) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {props.assets.map((item, key) => (
-                        <PrivateZAsset key={key} item={item} />
-                    ))}
+                    {assets &&
+                        assets.map((item: ZAsset, key: number) => (
+                            <PrivateZAsset key={key} item={item} />
+                        ))}
                 </TableBody>
             </Table>
         </TableContainer>

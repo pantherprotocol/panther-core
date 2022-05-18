@@ -12,13 +12,13 @@ import {
 } from '@mui/material';
 
 import infoIcon from '../../../images/info-icon.svg';
-import {ZAsset} from '../../../services/assets';
+import {Asset} from '../../../types/assets';
 
 import PublicAsset from './PublicAsset';
 
 import './styles.scss';
 
-export default function PublicAssetsTable(props: {assets: ZAsset[]}) {
+export default function PublicAssetsTable(props: {assets: Asset[]}) {
     return (
         <TableContainer className="public-asset-container" component={Paper}>
             <Table aria-label="unstaking table">
@@ -44,9 +44,10 @@ export default function PublicAssetsTable(props: {assets: ZAsset[]}) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {props.assets.map((item, key) => (
-                        <PublicAsset key={key} item={item} />
-                    ))}
+                    {props.assets &&
+                        props.assets.map((item, key) => (
+                            <PublicAsset key={key} item={item} />
+                        ))}
                 </TableBody>
             </Table>
         </TableContainer>

@@ -1,16 +1,22 @@
 import * as React from 'react';
 
 import {Button, TableCell, TableRow} from '@mui/material';
+import {BigNumber} from 'ethers';
 
 import rightSideArrow from '../../../../images/right-arrow-icon.svg';
 import tetherIcon from '../../../../images/tether-icon.svg';
-import {ZAsset} from '../../../../services/assets';
+import {Asset} from '../../../../types/assets';
+import {formatCurrency} from '../../../../utils/helpers';
 import Balance from '../../Balance';
 import Network from '../../Network';
 
 import './styles.scss';
 
-export default function PublicAsset(props: {item: ZAsset; key: number}) {
+export default function PublicAsset(props: {item: Asset; key: number}) {
+    const balance = formatCurrency(BigNumber.from(props.item.value));
+    const balanceValue =
+        '$' + formatCurrency(BigNumber.from(props.item.usdValue));
+
     return (
         <React.Fragment>
             <TableRow className="public-asset-row" key={props.key}>
@@ -19,9 +25,9 @@ export default function PublicAsset(props: {item: ZAsset; key: number}) {
                 </TableCell>
                 <TableCell align="right">
                     <Balance
-                        balance={props.item?.balanceValue}
+                        balance={balance}
                         name={props.item?.name}
-                        balanceValue={props.item?.balanceValue}
+                        balanceValue={balanceValue}
                     />
                 </TableCell>
                 <TableCell align="left">

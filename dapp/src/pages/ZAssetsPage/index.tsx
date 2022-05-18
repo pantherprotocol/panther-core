@@ -9,9 +9,9 @@ import Header from '../../components/Header';
 import ZAssets from '../../components/ZAssets';
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3';
 import background from '../../images/background.png';
-import {useAppSelector} from '../../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {getAssets} from '../../redux/slices/assets';
 import {blurSelector} from '../../redux/slices/blur';
-import {getZAssets, ZAsset} from '../../services/assets';
 import {injected, Network, supportedNetworks} from '../../services/connectors';
 import {switchNetwork} from '../../services/wallet';
 
@@ -19,14 +19,13 @@ import './styles.scss';
 
 const ZAssetsPage = () => {
     const context = useWeb3React();
-    const {connector, library, chainId, activate, deactivate, account, error} =
-        context;
+    const dispatch = useAppDispatch();
+
+    const {connector, chainId, activate, deactivate, error} = context;
 
     // Logic to recognize the connector currently being activated
     const [activatingConnector, setActivatingConnector] = useState<any>();
     const [, setChainError] = useState('');
-
-    const [assets, setAssets] = useState<ZAsset[]>([]);
 
     // Handle logic to eagerly connect to the injected ethereum provider, if it
     // exists and has granted access already
@@ -60,20 +59,11 @@ const ZAssetsPage = () => {
             deactivate();
         }
     }, [error, chainId, activate, deactivate]);
-
     const isBlur = useAppSelector(blurSelector);
 
-    const fetchZAssets = useCallback(async (): Promise<void> => {
-        if (!library || !account || !chainId) {
-            return;
-        }
-        const zAssets: ZAsset[] = await getZAssets(library, chainId);
-        setAssets(zAssets);
-    }, [library, account, chainId]);
-
     useEffect(() => {
-        fetchZAssets();
-    }, [fetchZAssets]);
+        dispatch(getAssets, context);
+    }, [context, dispatch]);
 
     return (
         <Box
@@ -95,7 +85,7 @@ const ZAssetsPage = () => {
                 networkLogo={currentNetwork?.logo}
             />
             <Box className="main-box-holder">
-                <ZAssets assets={assets} />
+                <ZAssets />
             </Box>
             <Footer />
         </Box>

@@ -1,6 +1,7 @@
 import {configureStore} from '@reduxjs/toolkit';
 
 import advancedStakeInputRewardsReducer from './slices/advancedStakePredictedRewards';
+import assetsReducer from './slices/assets';
 import blurReducer from './slices/blur';
 import chainBalanceReducer from './slices/chainBalance';
 import stakeTermsReducer from './slices/stakeTerms';
@@ -21,6 +22,7 @@ export const store = configureStore({
         advancedStakeInputRewards: advancedStakeInputRewardsReducer,
         unclaimedStakesRewards: unclaimedStakesRewardsReducer,
         stakeTerms: stakeTermsReducer,
+        assets: assetsReducer,
     },
 });
 

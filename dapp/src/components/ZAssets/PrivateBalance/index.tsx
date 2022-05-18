@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {Box, Typography, Button} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 
 import {useAppSelector} from '../../../redux/hooks';
 import {
@@ -31,11 +31,14 @@ export default function PrivateBalance() {
                     Total Privacy Reward Points (PRP)
                 </Typography>
             </Box>
-            <Box>
-                <Button variant="contained" className="deposit-button">
-                    <span>Deposit Assets</span>
-                </Button>
-            </Box>
+            {/* <Box>
+                <Link to={'/'}>
+                    {' '}
+                    <Button variant="contained" className="deposit-button">
+                        <span>Deposit Assets</span>
+                    </Button>
+                </Link>
+            </Box> */}
         </Box>
     );
 }

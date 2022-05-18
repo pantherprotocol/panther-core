@@ -24,8 +24,8 @@ import "./utils/Utils.sol";
  * - computes the amount of the $ZKP reward to the staker
  * - calls `grant` on the `PantherPoolV0` with the `FOR_ADVANCED_STAKE_GRANT` as the "grant type",
  *  and the staker as the "grantee", getting the amount of PRPs granted from the response
- * - if the `NFT_TOKEN` is non-zero address, it calls `mint` (a single token) on the NFT_TOKEN, and
- *   gets the `tokenId` of the minted NFT token
+ * - if the `NFT_TOKEN` is non-zero address, it calls `grantOneToken` on the NFT_TOKEN, and gets
+ * the `tokenId` of the minted NFT token
  * - calls `generateDeposits` of the PantherPoolV0, providing amounts/parameters of $ZKP, PRP, and
  *   optional NFT as "deposits", as well as "spending pubKeys" and "secrets" (explained below)
  * - returns the "zero reward advice" (with zero `sharesToCreate`) to the RewardMaster.
@@ -55,7 +55,7 @@ import "./utils/Utils.sol";
  * - this contract shall be authorized as:
  * -- "RewardAdviser" with the RewardMaster on Polygon for advanced stakes
  * -- "Curator" of the FOR_ADVANCED_STAKE_GRANT with the PantherPoolV0
- * -- "Minter" with the NFT_TOKEN contract
+ * -- "Minter" (or "grantor") with the NFT_TOKEN contract
  * - this contract shall hold enough $ZKP balance to reward stakers
  * - the Vault contract shall be approved to transfer $ZKPs and the NFT tokens from this contract
  * - the $ZKP and the NFT tokens shall be registered as zAssets on the PantherPoolV0.

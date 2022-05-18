@@ -9,7 +9,12 @@ export const useAppDispatch = () => {
 
     const safeDispatch = async (thunk: any, ...args: any[]) => {
         try {
-            await dispatch(thunk(...args)).unwrap();
+            const thunkPromise = await dispatch(thunk(...args));
+            if (thunkPromise.unwrap) {
+                // this check is added as not all actions are thunks;
+                // for example, resetUnclaimedRewards.
+                thunkPromise.unwrap();
+            }
         } catch (error) {
             console.error(
                 `Error in '${thunk.typePrefix}'`,

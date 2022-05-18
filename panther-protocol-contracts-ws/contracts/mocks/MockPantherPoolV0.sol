@@ -5,13 +5,28 @@ pragma solidity ^0.8.4;
 import "../PantherPoolV0.sol";
 import "../Vault.sol";
 import "../common/Types.sol";
+import "hardhat/console.sol";
+
+contract MockVault is IVault {
+    // solhint-disable-next-line no-empty-blocks
+    function lockAsset(LockData calldata data) external override {
+        // DEBUG INFO
+    }
+
+    // solhint-disable-next-line no-empty-blocks
+    function unlockAsset(LockData memory data) external override {
+        // DEBUG INFO
+    }
+}
 
 contract MockPantherPoolV0 is PantherPoolV0 {
-    Vault vault;
+    MockVault vault;
 
+    address _owner;
     constructor()
-        PantherPoolV0(msg.sender, timeNow() + 1, address(vault = new Vault()))
+        PantherPoolV0(address(this), timeNow() + 1, address(vault = new MockVault()))
     {
+        _owner = msg.sender;
         ZAsset memory z1;
         z1.tokenType = ERC20_TOKEN_TYPE;
         z1.scale = 0;
@@ -100,15 +115,6 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         );
     }
 
-    function GenerateDepositsFullApi(
-        uint256[OUT_UTXOs] calldata tokens,
-        uint256[OUT_UTXOs] calldata tokenIds,
-        uint256[OUT_UTXOs] calldata extAmounts,
-        uint256[2][OUT_UTXOs] calldata pubKeys,
-        uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
-        uint256 createdAt
-    ) external {}
-
     function GenerateDepositsExtended(
         uint256[OUT_UTXOs] calldata tokens,
         uint256[OUT_UTXOs] calldata extAmounts,
@@ -116,6 +122,8 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         uint256[CIPHERTEXT1_WORDS] calldata secrets,
         uint256 createdAt
     ) external {
+        require(_owner == msg.sender, "OWNER IS NOT MESSAGE_SENDER");
+
         address[OUT_UTXOs] memory tokenss;
         tokenss[0] = address(uint160(tokens[0]));
         tokenss[1] = address(uint160(tokens[1]));
@@ -130,8 +138,6 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         pubKeyss[0] = G1Point(pubKeys[0], pubKeys[1]);
         pubKeyss[1] = G1Point(pubKeys[0], pubKeys[1]);
         pubKeyss[2] = G1Point(pubKeys[0], pubKeys[1]);
-        //pubKeyss[1] = G1Point(pubKeys[1][0],pubKeys[1][1]);
-        //pubKeyss[2] = G1Point(pubKeys[2][0],pubKeys[2][1]);
 
         uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] memory secretss;
         secretss[0][0] = secrets[0];
@@ -151,61 +157,6 @@ contract MockPantherPoolV0 is PantherPoolV0 {
             pubKeyss,
             secretss,
             createdAt
-        );
-    }
-
-    function GenerateDeposits() external {
-        address[OUT_UTXOs] memory tokens;
-        tokens[0] = address(111);
-        tokens[1] = address(111);
-        tokens[2] = address(111);
-
-        uint256[OUT_UTXOs] memory tokenIds;
-        tokenIds[0] = 1;
-        tokenIds[1] = 2;
-        tokenIds[2] = 3;
-
-        ZAsset memory z1;
-        z1.tokenType = ERC20_TOKEN_TYPE;
-        z1.scale = 0;
-        z1.token = tokens[0];
-        z1.status = zASSET_ENABLED;
-        addAsset(z1);
-        z1.token = tokens[1];
-        addAsset(z1);
-        z1.token = tokens[2];
-        addAsset(z1);
-
-        uint256[OUT_UTXOs] memory extAmounts;
-        extAmounts[0] = 1;
-        extAmounts[1] = 2;
-        extAmounts[2] = 3;
-
-        G1Point[OUT_UTXOs] memory pubKeys;
-        pubKeys[0] = G1Point(0, 0);
-        pubKeys[1] = G1Point(1, 1);
-        pubKeys[2] = G1Point(2, 2);
-
-        uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] memory secrets;
-        secrets[0][0] = 0;
-        secrets[0][1] = 0;
-        secrets[0][2] = 0;
-        secrets[1][0] = 0;
-        secrets[1][1] = 0;
-        secrets[1][2] = 0;
-        secrets[2][0] = 0;
-        secrets[2][1] = 0;
-        secrets[2][2] = 0;
-
-        uint256 creationTime = 0;
-
-        this.generateDeposits(
-            tokens,
-            tokenIds,
-            extAmounts,
-            pubKeys,
-            secrets,
-            creationTime
         );
     }
 }

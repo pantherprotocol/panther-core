@@ -798,6 +798,8 @@ describe('PantherPoolV0', () => {
                     toBytes32(BigInt(merkleProof[0].root).toString()),
                     0,
                 );
+                //console.log("MT:",toBytes32(BigInt(merkleProof[0].root).toString()) );
+                //console.log("CM:", toBytes32(commitments[0].toString()), pathElements[0], pathElements[1])
                 expect(checkRoot, 'isKnownRoot must be true').equal(true);
                 const checkZAsset = await poolV0.IsKnownZAsset(Token, tokenId);
                 expect(checkZAsset, 'IsKnownZAsset must be true').equal(true);

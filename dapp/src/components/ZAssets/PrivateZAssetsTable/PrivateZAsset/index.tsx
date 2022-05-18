@@ -4,7 +4,6 @@ import {TableCell, TableRow} from '@mui/material';
 
 import pantherIcon from '../../../../images/panther-logo.svg';
 import {ZAsset} from '../../../../services/assets';
-import {MoreItems} from '../../../MoreItems';
 import Balance from '../../Balance';
 import Network from '../../Network';
 
@@ -27,12 +26,9 @@ export default function PrivateZAsset(props: {item: ZAsset; key: number}) {
                 <TableCell align="left">
                     <Network networkName={props.item?.name} />
                 </TableCell>
-                <TableCell align="left">
-                    {props.item?.value} {props.item?.name}
-                </TableCell>
-                <TableCell align="center" className="more-items-cell">
-                    <MoreItems />
-                </TableCell>
+                {/* <TableCell align="center" className="more-items-cell"> */}
+                {/* <MoreItems /> */}
+                {/* </TableCell> */}
             </TableRow>
         </React.Fragment>
     );

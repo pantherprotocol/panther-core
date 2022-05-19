@@ -2,8 +2,9 @@
 
 pragma solidity ^0.8.4;
 
-import { BY_ID_TOKEN_TYPE, zASSET_ENABLED } from "../common/Constants.sol";
-import { ERR_ASSET_ALREADY_REGISTERED, ERR_UNKNOWN_ASSET, ERR_WRONG_ASSET_STATUS, ERR_ZERO_TOKEN_ADDRESS } from "../common/ErrorMsgs.sol";
+import { zASSET_ENABLED, zASSET_UNKNOWN } from "../common/Constants.sol";
+import { ERR_ASSET_ALREADY_REGISTERED, ERR_UNKNOWN_ASSET } from "../common/ErrorMsgs.sol";
+import { ERR_WRONG_ASSET_STATUS, ERR_ZERO_TOKEN_ADDRESS } from "../common/ErrorMsgs.sol";
 import { ZAsset } from "../common/Types.sol";
 import "../common/Utils.sol";
 import "../interfaces/IZAssetsRegistry.sol";
@@ -14,6 +15,11 @@ import "../interfaces/IZAssetsRegistry.sol";
  * @notice Registry of supported assets (tokens) for the `PantherPool` contract
  */
 abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
+    // "zAsset RootID" - ID of the token contract.
+    // "zAsset ID" - ID of a particular NFT token (w/ its unique `tokenId`),
+    // or (one) ID for all ERC20 (fungible) tokens on a same token contract.
+
+    // Mapping from "zAsset RootID" to asset params
     mapping(uint160 => ZAsset) private _zAssets;
 
     function getZAssetRootId(address token)
@@ -42,13 +48,13 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
             );
     }
 
-    function getZAsset(uint160 zAssetIdOrRootId)
+    function getZAsset(uint160 zAssetRootId)
         public
         view
         override
         returns (ZAsset memory asset)
     {
-        asset = _zAssets[zAssetIdOrRootId];
+        asset = _zAssets[zAssetRootId];
     }
 
     function getZAssetAndId(address token, uint256 tokenId)
@@ -59,17 +65,18 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
     {
         uint160 zAssetRootId = getZAssetRootId(token);
         asset = _zAssets[zAssetRootId];
-        zAssetId = getZAssetId(token, tokenId);
-        if (asset.tokenType == BY_ID_TOKEN_TYPE) asset = _zAssets[zAssetId];
+        zAssetId = asset.status == zASSET_UNKNOWN
+            ? uint160(0)
+            : getZAssetId(token, tokenId);
     }
 
-    function isRootIdWhitelisted(uint160 zAssetId)
+    function isZAssetWhitelisted(uint160 zAssetRootId)
         external
         view
         override
         returns (bool)
     {
-        ZAsset memory asset = _zAssets[zAssetId];
+        ZAsset memory asset = _zAssets[zAssetRootId];
         return asset.status == zASSET_ENABLED;
     }
 
@@ -105,25 +112,28 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
 
     /// @dev Ensure only an owner may call it (from a child contact)
     function addAsset(ZAsset memory asset) internal {
-        uint160 zAssetId = getZAssetId(asset.token, 0);
+        uint160 zAssetRootId = getZAssetRootId(asset.token);
+        require(asset.token != address(0), ERR_ZERO_TOKEN_ADDRESS);
         require(
-            _zAssets[zAssetId].token == address(0),
+            _zAssets[zAssetRootId].token == address(0),
             ERR_ASSET_ALREADY_REGISTERED
         );
-        require(asset.token != address(0), ERR_ZERO_TOKEN_ADDRESS);
-        // Checks on other fields skipped to allow for protocol updates.
-        _zAssets[zAssetId] = asset;
-        emit AssetAdded(zAssetId, asset);
+        require(asset.status != zASSET_UNKNOWN, ERR_WRONG_ASSET_STATUS);
+        _zAssets[zAssetRootId] = asset;
+        emit AssetAdded(zAssetRootId, asset);
     }
 
     /// @dev Ensure only an owner may call it (from a child contact)
-    function changeAssetStatus(uint160 zAssetId, uint8 newStatus) internal {
-        require(_zAssets[zAssetId].token != address(0), ERR_UNKNOWN_ASSET);
-        // Check of the status value skipped to allow for protocol updates.
-        uint8 oldStatus = _zAssets[zAssetId].status;
-        _zAssets[zAssetId].status = newStatus;
-        require(oldStatus != newStatus, ERR_WRONG_ASSET_STATUS);
-        emit AssetStatusChanged(uint256(zAssetId), newStatus, oldStatus);
+    function changeAssetStatus(uint160 zAssetRootId, uint8 newStatus) internal {
+        require(_zAssets[zAssetRootId].token != address(0), ERR_UNKNOWN_ASSET);
+        uint8 oldStatus = _zAssets[zAssetRootId].status;
+        // New status value restrictions relaxed to allow for protocol updates.
+        require(
+            newStatus != zASSET_UNKNOWN && oldStatus != newStatus,
+            ERR_WRONG_ASSET_STATUS
+        );
+        _zAssets[zAssetRootId].status = newStatus;
+        emit AssetStatusChanged(zAssetRootId, newStatus, oldStatus);
     }
 
     function _getFactor(uint8 scale) private pure returns (uint256) {

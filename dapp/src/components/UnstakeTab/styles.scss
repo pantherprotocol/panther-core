@@ -3,20 +3,4 @@
 .unstaking-tab-holder {
     width: 100%;
     margin: 20px 5px;
-
-    .unstaking-info-message {
-        padding: 20px;
-        margin-bottom: 30px;
-        background-color: $card-background-darker;
-        border-radius: 13px;
-        text-align: start;
-
-        span {
-            display: flex;
-            line-height: 23px;
-            color: $white;
-            opacity: 0.8;
-            font-size: $small-font-size;
-        }
-    }
 }

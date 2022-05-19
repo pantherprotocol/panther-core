@@ -60,11 +60,11 @@ function bufToBn(buf) {
 }
 
 describe('MerkleProofVerifier', () => {
-    let trees: MockMerkleProofVerifier;
+    let mockMerkleProofVerifier: MockMerkleProofVerifier;
     let snapshot: number;
 
     before(async () => {
-        trees = await deployMockMerkleProofVerifier();
+        mockMerkleProofVerifier = await deployMockMerkleProofVerifier();
     });
 
     describe('internal `testVerifyMerkleProof` method - by using circom zkp-input test values', function () {
@@ -270,38 +270,38 @@ describe('MerkleProofVerifier', () => {
             const leafId_0 = BigInt('0');
             const commitment_0 = toBytes32(commitment0);
             it('should be proved - leaf index 0', async () => {
-                await trees.testMerkleProof(
+                await mockMerkleProofVerifier.testMerkleProof(
                     leafId_0,
                     merkleRoot,
                     commitment_0,
                     pathElements0,
                 );
-                let check = await trees.isProofVerified();
+                let check = await mockMerkleProofVerifier.isProofVerified();
                 expect(check == true, 'NOT PROVED');
             });
 
             const leafId_1 = BigInt('1');
             const commitment_1 = toBytes32(commitment1);
             it('should be proved - leaf index 1', async () => {
-                await trees.testMerkleProof(
+                await mockMerkleProofVerifier.testMerkleProof(
                     leafId_1,
                     merkleRoot,
                     commitment_1,
                     pathElements1,
                 );
-                let check = await trees.isProofVerified();
+                let check = await mockMerkleProofVerifier.isProofVerified();
                 expect(check == true, 'NOT PROVED');
             });
             const leafId_2 = BigInt('2');
             const commitment_2 = toBytes32(commitment2);
             it('should be proved - leaf index 2', async () => {
-                await trees.testMerkleProof(
+                await mockMerkleProofVerifier.testMerkleProof(
                     leafId_2,
                     merkleRoot,
                     commitment_2,
                     pathElements2,
                 );
-                let check = await trees.isProofVerified();
+                let check = await mockMerkleProofVerifier.isProofVerified();
                 expect(check == true, 'NOT PROVED');
             });
         });
@@ -603,13 +603,13 @@ describe('MerkleProofVerifier', () => {
                 const commitmentsLeavesTriadNumber = [c1, c2, c3] as Triad;
                 // TODO: increase this to few millions and move to long test
                 for (let trys = 0; trys < 16; ++trys) {
-                    await trees.internalInsertBatch(
+                    await mockMerkleProofVerifier.internalInsertBatch(
                         //Zkp(
                         commitmentsLeavesTriadNumber,
                     );
                     // When insertBatchZkp is used ( un-comment )
                     // let elements = await trees.PathElements();
-                    let leafID = await trees.LeafId();
+                    let leafID = await mockMerkleProofVerifier.LeafId();
                     // let merkleRoot = elements[14];
                     it('should be proved', async () => {
                         const pathElements = [
@@ -716,14 +716,15 @@ describe('MerkleProofVerifier', () => {
                             <BytesLike>elements[13],
                         ];
                         */
-                        await trees.testMerkleProof(
+                        await mockMerkleProofVerifier.testMerkleProof(
                             leafID,
                             //merkleRoot,
                             toBytes32(merkleProof[0].root.toString()),
                             commitment0,
                             pathElements,
                         );
-                        let check = await trees.isProofVerified();
+                        let check =
+                            await mockMerkleProofVerifier.isProofVerified();
                         expect(check, 'NOT PROVED').equal(true);
                     });
                 }
@@ -908,9 +909,10 @@ describe('MerkleProofVerifier', () => {
                     const S = babyjub.mulPointEscalar(babyjub.Base8, s);
                     it('SpenderDerivedPubKeyTypeScript == SpenderDerivedPubKeySolidity', async () => {
                         // [1] - Solidity code
-                        const Ssol = await trees.GeneratePublicSpendingKey(
-                            s as bigint,
-                        );
+                        const Ssol =
+                            await mockMerkleProofVerifier.generatePublicSpendingKey(
+                                s as bigint,
+                            );
                         // [2] - Check
                         expect(S[0]).equal(Ssol[0]);
                         expect(S[1]).equal(Ssol[1]);

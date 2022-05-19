@@ -34,7 +34,7 @@ contract MockMerkleProofVerifier is
         return _verifiedProof;
     }
 
-    function GeneratePublicSpendingKey(uint256 privKey)
+    function generatePublicSpendingKey(uint256 privKey)
         external
         view
         returns (uint256[2] memory xy)

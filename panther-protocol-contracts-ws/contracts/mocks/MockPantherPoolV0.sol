@@ -62,7 +62,7 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         return false;
     }
 
-    function GenerateCommitments(
+    function testGenerateCommitments(
         uint256 pubSpendingKeyX,
         uint256 pubSpendingKeyY,
         uint256 amount,
@@ -81,11 +81,11 @@ contract MockPantherPoolV0 is PantherPoolV0 {
             );
     }
 
-    function Convert(uint256 n) external pure returns (bytes32) {
+    function testConvert(uint256 n) external pure returns (bytes32) {
         return bytes32(n);
     }
 
-    function GeneratePublicSpendingKey(uint256 privKey)
+    function testGeneratePublicSpendingKey(uint256 privKey)
         external
         view
         returns (uint256[2] memory xy)
@@ -96,7 +96,7 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         xy[1] = p.y;
     }
 
-    function Exit(
+    function testExit(
         uint256 token,
         uint256 tokenId,
         uint256 amount,
@@ -120,7 +120,7 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         );
     }
 
-    function GenerateDepositsExtended(
+    function testGenerateDepositsExtended(
         uint256[OUT_UTXOs] calldata tokens,
         uint256[OUT_UTXOs] calldata extAmounts,
         uint256[2] calldata pubKeys,

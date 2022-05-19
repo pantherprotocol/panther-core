@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 import { PoseidonT3, PoseidonT4 } from "../../crypto/Poseidon.sol";
 import { ERR_UNKNOWN_MERKLE_ROOT, ERR_MERKLE_PROOF_VERIFICATION_FAILED, ERR_TRIAD_INDEX_MIN_VALUE, ERR_TRIAD_INDEX_MAX_VALUE } from "../../common/ErrorMsgs.sol";
+import "../../triadTree/TriadIncrementalMerkleTrees.sol";
 
 abstract contract MerkleProofVerifier {
     // @dev Number of levels in a tree excluding the root level
@@ -40,11 +41,10 @@ abstract contract MerkleProofVerifier {
         bytes32 leaf,
         bytes32[TREE_DEPTH + 1] calldata pathElements
     ) internal pure {
-        // [0] - Require
-        //require( iTRIAD_INDEX_LEFT <= triadIndex, "Triad index must be in range 0..2"); //ERR_TRIAD_INDEX_MIN_VALUE );
-        //require( triadIndex < iTRIAD_INDEX_FORBIDDEN, "Triad index must be in range 0..2");// ERR_TRIAD_INDEX_MAX_VALUE );
-        //require( iTRIAD_INDEX_LEFT <= triadIndex, ERR_TRIAD_INDEX_MIN_VALUE );
-        //require( triadIndex < iTRIAD_INDEX_FORBIDDEN, ERR_TRIAD_INDEX_MAX_VALUE );
+        // [0] - Require - assume it is computed by TriadIncrementalMerkleTrees class
+        //       by using modulo operation, so no need to check lower range
+        //require(iTRIAD_INDEX_LEFT <= triadIndex, ERR_TRIAD_INDEX_MIN_VALUE);
+        require(triadIndex < iTRIAD_INDEX_FORBIDDEN, ERR_TRIAD_INDEX_MAX_VALUE);
 
         // [1] - Compute zero level hash
         bytes32 nodeHash;

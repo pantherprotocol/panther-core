@@ -357,7 +357,7 @@ describe('PantherPoolV0', () => {
 
                 // Double check commitments vs solidity side
                 // TODO: implement same check by calling web-assembly of circom
-                const commitment1 = await poolV0.GenerateCommitments(
+                const commitment1 = await poolV0.testGenerateCommitments(
                     K[0],
                     K[1],
                     Amounts[0],
@@ -378,7 +378,7 @@ describe('PantherPoolV0', () => {
                 CommitmentsFromSolidity[0] = commitment1;
                 CommitmentsInternal[0] = commitment1;
 
-                const commitment2 = await poolV0.GenerateCommitments(
+                const commitment2 = await poolV0.testGenerateCommitments(
                     K[0],
                     K[1],
                     Amounts[1],
@@ -399,7 +399,7 @@ describe('PantherPoolV0', () => {
                 CommitmentsFromSolidity[1] = commitment2;
                 CommitmentsInternal[1] = commitment1;
 
-                const commitment3 = await poolV0.GenerateCommitments(
+                const commitment3 = await poolV0.testGenerateCommitments(
                     K[0],
                     K[1],
                     Amounts[2],
@@ -593,7 +593,7 @@ describe('PantherPoolV0', () => {
                 ];
                 // TODO: Add call to GenerateDepositsExtended with check of events parameters, see example ---
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
-                const tx = await poolV0.GenerateDepositsExtended(
+                const tx = await poolV0.testGenerateDepositsExtended(
                     tokens,
                     amounts,
                     spendingPublicKey,
@@ -729,7 +729,7 @@ describe('PantherPoolV0', () => {
                     sr,
                 ); // S = sB S' = srB
                 const SpenderDerivedPubKey_from_chain =
-                    await poolV0.GeneratePublicSpendingKey(sr as bigint);
+                    await poolV0.testGeneratePublicSpendingKey(sr as bigint);
                 expect(
                     SpenderDerivedPubKey[0],
                     'Generated Public Key TS must be equal to solidity version',
@@ -803,7 +803,7 @@ describe('PantherPoolV0', () => {
                 expect(checkRoot, 'isKnownRoot must be true').equal(true);
                 const checkZAsset = await poolV0.IsKnownZAsset(Token, tokenId);
                 expect(checkZAsset, 'IsKnownZAsset must be true').equal(true);
-                await poolV0.Exit(
+                await poolV0.testExit(
                     Token,
                     tokenId,
                     amountsOut[0],

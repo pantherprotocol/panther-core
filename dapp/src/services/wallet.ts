@@ -53,7 +53,7 @@ export const switchNetwork = async (
                         'You have hit a MetaMask bug! ' +
                         'See https://github.com/MetaMask/metamask-extension/issues/14416';
                 }
-                openNotification('Add token error', errorMsg, 'danger');
+                openNotification('Error switching network', errorMsg, 'danger');
                 if (errorHandler) errorHandler(errorMsg);
             }
         }

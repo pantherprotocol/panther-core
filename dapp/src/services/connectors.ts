@@ -46,7 +46,9 @@ export const supportedNetworks: Record<number, Network> = {
     },
     80001: {
         name: 'Mumbai',
-        rpcURL: 'https://rpc-mumbai.maticvigil.com',
+        rpcURL: 'https://matic-mumbai.chainstacklabs.com',
+        // This one doesn't work any more? See https://chainlist.org/
+        // rpcURL: 'https://rpc-mumbai.maticvigil.com',
         symbol: 'MATIC',
         decimals: 18,
         explorerURLs: ['https://mumbai.polygonscan.com/'],

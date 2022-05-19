@@ -11,7 +11,9 @@ export const switchNetwork = async (
     const switchToChainId = utils.hexValue(chainId);
     const requiredNetwork = supportedNetworks[chainId];
     try {
-        console.debug('Trying wallet_switchEthereumChain');
+        console.debug(
+            `Trying wallet_switchEthereumChain with chainId=${switchToChainId}`,
+        );
         await ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{chainId: switchToChainId}],

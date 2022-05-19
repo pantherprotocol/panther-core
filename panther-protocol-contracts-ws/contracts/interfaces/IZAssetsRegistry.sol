@@ -14,7 +14,7 @@ interface IZAssetsRegistry {
         view
         returns (uint160);
 
-    function getZAsset(uint160 zAssetIdOrRootId)
+    function getZAsset(uint160 zAssetRootId)
         external
         view
         returns (ZAsset memory);
@@ -24,7 +24,10 @@ interface IZAssetsRegistry {
         view
         returns (ZAsset memory asset, uint160 zAssetId);
 
-    function isRootIdWhitelisted(uint160 zAssetId) external view returns (bool);
+    function isZAssetWhitelisted(uint160 zAssetRootId)
+        external
+        view
+        returns (bool);
 
     function scaleAmount(uint256 amount, uint8 scale)
         external
@@ -36,9 +39,9 @@ interface IZAssetsRegistry {
         pure
         returns (uint256);
 
-    event AssetAdded(uint256 indexed zAssetId, ZAsset asset);
+    event AssetAdded(uint160 indexed zAssetRootId, ZAsset asset);
     event AssetStatusChanged(
-        uint256 indexed zAssetId,
+        uint160 indexed zAssetRootId,
         uint8 newStatus,
         uint8 oldStatus
     );

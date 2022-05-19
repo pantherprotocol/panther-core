@@ -1,60 +1,20 @@
 // SPDX-License-Identifier: MIT
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { toBigNum } from '../lib/utilities';
 import { MockZAssetsRegistry } from '../types';
-
-enum ZAssetStatus {
-    ENABLED = 1,
-    DISABLED = 2,
-    UNKNOWN = 0,
-}
-
-enum TokenTypes {
-    ERC20 = 0,
-    ERC721 = 1,
-    ERC1155 = 11,
-}
-
-type ZAsset = {
-    _unused: number;
-    status: number;
-    tokenType: number;
-    scale: number;
-    token: string;
-};
-
-const getZAssets = (): ZAsset[] => {
-    return [
-        {
-            _unused: 0,
-            status: ZAssetStatus.ENABLED,
-            tokenType: TokenTypes.ERC20,
-            scale: 0,
-            token: ethers.Wallet.createRandom().address,
-        },
-        {
-            _unused: 0,
-            status: ZAssetStatus.ENABLED,
-            tokenType: TokenTypes.ERC721,
-            scale: 0,
-            token: ethers.Wallet.createRandom().address,
-        },
-        {
-            _unused: 0,
-            status: ZAssetStatus.ENABLED,
-            tokenType: TokenTypes.ERC1155,
-            scale: 0,
-            token: ethers.Wallet.createRandom().address,
-        },
-    ];
-};
+import {
+    getIds,
+    getMissingIds,
+    getZAssets,
+    getZeroZAsset,
+    ZAsset,
+    ZAssetStatus,
+} from './data/zAssetsSample';
+import { revertSnapshot, takeSnapshot } from './helpers/hardhat';
 
 describe.only('ZAssetsRegistry', function () {
     let zAssetsRegistry: MockZAssetsRegistry;
-    const zAssets = getZAssets();
-    const zAssetToBeDisabled = zAssets[0];
-    const disabledZAssetId = calculateId(zAssetToBeDisabled.token);
+    let snapshot;
 
     before(async () => {
         const ZAssetsRegistry = await ethers.getContractFactory(
@@ -64,85 +24,199 @@ describe.only('ZAssetsRegistry', function () {
             (await ZAssetsRegistry.deploy()) as MockZAssetsRegistry;
     });
 
-    describe('Add asset', () => {
-        before(async () => {
-            for (const zAsset of zAssets) {
+    beforeEach(async () => {
+        snapshot = await takeSnapshot();
+    });
+
+    afterEach(async () => {
+        await revertSnapshot(snapshot);
+    });
+
+    describe('Internal addAsset', () => {
+        it('should emit AssetAdded event', async () => {
+            for (const zAsset of getZAssets()) {
                 await expect(zAssetsRegistry.internalAddAsset(zAsset))
                     .to.emit(zAssetsRegistry, 'AssetAdded')
-                    .withArgs(calculateId(zAsset.token), Object.values(zAsset));
+                    .withArgs(zAsset.token, Object.values(zAsset));
             }
         });
 
-        it('should get the zAsset', async () => {
-            for (const zAsset of zAssets) {
-                const expected = await zAssetsRegistry.getZAsset(
-                    calculateId(zAsset.token),
-                );
-
-                checkZAssetProperties(zAsset, expected);
-            }
-        });
-
-        it('should get asset along with its id', async () => {
-            for (const zAsset of zAssets) {
-                const { asset, zAssetId } =
-                    await zAssetsRegistry.getZAssetAndId(zAsset.token, 0);
-
-                checkZAssetProperties(zAsset, asset);
-
-                expect(zAssetId).to.equal(calculateId(zAsset.token));
-            }
-        });
-
-        it('should revert if zAsset is already added', () => {
-            expect(
-                zAssetsRegistry.internalAddAsset(zAssets[0]),
+        it('should revert if zAsset is already added', async () => {
+            const zAsset = getZAssets()[2];
+            await addAsset(zAsset);
+            await expect(
+                zAssetsRegistry.internalAddAsset(zAsset),
             ).to.be.revertedWith('AR:E1');
         });
 
-        it('should revert when token address is zero', () => {
-            zAssets[0].token = ethers.constants.AddressZero;
+        it('should revert when token address is zero', async () => {
+            const zAsset = getZAssets()[2];
+            zAsset.token = ethers.constants.AddressZero;
 
-            expect(
-                zAssetsRegistry.internalAddAsset(zAssets[0]),
+            await expect(
+                zAssetsRegistry.internalAddAsset(zAsset),
             ).to.be.revertedWith('AR:E4');
         });
     });
 
-    describe('Update zAsset', () => {
-        it('should change the zAsset status', async () => {
-            await expect(
-                zAssetsRegistry.internalChangeAssetStatus(
-                    disabledZAssetId,
-                    ZAssetStatus.DISABLED,
-                ),
-            )
-                .to.emit(zAssetsRegistry, 'AssetStatusChanged')
-                .withArgs(
-                    disabledZAssetId,
-                    ZAssetStatus.DISABLED,
-                    ZAssetStatus.ENABLED,
+    describe('internal changeAssetStatus', () => {
+        describe('for an asset has been added', () => {
+            let rootId;
+            let oldStatus;
+
+            beforeEach(async () => {
+                const zAsset = getZAssets()[2];
+                oldStatus = zAsset.status;
+                expect(oldStatus).to.be.equal(ZAssetStatus.ENABLED);
+                await addAsset(zAsset);
+                rootId = await zAssetsRegistry.getZAssetRootId(zAsset.token);
+            });
+
+            it('should update the zAsset status', async () => {
+                await expect(
+                    zAssetsRegistry.internalChangeAssetStatus(
+                        rootId,
+                        ZAssetStatus.DISABLED,
+                    ),
+                )
+                    .to.emit(zAssetsRegistry, 'AssetStatusChanged')
+                    .withArgs(rootId, ZAssetStatus.DISABLED, oldStatus);
+            });
+
+            it('should revert when status is same', async () => {
+                await expect(
+                    zAssetsRegistry.internalChangeAssetStatus(
+                        rootId,
+                        oldStatus,
+                    ),
+                ).to.revertedWith('AR:E3');
+            });
+        });
+
+        describe('when an asset has not been added', () => {
+            it('should revert if zAsset is not added yet', async () => {
+                const { zAssetRootId } = getMissingIds()[1];
+                await expect(
+                    zAssetsRegistry.internalChangeAssetStatus(
+                        zAssetRootId,
+                        ZAssetStatus.DISABLED,
+                    ),
+                ).to.revertedWith('AR:E2');
+            });
+        });
+    });
+
+    describe('getZAsset', () => {
+        beforeEach(addAllAssets);
+
+        describe('if an asset has been added', () => {
+            it('should return zAsset', async () => {
+                for (const expected of getZAssets()) {
+                    const actual = await zAssetsRegistry.getZAsset(
+                        expected.token,
+                    );
+                    checkZAssetProperties(expected, actual);
+                }
+            });
+        });
+
+        describe('if an asset has not been added', () => {
+            it('should return zero values', async () => {
+                for (const { zAssetRootId } of getMissingIds()) {
+                    const actual = await zAssetsRegistry.getZAsset(
+                        zAssetRootId,
+                    );
+                    checkZAssetProperties(getZeroZAsset(), actual);
+                }
+            });
+        });
+    });
+
+    describe('getZAssetAndId', () => {
+        beforeEach(addAllAssets);
+
+        describe('if an asset has been added', () => {
+            it('should get asset along with its zAssetId', async () => {
+                for (const {
+                    token,
+                    tokenId,
+                    zAssetId: expectedZAssetId,
+                } of getIds()) {
+                    const expected = Object.assign(
+                        getZeroZAsset(),
+                        getZAssets().find(e => e.token == token),
+                    );
+                    const { asset: actual, zAssetId: actualZAssetId } =
+                        await zAssetsRegistry.getZAssetAndId(
+                            expected.token,
+                            tokenId,
+                        );
+
+                    checkZAssetProperties(expected, actual);
+                    expect(actualZAssetId).to.equal(
+                        expectedZAssetId,
+                        'zAssetId',
+                    );
+                }
+            });
+        });
+
+        describe('if an asset has not been added', () => {
+            it('should return zero values in `zAsset`', async () => {
+                for (const missing of getMissingIds()) {
+                    const { asset: actual } =
+                        await zAssetsRegistry.getZAssetAndId(
+                            missing.token,
+                            missing.tokenId,
+                        );
+                    checkZAssetProperties(getZeroZAsset(), actual);
+                }
+            });
+
+            it('should return zero `zAssetId`', async () => {
+                for (const { token, tokenId } of getMissingIds()) {
+                    const { zAssetId } = await zAssetsRegistry.getZAssetAndId(
+                        token,
+                        tokenId,
+                    );
+                    expect(zAssetId).to.equal(0);
+                }
+            });
+        });
+    });
+
+    describe('getZAssetRootId', () => {
+        it('should get asset root id been zAsset.token', async () => {
+            for (const { token, zAssetRootId } of getIds()) {
+                expect(await zAssetsRegistry.getZAssetRootId(token)).to.be.eq(
+                    zAssetRootId,
                 );
+            }
+        });
+    });
+
+    describe('isZAssetWhitelisted', () => {
+        let rootId;
+        beforeEach(async () => {
+            const zAsset = getZAssets()[0];
+            await addAsset(zAsset);
+            rootId = await zAssetsRegistry.getZAssetRootId(zAsset.token);
         });
 
-        it('should revert when status is same', async () => {
-            await expect(
-                zAssetsRegistry.internalChangeAssetStatus(
-                    disabledZAssetId,
-                    ZAssetStatus.DISABLED,
-                ),
-            ).to.revertedWith('AR:E3');
+        it('should return true if rootId is whitelisted', async () => {
+            expect(await zAssetsRegistry.isZAssetWhitelisted(rootId)).to.be
+                .true;
         });
 
-        it('should revert if zAsset is not added yet', async () => {
-            const wrongId = calculateId(ethers.Wallet.createRandom().address);
+        it('should return false if rootId is not whitelisted', async () => {
+            const anotherMissingZAsset = getZAssets()[1];
+            const anotherMissingRootId = await zAssetsRegistry.getZAssetRootId(
+                anotherMissingZAsset.token,
+            );
 
-            await expect(
-                zAssetsRegistry.internalChangeAssetStatus(
-                    wrongId,
-                    ZAssetStatus.DISABLED,
-                ),
-            ).to.revertedWith('AR:E2');
+            expect(
+                await zAssetsRegistry.isZAssetWhitelisted(anotherMissingRootId),
+            ).to.be.false;
         });
     });
 
@@ -275,6 +349,7 @@ describe.only('ZAssetsRegistry', function () {
                         await zAssetsRegistry.unscaleAmount(amount, 10),
                     ).to.be.eq(amount.mul(1e5));
                 });
+
                 it('should multiple the amount by 1e6 when amount scale is 12 ', async () => {
                     expect(
                         await zAssetsRegistry.unscaleAmount(amount, 12),
@@ -339,48 +414,23 @@ describe.only('ZAssetsRegistry', function () {
         });
     });
 
-    describe('isRootIdWhitelisted', () => {
-        it('should return true if rootId is whitelisted', async () => {
-            const id = calculateId(zAssets[1].token);
-
-            expect(await zAssetsRegistry.isRootIdWhitelisted(id)).to.be.true;
-        });
-        it('should return false if rootId is not whitelisted', async () => {
-            const randomId = calculateId(ethers.Wallet.createRandom().address);
-
-            expect(await zAssetsRegistry.isRootIdWhitelisted(disabledZAssetId))
-                .to.be.false;
-            expect(await zAssetsRegistry.isRootIdWhitelisted(randomId)).to.be
-                .false;
-        });
-    });
-
-    describe('Asset root id', () => {
-        it('should get asset root id', async () => {
-            expect(
-                await zAssetsRegistry.getZAssetRootId(zAssets[0].token),
-            ).to.be.eq(toBigNum(zAssets[0].token));
-        });
-    });
-
-    function checkZAssetProperties(
-        zAsset: ZAsset,
-        expected: { [key: string]: any },
-    ): void {
-        expect(expected.status).to.equal(zAsset.status);
-        expect(expected.tokenType).to.equal(zAsset.tokenType);
-        expect(expected.scale).to.equal(zAsset.scale);
-        expect(expected.token).to.equal(zAsset.token);
+    async function addAsset(zAsset: ZAsset) {
+        await zAssetsRegistry.internalAddAsset(zAsset);
     }
 
-    function calculateId(token: string) {
-        return toBigNum(
-            ethers.utils.keccak256(
-                ethers.utils.defaultAbiCoder.encode(
-                    ['uint', 'uint'],
-                    [toBigNum(token), toBigNum(0)],
-                ),
-            ),
-        ).div(toBigNum(2).pow(96));
+    async function addAllAssets() {
+        for (const zAsset of getZAssets()) {
+            await addAsset(zAsset);
+        }
+    }
+
+    function checkZAssetProperties(
+        expected: ZAsset,
+        actual: { [key: string]: any },
+    ): void {
+        expect(actual.status, 'status').to.equal(expected.status);
+        expect(actual.tokenType, 'tokenType').to.equal(expected.tokenType);
+        expect(actual.scale, 'scale').to.equal(expected.scale);
+        expect(actual.token, 'token').to.equal(expected.token);
     }
 });

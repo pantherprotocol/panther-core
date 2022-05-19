@@ -7,17 +7,19 @@ import {RootState, AppDispatch} from './store';
 export const useAppDispatch = () => {
     const dispatch = useDispatch<AppDispatch>();
 
-    const safeDispatch = async (thunk: any, ...args: any[]) => {
+    const safeDispatch = async (actionCreatorOrThunk: any, ...args: any[]) => {
         try {
-            const thunkPromise = await dispatch(thunk(...args));
-            if (thunkPromise.unwrap) {
-                // this check is added as not all actions are thunks;
-                // for example, resetUnclaimedRewards.
-                thunkPromise.unwrap();
+            const dispatched = dispatch(actionCreatorOrThunk(...args));
+            if (dispatched.unwrap) {
+                // This action is a thunk
+                // https://redux-toolkit.js.org/api/createAsyncThunk#unwrapping-result-actions
+                await dispatched.unwrap();
+            } else {
+                await dispatched;
             }
         } catch (error) {
             console.error(
-                `Error in '${thunk.typePrefix}'`,
+                `Error in '${actionCreatorOrThunk.typePrefix}'`,
                 deserializeError(error),
             );
         }

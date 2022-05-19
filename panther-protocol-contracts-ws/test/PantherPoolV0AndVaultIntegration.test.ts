@@ -17,15 +17,29 @@ import { deriveKeypairFromSeed } from '../lib/keychain';
 
 import { MockPantherPoolV0AndVaultIntegration } from '../types';
 import { deployMockPantherPoolV0AndVaultIntegration } from './helpers/mockPantherPoolV0AndVaultIntegration';
+import { toBigNum, toBytes32, Triad } from '../lib/utilities';
+import { BigNumberish } from 'ethers/lib/ethers';
+import { BigNumber } from 'ethers';
 
 describe('PantherPoolV0 and Vault Integration', () => {
     // eslint-disable-next-line no-unused-vars
     let mockPantherPoolV0AndVaultIntegration: MockPantherPoolV0AndVaultIntegration;
     let snapshot: number;
+    const UTXOs = 3;
+    let tokensAddresses :BigInt[] = [BigInt(0),BigInt(0),BigInt(0)];
+    let zAssetIds :BigInt[] = [BigInt(0),BigInt(0),BigInt(0)];
+    const amounts = [BigInt(1000), BigInt(1000), BigInt(1000)];
 
     before(async () => {
         mockPantherPoolV0AndVaultIntegration =
             await deployMockPantherPoolV0AndVaultIntegration();
+        for (let i = 0; i < UTXOs; ++i) {
+            let tokenAddress = await mockPantherPoolV0AndVaultIntegration.getTokenAddress(i);
+            tokensAddresses[i] = BigInt(tokenAddress);
+            let zAssetId = await mockPantherPoolV0AndVaultIntegration.testGetZAssetId(BigNumber.from(tokensAddresses[i]),0);
+            zAssetIds[i] = BigInt(zAssetId.toString());
+
+        }
     });
 
     describe('Test GenerateDeposits & Exit', () => {
@@ -92,6 +106,60 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 expect(recipientTransaction.spenderRandom).equal(
                     senderTransaction.spenderRandom,
                 );
+            });
+
+            it('Async ... calls', async() => {
+                const secrets = [
+                    toBytes32(
+                        buffer32ToBigInt(
+                            senderTransaction.cipheredTextMessageV1.slice(0, 32),
+                        ).toString(),
+                    ),
+                    toBytes32(
+                        buffer32ToBigInt(
+                            senderTransaction.cipheredTextMessageV1.slice(32, 64),
+                        ).toString(),
+                    ),
+                    toBytes32(
+                        buffer32ToBigInt(
+                            senderTransaction.cipheredTextMessageV1.slice(64, 96),
+                        ).toString(),
+                    ),
+                ] as Triad;
+                const createdAtNum = BigInt('1652375774');
+                await mockPantherPoolV0AndVaultIntegration.generateDepositsExtended(
+                    [
+                        amounts[0],
+                        amounts[1],
+                        amounts[2],
+                    ],
+                    [
+                        BigNumber.from(senderTransaction.spenderPubKey[0]),
+                        BigNumber.from(senderTransaction.spenderPubKey[1])
+                    ],
+                    secrets,
+                    createdAtNum
+                );
+
+                // const createdAtNum = BigInt('1652375774');
+                // const createdAtBytes32 = toBytes32(createdAtNum.toString());
+                /*
+                for(let i = 0; i < UTXOs; ++i) {
+                    const commitment = await mockPantherPoolV0AndVaultIntegration.generateCommitments(
+                        BigNumber.from(senderTransaction.spenderPubKey[0]),
+                        BigNumber.from(senderTransaction.spenderPubKey[1]),
+                        amounts[i],
+                        BigNumber.from(zAssetIds[i]),
+                        createdAtNum
+                    );
+                    const zAssetIdBuf = bigIntToBuffer32(zAssetIds[i]);
+                    const amountBuf = bigIntToBuffer32(amounts[i]);
+                    const merged = new Uint8Array([
+                        ...zAssetIdBuf.slice(0, 20),
+                        ...amountBuf.slice(0, 12).reverse(),
+                    ]);
+                }
+                */
             });
         });
 

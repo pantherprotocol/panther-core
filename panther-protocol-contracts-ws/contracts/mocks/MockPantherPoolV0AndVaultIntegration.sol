@@ -16,7 +16,29 @@ contract MyERC20 is ERC20 {
     {
         uint256 totalSupply = 1024;
         _mint(owner, totalSupply);
+        //console.log(owner);
     }
+
+    /*
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public virtual override returns (bool) {
+        address spender = _msgSender();
+        console.logString("msg.sender");
+        console.log(msg.sender);
+        console.logString("Spender");
+        console.log(spender);
+        console.logString("To");
+        console.log(to);
+        console.logString("From");
+        console.log(from);
+        _spendAllowance(from, spender, amount);
+        _transfer(from, to, amount);
+        return true;
+    }
+    */
 }
 
 contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
@@ -30,12 +52,12 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
         PantherPoolV0(
             address(this),
             timeNow() + 1,
-            address(vault = new Vault(address(this)))
+            address(vault = new Vault(address(this))) // This mock is an owner of Vault
         )
     {
         _owner = msg.sender;
         for (uint256 i = 0; i < OUT_UTXOs; ++i) {
-            Tokens[i] = new MyERC20(i, address(this));
+            Tokens[i] = new MyERC20(i, address(this)); // This mock is an owner of MyERC20
             ZAsset memory z;
             z.tokenType = ERC20_TOKEN_TYPE;
             z.scale = 0;
@@ -49,7 +71,7 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
         return address(Tokens[index]);
     }
 
-    function getZAssetId(uint256 token, uint256 tokenId)
+    function testGetZAssetId(uint256 token, uint256 tokenId)
         external
         pure
         returns (uint256)
@@ -90,10 +112,6 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
             );
     }
 
-    function convert(uint256 n) external pure returns (bytes32) {
-        return bytes32(n);
-    }
-
     function generatePublicSpendingKey(uint256 privKey)
         external
         view
@@ -129,6 +147,10 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
         );
     }
 
+    function approveVault(uint256 amount, uint256 index) external {
+        Tokens[index].approve(address(vault),amount);
+    }
+
     function generateDepositsExtended(
         uint256[OUT_UTXOs] calldata extAmounts,
         uint256[2] calldata pubKeys,
@@ -157,6 +179,10 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
         secretss[2][0] = secrets[0];
         secretss[2][1] = secrets[1];
         secretss[2][2] = secrets[2];
+
+        for(uint256 i = 0; i < OUT_UTXOs; i++) {
+            this.approveVault(extAmounts[i],i);
+        }
 
         this.generateDeposits(
             [address(Tokens[0]), address(Tokens[1]), address(Tokens[2])],

@@ -1,0 +1,33 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - yarn install
+    build:
+      commands:
+        - |
+          for var in \
+              {FAUCET_,}CHAIN_ID{,S} NODE_ENV TOKEN_SYMBOL \
+              {STAKING,STAKING_TOKEN,VESTING_POOLS,REWARD_MASTER}_CONTRACT{,_{1,4,137,80001}} \
+              {STAKES_REPORTER,STAKE_REWARD_CONTROLLER_2}_CONTRACT{,_{1,4,137,80001}} \
+              FAUCET_CONTRACT_{1,4,137,80001} \
+              {BLOCK_EXPLORER,SUGGESTED_RPC_URL,REWARD_POOL_SIZE,STAKING_PROGRAM_DURATION,HAS_ADVANCED_STAKING}_{1,4,137,80001} \
+              ADVANCED_STAKING_T_{START,END}
+          do
+              if [ -n "${!var}" ]; then
+                  echo "${var}=${!var}" >> dapp/.env
+              fi
+          done
+        - cat dapp/.env
+        - yarn build:types
+        - yarn build:dapp
+  artifacts:
+    baseDirectory: /dapp/build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - contracts/node_modules/**/*
+      - dapp/node_modules/**/*

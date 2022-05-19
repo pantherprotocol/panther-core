@@ -43,7 +43,8 @@ $selected-toggle-button-hover-color: #1e2539;
         .Mui-selected {
             border-radius: 13px !important;
             background-color: $selected-toggle-button-color;
-            border: 2px solid $color-beige;
+            border-left: 2px solid $color-beige !important;
+            border: 2px solid $color-beige !important;
             opacity: 1;
 
             &:hover {
@@ -62,6 +63,7 @@ $selected-toggle-button-hover-color: #1e2539;
 
             &:hover {
                 background-color: $selected-item-color;
+                border-radius: 13px;
             }
         }
     }

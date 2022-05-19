@@ -42,7 +42,6 @@ export const stakedBalanceSlice = createSlice({
     reducers: {},
     extraReducers: builder => {
         builder
-
             .addCase(getTotalStaked.pending, state => {
                 state.status = 'loading';
             })

@@ -45,7 +45,6 @@ export const stakedBalanceSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-
             .addCase(getZkpStakedBalance.pending, state => {
                 state.status = 'loading';
             })

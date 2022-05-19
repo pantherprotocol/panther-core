@@ -40,7 +40,6 @@ const chainBalanceSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-
             .addCase(getChainBalance.pending, state => {
                 state.status = 'loading';
             })

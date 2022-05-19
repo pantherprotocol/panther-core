@@ -84,7 +84,6 @@ export const unclaimedRewardsSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-
             .addCase(getUnclaimedRewards.pending, state => {
                 state.status = 'loading';
             })

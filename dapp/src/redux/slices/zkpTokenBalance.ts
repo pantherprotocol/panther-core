@@ -46,7 +46,6 @@ export const tokenBalanceSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-
             .addCase(getZkpTokenBalance.pending, state => {
                 state.status = 'loading';
             })

@@ -23,6 +23,16 @@ import './styles.scss';
 export default function PrivateZAssetsTable() {
     const assets = useAppSelector(assetsSelector);
 
+    const zAssetTooltip = `$zZKP in a MASP. This reward is calculated based on your
+    Stake but created as a transaction in the MASP. You will be able to redeem $zZKP
+    for $ZKP using the Withdraw option at the end of the Advanced Staking period.`;
+
+    const prpTooltip = `PRPs (Panther Reward Points). This additional reward, aimed
+    toward incentivizing Advanced Staking, will also be created in the Shielded Pool as
+    a calculation based on the number of $zZKP for a given user. Users will be able to
+    convert PRPs to $ZKP using the Reward Converter when the core protocol (Panther Core
+    V1) launches.`;
+
     return (
         <TableContainer className="private-zasset-container" component={Paper}>
             <Table aria-label="unstaking table">
@@ -35,7 +45,7 @@ export default function PrivateZAssetsTable() {
                         >
                             Private zAssets
                             <Tooltip
-                                title={'Private zAssets:'}
+                                title={zAssetTooltip}
                                 data-html="true"
                                 placement="top"
                                 className="icon"
@@ -47,7 +57,7 @@ export default function PrivateZAssetsTable() {
                         <TableCell align="left" colSpan={2}>
                             Privacy Rewards
                             <Tooltip
-                                title={'Privacy Rewards'}
+                                title={prpTooltip}
                                 data-html="true"
                                 placement="top"
                                 className="icon"

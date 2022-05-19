@@ -40,7 +40,7 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         addAsset(z1);
     }
 
-    function GetZAssetId(uint256 token, uint256 tokenId)
+    function testGetZAssetId(uint256 token, uint256 tokenId)
         external
         pure
         returns (uint256)
@@ -48,7 +48,7 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         return getZAssetId(address(uint160(token)), tokenId);
     }
 
-    function IsKnownZAsset(uint256 token, uint256 tokenId)
+    function testIsKnownZAsset(uint256 token, uint256 tokenId)
         external
         view
         returns (bool)

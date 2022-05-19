@@ -19,6 +19,54 @@ import {
     IKeypair,
 } from './types/keypair';
 import { Buffer } from 'buffer';
+import { bigintToBuf, bufToBigint } from 'bigint-conversion';
+
+export function checkFn () {
+    /*
+    const problem = BigInt('11190577749905809504636919289551466950952332938163259116311353890251349953659');
+    let decryptedText = new Uint8Array([
+        0,   0,   0,   0,  24, 189, 164, 126,  50,
+        108,  65,  27, 204, 124, 120,  12, 140, 149,
+        15, 114, 214, 205, 154, 234,  18, 130,  27,
+        111,  72,  29, 170,  48,  87,  44,  12, 123
+    ]);
+    let prolog = decryptedText.slice(0,4);
+    let random = decryptedText.slice(4,32);
+    let randomNum = buffer32ToBigInt(random);
+    console.log("problem:", problem);
+    console.log("prolog:", buffer32ToBigInt(prolog).toString(16), ", random:", random, ", randomNum:", randomNum);
+     */
+
+    /*
+    const problem = BigInt('205857679485997401266894896096206301610488189411092784848385341199049004619');
+    console.log(
+        'Double convert:',
+        buffer32ToBigInt(bigIntToBuffer32(205857679485997401266894896096206301610488189411092784848385341199049004619n)),
+    );
+
+    let result = new Uint8Array(bigintToBuf(problem));
+    if( result.length < 32 ) {
+        console.log("Padding....");
+        let padding = new Uint8Array(32-result.length);
+        padding.fill(parseInt(BigInt(0).toString(16).slice(0, 2), 16),padding.length);
+
+        //result = new Uint8Array([...result,...padding]);
+        result = new Uint8Array([...padding,...result]);
+    }
+    if ( result.length > 32 ) {
+        throw "Support only number convertable to 32 bytes";
+    }
+    console.log('Initial value:', 205857679485997401266894896096206301610488189411092784848385341199049004619n);
+    console.log("AAAA:", problem.toString(16), ", BBBB: ", result);
+    result.forEach(function (i) {
+        let h = i.toString(16);
+        if (h.length % 2) {
+            h = '0' + h;
+        }
+        console.log("CCCC:", h);
+    });
+     */
+}
 
 export const generateEcdhSharedKey = (
     privateKey: PrivateKey,
@@ -78,51 +126,35 @@ export function decryptMessage(
 
 // TODO: move it to utils or lib since its related to pack-unpack operation
 export function bigIntToBuffer32(bn) {
-    // The handy-dandy `toString(base)` works!!
-    let hex = BigInt(bn).toString(16);
+    let result = new Uint8Array(bigintToBuf(bn));
+    if( result.length < 32 ) {
+        let padding = new Uint8Array(32-result.length);
+        padding.fill(parseInt(BigInt(0).toString(16).slice(0, 2), 16),padding.length);
 
-    // But it still follows the old behavior of giving
-    // invalid hex strings (due to missing padding),
-    // but we can easily add that back
-    if (hex.length % 2) {
-        hex = '0' + hex;
+        //result = new Uint8Array([...result,...padding]);
+        result = new Uint8Array([...padding,...result]);
     }
+    if ( result.length > 32 ) {
+        throw "Support only number convertable to 32 bytes";
+    }
+    // TODO: remove double check in production
+    if(buffer32ToBigInt(result) != bn) {
+        console.log("BN.STR:", bn.toString(16), ", RESULT: ", result);
+        result.forEach(function (i) {
+            let h = i.toString(16);
+            if (h.length % 2) {
+                h = '0' + h;
+            }
+            console.log("RESULT_HEX[",i ,"]: ", h);
+        });
 
-    // The byteLength will be half of the hex string length
-    let len = hex.length / 2;
-    let u8 = new Uint8Array(32); //len);
-
-    // And then we can iterate each element by one
-    // and each hex segment by two
-    let i = 0;
-    let j = 0;
-    while (i < len) {
-        u8[i] = parseInt(hex.slice(j, j + 2), 16);
-        i += 1;
-        j += 2;
     }
-    // zeros - since we want 32 bytes
-    while (i < 32) {
-        u8[i] = parseInt(BigInt(0).toString(16).slice(0, 2), 16);
-        i += 1;
-    }
-    return u8;
+    return result;
 }
 
 // TODO: move it to utils or lib since its related to pack-unpack operation
 export function buffer32ToBigInt(buf) {
-    let hex: string[] = [];
-    let u8 = Uint8Array.from(buf);
-
-    u8.forEach(function (i) {
-        let h = i.toString(16);
-        if (h.length % 2) {
-            h = '0' + h;
-        }
-        hex.push(h);
-    });
-
-    return BigInt('0x' + hex.join(''));
+    return bufToBigint(buf);
 }
 
 export class SenderTransaction {
@@ -136,15 +168,17 @@ export class SenderTransaction {
     // This value is ephemeralRandom * S - used to cipher text
     readonly ephemeralPubKey: BigInt[];
     // Packed version
-    readonly ephemeralPubKeyPacked: Buffer;
+    readonly ephemeralPubKeyPacked: Uint8Array;
     // This value is used to be shared in open form - ephemeralRandom * B
     // Since spender side knows 's' -> s * ephemeralRandom * B = s * B * ephemeralRandom
     readonly ephemeralSharedPubKey: BigInt[];
     // Packed version
-    readonly ephemeralSharedPubKeyPacked: Buffer;
+    readonly ephemeralSharedPubKeyPacked: Uint8Array;
     // IV 16 bytes - 128 bit for encryption
-    readonly iv: Buffer;
+    readonly iv: Uint8Array;
     // Text to be ciphered
+    textToBeCiphered: Uint8Array;
+    // Ciphered text
     cipheredText: Uint8Array;
     // Text to be send on-chain
     cipheredTextMessageV1: Uint8Array;
@@ -163,6 +197,7 @@ export class SenderTransaction {
             this.ephemeralSharedPubKey,
         );
         this.iv = crypto.randomBytes(16);
+        this.textToBeCiphered = crypto.randomBytes(36);
         this.cipheredText = crypto.randomBytes(48);
         this.cipheredTextMessageV1 = crypto.randomBytes(96);
     }
@@ -172,12 +207,13 @@ export class SenderTransaction {
         // Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
         const prolog = 0xeeffeeff; // THIS prolog must be used as is, according to specs
         const textToBeCiphered = new Uint8Array([
-            ...bigIntToBuffer32(prolog).slice(0, 4),
+            ...bigIntToBuffer32(prolog).slice(32-4, 32),
             ...bigIntToBuffer32(this.spenderRandom),
         ]);
-        if (textToBeCiphered.length != 36) {
+        if (textToBeCiphered.length != this.textToBeCiphered.length ) {
             throw 'Size of text to be ciphered V1 must be equal to 36 bytes';
         }
+        this.textToBeCiphered = textToBeCiphered;
         // [1] - cipher
         // const iv = crypto.randomBytes(16);
         const cipher = crypto.createCipheriv(
@@ -185,7 +221,7 @@ export class SenderTransaction {
             this.ephemeralPubKeyPacked,
             this.iv,
         );
-        const cipheredText1 = cipher.update(textToBeCiphered);
+        const cipheredText1 = cipher.update(this.textToBeCiphered);
         const cipheredText2 = cipher.final();
         // [2] - semi-pack
         this.cipheredText = new Uint8Array([

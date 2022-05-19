@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import {BigNumber} from 'ethers';
 
 import {useAppSelector} from '../../../redux/hooks';
-import {calculatedRewardsSelector} from '../../../redux/slices/calculateRewards';
+import {calculatedRewardsSelector} from '../../../redux/slices/advancedStakePredictedRewards';
 import {TokenID} from '../../../services/rewards';
 import {formatCurrency} from '../../../utils/helpers';
 

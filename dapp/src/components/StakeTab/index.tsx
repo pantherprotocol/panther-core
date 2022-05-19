@@ -10,7 +10,7 @@ import {BigNumber, utils} from 'ethers';
 
 import StakingInfo from '../../components/StakeTab/StakingInfo';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {calculateRewards} from '../../redux/slices/calculateRewards';
+import {calculateRewards} from '../../redux/slices/advancedStakePredictedRewards';
 import {
     isStakingOpenSelector,
     termsSelector,
@@ -68,7 +68,7 @@ export default function StakeTab(props: {
             const bn = safeParseUnits(amount);
             if (bn) {
                 setAmountToStakeBN(bn);
-                dispatch(calculateRewards, bn);
+                dispatch(calculateRewards, bn.toString());
             }
         },
         [dispatch],

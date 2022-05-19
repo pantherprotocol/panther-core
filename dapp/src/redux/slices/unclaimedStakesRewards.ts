@@ -10,9 +10,14 @@ import * as stakingService from '../../services/staking';
 import {formatCurrency, fiatPrice} from '../../utils/helpers';
 import {RootState} from '../store';
 
-import {StakeRewards, StakesRewardsState} from './types';
+import {StakeRewards} from './types/stakingRewards';
 
-const initialState: StakesRewardsState = {
+interface StakesRewardsAsyncState {
+    value: StakeRewards | null;
+    status: string;
+}
+
+const initialState: StakesRewardsAsyncState = {
     value: null,
     status: 'idle',
 };

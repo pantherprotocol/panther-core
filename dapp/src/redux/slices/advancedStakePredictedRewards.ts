@@ -1,35 +1,39 @@
-import {BigNumber} from '@ethersproject/bignumber';
+import {BigNumber} from 'ethers';
 // eslint-disable-next-line
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
 import {TokenID, prpReward, zZkpReward} from '../../services/rewards';
 import {RootState} from '../store';
 
-import {StakeRewards, StakesRewardsState} from './types';
+import {StakeRewards} from './types/stakingRewards';
 
-const initialState: StakesRewardsState = {
-    value: {} as StakeRewards,
-};
+interface StakesRewardsState {
+    value: StakeRewards | null;
+}
+
+const initialState: StakesRewardsState = {value: {} as StakeRewards};
 
 export const calculatedRewardSlice = createSlice({
-    name: 'zZkpBalance',
+    name: 'advancedStakeInputRewards',
     initialState,
     reducers: {
-        resetZzkpReward: state => {
-            state.value = initialState.value;
+        resetRewards: (state): void => {
+            state.value = {};
         },
-        calculateRewards: (state, action: PayloadAction<BigNumber>) => {
-            const amountToStakeBN = action.payload;
-            if (!amountToStakeBN) {
+        calculateRewards: (state, action: PayloadAction<string>) => {
+            const amountToStake = action.payload;
+            if (!amountToStake) {
                 state.value = {} as StakeRewards;
             } else {
                 const timeStaked = Math.floor(new Date().getTime());
                 const rewards = {
                     [TokenID.zZKP]: zZkpReward(
-                        amountToStakeBN,
+                        BigNumber.from(amountToStake),
                         timeStaked,
                     ).toString(),
-                    [TokenID.PRP]: prpReward(amountToStakeBN).toString(),
+                    [TokenID.PRP]: prpReward(
+                        BigNumber.from(amountToStake),
+                    ).toString(),
                 };
 
                 state.value = rewards;
@@ -41,10 +45,9 @@ export const calculatedRewardSlice = createSlice({
 export const calculatedRewardsSelector = (
     state: RootState,
 ): StakeRewards | null => {
-    return state.calculatedRewards.value ?? null;
+    return state.advancedStakeInputRewards.value ?? null;
 };
 
-export const {resetZzkpReward, calculateRewards} =
-    calculatedRewardSlice.actions;
+export const {resetRewards, calculateRewards} = calculatedRewardSlice.actions;
 
 export default calculatedRewardSlice.reducer;

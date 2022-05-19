@@ -5,5 +5,4 @@ export type StakeRewards = {
 };
 export interface StakesRewardsState {
     value: StakeRewards | null;
-    status: 'idle' | 'loading' | 'failed';
 }

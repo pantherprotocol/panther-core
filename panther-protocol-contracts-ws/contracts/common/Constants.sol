@@ -29,7 +29,8 @@ uint8 constant ERC1155_TOKEN_TYPE = 0x11;
 // for PRP (quasi-token) only
 uint8 constant PRP_TOKEN_TYPE = 0xFE;
 // defined for every tokenId rather than for all tokens on the contract
-uint8 constant BY_ID_TOKEN_TYPE = 0xFF;
+// (unsupported in the V0 and V1 of the MASP)
+uint8 constant BY_TOKENID_TOKEN_TYPE = 0xFF;
 
 // ZAsset statuses
 // (not `enum` to let protocol extensions use bits, if needed)

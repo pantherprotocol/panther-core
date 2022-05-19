@@ -41,9 +41,9 @@ struct ElGamalCiphertext {
 struct ZAsset {
     // reserved (for networkId, tokenIdPolicy. etc..)
     uint72 _unused;
-    // Refer to constant.sol
+    // Refer to Constants.sol
     uint8 status;
-    // Refer to constant.sol
+    // Refer to Constants.sol
     uint8 tokenType;
     // 0x00 - no scaling
     uint8 scale;
@@ -52,7 +52,7 @@ struct ZAsset {
 }
 
 struct LockData {
-    // Refer to constant.sol
+    // Refer to Constants.sol
     uint8 tokenType;
     // Token contract address
     address token;

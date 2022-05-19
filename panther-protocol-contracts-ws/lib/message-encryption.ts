@@ -21,52 +21,6 @@ import {
 import { Buffer } from 'buffer';
 import { bigintToBuf, bufToBigint } from 'bigint-conversion';
 
-export function checkFn() {
-    /*
-    const problem = BigInt('11190577749905809504636919289551466950952332938163259116311353890251349953659');
-    let decryptedText = new Uint8Array([
-        0,   0,   0,   0,  24, 189, 164, 126,  50,
-        108,  65,  27, 204, 124, 120,  12, 140, 149,
-        15, 114, 214, 205, 154, 234,  18, 130,  27,
-        111,  72,  29, 170,  48,  87,  44,  12, 123
-    ]);
-    let prolog = decryptedText.slice(0,4);
-    let random = decryptedText.slice(4,32);
-    let randomNum = buffer32ToBigInt(random);
-    console.log("problem:", problem);
-    console.log("prolog:", buffer32ToBigInt(prolog).toString(16), ", random:", random, ", randomNum:", randomNum);
-     */
-    /*
-    const problem = BigInt('205857679485997401266894896096206301610488189411092784848385341199049004619');
-    console.log(
-        'Double convert:',
-        buffer32ToBigInt(bigIntToBuffer32(205857679485997401266894896096206301610488189411092784848385341199049004619n)),
-    );
-
-    let result = new Uint8Array(bigintToBuf(problem));
-    if( result.length < 32 ) {
-        console.log("Padding....");
-        let padding = new Uint8Array(32-result.length);
-        padding.fill(parseInt(BigInt(0).toString(16).slice(0, 2), 16),padding.length);
-
-        //result = new Uint8Array([...result,...padding]);
-        result = new Uint8Array([...padding,...result]);
-    }
-    if ( result.length > 32 ) {
-        throw "Support only number convertable to 32 bytes";
-    }
-    console.log('Initial value:', 205857679485997401266894896096206301610488189411092784848385341199049004619n);
-    console.log("AAAA:", problem.toString(16), ", BBBB: ", result);
-    result.forEach(function (i) {
-        let h = i.toString(16);
-        if (h.length % 2) {
-            h = '0' + h;
-        }
-        console.log("CCCC:", h);
-    });
-     */
-}
-
 export const generateEcdhSharedKey = (
     privateKey: PrivateKey,
     publicKey: PublicKey,

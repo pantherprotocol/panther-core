@@ -330,7 +330,10 @@ describe('PantherPoolV0', () => {
 
             it('GenerateDeposits and try to Exit', async () => {
                 // This is real token number that will be used inside circom
-                const zAssetIdSol = await poolV0.testGetZAssetId(Token, BigInt(0));
+                const zAssetIdSol = await poolV0.testGetZAssetId(
+                    Token,
+                    BigInt(0),
+                );
                 zAsset_from_chain = zAssetIdSol;
                 expect(
                     zAssetIdSol,
@@ -421,7 +424,9 @@ describe('PantherPoolV0', () => {
                 CommitmentsInternal[1] = commitment1;
 
                 // [5] - Get event secretMsg = cipherTextMessageV1 = 3x256bit, token = 160bit, amount = 32bit = 4x256bit
-                const zAssetIdBuf1 = bigIntToBuffer32(BigInt(zAssetIdSol.toString()));
+                const zAssetIdBuf1 = bigIntToBuffer32(
+                    BigInt(zAssetIdSol.toString()),
+                );
                 const amountBuf1 = bigIntToBuffer32(Amounts[0]);
                 const merged1 = new Uint8Array([
                     ...zAssetIdBuf1.slice(0, 20),
@@ -478,7 +483,9 @@ describe('PantherPoolV0', () => {
                     BigNumber.from(buffer32ToBigInt(merged1).toString()),
                 ];
 
-                const zAssetIdBuf2 = bigIntToBuffer32(BigInt(zAssetIdSol.toString()));
+                const zAssetIdBuf2 = bigIntToBuffer32(
+                    BigInt(zAssetIdSol.toString()),
+                );
                 const amountBuf2 = bigIntToBuffer32(Amounts[1]);
                 const merged2 = new Uint8Array([
                     ...zAssetIdBuf2.slice(0, 20),
@@ -535,7 +542,9 @@ describe('PantherPoolV0', () => {
                     BigNumber.from(buffer32ToBigInt(merged2).toString()),
                 ];
 
-                const zAssetIdBuf3 = bigIntToBuffer32(BigInt(zAssetIdSol.toString()));
+                const zAssetIdBuf3 = bigIntToBuffer32(
+                    BigInt(zAssetIdSol.toString()),
+                );
                 const amountBuf3 = bigIntToBuffer32(Amounts[2]);
                 const merged3 = new Uint8Array([
                     ...zAssetIdBuf3.slice(0, 20),
@@ -801,7 +810,10 @@ describe('PantherPoolV0', () => {
                 //console.log("MT:",toBytes32(BigInt(merkleProof[0].root).toString()) );
                 //console.log("CM:", toBytes32(commitments[0].toString()), pathElements[0], pathElements[1])
                 expect(checkRoot, 'isKnownRoot must be true').equal(true);
-                const checkZAsset = await poolV0.testIsKnownZAsset(Token, tokenId);
+                const checkZAsset = await poolV0.testIsKnownZAsset(
+                    Token,
+                    tokenId,
+                );
                 expect(checkZAsset, 'IsKnownZAsset must be true').equal(true);
                 await poolV0.testExit(
                     Token,

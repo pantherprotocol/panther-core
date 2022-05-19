@@ -21,7 +21,7 @@ import {
 import { Buffer } from 'buffer';
 import { bigintToBuf, bufToBigint } from 'bigint-conversion';
 
-export function checkFn () {
+export function checkFn() {
     /*
     const problem = BigInt('11190577749905809504636919289551466950952332938163259116311353890251349953659');
     let decryptedText = new Uint8Array([
@@ -36,7 +36,6 @@ export function checkFn () {
     console.log("problem:", problem);
     console.log("prolog:", buffer32ToBigInt(prolog).toString(16), ", random:", random, ", randomNum:", randomNum);
      */
-
     /*
     const problem = BigInt('205857679485997401266894896096206301610488189411092784848385341199049004619');
     console.log(
@@ -127,27 +126,29 @@ export function decryptMessage(
 // TODO: move it to utils or lib since its related to pack-unpack operation
 export function bigIntToBuffer32(bn) {
     let result = new Uint8Array(bigintToBuf(bn));
-    if( result.length < 32 ) {
-        let padding = new Uint8Array(32-result.length);
-        padding.fill(parseInt(BigInt(0).toString(16).slice(0, 2), 16),padding.length);
+    if (result.length < 32) {
+        let padding = new Uint8Array(32 - result.length);
+        padding.fill(
+            parseInt(BigInt(0).toString(16).slice(0, 2), 16),
+            padding.length,
+        );
 
         //result = new Uint8Array([...result,...padding]);
-        result = new Uint8Array([...padding,...result]);
+        result = new Uint8Array([...padding, ...result]);
     }
-    if ( result.length > 32 ) {
-        throw "Support only number convertable to 32 bytes";
+    if (result.length > 32) {
+        throw 'Support only number convertable to 32 bytes';
     }
     // TODO: remove double check in production
-    if(buffer32ToBigInt(result) != bn) {
-        console.log("BN.STR:", bn.toString(16), ", RESULT: ", result);
+    if (buffer32ToBigInt(result) != bn) {
+        console.log('BN.STR:', bn.toString(16), ', RESULT: ', result);
         result.forEach(function (i) {
             let h = i.toString(16);
             if (h.length % 2) {
                 h = '0' + h;
             }
-            console.log("RESULT_HEX[",i ,"]: ", h);
+            console.log('RESULT_HEX[', i, ']: ', h);
         });
-
     }
     return result;
 }
@@ -207,10 +208,10 @@ export class SenderTransaction {
         // Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
         const prolog = 0xeeffeeff; // THIS prolog must be used as is, according to specs
         const textToBeCiphered = new Uint8Array([
-            ...bigIntToBuffer32(prolog).slice(32-4, 32),
+            ...bigIntToBuffer32(prolog).slice(32 - 4, 32),
             ...bigIntToBuffer32(this.spenderRandom),
         ]);
-        if (textToBeCiphered.length != this.textToBeCiphered.length ) {
+        if (textToBeCiphered.length != this.textToBeCiphered.length) {
             throw 'Size of text to be ciphered V1 must be equal to 36 bytes';
         }
         this.textToBeCiphered = textToBeCiphered;

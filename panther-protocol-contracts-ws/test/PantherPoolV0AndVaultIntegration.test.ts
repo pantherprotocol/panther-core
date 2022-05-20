@@ -192,90 +192,6 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 }
 
                 for (let i = 0; i < UTXOs; ++i) {
-                    const pathElements = [
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[0][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[0][1].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[1][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[2][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[3][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[4][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[5][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[6][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[7][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[8][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[9][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[10][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[11][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[12][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[13][0].toString(),
-                            )
-                        ),
-                        <BytesLike>(
-                            toBytes32(
-                                merkleProof[i].pathElements[14][0].toString(),
-                            )
-                        ),
-                    ] as PathElementsType;
-                    //console.log( await mockPantherPoolV0AndVaultIntegration.getTokenAddress(i) );
-                    //console.log( toBytes32(zAssetIds[i].toString()) );
                     const leftLeafId = i;
                     await mockPantherPoolV0AndVaultIntegration.testExit(
                         await mockPantherPoolV0AndVaultIntegration.getTokenAddress(
@@ -286,7 +202,24 @@ describe('PantherPoolV0 and Vault Integration', () => {
                         createdAtNum,
                         recipientTransaction.spenderKeys.privateKey as bigint,
                         leftLeafId,
-                        pathElements,
+                        ((): PathElementsType => {
+                            let pathElements: BytesLike[] = [];
+                            merkleProof[i].pathElements.forEach(
+                                (value, index) => {
+                                    pathElements.push(
+                                        toBytes32(
+                                            value[0].toString(),
+                                        ) as BytesLike,
+                                    );
+                                    if (index == 0) {
+                                        pathElements.push(
+                                            toBytes32(value[1].toString()),
+                                        );
+                                    }
+                                },
+                            );
+                            return pathElements as PathElementsType;
+                        })(),
                         toBytes32(merkleProof[i].root.toString()),
                         0,
                     );

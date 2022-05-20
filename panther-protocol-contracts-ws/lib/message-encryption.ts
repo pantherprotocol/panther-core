@@ -1,5 +1,4 @@
-import crypto, { generateKeyPair } from 'crypto';
-
+import crypto from 'crypto';
 import { babyjub } from 'circomlibjs';
 import { utils } from 'ethers';
 
@@ -8,7 +7,8 @@ import {
     deriveKeypairFromSeed,
     formatPrivateKeyForBabyJub,
     generatePublicKey,
-    generateRandomBabyJubValue, multiplyScalars,
+    generateRandomBabyJubValue,
+    multiplyScalars,
 } from './keychain';
 import { ICiphertext } from './types/message';
 import {
@@ -140,7 +140,10 @@ export class SenderTransaction {
 
     public constructor(spenderRootPubKey) {
         this.spenderRandom = generateRandomBabyJubValue();
-        this.spenderPubKey = babyjub.mulPointEscalar(spenderRootPubKey,this.spenderRandom);
+        this.spenderPubKey = babyjub.mulPointEscalar(
+            spenderRootPubKey,
+            this.spenderRandom,
+        );
         // this.spenderPubKey = generatePublicKey(this.spenderRandom);
         this.ephemeralRandom = generateRandomBabyJubValue();
         this.ephemeralPubKey = generateEcdhSharedKeyPoint(
@@ -202,7 +205,7 @@ export class RecipientTransaction {
     // Only spender have it
     readonly spenderRootKeys: IKeypair;
     // This pair is build using random & root private key
-    spenderKeys : IKeypair;
+    spenderKeys: IKeypair;
     // Value that must be extracted from ciphered-text
     spenderRandom: BigInt;
     // Value that must be derived in order to decrypt ciphered text
@@ -221,9 +224,14 @@ export class RecipientTransaction {
         this.spenderRootKeys = spenderRootKeys;
         // [1] - Just init
         const privKey = generateRandomBabyJubValue();
-        this.spenderKeys = { privateKey: privKey, publicKey : generatePublicKey(privKey) };
+        this.spenderKeys = {
+            privateKey: privKey,
+            publicKey: generatePublicKey(privKey),
+        };
         this.spenderKeys.privateKey = generateRandomBabyJubValue();
-        this.spenderKeys.publicKey = generatePublicKey(this.spenderKeys.privateKey);
+        this.spenderKeys.publicKey = generatePublicKey(
+            this.spenderKeys.privateKey,
+        );
         // [2] - Random values to be on safe side
         this.spenderRandom = generateRandomBabyJubValue();
         this.ephemeralPubKey = generatePublicKey(generateRandomBabyJubValue());
@@ -256,8 +264,14 @@ export class RecipientTransaction {
             this.decryptedText.slice(4, 4 + 32),
         );
         // [2] - Make derived public & private keys
-        this.spenderKeys.privateKey = multiplyScalars(this.spenderRootKeys.privateKey,this.spenderRandom);
-        this.spenderKeys.publicKey = babyjub.mulPointEscalar(this.spenderRootKeys.publicKey,this.spenderRandom );
+        this.spenderKeys.privateKey = multiplyScalars(
+            this.spenderRootKeys.privateKey,
+            this.spenderRandom,
+        );
+        this.spenderKeys.publicKey = babyjub.mulPointEscalar(
+            this.spenderRootKeys.publicKey,
+            this.spenderRandom,
+        );
     }
 
     public decryptMessageV1() {

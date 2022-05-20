@@ -147,7 +147,7 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
     }
 
     function approveVault(uint256 amount, uint256 index) external {
-        Tokens[index].approve(address(vault),amount);
+        Tokens[index].approve(address(vault), amount);
     }
 
     function generateDepositsExtended(
@@ -179,8 +179,8 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
         secretss[2][1] = secrets[1];
         secretss[2][2] = secrets[2];
 
-        for(uint256 i = 0; i < OUT_UTXOs; i++) {
-            this.approveVault(extAmounts[i],i);
+        for (uint256 i = 0; i < OUT_UTXOs; i++) {
+            this.approveVault(extAmounts[i], i);
         }
 
         this.generateDeposits(
@@ -191,7 +191,5 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
             secretss,
             createdAt
         );
-
-
     }
 }

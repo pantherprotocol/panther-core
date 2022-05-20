@@ -1,25 +1,17 @@
-@import '../../variables';
-
 .footer-holder {
-    width: 100%;
-    display: flex;
-    z-index: 2;
+    width: 100% !important;
+    display: flex !important;
     flex: 1;
+    position: relative;
+    top: 50px;
 
-    .footer-container {
+    .footer-links {
         display: flex;
-        justify-content: center;
-        width: 100%;
-        padding: 34px 20px 20px;
+        justify-content: start;
+    }
 
-        .socials {
-            a {
-                padding: 0 15px;
-
-                img {
-                    width: 22px;
-                }
-            }
-        }
+    .footer-socials {
+        display: flex;
+        justify-content: end;
     }
 }

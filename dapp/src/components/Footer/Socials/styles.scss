@@ -1,0 +1,16 @@
+@import '../../../variables.scss';
+
+.adv-staking-footer-socials {
+    display: flex;
+    justify-content: end;
+    width: 100%;
+    padding: 20px;
+
+    a {
+        padding: 0 15px;
+
+        img {
+            width: 22px;
+        }
+    }
+}

@@ -1,7 +1,5 @@
 @import '../../../variables';
 
-$address-holder-background: rgba(99, 114, 136, 0.2);
-
 .addresses-box {
     display: flex;
     justify-content: space-between;
@@ -73,7 +71,7 @@ $address-holder-background: rgba(99, 114, 136, 0.2);
     align-items: center;
     margin: 0 20px;
     padding: 0 8px;
-    background: $address-holder-background;
+    background: $card-background-darker;
     border-radius: 8px;
     min-height: 50px;
 }

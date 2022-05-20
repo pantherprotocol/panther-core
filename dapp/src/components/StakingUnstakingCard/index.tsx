@@ -7,20 +7,21 @@ import CardContent from '@mui/material/CardContent';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-import StakeTab from '../../components/StakeTab';
-import UnstakingTab from '../../components/UnstakeTab';
+import StakeTab from '../StakeTab';
+import UnstakingTab from '../UnstakeTab';
 
 import './styles.scss';
 
 export default function StakingUnstakingCard(props: {
     onConnect: any;
     networkLogo?: string;
-    switchNetwork: any;
+    switchNetwork: (chainId: number) => void;
+    stakeType: string;
 }) {
     const [toggle, setToggle] = useState('stake');
 
     const handleChange = (
-        event: React.MouseEvent<HTMLElement>,
+        _event: React.MouseEvent<HTMLElement>,
         newState: string,
     ) => {
         if (newState !== null) {
@@ -30,7 +31,7 @@ export default function StakingUnstakingCard(props: {
 
     const children = [
         <ToggleButton value="stake" key="1">
-            Stake ZKP
+            Stake
         </ToggleButton>,
         <ToggleButton value="unstake" key="2">
             Unstake
@@ -44,8 +45,8 @@ export default function StakingUnstakingCard(props: {
     };
 
     return (
-        <Box className="balance-card-holder">
-            <Card className="balance-card">
+        <Box className="advanced-balance-card-holder">
+            <Card className="advanced-balance-card">
                 <Box>
                     <ToggleButtonGroup size="large" {...control}>
                         {children}
@@ -56,8 +57,9 @@ export default function StakingUnstakingCard(props: {
                     {toggle == 'stake' || toggle == null ? (
                         <StakeTab
                             onConnect={props.onConnect}
-                            networkLogo={props.networkLogo}
                             switchNetwork={props.switchNetwork}
+                            networkLogo={props.networkLogo}
+                            stakeType={props.stakeType}
                         />
                     ) : (
                         <UnstakingTab />

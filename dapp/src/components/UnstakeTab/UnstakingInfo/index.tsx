@@ -3,12 +3,14 @@ import React from 'react';
 import {Box, Card, CardContent, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
+import {chainHasAdvancedStaking} from '../../../services/contracts';
+
 import './styles.scss';
 
 export default function UnstakingInfo() {
     const {chainId} = useWeb3React();
 
-    if (chainId === 1) {
+    if (chainId === 1 && !chainHasAdvancedStaking(chainId)) {
         return (
             <Card variant="outlined" className="unstaking-info-container">
                 <CardContent className="unstaking-info-card-content">

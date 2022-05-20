@@ -2,11 +2,11 @@
 
 .small-btn-holder {
     .small-btn {
-        font-weight: 800;
-        font-size: 16px;
+        font-weight: $bold-font-weight;
+        font-size: $normal-font-size;
         display: flex;
         align-items: center;
-        color: $main-brown;
+        color: $color-beige;
         background: rgba(255, 255, 255, 0.02);
         border: 1.25px solid rgba(120, 154, 205, 0.2);
         box-sizing: border-box;

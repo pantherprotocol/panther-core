@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {Box, Card} from '@mui/material';
+import Box from '@mui/material/Box';
 
 import UnstakeTable from '../UnstakeTable';
 
@@ -12,11 +12,9 @@ import './styles.scss';
 export default function UnstakingTab() {
     return (
         <Box className="unstaking-tab-holder">
-            <Card variant="outlined">
-                <UnstakingInfo />
-                <UnstakeTable />
-                <TotalUnclaimedRewards />
-            </Card>
+            <UnstakingInfo />
+            <UnstakeTable />
+            <TotalUnclaimedRewards />
         </Box>
     );
 }

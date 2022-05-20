@@ -1,12 +1,16 @@
 import {useCallback, useEffect, useState} from 'react';
 import * as React from 'react';
 
-import {Box, Card, CardContent} from '@mui/material';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import {BigNumber, utils} from 'ethers';
 
+import StakingInfo from '../../components/StakeTab/StakingInfo';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {calculateRewards} from '../../redux/slices/advancedStakePredictedRewards';
 import {
     isStakingOpenSelector,
     termsSelector,
@@ -15,8 +19,8 @@ import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {
-    getZkpTokenBalance,
     zkpTokenBalanceSelector,
+    getZkpTokenBalance,
 } from '../../redux/slices/zkpTokenBalance';
 import {onWrongNetwork} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
@@ -26,8 +30,8 @@ import {safeParseUnits} from '../../utils/helpers';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 
+import {ExpectedRewardsCard} from './ExpectedRewardsCard';
 import StakingBtn from './StakingBtn';
-import StakingInfo from './StakingInfo';
 import StakingInput from './StakingInput';
 
 import './styles.scss';
@@ -36,6 +40,7 @@ export default function StakeTab(props: {
     onConnect: any;
     networkLogo?: string;
     switchNetwork: any;
+    stakeType: string;
 }) {
     const context = useWeb3React();
     const {account, library, chainId, active, error} = context;
@@ -57,13 +62,17 @@ export default function StakeTab(props: {
     const [, setStakedId] = useState<number | null>(null);
 
     // For use when user types input
-    const setStakingAmount = useCallback((amount: string) => {
-        setAmountToStake(amount);
-        const bn = safeParseUnits(amount);
-        if (bn) {
-            setAmountToStakeBN(bn);
-        }
-    }, []);
+    const setStakingAmount = useCallback(
+        (amount: string) => {
+            setAmountToStake(amount);
+            const bn = safeParseUnits(amount);
+            if (bn) {
+                setAmountToStakeBN(bn);
+                dispatch(calculateRewards, bn.toString());
+            }
+        },
+        [dispatch],
+    );
 
     // For use when user clicks Max button
     const setStakingAmountBN = useCallback((amountBN: BigNumber) => {
@@ -139,19 +148,25 @@ export default function StakeTab(props: {
 
     return (
         <Box className="staking-tab-holder">
-            {isStakingOpen && (
-                <StakingInput
-                    setStakingAmount={setStakingAmount}
-                    setStakingAmountBN={setStakingAmountBN}
-                    amountToStake={amountToStake}
-                    networkLogo={props.networkLogo}
-                />
+            {isStakingOpen ? (
+                <>
+                    <StakingInput
+                        setStakingAmount={setStakingAmount}
+                        setStakingAmountBN={setStakingAmountBN}
+                        amountToStake={amountToStake}
+                        networkLogo={props.networkLogo}
+                    />
+                    <Card variant="outlined" className="staking-info-card">
+                        <CardContent className="staking-info-card-content">
+                            <StakingInfo />
+
+                            <ExpectedRewardsCard />
+                        </CardContent>
+                    </Card>
+                </>
+            ) : (
+                <StakingInfo />
             )}
-            <Card variant="outlined" className="staking-info-card">
-                <CardContent className="staking-info-card-content">
-                    <StakingInfo />
-                </CardContent>
-            </Card>
 
             {wrongNetwork && (
                 <div className="buttons-holder">

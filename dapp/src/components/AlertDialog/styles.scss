@@ -2,7 +2,7 @@
 $dialog-confirm-button: rgba(32, 91, 234, 1);
 $dialog-cancel-button: rgba(168, 179, 202, 1);
 $dialog-background-color: #303c54;
-$dialog-message-color: #ffdfbd;
+
 .css-e53awj-MuiStack-root {
     justify-content: center;
 }
@@ -28,18 +28,18 @@ $dialog-message-color: #ffdfbd;
         text-transform: uppercase;
         margin-bottom: 45px;
         .warning-text {
-            font-weight: 800;
-            font-size: 32px;
+            font-weight: $bold-font-weight;
+            font-size: $large-font-size;
             padding-left: 15px;
         }
     }
     p {
-        font-size: 22px;
+        font-size: $big-font-size;
         text-align: center;
         line-height: 27px;
         &.message {
-            font-weight: 700;
-            color: $dialog-message-color;
+            font-weight: $semi-bold-font-weight;
+            color: $color-beige;
             margin: 20px 0px;
         }
 
@@ -55,8 +55,8 @@ $dialog-message-color: #ffdfbd;
     .button {
         text-transform: capitalize;
         text-align: center;
-        font-weight: 700;
-        font-size: 18px;
+        font-weight: $semi-bold-font-weight;
+        font-size: $title-font-size;
         line-height: 30px;
         display: flex;
         align-items: center;

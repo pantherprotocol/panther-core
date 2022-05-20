@@ -3,7 +3,6 @@ $white: #ffffff;
 $light-gray: #e7e7e7;
 $price-unit: #f0ffff;
 $black: #191c1f;
-$main-brown: #ffdfbd;
 $highlighted-text: #ffdfbd;
 $grey-btn: #475267;
 $grey-btn-border: #485267;
@@ -28,6 +27,7 @@ $cube: #29303e;
 $asset-balance: rgba(150, 172, 214, 0.4);
 $selected-item-color: rgba(114, 123, 147, 1);
 $card-background: rgba(99, 114, 136, 0.15);
+$card-background-darker: rgba(99, 114, 136, 0.2);
 $asset-growth: #0eae00;
 $asset-fall: #d01111;
 $table-header-grey: #6c757e;
@@ -39,13 +39,14 @@ $progress: #fddcbc;
 $main-background: #0c121e;
 $main-text: #bbbbbb;
 $grey-text: rgba(255, 255, 255, 0.5);
+$semi-grey-text: rgba(255, 255, 255, 0.7);
 $buttons-holder-background-color: rgba(107, 155, 183, 0.2);
 $border-button: rgba(255, 255, 255, 0.36);
 $dropdown-border-color: rgba(102, 141, 198, 0.4);
 $warning-box: rgb(0 0 0 / 38%);
 $header-box-shadow: rgba(0, 0, 0, 0.1);
 
-$main-heading-span: #ffdfbd;
+$color-beige: #ffdfbd;
 $third-blue: linear-gradient(0deg, #2b63eb, #2b63eb);
 $blue-linear: linear-gradient(
         180deg,
@@ -71,3 +72,22 @@ $dropdown-background: linear-gradient(
 
 $warning-box-background: linear-gradient(216deg, #0000007a, transparent);
 $toggle-button-group-color: linear-gradient(0deg, #3f4a5f, #3f4a5f);
+
+// Font size
+$tiny-font-size: 12px;
+$smaller-font-size: 13px;
+$small-font-size: 14px;
+$normal-font-size: 16px;
+$title-font-size: 18px;
+$header-font-size: 20px;
+$big-font-size: 22px;
+$large-font-size: 32px;
+$larger-font-size: 36px;
+$huge-font-size: 39px;
+
+// Font weight
+$light-font-weight: 400;
+$normal-font-weight: 500;
+$semi-normal-font-weight: 600;
+$semi-bold-font-weight: 700;
+$bold-font-weight: 800;

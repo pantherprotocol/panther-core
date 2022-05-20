@@ -1,10 +1,9 @@
 @import '../../variables';
 $main-balance-card-background: linear-gradient(0deg, #3f4a5f, #3f4a5f);
-$balance-card-background: rgba(99, 114, 136, 0.2);
 
 .balance-card-holder {
     .balance-card {
-        background-color: $balance-card-background !important;
+        background-color: $card-background-darker !important;
         border: 1px solid transparent;
         border-radius: 8px !important;
         box-sizing: border-box;
@@ -48,9 +47,8 @@ $balance-card-background: rgba(99, 114, 136, 0.2);
         }
 
         .zkp-symbol {
-            font-weight: 700;
-            font-style: normal;
-            font-size: 16px;
+            font-weight: $semi-bold-font-weight;
+            font-size: $normal-font-size;
             line-height: 42px;
             margin-left: 8px;
 
@@ -67,14 +65,13 @@ $balance-card-background: rgba(99, 114, 136, 0.2);
         .balance-not-connected {
             text-align: left;
             text-decoration: underline;
-            font-weight: normal;
             padding-top: 12px;
         }
     }
 
     .title {
         height: 35px;
-        font-size: 18px !important;
+        font-size: $title-font-size !important;
         display: flex;
         align-items: center;
         opacity: 0.6;

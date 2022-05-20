@@ -1,12 +1,6 @@
 @import '../../variables';
-$unstaking-tab-holder-background: #2b334140;
 
 .unstaking-tab-holder {
     width: 100%;
-    margin: 0px 5px;
-
-    .MuiCard-root {
-        background-color: $unstaking-tab-holder-background;
-        border-radius: 8px;
-    }
+    margin: 20px 5px;
 }

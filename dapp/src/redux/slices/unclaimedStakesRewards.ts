@@ -5,21 +5,20 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {constants} from 'ethers';
 
 import {chainHasStakesReporter} from '../../services/contracts';
-import {TokenID, isClassic} from '../../services/rewards';
+import {TokenID, isClassic, AdvancedRewards} from '../../services/rewards';
 import * as stakingService from '../../services/staking';
 import {formatCurrency, fiatPrice} from '../../utils/helpers';
 import {RootState} from '../store';
 
-type UnclaimedStakesRewards = {
-    [key in TokenID]: string | null;
-};
-interface UnclaimedStakesRewardsState {
-    value: UnclaimedStakesRewards;
-    status: 'idle' | 'loading' | 'failed';
+import {StakeRewards} from './types/stakingRewards';
+
+interface StakesRewardsAsyncState {
+    value: StakeRewards | null;
+    status: string;
 }
 
-const initialState: UnclaimedStakesRewardsState = {
-    value: {} as UnclaimedStakesRewards,
+const initialState: StakesRewardsAsyncState = {
+    value: null,
     status: 'idle',
 };
 
@@ -27,10 +26,9 @@ export const getUnclaimedRewards = createAsyncThunk(
     'balance/getUnclaimedStakesRewards',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
-    ): Promise<UnclaimedStakesRewards> => {
+    ): Promise<StakeRewards | null> => {
         const {account, library, chainId} = context;
-        if (!library || !chainId || !account)
-            return {} as UnclaimedStakesRewards;
+        if (!library || !chainId || !account) return null;
         if (chainHasStakesReporter(chainId)) {
             if (chainId === 137) {
                 console.debug('Using StakesReporter on Polygon');
@@ -47,7 +45,7 @@ export const getUnclaimedRewards = createAsyncThunk(
             account,
         );
 
-        const reduxRewards = {} as UnclaimedStakesRewards;
+        const reduxRewards = {} as StakeRewards;
 
         for (const tid of [TokenID.PRP, TokenID.ZKP, TokenID.zZKP]) {
             reduxRewards[tid] = sumTokens(reward[1], tid).toString();
@@ -63,10 +61,11 @@ function sumTokens(rows: stakingService.StakeRow[], tid: TokenID): BigNumber {
     for (const row of rows) {
         if (tid === TokenID.ZKP && isClassic(row.reward)) {
             accumulated = accumulated.add(row.reward as BigNumber);
-        } else if (tid === TokenID.zZKP || tid === TokenID.PRP) {
-            if (!isClassic(row.reward)) {
-                accumulated = accumulated.add(row.reward[tid]);
-            }
+        } else if (
+            (tid === TokenID.zZKP || tid === TokenID.PRP) &&
+            !isClassic(row.reward)
+        ) {
+            accumulated = accumulated.add((row.reward as AdvancedRewards)[tid]);
         }
     }
 
@@ -93,13 +92,13 @@ export const unclaimedRewardsSlice = createSlice({
             })
             .addCase(getUnclaimedRewards.rejected, state => {
                 state.status = 'failed';
-                state.value = {} as UnclaimedStakesRewards;
+                state.value = {} as StakeRewards;
             });
     },
 });
 
 const rewardsSelector = (state: RootState, tid: TokenID) => {
-    return state.unclaimedStakesRewards.value[tid]
+    return state.unclaimedStakesRewards.value?.[tid]
         ? BigNumber.from(state.unclaimedStakesRewards.value[tid])
         : null;
 };

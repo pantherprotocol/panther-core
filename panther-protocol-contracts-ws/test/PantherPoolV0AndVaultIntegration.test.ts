@@ -18,11 +18,8 @@ import { deriveKeypairFromSeed } from '../lib/keychain';
 import { MockPantherPoolV0AndVaultIntegration } from '../types';
 import { deployMockPantherPoolV0AndVaultIntegration } from './helpers/mockPantherPoolV0AndVaultIntegration';
 import { PathElementsType, toBytes32, Triad } from '../lib/utilities';
-// eslint-disable-next-line import/no-duplicates
 import { BigNumber } from 'ethers';
-// eslint-disable-next-line import/no-duplicates
-import BytesLike from 'ethers';
-
+import type { BytesLike } from '@ethersproject/bytes';
 
 describe('PantherPoolV0 and Vault Integration', () => {
     // eslint-disable-next-line no-unused-vars

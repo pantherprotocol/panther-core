@@ -2,11 +2,13 @@ import {JsonRpcSigner} from '@ethersproject/providers';
 import {Contract} from 'ethers';
 
 import {abi as PZKPTOKEN_ABI} from '../abi/PZkpToken';
+import {abi as REWARD_MASTER_ABI} from '../abi/RewardMaster';
 import {abi as STAKE_REWARD_CONTROLLER_2_ABI} from '../abi/StakeRewardController2';
 import {abi as STAKES_REPORTER_ABI} from '../abi/StakesReporter';
 import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as ZKPTOKEN_ABI} from '../abi/ZKPToken';
 import {RewardMaster} from '../types/contracts/RewardMaster';
+import {StakeRewardController2} from '../types/contracts/StakeRewardController2';
 import {StakesReporter} from '../types/contracts/StakesReporter';
 import {Staking} from '../types/contracts/Staking';
 
@@ -15,6 +17,7 @@ import {env} from './env';
 export enum ContractName {
     STAKING,
     STAKES_REPORTER,
+    REWARD_MASTER,
     STAKE_REWARD_CONTROLLER_2,
     STAKING_TOKEN,
 }
@@ -60,6 +63,8 @@ export function getContractABI(
     chainId: number,
 ): any {
     switch (contractName) {
+        case ContractName.REWARD_MASTER:
+            return REWARD_MASTER_ABI;
         case ContractName.STAKE_REWARD_CONTROLLER_2:
             return STAKE_REWARD_CONTROLLER_2_ABI;
         case ContractName.STAKING:
@@ -103,15 +108,26 @@ export function getStakesReporterContract(
     ) as StakesReporter;
 }
 
-export function getStakeRewardController2Contract(
+export function getRewardMasterContract(
     library: any,
     chainId: number,
 ): RewardMaster {
     return getContract(
-        ContractName.STAKE_REWARD_CONTROLLER_2,
+        ContractName.REWARD_MASTER,
         library,
         chainId,
     ) as RewardMaster;
+}
+
+export function getStakeRewardController2Contract(
+    library: any,
+    chainId: number,
+): StakeRewardController2 {
+    return getContract(
+        ContractName.STAKE_REWARD_CONTROLLER_2,
+        library,
+        chainId,
+    ) as StakeRewardController2;
 }
 
 type PossiblyTypedContract = Contract | RewardMaster | Staking;

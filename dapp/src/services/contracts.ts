@@ -32,7 +32,7 @@ export function getContractAddress(
     return address;
 }
 
-export function chainHasStakesReporter(chainId?: number): boolean {
+export function chainHasStakesReporter(chainId: number): boolean {
     return !!env[`STAKES_REPORTER_CONTRACT_${chainId}`];
 }
 

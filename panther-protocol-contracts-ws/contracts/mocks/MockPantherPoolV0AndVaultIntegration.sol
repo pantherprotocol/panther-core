@@ -16,9 +16,7 @@ contract MyERC20 is ERC20 {
     {
         uint256 totalSupply = 1024;
         _mint(owner, totalSupply);
-        //console.log(owner);
     }
-
     /*
     function transferFrom(
         address from,
@@ -26,6 +24,7 @@ contract MyERC20 is ERC20 {
         uint256 amount
     ) public virtual override returns (bool) {
         address spender = _msgSender();
+        console.logString(" --- TOKEN --- ");
         console.logString("msg.sender");
         console.log(msg.sender);
         console.logString("Spender");
@@ -123,7 +122,7 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
         xy[1] = p.y;
     }
 
-    function exit(
+    function testExit(
         uint256 token,
         uint256 tokenId,
         uint256 amount,
@@ -192,5 +191,7 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
             secretss,
             createdAt
         );
+
+
     }
 }

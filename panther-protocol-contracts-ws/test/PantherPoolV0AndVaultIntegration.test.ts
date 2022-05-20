@@ -4,7 +4,7 @@ import { expect } from 'chai';
 // @ts-ignore
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
 import { poseidon } from 'circomlibjs';
-import { TriadMerkleTree } from '../lib/tree';
+import { MerkleProof, TriadMerkleTree } from '../lib/tree';
 import assert from 'assert';
 import {
     bigIntToBuffer32,
@@ -17,9 +17,10 @@ import { deriveKeypairFromSeed } from '../lib/keychain';
 
 import { MockPantherPoolV0AndVaultIntegration } from '../types';
 import { deployMockPantherPoolV0AndVaultIntegration } from './helpers/mockPantherPoolV0AndVaultIntegration';
-import { toBigNum, toBytes32, Triad } from '../lib/utilities';
+import { PathElementsType, toBigNum, toBytes32, Triad } from '../lib/utilities';
 import { BigNumberish } from 'ethers/lib/ethers';
 import { BigNumber } from 'ethers';
+import { BytesLike } from '@ethersproject/bytes';
 
 describe('PantherPoolV0 and Vault Integration', () => {
     // eslint-disable-next-line no-unused-vars
@@ -107,6 +108,17 @@ describe('PantherPoolV0 and Vault Integration', () => {
                     senderTransaction.spenderRandom,
                 );
             });
+            // [9] - Double check sender derived public = recipient derived public key
+            it('Sender derived pub-key is equal to recipient derived pub-key', () => {
+                if(recipientTransaction.spenderKeys.publicKey[0] != senderTransaction.spenderPubKey[0] ||
+                    recipientTransaction.spenderKeys.publicKey[1] != senderTransaction.spenderPubKey[1]) {
+                    console.log('Tx-OUT:', senderTransaction);
+                    console.log('Tx-IN:', recipientTransaction);
+                }
+                expect(recipientTransaction.spenderKeys.publicKey).deep.equal(
+                    senderTransaction.spenderPubKey,
+                );
+            });
 
             it('Async ... calls', async() => {
                 const secrets = [
@@ -143,23 +155,105 @@ describe('PantherPoolV0 and Vault Integration', () => {
 
                 // const createdAtNum = BigInt('1652375774');
                 // const createdAtBytes32 = toBytes32(createdAtNum.toString());
-                /*
+                let commitments : BigNumber[] = [];
+                commitments.fill(BigNumber.from(0),UTXOs);
+                let commitmentsForTree : BigInt[] = [];
+                commitmentsForTree.fill(BigInt(0),UTXOs);
                 for(let i = 0; i < UTXOs; ++i) {
-                    const commitment = await mockPantherPoolV0AndVaultIntegration.generateCommitments(
+                    commitments[i] = await mockPantherPoolV0AndVaultIntegration.generateCommitments(
                         BigNumber.from(senderTransaction.spenderPubKey[0]),
                         BigNumber.from(senderTransaction.spenderPubKey[1]),
                         amounts[i],
                         BigNumber.from(zAssetIds[i]),
                         createdAtNum
                     );
+                    commitmentsForTree[i] = BigInt(commitments[i].toString());
+                    console.log(" --- TEST VALUES ---");
+                    console.log(toBytes32(commitments[i].toString()));
+                }
+
+                tree.insertBatch(commitmentsForTree as bigint[]);
+                let merkleProof : MerkleProof[] = [];
+                for(let i = 0; i < UTXOs; ++i) {
+                    merkleProof[i] = tree.genMerklePath(i);
+                }
+
+                for(let i = 0; i < UTXOs; ++i) {
+
+                    const pathElements = [
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[0][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[0][1].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[1][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[2][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[3][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[4][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[5][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[6][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[7][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[8][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[9][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[10][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[11][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[12][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[13][0].toString())
+                        ),
+                        <BytesLike>(
+                            toBytes32(merkleProof[i].pathElements[14][0].toString())
+                        ),
+                    ] as PathElementsType;
+                    //console.log( await mockPantherPoolV0AndVaultIntegration.getTokenAddress(i) );
+                    //console.log( toBytes32(zAssetIds[i].toString()) );
+                    const leftLeafId = i;
+                    await mockPantherPoolV0AndVaultIntegration.testExit(
+                        await mockPantherPoolV0AndVaultIntegration.getTokenAddress(i),
+                        0,
+                        amounts[i],
+                        createdAtNum,
+                        recipientTransaction.spenderKeys.privateKey as bigint,
+                        leftLeafId,
+                        pathElements,
+                        toBytes32(merkleProof[i].root.toString()),
+                        0
+                    );
+                }
+                    /*
                     const zAssetIdBuf = bigIntToBuffer32(zAssetIds[i]);
                     const amountBuf = bigIntToBuffer32(amounts[i]);
                     const merged = new Uint8Array([
                         ...zAssetIdBuf.slice(0, 20),
                         ...amountBuf.slice(0, 12).reverse(),
                     ]);
-                }
-                */
+                    */
+
             });
         });
 
@@ -189,20 +283,19 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 try {
                     recipientTransaction.decryptMessageV1();
                 } catch (e) {
-                    // can't decrypt - this message is not for us
+                    console.log("can't decrypt - this message is not for us");
                 }
                 // [7] - Extract random ( try ... )
                 try {
                     recipientTransaction.unpackRandomAndCheckProlog();
                 } catch (e) {
-                    // prolog is not equal to expected
+                    console.log("prolog is not equal to expected");
                 }
                 // [8] - We ready to use random in spend flow
                 if (
                     recipientTransaction.spenderRandom !=
                     senderTransaction.spenderRandom
                 ) {
-                    // checkFn();
                     console.log(
                         'Double convert:',
                         buffer32ToBigInt(

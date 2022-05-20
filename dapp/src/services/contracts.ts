@@ -19,11 +19,26 @@ export enum ContractName {
     STAKING_TOKEN,
 }
 
+export function getContractEnvVar(
+    contractName: ContractName,
+    chainId: number,
+): string {
+    return `${ContractName[contractName]}_CONTRACT_${chainId}`;
+}
+
+export function hasContract(
+    contractName: ContractName,
+    chainId: number,
+): boolean {
+    const varName = getContractEnvVar(contractName, chainId);
+    return !!env[varName];
+}
+
 export function getContractAddress(
     contractName: ContractName,
     chainId: number,
 ): string {
-    const varName = `${ContractName[contractName]}_CONTRACT_${chainId}`;
+    const varName = getContractEnvVar(contractName, chainId);
     const address = env[varName];
     if (!address) {
         throw `${varName} not defined`;
@@ -33,7 +48,7 @@ export function getContractAddress(
 }
 
 export function chainHasStakesReporter(chainId: number): boolean {
-    return !!env[`STAKES_REPORTER_CONTRACT_${chainId}`];
+    return hasContract(ContractName.STAKES_REPORTER, chainId);
 }
 
 export function chainHasAdvancedStaking(chainId?: number): boolean {

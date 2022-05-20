@@ -8,6 +8,7 @@ import {Route} from 'react-router';
 import {BrowserRouter as Router} from 'react-router-dom';
 
 import {useEagerConnect, useInactiveListener} from './hooks/web3';
+import Faucet from './pages/Faucet';
 import Staking from './pages/Staking';
 import WelcomePage from './pages/WelcomePage';
 import ZAssets from './pages/ZAssets';
@@ -109,6 +110,11 @@ function App() {
                         path={'/welcome'}
                         exact={true}
                         component={WelcomePage}
+                    />
+                    <Route
+                        path={'/faucet'}
+                        exact={true}
+                        component={() => Faucet(onConnect, currentNetwork)}
                     />
                 </Router>
             </div>

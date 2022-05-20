@@ -5,6 +5,8 @@ const REQUIRED_ENV_VARS: string[] = [
     'STAKE_REWARD_CONTROLLER_2_CONTRACT_1',
     'ADVANCED_STAKING_T_START',
     'ADVANCED_STAKING_T_END',
+    'FAUCET_CHAIN_IDS',
+    'FAUCET_CONTRACT_80001',
 ];
 
 const REQUIRED_CHAIN_ENV_VAR_PREFIXES: string[] = [
@@ -25,6 +27,7 @@ interface EnvVariables {
 
 export const env: EnvVariables = {
     CHAIN_IDS: process.env.CHAIN_IDS,
+    FAUCET_CHAIN_IDS: process.env.FAUCET_CHAIN_IDS,
     TOKEN_SYMBOL: process.env.TOKEN_SYMBOL,
 
     STAKE_REWARD_CONTROLLER_2_CONTRACT_1:
@@ -98,6 +101,10 @@ export const env: EnvVariables = {
 
     ADVANCED_STAKING_T_START: process.env.ADVANCED_STAKING_T_START,
     ADVANCED_STAKING_T_END: process.env.ADVANCED_STAKING_T_END,
+
+    FAUCET_CONTRACT_80001: process.env.FAUCET_CONTRACT_80001,
+    FAUCET_CONTRACT_31337: process.env.FAUCET_CONTRACT_31337,
+    FAUCET_CONTRACT_137: process.env.FAUCET_CONTRACT_137,
 };
 
 export const CHAIN_IDS = env.CHAIN_IDS
@@ -108,6 +115,10 @@ if (!CHAIN_IDS.length) {
     throw `Failed to parse CHAIN_IDS value of '${env.CHAIN_IDS}' as a list of
     supported networks; got: '${CHAIN_IDS}'`;
 }
+
+export const FAUCET_CHAIN_IDS = env.FAUCET_CHAIN_IDS
+    ? env.FAUCET_CHAIN_IDS.split(',').map(item => Number(item))
+    : [];
 
 export function chainVar(varName: string, chainId: number): string | undefined {
     return env[`${varName}_${chainId}`];

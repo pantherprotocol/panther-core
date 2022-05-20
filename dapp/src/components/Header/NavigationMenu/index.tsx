@@ -59,6 +59,13 @@ export default function NavigationMenu() {
                     </SafeLink>
                 </Typography>
             </Box>
+            <Box
+                className={`nav-item ${
+                    pathname === '/faucet' ? 'selected' : ''
+                }`}
+            >
+                <Link to={'/faucet'}>Faucet</Link>
+            </Box>
         </Grid>
     );
 }

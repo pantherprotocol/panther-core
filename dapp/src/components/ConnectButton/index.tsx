@@ -9,7 +9,6 @@ export const ConnectButton = (props: {text: string | null; onClick: any}) => {
         <div className="wallet-btn-holder">
             <Button
                 className="wallet-btn"
-                href="#"
                 onClick={() => {
                     props.onClick();
                 }}

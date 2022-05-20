@@ -28,14 +28,7 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
         override
         returns (uint160)
     {
-        // TEMP FIX
-        //return uint160(token);
-        return
-            uint160(
-                uint256(
-                    keccak256(abi.encode(uint256(uint160(token)), uint256(0)))
-                ) >> 96
-            );
+        return uint160(token);
     }
 
     function getZAssetId(address token, uint256 tokenId)

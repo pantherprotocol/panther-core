@@ -1,5 +1,6 @@
 export interface ZAsset {
     name: string;
+    network: string;
     value: string;
     usdValue: string;
     prpAmount: string;
@@ -8,6 +9,7 @@ export interface ZAsset {
 
 export interface Asset {
     name: string;
+    network: string;
     value: string;
     usdValue: string;
     hasMenu: boolean;

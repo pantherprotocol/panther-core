@@ -42,6 +42,7 @@ export const getAssets = createAsyncThunk(
         const assets: ZAsset[] = [
             {
                 name: 'zZKP',
+                network: 'Polygon zAsset',
                 value,
                 prpAmount,
                 usdValue,

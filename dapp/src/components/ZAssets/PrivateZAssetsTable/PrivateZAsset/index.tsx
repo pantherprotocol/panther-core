@@ -31,7 +31,7 @@ export default function PrivateZAsset(props: {item: ZAsset; key: number}) {
                     />
                 </TableCell>
                 <TableCell align="left">
-                    <Network networkName={'Polygon zAsset'} />
+                    <Network networkName={props.item.network} />
                 </TableCell>
                 <TableCell align="left">{prp} PRP</TableCell>
                 {/* <TableCell align="center" className="more-items-cell"> */}

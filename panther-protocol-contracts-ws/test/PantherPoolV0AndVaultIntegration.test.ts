@@ -181,8 +181,8 @@ describe('PantherPoolV0 and Vault Integration', () => {
                             createdAtNum,
                         );
                     commitmentsForTree[i] = BigInt(commitments[i].toString());
-                    console.log(' --- TEST VALUES ---');
-                    console.log(toBytes32(commitments[i].toString()));
+                    //console.log(' --- TEST VALUES ---');
+                    //console.log(toBytes32(commitments[i].toString()));
                 }
 
                 tree.insertBatch(commitmentsForTree as bigint[]);

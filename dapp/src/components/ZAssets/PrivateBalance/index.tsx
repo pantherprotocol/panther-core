@@ -7,7 +7,7 @@ import {
     prpUnclaimedRewardsSelector,
     zZkpTokenUSDMarketPriceSelector,
 } from '../../../redux/slices/unclaimedStakesRewards';
-import {formatCurrency} from '../../../utils/helpers';
+import {formatCurrency, formatUSD} from '../../../utils/helpers';
 
 import './styles.scss';
 
@@ -23,7 +23,7 @@ export default function PrivateBalance() {
                 </Typography>
                 <Typography className="amount">
                     {zZkpRewardsUSDValue
-                        ? `$ ${formatCurrency(zZkpRewardsUSDValue)}`
+                        ? formatUSD(zZkpRewardsUSDValue, {decimals: 2})
                         : '-'}
                 </Typography>
                 <Typography className="zkp-rewards">

@@ -5,7 +5,7 @@ import {BigNumber} from 'ethers';
 
 import pantherIcon from '../../../../images/panther-logo.svg';
 import {ZAsset} from '../../../../types/assets';
-import {formatCurrency} from '../../../../utils/helpers';
+import {formatCurrency, formatUSD} from '../../../../utils/helpers';
 import Balance from '../../Balance';
 import Network from '../../Network';
 
@@ -13,8 +13,9 @@ import './styles.scss';
 
 export default function PrivateZAsset(props: {item: ZAsset; key: number}) {
     const balance = formatCurrency(BigNumber.from(props.item.value));
-    const balanceValue =
-        '$' + formatCurrency(BigNumber.from(props.item.usdValue));
+    const balanceValue = formatUSD(BigNumber.from(props.item.usdValue), {
+        decimals: 2,
+    });
     const prp = formatCurrency(BigNumber.from(props.item.prpAmount));
 
     return (

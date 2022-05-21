@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import {BigNumber} from 'ethers';
 
 import infoIcon from '../../../images/info-icon.svg';
-import {formatCurrency} from '../../../utils/helpers';
+import {formatCurrency, formatUSD} from '../../../utils/helpers';
 import {SmallButton} from '../../SmallButton';
 
 import './styles.scss';
@@ -47,7 +47,7 @@ export default function AddressBalances(props: {
                 </Box>
                 {amountUSD && (
                     <Typography className="amount-usd">
-                        {`~$ ${formatCurrency(amountUSD)} USD`}
+                        {`~${formatUSD(amountUSD)}`}
                     </Typography>
                 )}
                 {props.redeem && (

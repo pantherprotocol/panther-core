@@ -81,6 +81,13 @@ export function formatCurrency(
     //     .replace(/\.0$/, '');
 }
 
+export function formatUSD(
+    value: BigNumber | null,
+    options?: {decimals?: number},
+): string {
+    return `$${formatCurrency(value, options)} USD`;
+}
+
 export function formatEther(bignum: BigNumber | null): string | null {
     return bignum && utils.formatEther(bignum);
 }

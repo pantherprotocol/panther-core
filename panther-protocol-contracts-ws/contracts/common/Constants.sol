@@ -17,9 +17,11 @@ uint256 constant CIPERTEXT0_WORDS = 4;
 uint256 constant CIPHERTEXT1_WORDS = 3;
 
 // For overflow protection and circuits optimization
+// (must be less than the FIELD_SIZE)
 uint256 constant MAX_EXT_AMOUNT = 2**96;
-
+uint256 constant MAX_IN_CIRCUIT_AMOUNT = 2**120;
 uint256 constant MAX_TIMESTAMP = 2**32;
+uint256 constant MAX_ZASSET_ID = 2**160;
 
 // Token types
 // (not `enum` to let protocol extensions use bits, if needed)

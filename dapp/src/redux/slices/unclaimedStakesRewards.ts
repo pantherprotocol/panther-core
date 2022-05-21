@@ -14,7 +14,7 @@ import {StakeRewards} from './types/stakingRewards';
 
 interface StakesRewardsAsyncState {
     value: StakeRewards | null;
-    status: string;
+    status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: StakesRewardsAsyncState = {
@@ -97,21 +97,27 @@ export const unclaimedRewardsSlice = createSlice({
     },
 });
 
-const rewardsSelector = (state: RootState, tid: TokenID) => {
+const rewardsSelector = (state: RootState, tid: TokenID): BigNumber | null => {
     return state.unclaimedStakesRewards.value?.[tid]
         ? BigNumber.from(state.unclaimedStakesRewards.value[tid])
         : null;
 };
 
-export const zZkpUnclaimedRewardsSelector = (state: RootState) => {
+export const zZkpUnclaimedRewardsSelector = (
+    state: RootState,
+): BigNumber | null => {
     return rewardsSelector(state, TokenID.zZKP);
 };
 
-export const prpUnclaimedRewardsSelector = (state: RootState) => {
+export const prpUnclaimedRewardsSelector = (
+    state: RootState,
+): BigNumber | null => {
     return rewardsSelector(state, TokenID.PRP);
 };
 
-export const zkpUnclaimedRewardsSelector = (state: RootState) => {
+export const zkpUnclaimedRewardsSelector = (
+    state: RootState,
+): BigNumber | null => {
     return rewardsSelector(state, TokenID.ZKP);
 };
 
@@ -144,6 +150,12 @@ const tokenUSDMarketPriceSelector = (
         );
     }
     return rewardsUSDValue;
+};
+
+export const statusUnclaimedRewardsSelector = (
+    state: RootState,
+): 'idle' | 'loading' | 'failed' => {
+    return state.unclaimedStakesRewards.status;
 };
 
 export const {resetUnclaimedRewards} = unclaimedRewardsSlice.actions;

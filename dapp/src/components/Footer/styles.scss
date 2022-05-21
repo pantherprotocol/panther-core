@@ -2,8 +2,8 @@
     width: 100% !important;
     display: flex !important;
     flex: 1;
-    position: relative;
-    top: 50px;
+    position: absolute;
+    bottom: 0;
 
     .footer-links {
         display: flex;

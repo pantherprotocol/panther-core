@@ -11,7 +11,7 @@ import {
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
 } from '../../../redux/slices/zkpTokenBalance';
-import {formatCurrency} from '../../../utils/helpers';
+import {formatCurrency, formatUSD} from '../../../utils/helpers';
 
 import './styles.scss';
 
@@ -54,7 +54,7 @@ export default function UnstakedBalance() {
                 <Box className="amount-box">
                     <Typography className="token-market-price">
                         {tokenMarketPrice
-                            ? `~$ ${formatCurrency(tokenMarketPrice)} USD`
+                            ? `~${formatUSD(tokenMarketPrice)}`
                             : '-'}
                     </Typography>
                 </Box>

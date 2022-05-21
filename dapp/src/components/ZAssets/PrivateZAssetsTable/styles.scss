@@ -1,0 +1,35 @@
+@import '../../../variables';
+
+.private-zasset-container {
+    margin-top: 15px;
+
+    .MuiTableCell-root.MuiTableCell-head {
+        font-size: 16px !important;
+        vertical-align: middle;
+    }
+
+    .MuiTableCell-root.MuiTableCell-body {
+        font-size: 20px !important;
+        font-weight: bold;
+        color: $color-beige;
+        vertical-align: middle;
+    }
+
+    table {
+        min-width: 400px;
+    }
+
+    .icon {
+        padding-left: 20px;
+        position: relative;
+        top: 3px;
+
+        @media (max-width: 768px) {
+            padding-left: 10px;
+        }
+    }
+
+    .column-title {
+        min-width: 150px;
+    }
+}

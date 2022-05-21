@@ -1,0 +1,36 @@
+@import '../../variables';
+
+.wallet-modal-btn-holder {
+    max-width: 515px;
+    width: 100%;
+
+    .wallet-modal-btn {
+        max-width: 515px;
+        height: 57px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: $blue-linear;
+        border-radius: 90px;
+        color: $white;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 18px;
+
+        a {
+            color: $white;
+            text-decoration: none;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            height: 57px;
+            align-items: center;
+        }
+
+        @media (max-width: 620px) {
+            font-size: 16px;
+            height: 39px;
+        }
+    }
+}

@@ -1,0 +1,46 @@
+@import '../../variables';
+
+.sidebar-more-items {
+    display: flex;
+    justify-content: space-between;
+    width: 56px;
+    height: 50px;
+    padding: 8px;
+    margin: 0 15px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: $dropdown-background;
+
+    &:hover,
+    &:active,
+    &:focus {
+        border: 1px solid $dropdown-border-color;
+    }
+
+    @media (max-width: 768px) {
+        width: 36px;
+        height: 30px;
+    }
+
+    label {
+        top: 5px !important;
+        left: 7px;
+        transition: none !important;
+        transform: none !important;
+
+        @media (max-width: 768px) {
+            top: -4px !important;
+            left: -1px !important;
+
+            > svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        &:focus {
+            top: 10px !important;
+            left: 10px;
+        }
+    }
+}

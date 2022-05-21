@@ -1,0 +1,87 @@
+@import '../../../variables';
+
+$balance-container-background-color: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(0, 0, 0, 0) 100%
+);
+$balance-container-border-color: rgba(174, 192, 255, 0.6);
+$deposit-button-background-color: #205bea;
+
+.private-zAssets-balance-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: $balance-container-background-color;
+    mix-blend-mode: normal;
+    border: 1px solid $balance-container-border-color;
+    box-sizing: border-box;
+    backdrop-filter: blur(600px);
+    width: 100%;
+    padding: 20px;
+    border-radius: 16px;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
+
+    .private-zAssets-balance {
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        flex-direction: column;
+
+        @media (max-width: 768px) {
+            align-items: center;
+        }
+
+        .title {
+            font-style: normal;
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 42px;
+            display: flex;
+            align-items: center;
+            color: $white;
+            opacity: 0.6;
+        }
+
+        .amount {
+            padding: 10px 0;
+            font-style: normal;
+            font-weight: 700;
+            font-size: 39px;
+            line-height: 19px;
+            display: flex;
+            align-items: center;
+            color: $white;
+            place-items: baseline;
+
+            span {
+                font-size: 29px;
+            }
+        }
+
+        .zkp-rewards {
+            font-style: normal;
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 42px;
+            display: flex;
+            align-items: center;
+            color: $white;
+            opacity: 0.8;
+        }
+    }
+
+    .deposit-button {
+        width: 200px;
+        height: 65px;
+        background: $deposit-button-background-color;
+        border-radius: 16px;
+        text-transform: capitalize;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 30px;
+    }
+}

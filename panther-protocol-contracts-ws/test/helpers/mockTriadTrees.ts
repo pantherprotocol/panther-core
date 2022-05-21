@@ -29,7 +29,6 @@ async function deployMockTrees(): Promise<MockTriadIncrementalMerkleTrees> {
             libraries: {
                 PoseidonT3: poseidonT3.address,
                 PoseidonT4: poseidonT4.address,
-                //BabyJubJub: babyJubJub.address,
             },
         },
     );

@@ -73,6 +73,7 @@ const generateRandomness = (): bigint => {
     }
     return randomness;
 };
+
 // eslint-disable-next-line no-unused-vars
 const bigIntToBuffer = (i: BigInt): Buffer => {
     let hexStr = i.toString(16);

@@ -87,9 +87,9 @@ contract PantherPoolV0 is
         uint256[OUT_UTXOs] calldata extAmounts,
         G1Point[OUT_UTXOs] calldata pubSpendingKeys,
         uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
-        uint256 createdAt
+        uint32 createdAt
     ) external nonReentrant {
-        uint256 timestamp = timeNow();
+        uint32 timestamp = safe32TimeNow();
         if (createdAt != 0) {
             require(createdAt <= timestamp, ERR_TOO_EARLY_CREATED_AT);
             timestamp = createdAt;
@@ -125,7 +125,7 @@ contract PantherPoolV0 is
                 pubSpendingKeys[utxoIndex].x,
                 pubSpendingKeys[utxoIndex].y,
                 uint256(scaledAmount),
-                uint256(zAssetId),
+                zAssetId,
                 timestamp
             );
             // Copy ciphertext into the first words of the message to the receiver
@@ -151,7 +151,7 @@ contract PantherPoolV0 is
         address token,
         uint256 tokenId,
         uint256 amount,
-        uint256 creationTime,
+        uint32 creationTime,
         uint256 privSpendingKey,
         uint256 leafId,
         bytes32[TREE_DEPTH + 1] calldata pathElements,
@@ -202,8 +202,8 @@ contract PantherPoolV0 is
 
         verifyMerkleProof(
             merkleRoot,
-            getTriadIndex(leafId),
-            getTriadNodeIndex(leafId),
+            _getTriadIndex(leafId),
+            _getTriadNodeIndex(leafId),
             commitment,
             pathElements
         );

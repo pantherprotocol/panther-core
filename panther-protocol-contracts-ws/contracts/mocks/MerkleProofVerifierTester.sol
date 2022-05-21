@@ -6,7 +6,7 @@ import "../triadTree/TriadIncrementalMerkleTrees.sol";
 import "../pantherPool/v0/MerkleProofVerifier.sol";
 import "../pantherPool/v0/PubKeyGenerator.sol";
 
-contract MockMerkleProofVerifier is
+contract MerkleProofVerifierTester is
     MerkleProofVerifier,
     TriadIncrementalMerkleTrees,
     PubKeyGenerator
@@ -22,8 +22,8 @@ contract MockMerkleProofVerifier is
         _verifiedProof = false;
         verifyMerkleProof(
             merkleRoot,
-            getTriadIndex(leafId),
-            getTriadNodeIndex(leafId),
+            _getTriadIndex(leafId),
+            _getTriadNodeIndex(leafId),
             commitment,
             pathElementss
         );

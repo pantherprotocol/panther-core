@@ -4,7 +4,7 @@ import { expect } from 'chai';
 // @ts-ignore
 import { toBytes32, PathElementsType, Triad, Pair } from '../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MockPantherPoolV0 } from '../types';
+import { PantherPoolV0Tester } from '../types';
 import { poseidon, babyjub } from 'circomlibjs';
 import { TriadMerkleTree } from '../lib/tree';
 import assert from 'assert';
@@ -26,10 +26,10 @@ import {
 } from '../lib/keychain';
 
 ('../lib/keychain');
-import { deployMockPantherPoolV0 } from './helpers/mockPantherPoolV0';
+import { deployMockPantherPoolV0 } from './helpers/pantherPoolV0Tester';
 
 describe('PantherPoolV0', () => {
-    let poolV0: MockPantherPoolV0;
+    let poolV0: PantherPoolV0Tester;
     let snapshot: number;
 
     before(async () => {
@@ -289,18 +289,9 @@ describe('PantherPoolV0', () => {
                 'extracted from chain random must be equal',
             ).equal(r);
             // [4] - TODO: call generateDeposits - with R & cipherTextMessageV1 for each OUT_UTXOs = 3
-            const Token = BigInt(111);
-            const tokens = [
-                toBytes32(Token.toString()),
-                toBytes32(Token.toString()),
-                toBytes32(Token.toString()),
-            ] as Triad;
-            const Amounts = [BigInt(7), BigInt(8), BigInt(9)];
-            const amounts = [
-                toBytes32(Amounts[0].toString()),
-                toBytes32(Amounts[1].toString()),
-                toBytes32(Amounts[2].toString()),
-            ] as Triad;
+            const Token = '0x000000000000000000000000000000000000006f'; /// = 111
+            const tokens = [Token, Token, Token];
+            const amounts = [BigInt(7), BigInt(8), BigInt(9)];
 
             const spendingPublicKey = [
                 toBytes32(K[0].toString()),
@@ -325,11 +316,10 @@ describe('PantherPoolV0', () => {
             ] as Triad;
 
             const createdAtNum = BigInt('1652375774');
-            const createdAt = toBytes32(createdAtNum.toString());
             let zAsset_from_chain = BigNumber.from(0);
 
             it('GenerateDeposits and try to Exit', async () => {
-                // This is real token number that will be used inside circom
+                // This is ID of token that will be used inside circom
                 const zAssetIdSol = await poolV0.testGetZAssetId(
                     Token,
                     BigInt(0),
@@ -344,7 +334,7 @@ describe('PantherPoolV0', () => {
                 // TODO: cast zAssetIdTs to uint160
                 // const z = toBigNum(zAssetIdTs);
                 // const z1 = Number(z) >> 96;
-                // expect(zAssetIdSol, "Solidity token is equal to typescript token").equal( z1 );
+                // expect(zAssetIdSol, "zAssetId in solidity equals to one in typescript").equal( z1 );
                 // TODO: uze zAssetIdTs to generate commitment inside TS
 
                 let CommitmentsFromSolidity = [
@@ -363,14 +353,14 @@ describe('PantherPoolV0', () => {
                 const commitment1 = await poolV0.testGenerateCommitments(
                     K[0],
                     K[1],
-                    Amounts[0],
+                    amounts[0],
                     zAsset_from_chain,
                     createdAtNum,
                 );
                 const commitment1_internal = poseidon([
                     K[0],
                     K[1],
-                    Amounts[0],
+                    amounts[0],
                     zAsset_from_chain,
                     createdAtNum,
                 ]);
@@ -384,14 +374,14 @@ describe('PantherPoolV0', () => {
                 const commitment2 = await poolV0.testGenerateCommitments(
                     K[0],
                     K[1],
-                    Amounts[1],
+                    amounts[1],
                     zAsset_from_chain,
                     createdAtNum,
                 );
                 const commitment2_internal = poseidon([
                     K[0],
                     K[1],
-                    Amounts[1],
+                    amounts[1],
                     zAsset_from_chain,
                     createdAtNum,
                 ]);
@@ -405,14 +395,14 @@ describe('PantherPoolV0', () => {
                 const commitment3 = await poolV0.testGenerateCommitments(
                     K[0],
                     K[1],
-                    Amounts[2],
+                    amounts[2],
                     zAsset_from_chain,
                     createdAtNum,
                 );
                 const commitment3_internal = poseidon([
                     K[0],
                     K[1],
-                    Amounts[2],
+                    amounts[2],
                     zAsset_from_chain,
                     createdAtNum,
                 ]);
@@ -427,7 +417,7 @@ describe('PantherPoolV0', () => {
                 const zAssetIdBuf1 = bigIntToBuffer32(
                     BigInt(zAssetIdSol.toString()),
                 );
-                const amountBuf1 = bigIntToBuffer32(Amounts[0]);
+                const amountBuf1 = bigIntToBuffer32(amounts[0]);
                 const merged1 = new Uint8Array([
                     ...zAssetIdBuf1.slice(0, 20),
                     ...amountBuf1.slice(0, 12).reverse(),
@@ -486,7 +476,7 @@ describe('PantherPoolV0', () => {
                 const zAssetIdBuf2 = bigIntToBuffer32(
                     BigInt(zAssetIdSol.toString()),
                 );
-                const amountBuf2 = bigIntToBuffer32(Amounts[1]);
+                const amountBuf2 = bigIntToBuffer32(amounts[1]);
                 const merged2 = new Uint8Array([
                     ...zAssetIdBuf2.slice(0, 20),
                     ...amountBuf2.slice(0, 12).reverse(),
@@ -545,7 +535,7 @@ describe('PantherPoolV0', () => {
                 const zAssetIdBuf3 = bigIntToBuffer32(
                     BigInt(zAssetIdSol.toString()),
                 );
-                const amountBuf3 = bigIntToBuffer32(Amounts[2]);
+                const amountBuf3 = bigIntToBuffer32(amounts[2]);
                 const merged3 = new Uint8Array([
                     ...zAssetIdBuf3.slice(0, 20),
                     ...amountBuf3.slice(0, 12).reverse(),
@@ -603,11 +593,11 @@ describe('PantherPoolV0', () => {
                 // TODO: Add call to GenerateDepositsExtended with check of events parameters, see example ---
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
                 const tx = await poolV0.testGenerateDepositsExtended(
-                    tokens,
-                    amounts,
+                    [tokens[0], tokens[1], tokens[2]],
+                    [amounts[0], amounts[1], amounts[2]],
                     spendingPublicKey,
                     secrets,
-                    createdAt,
+                    createdAtNum,
                 );
                 const rcp = await tx.wait(); // eslint-disable-line no-unused-vars
                 //console.log("rcp.logs[0]:" , rcp.events[0]);
@@ -688,7 +678,7 @@ describe('PantherPoolV0', () => {
                 const amountsOut = [BigInt('7'), BigInt('8'), BigInt('9')];
                 // NOTE: use here zAssetId and not Token since this is what actually inserted into poseidon
                 // same must be done inside circom
-                const token = zAssetIdSol;
+                const zAssetId = zAssetIdSol;
                 const createTime = createdAtNum;
                 // TODO: re-generate K by using data sended on-chain
                 const pubKey: BigInt[] = [K[0], K[1]];
@@ -697,21 +687,21 @@ describe('PantherPoolV0', () => {
                         pubKey[0],
                         pubKey[1],
                         amountsOut[0],
-                        token,
+                        zAssetId,
                         createTime,
                     ]),
                     poseidon([
                         pubKey[0],
                         pubKey[1],
                         amountsOut[1],
-                        token,
+                        zAssetId,
                         createTime,
                     ]),
                     poseidon([
                         pubKey[0],
                         pubKey[1],
                         amountsOut[2],
-                        token,
+                        zAssetId,
                         createTime,
                     ]),
                 ];

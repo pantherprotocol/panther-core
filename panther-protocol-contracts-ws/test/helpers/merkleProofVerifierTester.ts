@@ -4,11 +4,11 @@ import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
 } from '../../lib/poseidonBuilder';
-import { MockMerkleProofVerifier } from '../../types';
+import { MerkleProofVerifierTester } from '../../types';
 
-export { deployMockMerkleProofVerifier };
+export { deployMerkleProofVerifierTester };
 
-async function deployMockMerkleProofVerifier(): Promise<MockMerkleProofVerifier> {
+async function deployMerkleProofVerifierTester(): Promise<MerkleProofVerifierTester> {
     const PoseidonT3 = await getPoseidonT3Contract();
     const poseidonT3 = await PoseidonT3.deploy();
     await poseidonT3.deployed();
@@ -22,8 +22,8 @@ async function deployMockMerkleProofVerifier(): Promise<MockMerkleProofVerifier>
     await babyJubJub.deployed();
     // Link Poseidon contracts
     // @ts-ignore
-    const MerkleProofVerifier = await ethers.getContractFactory(
-        'MockMerkleProofVerifier',
+    const MerkleProofVerifierTester = await ethers.getContractFactory(
+        'MerkleProofVerifierTester',
         {
             libraries: {
                 PoseidonT3: poseidonT3.address,
@@ -34,6 +34,6 @@ async function deployMockMerkleProofVerifier(): Promise<MockMerkleProofVerifier>
     );
 
     return (
-        await MerkleProofVerifier.deploy()
-    ).deployed() as Promise<MockMerkleProofVerifier>;
+        await MerkleProofVerifierTester.deploy()
+    ).deployed() as Promise<MerkleProofVerifierTester>;
 }

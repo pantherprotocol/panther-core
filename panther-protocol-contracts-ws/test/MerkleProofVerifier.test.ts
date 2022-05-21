@@ -4,7 +4,7 @@ import { expect } from 'chai';
 // @ts-ignore
 import { toBytes32, PathElementsType, Triad } from '../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MockMerkleProofVerifier } from '../types';
+import { MerkleProofVerifierTester } from '../types';
 import { poseidon, babyjub } from 'circomlibjs';
 import { TriadMerkleTree } from '../lib/tree';
 import assert from 'assert';
@@ -13,11 +13,11 @@ import { generateRandomBabyJubValue, multiplyScalars } from '../lib/keychain';
 import crypto from 'crypto';
 import { utils } from 'ethers';
 import { bigintToBytes32 } from '../lib/conversions';
-import { deployMockMerkleProofVerifier } from './helpers/mockMerkleProofVerifier';
+import { deployMerkleProofVerifierTester } from './helpers/merkleProofVerifierTester';
 
 function bnToBuf(bn) {
     // The handy-dandy `toString(base)` works!!
-    var hex = BigInt(bn).toString(16);
+    let hex = BigInt(bn).toString(16);
 
     // But it still follows the old behavior of giving
     // invalid hex strings (due to missing padding),
@@ -27,8 +27,8 @@ function bnToBuf(bn) {
     }
 
     // The byteLength will be half of the hex string length
-    var len = hex.length / 2;
-    var u8 = new Uint8Array(len);
+    const len = hex.length / 2;
+    const u8 = new Uint8Array(len);
 
     // And then we can iterate each element by one
     // and each hex segment by two
@@ -60,11 +60,11 @@ function bufToBn(buf) {
 }
 
 describe('MerkleProofVerifier', () => {
-    let mockMerkleProofVerifier: MockMerkleProofVerifier;
+    let merkleProofVerifierTester: MerkleProofVerifierTester;
     let snapshot: number;
 
     before(async () => {
-        mockMerkleProofVerifier = await deployMockMerkleProofVerifier();
+        merkleProofVerifierTester = await deployMerkleProofVerifierTester();
     });
 
     describe('internal `testVerifyMerkleProof` method - by using circom zkp-input test values', function () {
@@ -270,38 +270,38 @@ describe('MerkleProofVerifier', () => {
             const leafId_0 = BigInt('0');
             const commitment_0 = toBytes32(commitment0);
             it('should be proved - leaf index 0', async () => {
-                await mockMerkleProofVerifier.testMerkleProof(
+                await merkleProofVerifierTester.testMerkleProof(
                     leafId_0,
                     merkleRoot,
                     commitment_0,
                     pathElements0,
                 );
-                let check = await mockMerkleProofVerifier.isProofVerified();
+                let check = await merkleProofVerifierTester.isProofVerified();
                 expect(check == true, 'NOT PROVED');
             });
 
             const leafId_1 = BigInt('1');
             const commitment_1 = toBytes32(commitment1);
             it('should be proved - leaf index 1', async () => {
-                await mockMerkleProofVerifier.testMerkleProof(
+                await merkleProofVerifierTester.testMerkleProof(
                     leafId_1,
                     merkleRoot,
                     commitment_1,
                     pathElements1,
                 );
-                let check = await mockMerkleProofVerifier.isProofVerified();
+                let check = await merkleProofVerifierTester.isProofVerified();
                 expect(check == true, 'NOT PROVED');
             });
             const leafId_2 = BigInt('2');
             const commitment_2 = toBytes32(commitment2);
             it('should be proved - leaf index 2', async () => {
-                await mockMerkleProofVerifier.testMerkleProof(
+                await merkleProofVerifierTester.testMerkleProof(
                     leafId_2,
                     merkleRoot,
                     commitment_2,
                     pathElements2,
                 );
-                let check = await mockMerkleProofVerifier.isProofVerified();
+                let check = await merkleProofVerifierTester.isProofVerified();
                 expect(check == true, 'NOT PROVED');
             });
         });
@@ -603,13 +603,13 @@ describe('MerkleProofVerifier', () => {
                 const commitmentsLeavesTriadNumber = [c1, c2, c3] as Triad;
                 // TODO: increase this to few millions and move to long test
                 for (let trys = 0; trys < 16; ++trys) {
-                    await mockMerkleProofVerifier.internalInsertBatch(
+                    await merkleProofVerifierTester.internalInsertBatch(
                         //Zkp(
                         commitmentsLeavesTriadNumber,
                     );
                     // When insertBatchZkp is used ( un-comment )
                     // let elements = await trees.PathElements();
-                    let leafID = await mockMerkleProofVerifier.LeafId();
+                    let leafID = await merkleProofVerifierTester.LeafId();
                     // let merkleRoot = elements[14];
                     it('should be proved', async () => {
                         const pathElements = [
@@ -716,7 +716,7 @@ describe('MerkleProofVerifier', () => {
                             <BytesLike>elements[13],
                         ];
                         */
-                        await mockMerkleProofVerifier.testMerkleProof(
+                        await merkleProofVerifierTester.testMerkleProof(
                             leafID,
                             //merkleRoot,
                             toBytes32(merkleProof[0].root.toString()),
@@ -724,7 +724,7 @@ describe('MerkleProofVerifier', () => {
                             pathElements,
                         );
                         let check =
-                            await mockMerkleProofVerifier.isProofVerified();
+                            await merkleProofVerifierTester.isProofVerified();
                         expect(check, 'NOT PROVED').equal(true);
                     });
                 }
@@ -874,7 +874,7 @@ describe('MerkleProofVerifier', () => {
                     uint256[OUT_UTXOs] calldata extAmounts,
                     G1Point[OUT_UTXOs] calldata pubSpendingKeys, <------------- its `R` [ UTXOs ]
                     uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets, <-- its  `cipherTextMessageV1` [ UTXOs ]
-                    uint256 createdAt) */
+                    uint32 createdAt) */
 
                 // [5] - TODO: get event secretMsg = cipherTextMessageV1 = 3x256bit, token = 160bit, amount = 32bit = 4x256bit
                 // [6] - TODO: unpack them
@@ -910,7 +910,7 @@ describe('MerkleProofVerifier', () => {
                     it('SpenderDerivedPubKeyTypeScript == SpenderDerivedPubKeySolidity', async () => {
                         // [1] - Solidity code
                         const Ssol =
-                            await mockMerkleProofVerifier.generatePublicSpendingKey(
+                            await merkleProofVerifierTester.generatePublicSpendingKey(
                                 s as bigint,
                             );
                         // [2] - Check

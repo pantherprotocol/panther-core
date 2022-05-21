@@ -19,7 +19,6 @@ abstract contract PubKeyGenerator {
             x: BabyJubJub.BASE8_X,
             y: BabyJubJub.BASE8_Y
         });
-        // pubKey = BabyJubJub.mulPointEscalar(G1Point(BabyJubJub.BASE8_X, BabyJubJub.BASE8_Y), privKey);
         pubKey = BabyJubJub.mulPointEscalar(base8, privKey);
     }
 }

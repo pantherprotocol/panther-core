@@ -8,18 +8,18 @@ import "../common/Types.sol";
 import "hardhat/console.sol";
 
 contract MockVault is IVault {
-    // solhint-disable-next-line no-empty-blocks
+    event DebugData(LockData data);
+
     function lockAsset(LockData calldata data) external override {
-        // DEBUG INFO
+        emit DebugData(data);
     }
 
-    // solhint-disable-next-line no-empty-blocks
     function unlockAsset(LockData memory data) external override {
-        // DEBUG INFO
+        emit DebugData(data);
     }
 }
 
-contract MockPantherPoolV0 is PantherPoolV0 {
+contract PantherPoolV0Tester is PantherPoolV0 {
     MockVault vault;
 
     address _owner;
@@ -40,22 +40,22 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         addAsset(z1);
     }
 
-    function testGetZAssetId(uint256 token, uint256 tokenId)
+    function testGetZAssetId(address token, uint256 tokenId)
         external
         pure
         returns (uint256)
     {
-        return getZAssetId(address(uint160(token)), tokenId);
+        return getZAssetId(token, tokenId);
     }
 
-    function testIsKnownZAsset(uint256 token, uint256 tokenId)
+    function testIsKnownZAsset(address token, uint256 tokenId)
         external
         view
         returns (bool)
     {
         ZAsset memory asset;
         uint160 zAssetId;
-        (asset, zAssetId) = getZAssetAndId(address(uint160(token)), tokenId);
+        (asset, zAssetId) = getZAssetAndId(token, tokenId);
         if (asset.status == 1 || asset.status == 2) {
             return true;
         }
@@ -66,8 +66,8 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         uint256 pubSpendingKeyX,
         uint256 pubSpendingKeyY,
         uint256 amount,
-        uint256 zAssetId,
-        uint256 creationTime
+        uint160 zAssetId,
+        uint32 creationTime
     ) external pure returns (uint256) {
         return
             uint256(
@@ -97,10 +97,10 @@ contract MockPantherPoolV0 is PantherPoolV0 {
     }
 
     function testExit(
-        uint256 token,
+        address token,
         uint256 tokenId,
         uint256 amount,
-        uint256 creationTime,
+        uint32 creationTime,
         uint256 privSpendingKey,
         uint256 leafId,
         bytes32[TREE_DEPTH + 1] calldata pathElements,
@@ -108,7 +108,7 @@ contract MockPantherPoolV0 is PantherPoolV0 {
         uint256 cacheIndexHint
     ) external {
         this.exit(
-            address(uint160(token)),
+            token,
             tokenId,
             amount,
             creationTime,
@@ -121,18 +121,18 @@ contract MockPantherPoolV0 is PantherPoolV0 {
     }
 
     function testGenerateDepositsExtended(
-        uint256[OUT_UTXOs] calldata tokens,
+        address[OUT_UTXOs] calldata tokens,
         uint256[OUT_UTXOs] calldata extAmounts,
         uint256[2] calldata pubKeys,
         uint256[CIPHERTEXT1_WORDS] calldata secrets,
-        uint256 createdAt
+        uint32 createdAt
     ) external {
         require(_owner == msg.sender, "OWNER IS NOT MESSAGE_SENDER");
 
         address[OUT_UTXOs] memory tokenss;
-        tokenss[0] = address(uint160(tokens[0]));
-        tokenss[1] = address(uint160(tokens[1]));
-        tokenss[2] = address(uint160(tokens[2]));
+        tokenss[0] = tokens[0];
+        tokenss[1] = tokens[1];
+        tokenss[2] = tokens[2];
 
         uint256[OUT_UTXOs] memory tokenIds;
         tokenIds[0] = 0;

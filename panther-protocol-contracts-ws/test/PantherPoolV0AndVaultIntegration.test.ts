@@ -15,15 +15,15 @@ import {
 
 import { deriveKeypairFromSeed } from '../lib/keychain';
 
-import { MockPantherPoolV0AndVaultIntegration } from '../types';
-import { deployMockPantherPoolV0AndVaultIntegration } from './helpers/mockPantherPoolV0AndVaultIntegration';
+import { PantherPoolV0AndVaultTester } from '../types';
+import { deployPantherPoolV0AndVaultTester } from './helpers/pantherPoolV0AndVaultTester';
 import { PathElementsType, toBytes32, Triad } from '../lib/utilities';
 import { BigNumber } from 'ethers';
 import type { BytesLike } from '@ethersproject/bytes';
 
 describe('PantherPoolV0 and Vault Integration', () => {
     // eslint-disable-next-line no-unused-vars
-    let mockPantherPoolV0AndVaultIntegration: MockPantherPoolV0AndVaultIntegration;
+    let pantherPoolV0AndVaultTester: PantherPoolV0AndVaultTester;
     let snapshot: number;
     const UTXOs = 3;
     let tokensAddresses: BigInt[] = [BigInt(0), BigInt(0), BigInt(0)];
@@ -31,17 +31,15 @@ describe('PantherPoolV0 and Vault Integration', () => {
     const amounts = [BigInt(1000), BigInt(1000), BigInt(1000)];
 
     before(async () => {
-        mockPantherPoolV0AndVaultIntegration =
-            await deployMockPantherPoolV0AndVaultIntegration();
+        pantherPoolV0AndVaultTester = await deployPantherPoolV0AndVaultTester();
         for (let i = 0; i < UTXOs; ++i) {
             let tokenAddress =
-                await mockPantherPoolV0AndVaultIntegration.getTokenAddress(i);
+                await pantherPoolV0AndVaultTester.getTokenAddress(i);
             tokensAddresses[i] = BigInt(tokenAddress);
-            let zAssetId =
-                await mockPantherPoolV0AndVaultIntegration.testGetZAssetId(
-                    BigNumber.from(tokensAddresses[i]),
-                    0,
-                );
+            let zAssetId = await pantherPoolV0AndVaultTester.testGetZAssetId(
+                BigNumber.from(tokensAddresses[i]),
+                0,
+            );
             zAssetIds[i] = BigInt(zAssetId.toString());
         }
     });
@@ -155,7 +153,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                     ),
                 ] as Triad;
                 const createdAtNum = BigInt('1652375774');
-                await mockPantherPoolV0AndVaultIntegration.generateDepositsExtended(
+                await pantherPoolV0AndVaultTester.generateDepositsExtended(
                     [amounts[0], amounts[1], amounts[2]],
                     [
                         BigNumber.from(senderTransaction.spenderPubKey[0]),
@@ -173,7 +171,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 commitmentsForTree.fill(BigInt(0), UTXOs);
                 for (let i = 0; i < UTXOs; ++i) {
                     commitments[i] =
-                        await mockPantherPoolV0AndVaultIntegration.generateCommitments(
+                        await pantherPoolV0AndVaultTester.generateCommitments(
                             BigNumber.from(senderTransaction.spenderPubKey[0]),
                             BigNumber.from(senderTransaction.spenderPubKey[1]),
                             amounts[i],
@@ -193,10 +191,8 @@ describe('PantherPoolV0 and Vault Integration', () => {
 
                 for (let i = 0; i < UTXOs; ++i) {
                     const leftLeafId = i;
-                    await mockPantherPoolV0AndVaultIntegration.testExit(
-                        await mockPantherPoolV0AndVaultIntegration.getTokenAddress(
-                            i,
-                        ),
+                    await pantherPoolV0AndVaultTester.testExit(
+                        await pantherPoolV0AndVaultTester.getTokenAddress(i),
                         0,
                         amounts[i],
                         createdAtNum,

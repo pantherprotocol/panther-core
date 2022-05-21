@@ -41,8 +41,8 @@ abstract contract MerkleProofVerifier {
         bytes32 leaf,
         bytes32[TREE_DEPTH + 1] calldata pathElements
     ) internal pure {
-        // [0] - Require - assume it is computed by TriadIncrementalMerkleTrees class
-        //       by using modulo operation, so no need to check lower range
+        // [0] - Assumed it is computed by the TriadIncrementalMerkleTrees
+        //       using modulo operation, so no need to check lower range
         //require(iTRIAD_INDEX_LEFT <= triadIndex, ERR_TRIAD_INDEX_MIN_VALUE);
         require(triadIndex < iTRIAD_INDEX_FORBIDDEN, ERR_TRIAD_INDEX_MAX_VALUE);
 

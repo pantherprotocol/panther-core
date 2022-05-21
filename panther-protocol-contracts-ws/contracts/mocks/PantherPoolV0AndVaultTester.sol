@@ -40,7 +40,7 @@ contract MyERC20 is ERC20 {
     */
 }
 
-contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
+contract PantherPoolV0AndVaultTester is PantherPoolV0 {
     Vault vault;
 
     address _owner;
@@ -96,8 +96,8 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
         uint256 pubSpendingKeyX,
         uint256 pubSpendingKeyY,
         uint256 amount,
-        uint256 zAssetId,
-        uint256 creationTime
+        uint160 zAssetId,
+        uint32 creationTime
     ) external pure returns (uint256) {
         return
             uint256(
@@ -126,7 +126,7 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
         uint256 token,
         uint256 tokenId,
         uint256 amount,
-        uint256 creationTime,
+        uint32 creationTime,
         uint256 privSpendingKey,
         uint256 leafId,
         bytes32[TREE_DEPTH + 1] calldata pathElements,
@@ -154,7 +154,7 @@ contract MockPantherPoolV0AndVaultIntegration is PantherPoolV0 {
         uint256[OUT_UTXOs] calldata extAmounts,
         uint256[2] calldata pubKeys,
         uint256[CIPHERTEXT1_WORDS] calldata secrets,
-        uint256 createdAt
+        uint32 createdAt
     ) external {
         require(_owner == msg.sender, "OWNER IS NOT MESSAGE_SENDER");
 

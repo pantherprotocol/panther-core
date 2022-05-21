@@ -62,10 +62,7 @@ string constant ERR_ZERO_EXT_AMOUNT = "VA:E4";
 string constant ERR_ZERO_ROOT = "TT:E1"; // merkle tree root can not be zero
 
 // CommitmentGenerator contract
-string constant ERR_TOO_LARGE_PUBKEY_SIZE = "CG:E1";
-string constant ERR_TOO_LARGE_AMOUNT_SIZE = "CG:E2";
-string constant ERR_TOO_LARGE_ZASSET_ID_SIZE = "CG:E3";
-string constant ERR_TOO_LARGE_CREATION_TIME_SIZE = "CG:E4";
+string constant ERR_TOO_LARGE_PUBKEY = "CG:E1";
 
 // MerkleProofVerifier
 string constant ERR_MERKLE_PROOF_VERIFICATION_FAILED = "MP:E1";

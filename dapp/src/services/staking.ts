@@ -23,11 +23,13 @@ import {
     chainHasAdvancedStaking,
     chainHasStakesReporter,
     getContractAddress,
+    getRewardMasterContract,
     getStakeRewardController2Contract,
     getSignableContract,
     getStakesReporterContract,
     getStakingContract,
     getTokenContract,
+    hasContract,
 } from './contracts';
 import {env} from './env';
 import {deriveRootKeypairs} from './keychain';
@@ -457,11 +459,17 @@ export async function getRewardsBalance(
                 account,
             );
         } else {
-            const stakesRewardController2 = getStakeRewardController2Contract(
-                library,
-                chainId,
-            );
-            return await stakesRewardController2.entitled(account);
+            if (hasContract(ContractName.STAKE_REWARD_CONTROLLER_2, chainId)) {
+                const stakesRewardController2 =
+                    getStakeRewardController2Contract(library, chainId);
+                return await stakesRewardController2.entitled(account);
+            } else {
+                console.debug(
+                    'Falling back to (probably buggy) RewardMaster.entitled()',
+                );
+                const rewardMaster = getRewardMasterContract(library, chainId);
+                return await rewardMaster.entitled(account);
+            }
         }
     } catch (err: any) {
         console.warn(`Failed to fetch rewards entitled for ${account}:`, err);

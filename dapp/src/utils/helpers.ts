@@ -20,7 +20,15 @@ export function getLocale(): string {
 export const formatTime = (date: number | null): string | null => {
     if (!date) return null;
     const localDate = new Date(date);
-    return localDate.toLocaleString(getLocale());
+    return (
+        localDate.toLocaleDateString(getLocale(), {
+            dateStyle: 'long',
+        }) +
+        ' ' +
+        localDate.toLocaleTimeString(getLocale(), {
+            timeStyle: 'long',
+        })
+    );
 };
 
 export function formatPercentage(percentage: number): string {

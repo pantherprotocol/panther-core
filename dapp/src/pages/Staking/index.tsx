@@ -18,20 +18,14 @@ import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
 import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
-import {Network} from '../../services/connectors';
 import {chainHasAdvancedStaking} from '../../services/contracts';
-import {switchNetwork} from '../../services/wallet';
 
 import './styles.scss';
 
-const Staking = (
-    onConnect: () => void,
-    currentNetwork: Network | null,
-): React.ReactElement => {
+const Staking = (): React.ReactElement => {
     const context = useWeb3React();
     const dispatch = useAppDispatch();
     const {chainId} = context;
-    const stakeType = chainHasAdvancedStaking(chainId) ? 'advanced' : 'classic';
 
     useEffect(() => {
         dispatch(getZKPTokenMarketPrice);
@@ -43,7 +37,7 @@ const Staking = (
     }, [context, dispatch]);
 
     return (
-        <MainPageWrapper {...{onConnect, network: currentNetwork, background}}>
+        <MainPageWrapper background={background}>
             <Box className="main-box-holder">
                 <Container className="main-container">
                     <Grid container>
@@ -66,16 +60,7 @@ const Staking = (
                                     ) : (
                                         <CurrentStakeAPY />
                                     )}
-                                    <StakingUnstakingCard
-                                        networkLogo={currentNetwork?.logo}
-                                        onConnect={() => {
-                                            onConnect();
-                                        }}
-                                        switchNetwork={(chainId: number) => {
-                                            switchNetwork(chainId);
-                                        }}
-                                        stakeType={stakeType}
-                                    />
+                                    <StakingUnstakingCard />
                                 </Box>
                                 <Grid item xs={12} md={3}></Grid>
                             </Grid>

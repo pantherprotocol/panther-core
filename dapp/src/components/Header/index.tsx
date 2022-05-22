@@ -10,26 +10,14 @@ import WalletHeader from './WalletHeader';
 
 import './styles.scss';
 
-const Header = (props: {
-    onConnect: () => void;
-    networkLogo?: string;
-    networkName?: string;
-    networkSymbol?: string;
-    switchNetwork: (chainId: number) => void;
-}) => {
+const Header = () => {
     return (
         <Box sx={{flexGrow: 1}}>
             <AppBar position="static" className="app-bar">
                 <Toolbar className="main-toolbar">
                     <Grid container>
                         <NavigationMenu />
-                        <WalletHeader
-                            onConnect={props.onConnect}
-                            switchNetwork={props.switchNetwork}
-                            networkName={props.networkName}
-                            networkSymbol={props.networkSymbol}
-                            networkLogo={props.networkLogo}
-                        />
+                        <WalletHeader />
                     </Grid>
                 </Toolbar>
             </AppBar>

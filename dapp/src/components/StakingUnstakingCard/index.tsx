@@ -12,12 +12,7 @@ import UnstakingTab from '../UnstakeTab';
 
 import './styles.scss';
 
-export default function StakingUnstakingCard(props: {
-    onConnect: any;
-    networkLogo?: string;
-    switchNetwork: (chainId: number) => void;
-    stakeType: string;
-}) {
+export default function StakingUnstakingCard() {
     const [toggle, setToggle] = useState('stake');
 
     const handleChange = (
@@ -55,12 +50,7 @@ export default function StakingUnstakingCard(props: {
 
                 <CardContent>
                     {toggle == 'stake' || toggle == null ? (
-                        <StakeTab
-                            onConnect={props.onConnect}
-                            switchNetwork={props.switchNetwork}
-                            networkLogo={props.networkLogo}
-                            stakeType={props.stakeType}
-                        />
+                        <StakeTab />
                     ) : (
                         <UnstakingTab />
                     )}

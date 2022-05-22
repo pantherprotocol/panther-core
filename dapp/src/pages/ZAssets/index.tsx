@@ -8,14 +8,10 @@ import PrivateZAssetsTable from '../../components/ZAssets/PrivateZAssetsTable';
 import background from '../../images/background.png';
 import {useAppDispatch} from '../../redux/hooks';
 import {getAssets} from '../../redux/slices/assets';
-import {Network} from '../../services/connectors';
 
 import './styles.scss';
 
-export default function ZAssets(
-    onConnect: () => void,
-    currentNetwork: Network | null,
-): React.ReactElement {
+export default function ZAssets(): React.ReactElement {
     const context = useWeb3React();
     const dispatch = useAppDispatch();
 
@@ -24,7 +20,7 @@ export default function ZAssets(
     }, [context, dispatch]);
 
     return (
-        <MainPageWrapper {...{onConnect, network: currentNetwork, background}}>
+        <MainPageWrapper {...{background}}>
             <div className="assets-holder">
                 <div className="assets-container">
                     <PrivateBalance />

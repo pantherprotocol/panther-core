@@ -1,17 +1,14 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React from 'react';
 
 import {createTheme} from '@mui/material';
 import {ThemeProvider} from '@mui/material/styles';
-import {useWeb3React} from '@web3-react/core';
 import {ReactNotifications} from 'react-notifications-component';
 import {Route, Redirect} from 'react-router';
 import {BrowserRouter as Router} from 'react-router-dom';
 
-import {useEagerConnect, useInactiveListener} from './hooks/web3';
 import Faucet from './pages/Faucet';
 import Staking from './pages/Staking';
 import ZAssets from './pages/ZAssets';
-import {injected, supportedNetworks, Network} from './services/connectors';
 import {getMissingEnvVars, env} from './services/env';
 
 import './styles.scss';
@@ -25,45 +22,6 @@ const theme = createTheme({
 });
 
 function App() {
-    const context = useWeb3React();
-    const {connector, chainId, activate, deactivate, error} = context;
-
-    // Logic to recognize the connector currently being activated
-    const [activatingConnector, setActivatingConnector] = useState<any>();
-
-    // Handle logic to eagerly connect to the injected ethereum provider, if it
-    // exists and has granted access already
-    const triedEager = useEagerConnect();
-
-    useEffect(() => {
-        if (activatingConnector && activatingConnector === connector) {
-            setActivatingConnector(undefined);
-        }
-    }, [activatingConnector, connector]);
-
-    // Set up listeners for events on the injected ethereum provider, if it exists
-    // and is not in the process of activating.
-    const suppressInactiveListeners =
-        !triedEager || activatingConnector || error;
-    useInactiveListener(suppressInactiveListeners);
-
-    const currentNetwork: Network | null =
-        context && context.chainId ? supportedNetworks[context.chainId] : null;
-
-    const onConnect = useCallback(async () => {
-        console.debug('onConnect: error', error, '/ chainId', chainId);
-        if (!chainId) {
-            console.debug(
-                'Connecting to the network; injected connector:',
-                injected,
-            );
-            setActivatingConnector(injected);
-            await activate(injected);
-        } else {
-            deactivate();
-        }
-    }, [error, chainId, activate, deactivate]);
-
     const missing = getMissingEnvVars();
 
     if (missing.length > 0) {
@@ -98,7 +56,7 @@ function App() {
                         key="faucet"
                         path={'/'}
                         exact={true}
-                        component={() => Faucet(onConnect, currentNetwork)}
+                        component={Faucet}
                     />,
                 ];
 
@@ -108,19 +66,19 @@ function App() {
                         key="staking"
                         path={'/'}
                         exact={true}
-                        component={() => Staking(onConnect, currentNetwork)}
+                        component={Staking}
                     />,
                     <Route
                         key="zassets"
                         path={'/zAssets'}
                         exact={true}
-                        component={() => ZAssets(onConnect, currentNetwork)}
+                        component={ZAssets}
                     />,
                     <Route
                         key="faucet"
                         path={'/faucet'}
                         exact={true}
-                        component={() => Faucet(onConnect, currentNetwork)}
+                        component={Faucet}
                     />,
                 ];
         }

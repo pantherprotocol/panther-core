@@ -5,11 +5,13 @@ import Grid from '@mui/material/Grid';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
+import {useOnConnect} from '../../../hooks/web3';
 import {useAppDispatch} from '../../../redux/hooks';
 import {getChainBalance} from '../../../redux/slices/chainBalance';
 import {formatAccountAddress} from '../../../services/account';
-import {onWrongNetwork} from '../../../services/connectors';
+import {currentNetwork, onWrongNetwork} from '../../../services/connectors';
 import {CHAIN_IDS} from '../../../services/env';
+import {switchNetwork} from '../../../services/wallet';
 import Address from '../../Address';
 import {safeOpenMetamask} from '../../Common/links';
 import {ConnectButton} from '../../ConnectButton';
@@ -19,20 +21,14 @@ import AccountBalance from '../AccountBalance';
 
 import './styles.scss';
 
-export default function WalletHeader(props: {
-    onConnect: () => void;
-    networkLogo?: string;
-    networkName?: string;
-    networkSymbol?: string;
-    switchNetwork: (chainId: number) => void;
-}) {
-    const {onConnect} = props;
+export default function WalletHeader() {
     const dispatch = useAppDispatch();
     const context = useWeb3React();
     const {account, active, error, chainId} = context;
     const [wrongNetwork, setWrongNetwork] = useState(false);
 
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
+    const network = currentNetwork(chainId);
 
     const fetchChainBalance = useCallback(() => {
         dispatch(getChainBalance, context);
@@ -56,6 +52,8 @@ export default function WalletHeader(props: {
     }, [context, active, account, error, fetchChainBalance]);
 
     const accountAddress = formatAccountAddress(account) || null;
+
+    const onConnect = useOnConnect();
 
     return (
         <Grid item lg={6} md={12} xs={12} className="header-right-container">
@@ -87,7 +85,7 @@ export default function WalletHeader(props: {
                             const chainIdToSwitch = chainId
                                 ? chainId
                                 : CHAIN_IDS[0];
-                            props.switchNetwork(chainIdToSwitch);
+                            switchNetwork(chainIdToSwitch);
                         }}
                     />
                 </Box>
@@ -96,11 +94,10 @@ export default function WalletHeader(props: {
             {/* account details */}
             {active && !wrongNetwork && (
                 <>
-                    {props.networkName && props.networkLogo && (
+                    {network && (
                         <NetworkButton
-                            networkName={props.networkName}
-                            networkLogo={props.networkLogo}
-                            switchNetwork={props.switchNetwork}
+                            networkName={network.name}
+                            networkLogo={network.logo}
                         />
                     )}
                     <Box className="address-and-balance-holder">
@@ -110,9 +107,7 @@ export default function WalletHeader(props: {
                             </Box>
                         )}
                         <Box>
-                            <AccountBalance
-                                networkSymbol={props.networkSymbol}
-                            />
+                            <AccountBalance networkSymbol={network?.symbol} />
                         </Box>
                     </Box>
                 </>

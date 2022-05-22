@@ -1,4 +1,6 @@
 @import '../../../variables';
+$staking-input-container-color: #3f4a5f;
+$staking-input-max-button-background: #1e2539;
 
 .staking-input-header {
     display: flex;
@@ -33,29 +35,29 @@
         color: $color-beige;
         margin-left: 10px;
     }
-
-    .staking-input-max {
-        color: $color-beige;
-        font-size: $normal-font-size;
-        width: 20%;
-        cursor: pointer;
-        line-height: initial;
-        margin: 0 15px;
-        background: $card-background;
-        border-radius: 8px;
-        padding: 5px 15px;
-    }
 }
 
 .staking-input-container {
-    background-color: #3f4a5f;
+    background-color: rgba(30, 37, 57, 0.25);
     height: 80px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 16px;
-    border: 1px solid $color-beige;
+    border: 1px solid $staking-input-container-color;
     border-radius: 15px;
+
+    .staking-input-max {
+        color: $color-beige;
+        border: 2px solid $color-beige;
+        font-size: 16px;
+        cursor: pointer;
+        line-height: initial;
+        margin: 0 10px;
+        background: $staking-input-max-button-background;
+        border-radius: 18px;
+        padding: 7px 10px;
+    }
 
     .staking-input {
         border: 0;

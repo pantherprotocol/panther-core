@@ -1,3 +1,5 @@
+@import '../../../../variables';
+
 $private-zasset-row-background-color: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.08) 0%,
@@ -23,5 +25,21 @@ $private-zasset-row-background-color: linear-gradient(
         @media (max-width: 768px) {
             width: initial;
         }
+    }
+
+    .asset-balance {
+        > p:first-child {
+            color: $color-beige;
+            font-weight: bold;
+
+            > span {
+                font-weight: bold;
+                color: $color-beige;
+            }
+        }
+    }
+
+    .prp-reward-column {
+        color: $color-beige !important;
     }
 }

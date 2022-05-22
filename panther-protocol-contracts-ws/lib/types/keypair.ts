@@ -1,10 +1,12 @@
-export type PrivateKey = BigInt;
-export type PublicKey = [BigInt, BigInt];
-
-export type EcdhSharedKey = bigint;
-export type EcdhSharedKeyPoint = [any, any];
+// should have few more classes for keypair,
+// differentiate between master keypair and derived
+// rootkeypair, keypair and derived keypair
 
 export interface IKeypair {
-    publicKey: PublicKey;
-    privateKey: PrivateKey;
+    publicKey: BigInt[];
+    privateKey: BigInt;
 }
+export type PrivateKey = BigInt;
+export type PublicKey = BigInt[];
+export type EcdhSharedKey = BigInt;
+export type EcdhSharedKeyPoint = BigInt[];

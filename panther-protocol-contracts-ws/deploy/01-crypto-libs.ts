@@ -2,18 +2,27 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    const { deployments, getNamedAccounts } = hre;
-    const { deploy } = deployments;
+    const {
+        deployments: { deploy },
+        getNamedAccounts,
+    } = hre;
     const { deployer } = await getNamedAccounts();
 
-    console.log(`Deploying Poseidon libraries on ${hre.network.name}...`);
+    await deploy('BabyJubJub', {
+        from: deployer,
+        args: [],
+        libraries: {},
+        log: true,
+        // speed up deployment on local network (ganache, hardhat), no effect on live networks
+        autoMine: true,
+    });
 
     await deploy('PoseidonT3', {
         from: deployer,
         args: [],
         libraries: {},
         log: true,
-        autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+        autoMine: true,
     });
 
     await deploy('PoseidonT4', {
@@ -34,4 +43,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ['Poseidon', 'Pool-all'];
+func.tags = ['crypto-libs'];
+func.dependencies = ['check-params'];

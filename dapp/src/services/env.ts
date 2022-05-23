@@ -1,4 +1,5 @@
 const REQUIRED_ENV_VARS: string[] = [
+    'APP_MODE',
     'CHAIN_IDS',
     'REWARD_MASTER_CONTRACT_80001',
     'STAKES_REPORTER_CONTRACT_137',
@@ -7,6 +8,7 @@ const REQUIRED_ENV_VARS: string[] = [
     'ADVANCED_STAKING_T_END',
     'FAUCET_CHAIN_IDS',
     'FAUCET_CONTRACT_80001',
+    'FAUCET_BASE_URL',
 ];
 
 const REQUIRED_CHAIN_ENV_VAR_PREFIXES: string[] = [
@@ -26,6 +28,8 @@ interface EnvVariables {
 }
 
 export const env: EnvVariables = {
+    APP_MODE: process.env.APP_MODE,
+    FAUCET_BASE_URL: process.env.FAUCET_BASE_URL,
     CHAIN_IDS: process.env.CHAIN_IDS,
     FAUCET_CHAIN_IDS: process.env.FAUCET_CHAIN_IDS,
     TOKEN_SYMBOL: process.env.TOKEN_SYMBOL,

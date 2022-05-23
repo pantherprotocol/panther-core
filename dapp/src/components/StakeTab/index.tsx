@@ -10,7 +10,10 @@ import {BigNumber, utils} from 'ethers';
 
 import StakingInfo from '../../components/StakeTab/StakingInfo';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {calculateRewards} from '../../redux/slices/advancedStakePredictedRewards';
+import {
+    calculateRewards,
+    resetRewards,
+} from '../../redux/slices/advancedStakePredictedRewards';
 import {
     isStakingOpenSelector,
     termsSelector,
@@ -69,17 +72,23 @@ export default function StakeTab(props: {
             if (bn) {
                 setAmountToStakeBN(bn);
                 dispatch(calculateRewards, bn.toString());
+            } else {
+                dispatch(resetRewards);
             }
         },
         [dispatch],
     );
 
     // For use when user clicks Max button
-    const setStakingAmountBN = useCallback((amountBN: BigNumber) => {
-        const amount = utils.formatEther(amountBN);
-        setAmountToStake(amount);
-        setAmountToStakeBN(amountBN);
-    }, []);
+    const setStakingAmountBN = useCallback(
+        (amountBN: BigNumber) => {
+            const amount = utils.formatEther(amountBN);
+            setAmountToStake(amount);
+            setAmountToStakeBN(amountBN);
+            dispatch(calculateRewards, amountBN.toString());
+        },
+        [dispatch],
+    );
 
     const stake = useCallback(
         async (amount: BigNumber) => {

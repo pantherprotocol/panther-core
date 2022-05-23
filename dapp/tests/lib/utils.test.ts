@@ -109,9 +109,9 @@ describe('formatCurrency', () => {
 
         for (const [input, expected] of TEST_CASES) {
             it(`formats ${input} as ${expected}`, () => {
-                expect(formatCurrency(utils.parseUnits(input))).toEqual(
-                    expected,
-                );
+                expect(
+                    formatCurrency(utils.parseUnits(input), {decimals: 3}),
+                ).toEqual(expected);
             });
         }
     });
@@ -123,9 +123,9 @@ describe('formatCurrency', () => {
 
         for (const [input, , expected] of TEST_CASES) {
             it(`formats '${input}' as '${expected}'`, () => {
-                expect(formatCurrency(utils.parseUnits(input))).toEqual(
-                    expected,
-                );
+                expect(
+                    formatCurrency(utils.parseUnits(input), {decimals: 3}),
+                ).toEqual(expected);
             });
         }
     });
@@ -137,9 +137,9 @@ describe('formatCurrency', () => {
 
         for (const [input, , , expected] of TEST_CASES) {
             it(`formats ${input} as ${expected}`, () => {
-                expect(
-                    formatCurrency(utils.parseUnits(input), {decimals: 2}),
-                ).toEqual(expected);
+                expect(formatCurrency(utils.parseUnits(input))).toEqual(
+                    expected,
+                );
             });
         }
     });

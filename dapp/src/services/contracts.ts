@@ -1,6 +1,7 @@
 import {JsonRpcSigner} from '@ethersproject/providers';
 import {Contract} from 'ethers';
 
+import {abi as FAUCET_ABI} from '../abi/Faucet';
 import {abi as PZKPTOKEN_ABI} from '../abi/PZkpToken';
 import {abi as REWARD_MASTER_ABI} from '../abi/RewardMaster';
 import {abi as STAKE_REWARD_CONTROLLER_2_ABI} from '../abi/StakeRewardController2';
@@ -20,6 +21,8 @@ export enum ContractName {
     REWARD_MASTER,
     STAKE_REWARD_CONTROLLER_2,
     STAKING_TOKEN,
+    ZKP_TESTNET_TOKEN,
+    FAUCET,
 }
 
 export function getContractEnvVar(
@@ -71,6 +74,8 @@ export function getContractABI(
             return STAKING_ABI;
         case ContractName.STAKES_REPORTER:
             return STAKES_REPORTER_ABI;
+        case ContractName.FAUCET:
+            return FAUCET_ABI;
         case ContractName.STAKING_TOKEN:
             if ([1, 4, 31337].includes(chainId)) return ZKPTOKEN_ABI;
             if ([137, 80001].includes(chainId)) return PZKPTOKEN_ABI;
@@ -95,6 +100,10 @@ export function getTokenContract(library: any, chainId: number): Contract {
 
 export function getStakingContract(library: any, chainId: number): Staking {
     return getContract(ContractName.STAKING, library, chainId) as Staking;
+}
+
+export function getFaucetContract(library: any, chainId: number): Contract {
+    return getContract(ContractName.FAUCET, library, chainId);
 }
 
 export function getStakesReporterContract(

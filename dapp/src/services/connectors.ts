@@ -7,7 +7,7 @@ import {
 import ethIcon from '../images/eth-logo.svg';
 import polygonIcon from '../images/polygon-logo.svg';
 
-import {CHAIN_IDS} from './env';
+import {CHAIN_IDS, FAUCET_CHAIN_IDS} from './env';
 import {Web3ReactContextInterface} from './types';
 
 export interface Network {
@@ -78,6 +78,17 @@ export const onWrongNetwork = (context: Web3ReactContextInterface): boolean => {
     );
 };
 
+export const onWrongFaucetNetwork = (
+    context: Web3ReactContextInterface,
+): boolean => {
+    if (context.chainId && !FAUCET_CHAIN_IDS.includes(context.chainId)) {
+        return true;
+    }
+    return !!(
+        context.error && context.error instanceof UnsupportedChainIdError
+    );
+};
+
 export const isConnected = ({
     active,
     account,
@@ -88,4 +99,8 @@ export const isConnected = ({
 
 export const injected = new InjectedConnector({
     supportedChainIds: CHAIN_IDS,
+});
+
+export const injectedFaucet = new InjectedConnector({
+    supportedChainIds: FAUCET_CHAIN_IDS,
 });

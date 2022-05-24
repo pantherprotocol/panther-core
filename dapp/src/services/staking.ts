@@ -32,6 +32,7 @@ import {
     hasContract,
 } from './contracts';
 import {env} from './env';
+import {notifyError} from './errors';
 import {deriveRootKeypairs} from './keychain';
 import {encryptEphemeralKey} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
@@ -97,12 +98,6 @@ export async function generatePermitSignature(
     }
 
     return signature;
-}
-
-function notifyError(title: string, msg: string, diagnostics: any): Error {
-    console.error(`${title}: ${msg}. Diagnostics info:`, diagnostics);
-    openNotification(title, msg, 'danger', 60000);
-    return new Error(msg);
 }
 
 // craftAdvancedStakeData is a helper function to create the bytes data argument for

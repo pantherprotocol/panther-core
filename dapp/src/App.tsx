@@ -4,15 +4,15 @@ import {createTheme} from '@mui/material';
 import {ThemeProvider} from '@mui/material/styles';
 import {useWeb3React} from '@web3-react/core';
 import {ReactNotifications} from 'react-notifications-component';
-import {Route} from 'react-router';
+import {Route, Redirect} from 'react-router';
 import {BrowserRouter as Router} from 'react-router-dom';
 
 import {useEagerConnect, useInactiveListener} from './hooks/web3';
+import Faucet from './pages/Faucet';
 import Staking from './pages/Staking';
-import WelcomePage from './pages/WelcomePage';
 import ZAssets from './pages/ZAssets';
 import {injected, supportedNetworks, Network} from './services/connectors';
-import {getMissingEnvVars} from './services/env';
+import {getMissingEnvVars, env} from './services/env';
 
 import './styles.scss';
 
@@ -90,26 +90,49 @@ function App() {
         );
     }
 
+    function buildRouting(): React.ReactElement[] {
+        switch (env.APP_MODE) {
+            case 'faucet':
+                return [
+                    <Route
+                        key="faucet"
+                        path={'/'}
+                        exact={true}
+                        component={() => Faucet(onConnect, currentNetwork)}
+                    />,
+                ];
+
+            default:
+                return [
+                    <Route
+                        key="staking"
+                        path={'/'}
+                        exact={true}
+                        component={() => Staking(onConnect, currentNetwork)}
+                    />,
+                    <Route
+                        key="zassets"
+                        path={'/zAssets'}
+                        exact={true}
+                        component={() => ZAssets(onConnect, currentNetwork)}
+                    />,
+                    <Route
+                        key="faucet"
+                        path={'/faucet'}
+                        exact={true}
+                        component={() => Faucet(onConnect, currentNetwork)}
+                    />,
+                ];
+        }
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <ReactNotifications />
             <div className="App">
                 <Router>
-                    <Route
-                        path={'/'}
-                        exact={true}
-                        component={() => Staking(onConnect, currentNetwork)}
-                    />
-                    <Route
-                        path={'/zAssets'}
-                        exact={true}
-                        component={() => ZAssets(onConnect, currentNetwork)}
-                    />
-                    <Route
-                        path={'/welcome'}
-                        exact={true}
-                        component={WelcomePage}
-                    />
+                    {...buildRouting()}
+                    <Route render={() => <Redirect to="/" />} />
                 </Router>
             </div>
         </ThemeProvider>

@@ -22,9 +22,6 @@ async function deployPantherPoolV0AndVaultTester(): Promise<PantherPoolV0AndVaul
     const poseidonT6 = await PoseidonT6.deploy();
     await poseidonT6.deployed();
 
-    const BabyJubJubLib = await ethers.getContractFactory('BabyJubJub');
-    const babyJubJub = await BabyJubJubLib.deploy();
-    await babyJubJub.deployed();
     // Link Poseidon contracts
     // @ts-ignore
     const PantherPoolV0 = await ethers.getContractFactory(
@@ -34,7 +31,6 @@ async function deployPantherPoolV0AndVaultTester(): Promise<PantherPoolV0AndVaul
                 PoseidonT3: poseidonT3.address,
                 PoseidonT4: poseidonT4.address,
                 PoseidonT6: poseidonT6.address,
-                BabyJubJub: babyJubJub.address,
             },
         },
     );

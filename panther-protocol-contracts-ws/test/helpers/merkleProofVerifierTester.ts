@@ -17,9 +17,6 @@ async function deployMerkleProofVerifierTester(): Promise<MerkleProofVerifierTes
     const poseidonT4 = await PoseidonT4.deploy();
     await poseidonT4.deployed();
 
-    const BabyJubJubLib = await ethers.getContractFactory('BabyJubJub');
-    const babyJubJub = await BabyJubJubLib.deploy();
-    await babyJubJub.deployed();
     // Link Poseidon contracts
     // @ts-ignore
     const MerkleProofVerifierTester = await ethers.getContractFactory(
@@ -28,7 +25,6 @@ async function deployMerkleProofVerifierTester(): Promise<MerkleProofVerifierTes
             libraries: {
                 PoseidonT3: poseidonT3.address,
                 PoseidonT4: poseidonT4.address,
-                BabyJubJub: babyJubJub.address,
             },
         },
     );

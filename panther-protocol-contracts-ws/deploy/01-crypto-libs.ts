@@ -8,15 +8,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     } = hre;
     const { deployer } = await getNamedAccounts();
 
-    await deploy('BabyJubJub', {
-        from: deployer,
-        args: [],
-        libraries: {},
-        log: true,
-        // speed up deployment on local network (ganache, hardhat), no effect on live networks
-        autoMine: true,
-    });
-
     await deploy('PoseidonT3', {
         from: deployer,
         args: [],

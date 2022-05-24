@@ -14,7 +14,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const vaultProxy = await hre.ethers.getContract('Vault_Proxy');
 
-    const babyJubJub = await hre.ethers.getContract('BabyJubJub');
     const poseidonT3 = await hre.ethers.getContract('PoseidonT3');
     const poseidonT4 = await hre.ethers.getContract('PoseidonT4');
     const poseidonT6 = await hre.ethers.getContract('PoseidonT6');
@@ -26,7 +25,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         from: deployer,
         args: [multisig, exitTime, vaultProxy.address],
         libraries: {
-            BabyJubJub: babyJubJub.address,
             PoseidonT3: poseidonT3.address,
             PoseidonT4: poseidonT4.address,
             PoseidonT6: poseidonT6.address,

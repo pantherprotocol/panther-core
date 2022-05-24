@@ -110,7 +110,7 @@ library BabyJubJub {
     }
 
     function mulPointEscalar(G1Point memory point, uint256 scalar)
-        public
+        internal
         view
         returns (G1Point memory r)
     {

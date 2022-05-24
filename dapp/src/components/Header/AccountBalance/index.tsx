@@ -29,7 +29,7 @@ export default function AccountBalance(props: {
             <IconButton onClick={refreshChainBalance}>
                 <img src={refreshIcon} />
             </IconButton>
-            {formatCurrency(chainBalance) || '-'}
+            {formatCurrency(chainBalance, {decimals: 3}) || '-'}
             <InputAdornment position="end" className="currency-symbol">
                 <span>{props.networkSymbol || '-'}</span>
             </InputAdornment>

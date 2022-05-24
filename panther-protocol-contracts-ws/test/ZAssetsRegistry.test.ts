@@ -12,7 +12,7 @@ import {
 } from './data/zAssetsSample';
 import { revertSnapshot, takeSnapshot } from './helpers/hardhat';
 
-describe.only('ZAssetsRegistry', function () {
+describe('ZAssetsRegistry', function () {
     let zAssetsRegistry: MockZAssetsRegistry;
     let snapshot;
 

@@ -23,7 +23,11 @@ export async function sendFaucetTransaction(
             gasLimit: 320000,
         });
     } catch (err) {
-        return notifyError('Transaction error', parseTxErrorMessage(err), err);
+        return notifyError(
+            'Failed to submit transaction',
+            parseTxErrorMessage(err),
+            err,
+        );
     }
 
     const inProgress = openNotification(

@@ -455,9 +455,13 @@ export async function getRewardsBalance(
             );
         } else {
             if (hasContract(ContractName.STAKE_REWARD_CONTROLLER_2, chainId)) {
-                const stakesRewardController2 =
+                const stakeRewardController2 =
                     getStakeRewardController2Contract(library, chainId);
-                return await stakesRewardController2.entitled(account);
+                console.debug(
+                    `Using StakeRewardController2.entitled() ` +
+                        `at ${stakeRewardController2.address}`,
+                );
+                return await stakeRewardController2.entitled(account);
             } else {
                 console.debug(
                     'Falling back to (probably buggy) RewardMaster.entitled()',

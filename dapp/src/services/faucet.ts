@@ -1,3 +1,5 @@
+import {BigNumber, utils} from 'ethers';
+
 import {CONFIRMATIONS_NUM} from '../utils/constants';
 import {parseTxErrorMessage} from '../utils/errors';
 
@@ -17,10 +19,24 @@ export async function sendFaucetTransaction(
         getFaucetContract,
     );
 
+    let maxAmountToPay: BigNumber;
+    try {
+        maxAmountToPay = await contract.maxAmountToPay();
+    } catch (err) {
+        return notifyError(
+            'Failed to prepare transaction',
+            `Couldn't obtain maxAmountToPay from faucet at ${contract.address}`,
+            err,
+        );
+    }
+    console.debug(
+        `Faucet had maxAmountToPay: ${utils.formatEther(maxAmountToPay)}`,
+    );
+
     let tx: any;
     try {
         tx = await contract.drink(account, {
-            gasLimit: 320000,
+            value: maxAmountToPay,
         });
     } catch (err) {
         return notifyError(

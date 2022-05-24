@@ -95,7 +95,7 @@ function isStakingOpen(terms: IStakingTypes.TermsStructOutput): boolean {
 export function isStakingOpenSelector(
     chainId: number | undefined,
     stakeType: StakeType,
-) {
+): (state: RootState) => boolean {
     return (state: RootState): boolean => {
         if (!chainId) return false;
         const t = terms(state, chainId, stakeType);
@@ -109,8 +109,10 @@ export function termsSelector(
     chainId: number | undefined,
     stakeType: StakeType,
     property: keyof IStakingTypes.TermsStruct,
-) {
-    return (state: RootState): number | boolean | null => {
+): (state: RootState) => IStakingTypes.TermsStruct[typeof property] | null {
+    return (
+        state: RootState,
+    ): IStakingTypes.TermsStruct[typeof property] | null => {
         if (!chainId) return null;
         const t: IStakingTypes.TermsStructOutput | null = terms(
             state,

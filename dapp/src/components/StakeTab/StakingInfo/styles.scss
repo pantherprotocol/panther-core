@@ -1,19 +1,20 @@
 @import '../../../variables';
 
 .staking-info-container {
-    flex-direction: column;
-    text-align: start;
-    border: none;
-    background: transparent;
-    padding: 0 16px;
+    // background: $card-background  !important;
+
+    .staking-info-card-content {
+        padding: 0px !important;
+    }
 
     .staking-info-title {
-        font-weight: $bold-font-weight;
-        font-size: $title-font-size;
+        font-weight: $bold-font-weight !important;
+        font-size: $title-font-size !important;
         line-height: 42px;
         display: flex;
         align-items: center;
-        color: $color-beige;
+        color: $color-beige !important;
+        /* FIXME: use common variable */
     }
 
     .staking-info-text {
@@ -21,7 +22,11 @@
         line-height: 25px;
         color: white;
         opacity: 0.8;
-        padding: 20px 0;
+        padding: 5px 0;
         text-align: start;
+
+        strong {
+            opacity: 1;
+        }
     }
 }

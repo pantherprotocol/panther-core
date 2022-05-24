@@ -51,7 +51,7 @@ export default function StakeTab(props: {
     const minStake = useAppSelector(
         termsSelector(chainId, StakeType.Advanced, 'minAmountScaled'),
     );
-    const isStakingOpen = useAppSelector(
+    const isAdvancedStakingOpen = useAppSelector(
         isStakingOpenSelector(chainId, StakeType.Advanced),
     );
 
@@ -157,7 +157,7 @@ export default function StakeTab(props: {
 
     return (
         <Box className="staking-tab-holder">
-            {isStakingOpen ? (
+            {isAdvancedStakingOpen ? (
                 <>
                     <StakingInput
                         setStakingAmount={setStakingAmount}
@@ -210,7 +210,7 @@ export default function StakeTab(props: {
                 </div>
             )}
 
-            {isStakingOpen && active && !wrongNetwork && (
+            {isAdvancedStakingOpen && active && !wrongNetwork && (
                 <StakingBtn
                     amountToStake={amountToStake}
                     amountToStakeBN={amountToStakeBN}

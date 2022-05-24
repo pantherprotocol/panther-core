@@ -119,6 +119,9 @@ contract AdvancedStakeRewardController is
 
     uint256 private constant ZKP_RESCUE_FORBIDDEN_PERIOD = 90 days;
 
+    /// @notice Block when this contract is deployed
+    uint256 public immutable START_BLOCK;
+
     // solhint-enable var-name-mixedcase
 
     /// @notice Amount of $ZKPs allocated for rewards
@@ -133,9 +136,10 @@ contract AdvancedStakeRewardController is
     /// @dev Emitted when new $ZKPs are allocated to reward stakers
     event ZkpRewardAllocated(uint256 zkpAmount);
 
-    /// @dev Emitted when new reward amount ...
-    event RewardUtilized(
+    /// @dev Emitted when the reward for a stake is generated
+    event RewardGenerated(
         address indexed staker,
+        uint256 firstLeafId,
         uint256 zkp,
         uint256 prp,
         uint256 nft
@@ -171,9 +175,13 @@ contract AdvancedStakeRewardController is
         );
         REWARDING_START = uint256(rewardingStart);
         ZKP_APY_DECLINE_PERIOD = uint256(zkpApyDeclinePeriod);
+
+        // The scale factor is 1e9 (xxx_ZKP_APY is percents, i.e. scaled by 1e2)
         sc_ZKP_APY_PER_SECOND_DROP =
-            ((START_ZKP_APY - FINAL_ZKP_APY) * 1e9) /
+            ((START_ZKP_APY - FINAL_ZKP_APY) * 1e7) /
             uint256(zkpApyDeclinePeriod);
+
+        START_BLOCK = block.number;
     }
 
     /// @dev To be called by the {RewardMaster} contract on `STAKE` and `UNSTAKE` actions.
@@ -293,47 +301,52 @@ contract AdvancedStakeRewardController is
         require(stakedAt >= REWARDING_START, "SRC: unexpected stakedAt");
         require(lockedTill > stakedAt, "SRC: unexpected lockedTill");
 
-        UtilizedRewards memory _utilizedRewards = utilizedRewards;
-
-        // Compute amount of the $ZKP reward
-        uint256 zkpAmount;
-        {
-            uint256 period = uint256(lockedTill - stakedAt);
-            uint256 apy = getZkpApyAt(stakedAt);
-            zkpAmount = (uint256(stakeAmount) * apy * period) / 365 days;
-
-            uint256 newUtilizedZkpRewards = uint256(_utilizedRewards.zkp) +
-                zkpAmount;
-            require(
-                allocatedZkpRewards >= newUtilizedZkpRewards,
-                "SRC: too less rewards available"
-            );
-            _utilizedRewards.zkp = safe96(newUtilizedZkpRewards);
-        }
-
-        // Register PRP grant to this contract (it will be "burnt" for PRP UTXO)
-        uint256 prpAmount = IPantherPoolV0(PANTHER_POOL).grant(
-            address(this),
-            FOR_ADVANCED_STAKE_GRANT
-        );
-        // `prpAmount` values assumed to be too small to cause overflow
-        _utilizedRewards.prp += uint96(prpAmount);
-
-        // TODO: enhance PRP granting to save gas
-        // Grant the total just once (for all stakes), then use a part (for every stake),
-        // and finally burn unused grant amount, if it remains, in the end
-
-        // If the NFT token contract defined, mint the NFT
+        uint256 zkpAmount = 0;
+        uint256 prpAmount = 0;
         uint256 nftAmount = 0;
         uint256 nftTokenId = 0;
-        if (NFT_TOKEN != address(0)) {
-            // trusted contract called - no reentrancy guard needed
-            nftTokenId = INftGrantor(NFT_TOKEN).grantOneToken(address(this));
-            nftAmount = 1;
-            _utilizedRewards.nft += 1;
-        }
+        {
+            UtilizedRewards memory _utilizedRewards = utilizedRewards;
 
-        utilizedRewards = _utilizedRewards;
+            // Compute amount of the $ZKP reward
+            {
+                uint256 period = uint256(lockedTill - stakedAt);
+                uint256 apy = getZkpApyAt(stakedAt);
+                zkpAmount = (uint256(stakeAmount) * apy * period) / 365 days;
+
+                uint256 newUtilizedZkpRewards = uint256(_utilizedRewards.zkp) +
+                    zkpAmount;
+                require(
+                    allocatedZkpRewards >= newUtilizedZkpRewards,
+                    "SRC: too less rewards available"
+                );
+                _utilizedRewards.zkp = safe96(newUtilizedZkpRewards);
+            }
+
+            // Register PRP grant to this contract (it will be "burnt" for PRP UTXO)
+            prpAmount = IPantherPoolV0(PANTHER_POOL).grant(
+                address(this),
+                FOR_ADVANCED_STAKE_GRANT
+            );
+            // `prpAmount` values assumed to be too small to cause overflow
+            _utilizedRewards.prp += uint96(prpAmount);
+
+            // TODO: enhance PRP granting to save gas
+            // Grant the total just once (for all stakes), then use a part (for every stake),
+            // and finally burn unused grant amount, if it remains, in the end
+
+            // If the NFT token contract defined, mint the NFT
+            if (NFT_TOKEN != address(0)) {
+                // trusted contract called - no reentrancy guard needed
+                nftTokenId = INftGrantor(NFT_TOKEN).grantOneToken(
+                    address(this)
+                );
+                nftAmount = 1;
+                _utilizedRewards.nft += 1;
+            }
+
+            utilizedRewards = _utilizedRewards;
+        }
 
         // Extract public spending keys and "secrets"
         (
@@ -350,7 +363,7 @@ contract AdvancedStakeRewardController is
             nftAmount
         ];
         uint256 createdAt = timeNow();
-        IPantherPoolV0(PANTHER_POOL).generateDeposits(
+        uint256 leftLeafId = IPantherPoolV0(PANTHER_POOL).generateDeposits(
             tokens,
             tokenIds,
             extAmounts,
@@ -359,6 +372,12 @@ contract AdvancedStakeRewardController is
             createdAt
         );
 
-        emit RewardUtilized(staker, zkpAmount, prpAmount, nftAmount);
+        emit RewardGenerated(
+            staker,
+            leftLeafId,
+            zkpAmount,
+            prpAmount,
+            nftAmount
+        );
     }
 }

@@ -16,7 +16,7 @@ interface IPantherPoolV0 {
         G1Point[OUT_UTXOs] calldata pubSpendingKeys,
         uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
         uint256 createdAt
-    ) external;
+    ) external returns (uint256 leftLeafId);
 
     function exit(
         address token,

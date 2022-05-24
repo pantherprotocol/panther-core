@@ -194,7 +194,7 @@ export default function StakingInfo() {
                 <Typography variant="subtitle2" className="staking-info-title">
                     {subtitle}
                 </Typography>
-                <Typography className="staking-info-text">{body}</Typography>
+                <div className="staking-info-text">{body}</div>
             </CardContent>
         </Card>
     );

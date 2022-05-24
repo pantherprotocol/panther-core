@@ -4,15 +4,17 @@ import {Box, Typography} from '@mui/material';
 import LinearProgress from '@mui/material/LinearProgress';
 import {useWeb3React} from '@web3-react/core';
 
+import {useAppSelector} from '../../redux/hooks';
+import {termsSelector} from '../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../services/contracts';
 import {getAdvStakingAPY} from '../../services/rewards';
+import {StakeType} from '../../types/staking';
 import {formatPercentage} from '../../utils/helpers';
 
 import './styles.scss';
 
 function AdvancedStakingRewards() {
     const context = useWeb3React();
-
     const {chainId} = context;
 
     const advancedStakingAPY = getAdvStakingAPY(new Date().getTime());
@@ -42,11 +44,29 @@ function ClaimedProgress() {
     );
 }
 
+function getDaysRemaining(allowedTill: number): string {
+    const now = new Date().getTime() / 1000;
+    let secsRemaining = Number(allowedTill) - now;
+    if (secsRemaining < 0) {
+        secsRemaining = 0;
+    }
+    return (secsRemaining / 3600 / 24).toFixed(1);
+}
+
 function RemainingDays() {
+    const context = useWeb3React();
+    const {chainId} = context;
+
+    const allowedTill = useAppSelector(
+        termsSelector(chainId!, StakeType.Advanced, 'allowedTill'),
+    );
+    const daysRemaining =
+        typeof allowedTill === 'number' ? getDaysRemaining(allowedTill) : '?';
+
     return (
         <Box className="remaining-days">
             <Typography className="value">
-                29 <span> days</span>
+                {daysRemaining} <span>days</span>
             </Typography>
             <Typography className="text">Remaining</Typography>
         </Box>

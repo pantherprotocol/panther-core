@@ -32,7 +32,19 @@ export async function sendFaucetTransaction(
         'info',
     );
 
-    await tx.wait(CONFIRMATIONS_NUM);
+    try {
+        const receipt = await tx.wait(CONFIRMATIONS_NUM);
+        if (receipt.status === 0) {
+            console.error('receipt: ', receipt);
+            throw new Error(
+                'Transaction failed on-chain without giving error details.',
+            );
+        }
+    } catch (err) {
+        removeNotification(inProgress);
+        return notifyError('Transaction failed', parseTxErrorMessage(err), err);
+    }
+
     removeNotification(inProgress);
 
     openNotification(

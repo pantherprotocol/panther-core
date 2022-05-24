@@ -64,9 +64,7 @@ const Staking = (
                                     {chainHasAdvancedStaking(chainId) ? (
                                         <AdvancedStakingRewards />
                                     ) : (
-                                        <CurrentStakeAPY
-                                            networkName={currentNetwork?.name}
-                                        />
+                                        <CurrentStakeAPY />
                                     )}
                                     <StakingUnstakingCard
                                         networkLogo={currentNetwork?.logo}

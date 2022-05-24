@@ -17,8 +17,6 @@ import {SafeMuiLink} from '../Common/links';
 
 import './styles.scss';
 
-const TOTAL_REWARDS_AVAILABLE = 6_650_000 + 2_000_000;
-
 const getAPY = (totalStaked: BigNumber | null, chainId: number | undefined) => {
     if (!chainId || !totalStaked) return null;
     console.log('Total ZKP staked:', formatCurrency(totalStaked));
@@ -50,7 +48,7 @@ const getAPY = (totalStaked: BigNumber | null, chainId: number | undefined) => {
     return currentStakingAPY;
 };
 
-const CurrentStakeAPY = (props: {networkName: string | undefined}) => {
+const CurrentStakeAPY = () => {
     const context = useWeb3React();
     const {chainId} = context;
     const totalStaked = useAppSelector(totalStakedSelector);
@@ -74,14 +72,6 @@ const CurrentStakeAPY = (props: {networkName: string | undefined}) => {
         })} ZKP available over ${programDays} days`;
     }, [getRewardPoolSize, chainId]);
 
-    const getPoolSizeText = useCallback(() => {
-        const poolSize = getRewardPoolSize();
-        const poolSizeText = Number(poolSize || TOTAL_REWARDS_AVAILABLE) / 1e6;
-        return poolSize && props.networkName
-            ? `a ${poolSizeText} million $ZKP rewards pool on ${props.networkName}`
-            : `${poolSizeText} million in $ZKP reward pools`;
-    }, [getRewardPoolSize, props]);
-
     return (
         <Box className="current-stake-apy-container">
             {typeof currentStakingAPY === 'number' && (
@@ -103,7 +93,7 @@ const CurrentStakeAPY = (props: {networkName: string | undefined}) => {
                         {formatPercentage(currentStakingAPY) || '??'}
                     </Typography>
                     <Typography className="apy-title">
-                        Current staking APY
+                        Final staking APY
                     </Typography>
                 </Box>
             )}
@@ -119,10 +109,10 @@ const CurrentStakeAPY = (props: {networkName: string | undefined}) => {
 
             <Box className="current-stake-apy-text">
                 <Typography className="message-title">
-                    Earn rewards for staking ZKP
+                    Earn rewards for staking $ZKP
                 </Typography>
                 <Typography className="message-text">
-                    Along with earning from {getPoolSizeText()}, staking also
+                    Along with earning from $ZKP reward pools, staking also
                     gives you voting rights on Panther DAO proposals.{' '}
                     <SafeMuiLink
                         href="https://docs.pantherprotocol.io/panther-dao-and-zkp/the-zkp-token/staking"

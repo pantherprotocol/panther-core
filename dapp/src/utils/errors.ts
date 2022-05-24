@@ -4,7 +4,11 @@ friendly error messages to the user. */
 export function parseTxErrorMessage(error: any): string {
     console.debug('parsing transaction error:', error);
 
-    if (error.error && error.error.message && error.reason) {
+    if (error.data?.message) {
+        return error.data.message;
+    }
+
+    if (error.error?.message && error.reason) {
         return error.reason;
     }
 

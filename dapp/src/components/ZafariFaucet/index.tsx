@@ -7,7 +7,7 @@ import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import polygonIcon from '../../images/polygon-logo.svg';
 import {formatAccountAddress} from '../../services/account';
 import {
-    onWrongNetworkFaucet,
+    onWrongFaucetNetwork,
     supportedNetworks,
 } from '../../services/connectors';
 import {FAUCET_CHAIN_IDS} from '../../services/env';
@@ -26,7 +26,7 @@ function ZafariFaucet(props: {onConnect: () => void; sendFaucet: () => void}) {
 
     useEffect((): void => {
         const wrongNetwork =
-            onWrongNetworkFaucet(context) ||
+            onWrongFaucetNetwork(context) ||
             error instanceof UnsupportedChainIdError;
         setWrongNetwork(wrongNetwork);
         console.debug(

@@ -78,7 +78,7 @@ export const onWrongNetwork = (context: Web3ReactContextInterface): boolean => {
     );
 };
 
-export const onWrongNetworkFaucet = (
+export const onWrongFaucetNetwork = (
     context: Web3ReactContextInterface,
 ): boolean => {
     if (context.chainId && !FAUCET_CHAIN_IDS.includes(context.chainId)) {

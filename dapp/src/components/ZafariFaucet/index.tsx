@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 
 import {Box, Button, Card, Typography} from '@mui/material';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
@@ -11,16 +11,17 @@ import {
     supportedNetworks,
 } from '../../services/connectors';
 import {FAUCET_CHAIN_IDS} from '../../services/env';
+import {sendFaucetTransaction} from '../../services/faucet';
 import {switchNetwork} from '../../services/wallet';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 
 import './styles.scss';
 
-function ZafariFaucet(props: {onConnect: () => void; sendFaucet: () => void}) {
-    const {onConnect, sendFaucet} = props;
+function ZafariFaucet(props: {onConnect: () => void}) {
+    const {onConnect} = props;
     const context = useWeb3React();
-    const {account, active, error} = context;
+    const {account, active, library, error, chainId} = context;
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
 
@@ -60,6 +61,22 @@ function ZafariFaucet(props: {onConnect: () => void; sendFaucet: () => void}) {
             </Typography>
         );
     }
+
+    const sendFaucet = useCallback(async () => {
+        if (!chainId || !account) {
+            return;
+        }
+
+        const faucetResponse = await sendFaucetTransaction(
+            library,
+            chainId,
+            account,
+        );
+
+        if (faucetResponse instanceof Error) {
+            return;
+        }
+    }, [library, chainId, account]);
 
     return (
         <Card className="zafari-faucet-container">

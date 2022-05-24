@@ -81,6 +81,7 @@ contract PantherPoolV0 is
     /// @param secrets Encrypted opening values for every UTXO
     /// @param  createdAt Optional, if 0 network time used
     /// @dev createdAt must be less (or equal) the network time
+    /// @return leftLeafId The `leafId` of the first UTXO (leaf) in the batch
     function generateDeposits(
         address[OUT_UTXOs] calldata tokens,
         uint256[OUT_UTXOs] calldata tokenIds,
@@ -88,7 +89,7 @@ contract PantherPoolV0 is
         G1Point[OUT_UTXOs] calldata pubSpendingKeys,
         uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
         uint32 createdAt
-    ) external nonReentrant {
+    ) external nonReentrant returns (uint256 leftLeafId) {
         uint32 timestamp = safe32TimeNow();
         if (createdAt != 0) {
             require(createdAt <= timestamp, ERR_TOO_EARLY_CREATED_AT);
@@ -98,28 +99,11 @@ contract PantherPoolV0 is
         bytes32[OUT_UTXOs] memory commitments;
         uint256[UTXO_SECRETS][OUT_UTXOs] memory secretMsgs;
         for (uint256 utxoIndex = 0; utxoIndex < OUT_UTXOs; utxoIndex++) {
-            (ZAsset memory asset, uint160 zAssetId) = getZAssetAndId(
+            (uint160 zAssetId, uint96 scaledAmount) = _processDepositedAsset(
                 tokens[utxoIndex],
-                tokenIds[utxoIndex]
+                tokenIds[utxoIndex],
+                extAmounts[utxoIndex]
             );
-            require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);
-
-            uint96 scaledAmount = 0;
-            if (extAmounts[utxoIndex] != 0) {
-                if (asset.tokenType == PRP_TOKEN_TYPE)
-                    useGrant(msg.sender, extAmounts[utxoIndex]);
-                else
-                    IVault(VAULT).lockAsset(
-                        LockData(
-                            asset.tokenType,
-                            asset.token,
-                            tokenIds[utxoIndex],
-                            msg.sender,
-                            safe96(extAmounts[utxoIndex])
-                        )
-                    );
-                scaledAmount = scaleAmount(extAmounts[utxoIndex], asset.scale);
-            }
 
             commitments[utxoIndex] = generateCommitment(
                 pubSpendingKeys[utxoIndex].x,
@@ -144,7 +128,7 @@ contract PantherPoolV0 is
                 scaledAmount;
         }
 
-        addAndEmitCommitments(commitments, secretMsgs, timestamp);
+        leftLeafId = addAndEmitCommitments(commitments, secretMsgs, timestamp);
     }
 
     function exit(
@@ -241,5 +225,39 @@ contract PantherPoolV0 is
         uint256 amount
     ) external onlyOwner nonReentrant {
         _claimEthOrErc20(token, to, amount);
+    }
+
+    /// Internal and private functions follow
+
+    function _processDepositedAsset(
+        address token,
+        uint256 tokenId,
+        uint256 extAmount
+    ) internal returns (uint160 zAssetId, uint96 scaledAmount) {
+        if (token == address(0)) {
+            require(extAmount == 0, ERR_WRONG_DEPOSIT);
+            return (0, 0);
+        }
+
+        ZAsset memory asset;
+        (asset, zAssetId) = getZAssetAndId(token, tokenId);
+        require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);
+
+        scaledAmount = 0;
+        if (extAmount != 0) {
+            if (asset.tokenType == PRP_TOKEN_TYPE)
+                useGrant(msg.sender, extAmount);
+            else
+                IVault(VAULT).lockAsset(
+                    LockData(
+                        asset.tokenType,
+                        asset.token,
+                        tokenId,
+                        msg.sender,
+                        safe96(extAmount)
+                    )
+                );
+            scaledAmount = scaleAmount(extAmount, asset.scale);
+        }
     }
 }

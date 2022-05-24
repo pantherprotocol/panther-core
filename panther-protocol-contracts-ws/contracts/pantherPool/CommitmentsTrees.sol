@@ -29,12 +29,13 @@ abstract contract CommitmentsTrees is TriadIncrementalMerkleTrees {
     /**
      * @notice Adds commitments to merkle tree(s) and emits events
      * @param commitments Commitments (leaves hashes) to be inserted into merkle tree(s)
+     * @return leftLeafId The `leafId` of the first leaf in the batch
      */
     function addAndEmitCommitments(
         bytes32[OUT_UTXOs] memory commitments,
         uint256[UTXO_SECRETS][OUT_UTXOs] memory secretMsgs,
         uint256 timestamp
-    ) internal {
+    ) internal returns (uint256 leftLeafId) {
         for (uint256 i = 0; i < OUT_UTXOs; i++) {
             require(
                 uint256(commitments[i]) < FIELD_SIZE,
@@ -43,7 +44,7 @@ abstract contract CommitmentsTrees is TriadIncrementalMerkleTrees {
         }
 
         // Insert hashes into Merkle tree(s)
-        uint256 leftLeafId = insertBatch(commitments);
+        leftLeafId = insertBatch(commitments);
 
         emit NewCommitments(leftLeafId, timestamp, commitments, secretMsgs);
     }

@@ -40,6 +40,7 @@ string constant ERR_ZERO_TOKEN_UNEXPECTED = "PP:E21";
 string constant ERR_TOO_EARLY_EXIT = "P0:E1";
 string constant ERR_TOO_LARGE_LEAFID = "P0:E2";
 string constant ERR_TOO_LARGE_PRIVKEY = "P0:E3";
+string constant ERR_WRONG_DEPOSIT = "P0:E4";
 
 // PrpGrantor contract
 string constant ERR_ZERO_CURATOR_ADDR = "GR:E1";

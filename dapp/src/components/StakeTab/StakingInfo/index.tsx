@@ -115,17 +115,25 @@ export default function StakingInfo() {
 
         console.debug('allowedTill: ', allowedTill);
         console.debug('minLockPeriod: ', minLockPeriod);
-        const rewardsEnd = Number(allowedTill) + Number(minLockPeriod);
+        const rewardsEnd =
+            allowedTill &&
+            minLockPeriod &&
+            Number(allowedTill) + Number(minLockPeriod);
 
         return {
             subtitle: 'Classic staking is closed for new stakes',
             body: (
                 <>
                     <Typography>
-                        The classic staking rewards program ended on{' '}
-                        {formatTime(rewardsEnd * 1000)}, so new stakes were
-                        automatically disabled by the smart contracts on{' '}
-                        {formatTime(Number(allowedTill) * 1000)}
+                        The classic staking rewards program ended
+                        {rewardsEnd
+                            ? ' on ' + formatTime(rewardsEnd * 1000)
+                            : ''}
+                        , so new stakes were automatically disabled by the smart
+                        contracts
+                        {allowedTill
+                            ? ' on ' + formatTime(Number(allowedTill) * 1000)
+                            : ''}
                         {link && (
                             <>
                                 {' '}

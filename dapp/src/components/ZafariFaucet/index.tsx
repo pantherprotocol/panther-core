@@ -5,6 +5,12 @@ import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
 import polygonIcon from '../../images/polygon-logo.svg';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {getChainBalance} from '../../redux/slices/chainBalance';
+import {
+    getZkpTokenBalance,
+    zkpTokenBalanceSelector,
+} from '../../redux/slices/zkpTokenBalance';
 import {formatAccountAddress} from '../../services/account';
 import {
     onWrongFaucetNetwork,
@@ -13,6 +19,7 @@ import {
 import {FAUCET_CHAIN_IDS} from '../../services/env';
 import {sendFaucetTransaction} from '../../services/faucet';
 import {switchNetwork} from '../../services/wallet';
+import {formatCurrency} from '../../utils/helpers';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 
@@ -24,6 +31,9 @@ function ZafariFaucet(props: {onConnect: () => void}) {
     const {account, active, library, error, chainId} = context;
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
+
+    const dispatch = useAppDispatch();
+    const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
 
     useEffect((): void => {
         const wrongNetwork =
@@ -73,10 +83,13 @@ function ZafariFaucet(props: {onConnect: () => void}) {
             account,
         );
 
+        dispatch(getChainBalance, context);
+        dispatch(getZkpTokenBalance, context);
+
         if (faucetResponse instanceof Error) {
             return;
         }
-    }, [library, chainId, account]);
+    }, [context, dispatch, library, chainId, account]);
 
     return (
         <Card className="zafari-faucet-container">
@@ -93,6 +106,12 @@ function ZafariFaucet(props: {onConnect: () => void}) {
                 <Box className="details-row">
                     <Typography id="caption">Token:</Typography>
                     <Typography id="token-symbol">$TESTZKP</Typography>
+                </Box>
+                <Box className="details-row">
+                    <Typography id="caption">Balance:</Typography>
+                    <Typography id="token-balance">
+                        {formatCurrency(tokenBalance)}
+                    </Typography>
                 </Box>
                 <Box className="details-row">
                     <Typography id="caption">Wallet Address:</Typography>
@@ -140,7 +159,7 @@ function ZafariFaucet(props: {onConnect: () => void}) {
                             sendFaucet();
                         }}
                     >
-                        Send Test Tokens
+                        Request Test Tokens
                     </Button>
                 )}
             </Box>

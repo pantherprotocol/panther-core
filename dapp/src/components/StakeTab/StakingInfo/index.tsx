@@ -113,8 +113,8 @@ export default function StakingInfo() {
             }
         })();
 
-        console.log('allowedTill: ', allowedTill);
-        console.log('minLockPeriod: ', minLockPeriod);
+        console.debug('allowedTill: ', allowedTill);
+        console.debug('minLockPeriod: ', minLockPeriod);
         const rewardsEnd = Number(allowedTill) + Number(minLockPeriod);
 
         return {

@@ -35,6 +35,13 @@ function ZafariFaucet(props: {onConnect: () => void}) {
     const dispatch = useAppDispatch();
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
 
+    const fetchZkpTokenBalance = useCallback(async () => {
+        if (tokenBalance) {
+            return;
+        }
+        dispatch(getZkpTokenBalance, context);
+    }, [dispatch, context, tokenBalance]);
+
     useEffect((): void => {
         const wrongNetwork =
             onWrongFaucetNetwork(context) ||
@@ -49,6 +56,13 @@ function ZafariFaucet(props: {onConnect: () => void}) {
             error,
         );
     }, [context, active, account, error]);
+
+    useEffect(() => {
+        if (!library || !account || !chainId) {
+            return;
+        }
+        fetchZkpTokenBalance();
+    }, [library, account, chainId, fetchZkpTokenBalance]);
 
     function networkName(): React.ReactElement {
         if (!active) {

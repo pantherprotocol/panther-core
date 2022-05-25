@@ -162,7 +162,9 @@ export default function StakingInfo() {
                         active stakes have ceased to earn further rewards.
                     </p>
                     <p>
-                        Also, advanced staking is now in public testing!{' '}
+                        <strong>
+                            Also, advanced staking is now in public testing!
+                        </strong>{' '}
                         <SafeMuiLink
                             href="https://blog.pantherprotocol.io/incentivized-testing-for-zkp-advanced-staking-is-now-live-19b51bc6b42b"
                             underline="always"

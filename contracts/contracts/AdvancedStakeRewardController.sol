@@ -70,11 +70,13 @@ contract AdvancedStakeRewardController is
     IERC721Receiver,
     IRewardAdviser
 {
-    /// @dev Total amount of $ZKPs, PRPd and NFTs used for rewards
-    struct UtilizedRewards {
-        uint96 zkp;
-        uint96 prp;
-        uint24 nft;
+    /// @dev Total amount of $ZKPs, PRPd and NFTs (ever) rewarded and staked
+    struct Totals {
+        uint96 zkpRewards;
+        uint96 prpRewards;
+        uint24 nftRewards;
+        // Accumulated amount of $ZKP (ever) staked, scaled (divided) by 1e15
+        uint40 scZkpStaked;
     }
 
     // solhint-disable var-name-mixedcase
@@ -84,10 +86,10 @@ contract AdvancedStakeRewardController is
     bytes4 private constant STAKE_TYPE = 0x7ec13a06;
     // `action` for the "staked" and message
     // bytes4(keccak256(abi.encodePacked(bytes4(keccak256("stake"), STAKE_TYPE)))
-    bytes4 private constant STAKE = 0x1e4d02b5;
+    bytes4 private constant STAKE = 0xcc995ce8;
     // `action` for the "unstaked" message
     // bytes4(keccak256(abi.encodePacked(bytes4(keccak256("unstake"), STAKE_TYPE)))
-    bytes4 private constant UNSTAKE = 0x493bdf45;
+    bytes4 private constant UNSTAKE = 0xb8372e55;
     // PRP grant type for the "advanced" stake
     // bytes4(keccak256("forAdvancedStakeGrant"))
     bytes4 private constant FOR_ADVANCED_STAKE_GRANT = 0x31a180d4;
@@ -126,15 +128,15 @@ contract AdvancedStakeRewardController is
 
     /// @notice Amount of $ZKPs allocated for rewards
     /// @dev Unlike $ZKPs, PRPs and NFTs are unlimited (not allocated in advance)
-    uint256 public allocatedZkpRewards;
+    uint256 public zkpRewardsLimit;
 
     /// @notice Total amounts of $ZKP, PRP and NFT rewarded so far
-    UtilizedRewards public utilizedRewards;
+    Totals public totals;
 
     uint8 private _reentrancyStatus;
 
     /// @dev Emitted when new $ZKPs are allocated to reward stakers
-    event ZkpRewardAllocated(uint256 zkpAmount);
+    event ZkpRewardLimitUpdate(uint256 newLimit);
 
     /// @dev Emitted when the reward for a stake is generated
     event RewardGenerated(
@@ -160,7 +162,7 @@ contract AdvancedStakeRewardController is
             rewardMaster != address(0) &&
                 pantherPool != address(0) &&
                 zkpToken != address(0),
-            "SRC:E1"
+            "ARC:E1"
         );
 
         REWARD_MASTER = rewardMaster;
@@ -171,7 +173,7 @@ contract AdvancedStakeRewardController is
 
         require(
             uint256(rewardingStart) + uint256(zkpApyDeclinePeriod) > timeNow(),
-            "SRC:E4"
+            "ARC:E4"
         );
         REWARDING_START = uint256(rewardingStart);
         ZKP_APY_DECLINE_PERIOD = uint256(zkpApyDeclinePeriod);
@@ -193,12 +195,12 @@ contract AdvancedStakeRewardController is
         override
         returns (Advice memory)
     {
-        require(msg.sender == REWARD_MASTER, "SRC: unauthorized");
+        require(msg.sender == REWARD_MASTER, "ARC: unauthorized");
 
         if (action == STAKE) {
             _generateRewards(message);
         } else {
-            require(action == UNSTAKE, "SRC: unsupported action");
+            require(action == UNSTAKE, "ARC: unsupported action");
         }
 
         // Return "zero" advice
@@ -228,23 +230,23 @@ contract AdvancedStakeRewardController is
 
     /// @notice Allocate the $ZKP amount, which this contract holds, for rewards
     /// @dev Anyone may call it
-    function allocateZkpForRewards() external {
+    function setZkpRewardsLimit() external {
         // trusted token contract - reentrancy guard unneeded
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory data) = ZKP_TOKEN.call(
             // bytes4(keccak256(bytes('balanceOf(address)')));
             abi.encodeWithSelector(0x70a08231, address(this))
         );
-        require(success && (data.length != 0), "SRC:E5");
+        require(success && (data.length != 0), "ARC:E5");
         uint256 balance = abi.decode(data, (uint256));
 
-        uint256 allocated = allocatedZkpRewards;
-        uint256 utilized = uint256(utilizedRewards.zkp);
-        uint256 remaining = allocated - utilized;
+        uint256 limit = zkpRewardsLimit;
+        uint256 rewarded = uint256(totals.zkpRewards);
+        uint256 remaining = limit - rewarded;
         if (balance > remaining) {
             uint256 newAllocation = balance - remaining;
-            allocatedZkpRewards = allocated + newAllocation;
-            emit ZkpRewardAllocated(newAllocation);
+            zkpRewardsLimit = limit + newAllocation;
+            emit ZkpRewardLimitUpdate(zkpRewardsLimit);
         }
     }
 
@@ -255,15 +257,15 @@ contract AdvancedStakeRewardController is
         address to,
         uint256 amount
     ) external {
-        require(_reentrancyStatus != 1, "SRC: can't be re-entered");
+        require(_reentrancyStatus != 1, "ARC: can't be re-entered");
         _reentrancyStatus = 1;
 
-        require(OWNER == msg.sender, "SRC: unauthorized");
+        require(OWNER == msg.sender, "ARC: unauthorized");
         require(
             (token != ZKP_TOKEN) ||
                 (block.timestamp >=
                     (REWARDING_START + ZKP_RESCUE_FORBIDDEN_PERIOD)),
-            "SRC: too early withdrawal"
+            "ARC: too early withdrawal"
         );
 
         _claimErc20(token, to, amount);
@@ -297,16 +299,16 @@ contract AdvancedStakeRewardController is
             bytes memory data
         ) = _unpackStakingActionMsg(message);
 
-        require(stakeAmount != 0, "SRC: unexpected zero stakeAmount");
-        require(stakedAt >= REWARDING_START, "SRC: unexpected stakedAt");
-        require(lockedTill > stakedAt, "SRC: unexpected lockedTill");
+        require(stakeAmount != 0, "ARC: unexpected zero stakeAmount");
+        require(stakedAt >= REWARDING_START, "ARC: unexpected stakedAt");
+        require(lockedTill > stakedAt, "ARC: unexpected lockedTill");
 
         uint256 zkpAmount = 0;
         uint256 prpAmount = 0;
         uint256 nftAmount = 0;
         uint256 nftTokenId = 0;
         {
-            UtilizedRewards memory _utilizedRewards = utilizedRewards;
+            Totals memory _totals = totals;
 
             // Compute amount of the $ZKP reward
             {
@@ -314,13 +316,19 @@ contract AdvancedStakeRewardController is
                 uint256 apy = getZkpApyAt(stakedAt);
                 zkpAmount = (uint256(stakeAmount) * apy * period) / 365 days;
 
-                uint256 newUtilizedZkpRewards = uint256(_utilizedRewards.zkp) +
+                uint256 newTotalZkpReward = uint256(_totals.zkpRewards) +
                     zkpAmount;
                 require(
-                    allocatedZkpRewards >= newUtilizedZkpRewards,
-                    "SRC: too less rewards available"
+                    zkpRewardsLimit >= newTotalZkpReward,
+                    "ARC: too less rewards available"
                 );
-                _utilizedRewards.zkp = safe96(newUtilizedZkpRewards);
+                _totals.zkpRewards = safe96(newTotalZkpReward);
+
+                uint256 newScZkpStaked = uint256(_totals.scZkpStaked) +
+                    uint256(stakeAmount) /
+                    1e15;
+                // Risk of overflow ignored as the $ZKP max total supply is 1e9 tokens
+                _totals.scZkpStaked = uint40(newScZkpStaked);
             }
 
             // Register PRP grant to this contract (it will be "burnt" for PRP UTXO)
@@ -329,7 +337,7 @@ contract AdvancedStakeRewardController is
                 FOR_ADVANCED_STAKE_GRANT
             );
             // `prpAmount` values assumed to be too small to cause overflow
-            _utilizedRewards.prp += uint96(prpAmount);
+            _totals.prpRewards += uint96(prpAmount);
 
             // TODO: enhance PRP granting to save gas
             // Grant the total just once (for all stakes), then use a part (for every stake),
@@ -342,10 +350,10 @@ contract AdvancedStakeRewardController is
                     address(this)
                 );
                 nftAmount = 1;
-                _utilizedRewards.nft += 1;
+                _totals.nftRewards += 1;
             }
 
-            utilizedRewards = _utilizedRewards;
+            totals = _totals;
         }
 
         // Extract public spending keys and "secrets"

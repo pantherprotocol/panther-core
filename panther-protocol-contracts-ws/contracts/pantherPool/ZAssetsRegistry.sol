@@ -111,7 +111,7 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
     }
 
     /// @dev Ensure only an owner may call it (from a child contact)
-    function addAsset(ZAsset memory asset) internal {
+    function _addAsset(ZAsset memory asset) internal {
         uint160 zAssetRootId = getZAssetRootId(asset.token);
         require(asset.token != address(0), ERR_ZERO_TOKEN_ADDRESS);
         require(
@@ -124,7 +124,9 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
     }
 
     /// @dev Ensure only an owner may call it (from a child contact)
-    function changeAssetStatus(uint160 zAssetRootId, uint8 newStatus) internal {
+    function _changeAssetStatus(uint160 zAssetRootId, uint8 newStatus)
+        internal
+    {
         require(_zAssets[zAssetRootId].token != address(0), ERR_UNKNOWN_ASSET);
         uint8 oldStatus = _zAssets[zAssetRootId].status;
         // New status value restrictions relaxed to allow for protocol updates.

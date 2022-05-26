@@ -192,6 +192,22 @@ contract PantherPoolV0 is
         );
     }
 
+    /// @notice Register a new asset with the given params as a "zAsset" with the MASP
+    /// @param asset Params of the asset (including its `ZAsset.status`)
+    /// @dev The "owner" may call only
+    function addAsset(ZAsset memory asset) external onlyOwner {
+        _addAsset(asset);
+    }
+
+    /// @notice Set the status of the given "zAsset" to the given value
+    /// @dev The "owner" may call only
+    function changeAssetStatus(uint160 zAssetRootId, uint8 newStatus)
+        external
+        onlyOwner
+    {
+        _changeAssetStatus(zAssetRootId, newStatus);
+    }
+
     /// @notice Add a new "grant type", with the specified amount (in PRPs) of the grant,
     /// and allow the specified "curator" to issue grants of this type
     /// @dev The "owner" may call only

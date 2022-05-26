@@ -37,7 +37,7 @@ contract PantherPoolV0Tester is PantherPoolV0 {
         z1.scale = 0;
         z1.token = address(uint160(111));
         z1.status = zASSET_ENABLED;
-        addAsset(z1);
+        _addAsset(z1);
     }
 
     function testGetZAssetId(address token, uint256 tokenId)

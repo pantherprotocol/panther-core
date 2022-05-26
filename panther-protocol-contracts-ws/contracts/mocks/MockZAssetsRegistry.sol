@@ -7,12 +7,12 @@ import { ZAsset } from "../common/Types.sol";
 
 contract MockZAssetsRegistry is ZAssetsRegistry {
     function internalAddAsset(ZAsset calldata asset) external {
-        addAsset(asset);
+        _addAsset(asset);
     }
 
     function internalChangeAssetStatus(uint160 zAssetId, uint8 newStatus)
         external
     {
-        changeAssetStatus(zAssetId, newStatus);
+        _changeAssetStatus(zAssetId, newStatus);
     }
 }

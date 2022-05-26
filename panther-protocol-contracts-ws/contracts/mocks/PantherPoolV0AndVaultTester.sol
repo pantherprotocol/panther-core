@@ -62,7 +62,7 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
             z.scale = 0;
             z.token = address(Tokens[i]);
             z.status = zASSET_ENABLED;
-            addAsset(z);
+            _addAsset(z);
         }
     }
 

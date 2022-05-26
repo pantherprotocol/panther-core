@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: GPL-3.0
 // derived from example provided at https://github.com/NoahZinsmeister/web3-react
 
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 
 import {Contract} from '@ethersproject/contracts';
 import {useWeb3React, UnsupportedChainIdError} from '@web3-react/core';
@@ -191,4 +191,41 @@ export function useContractCallData(
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [blockNumber, args, contract, methodName]);
     return result;
+}
+
+export function useOnConnect() {
+    const {connector, error, chainId, activate, deactivate} = useWeb3React();
+
+    // Logic to recognize the connector currently being activated
+    const [activatingConnector, setActivatingConnector] = useState<any>();
+
+    // Handle logic to eagerly connect to the injected ethereum provider, if it
+    // exists and has granted access already
+    const triedEager = useEagerConnect();
+
+    useEffect(() => {
+        if (activatingConnector && activatingConnector === connector) {
+            setActivatingConnector(undefined);
+        }
+    }, [activatingConnector, connector]);
+
+    // Set up listeners for events on the injected ethereum provider, if it exists
+    // and is not in the process of activating.
+    const suppressInactiveListeners =
+        !triedEager || activatingConnector || error;
+    useInactiveListener(suppressInactiveListeners);
+
+    return useCallback(async () => {
+        console.debug('onConnect: error', error, '/ chainId', chainId);
+        if (!chainId) {
+            console.debug(
+                'Connecting to the network; injected connector:',
+                injected,
+            );
+            setActivatingConnector(injected);
+            await activate(injected);
+        } else {
+            deactivate();
+        }
+    }, [error, chainId, activate, deactivate]);
 }

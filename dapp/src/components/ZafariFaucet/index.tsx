@@ -4,6 +4,7 @@ import {Box, Button, Card, Typography} from '@mui/material';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
+import {useOnConnect} from '../../hooks/web3';
 import polygonIcon from '../../images/polygon-logo.svg';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getChainBalance} from '../../redux/slices/chainBalance';
@@ -25,12 +26,12 @@ import {ConnectButton} from '../ConnectButton';
 
 import './styles.scss';
 
-function ZafariFaucet(props: {onConnect: () => void}) {
-    const {onConnect} = props;
+function ZafariFaucet() {
     const context = useWeb3React();
-    const {account, active, library, error, chainId} = context;
+    const {library, account, active, error, chainId} = context;
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
+    const onConnect = useOnConnect();
 
     const dispatch = useAppDispatch();
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);

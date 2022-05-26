@@ -104,3 +104,7 @@ export const injected = new InjectedConnector({
 export const injectedFaucet = new InjectedConnector({
     supportedChainIds: FAUCET_CHAIN_IDS,
 });
+
+export function currentNetwork(chainId: number | undefined): Network | null {
+    return chainId ? supportedNetworks[chainId] : null;
+}

@@ -8,6 +8,7 @@ import logo from '../../../images/panther-logo.svg';
 import {useAppSelector} from '../../../redux/hooks';
 import {isStakingOpenSelector} from '../../../redux/slices/stakeTerms';
 import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
+import {currentNetwork} from '../../../services/connectors';
 import {StakeType} from '../../../types/staking';
 import {formatCurrency} from '../../../utils/helpers';
 
@@ -17,7 +18,6 @@ export default function StakingInput(props: {
     amountToStake: string | null;
     setStakingAmount: (amount: string) => void;
     setStakingAmountBN: (amount: BigNumber) => void;
-    networkLogo?: string;
 }) {
     const context = useWeb3React();
     const {account, chainId} = context;
@@ -27,6 +27,8 @@ export default function StakingInput(props: {
         isStakingOpenSelector(chainId, StakeType.Advanced),
     );
     const disabled = !account || !isStakingOpen;
+
+    const network = currentNetwork(chainId);
 
     const changeHandler = (e: any) => {
         const inputTextLength = e.target.value.length;
@@ -99,9 +101,9 @@ export default function StakingInput(props: {
                                 className="staking-input-symbol"
                             >
                                 <span className="staking-symbol-holder">
-                                    {props.networkLogo && (
+                                    {network?.logo && (
                                         <img
-                                            src={props.networkLogo}
+                                            src={network.logo}
                                             alt="Network logo"
                                         />
                                     )}

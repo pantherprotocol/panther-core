@@ -5,16 +5,12 @@ import {Box} from '@mui/system';
 
 import {useAppSelector} from '../../redux/hooks';
 import {blurSelector} from '../../redux/slices/blur';
-import {Network} from '../../services/connectors';
-import {switchNetwork} from '../../services/wallet';
 import {Footer} from '../Footer';
 import Header from '../Header';
 
 import './styles.scss';
 
 export const MainPageWrapper = (props: {
-    onConnect: () => void;
-    network: Network | null;
     background: string;
     children: React.ReactNode;
 }): React.ReactElement => {
@@ -27,17 +23,7 @@ export const MainPageWrapper = (props: {
             }}
         >
             <CssBaseline />
-            <Header
-                onConnect={() => {
-                    props.onConnect();
-                }}
-                switchNetwork={(chainId: number) => {
-                    switchNetwork(chainId);
-                }}
-                networkName={props.network?.name}
-                networkSymbol={props.network?.symbol}
-                networkLogo={props.network?.logo}
-            />
+            <Header />
             <Box className="main-box-holder">{props.children}</Box>
             <Footer />
         </Box>

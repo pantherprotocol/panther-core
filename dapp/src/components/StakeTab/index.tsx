@@ -9,6 +9,7 @@ import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import {BigNumber, utils} from 'ethers';
 
 import StakingInfo from '../../components/StakeTab/StakingInfo';
+import {useOnConnect} from '../../hooks/web3';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {
     calculateRewards,
@@ -28,6 +29,7 @@ import {
 import {onWrongNetwork} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
 import {advancedStake} from '../../services/staking';
+import {switchNetwork} from '../../services/wallet';
 import {StakeType} from '../../types/staking';
 import {safeParseUnits} from '../../utils/helpers';
 import {safeOpenMetamask} from '../Common/links';
@@ -39,12 +41,7 @@ import StakingInput from './StakingInput';
 
 import './styles.scss';
 
-export default function StakeTab(props: {
-    onConnect: any;
-    networkLogo?: string;
-    switchNetwork: any;
-    stakeType: string;
-}) {
+export default function StakeTab() {
     const context = useWeb3React();
     const {account, library, chainId, active, error} = context;
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
@@ -155,6 +152,8 @@ export default function StakeTab(props: {
         }
     }, [context, active, account, library, error]);
 
+    const onConnect = useOnConnect();
+
     return (
         <Box className="staking-tab-holder">
             {isAdvancedStakingOpen ? (
@@ -163,7 +162,6 @@ export default function StakeTab(props: {
                         setStakingAmount={setStakingAmount}
                         setStakingAmountBN={setStakingAmountBN}
                         amountToStake={amountToStake}
-                        networkLogo={props.networkLogo}
                     />
                     <Card variant="outlined" className="staking-info-card">
                         <CardContent className="staking-info-card-content">
@@ -185,7 +183,7 @@ export default function StakeTab(props: {
                             const chainIdToSwitch = chainId
                                 ? chainId
                                 : CHAIN_IDS[0];
-                            props.switchNetwork(chainIdToSwitch);
+                            switchNetwork(chainIdToSwitch);
                         }}
                     />
                 </div>
@@ -203,7 +201,7 @@ export default function StakeTab(props: {
                             if (isNoEthereumProviderError) {
                                 safeOpenMetamask();
                             } else {
-                                props.onConnect();
+                                onConnect();
                             }
                         }}
                     />

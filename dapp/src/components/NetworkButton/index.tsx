@@ -10,13 +10,13 @@ import Typography from '@mui/material/Typography';
 
 import {supportedNetworks} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
+import {switchNetwork} from '../../services/wallet';
 
 import './styles.scss';
 
 export const NetworkButton = (props: {
     networkLogo: string;
     networkName: string;
-    switchNetwork: (chainId: number) => void;
 }) => {
     return (
         <Box className="network-button-container">
@@ -52,7 +52,7 @@ export const NetworkButton = (props: {
                                         <Typography
                                             className="network-name"
                                             onClick={() => {
-                                                props.switchNetwork(chainId);
+                                                switchNetwork(chainId);
                                             }}
                                         >
                                             {requiredNetwork.name}

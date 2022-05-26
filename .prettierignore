@@ -11,6 +11,8 @@ contracts/testing/**/data
 contracts/typechain/
 contracts/types/
 contracts/typing/
+crypto/coverage/
+crypto/lib/
 dapp/public/preparation/
 dapp/src/types/
 .eslintignore

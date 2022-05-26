@@ -38,6 +38,7 @@ stages: # List of stages for jobs, and their order of execution
   - yarn build:types
   - yarn run build:dapp
   - yarn run test:dapp
+  - yarn run test:crypto
 
 .preview_script: &preview_script
   - |

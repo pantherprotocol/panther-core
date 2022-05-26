@@ -20,11 +20,13 @@
     "prettier:list-different": "yarn prettier --list-different .",
     "test": "yarn test:contracts && yarn test:dapp",
     "test:contracts": "yarn workspace @panther-core/contracts test",
-    "test:dapp": "yarn workspace @panther-core/dapp test"
+    "test:dapp": "yarn workspace @panther-core/dapp test",
+    "test:crypto": "yarn workspace @panther-core/crypto test"
   },
   "workspaces": {
     "packages": [
       "contracts",
+      "crypto",
       "dapp"
     ],
     "nohoist": [

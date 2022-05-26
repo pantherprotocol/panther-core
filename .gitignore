@@ -16,6 +16,7 @@ typing/
 *.tsbuildinfo
 yarn-debug.log*
 yarn-error.log*
+crypto/lib
 
 /.idea
 .vscode

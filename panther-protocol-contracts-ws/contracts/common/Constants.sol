@@ -39,3 +39,6 @@ uint8 constant BY_TOKENID_TOKEN_TYPE = 0xFF;
 uint8 constant zASSET_ENABLED = 0x01;
 uint8 constant zASSET_DISABLED = 0x02;
 uint8 constant zASSET_UNKNOWN = 0x00;
+
+// UTXO data (opeing values - encrypted and public) foromats
+uint8 constant UTXO_DATA_TYPE1 = 0xAB;

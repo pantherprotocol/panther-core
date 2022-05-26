@@ -97,7 +97,7 @@ contract PantherPoolV0 is
         }
 
         bytes32[OUT_UTXOs] memory commitments;
-        uint256[UTXO_SECRETS][OUT_UTXOs] memory secretMsgs;
+        bytes[OUT_UTXOs] memory utxoData;
         for (uint256 utxoIndex = 0; utxoIndex < OUT_UTXOs; utxoIndex++) {
             (uint160 zAssetId, uint96 scaledAmount) = _processDepositedAsset(
                 tokens[utxoIndex],
@@ -112,23 +112,18 @@ contract PantherPoolV0 is
                 zAssetId,
                 timestamp
             );
-            // Copy ciphertext into the first words of the message to the receiver
-            for (
-                uint256 wordIndex = 0;
-                wordIndex < CIPHERTEXT1_WORDS;
-                wordIndex++
-            ) {
-                secretMsgs[utxoIndex][wordIndex] = secrets[utxoIndex][
-                    wordIndex
-                ];
-            }
-            // Pack zAssetId and scaledAmount as the last word of the message to the receiver
-            secretMsgs[utxoIndex][CIPHERTEXT1_WORDS] =
-                (uint256(zAssetId) << 96) |
-                scaledAmount;
+
+            uint256 tokenAndAmount = (uint256(uint160(tokens[utxoIndex])) <<
+                96) | scaledAmount;
+            utxoData[utxoIndex] = abi.encodePacked(
+                uint8(UTXO_DATA_TYPE1),
+                secrets[utxoIndex],
+                tokenAndAmount,
+                tokenIds[utxoIndex]
+            );
         }
 
-        leftLeafId = addAndEmitCommitments(commitments, secretMsgs, timestamp);
+        leftLeafId = addAndEmitCommitments(commitments, utxoData, timestamp);
     }
 
     function exit(

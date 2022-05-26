@@ -1,10 +1,8 @@
 // @ts-ignore
-import {bigIntToBuffer, bufferToBigInt, sha256} from './utils';
 
 // @ts-ignore
 import {ZqField} from 'ffjavascript';
 import assert from 'assert';
-import {builder} from './witness_calculator';
 import {ethers} from 'ethers';
 import fs from 'fs';
 // @ts-ignore
@@ -13,11 +11,12 @@ import {groth16} from 'snarkjs';
 import {poseidon} from 'circomlibjs';
 import {
     TriadMerkleTree,
+    generateMerkleProof,
     triadTreeMerkleProofToPathElements,
     triadTreeMerkleProofToPathIndices,
 } from './triad-merkle-tree';
-import {leafIdToTreeIdAndTriadId, MerkleProof, poseidon2or3} from './index';
-import {toBytes32} from './triad-merkle-tree/utils';
+import {bigIntToBuffer, bufferToBigInt, sha256} from './utils';
+import {builder} from './witness_calculator';
 
 // @ts-ignore
 export {groth16} from 'snarkjs';
@@ -279,7 +278,7 @@ export const verifyProof = async (
 export async function generateProofFromBrowser(
     address: string,
     secrets: string,
-    leafId: BigInt,
+    leafId: bigint,
     tree: TriadMerkleTree,
     wasmBuffer: any,
     zKeyBuffer: any,
@@ -331,19 +330,4 @@ export async function generateProofFromBrowser(
         root: merkleProof.root,
         treeId,
     };
-}
-
-export async function generateMerkleProof(
-    leafId: BigInt,
-    tree: TriadMerkleTree,
-): Promise<[MerkleProof, number]> {
-    const [treeId, triadLeafIndex] = leafIdToTreeIdAndTriadId(leafId);
-    const root = tree.root ? toBytes32(tree.root) : 'null';
-    console.debug(
-        `Generating Merkle proof for leafId=${leafId} treeId=${treeId} ` +
-            `triadLeafIndex=${triadLeafIndex} root=${root}`,
-    );
-    const path = tree.genMerklePath(triadLeafIndex);
-    assert(TriadMerkleTree.verifyMerklePath(path, poseidon2or3));
-    return [path, treeId];
 }

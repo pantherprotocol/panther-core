@@ -1,4 +1,9 @@
-export {poseidon2or3, TriadMerkleTree, MerkleProof} from './tree';
+export {
+    poseidon2or3,
+    TriadMerkleTree,
+    MerkleProof,
+    generateMerkleProof,
+} from './tree';
 export {
     createTriadMerkleTree,
     compressString,

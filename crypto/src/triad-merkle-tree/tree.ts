@@ -10,12 +10,17 @@ This code is modified version of incrementalquintree:
 https://github.com/appliedzkp/incrementalquintree
 */
 
-import {compressString, decompressString, toBytes32} from './utils';
-
 import assert from 'assert';
 import fs from 'fs';
 // @ts-ignore
 import {poseidon} from 'circomlibjs';
+
+import {
+    leafIdToTreeIdAndTriadId,
+    compressString,
+    decompressString,
+    toBytes32,
+} from './utils';
 
 type PathElements = bigint[][];
 type Indices = number[];
@@ -26,6 +31,21 @@ interface MerkleProof {
     depth: number;
     root: bigint;
     leaf: bigint;
+}
+
+export async function generateMerkleProof(
+    leafId: bigint,
+    tree: TriadMerkleTree,
+): Promise<[MerkleProof, number]> {
+    const [treeId, triadLeafIndex] = leafIdToTreeIdAndTriadId(leafId);
+    const root = tree.root ? toBytes32(tree.root) : 'null';
+    console.debug(
+        `Generating Merkle proof for leafId=${leafId} treeId=${treeId} ` +
+            `triadLeafIndex=${triadLeafIndex} root=${root}`,
+    );
+    const path = tree.genMerklePath(triadLeafIndex);
+    assert(TriadMerkleTree.verifyMerklePath(path, poseidon2or3));
+    return [path, treeId];
 }
 
 const calcInitialVals = (

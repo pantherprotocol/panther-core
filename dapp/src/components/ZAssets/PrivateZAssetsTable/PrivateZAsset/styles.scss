@@ -1,30 +1,62 @@
 @import '../../../../variables';
 
-$private-zasset-row-background-color: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(0, 0, 0, 0) 100%
-) !important;
-
-.private-zasset-row {
-    background: $private-zasset-row-background-color;
-    mix-blend-mode: normal;
+.private-zAsset-row {
+    background: transparent !important;
     opacity: 0.7;
-    box-sizing: border-box;
     backdrop-filter: blur(600px);
-    border-radius: 16px !important;
-    padding: 10px !important;
+    border-radius: 0px !important;
+    padding: 15px !important;
+    border: 2px solid white !important;
 
-    .more-items-cell {
-        width: 12%;
-    }
-
-    .icon-cell {
-        width: 15%;
+    .expand-icon {
+        width: 3%;
 
         @media (max-width: 768px) {
             width: initial;
         }
+    }
+
+    .logo-cell {
+        width: 10%;
+
+        @media (max-width: 768px) {
+            width: initial;
+        }
+    }
+
+    .staked-zAsset-row {
+        background: transparent !important;
+        mix-blend-mode: normal;
+        opacity: 0.7;
+        box-sizing: border-box;
+        backdrop-filter: blur(600px);
+        border-radius: 0px !important;
+        padding: 10px !important;
+    }
+
+    .zAsset-staking-type {
+        background: rgba(75, 86, 107, 0.3);
+        mix-blend-mode: normal;
+        backdrop-filter: blur(80px);
+        border-radius: 10px;
+        font-size: 16px;
+        line-height: 2px;
+        color: white;
+        padding: 10px;
+        font-weight: normal;
+    }
+
+    .staking-date {
+        font-weight: normal !important;
+    }
+
+    .redeem-button {
+        background: rgba(71, 82, 103, 0.2) !important;
+        color: #ffdfbd !important;
+        padding: 10px 20px !important;
+        margin: 5px 15px;
+        border-radius: 8px;
+        text-transform: none;
     }
 
     .asset-balance {
@@ -39,7 +71,10 @@ $private-zasset-row-background-color: linear-gradient(
         }
     }
 
-    .prp-reward-column {
+    .bold-beige {
         color: $color-beige !important;
+    }
+
+    .staked-zAsset-table {
     }
 }

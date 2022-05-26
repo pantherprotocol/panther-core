@@ -1,11 +1,11 @@
 @import '../../../variables';
 
-.private-zasset-container {
+.private-zAsset-container {
     margin-top: 15px;
 
     .MuiTableCell-root.MuiTableCell-head {
-        font-size: 16px !important;
         vertical-align: middle;
+        font-size: 16px !important;
     }
 
     .MuiTableCell-root.MuiTableCell-body {
@@ -19,7 +19,7 @@
         min-width: 400px;
     }
 
-    .icon {
+    .tooltip-icon {
         padding-left: 20px;
         position: relative;
         top: 3px;

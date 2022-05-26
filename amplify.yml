@@ -31,4 +31,5 @@ frontend:
     paths:
       - node_modules/**/*
       - contracts/node_modules/**/*
+      - crypto/node_modules/**/*
       - dapp/node_modules/**/*

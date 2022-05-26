@@ -1,5 +1,5 @@
 {
-  "name": "@preZKP/crypto",
+  "name": "@panther-core/crypto",
   "description": "Cryptography library for Panther Protocol LaunchDAO",
   "version": "0.1.0",
   "main": "lib/index.js",
@@ -15,12 +15,12 @@
     "build:ts": "tsc -p tsconfig.json",
     "build": "yarn build:types && yarn build:ts",
     "watch": "yarn build:ts --watch",
-    "test": "yarn build:types && jest",
+    "test": "yarn jest",
     "test:watch": "jest --clearCache && jest --watch",
     "tmt:build": "ts-node ./src/triad-merkle-tree/scripts/build.ts",
-    "lint": "yarn run lint:ts && yarn run prettier:list-different",
+    "lint": "yarn run lint:eslint && yarn run prettier:list-different",
     "lint:eslint": "yarn eslint --max-warnings 0",
-    "lint:ts": "yarn lint:eslint --ext .js,.ts .",
+    "lint:fix": "yarn lint:eslint --fix",
     "prettier:check": "cd .. && yarn prettier --check crypto",
     "prettier:fix": "cd .. && yarn prettier --write crypto",
     "prettier:list-different": "cd .. && yarn prettier --list-different crypto"

@@ -48,6 +48,15 @@ export function fiatPrice(
     return amount && price && amount.mul(price).div(E18);
 }
 
+export function calcUSDPrice(
+    value: BigNumber | null,
+    price: BigNumber | null,
+    options?: {decimals?: number},
+): string {
+    const usdValue = fiatPrice(value, price);
+    return formatUSD(usdValue, options);
+}
+
 export function getDecimalSeparator(): string {
     const n = 1.1;
     return n.toLocaleString(getLocale()).substring(1, 2);

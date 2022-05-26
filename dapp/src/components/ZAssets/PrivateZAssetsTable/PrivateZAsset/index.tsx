@@ -4,19 +4,23 @@ import {TableCell, TableRow} from '@mui/material';
 import {BigNumber} from 'ethers';
 
 import pantherIcon from '../../../../images/panther-logo.svg';
-import {ZAsset} from '../../../../types/assets';
-import {formatCurrency, formatUSD} from '../../../../utils/helpers';
+import {useAppSelector} from '../../../../redux/hooks';
+import {marketPriceSelector} from '../../../../redux/slices/zkpMarketPrice';
+import {AdvancedStakeReward} from '../../../../types/staking';
+import {calcUSDPrice, formatCurrency} from '../../../../utils/helpers';
 import Balance from '../../Balance';
 import Network from '../../Network';
 
 import './styles.scss';
 
-export default function PrivateZAsset(props: {item: ZAsset; key: number}) {
-    const balance = formatCurrency(BigNumber.from(props.item.value));
-    const balanceValue = formatUSD(BigNumber.from(props.item.usdValue), {
-        decimals: 2,
-    });
-    const prp = formatCurrency(BigNumber.from(props.item.prpAmount));
+export default function PrivateZAsset(props: {
+    item: AdvancedStakeReward;
+    key: number;
+}) {
+    const zkpPrice = useAppSelector(marketPriceSelector);
+    const zZKP = formatCurrency(BigNumber.from(props.item.zZKP));
+    const zZKPValue = calcUSDPrice(BigNumber.from(props.item.zZKP), zkpPrice);
+    const prp = formatCurrency(BigNumber.from(props.item.PRP));
 
     return (
         <React.Fragment>
@@ -26,13 +30,13 @@ export default function PrivateZAsset(props: {item: ZAsset; key: number}) {
                 </TableCell>
                 <TableCell align="right">
                     <Balance
-                        balance={balance}
-                        name={props.item.name}
-                        balanceValue={balanceValue}
+                        balance={zZKP}
+                        name={'zZKP'}
+                        balanceValue={zZKPValue}
                     />
                 </TableCell>
                 <TableCell align="left">
-                    <Network networkName={props.item.network} />
+                    <Network networkName={'Polygon zAsset'} />
                 </TableCell>
                 <TableCell align="left">{prp} PRP</TableCell>
                 {/* <TableCell align="center" className="more-items-cell"> */}

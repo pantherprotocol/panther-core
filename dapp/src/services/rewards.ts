@@ -12,7 +12,7 @@ export type AdvancedRewards = {
     [key in AdvancedTokenIDs]: BigNumber;
 };
 
-type AdvancedTokenIDs = 'PRP' | 'zZKP';
+export type AdvancedTokenIDs = 'PRP' | 'zZKP';
 
 export enum TokenID {
     ZKP = 'ZKP',

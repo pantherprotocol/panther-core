@@ -20,9 +20,9 @@ import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 import {chainHasAdvancedStaking} from '../../services/contracts';
 import {
     isClassic,
-    TokenID,
     AdvancedRewards,
     ClassicRewards,
+    TokenID,
 } from '../../services/rewards';
 import {
     unstake,

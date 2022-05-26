@@ -5,12 +5,11 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {constants} from 'ethers';
 
 import {chainHasStakesReporter} from '../../services/contracts';
-import {TokenID, isClassic, AdvancedRewards} from '../../services/rewards';
+import {isClassic, AdvancedRewards, TokenID} from '../../services/rewards';
 import * as stakingService from '../../services/staking';
+import {StakeRewards} from '../../types/staking';
 import {formatCurrency, fiatPrice} from '../../utils/helpers';
 import {RootState} from '../store';
-
-import {StakeRewards} from './types/stakingRewards';
 
 interface StakesRewardsAsyncState {
     value: StakeRewards | null;

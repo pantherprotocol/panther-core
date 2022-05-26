@@ -2,10 +2,9 @@ import {BigNumber} from 'ethers';
 // eslint-disable-next-line
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
-import {TokenID, prpReward, zZkpReward} from '../../services/rewards';
+import {prpReward, zZkpReward, TokenID} from '../../services/rewards';
+import {StakeRewards} from '../../types/staking';
 import {RootState} from '../store';
-
-import {StakeRewards} from './types/stakingRewards';
 
 interface StakesRewardsState {
     value: StakeRewards | null;

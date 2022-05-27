@@ -194,26 +194,7 @@ export function useContractCallData(
 }
 
 export function useOnConnect() {
-    const {connector, error, chainId, activate, deactivate} = useWeb3React();
-
-    // Logic to recognize the connector currently being activated
-    const [activatingConnector, setActivatingConnector] = useState<any>();
-
-    // Handle logic to eagerly connect to the injected ethereum provider, if it
-    // exists and has granted access already
-    const triedEager = useEagerConnect();
-
-    useEffect(() => {
-        if (activatingConnector && activatingConnector === connector) {
-            setActivatingConnector(undefined);
-        }
-    }, [activatingConnector, connector]);
-
-    // Set up listeners for events on the injected ethereum provider, if it exists
-    // and is not in the process of activating.
-    const suppressInactiveListeners =
-        !triedEager || activatingConnector || error;
-    useInactiveListener(suppressInactiveListeners);
+    const {error, chainId, activate, deactivate} = useWeb3React();
 
     return useCallback(async () => {
         console.debug('onConnect: error', error, '/ chainId', chainId);
@@ -222,7 +203,6 @@ export function useOnConnect() {
                 'Connecting to the network; injected connector:',
                 injected,
             );
-            setActivatingConnector(injected);
             await activate(injected);
         } else {
             deactivate();

@@ -35,6 +35,7 @@ string constant ERR_WRONG_ASSET = "PP:E18";
 string constant ERR_ZERO_FEE_PAYER = "PP:E19";
 string constant ERR_ZERO_TOKEN_EXPECTED = "PP:E20";
 string constant ERR_ZERO_TOKEN_UNEXPECTED = "PP:E21";
+string constant ERR_ZERO_TOKENID_EXPECTED = "PP:22";
 
 // (Specific to) PantherPoolV0 contract
 string constant ERR_TOO_EARLY_EXIT = "P0:E1";

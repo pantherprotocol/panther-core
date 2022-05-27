@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.4;
 
-import { zASSET_ENABLED, zASSET_UNKNOWN } from "../common/Constants.sol";
-import { ERR_ASSET_ALREADY_REGISTERED, ERR_UNKNOWN_ASSET } from "../common/ErrorMsgs.sol";
+import { ERC20_TOKEN_TYPE, zASSET_ENABLED, zASSET_UNKNOWN } from "../common/Constants.sol";
+import { ERR_ASSET_ALREADY_REGISTERED, ERR_UNKNOWN_ASSET, ERR_ZERO_TOKENID_EXPECTED } from "../common/ErrorMsgs.sol";
 import { ERR_WRONG_ASSET_STATUS, ERR_ZERO_TOKEN_ADDRESS } from "../common/ErrorMsgs.sol";
 import { ZAsset } from "../common/Types.sol";
 import "../common/Utils.sol";
@@ -65,9 +65,16 @@ abstract contract ZAssetsRegistry is Utils, IZAssetsRegistry {
     {
         uint160 zAssetRootId = getZAssetRootId(token);
         asset = _zAssets[zAssetRootId];
-        zAssetId = asset.status == zASSET_UNKNOWN
-            ? uint160(0)
-            : getZAssetId(token, tokenId);
+
+        if (asset.status == zASSET_UNKNOWN) {
+            zAssetId = uint160(0);
+        } else {
+            require(
+                asset.tokenType != ERC20_TOKEN_TYPE || tokenId == 0,
+                ERR_ZERO_TOKENID_EXPECTED
+            );
+            zAssetId = getZAssetId(token, tokenId);
+        }
     }
 
     function isZAssetWhitelisted(uint160 zAssetRootId)

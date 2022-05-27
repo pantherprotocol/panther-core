@@ -4,10 +4,10 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {BigNumber} from 'ethers';
 
+import {formatCurrency} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {calculatedRewardsSelector} from '../../../redux/slices/advancedStakePredictedRewards';
 import {StakingRewardTokenID} from '../../../types/staking';
-import {formatCurrency} from '../../../utils/format';
 
 import './styles.scss';
 

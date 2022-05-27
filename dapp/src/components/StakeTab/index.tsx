@@ -10,6 +10,7 @@ import {BigNumber, utils} from 'ethers';
 
 import StakingInfo from '../../components/StakeTab/StakingInfo';
 import {useOnConnect} from '../../hooks/web3';
+import {safeParseUnits} from '../../lib/numbers';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {
     calculateRewards,
@@ -31,7 +32,6 @@ import {CHAIN_IDS} from '../../services/env';
 import {advancedStake} from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
 import {StakeType} from '../../types/staking';
-import {safeParseUnits} from '../../utils/numbers';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 

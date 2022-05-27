@@ -7,16 +7,16 @@ import type {ContractTransaction, Signer} from 'ethers';
 import {BigNumber, constants, utils} from 'ethers';
 
 import {MessageWithTx} from '../components/Common/MessageWithTx';
+import {CONFIRMATIONS_NUM} from '../lib/constants';
 import {bigintToBytes32} from '../lib/conversions';
+import {parseTxErrorMessage} from '../lib/errors';
 import {
     generateEphemeralKeypair,
     generateChildPublicKey,
 } from '../lib/keychain';
+import {getEventFromReceipt} from '../lib/transactions';
 import type {IStakingTypes, Staking} from '../types/contracts/Staking';
 import {StakeRewardBN, StakeTypes} from '../types/staking';
-import {CONFIRMATIONS_NUM} from '../utils/constants';
-import {parseTxErrorMessage} from '../utils/errors';
-import {getEventFromReceipt} from '../utils/transactions';
 
 import {
     ContractName,

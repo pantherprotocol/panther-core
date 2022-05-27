@@ -4,11 +4,11 @@ import {TableCell, TableRow} from '@mui/material';
 import {BigNumber} from 'ethers';
 
 import pantherIcon from '../../../../images/panther-logo.svg';
+import {formatCurrency} from '../../../../lib/format';
+import {calcUSDPrice} from '../../../../lib/tokenPrice';
 import {useAppSelector} from '../../../../redux/hooks';
 import {marketPriceSelector} from '../../../../redux/slices/zkpMarketPrice';
 import {AdvancedStakeRewards} from '../../../../types/staking';
-import {formatCurrency} from '../../../../utils/format';
-import {calcUSDPrice} from '../../../../utils/tokenPrice';
 import Balance from '../../Balance';
 import Network from '../../Network';
 

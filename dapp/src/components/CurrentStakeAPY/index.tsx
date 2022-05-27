@@ -8,11 +8,11 @@ import {useWeb3React} from '@web3-react/core';
 import {constants} from 'ethers';
 
 import infoIcon from '../../images/info-icon.svg';
+import {E18} from '../../lib/constants';
+import {formatCurrency, formatPercentage} from '../../lib/format';
 import {useAppSelector} from '../../redux/hooks';
 import {totalStakedSelector} from '../../redux/slices/totalStaked';
 import {chainVar} from '../../services/env';
-import {E18} from '../../utils/constants';
-import {formatCurrency, formatPercentage} from '../../utils/format';
 import {SafeMuiLink} from '../Common/links';
 
 import './styles.scss';

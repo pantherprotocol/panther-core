@@ -4,11 +4,11 @@ import {Box, Card, CardContent, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {Link} from 'react-router-dom';
 
+import {formatTime} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {termsSelector} from '../../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
 import {StakeType} from '../../../types/staking';
-import {formatTime} from '../../../utils/format';
 
 import './styles.scss';
 

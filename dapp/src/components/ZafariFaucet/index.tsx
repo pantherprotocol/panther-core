@@ -6,6 +6,7 @@ import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
 import {useOnConnect} from '../../hooks/web3';
 import polygonIcon from '../../images/polygon-logo.svg';
+import {formatCurrency} from '../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getChainBalance} from '../../redux/slices/chainBalance';
 import {
@@ -20,7 +21,6 @@ import {
 import {FAUCET_CHAIN_IDS} from '../../services/env';
 import {sendFaucetTransaction} from '../../services/faucet';
 import {switchNetwork} from '../../services/wallet';
-import {formatCurrency} from '../../utils/format';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 

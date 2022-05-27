@@ -3,6 +3,7 @@ import React, {ReactElement, useCallback} from 'react';
 import {Typography, Card, CardContent} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
+import {formatTime} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {
     isStakingOpenSelector,
@@ -10,7 +11,6 @@ import {
 } from '../../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
 import {StakeType} from '../../../types/staking';
-import {formatTime} from '../../../utils/format';
 import {SafeMuiLink} from '../../Common/links';
 
 import './styles.scss';

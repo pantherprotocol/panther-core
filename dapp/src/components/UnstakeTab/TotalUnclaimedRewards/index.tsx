@@ -3,12 +3,12 @@ import React from 'react';
 import {Box, Typography} from '@mui/material';
 import {constants} from 'ethers';
 
+import {formatCurrency} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {
     zkpUnclaimedRewardsSelector,
     zZkpUnclaimedRewardsSelector,
 } from '../../../redux/slices/unclaimedStakesRewards';
-import {formatCurrency} from '../../../utils/format';
 
 import './styles.scss';
 

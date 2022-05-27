@@ -1,7 +1,7 @@
 import {BigNumber, utils} from 'ethers';
 
-import {CONFIRMATIONS_NUM} from '../utils/constants';
-import {parseTxErrorMessage} from '../utils/errors';
+import {CONFIRMATIONS_NUM} from '../lib/constants';
+import {parseTxErrorMessage} from '../lib/errors';
 
 import {getFaucetContract, getSignableContract} from './contracts';
 import {notifyError} from './errors';

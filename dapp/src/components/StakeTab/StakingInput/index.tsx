@@ -5,12 +5,12 @@ import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 
 import logo from '../../../images/panther-logo.svg';
+import {formatCurrency} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {isStakingOpenSelector} from '../../../redux/slices/stakeTerms';
 import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
 import {currentNetwork} from '../../../services/connectors';
 import {StakeType} from '../../../types/staking';
-import {formatCurrency} from '../../../utils/format';
 
 import './styles.scss';
 

@@ -46,11 +46,13 @@ describe('IncrementalMerkleTree', () => {
 
     describe('an empty tree', function () {
         it('should have the depth of 15', async () => {
-            expect(await trees.TREE_DEPTH()).to.equal(15);
+            expect(await trees.internal_TREE_DEPTH()).to.equal(15);
         });
 
         it('should have the correct zero leaf value', async () => {
-            expect(await trees.ZERO_VALUE()).to.equal(toBigNum(zeroLeaf));
+            expect(await trees.internal_ZERO_VALUE()).to.equal(
+                toBigNum(zeroLeaf),
+            );
         });
 
         it('should have the current tree ID of zero', async () => {

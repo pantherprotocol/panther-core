@@ -7,6 +7,14 @@ import "../triadTree/TriadIncrementalMerkleTrees.sol";
 contract MockTriadIncrementalMerkleTrees is TriadIncrementalMerkleTrees {
     event InternalInsertBatch(uint256 leftLeafId);
 
+    function internal_TREE_DEPTH() external pure returns (uint256) {
+        return TREE_DEPTH;
+    }
+
+    function internal_ZERO_VALUE() external pure returns (bytes32) {
+        return ZERO_VALUE;
+    }
+
     function internalInsertBatch(bytes32[TRIAD_SIZE] memory leaves) external {
         uint256 leftLeafId = insertBatch(leaves);
         emit InternalInsertBatch(leftLeafId);

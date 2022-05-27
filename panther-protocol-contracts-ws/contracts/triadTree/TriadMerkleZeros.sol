@@ -40,11 +40,11 @@ import { FIELD_SIZE as SNARK_FIELD_SIZE } from "../crypto/SnarkConstants.sol";
 // @notice The "triad binary tree" populated with zero leaf values
 abstract contract TriadMerkleZeros {
     // @dev Order of alt_bn128 and the field prime of Baby Jubjub and Poseidon hash
-    uint256 public constant FIELD_SIZE = SNARK_FIELD_SIZE;
+    uint256 internal constant FIELD_SIZE = SNARK_FIELD_SIZE;
 
     // @dev Number of levels in a tree excluding the root level
     // (also defined in scripts/generateTriadMerkleZeroesContracts.sh)
-    uint256 public constant TREE_DEPTH = 15;
+    uint256 internal constant TREE_DEPTH = 15;
 
     // Number of levels in a tree including both leaf and root levels
     uint256 internal constant TREE_LEVELS = TREE_DEPTH + 1;
@@ -56,12 +56,13 @@ abstract contract TriadMerkleZeros {
     uint256 internal constant LEAVES_NUM = (2**(TREE_DEPTH - 1)) * TRIAD_SIZE;
 
     // @dev Leaf zero value (`keccak256("Pantherprotocol")%FIELD_SIZE`)
-    bytes32 public constant ZERO_VALUE =
+    bytes32 internal constant ZERO_VALUE =
         bytes32(
             uint256(
                 0x667764c376602b72ef22218e1673c2cc8546201f9a77807570b3e5de137680d
             )
         );
+
     // Merkle root of a tree that contains zeros only
     bytes32 internal constant ZERO_ROOT =
         bytes32(

@@ -3,7 +3,7 @@ import { DeployFunction } from 'hardhat-deploy/types';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {
-        deployments: { deploy },
+        deployments: { deploy, get },
         getNamedAccounts,
     } = hre;
     const { deployer } = await getNamedAccounts();
@@ -14,9 +14,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const vaultProxy = await hre.ethers.getContract('Vault_Proxy');
 
-    const poseidonT3 = await hre.ethers.getContract('PoseidonT3');
-    const poseidonT4 = await hre.ethers.getContract('PoseidonT4');
-    const poseidonT6 = await hre.ethers.getContract('PoseidonT6');
+    const poseidonT3 = await get('PoseidonT3');
+    const poseidonT4 = await get('PoseidonT4');
+    const poseidonT6 = await get('PoseidonT6');
 
     const exitTime =
         process.env.POOL_EXIT_TIME || Math.ceil(Date.now() / 1000) + 60;

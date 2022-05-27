@@ -11,7 +11,7 @@ import {
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
 } from '../../../redux/slices/zkpTokenBalance';
-import {formatCurrency, formatUSD} from '../../../utils/helpers';
+import {formatCurrency, formatUSD} from '../../../utils/format';
 
 import './styles.scss';
 

@@ -31,7 +31,7 @@ import {CHAIN_IDS} from '../../services/env';
 import {advancedStake} from '../../services/staking';
 import {switchNetwork} from '../../services/wallet';
 import {StakeType} from '../../types/staking';
-import {safeParseUnits} from '../../utils/helpers';
+import {safeParseUnits} from '../../utils/numbers';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 

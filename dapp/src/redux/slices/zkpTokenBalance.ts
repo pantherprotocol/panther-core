@@ -5,7 +5,9 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {constants} from 'ethers';
 
 import * as accountService from '../../services/account';
-import {fiatPrice, formatCurrency, formatEther} from '../../utils/helpers';
+import {formatCurrency} from '../../utils/format';
+import {formatEther} from '../../utils/numbers';
+import {fiatPrice} from '../../utils/tokenPrice';
 import {RootState} from '../store';
 
 interface ZkpTokenBalanceState {

@@ -9,7 +9,7 @@ import {
     chainBalanceSelector,
     getChainBalance,
 } from '../../../redux/slices/chainBalance';
-import {formatCurrency} from '../../../utils/helpers';
+import {formatCurrency} from '../../../utils/format';
 
 import './styles.scss';
 

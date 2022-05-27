@@ -5,7 +5,8 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {constants} from 'ethers';
 
 import * as stakingService from '../../services/staking';
-import {fiatPrice, formatCurrency} from '../../utils/helpers';
+import {formatCurrency} from '../../utils/format';
+import {fiatPrice} from '../../utils/tokenPrice';
 import {RootState} from '../store';
 
 interface ZkpStakedBalanceState {

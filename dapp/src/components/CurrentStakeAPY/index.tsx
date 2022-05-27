@@ -12,7 +12,7 @@ import {useAppSelector} from '../../redux/hooks';
 import {totalStakedSelector} from '../../redux/slices/totalStaked';
 import {chainVar} from '../../services/env';
 import {E18} from '../../utils/constants';
-import {formatCurrency, formatPercentage} from '../../utils/helpers';
+import {formatCurrency, formatPercentage} from '../../utils/format';
 import {SafeMuiLink} from '../Common/links';
 
 import './styles.scss';

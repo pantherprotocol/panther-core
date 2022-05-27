@@ -10,7 +10,7 @@ import {isStakingOpenSelector} from '../../../redux/slices/stakeTerms';
 import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
 import {currentNetwork} from '../../../services/connectors';
 import {StakeType} from '../../../types/staking';
-import {formatCurrency} from '../../../utils/helpers';
+import {formatCurrency} from '../../../utils/format';
 
 import './styles.scss';
 

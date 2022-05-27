@@ -30,7 +30,7 @@ import {
     ClassicStakeRewardBN,
     StakingRewardTokenID,
 } from '../../types/staking';
-import {formatCurrency, formatTime} from '../../utils/helpers';
+import {formatCurrency, formatTime} from '../../utils/format';
 
 import './styles.scss';
 

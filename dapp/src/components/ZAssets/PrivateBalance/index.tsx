@@ -7,7 +7,8 @@ import {useAppSelector} from '../../../redux/hooks';
 import {totalSelector} from '../../../redux/slices/advancedStakesRewards';
 import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
 import {StakingRewardTokenID} from '../../../types/staking';
-import {formatCurrency, formatUSD, fiatPrice} from '../../../utils/helpers';
+import {formatCurrency, formatUSD} from '../../../utils/format';
+import {fiatPrice} from '../../../utils/tokenPrice';
 
 import './styles.scss';
 

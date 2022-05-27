@@ -7,7 +7,8 @@ import pantherIcon from '../../../../images/panther-logo.svg';
 import {useAppSelector} from '../../../../redux/hooks';
 import {marketPriceSelector} from '../../../../redux/slices/zkpMarketPrice';
 import {AdvancedStakeRewards} from '../../../../types/staking';
-import {calcUSDPrice, formatCurrency} from '../../../../utils/helpers';
+import {formatCurrency} from '../../../../utils/format';
+import {calcUSDPrice} from '../../../../utils/tokenPrice';
 import Balance from '../../Balance';
 import Network from '../../Network';
 

@@ -29,4 +29,7 @@ interface IPantherPoolV0 {
         bytes32 merkleRoot,
         uint256 cacheIndexHint
     ) external;
+
+    // solhint-disable-next-line func-name-mixedcase
+    function VAULT() external view returns (address);
 }

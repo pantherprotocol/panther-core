@@ -231,10 +231,11 @@ contract AdvancedStakeRewardController is
     /// @notice Allocate the $ZKP amount, which this contract holds, for rewards
     /// @dev Anyone may call it
     function setZkpRewardsLimit() external {
+        // External calls here are to trusted contracts only - reentrancy guard unneeded
+
         // TODO: replace low-levels using with `library TransferHelper` in `panther-core`
         uint256 balance;
         {
-            // trusted token contract - reentrancy guard unneeded
             // solhint-disable-next-line avoid-low-level-calls
             (bool success, bytes memory data) = ZKP_TOKEN.call(
                 // bytes4(keccak256(bytes('balanceOf(address)')));
@@ -249,15 +250,16 @@ contract AdvancedStakeRewardController is
         uint256 remaining = limit - rewarded;
 
         if (balance > remaining) {
-            // Update the limit and approve PANTHER_POOL to spend from this contract balance
+            // Update the limit and approve the Vault to spend from this contract balance
             uint256 newAllocation = balance - remaining;
             uint256 newLimit = limit + newAllocation;
 
-            // trusted token contract - reentrancy guard unneeded
+            address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
+
             // solhint-disable-next-line avoid-low-level-calls
             (bool success, bytes memory data) = ZKP_TOKEN.call(
                 // bytes4(keccak256('approve(address,uint256)'));
-                abi.encodeWithSelector(0x095ea7b3, PANTHER_POOL, newLimit)
+                abi.encodeWithSelector(0x095ea7b3, vault, newLimit)
             );
             require(
                 success && (data.length == 0 || abi.decode(data, (bool))),

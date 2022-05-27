@@ -245,30 +245,42 @@ contract PantherPoolV0 is
         uint256 tokenId,
         uint256 extAmount
     ) internal returns (uint160 zAssetId, uint96 scaledAmount) {
-        if (token == address(0)) {
-            require(extAmount == 0, ERR_WRONG_DEPOSIT);
-            return (0, 0);
+        require(
+            extAmount != 0 || (token == address(0) && tokenId == 0),
+            ERR_WRONG_DEPOSIT
+        );
+
+        // Check special cases first
+
+        // Do nothing for "zero" UTXO
+        if (token == address(0)) return (0, 0);
+
+        if (token == address(this)) {
+            // PRP UTXO, no amount scaling
+            require(tokenId == 0, ERR_ZERO_TOKENID_EXPECTED);
+            if (extAmount != 0) useGrant(msg.sender, extAmount);
+
+            return (PRP_ZASSET_ID, safe96(extAmount));
         }
+
+        // Process "Normal" zAsset, w/ scaling, if it comes here
 
         ZAsset memory asset;
         (asset, zAssetId) = getZAssetAndId(token, tokenId);
         require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);
 
-        scaledAmount = 0;
         if (extAmount != 0) {
-            if (asset.tokenType == PRP_TOKEN_TYPE)
-                useGrant(msg.sender, extAmount);
-            else
-                IVault(VAULT).lockAsset(
-                    LockData(
-                        asset.tokenType,
-                        asset.token,
-                        tokenId,
-                        msg.sender,
-                        safe96(extAmount)
-                    )
-                );
-            scaledAmount = scaleAmount(extAmount, asset.scale);
+            IVault(VAULT).lockAsset(
+                LockData(
+                    asset.tokenType,
+                    asset.token,
+                    tokenId,
+                    msg.sender,
+                    safe96(extAmount)
+                )
+            );
         }
+
+        return (zAssetId, scaleAmount(extAmount, asset.scale));
     }
 }

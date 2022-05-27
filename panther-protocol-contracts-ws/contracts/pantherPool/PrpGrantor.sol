@@ -26,6 +26,11 @@ abstract contract PrpGrantor {
     uint256 internal constant ZERO_AMOUNT = 1;
     uint256 internal constant UNDEF_AMOUNT = 0;
 
+    // zAssetId (i.e. "token" in the UTXO preimage) of PRPs
+    // keccak256('Panther Reward Point') >> 96
+    uint160 internal constant PRP_ZASSET_ID =
+        0x000000000000000000000000bb432d4ecd82dd023cb8ebc510121065bade2466;
+
     // solhint-enable var-name-mixedcase
 
     /// @dev Mapping from "curator" to "grant type" to "grant amount in PRPs"

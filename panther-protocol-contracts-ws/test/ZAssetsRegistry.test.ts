@@ -89,7 +89,7 @@ describe('ZAssetsRegistry', function () {
                         rootId,
                         oldStatus,
                     ),
-                ).to.revertedWith('AR:E3');
+                ).to.be.revertedWith('AR:E3');
             });
         });
 
@@ -101,7 +101,7 @@ describe('ZAssetsRegistry', function () {
                         zAssetRootId,
                         ZAssetStatus.DISABLED,
                     ),
-                ).to.revertedWith('AR:E2');
+                ).to.be.revertedWith('AR:E2');
             });
         });
     });
@@ -220,197 +220,215 @@ describe('ZAssetsRegistry', function () {
         });
     });
 
-    describe('When scale/unscale amount', () => {
-        const amount = ethers.utils.parseEther('100');
+    describe('scaleAmount', () => {
+        const amount = ethers.BigNumber.from('1234567890123456789012');
 
-        describe('Scale', () => {
-            describe('When scale down', () => {
-                it('should divide the amount by 1e1 when amount scale is 2 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 2),
-                    ).to.be.eq(amount.div(1e1));
-                });
-
-                it('should divide the amount by 1e2 when amount scale is 4 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 4),
-                    ).to.be.eq(amount.div(1e2));
-                });
-
-                it('should divide the amount by 1e3 when amount scale is 6 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 6),
-                    ).to.be.eq(amount.div(1e3));
-                });
-
-                it('should divide the amount by 1e4 when amount scale is 8 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 8),
-                    ).to.be.eq(amount.div(1e4));
-                });
-
-                it('should divide the amount by 1e5 when amount scale is 10 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 10),
-                    ).to.be.eq(amount.div(1e5));
-                });
-
-                it('should divide the amount by 1e6 when amount scale is 12 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 12),
-                    ).to.be.eq(amount.div(1e6));
-                });
-            });
-
-            describe('When scale up', () => {
-                it('should multiply the amount by 1e1 when amount scale is 3 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 3),
-                    ).to.be.eq(amount.mul(1e1));
-                });
-
-                it('should multiply the amount by 1e2 when amount scale is 5 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 5),
-                    ).to.be.eq(amount.mul(1e2));
-                });
-
-                it('should multiply the amount by 1e3 when amount scale is 7 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 7),
-                    ).to.be.eq(amount.mul(1e3));
-                });
-
-                it('should multiply the amount by 1e4 when amount scale is 9 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 9),
-                    ).to.be.eq(amount.mul(1e4));
-                });
-
-                it('should multiply the amount by 1e5 when amount scale is 11 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 11),
-                    ).to.be.eq(amount.mul(1e5));
-                });
-
-                it('should multiply the amount by 1e6 when amount scale is 13 ', async () => {
-                    expect(
-                        await zAssetsRegistry.scaleAmount(amount, 13),
-                    ).to.be.eq(amount.mul(1e6));
-                });
-            });
-
-            it('should not change the amount when scale is 0', async () => {
-                expect(await zAssetsRegistry.scaleAmount(amount, 0)).to.be.eq(
-                    amount,
-                );
-            });
-
-            it('should not change the amount when scale is 1', async () => {
-                expect(await zAssetsRegistry.scaleAmount(amount, 1)).to.be.eq(
-                    amount,
-                );
-            });
-
-            it('should revert if scale is greater than 14', async () => {
-                await expect(zAssetsRegistry.scaleAmount(amount, 14)).to
-                    .reverted;
-            });
+        it('should not change the amount when scale is 0', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 0)).to.be.eq(
+                amount,
+            );
         });
 
-        describe('Unscale', () => {
-            describe('When unscale up', () => {
-                it('should multiple the amount by 1e1 when amount scale is 2 ', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 2),
-                    ).to.be.eq(amount.mul(1e1));
-                });
+        it('should revert if scale is 8', async () => {
+            await expect(zAssetsRegistry.unscaleAmount(amount, 8)).to.be
+                .reverted;
+        });
 
-                it('should multiple the amount by 1e2 when amount scale is 4 ', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 4),
-                    ).to.be.eq(amount.mul(1e2));
-                });
+        it('should revert if scale is 16 or grater', async () => {
+            await expect(zAssetsRegistry.unscaleAmount(amount, 16)).to.be
+                .reverted;
+            await expect(zAssetsRegistry.unscaleAmount(amount, 131)).to.be
+                .reverted;
+        });
 
-                it('should multiple the amount by 1e3 when amount scale is 6 ', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 6),
-                    ).to.be.eq(amount.mul(1e3));
-                });
+        it('should divide the amount by 1e1 when scale is 1 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 1)).to.be.eq(
+                amount.div(1e1),
+            );
+        });
 
-                it('should multiple the amount by 1e4 when amount scale is 8 ', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 8),
-                    ).to.be.eq(amount.mul(1e4));
-                });
+        it('should divide the amount by 1e2 when amount scale is 2 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 2)).to.be.eq(
+                amount.div(1e2),
+            );
+        });
 
-                it('should multiple the amount by 1e5 when amount scale is 10 ', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 10),
-                    ).to.be.eq(amount.mul(1e5));
-                });
+        it('should divide the amount by 1e3 when amount scale is 3 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 3)).to.be.eq(
+                amount.div(1e3),
+            );
+        });
 
-                it('should multiple the amount by 1e6 when amount scale is 12 ', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 12),
-                    ).to.be.eq(amount.mul(1e6));
-                });
-            });
+        it('should divide the amount by 1e4 when amount scale is 4 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 4)).to.be.eq(
+                amount.div(1e4),
+            );
+        });
 
-            describe('When unscale down', () => {
-                it('should divide the amount by 1e1 when amount scale is 3', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 3),
-                    ).to.be.eq(amount.div(1e1));
-                });
+        it('should divide the amount by 1e5 when amount scale is 5 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 5)).to.be.eq(
+                amount.div(1e5),
+            );
+        });
 
-                it('should divide the amount by 1e2 when amount scale is 5', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 5),
-                    ).to.be.eq(amount.div(1e2));
-                });
+        it('should divide the amount by 1e6 when amount scale is 6 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 6)).to.be.eq(
+                amount.div(1e6),
+            );
+        });
 
-                it('should divide the amount by 1e3 when amount scale is 7', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 7),
-                    ).to.be.eq(amount.div(1e3));
-                });
+        it('should divide the amount by 1e7 when amount scale is 7 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 7)).to.be.eq(
+                amount.div(1e7),
+            );
+        });
 
-                it('should divide the amount by 1e4 when amount scale is 9', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 9),
-                    ).to.be.eq(amount.div(1e4));
-                });
+        it('should multiply the amount by 1e1 when amount scale is 9 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 9)).to.be.eq(
+                amount.mul(1e1),
+            );
+        });
 
-                it('should divide the amount by 1e5 when amount scale is 11', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 11),
-                    ).to.be.eq(amount.div(1e5));
-                });
+        it('should multiply the amount by 1e2 when amount scale is 10 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 10)).to.be.eq(
+                amount.mul(1e2),
+            );
+        });
 
-                it('should divide the amount by 1e6 when amount scale is 13 ', async () => {
-                    expect(
-                        await zAssetsRegistry.unscaleAmount(amount, 13),
-                    ).to.be.eq(amount.div(1e6));
-                });
-            });
+        it('should multiply the amount by 1e3 when amount scale is 11 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 11)).to.be.eq(
+                amount.mul(1e3),
+            );
+        });
 
-            it('should not change the amount when scale is 0', async () => {
-                expect(await zAssetsRegistry.unscaleAmount(amount, 0)).to.be.eq(
-                    amount,
-                );
-            });
+        it('should multiply the amount by 1e4 when amount scale is 12 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 12)).to.be.eq(
+                amount.mul(1e4),
+            );
+        });
 
-            it('should not change the amount when scale is 1', async () => {
-                expect(await zAssetsRegistry.unscaleAmount(amount, 1)).to.be.eq(
-                    amount,
-                );
-            });
+        it('should multiply the amount by 1e5 when amount scale is 13 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 13)).to.be.eq(
+                amount.mul(1e5),
+            );
+        });
 
-            it('should revert if scale is greater than 14', async () => {
-                await expect(zAssetsRegistry.unscaleAmount(amount, 14)).to
-                    .reverted;
-            });
+        it('should multiply the amount by 1e6 when amount scale is 14 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 14)).to.be.eq(
+                amount.mul(1e6),
+            );
+        });
+
+        it('should multiply the amount by 1e7 when amount scale is 15 ', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 15)).to.be.eq(
+                amount.mul(1e7),
+            );
+        });
+    });
+
+    describe('unscaleAmount', () => {
+        const amount = ethers.BigNumber.from('32109876543210987654321');
+
+        it('should not change the amount when scale is 0', async () => {
+            expect(await zAssetsRegistry.scaleAmount(amount, 0)).to.be.eq(
+                amount,
+            );
+        });
+
+        it('should revert if scale is 8', async () => {
+            await expect(zAssetsRegistry.unscaleAmount(amount, 8)).to.be
+                .reverted;
+        });
+
+        it('should revert if scale is 16 or grater', async () => {
+            await expect(zAssetsRegistry.unscaleAmount(amount, 16)).to.be
+                .reverted;
+            await expect(zAssetsRegistry.unscaleAmount(amount, 131)).to.be
+                .reverted;
+        });
+
+        it('should multiple the amount by 1e1 when amount scale is 1 ', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 1)).to.be.eq(
+                amount.mul(1e1),
+            );
+        });
+
+        it('should multiple the amount by 1e2 when amount scale is 2', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 2)).to.be.eq(
+                amount.mul(1e2),
+            );
+        });
+
+        it('should multiple the amount by 1e3 when amount scale is 3 ', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 3)).to.be.eq(
+                amount.mul(1e3),
+            );
+        });
+
+        it('should multiple the amount by 1e4 when amount scale is 4', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 4)).to.be.eq(
+                amount.mul(1e4),
+            );
+        });
+
+        it('should multiple the amount by 1e5 when amount scale is 5', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 5)).to.be.eq(
+                amount.mul(1e5),
+            );
+        });
+
+        it('should multiple the amount by 1e6 when amount scale is 6', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 6)).to.be.eq(
+                amount.mul(1e6),
+            );
+        });
+
+        it('should multiple the amount by 1e7 when amount scale is 7', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 7)).to.be.eq(
+                amount.mul(1e7),
+            );
+        });
+
+        it('should divide the amount by 1e1 when amount scale is 9', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 9)).to.be.eq(
+                amount.div(1e1),
+            );
+        });
+
+        it('should divide the amount by 1e2 when amount scale is 10', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 10)).to.be.eq(
+                amount.div(1e2),
+            );
+        });
+
+        it('should divide the amount by 1e3 when amount scale is 11', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 11)).to.be.eq(
+                amount.div(1e3),
+            );
+        });
+
+        it('should divide the amount by 1e4 when amount scale is 12', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 12)).to.be.eq(
+                amount.div(1e4),
+            );
+        });
+
+        it('should divide the amount by 1e5 when amount scale is 13', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 13)).to.be.eq(
+                amount.div(1e5),
+            );
+        });
+
+        it('should divide the amount by 1e6 when amount scale is 14 ', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 14)).to.be.eq(
+                amount.div(1e6),
+            );
+        });
+
+        it('should divide the amount by 1e7 when amount scale is 15 ', async () => {
+            expect(await zAssetsRegistry.unscaleAmount(amount, 15)).to.be.eq(
+                amount.div(1e7),
+            );
         });
     });
 

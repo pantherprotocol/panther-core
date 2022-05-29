@@ -6,13 +6,21 @@ import { CIPHERTEXT1_WORDS, OUT_UTXOs, PATH_ELEMENTS_NUM } from "../common/Const
 import { G1Point } from "../common/Types.sol";
 import "../interfaces/IPantherPoolV0.sol";
 
-/// @dev It simulates `IPantherPoolV0`. See an example bellow.
+/// @dev It simulates (but not precisely!!!) `IPantherPoolV0`. See an example bellow.
 contract FakePantherPoolV0 is IPantherPoolV0 {
     // solhint-disable var-name-mixedcase
 
     // Snark field size
     uint256 private constant FIELD_SIZE =
         21888242871839275222246405745257275088548364400416034343698204186575808495617;
+
+    // Leaf zero value (`keccak256("Pantherprotocol")%FIELD_SIZE`)
+    bytes32 internal constant ZERO_VALUE =
+        bytes32(
+            uint256(
+                0x667764c376602b72ef22218e1673c2cc8546201f9a77807570b3e5de137680d
+            )
+        );
 
     address public immutable override VAULT;
     uint256 public immutable EXIT_TIME;
@@ -61,27 +69,40 @@ contract FakePantherPoolV0 is IPantherPoolV0 {
                 extAmounts[utxoIndex] < 2**96,
                 "FakePantherPoolV0:ERR_TOO_LARGE_AMOUNT"
             );
-
-            // Fake (!!!) the commitment
-            commitments[utxoIndex] = bytes32(
-                uint256(keccak256(abi.encode(block.timestamp, utxoIndex))) %
-                    FIELD_SIZE
+            require(
+                extAmounts[utxoIndex] != 0 ||
+                    (tokens[utxoIndex] == address(0) &&
+                        tokenIds[utxoIndex] == 0),
+                "FakePantherPoolV0:ERR_WRONG_DEPOSIT"
             );
 
-            // No scaling (!!!)
-            uint256 scaledAmount = extAmounts[utxoIndex];
-            uint256 tokenAndAmount = (uint256(uint160(tokens[utxoIndex])) <<
-                96) | scaledAmount;
+            bytes memory thisUtxoData;
+            if (extAmounts[utxoIndex] == 0) {
+                // zero UTXO
+                commitments[utxoIndex] = ZERO_VALUE;
+                // UTXO_DATA_TYPE_ZERO
+                thisUtxoData = bytes.concat(abi.encodePacked(uint8(0xA0)));
+            } else {
+                // Fake (!!!) the commitment
+                commitments[utxoIndex] = bytes32(
+                    uint256(keccak256(abi.encode(block.timestamp, utxoIndex))) %
+                        FIELD_SIZE
+                );
 
-            utxoData = bytes.concat(
-                utxoData,
-                abi.encodePacked(
+                // No scaling (!!!)
+                uint256 scaledAmount = extAmounts[utxoIndex];
+                uint256 tokenAndAmount = (uint256(uint160(tokens[utxoIndex])) <<
+                    96) | scaledAmount;
+
+                thisUtxoData = abi.encodePacked(
                     uint8(0xAB), // UTXO_DATA_TYPE1
                     secrets[utxoIndex],
                     tokenAndAmount,
                     tokenIds[utxoIndex]
-                )
-            );
+                );
+            }
+
+            utxoData = bytes.concat(utxoData, thisUtxoData);
         }
 
         uint256 n = fakeLeavesNum;

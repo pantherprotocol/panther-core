@@ -28,15 +28,17 @@ string constant ERR_TOO_LARGE_COMMITMENT = "PP:E11";
 string constant ERR_TOO_LARGE_NULLIFIER = "PP:E12";
 string constant ERR_TOO_LARGE_ROOT = "PP:E13";
 string constant ERR_TOO_LARGE_TIME = "PP:E14";
-string constant ERR_UNKNOWN_MERKLE_ROOT = "PP:E15";
-string constant ERR_WITHDRAW_OVER_LIMIT = "PP:E16";
-string constant ERR_WITHDRAW_TO_ZERO_ADDRESS = "PP:E17";
-string constant ERR_WRONG_ASSET = "PP:E18";
-string constant ERR_WRONG_ASSET_SCALE = "PP:19";
-string constant ERR_ZERO_FEE_PAYER = "PP:E20";
-string constant ERR_ZERO_TOKEN_EXPECTED = "PP:E21";
-string constant ERR_ZERO_TOKEN_UNEXPECTED = "PP:E22";
-string constant ERR_ZERO_TOKENID_EXPECTED = "PP:23";
+string constant ERR_TOO_SMALL_AMOUNT = "PP:E15";
+string constant ERR_UNKNOWN_MERKLE_ROOT = "PP:E16";
+string constant ERR_WITHDRAW_OVER_LIMIT = "PP:E17";
+string constant ERR_WITHDRAW_TO_ZERO_ADDRESS = "PP:E18";
+string constant ERR_WRONG_ASSET = "PP:E19";
+string constant ERR_WRONG_ASSET_SCALE = "PP:20";
+string constant ERR_ZERO_DEPOSIT = "PP:E21";
+string constant ERR_ZERO_FEE_PAYER = "PP:E22";
+string constant ERR_ZERO_TOKEN_EXPECTED = "PP:E23";
+string constant ERR_ZERO_TOKEN_UNEXPECTED = "PP:E24";
+string constant ERR_ZERO_TOKENID_EXPECTED = "PP:E25";
 
 // (Specific to) PantherPoolV0 contract
 string constant ERR_TOO_EARLY_EXIT = "P0:E1";

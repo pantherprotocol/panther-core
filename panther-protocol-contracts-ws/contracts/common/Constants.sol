@@ -39,4 +39,6 @@ uint8 constant zASSET_DISABLED = 0x02;
 uint8 constant zASSET_UNKNOWN = 0x00;
 
 // UTXO data (opeing values - encrypted and public) foromats
+uint8 constant UTXO_DATA_TYPE_ZERO = 0xA0; // no data (for zero UTXO)
+uint8 constant UTXO_DATA_TYPE0 = 0xAA;
 uint8 constant UTXO_DATA_TYPE1 = 0xAB;

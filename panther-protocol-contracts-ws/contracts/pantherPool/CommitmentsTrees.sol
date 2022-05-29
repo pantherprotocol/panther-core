@@ -17,31 +17,33 @@ abstract contract CommitmentsTrees is TriadIncrementalMerkleTrees {
      * @param leftLeafId The `leafId` of the first leaf in the batch
      * @dev `leafId = leftLeafId + 1` for the 2nd leaf (`leftLeafId + 2` for the 3rd leaf)
      * @param commitments Commitments hashes
-     * @param utxoData UTXO opening values (encrypted and public)
+     * @param utxoData opening values (encrypted and public) for UTXOs
      */
     event NewCommitments(
         uint256 indexed leftLeafId,
         uint256 creationTime,
         bytes32[OUT_UTXOs] commitments,
-        bytes[OUT_UTXOs] utxoData
+        bytes utxoData
     );
 
     /**
      * @notice Adds commitments to merkle tree(s) and emits events
      * @param commitments Commitments (leaves hashes) to be inserted into merkle tree(s)
-     * @param utxoData UTXO opening values (encrypted and public)
+     * @param perUtxoData opening values (encrypted and public) for every UTXO
      * @return leftLeafId The `leafId` of the first leaf in the batch
      */
     function addAndEmitCommitments(
         bytes32[OUT_UTXOs] memory commitments,
-        bytes[OUT_UTXOs] memory utxoData,
+        bytes[OUT_UTXOs] memory perUtxoData,
         uint256 timestamp
     ) internal returns (uint256 leftLeafId) {
+        bytes memory utxoData = "";
         for (uint256 i = 0; i < OUT_UTXOs; i++) {
             require(
                 uint256(commitments[i]) < FIELD_SIZE,
                 ERR_TOO_LARGE_COMMITMENTS
             );
+            utxoData = bytes.concat(utxoData, perUtxoData[i]);
         }
 
         // Insert hashes into Merkle tree(s)

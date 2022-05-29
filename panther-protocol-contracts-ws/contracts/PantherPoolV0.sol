@@ -97,7 +97,7 @@ contract PantherPoolV0 is
         }
 
         bytes32[OUT_UTXOs] memory commitments;
-        bytes[OUT_UTXOs] memory utxoData;
+        bytes[OUT_UTXOs] memory perUtxoData;
         for (uint256 utxoIndex = 0; utxoIndex < OUT_UTXOs; utxoIndex++) {
             (uint160 zAssetId, uint96 scaledAmount) = _processDepositedAsset(
                 tokens[utxoIndex],
@@ -105,25 +105,35 @@ contract PantherPoolV0 is
                 extAmounts[utxoIndex]
             );
 
-            commitments[utxoIndex] = generateCommitment(
-                pubSpendingKeys[utxoIndex].x,
-                pubSpendingKeys[utxoIndex].y,
-                uint256(scaledAmount),
-                zAssetId,
-                timestamp
-            );
+            if (scaledAmount == 0) {
+                // At least the 1st deposited amount shall be non-zero
+                require(utxoIndex != 0, ERR_ZERO_DEPOSIT);
 
-            uint256 tokenAndAmount = (uint256(uint160(tokens[utxoIndex])) <<
-                96) | scaledAmount;
-            utxoData[utxoIndex] = abi.encodePacked(
-                uint8(UTXO_DATA_TYPE1),
-                secrets[utxoIndex],
-                tokenAndAmount,
-                tokenIds[utxoIndex]
-            );
+                // the zero UTXO
+                commitments[utxoIndex] = ZERO_VALUE;
+                perUtxoData[utxoIndex] = abi.encodePacked(UTXO_DATA_TYPE_ZERO);
+            } else {
+                // non-zero UTXO
+                commitments[utxoIndex] = generateCommitment(
+                    pubSpendingKeys[utxoIndex].x,
+                    pubSpendingKeys[utxoIndex].y,
+                    uint256(scaledAmount),
+                    zAssetId,
+                    timestamp
+                );
+
+                uint256 tokenAndAmount = (uint256(uint160(tokens[utxoIndex])) <<
+                    96) | scaledAmount;
+                perUtxoData[utxoIndex] = abi.encodePacked(
+                    uint8(UTXO_DATA_TYPE1),
+                    secrets[utxoIndex],
+                    tokenAndAmount,
+                    tokenIds[utxoIndex]
+                );
+            }
         }
 
-        leftLeafId = addAndEmitCommitments(commitments, utxoData, timestamp);
+        leftLeafId = addAndEmitCommitments(commitments, perUtxoData, timestamp);
     }
 
     function exit(
@@ -245,21 +255,21 @@ contract PantherPoolV0 is
         uint256 tokenId,
         uint256 extAmount
     ) internal returns (uint160 zAssetId, uint96 scaledAmount) {
+        // extAmount may be zero if only both token and tokenId are zeros
         require(
             extAmount != 0 || (token == address(0) && tokenId == 0),
             ERR_WRONG_DEPOSIT
         );
 
-        // Check special cases first
-
         // Do nothing for "zero" UTXO
         if (token == address(0)) return (0, 0);
 
         if (token == address(this)) {
-            // PRP UTXO, no amount scaling
+            // PRP grant assumed
             require(tokenId == 0, ERR_ZERO_TOKENID_EXPECTED);
             if (extAmount != 0) useGrant(msg.sender, extAmount);
 
+            // no amount scaling
             return (PRP_ZASSET_ID, safe96(extAmount));
         }
 
@@ -269,17 +279,20 @@ contract PantherPoolV0 is
         (asset, zAssetId) = getZAssetAndId(token, tokenId);
         require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);
 
-        if (extAmount != 0) {
-            IVault(VAULT).lockAsset(
-                LockData(
-                    asset.tokenType,
-                    asset.token,
-                    tokenId,
-                    msg.sender,
-                    safe96(extAmount)
-                )
-            );
-        }
+        // extAmount can't be zero here
+        scaledAmount = scaleAmount(extAmount, asset.scale);
+        // revert, if extAmount gets scaled to zero
+        require(scaledAmount != 0, ERR_TOO_SMALL_AMOUNT);
+
+        IVault(VAULT).lockAsset(
+            LockData(
+                asset.tokenType,
+                asset.token,
+                tokenId,
+                msg.sender,
+                safe96(extAmount)
+            )
+        );
 
         return (zAssetId, scaleAmount(extAmount, asset.scale));
     }

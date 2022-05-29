@@ -391,7 +391,7 @@ contract AdvancedStakeRewardController is
             prpAmount,
             nftAmount
         ];
-        uint256 createdAt = timeNow();
+        uint32 createdAt = safe32TimeNow();
         uint256 leftLeafId = IPantherPoolV0(PANTHER_POOL).generateDeposits(
             tokens,
             tokenIds,

@@ -38,7 +38,7 @@ contract FakePantherPoolV0 is IPantherPoolV0 {
         uint32 createdAt
     ) external override returns (uint256 leftLeafId) {
         require(
-            createdAt < block.timestamp,
+            createdAt <= block.timestamp,
             "FakePantherPoolV0:TOO_LARGE_createdAt"
         );
         bytes32[OUT_UTXOs] memory commitments;
@@ -146,7 +146,7 @@ Example:
 const {depositFakeInput: {tokens, tokenIds, extAmounts, pubSpendingKeys, secrets}, utxoData} = require(
     './test/assets/advancesStakingData.data.ts'
 )
-const [ createdAt, exitTime, vaultAddr ] = [ '0xb0bab0', '0xb0bbb0', '0x6379dfD29D1b4bC713152F6B683223891ea118C2']
+const [ createdAt, exitTime, vaultAddr ] = [ '0xb0bab0', '0x62626262', '0x6379dfD29D1b4bC713152F6B683223891ea118C2']
 const FakePantherPoolV0 = await ethers.getContractFactory('FakePantherPoolV0')
 const fakePool = await FakePantherPoolV0.deploy(vaultAddr, exitTime)
 let tx = await fakePool.generateDeposits(tokens, tokenIds, extAmounts, pubSpendingKeys, secrets, createdAt)

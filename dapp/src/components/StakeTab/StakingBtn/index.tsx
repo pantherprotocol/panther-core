@@ -18,21 +18,21 @@ const getButtonText = (
         return ["Couldn't get token balance", false];
     }
     if (!amount || !amountBN) {
-        return ['Enter amount to stake above', false];
+        return ['Enter amount of ZKP to stake above', false];
     }
     if (amountBN.gt(tokenBalance)) {
         console.debug(
-            'Insufficient balance:',
+            'Insufficient ZKP balance:',
             utils.formatEther(amountBN),
             '>',
             utils.formatEther(tokenBalance),
         );
-        return ['Insufficient balance', false];
+        return ['Insufficient ZKP balance', false];
     }
 
     if (amountBN.gte(utils.parseEther(minStake.toString()))) {
         console.debug(
-            'Sufficient balance:',
+            'Sufficient ZKP balance:',
             utils.formatEther(amountBN),
             amountBN.eq(tokenBalance) ? '==' : '<=',
             utils.formatEther(tokenBalance),
@@ -44,7 +44,7 @@ const getButtonText = (
         return [`STAKE ${amount} ZKP`, true];
     }
     console.debug('Below minimum stake amount:', utils.formatEther(amountBN));
-    return ['Stake amount must be above 100', false];
+    return ['Stake amount must be above 100 ZKP', false];
 };
 
 const StakingBtn = (props: {

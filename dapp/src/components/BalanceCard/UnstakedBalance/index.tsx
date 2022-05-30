@@ -6,8 +6,8 @@ import {useWeb3React} from '@web3-react/core';
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
-import {getChainBalance} from '../../../redux/slices/chainBalance';
 import {
+    getZkpTokenBalance,
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
 } from '../../../redux/slices/zkpTokenBalance';
@@ -21,8 +21,8 @@ export default function UnstakedBalance() {
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const tokenMarketPrice = useAppSelector(zkpUnstakedUSDMarketPriceSelector);
 
-    const refreshChainBalance = () => {
-        dispatch(getChainBalance, context);
+    const refreshTokenBalance = () => {
+        dispatch(getZkpTokenBalance, context);
     };
 
     return (
@@ -39,7 +39,7 @@ export default function UnstakedBalance() {
                         </IconButton>
                     </Tooltip>
                 )}
-                <IconButton onClick={refreshChainBalance}>
+                <IconButton onClick={refreshTokenBalance}>
                     <img src={refreshIcon} />
                 </IconButton>
             </Box>

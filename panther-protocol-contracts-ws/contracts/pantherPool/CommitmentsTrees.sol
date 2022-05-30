@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-
+// SPDX-License-Identifier: BUSL-1.1
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
 import "../triadTree/TriadIncrementalMerkleTrees.sol";

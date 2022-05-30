@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: UNLICENSED
-// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
+// SPDX-License-Identifier: BUSL-1.1
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
 import "../common/ErrorMsgs.sol";

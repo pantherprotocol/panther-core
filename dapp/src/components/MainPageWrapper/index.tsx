@@ -17,15 +17,19 @@ export const MainPageWrapper = (props: {
     const isBlur = useAppSelector(blurSelector);
     return (
         <Box
-            className={`main-app main-page ${isBlur && 'isBlur'}`}
+            className={`main-page ${isBlur && 'isBlur'}`}
             sx={{
                 backgroundImage: `url(${props.background})`,
             }}
         >
             <CssBaseline />
-            <Header />
-            <Box className="main-box-holder">{props.children}</Box>
-            <Footer />
+            <Box className="header-container">
+                <Header />
+            </Box>
+            <Box className="body-container">{props.children}</Box>
+            <Box className="footer-container">
+                <Footer />
+            </Box>
         </Box>
     );
 };

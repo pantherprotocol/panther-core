@@ -308,7 +308,7 @@ async function normalStake(
     data: any,
 ) {
     return await contract.stake(amount, stakeType, data, {
-        gasLimit: 320000,
+        gasLimit: 1_300_000,
     });
 }
 
@@ -345,7 +345,7 @@ async function permitAndStake(
         stakeType,
         data,
         {
-            gasLimit: 500_000,
+            gasLimit: 1_600_000,
         },
     );
 }

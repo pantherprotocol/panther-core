@@ -10,3 +10,11 @@ export const bufferToBigInt = (buf: Buffer) => {
     }
     return BigInt(`0x${hex}`);
 };
+
+export function bigIntToUint8Array(bigint: bigint, width = 32): Uint8Array {
+    return new Uint8Array(bigIntToBuffer(bigint, width));
+}
+
+export function uint8ArrayToBigInt(uint8Array: Uint8Array): bigint {
+    return bufferToBigInt(Buffer.from(uint8Array));
+}

@@ -1,3 +1,7 @@
+import {
+    bigIntToUint8Array,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/bigint-conversions';
 import {babyjub} from 'circomlibjs';
 import {Wallet} from 'ethers';
 
@@ -56,7 +60,10 @@ describe('Transaction integration test', () => {
 
         const K = generateEcdhSharedKey(rR.privateKey, vV.publicKey);
         const plainText = rR.privateKey.toString(16);
-        const C = encryptMessage(plainText, K);
+        const C = encryptMessage(
+            bigIntToUint8Array(BigInt('0x' + plainText)),
+            K,
+        );
 
         // sender calls the contract with data
         // and publishes S, R and C (packing of data is omitted)
@@ -70,13 +77,13 @@ describe('Transaction integration test', () => {
 
         // Receiver actions from here:
         const derivedK = generateEcdhSharedKey(vV.privateKey, rR.publicKey);
-        const decryptedText = decryptMessage(C, derivedK);
+        const decryptedText = uint8ArrayToBigInt(decryptMessage(C, derivedK));
         const sPrime = babyjub.mulPointEscalar(
             rR.publicKey,
             formatPrivateKeyForBabyJub(sS.privateKey),
         );
 
-        expect(decryptedText).toEqual(plainText);
+        expect(decryptedText.toString(16)).toEqual(plainText);
         expect(sPrime[0]).toEqual(Sprime[0]);
         expect(sPrime[1]).toEqual(Sprime[1]);
     });

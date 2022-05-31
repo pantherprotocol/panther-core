@@ -34,11 +34,11 @@ stages: # List of stages for jobs, and their order of execution
 
 .base_scripts: &base_scripts
   - yarn lint
-  - HARDHAT_NO_MNEMONIC=yes yarn run build:contracts && yarn test
   - yarn build:types
+  - HARDHAT_NO_MNEMONIC=yes yarn run build:contracts && yarn test
+  - yarn run test:crypto
   - yarn run build:dapp
   - yarn run test:dapp
-  - yarn run test:crypto
 
 .preview_script: &preview_script
   - |

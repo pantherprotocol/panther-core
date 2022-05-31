@@ -1,4 +1,8 @@
 import {describe, expect} from '@jest/globals';
+import {
+    bigIntToUint8Array,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/bigint-conversions';
 
 import {bigintToBytes32} from '../../src/lib/conversions';
 import {deriveKeypairFromSeed} from '../../src/lib/keychain';
@@ -15,13 +19,16 @@ import {
 function decryptEphemeralKey(encrypted: string, ecdhKey: EcdhSharedKey): any {
     const ephemeralPublicKeyX = encrypted.slice(0, 64);
     const iv = encrypted.slice(64, 96);
-    const data = encrypted.slice(96);
+    const dataHex = encrypted.slice(96);
+    const data = bigIntToUint8Array(BigInt('0x' + dataHex), 48);
 
     return {
         ephemeralPublicKeyX,
         iv,
         data,
-        msg: decryptMessage({iv, data}, ecdhKey),
+        msg: uint8ArrayToBigInt(decryptMessage({iv, data}, ecdhKey)).toString(
+            16,
+        ),
     };
 }
 
@@ -49,7 +56,7 @@ describe('Ephemeral key encryption', () => {
 
     it('should be decrypted and have correct message', () => {
         expect(decrypted.msg).toEqual(
-            PROLOG + ephemeralKeypair.privateKey.toString(16),
+            PROLOG + bigintToBytes32(ephemeralKeypair.privateKey).slice(2),
         );
     });
 

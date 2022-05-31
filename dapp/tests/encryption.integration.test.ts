@@ -1,3 +1,7 @@
+import {
+    bigIntToUint8Array,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/bigint-conversions';
 import {ethers} from 'ethers';
 
 import {
@@ -33,23 +37,24 @@ describe('Message encryption and decryption', () => {
             childRandomKeypair.publicKey,
         );
 
-        const plaintext = [
-            childRandomKeypair.privateKey.toString(16),
-            BigInt(99).toString(16),
-            BigInt(999).toString(16),
-        ].join('');
+        const prolog = 'deadbeef';
+        const plaintext = prolog + childRandomKeypair.privateKey.toString(16);
 
-        const ciphertext = encryptMessage(plaintext, spendingEcdhSharedKey);
-
-        const decryptedCiphertext = decryptMessage(
-            ciphertext,
-            readingEcdhSharedKey,
+        const ciphertext = encryptMessage(
+            bigIntToUint8Array(BigInt('0x' + plaintext), 36),
+            spendingEcdhSharedKey,
         );
+
+        const decryptedCiphertext = uint8ArrayToBigInt(
+            decryptMessage(ciphertext, readingEcdhSharedKey),
+        ).toString(16);
 
         expect(decryptedCiphertext).toEqual(plaintext);
 
         for (let i = 0; i < decryptedCiphertext.length; i++) {
             expect(decryptedCiphertext[i]).toEqual(plaintext[i]);
         }
+
+        expect(ciphertext.data.length).toEqual(48);
     });
 });

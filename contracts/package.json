@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "author": "Panther Protocol Team (see contributors.md)",
   "description": "Panther Protocol initial staking contracts",
+  "license": "Proprietary",
   "scripts": {
     "build": "waffle",
     "build:types": "cp -a types ../dapp/src",
@@ -41,7 +42,6 @@
     "zero-knowledge",
     "zk-proof"
   ],
-  "license": "Unlicense",
   "dependencies": {
     "chai": "^4.3.4"
   },

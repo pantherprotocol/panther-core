@@ -2,7 +2,7 @@
   "name": "@panther-core/dapp",
   "description": "dApp frontend for Panther Protocol Staking",
   "version": "0.1.0",
-  "license": "MIT",
+  "license": "Proprietary",
   "private": true,
   "scripts": {
     "start": "webpack-cli serve --mode=development --env development --hot",

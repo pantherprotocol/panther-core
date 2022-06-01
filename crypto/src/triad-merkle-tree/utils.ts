@@ -1,10 +1,11 @@
 import {MerkleProof, TriadMerkleTree, poseidon2or3} from '.';
 
-import CONSTANTS from './constants';
 import LZString from 'lz-string';
 import _ from 'lodash';
 import assert from 'assert';
 import {ethers} from 'ethers';
+
+const LEAF_NODE_SIZE = 3;
 
 // returns a new triad merkle tree constructed of passed 1536! commitments
 export const createTriadMerkleTree = (
@@ -18,11 +19,9 @@ export const createTriadMerkleTree = (
     );
 
     const triadMerkleTree = new TriadMerkleTree(depth, zeroValue, poseidon2or3);
-    _.chunk(commitments, CONSTANTS.LEAF_NODE_SIZE).forEach(
-        (leaves: string[]) => {
-            triadMerkleTree.insertBatch(leaves.map(c => BigInt(c)));
-        },
-    );
+    _.chunk(commitments, LEAF_NODE_SIZE).forEach((leaves: string[]) => {
+        triadMerkleTree.insertBatch(leaves.map(c => BigInt(c)));
+    });
     return triadMerkleTree;
 };
 

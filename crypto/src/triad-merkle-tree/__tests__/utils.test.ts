@@ -5,23 +5,21 @@ import {
 } from '../utils';
 import {describe, expect} from '@jest/globals';
 
-import CONSTANTS from '../constants';
 import {TriadMerkleTree} from '..';
 import {fourthTree} from './data/trees';
+
+const TREE_SIZE = 1536;
+const TREE_DEPTH = 10;
 
 describe('Generation, loading and compression of the Triad Merkle tree', () => {
     let tree: TriadMerkleTree;
     beforeAll(() => {
-        const commitments = new Array<string>(CONSTANTS.TREE_SIZE);
-        for (let i = 0; i < CONSTANTS.TREE_SIZE; i++) {
+        const commitments = new Array<string>(TREE_SIZE);
+        for (let i = 0; i < TREE_SIZE; i++) {
             commitments[i] = '0x' + BigInt(i).toString(16);
         }
 
-        tree = createTriadMerkleTree(
-            CONSTANTS.TREE_DEPTH,
-            commitments,
-            BigInt(0),
-        );
+        tree = createTriadMerkleTree(TREE_DEPTH, commitments, BigInt(0));
     });
 
     it('should generate correct tree from 1536 commitments of 32 bytes hashes', () => {

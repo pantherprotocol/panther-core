@@ -6,11 +6,12 @@ import {
 // @ts-ignore
 import {firstTree, secondTree, thirdTree} from './data/trees.js';
 
-import CONSTANTS from '../constants';
 import _ from 'lodash';
 import assert from 'assert';
 
 const ZERO_VALUE = BigInt(0);
+const TREE_DEPTH = 10;
+const LEAF_NODE_SIZE = 3;
 
 // Hash represented as a sum of 2 or 3 elements (for debugging purposes)
 const sum23 = (inputs: bigint[]): bigint => {
@@ -39,7 +40,7 @@ describe('Testing Triad Tree with provided examples', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
             tree = new TriadMerkleTree(5, ZERO_VALUE, poseidon2or3);
-            _.chunk(firstTree[0], CONSTANTS.LEAF_NODE_SIZE).forEach(
+            _.chunk(firstTree[0], LEAF_NODE_SIZE).forEach(
                 (leaves: bigint[]) => {
                     tree.insertBatch(leaves);
                 },
@@ -78,7 +79,7 @@ describe('Testing Triad Tree with provided examples', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
             tree = new TriadMerkleTree(5, ZERO_VALUE, poseidon2or3);
-            _.chunk(secondTree[0], CONSTANTS.LEAF_NODE_SIZE).forEach(
+            _.chunk(secondTree[0], LEAF_NODE_SIZE).forEach(
                 (leaves: bigint[]) => {
                     tree.insertBatch(leaves);
                 },
@@ -117,7 +118,7 @@ describe('Testing Triad Tree with provided examples', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
             tree = new TriadMerkleTree(
-                CONSTANTS.TREE_DEPTH,
+                TREE_DEPTH,
                 BigInt(thirdTree.zeroValue),
                 poseidon2or3,
             );
@@ -147,7 +148,7 @@ describe('Testing Triad Tree with provided examples', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
             tree = new TriadMerkleTree(
-                CONSTANTS.TREE_DEPTH,
+                TREE_DEPTH,
                 BigInt(thirdTree.zeroValue),
                 poseidon2or3,
             );

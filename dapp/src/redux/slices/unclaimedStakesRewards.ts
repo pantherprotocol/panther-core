@@ -5,14 +5,18 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {constants} from 'ethers';
 
 import {chainHasStakesReporter} from '../../services/contracts';
-import {isClassic, AdvancedRewards, TokenID} from '../../services/rewards';
+import {isClassic} from '../../services/rewards';
 import * as stakingService from '../../services/staking';
-import {StakeRewards} from '../../types/staking';
+import {
+    StakeReward,
+    AdvancedStakeRewardsBN,
+    StakingRewardTokenID,
+} from '../../types/staking';
 import {formatCurrency, fiatPrice} from '../../utils/helpers';
 import {RootState} from '../store';
 
 interface StakesRewardsAsyncState {
-    value: StakeRewards | null;
+    value: StakeReward | null;
     status: 'idle' | 'loading' | 'failed';
 }
 
@@ -25,7 +29,7 @@ export const getUnclaimedRewards = createAsyncThunk(
     'balance/getUnclaimedStakesRewards',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
-    ): Promise<StakeRewards | null> => {
+    ): Promise<StakeReward | null> => {
         const {account, library, chainId} = context;
         if (!library || !chainId || !account) return null;
         if (chainHasStakesReporter(chainId)) {
@@ -44,9 +48,13 @@ export const getUnclaimedRewards = createAsyncThunk(
             account,
         );
 
-        const reduxRewards = {} as StakeRewards;
+        const reduxRewards = {} as StakeReward;
 
-        for (const tid of [TokenID.PRP, TokenID.ZKP, TokenID.zZKP]) {
+        for (const tid of [
+            StakingRewardTokenID.PRP,
+            StakingRewardTokenID.ZKP,
+            StakingRewardTokenID.zZKP,
+        ]) {
             reduxRewards[tid] = sumTokens(reward[1], tid).toString();
         }
 
@@ -54,17 +62,23 @@ export const getUnclaimedRewards = createAsyncThunk(
     },
 );
 
-function sumTokens(rows: stakingService.StakeRow[], tid: TokenID): BigNumber {
+function sumTokens(
+    rows: stakingService.StakeRow[],
+    tid: StakingRewardTokenID,
+): BigNumber {
     let accumulated = constants.Zero;
 
     for (const row of rows) {
-        if (tid === TokenID.ZKP && isClassic(row.reward)) {
+        if (tid === StakingRewardTokenID.ZKP && isClassic(row.reward)) {
             accumulated = accumulated.add(row.reward as BigNumber);
         } else if (
-            (tid === TokenID.zZKP || tid === TokenID.PRP) &&
+            (tid === StakingRewardTokenID.zZKP ||
+                tid === StakingRewardTokenID.PRP) &&
             !isClassic(row.reward)
         ) {
-            accumulated = accumulated.add((row.reward as AdvancedRewards)[tid]);
+            accumulated = accumulated.add(
+                (row.reward as AdvancedStakeRewardsBN)[tid],
+            );
         }
     }
 
@@ -91,12 +105,15 @@ export const unclaimedRewardsSlice = createSlice({
             })
             .addCase(getUnclaimedRewards.rejected, state => {
                 state.status = 'failed';
-                state.value = {} as StakeRewards;
+                state.value = {} as StakeReward;
             });
     },
 });
 
-const rewardsSelector = (state: RootState, tid: TokenID): BigNumber | null => {
+const rewardsSelector = (
+    state: RootState,
+    tid: StakingRewardTokenID,
+): BigNumber | null => {
     return state.unclaimedStakesRewards.value?.[tid]
         ? BigNumber.from(state.unclaimedStakesRewards.value[tid])
         : null;
@@ -105,36 +122,36 @@ const rewardsSelector = (state: RootState, tid: TokenID): BigNumber | null => {
 export const zZkpUnclaimedRewardsSelector = (
     state: RootState,
 ): BigNumber | null => {
-    return rewardsSelector(state, TokenID.zZKP);
+    return rewardsSelector(state, StakingRewardTokenID.zZKP);
 };
 
 export const prpUnclaimedRewardsSelector = (
     state: RootState,
 ): BigNumber | null => {
-    return rewardsSelector(state, TokenID.PRP);
+    return rewardsSelector(state, StakingRewardTokenID.PRP);
 };
 
 export const zkpUnclaimedRewardsSelector = (
     state: RootState,
 ): BigNumber | null => {
-    return rewardsSelector(state, TokenID.ZKP);
+    return rewardsSelector(state, StakingRewardTokenID.ZKP);
 };
 
 export const zZkpTokenUSDMarketPriceSelector = (
     state: RootState,
 ): BigNumber | null => {
-    return tokenUSDMarketPriceSelector(state, TokenID.zZKP);
+    return tokenUSDMarketPriceSelector(state, StakingRewardTokenID.zZKP);
 };
 
 export const zkpTokenUSDMarketPriceSelector = (
     state: RootState,
 ): BigNumber | null => {
-    return tokenUSDMarketPriceSelector(state, TokenID.ZKP);
+    return tokenUSDMarketPriceSelector(state, StakingRewardTokenID.ZKP);
 };
 
 const tokenUSDMarketPriceSelector = (
     state: RootState,
-    tid: TokenID,
+    tid: StakingRewardTokenID,
 ): BigNumber | null => {
     const price = state.zkpMarketPrice.value
         ? BigNumber.from(state.zkpMarketPrice.value)

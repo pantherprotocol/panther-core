@@ -14,7 +14,7 @@ import {
 import infoIcon from '../../../images/info-icon.svg';
 import {useAppSelector} from '../../../redux/hooks';
 import {advancedStakesRewardsSelector} from '../../../redux/slices/advancedStakesRewards';
-import {AdvancedStakeReward} from '../../../types/staking';
+import {AdvancedStakeRewards} from '../../../types/staking';
 
 import PrivateZAsset from './PrivateZAsset';
 
@@ -69,7 +69,7 @@ export default function PrivateZAssetsTable() {
                 </TableHead>
                 <TableBody>
                     {advancedStakeRewards.map(
-                        (item: AdvancedStakeReward, key: number) => (
+                        (item: AdvancedStakeRewards, key: number) => (
                             <PrivateZAsset key={key} item={item} />
                         ),
                     )}

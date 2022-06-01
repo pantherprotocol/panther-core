@@ -6,7 +6,7 @@ import {BigNumber} from 'ethers';
 import pantherIcon from '../../../../images/panther-logo.svg';
 import {useAppSelector} from '../../../../redux/hooks';
 import {marketPriceSelector} from '../../../../redux/slices/zkpMarketPrice';
-import {AdvancedStakeReward} from '../../../../types/staking';
+import {AdvancedStakeRewards} from '../../../../types/staking';
 import {calcUSDPrice, formatCurrency} from '../../../../utils/helpers';
 import Balance from '../../Balance';
 import Network from '../../Network';
@@ -14,7 +14,7 @@ import Network from '../../Network';
 import './styles.scss';
 
 export default function PrivateZAsset(props: {
-    item: AdvancedStakeReward;
+    item: AdvancedStakeRewards;
     key: number;
 }) {
     const zkpPrice = useAppSelector(marketPriceSelector);

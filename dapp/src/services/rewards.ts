@@ -1,24 +1,14 @@
 import {BigNumber, constants} from 'ethers';
 
 import {IStakingTypes} from '../types/contracts/Staking';
+import {
+    StakeRewardBN,
+    ClassicStakeRewardBN,
+    AdvancedStakeRewardsBN,
+    StakingRewardTokenID,
+} from '../types/staking';
 
 import {CLASSIC_TYPE_HEX, ADVANCED_TYPE_HEX} from './staking';
-
-export type Rewards = ClassicRewards | AdvancedRewards;
-
-export type ClassicRewards = BigNumber;
-
-export type AdvancedRewards = {
-    [key in AdvancedTokenIDs]: BigNumber;
-};
-
-export type AdvancedTokenIDs = 'PRP' | 'zZKP';
-
-export enum TokenID {
-    ZKP = 'ZKP',
-    zZKP = 'zZKP',
-    PRP = 'PRP',
-}
 
 /* Constants are described in Advanced Staking Rewards document:
 https://docs.google.com/document/d/1lsZlE3RsUlk-Dx_dXAqKxXKWZD18ZuuNA-DKoEsArm4/edit
@@ -91,7 +81,7 @@ export function calculateRewardsForStake(
     rewardsBalance: BigNumber | null,
     totalStaked: BigNumber | null,
     classicReward: BigNumber | null,
-): Rewards {
+): StakeRewardBN {
     switch (stake.stakeType) {
         case CLASSIC_TYPE_HEX:
             return calculateRewardsForClassicStake(
@@ -112,7 +102,7 @@ export function calculateRewardsForClassicStake(
     rewardsBalance: BigNumber | null,
     totalStaked: BigNumber | null,
     classicReward: BigNumber | null,
-): ClassicRewards {
+): ClassicStakeRewardBN {
     if (classicReward) {
         return classicReward;
     }
@@ -138,14 +128,19 @@ export function calculateRewardsForClassicStake(
 
 export function calculateRewardsForAdvancedStake(
     stake: IStakingTypes.StakeStructOutput,
-): AdvancedRewards {
+): AdvancedStakeRewardsBN {
     return {
         // x1000 is conversion to ms as in Date.getTime() method.
-        [TokenID.zZKP]: zZkpReward(stake.amount, stake.stakedAt * 1000),
-        [TokenID.PRP]: prpReward(stake.amount),
+        [StakingRewardTokenID.zZKP]: zZkpReward(
+            stake.amount,
+            stake.stakedAt * 1000,
+        ),
+        [StakingRewardTokenID.PRP]: prpReward(stake.amount),
     };
 }
 
-export function isClassic(rewards: Rewards): rewards is ClassicRewards {
+export function isClassic(
+    rewards: StakeRewardBN,
+): rewards is ClassicStakeRewardBN {
     return rewards instanceof BigNumber;
 }

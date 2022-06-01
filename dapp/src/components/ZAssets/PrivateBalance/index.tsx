@@ -6,19 +6,23 @@ import {BigNumber} from 'ethers';
 import {useAppSelector} from '../../../redux/hooks';
 import {totalSelector} from '../../../redux/slices/advancedStakesRewards';
 import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
-import {TokenID} from '../../../services/rewards';
+import {StakingRewardTokenID} from '../../../types/staking';
 import {formatCurrency, formatUSD, fiatPrice} from '../../../utils/helpers';
 
 import './styles.scss';
 
 export default function PrivateBalance() {
     const zkpPrice = useAppSelector(marketPriceSelector);
-    const unclaimedZZKP = useAppSelector(totalSelector(TokenID.zZKP));
+    const unclaimedZZKP = useAppSelector(
+        totalSelector(StakingRewardTokenID.zZKP),
+    );
     const totalPrice = zkpPrice
         ? fiatPrice(unclaimedZZKP, BigNumber.from(zkpPrice))
         : 0;
 
-    const unclaimedPRP = useAppSelector(totalSelector(TokenID.zZKP));
+    const unclaimedPRP = useAppSelector(
+        totalSelector(StakingRewardTokenID.zZKP),
+    );
 
     return (
         <Box className="private-zAssets-balance-container">

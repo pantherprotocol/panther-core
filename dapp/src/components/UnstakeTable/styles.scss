@@ -56,11 +56,11 @@ $unstake-button-background: linear-gradient(
         text-transform: capitalize;
         width: 100% !important;
         min-width: 173px !important;
-        height: 43px !important;
+        height: auto !important;
+        min-height: 43px;
         font-size: $smaller-font-size !important;
         background: $unstake-button-background !important;
         mix-blend-mode: normal;
-        backdrop-filter: blur(400px);
         border-radius: 22px !important;
 
         &:hover {

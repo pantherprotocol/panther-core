@@ -12,7 +12,13 @@
     "outDir": "lib",
     "baseUrl": ".",
     "paths": {
-      "*": ["src/*", "node_modules/*", "../node_modules/*", "typing/*"]
+      "*": [
+        "../node_modules/*",
+        "node_modules/*",
+        "scripts/*",
+        "src/*",
+        "src/types/*"
+      ]
     },
     "sourceMap": true,
     "declaration": true,

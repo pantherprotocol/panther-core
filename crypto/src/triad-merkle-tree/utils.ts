@@ -4,6 +4,8 @@ import LZString from 'lz-string';
 import _ from 'lodash';
 import assert from 'assert';
 import {ethers} from 'ethers';
+import {NewCommitmentEvent} from '../types/commitments';
+import fs from 'fs';
 
 const LEAF_NODE_SIZE = 3;
 
@@ -72,4 +74,24 @@ export function triadTreeMerkleProofToPathElements({
     // Leaf level input is an array of two elements,
     // it must be converted in two output elements.
     return input.flat(1);
+}
+
+// reads commitments from the JSON file with NewCommitmentLog[]
+export function readCommitmentsFromCommitmentLog(fn: string): string[] {
+    console.log(`reading file ${fn}...`);
+    const events: NewCommitmentEvent[] = JSON.parse(
+        fs.readFileSync(fn, 'utf-8'),
+    );
+
+    console.log(`found ${events.length} events`);
+
+    const commitments = events
+        .sort((a: NewCommitmentEvent, b: NewCommitmentEvent) =>
+            BigInt(a.leftLeafId) > BigInt(b.leftLeafId) ? 1 : -1,
+        )
+        .map((c: NewCommitmentEvent) => c.commitments)
+        .flat();
+
+    console.log(`which have ${commitments.length} commitments`);
+    return commitments;
 }

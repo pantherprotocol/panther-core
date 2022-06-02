@@ -4,6 +4,8 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {constants} from 'ethers';
 
+import {formatCurrency} from '../../lib/format';
+import {fiatPrice} from '../../lib/tokenPrice';
 import {chainHasStakesReporter} from '../../services/contracts';
 import {isClassic} from '../../services/rewards';
 import * as stakingService from '../../services/staking';
@@ -12,8 +14,6 @@ import {
     AdvancedStakeRewardsBN,
     StakingRewardTokenID,
 } from '../../types/staking';
-import {formatCurrency} from '../../utils/format';
-import {fiatPrice} from '../../utils/tokenPrice';
 import {RootState} from '../store';
 
 interface StakesRewardsAsyncState {

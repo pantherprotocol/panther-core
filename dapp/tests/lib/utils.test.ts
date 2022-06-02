@@ -1,8 +1,8 @@
 import {utils} from 'ethers';
 
-import {formatCurrency, formatPercentage} from '../../src/utils/format';
-import {getDecimalSeparator, _setLocale} from '../../src/utils/i18n';
-import {formatEther, safeParseUnits} from '../../src/utils/numbers';
+import {formatCurrency, formatPercentage} from '../../src/lib/format';
+import {getDecimalSeparator, _setLocale} from '../../src/lib/i18n';
+import {formatEther, safeParseUnits} from '../../src/lib/numbers';
 
 describe('formatPercentage', () => {
     type TEST_CASE = [number, string, string];

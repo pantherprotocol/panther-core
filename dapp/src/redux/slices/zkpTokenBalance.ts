@@ -4,10 +4,10 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {constants} from 'ethers';
 
+import {formatCurrency} from '../../lib/format';
+import {formatEther} from '../../lib/numbers';
+import {fiatPrice} from '../../lib/tokenPrice';
 import * as accountService from '../../services/account';
-import {formatCurrency} from '../../utils/format';
-import {formatEther} from '../../utils/numbers';
-import {fiatPrice} from '../../utils/tokenPrice';
 import {RootState} from '../store';
 
 interface ZkpTokenBalanceState {

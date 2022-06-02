@@ -4,12 +4,12 @@ import {Box, Typography} from '@mui/material';
 import LinearProgress from '@mui/material/LinearProgress';
 import {useWeb3React} from '@web3-react/core';
 
+import {formatPercentage} from '../../lib/format';
 import {useAppSelector} from '../../redux/hooks';
 import {termsSelector} from '../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../services/contracts';
 import {getAdvStakingAPY} from '../../services/rewards';
 import {StakeType} from '../../types/staking';
-import {formatPercentage} from '../../utils/format';
 
 import './styles.scss';
 

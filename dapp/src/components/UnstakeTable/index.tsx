@@ -12,6 +12,7 @@ import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, constants} from 'ethers';
 
+import {formatCurrency, formatTime} from '../../lib/format';
 import {useAppDispatch} from '../../redux/hooks';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
@@ -30,7 +31,6 @@ import {
     ClassicStakeRewardBN,
     StakingRewardTokenID,
 } from '../../types/staking';
-import {formatCurrency, formatTime} from '../../utils/format';
 
 import './styles.scss';
 

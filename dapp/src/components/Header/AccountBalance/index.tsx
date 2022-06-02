@@ -4,12 +4,12 @@ import {InputAdornment, IconButton, Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
 import refreshIcon from '../../../images/refresh-icon.svg';
+import {formatCurrency} from '../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {
     chainBalanceSelector,
     getChainBalance,
 } from '../../../redux/slices/chainBalance';
-import {formatCurrency} from '../../../utils/format';
 
 import './styles.scss';
 

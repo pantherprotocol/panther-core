@@ -5,13 +5,13 @@ import {useWeb3React} from '@web3-react/core';
 
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
+import {formatCurrency, formatUSD} from '../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {getChainBalance} from '../../../redux/slices/chainBalance';
 import {
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
 } from '../../../redux/slices/zkpTokenBalance';
-import {formatCurrency, formatUSD} from '../../../utils/format';
 
 import './styles.scss';
 

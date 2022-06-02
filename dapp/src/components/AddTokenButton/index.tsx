@@ -5,9 +5,9 @@ import {useWeb3React} from '@web3-react/core';
 
 import metamaskIcon from '../../images/meta-mask-icon.svg';
 import logo from '../../images/panther-logo.svg';
+import {DECIMALS} from '../../lib/constants';
 import {getTokenContract} from '../../services/contracts';
 import {openNotification} from '../../services/notification';
-import {DECIMALS} from '../../utils/constants';
 
 import './styles.scss';
 

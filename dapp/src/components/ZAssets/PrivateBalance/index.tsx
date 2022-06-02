@@ -3,12 +3,12 @@ import * as React from 'react';
 import {Box, Typography} from '@mui/material';
 import {BigNumber} from 'ethers';
 
+import {formatCurrency, formatUSD} from '../../../lib/format';
+import {fiatPrice} from '../../../lib/tokenPrice';
 import {useAppSelector} from '../../../redux/hooks';
 import {totalSelector} from '../../../redux/slices/advancedStakesRewards';
 import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
 import {StakingRewardTokenID} from '../../../types/staking';
-import {formatCurrency, formatUSD} from '../../../utils/format';
-import {fiatPrice} from '../../../utils/tokenPrice';
 
 import './styles.scss';
 

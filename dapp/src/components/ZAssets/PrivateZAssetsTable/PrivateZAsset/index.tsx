@@ -43,7 +43,7 @@ export default function PrivateZAsset() {
     );
     const balanceValue = calcUSDPrice(BigNumber.from(unclaimedZZKP), zkpPrice);
 
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     return (
         <React.Fragment>
             <TableRow

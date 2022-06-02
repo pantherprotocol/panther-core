@@ -72,7 +72,7 @@ export default function StakingInput(props: {
                         variant="subtitle2"
                         component="span"
                     >
-                        {formatCurrency(tokenBalance)}
+                        {tokenBalance ? formatCurrency(tokenBalance) : '-'}
                     </Typography>
                     <Typography
                         className="token-balance"

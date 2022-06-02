@@ -1,19 +1,28 @@
 import * as React from 'react';
 
 import {Box, Typography} from '@mui/material';
+import {BigNumber} from 'ethers';
 
 import {useAppSelector} from '../../../redux/hooks';
-import {
-    prpUnclaimedRewardsSelector,
-    zZkpTokenUSDMarketPriceSelector,
-} from '../../../redux/slices/unclaimedStakesRewards';
-import {formatCurrency, formatUSD} from '../../../utils/helpers';
+import {totalSelector} from '../../../redux/slices/advancedStakesRewards';
+import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
+import {StakingRewardTokenID} from '../../../types/staking';
+import {formatCurrency, formatUSD, fiatPrice} from '../../../utils/helpers';
 
 import './styles.scss';
 
 export default function PrivateBalance() {
-    const zZkpRewardsUSDValue = useAppSelector(zZkpTokenUSDMarketPriceSelector);
-    const prpRewardBalance = useAppSelector(prpUnclaimedRewardsSelector);
+    const zkpPrice = useAppSelector(marketPriceSelector);
+    const unclaimedZZKP = useAppSelector(
+        totalSelector(StakingRewardTokenID.zZKP),
+    );
+    const totalPrice = zkpPrice
+        ? fiatPrice(unclaimedZZKP, BigNumber.from(zkpPrice))
+        : 0;
+
+    const unclaimedPRP = useAppSelector(
+        totalSelector(StakingRewardTokenID.zZKP),
+    );
 
     return (
         <Box className="private-zAssets-balance-container">
@@ -22,13 +31,11 @@ export default function PrivateBalance() {
                     Private zAsset Balance
                 </Typography>
                 <Typography className="amount">
-                    {zZkpRewardsUSDValue
-                        ? formatUSD(zZkpRewardsUSDValue, {decimals: 2})
-                        : '-'}
+                    {totalPrice ? formatUSD(totalPrice, {decimals: 2}) : '-'}
                 </Typography>
                 <Typography className="zkp-rewards">
-                    {prpRewardBalance ? formatCurrency(prpRewardBalance) : '-'}{' '}
-                    Total Privacy Reward Points (PRP)
+                    {unclaimedPRP ? formatCurrency(unclaimedPRP) : '-'} Total
+                    Privacy Reward Points (PRP)
                 </Typography>
             </Box>
             {/* <Box>

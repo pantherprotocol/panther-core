@@ -13,15 +13,15 @@ import {
 
 import infoIcon from '../../../images/info-icon.svg';
 import {useAppSelector} from '../../../redux/hooks';
-import {assetsSelector} from '../../../redux/slices/assets';
-import {ZAsset} from '../../../types/assets';
+import {advancedStakesRewardsSelector} from '../../../redux/slices/advancedStakesRewards';
+import {AdvancedStakeRewards} from '../../../types/staking';
 
 import PrivateZAsset from './PrivateZAsset';
 
 import './styles.scss';
 
 export default function PrivateZAssetsTable() {
-    const assets = useAppSelector(assetsSelector);
+    const advancedStakeRewards = useAppSelector(advancedStakesRewardsSelector);
 
     const zAssetTooltip = `$zZKP in a MASP. This reward is calculated based on your
     Stake but created as a transaction in the MASP. You will be able to redeem $zZKP
@@ -68,10 +68,11 @@ export default function PrivateZAssetsTable() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {assets &&
-                        assets.map((item: ZAsset, key: number) => (
+                    {advancedStakeRewards.map(
+                        (item: AdvancedStakeRewards, key: number) => (
                             <PrivateZAsset key={key} item={item} />
-                        ))}
+                        ),
+                    )}
                 </TableBody>
             </Table>
         </TableContainer>

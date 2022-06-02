@@ -13,7 +13,7 @@ import {
     generateChildPublicKey,
 } from '../lib/keychain';
 import type {IStakingTypes, Staking} from '../types/contracts/Staking';
-import {StakeTypes} from '../types/staking';
+import {StakeRewardBN, StakeTypes} from '../types/staking';
 import {CONFIRMATIONS_NUM} from '../utils/constants';
 import {parseTxErrorMessage} from '../utils/errors';
 import {getEventFromReceipt} from '../utils/transactions';
@@ -36,7 +36,7 @@ import {notifyError} from './errors';
 import {deriveRootKeypairs} from './keychain';
 import {encryptEphemeralKey} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
-import {Rewards, calculateRewardsForStake} from './rewards';
+import {calculateRewardsForStake} from './rewards';
 
 const CoinGeckoClient = new CoinGecko();
 
@@ -481,7 +481,7 @@ export interface StakeRow {
     stakeType: string;
     stakedAt: number;
     amount: BigNumber;
-    reward: Rewards;
+    reward: StakeRewardBN;
     lockedTill: number;
     unstakable?: boolean;
     claimedAt: number;

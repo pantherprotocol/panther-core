@@ -18,18 +18,18 @@ import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 import {chainHasAdvancedStaking} from '../../services/contracts';
-import {
-    isClassic,
-    TokenID,
-    AdvancedRewards,
-    ClassicRewards,
-} from '../../services/rewards';
+import {isClassic} from '../../services/rewards';
 import {
     unstake,
     StakeRow,
     getStakesAndRewards,
     CLASSIC_TYPE_HEX,
 } from '../../services/staking';
+import {
+    AdvancedStakeRewardsBN,
+    ClassicStakeRewardBN,
+    StakingRewardTokenID,
+} from '../../types/staking';
 import {formatCurrency, formatTime} from '../../utils/helpers';
 
 import './styles.scss';
@@ -161,10 +161,10 @@ export default function UnstakeTable() {
                                 {formatCurrency(
                                     row.stakeType === CLASSIC_TYPE_HEX &&
                                         isClassic(row.reward)
-                                        ? (row.reward as ClassicRewards)
-                                        : (row.reward as AdvancedRewards)[
-                                              TokenID.zZKP
-                                          ],
+                                        ? (row.reward as ClassicStakeRewardBN)
+                                        : (
+                                              row.reward as AdvancedStakeRewardsBN
+                                          )[StakingRewardTokenID.zZKP],
                                 )}
                             </Typography>
                             <Typography>

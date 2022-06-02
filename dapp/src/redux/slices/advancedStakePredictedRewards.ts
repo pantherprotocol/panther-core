@@ -2,16 +2,15 @@ import {BigNumber} from 'ethers';
 // eslint-disable-next-line
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
-import {TokenID, prpReward, zZkpReward} from '../../services/rewards';
+import {prpReward, zZkpReward} from '../../services/rewards';
+import {StakeReward, StakingRewardTokenID} from '../../types/staking';
 import {RootState} from '../store';
 
-import {StakeRewards} from './types/stakingRewards';
-
 interface StakesRewardsState {
-    value: StakeRewards | null;
+    value: StakeReward | null;
 }
 
-const initialState: StakesRewardsState = {value: {} as StakeRewards};
+const initialState: StakesRewardsState = {value: {} as StakeReward};
 
 export const calculatedRewardSlice = createSlice({
     name: 'advancedStakeInputRewards',
@@ -23,15 +22,15 @@ export const calculatedRewardSlice = createSlice({
         calculateRewards: (state, action: PayloadAction<string>) => {
             const amountToStake = action.payload;
             if (!amountToStake) {
-                state.value = {} as StakeRewards;
+                state.value = {} as StakeReward;
             } else {
                 const timeStaked = Math.floor(new Date().getTime());
                 const rewards = {
-                    [TokenID.zZKP]: zZkpReward(
+                    [StakingRewardTokenID.zZKP]: zZkpReward(
                         BigNumber.from(amountToStake),
                         timeStaked,
                     ).toString(),
-                    [TokenID.PRP]: prpReward(
+                    [StakingRewardTokenID.PRP]: prpReward(
                         BigNumber.from(amountToStake),
                     ).toString(),
                 };
@@ -44,7 +43,7 @@ export const calculatedRewardSlice = createSlice({
 
 export const calculatedRewardsSelector = (
     state: RootState,
-): StakeRewards | null => {
+): StakeReward | null => {
     return state.advancedStakeInputRewards.value ?? null;
 };
 

@@ -6,15 +6,15 @@ import {BigNumber} from 'ethers';
 
 import {useAppSelector} from '../../../redux/hooks';
 import {calculatedRewardsSelector} from '../../../redux/slices/advancedStakePredictedRewards';
-import {TokenID} from '../../../services/rewards';
+import {StakingRewardTokenID} from '../../../types/staking';
 import {formatCurrency} from '../../../utils/helpers';
 
 import './styles.scss';
 
 export function ExpectedRewardsCard() {
     const rewards = useAppSelector(calculatedRewardsSelector);
-    const prp = rewards?.[TokenID.PRP];
-    const zZkp = rewards?.[TokenID.zZKP];
+    const prp = rewards?.[StakingRewardTokenID.PRP];
+    const zZkp = rewards?.[StakingRewardTokenID.zZKP];
 
     return (
         <Box className="expected-rewards-card">

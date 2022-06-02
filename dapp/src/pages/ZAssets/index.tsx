@@ -7,7 +7,7 @@ import PrivateBalance from '../../components/ZAssets/PrivateBalance';
 import PrivateZAssetsTable from '../../components/ZAssets/PrivateZAssetsTable';
 import background from '../../images/background.png';
 import {useAppDispatch} from '../../redux/hooks';
-import {getAssets} from '../../redux/slices/assets';
+import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
 
 import './styles.scss';
 
@@ -16,7 +16,7 @@ export default function ZAssets(): React.ReactElement {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        dispatch(getAssets, context);
+        dispatch(getAdvancedStakesRewards, context);
     }, [context, dispatch]);
 
     return (

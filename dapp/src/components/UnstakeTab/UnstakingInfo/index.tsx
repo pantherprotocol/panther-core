@@ -8,7 +8,7 @@ import {useAppSelector} from '../../../redux/hooks';
 import {termsSelector} from '../../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
 import {StakeType} from '../../../types/staking';
-import {formatTime} from '../../../utils/helpers';
+import {formatTime} from '../../../utils/format';
 
 import './styles.scss';
 

@@ -1,21 +1,7 @@
 import {BigNumber, utils} from 'ethers';
-import {escapeRegExp} from 'lodash';
 
-import {E18} from './constants';
-
-// For testing only!
-let localeOverride: string | undefined;
-export function _setLocale(locale: string) {
-    localeOverride = locale;
-}
-
-export function getLocale(): string {
-    return (
-        localeOverride ||
-        navigator.language ||
-        new Intl.NumberFormat().resolvedOptions().locale
-    );
-}
+import {getLocale} from './i18n';
+import {roundDown} from './numbers';
 
 export const formatTime = (date: number | null): string | null => {
     if (!date) return null;
@@ -39,38 +25,6 @@ export function formatPercentage(percentage: number): string {
         style: 'percent',
     });
     return percentFormat.format(percentage);
-}
-
-export function fiatPrice(
-    amount: BigNumber | null,
-    price: BigNumber | null,
-): BigNumber | null {
-    return amount && price && amount.mul(price).div(E18);
-}
-
-export function calcUSDPrice(
-    value: BigNumber | null,
-    price: BigNumber | null,
-    options?: {decimals?: number},
-): string {
-    const usdValue = fiatPrice(value, price);
-    return formatUSD(usdValue, options);
-}
-
-export function getDecimalSeparator(): string {
-    const n = 1.1;
-    return n.toLocaleString(getLocale()).substring(1, 2);
-}
-
-export function roundDown(s: string, decimals: number): string {
-    const sep = escapeRegExp(getDecimalSeparator());
-    if (decimals === 0) {
-        const regexp = new RegExp(`${sep}\\d+$`);
-        return s.replace(regexp, '');
-    }
-    const regexp = new RegExp(`(${sep}\\d{${decimals}}).+$`);
-    const rounded = s.replace(regexp, '$1');
-    return rounded;
 }
 
 export function formatCurrency(
@@ -103,16 +57,4 @@ export function formatUSD(
     options?: {decimals?: number},
 ): string {
     return `$${formatCurrency(value, options)} USD`;
-}
-
-export function formatEther(bignum: BigNumber | null): string | null {
-    return bignum && utils.formatEther(bignum);
-}
-
-export function safeParseUnits(s: string | null): BigNumber | null {
-    try {
-        return utils.parseUnits(s || '');
-    } catch (err: any) {
-        return null;
-    }
 }

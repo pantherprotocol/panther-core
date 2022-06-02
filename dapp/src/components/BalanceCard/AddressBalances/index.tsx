@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import {BigNumber} from 'ethers';
 
 import infoIcon from '../../../images/info-icon.svg';
-import {formatCurrency, formatUSD} from '../../../utils/helpers';
+import {formatCurrency, formatUSD} from '../../../utils/format';
 import {SmallButton} from '../../SmallButton';
 
 import './styles.scss';

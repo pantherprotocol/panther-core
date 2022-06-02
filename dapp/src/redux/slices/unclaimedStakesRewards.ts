@@ -12,7 +12,8 @@ import {
     AdvancedStakeRewardsBN,
     StakingRewardTokenID,
 } from '../../types/staking';
-import {formatCurrency, fiatPrice} from '../../utils/helpers';
+import {formatCurrency} from '../../utils/format';
+import {fiatPrice} from '../../utils/tokenPrice';
 import {RootState} from '../store';
 
 interface StakesRewardsAsyncState {

@@ -20,7 +20,7 @@ import {
 import {FAUCET_CHAIN_IDS} from '../../services/env';
 import {sendFaucetTransaction} from '../../services/faucet';
 import {switchNetwork} from '../../services/wallet';
-import {formatCurrency} from '../../utils/helpers';
+import {formatCurrency} from '../../utils/format';
 import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 

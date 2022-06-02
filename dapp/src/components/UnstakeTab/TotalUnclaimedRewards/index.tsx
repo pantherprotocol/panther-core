@@ -8,7 +8,7 @@ import {
     zkpUnclaimedRewardsSelector,
     zZkpUnclaimedRewardsSelector,
 } from '../../../redux/slices/unclaimedStakesRewards';
-import {formatCurrency} from '../../../utils/helpers';
+import {formatCurrency} from '../../../utils/format';
 
 import './styles.scss';
 

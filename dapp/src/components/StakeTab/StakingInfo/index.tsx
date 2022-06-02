@@ -10,7 +10,7 @@ import {
 } from '../../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
 import {StakeType} from '../../../types/staking';
-import {formatTime} from '../../../utils/helpers';
+import {formatTime} from '../../../utils/format';
 import {SafeMuiLink} from '../../Common/links';
 
 import './styles.scss';

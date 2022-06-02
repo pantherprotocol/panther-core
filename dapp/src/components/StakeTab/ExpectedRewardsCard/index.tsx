@@ -7,7 +7,7 @@ import {BigNumber} from 'ethers';
 import {useAppSelector} from '../../../redux/hooks';
 import {calculatedRewardsSelector} from '../../../redux/slices/advancedStakePredictedRewards';
 import {StakingRewardTokenID} from '../../../types/staking';
-import {formatCurrency} from '../../../utils/helpers';
+import {formatCurrency} from '../../../utils/format';
 
 import './styles.scss';
 

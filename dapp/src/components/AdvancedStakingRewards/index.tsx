@@ -9,7 +9,7 @@ import {termsSelector} from '../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../services/contracts';
 import {getAdvStakingAPY} from '../../services/rewards';
 import {StakeType} from '../../types/staking';
-import {formatPercentage} from '../../utils/helpers';
+import {formatPercentage} from '../../utils/format';
 
 import './styles.scss';
 

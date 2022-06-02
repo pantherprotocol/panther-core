@@ -120,7 +120,7 @@ function ZafariFaucet() {
                 </Box>
                 <Box className="details-row">
                     <Typography id="caption">Token:</Typography>
-                    <Typography id="token-symbol">$TESTZKP</Typography>
+                    <Typography id="token-symbol">$ZKP</Typography>
                 </Box>
                 <Box className="details-row">
                     <Typography id="caption">Balance:</Typography>

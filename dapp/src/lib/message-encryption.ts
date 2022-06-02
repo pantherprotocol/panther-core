@@ -18,7 +18,7 @@ export const generateEcdhSharedKey = (
 };
 
 export function encryptMessage(
-    plaintext: string,
+    plaintext: Uint8Array,
     sharedKey: EcdhSharedKey,
 ): ICiphertext {
     const iv = crypto.randomBytes(16);
@@ -29,9 +29,11 @@ export function encryptMessage(
             utils.arrayify(bigintToBytes32(sharedKey)),
             iv,
         );
+        const cipheredText1 = cipher.update(plaintext);
+        const cipheredText2 = cipher.final();
         return {
             iv: iv.toString('hex'),
-            data: cipher.update(plaintext, 'utf8', 'hex') + cipher.final('hex'),
+            data: new Uint8Array([...cipheredText1, ...cipheredText2]),
         };
     } catch (error) {
         throw Error(`Failed to encrypt message: ${error}`);
@@ -41,14 +43,15 @@ export function encryptMessage(
 export function decryptMessage(
     ciphertext: ICiphertext,
     sharedKey: EcdhSharedKey,
-): string {
+): Uint8Array {
     const decipher = crypto.createDecipheriv(
         'aes-256-cbc',
         utils.arrayify(bigintToBytes32(sharedKey)),
         Buffer.from(ciphertext.iv, 'hex'),
     );
 
-    return (
-        decipher.update(ciphertext.data, 'hex', 'utf8') + decipher.final('utf8')
-    );
+    return new Uint8Array([
+        ...decipher.update(ciphertext.data),
+        ...decipher.final(),
+    ]);
 }

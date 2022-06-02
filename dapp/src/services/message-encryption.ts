@@ -1,4 +1,9 @@
-import {bigintToBytes32} from '../lib/conversions';
+import {
+    bigIntToUint8Array,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/bigint-conversions';
+
+import {bigintToBytes32, bigintToBytes} from '../lib/conversions';
 import {encryptMessage, generateEcdhSharedKey} from '../lib/message-encryption';
 import {IKeypair, PublicKey} from '../lib/types';
 
@@ -16,12 +21,17 @@ export function encryptEphemeralKey(
         readingPublicKey,
     );
 
-    const plaintext = PROLOG + ephemeralKeypair.privateKey.toString(16);
-    const ciphertext = encryptMessage(plaintext, ecdhKey);
+    const plaintext =
+        PROLOG + bigintToBytes32(ephemeralKeypair.privateKey).slice(2);
+
+    const ciphertext = encryptMessage(
+        bigIntToUint8Array(BigInt('0x' + plaintext), 36),
+        ecdhKey,
+    );
 
     return (
         bigintToBytes32(ephemeralKeypair.publicKey[0]).slice(2) +
         ciphertext.iv +
-        ciphertext.data
+        bigintToBytes(uint8ArrayToBigInt(ciphertext.data), 48).slice(2)
     );
 }

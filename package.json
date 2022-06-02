@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "build:contracts": "yarn workspace @panther-core/contracts compile",
+    "build:crypto": "yarn workspace @panther-core/crypto build",
     "build:dapp": "yarn workspace @panther-core/dapp build",
-    "build:types": "HARDHAT_NO_MNEMONIC=yes yarn workspace @panther-core/contracts compile && yarn workspace @panther-core/contracts build:types && yarn workspace @panther-core/dapp build:types ",
+    "build:types": "HARDHAT_NO_MNEMONIC=yes yarn workspace @panther-core/contracts compile && yarn workspace @panther-core/contracts build:types && yarn workspace @panther-core/dapp build:types && yarn build:crypto",
     "chain": "yarn workspace @panther-core/contracts chain",
     "console": "yarn workspace @panther-core/contracts console",
     "contracts": "yarn workspace @panther-core/contracts contracts",

@@ -1,4 +1,8 @@
 import {describe, expect} from '@jest/globals';
+import {
+    bigIntToUint8Array,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/bigint-conversions';
 
 import {deriveKeypairFromSeed, SNARK_FIELD_SIZE} from '../../src/lib/keychain';
 import {
@@ -20,9 +24,14 @@ describe('Cryptographic operations', () => {
         keypair1.publicKey,
     );
 
-    const plaintext = deriveKeypairFromSeed().privateKey.toString(16);
-    const ciphertext = encryptMessage(plaintext, ecdhSharedKey12);
-    const decryptedCiphertext = decryptMessage(ciphertext, ecdhSharedKey21);
+    const plaintext = deriveKeypairFromSeed().privateKey;
+    const ciphertext = encryptMessage(
+        bigIntToUint8Array(plaintext),
+        ecdhSharedKey12,
+    );
+    const decryptedCiphertext = uint8ArrayToBigInt(
+        decryptMessage(ciphertext, ecdhSharedKey21),
+    );
 
     describe('Private key', () => {
         it('should be smaller than the snark field size', () => {
@@ -60,13 +69,19 @@ describe('Cryptographic operations', () => {
         });
 
         it('should differ from the plaintext', () => {
-            expect(plaintext.toString() !== ciphertext.data).toBeTruthy();
+            expect(
+                bigIntToUint8Array(plaintext) !== ciphertext.data,
+            ).toBeTruthy();
         });
 
         it('should be smaller than the snark field size', () => {
             expect(
                 BigInt(`0x${ciphertext.iv}`) < SNARK_FIELD_SIZE,
             ).toBeTruthy();
+        });
+
+        it('should have 48 bytes of data', () => {
+            expect(ciphertext.data.length).toEqual(48);
         });
     });
 
@@ -91,7 +106,7 @@ describe('Cryptographic operations', () => {
                 console.log('Diagnostics for sometimes failing test:', {
                     decrypted,
                     plaintext,
-                    isTheSame: decrypted === plaintext,
+                    isTheSame: uint8ArrayToBigInt(decrypted) === plaintext,
                     differentKey,
                     ecdhSharedKey12,
                     decryptedCiphertext,

@@ -3,7 +3,7 @@
   "description": "Cryptography library for Panther Protocol LaunchDAO",
   "version": "0.1.0",
   "main": "lib/index.js",
-  "types": "dist/**/*.d.ts",
+  "types": "lib/**/*.d.ts",
   "license": "Proprietary",
   "browser": {
     "fs": false,

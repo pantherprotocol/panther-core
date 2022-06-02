@@ -1,6 +1,7 @@
 import type {TypedDataDomain} from '@ethersproject/abstract-signer';
 import type {TransactionResponse} from '@ethersproject/providers';
 import {JsonRpcSigner} from '@ethersproject/providers';
+import {bigintToBytes32} from '@panther-core/crypto/lib/bigint-conversions';
 import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
 import type {ContractTransaction, Signer} from 'ethers';
@@ -8,7 +9,6 @@ import {BigNumber, constants, utils} from 'ethers';
 
 import {MessageWithTx} from '../components/Common/MessageWithTx';
 import {CONFIRMATIONS_NUM} from '../lib/constants';
-import {bigintToBytes32} from '../lib/conversions';
 import {parseTxErrorMessage} from '../lib/errors';
 import {
     generateEphemeralKeypair,

@@ -1,9 +1,10 @@
 import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
+    bigintToBytes32,
+    bigintToBytes,
 } from '@panther-core/crypto/lib/bigint-conversions';
 
-import {bigintToBytes32, bigintToBytes} from '../lib/conversions';
 import {encryptMessage, generateEcdhSharedKey} from '../lib/message-encryption';
 import {IKeypair, PublicKey} from '../lib/types';
 

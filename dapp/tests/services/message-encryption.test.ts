@@ -2,9 +2,9 @@ import {describe, expect} from '@jest/globals';
 import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
+    bigintToBytes32,
 } from '@panther-core/crypto/lib/bigint-conversions';
 
-import {bigintToBytes32} from '../../src/lib/conversions';
 import {deriveKeypairFromSeed} from '../../src/lib/keychain';
 import {
     generateEcdhSharedKey,

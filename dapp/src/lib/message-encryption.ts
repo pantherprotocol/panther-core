@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 
+import {bigintToBytes32} from '@panther-core/crypto/lib/bigint-conversions';
 import {babyjub} from 'circomlibjs';
 import {utils} from 'ethers';
 
-import {bigintToBytes32} from './conversions';
 import {formatPrivateKeyForBabyJub} from './keychain';
 import {ICiphertext, PrivateKey, PublicKey, EcdhSharedKey} from './types';
 

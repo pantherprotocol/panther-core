@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./actions/AdvancedStakingDataDecoder.sol";
+import "./actions/Constants.sol";
 import "./actions/StakingMsgProcessor.sol";
 import "./interfaces/IERC721Receiver.sol";
 import "./interfaces/INftGrantor.sol";
@@ -18,8 +19,9 @@ import "./utils/Utils.sol";
  * @notice It generates UTXOs in the MASP as rewards to stakers for the "Advanced Staking"
  * @dev This contract is supposed to run on the Polygon. Unless otherwise mentioned, other smart
  * contracts are supposed to run on the Polygon also.
- * As the "Reward Adviser" on the "advanced" stakes, it receives `getRewardAdvice` calls from the
- * `RewardMaster` contract with the `STAKE` message being the call parameter.
+ * As the "Reward Adviser" on the "advanced" stakes, every time a new stake is being created, it
+ * receives the `getRewardAdvice` call from the `RewardMaster` contract with the `STAKE` action
+ * type and the stake data (the `message`) being the call parameters.
  * On the `getRewardAdvice` call received, this contract:
  * - computes the amount of the $ZKP reward to the staker
  * - calls `grant` on the `PantherPoolV0` with the `FOR_ADVANCED_STAKE_GRANT` as the "grant type",
@@ -47,7 +49,7 @@ import "./utils/Utils.sol";
  * on the same network, the RewardMaster on the Polygon calls this contract directly.
  * For stakes made on the mainnet, where the Staking and the RewardMaster run, but this contract is
  * on the Polygon, the RewardMaster on the mainnet sends the STAKE message to the RewardMaster on
- * thePolygon via the PoS bridge and mediator contracts. The RewardMaster on the Polygon handles a
+ * the Polygon via the PoS bridge and mediator contracts. The RewardMaster on the Polygon handles a
  * bridged STAKE message (calling the `getRewardAdvice`) as if the message had been sent by the
  * Staking on the Polygon.
  *
@@ -80,19 +82,6 @@ contract AdvancedStakeRewardController is
     }
 
     // solhint-disable var-name-mixedcase
-
-    // `stakeType` for "Advance Staking"
-    // bytes4(keccak256("advanced"))
-    bytes4 private constant STAKE_TYPE = 0x7ec13a06;
-    // `action` for the "staked" and message
-    // bytes4(keccak256(abi.encodePacked(bytes4(keccak256("stake"), STAKE_TYPE)))
-    bytes4 private constant STAKE = 0xcc995ce8;
-    // `action` for the "unstaked" message
-    // bytes4(keccak256(abi.encodePacked(bytes4(keccak256("unstake"), STAKE_TYPE)))
-    bytes4 private constant UNSTAKE = 0xb8372e55;
-    // PRP grant type for the "advanced" stake
-    // bytes4(keccak256("forAdvancedStakeGrant"))
-    bytes4 private constant FOR_ADVANCED_STAKE_GRANT = 0x31a180d4;
 
     /// @notice RewardMaster contract instance
     address public immutable REWARD_MASTER;
@@ -188,8 +177,8 @@ contract AdvancedStakeRewardController is
         START_BLOCK = block.number;
     }
 
-    /// @dev To be called by the {RewardMaster} contract on `STAKE` and `UNSTAKE` actions.
-    /// The caller is trusted to never call STAKE:
+    /// @dev To be called by the {RewardMaster} contract on "advanced" `STAKE` and `UNSTAKE` actions.
+    /// The caller is trusted to never call w/ the STAKE acton:
     /// - twice for the same stake
     /// - after the rewarded period has ended
     function getRewardAdvice(bytes4 action, bytes memory message)
@@ -199,10 +188,10 @@ contract AdvancedStakeRewardController is
     {
         require(msg.sender == REWARD_MASTER, "ARC: unauthorized");
 
-        if (action == STAKE) {
+        if (action == ADVANCED_STAKE) {
             _generateRewards(message);
         } else {
-            require(action == UNSTAKE, "ARC: unsupported action");
+            require(action == ADVANCED_UNSTAKE, "ARC: unsupported action");
         }
 
         // Return "zero" advice

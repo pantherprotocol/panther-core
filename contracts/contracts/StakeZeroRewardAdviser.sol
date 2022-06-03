@@ -8,28 +8,29 @@ import "./interfaces/IRewardAdviser.sol";
 /**
  * @title StakeZeroRewardAdviser
  * @notice The "reward adviser" for the `RewardMaster` that returns the "zero reward advice" only.
- * @dev The "zero" reward advice it the `Advice` with zero `sharesToCreate` and `sharesToRedeem`.
+ * @dev The "zero" reward advice is the `Advice` with zero `sharesToCreate` and `sharesToRedeem`.
  * On "zero" advices, the RewardMaster skips creating/redeeming "treasure shares" for/to stakers.
  */
 contract StakeZeroRewardAdviser is StakingMsgProcessor, IRewardAdviser {
     // solhint-disable var-name-mixedcase
 
-    // `action` for the "staked" message
-    // For "advanced" stakes it is `0xcc995ce8`
-    bytes4 private immutable STAKE;
+    // `stakeAction` for the STAKE
+    bytes4 internal immutable STAKE;
 
-    // `action` for the "unstaked" message
-    // For "advanced" stakes it is `0xb8372e55`
-    bytes4 private immutable UNSTAKE;
+    // `stakeAction` for the UNSTAKE
+    bytes4 internal immutable UNSTAKE;
 
     // solhint-enable var-name-mixedcase
 
-    /// @param stakeType The staking "type"
-    /// For "advanced staking" it is `0x7ec13a06 = bytes4(keccak256("advanced"))`
-    constructor(bytes4 stakeType) {
-        require(stakeType != bytes4(0), "ZRA:E1");
-        STAKE = _encodeStakeActionType(stakeType);
-        UNSTAKE = _encodeUnstakeActionType(stakeType);
+    /// @param stakeAction The STAKE action type (see StakingMsgProcessor::_encodeStakeActionType)
+    /// @param unstakeAction The UNSTAKE action type (see StakingMsgProcessor::_encodeUNstakeActionType)
+    constructor(bytes4 stakeAction, bytes4 unstakeAction) {
+        require(
+            stakeAction != bytes4(0) && unstakeAction != bytes4(0),
+            "ZRA:E1"
+        );
+        STAKE = stakeAction;
+        UNSTAKE = unstakeAction;
     }
 
     /// @dev It is assumed to be called by the RewardMaster contract.

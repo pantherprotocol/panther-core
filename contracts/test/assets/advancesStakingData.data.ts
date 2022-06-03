@@ -109,6 +109,26 @@ export const utxoData = utils.hexConcat([
     zeroHexPad(depositFakeInput.tokenIds[2], 32),
 ]);
 
+export const bridgedData = {
+    nonce: '0x0063ea', // uint24
+    action: '0xcc995ce8', // uint32
+    message:
+        '0x1234501234501234501234501234501234501234' + // address staker
+        '00000000000000000adadaad' + // uint96 amount
+        '00000311' + // uint32 id
+        '6299fe24' + // uint32 stakedAt
+        '63033333' + // uint32 lockedTill
+        '00000000' + // uint32 clamedAt
+        utxoData.replace('0x', ''), // bytes
+    content: '',
+};
+
+bridgedData.content = utils.hexConcat([
+    bridgedData.nonce,
+    bridgedData.action,
+    bridgedData.message,
+]);
+
 function zeroHexPad(s: string, bytesNum: number): string {
     return utils.hexZeroPad(s, bytesNum);
 }

@@ -71,10 +71,7 @@ abstract contract PrpGrantor {
         view
         returns (uint256 prpAmount)
     {
-        prpAmount = _unusedPrpGrants[grantee];
-        unchecked {
-            if (prpAmount >= ZERO_AMOUNT) prpAmount -= ZERO_AMOUNT;
-        }
+        return _unusedPrpGrants[grantee];
     }
 
     /// @notice It returns the PRP amount of the grant specified by a given curator and type

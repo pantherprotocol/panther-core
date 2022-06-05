@@ -20,16 +20,19 @@ import "./pantherPool/v0/PubKeyGenerator.sol";
 /**
  * @title PantherPool
  * @author Pantherprotocol Contributors
- * @notice Shielded Pool main contract v0
+ * @notice Multi-Asset Shielded Pool main contract v0
  * @dev It is the "version 0" of the Panther Protocol Multi-Asset Shielded Pool ("MASP").
- * It locks assets and generates UTXO's in the MASP (i.e. builds commitment trees), but
- * it does not implement the functionality for spending these UTXOs.
- * This contract is supposed to be upgraded with the new one, which is the MASP "v.1".
- * The "v.1" is supposed to implement the spending and lets holders spend their UTXOs.
+ * It locks assets (ERC-20, ERC-721 or ERC-1155 tokens) of a user with the `Vault` smart
+ * contract and generates UTXO's in the MASP the user owns (i.e. builds merkle trees of
+ * UTXO's commitments), but it does not implement the functionality for spending UTXO's
+ * (other than the "exit" described further).
+ * This contract is supposed to be upgraded with the new one, the MASP "v.1", which will
+ * implement spending of UTXO's using zero-knowledge proves.
  * To be upgradable, this contract is assumed to run as an "implementation" for a proxy
  * that DELEGATECALL's the implementation.
  * To protect holders against lost of assets in case this contract is not upgraded, it
- * implements the "early exit", through which holders may withdraw their locked assets.
+ * exposes the `exit` function, through which users may withdraw their locked assets via
+ * revealing preimages of commitments.
  */
 contract PantherPoolV0 is
     ImmutableOwnable,

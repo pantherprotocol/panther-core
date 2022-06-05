@@ -43,3 +43,9 @@ uint8 constant zASSET_UNKNOWN = 0x00;
 uint8 constant UTXO_DATA_TYPE_ZERO = 0xA0; // no data (for zero UTXO)
 uint8 constant UTXO_DATA_TYPE0 = 0xAA;
 uint8 constant UTXO_DATA_TYPE1 = 0xAB;
+
+// Address of the "virtual token contract" for PRPs.
+// "Virtual" since PRP is NOT a token, and it does not have a token contract.
+// Other contracts must use it to identify PRPs, whenever needed.
+// Calculated as `keccak256('Privacy Reward Point') >> 96`.
+address constant PRP_VIRTUAL_CONTRACT = 0x1afa2212970b809aE15D51AF00C502D5c8eB3bAf;

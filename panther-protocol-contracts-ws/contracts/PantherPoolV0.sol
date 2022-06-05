@@ -65,7 +65,10 @@ contract PantherPoolV0 is
         address _owner,
         uint256 exitTime,
         address vault
-    ) ImmutableOwnable(_owner) {
+    )
+        ImmutableOwnable(_owner)
+        PrpGrantor(getZAssetId(PRP_VIRTUAL_CONTRACT, 0))
+    {
         require(TRIAD_SIZE == OUT_UTXOs, "E0");
         require(exitTime > timeNow() && exitTime < MAX_TIMESTAMP, "E1");
         revertZeroAddress(vault);
@@ -268,7 +271,7 @@ contract PantherPoolV0 is
         // Do nothing for "zero" UTXO
         if (token == address(0)) return (0, 0);
 
-        if (token == address(this)) {
+        if (token == PRP_VIRTUAL_CONTRACT) {
             // PRP grant assumed
             require(tokenId == 0, ERR_ZERO_TOKENID_EXPECTED);
             if (extAmount != 0) useGrant(msg.sender, extAmount);

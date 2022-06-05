@@ -27,9 +27,8 @@ abstract contract PrpGrantor {
     uint256 internal constant UNDEF_AMOUNT = 0;
 
     // zAssetId (i.e. "token" in the UTXO preimage) of PRPs
-    // keccak256('Panther Reward Point') >> 96
-    uint160 internal constant PRP_ZASSET_ID =
-        0x000000000000000000000000bb432d4ecd82dd023cb8ebc510121065bade2466;
+    // Other contracts must use it to encode/decode PRPs in UTXOs.
+    uint160 public immutable PRP_ZASSET_ID;
 
     // solhint-enable var-name-mixedcase
 
@@ -60,6 +59,11 @@ abstract contract PrpGrantor {
     event PrpGrantEnabled(address curator, bytes4 grantType, uint256 prpAmount);
     /// @dev Existing grant type disabled
     event PrpGrantDisabled(address curator, bytes4 grantType);
+
+    // Proxy-friendly - it does not change the storage
+    constructor(uint160 prpZAssetId) {
+        PRP_ZASSET_ID = prpZAssetId;
+    }
 
     /// @notice It returns the total amount (in PRPs) of unused grants for the given grantee
     function getUnusedGrant(address grantee)

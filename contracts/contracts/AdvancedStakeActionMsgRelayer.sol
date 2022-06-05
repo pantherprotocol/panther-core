@@ -10,13 +10,13 @@ import "./interfaces/IFxMessageProcessor.sol";
  * @notice It re-translates messages on new "advanced" stakes created on the mainnet (or Goerli)
  * network to the `RewardMaster` contract running on the Polygon (or Mumbai) network.
  * @dev It is assumed to run on the Polygon (or Mumbai) network.
- * Like the `Staking` contract, this contract acts as the "Action Oracle" and it must be registered
- * as the oracle with the RewardMaster.
- * It receives STAKE action messages (on new "advanced" stakes created), sanitizes and decodes them,
- * and finally relays them to the RewardMaster on the Polygon (or Mumbai).
- * It's counterpart, the `AdvancedStakeRewardAdviserAndMsgSender` contract, that runs on the mainnet
- * (or Goerli) network, sends these messages to this contract over the  the "Fx-Portal", that is the
- * PoS bridge run by the Polygon team.
+ * Like the `Staking` contract, this contract acts as the "Action Oracle" for the RewardMaster, and
+ * this contract must be registered as the oracle with the latest.
+ * It receives STAKE action messages (on new "advanced" stakes created) from the `FxChild` contract
+ * (a contract of the "Fx-Portal" PoS bridge), sanitizes and relays messages to the RewardMaster on
+ * the Polygon (or Mumbai).
+ * The `AdvancedStakeRewardAdviserAndMsgSender` contract, a counterpart to this contract that runs
+ * on the mainnet (or Goerli) network, sends these messages to this contract over the bridge.
  */
 contract AdvancedStakeActionMsgRelayer is
     AdvancedStakingBridgedDataCoder,

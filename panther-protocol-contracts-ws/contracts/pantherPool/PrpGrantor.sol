@@ -24,7 +24,7 @@ abstract contract PrpGrantor {
 
     // To distinguish "undefined" from "zero"
     uint256 internal constant ZERO_AMOUNT = 1;
-    uint256 internal constant UNDEF_AMOUNT = 0;
+    uint256 private constant UNDEF_AMOUNT = 0;
 
     // zAssetId (i.e. "token" in the UTXO preimage) of PRPs
     // Other contracts must use it to encode/decode PRPs in UTXOs.
@@ -172,18 +172,18 @@ abstract contract PrpGrantor {
         emit PrpGrantDisabled(curator, grantType);
     }
 
-    /// Modifiers, internal and private functions follow
+    /// Modifiers and private functions follow
 
     modifier nonZeroGrantType(bytes4 grantType) {
         require(grantType != bytes4(0), ERR_UKNOWN_GRANT_TYPE);
         _;
     }
 
-    function _revertOnTooBigPrpAmount(uint256 prpAmount) internal pure virtual {
+    function _revertOnTooBigPrpAmount(uint256 prpAmount) private pure {
         require(prpAmount <= MAX_PRP_GRANT, ERR_TOO_LARGE_GRANT_AMOUNT);
     }
 
-    function _revertOnUndefPrpAmount(uint256 prpAmount) internal pure virtual {
+    function _revertOnUndefPrpAmount(uint256 prpAmount) private pure {
         require(prpAmount != UNDEF_AMOUNT, ERR_UNDEF_GRANT);
     }
 

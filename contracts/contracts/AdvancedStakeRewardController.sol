@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 import "./actions/AdvancedStakingDataDecoder.sol";
 import "./actions/Constants.sol";
 import "./actions/StakingMsgProcessor.sol";
+import { PRP_VIRTUAL_CONTRACT } from "./common/Constants.sol";
 import "./interfaces/IERC721Receiver.sol";
 import "./interfaces/INftGrantor.sol";
 import "./interfaces/IPantherPoolV0.sol";
@@ -92,7 +93,6 @@ contract AdvancedStakeRewardController is
     address private immutable ZKP_TOKEN;
     // Address of the NFT token contract
     address private immutable NFT_TOKEN;
-    // PRP "quasi-token" contract is PANTHER_POOL
 
     /// @notice (UNIX) Time when staking rewards start to accrue
     uint256 public immutable REWARDING_START;
@@ -377,7 +377,11 @@ contract AdvancedStakeRewardController is
         ) = unpackStakingData(data);
 
         // Finally, generate deposits (i.e. UTXOs with the MASP)
-        address[OUT_UTXOs] memory tokens = [ZKP_TOKEN, PANTHER_POOL, NFT_TOKEN];
+        address[OUT_UTXOs] memory tokens = [
+            ZKP_TOKEN,
+            PRP_VIRTUAL_CONTRACT,
+            NFT_TOKEN
+        ];
         uint256[OUT_UTXOs] memory tokenIds = [0, 0, nftTokenId];
         uint256[OUT_UTXOs] memory extAmounts = [
             zkpAmount,

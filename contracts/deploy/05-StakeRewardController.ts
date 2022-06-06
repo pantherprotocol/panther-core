@@ -10,7 +10,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         from: deployer,
         args: [
             deployer, // owner
-            process.env.TOKEN_ADDRESS,
+            process.env.ZKP_TOKEN_ADDRESS,
             process.env.STAKING_CONTRACT,
             process.env.REWARD_TREASURY,
             process.env.REWARD_MASTER,

@@ -11,7 +11,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         from: deployer,
         args: [
             process.env.DAO_MULTISIG_ADDRESS, // owner
-            process.env.TOKEN_ADDRESS,
+            process.env.ZKP_TOKEN_ADDRESS,
             process.env.STAKING_CONTRACT,
             process.env.REWARD_MASTER,
             utils.parseEther(String(3.555666824442e6)),

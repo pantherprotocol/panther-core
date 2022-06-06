@@ -20,7 +20,7 @@ let {getBalanceFetcher, showBalances} = require('./lib/polygon-fix');
 
 let {deployer} = await e.getNamedSigners(); deployer.address;
 
-tokenAddress = process.env.TOKEN_ADDRESS;
+tokenAddress = process.env.ZKP_TOKEN_ADDRESS;
 stakingAddress = process.env.STAKING_CONTRACT;
 treasuryAddress = process.env.REWARD_TREASURY;
 rewardMasterAddress = process.env.REWARD_MASTER;

@@ -51,8 +51,13 @@ contract PantherPoolV0 is
     uint256[50] private __gap;
 
     // solhint-disable var-name-mixedcase
+
+    /// @notice (UNIX) Time since when the `exit` calls get enabled
     uint256 public immutable EXIT_TIME;
+
+    /// @notice Address of the Vault contract
     address public immutable VAULT;
+
     // solhint-enable var-name-mixedcase
 
     // @notice Seen (i.e. spent) commitment nullifiers
@@ -61,6 +66,9 @@ contract PantherPoolV0 is
 
     event Nullifier(bytes32 nullifier);
 
+    /// @param _owner Address of the `OWNER` who may call `onlyOwner` methods
+    /// @param exitTime (UNIX) Time since when the `exit` calls get enabled
+    /// @param vault Address of the Vault contract
     constructor(
         address _owner,
         uint256 exitTime,
@@ -143,6 +151,16 @@ contract PantherPoolV0 is
         leftLeafId = addAndEmitCommitments(commitments, perUtxoData, timestamp);
     }
 
+    /// @notice Spend an UTXO in the MASP and withdraw the asset from the Vault to the msg.sender
+    /// @param token Address of the token contract
+    /// @param tokenId ERC-721/1155 tokenId, 0 for ERC-20
+    /// @param amount Token amount
+    /// @param privSpendingKey UTXO's Private Spending Key
+    /// @param leafId Id of the leaf with the UTXO commitments in the Merkle Trees
+    /// @param pathElements Elements of the Merkle proof of inclusion
+    /// @param merkleRoot The root of the Merkle Tree the leaf is a part of
+    /// @param cacheIndexHint Index of the `merkleRoot` in the cache of roots, 0 by default
+    /// @dev `cacheIndexHint` needed for the "current" (partially populated) tree only
     function exit(
         address token,
         uint256 tokenId,

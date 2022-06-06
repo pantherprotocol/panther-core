@@ -10,7 +10,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         from: deployer,
         args: [
             deployer, // owner
-            process.env.TOKEN_ADDRESS,
+            process.env.ZKP_TOKEN_ADDRESS,
         ],
         log: true,
         autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks

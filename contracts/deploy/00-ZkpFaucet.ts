@@ -17,7 +17,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         from: deployer,
         args: [
             deployer,
-            process.env.TOKEN_ADDRESS,
+            process.env.ZKP_TOKEN_ADDRESS,
             tokenPrice,
             maxAmountToPay,
             cupSize,

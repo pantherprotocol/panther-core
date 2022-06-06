@@ -49,7 +49,7 @@ In `zkp-staking`, set up the environment variables:
     cp .env.example .env
 
 Ensure the `STAKING_TOKEN` variable is pointing to that same ZKP token
-contract defined as `TOKEN_ADDRESS` in `zkp-token/.env` above, e.g.:
+contract defined as `ZKP_TOKEN_ADDRESS` in `zkp-token/.env` above, e.g.:
 
     STAKING_TOKEN=0x5FbDB2315678afecb367f032d93F642f64180aa3
 

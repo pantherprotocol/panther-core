@@ -10,7 +10,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     await deploy('Staking', {
         from: deployer,
-        args: [process.env.TOKEN_ADDRESS, master.address, deployer],
+        args: [process.env.ZKP_TOKEN_ADDRESS, master.address, deployer],
         log: true,
         autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
     });

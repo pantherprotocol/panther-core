@@ -10,11 +10,11 @@ import {BigNumber, constants, utils} from 'ethers';
 import {MessageWithTx} from '../components/Common/MessageWithTx';
 import {CONFIRMATIONS_NUM} from '../lib/constants';
 import {parseTxErrorMessage} from '../lib/errors';
+import {getEventFromReceipt} from '../lib/events';
 import {
     generateEphemeralKeypair,
     generateChildPublicKey,
 } from '../lib/keychain';
-import {getEventFromReceipt} from '../lib/transactions';
 import type {IStakingTypes, Staking} from '../types/contracts/Staking';
 import {StakeRewardBN, StakeTypes} from '../types/staking';
 

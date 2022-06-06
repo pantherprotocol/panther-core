@@ -275,36 +275,34 @@ contract PantherPoolV0 is
 
     /// Internal and private functions follow
 
+    // Declared `internal` rather than `private` to ease testing
     function _processDepositedAsset(
         address token,
         uint256 tokenId,
         uint256 extAmount
     ) internal returns (uint160 zAssetId, uint96 scaledAmount) {
-        // extAmount may be zero if only both token and tokenId are zeros
-        require(
-            extAmount != 0 || (token == address(0) && tokenId == 0),
-            ERR_WRONG_DEPOSIT
-        );
+        // Do nothing if it's the "zero" (or "dummy") deposit
+        if (extAmount == 0) {
+            // Both token and tokenId must be zeros for the "zero" deposit
+            require(token == address(0) && tokenId == 0, ERR_WRONG_DEPOSIT);
+            return (0, 0);
+        }
+        // extAmount can't be zero here and further
 
-        // Do nothing for "zero" UTXO
-        if (token == address(0)) return (0, 0);
-
+        // Use a PRP grant, if it's a "deposit" in PRPs
         if (token == PRP_VIRTUAL_CONTRACT) {
-            // PRP grant assumed
             require(tokenId == 0, ERR_ZERO_TOKENID_EXPECTED);
-            if (extAmount != 0) useGrant(msg.sender, extAmount);
-
-            // no amount scaling
+            useGrant(msg.sender, extAmount);
+            // No extAmount scaling for PRPs
             return (PRP_ZASSET_ID, safe96(extAmount));
         }
 
-        // Process "Normal" zAsset, w/ scaling, if it comes here
+        // If it comes here, a supported token (asset) is being deposited
 
         ZAsset memory asset;
         (asset, zAssetId) = getZAssetAndId(token, tokenId);
         require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);
 
-        // extAmount can't be zero here
         scaledAmount = scaleAmount(extAmount, asset.scale);
         // revert, if extAmount gets scaled to zero
         require(scaledAmount != 0, ERR_TOO_SMALL_AMOUNT);
@@ -319,6 +317,7 @@ contract PantherPoolV0 is
             )
         );
 
+        // Scale extAmount, if asset.scale provides for it
         return (zAssetId, scaleAmount(extAmount, asset.scale));
     }
 }

@@ -76,7 +76,7 @@ describe('Cryptographic operations', () => {
 
         it('should be smaller than the snark field size', () => {
             expect(
-                BigInt(`0x${ciphertext.iv}`) < SNARK_FIELD_SIZE,
+                uint8ArrayToBigInt(ciphertext.iv) < SNARK_FIELD_SIZE,
             ).toBeTruthy();
         });
 

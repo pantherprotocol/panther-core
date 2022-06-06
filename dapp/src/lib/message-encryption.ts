@@ -32,7 +32,7 @@ export function encryptMessage(
         const cipheredText1 = cipher.update(plaintext);
         const cipheredText2 = cipher.final();
         return {
-            iv: iv.toString('hex'),
+            iv: iv,
             data: new Uint8Array([...cipheredText1, ...cipheredText2]),
         };
     } catch (error) {
@@ -47,7 +47,7 @@ export function decryptMessage(
     const decipher = crypto.createDecipheriv(
         'aes-256-cbc',
         utils.arrayify(bigintToBytes32(sharedKey)),
-        Buffer.from(ciphertext.iv, 'hex'),
+        ciphertext.iv,
     );
 
     return new Uint8Array([

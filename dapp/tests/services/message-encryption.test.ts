@@ -18,7 +18,8 @@ import {
 
 function decryptEphemeralKey(encrypted: string, ecdhKey: EcdhSharedKey): any {
     const ephemeralPublicKeyX = encrypted.slice(0, 64);
-    const iv = encrypted.slice(64, 96);
+    const ivHex = encrypted.slice(64, 96);
+    const iv = bigIntToUint8Array(BigInt('0x' + ivHex), 16);
     const dataHex = encrypted.slice(96);
     const data = bigIntToUint8Array(BigInt('0x' + dataHex), 48);
 

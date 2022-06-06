@@ -32,7 +32,7 @@ export function encryptEphemeralKey(
 
     return (
         bigintToBytes32(ephemeralKeypair.publicKey[0]).slice(2) +
-        ciphertext.iv +
+        bigintToBytes(uint8ArrayToBigInt(ciphertext.iv), 16).slice(2) +
         bigintToBytes(uint8ArrayToBigInt(ciphertext.data), 48).slice(2)
     );
 }

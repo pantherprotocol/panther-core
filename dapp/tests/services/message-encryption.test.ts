@@ -5,18 +5,21 @@ import {
     bigintToBytes32,
 } from '@panther-core/crypto/lib/bigint-conversions';
 
-import {deriveKeypairFromSeed} from '../../src/lib/keychain';
+import {deriveKeypairFromSeed, packPublicKey} from '../../src/lib/keychain';
 import {
     generateEcdhSharedKey,
     decryptMessage,
 } from '../../src/lib/message-encryption';
-import {EcdhSharedKey} from '../../src/lib/types';
+import {PackedEcdhSharedKey} from '../../src/lib/types';
 import {
     encryptEphemeralKey,
     PROLOG,
 } from '../../src/services/message-encryption';
 
-function decryptEphemeralKey(encrypted: string, ecdhKey: EcdhSharedKey): any {
+function decryptEphemeralKey(
+    encrypted: string,
+    ecdhKey: PackedEcdhSharedKey,
+): any {
     const ephemeralPublicKeyX = encrypted.slice(0, 64);
     const ivHex = encrypted.slice(64, 96);
     const iv = bigIntToUint8Array(BigInt('0x' + ivHex), 16);
@@ -47,7 +50,8 @@ describe('Ephemeral key encryption', () => {
         readingKeypair.publicKey,
     );
 
-    const decrypted = decryptEphemeralKey(ciphertext, ecdh);
+    const packedEcdh = packPublicKey(ecdh);
+    const decrypted = decryptEphemeralKey(ciphertext, packedEcdh);
 
     it('should have correct R', () => {
         expect('0x' + decrypted.ephemeralPublicKeyX).toEqual(
@@ -66,7 +70,7 @@ describe('Ephemeral key encryption', () => {
         const randomKeypair = deriveKeypairFromSeed(sk);
         const differentKey = generateEcdhSharedKey(sk, randomKeypair.publicKey);
         expect(() =>
-            decryptEphemeralKey(ciphertext, differentKey),
+            decryptEphemeralKey(ciphertext, packPublicKey(differentKey)),
         ).toThrowError(/bad decrypt/);
     });
 });

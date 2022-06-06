@@ -5,6 +5,7 @@ import {
     bigintToBytes,
 } from '@panther-core/crypto/lib/bigint-conversions';
 
+import {packPublicKey} from '../lib/keychain';
 import {encryptMessage, generateEcdhSharedKey} from '../lib/message-encryption';
 import {IKeypair, PublicKey} from '../lib/types';
 
@@ -27,7 +28,7 @@ export function encryptEphemeralKey(
 
     const ciphertext = encryptMessage(
         bigIntToUint8Array(BigInt('0x' + plaintext), 36),
-        ecdhKey,
+        packPublicKey(ecdhKey),
     );
 
     return (

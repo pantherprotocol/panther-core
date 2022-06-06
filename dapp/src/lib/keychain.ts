@@ -40,6 +40,9 @@ export const multiplyScalars = (a: bigint, b: bigint): bigint => {
     return (a * b) % babyjub.subOrder;
 };
 
+export const packPublicKey = babyjub.packPoint;
+export const unpackPublicKey = babyjub.unpackPoint;
+
 export const deriveKeypairFromSignature = (signature: string): IKeypair => {
     const pKey = derivePrivateKeyFromSignature(signature);
     return deriveKeypairFromSeed(pKey);

@@ -1,11 +1,15 @@
 import crypto from 'crypto';
 
-import {bigintToBytes32} from '@panther-core/crypto/lib/bigint-conversions';
 import {babyjub} from 'circomlibjs';
-import {utils} from 'ethers';
 
 import {formatPrivateKeyForBabyJub} from './keychain';
-import {ICiphertext, PrivateKey, PublicKey, EcdhSharedKey} from './types';
+import {
+    ICiphertext,
+    PrivateKey,
+    PublicKey,
+    EcdhSharedKey,
+    PackedEcdhSharedKey,
+} from './types';
 
 export const generateEcdhSharedKey = (
     privateKey: PrivateKey,
@@ -14,21 +18,17 @@ export const generateEcdhSharedKey = (
     return babyjub.mulPointEscalar(
         publicKey,
         formatPrivateKeyForBabyJub(privateKey),
-    )[0];
+    );
 };
 
 export function encryptMessage(
     plaintext: Uint8Array,
-    sharedKey: EcdhSharedKey,
+    sharedKey: PackedEcdhSharedKey,
 ): ICiphertext {
     const iv = crypto.randomBytes(16);
 
     try {
-        const cipher = crypto.createCipheriv(
-            'aes-256-cbc',
-            utils.arrayify(bigintToBytes32(sharedKey)),
-            iv,
-        );
+        const cipher = crypto.createCipheriv('aes-256-cbc', sharedKey, iv);
         const cipheredText1 = cipher.update(plaintext);
         const cipheredText2 = cipher.final();
         return {
@@ -42,11 +42,11 @@ export function encryptMessage(
 
 export function decryptMessage(
     ciphertext: ICiphertext,
-    sharedKey: EcdhSharedKey,
+    sharedKey: PackedEcdhSharedKey,
 ): Uint8Array {
     const decipher = crypto.createDecipheriv(
         'aes-256-cbc',
-        utils.arrayify(bigintToBytes32(sharedKey)),
+        sharedKey,
         ciphertext.iv,
     );
 

@@ -7,6 +7,7 @@ import {ethers} from 'ethers';
 import {
     deriveKeypairFromSignature,
     deriveKeypairFromSeed,
+    packPublicKey,
 } from '../src/lib/keychain';
 import {
     encryptMessage,
@@ -42,11 +43,11 @@ describe('Message encryption and decryption', () => {
 
         const ciphertext = encryptMessage(
             bigIntToUint8Array(BigInt('0x' + plaintext), 36),
-            spendingEcdhSharedKey,
+            packPublicKey(spendingEcdhSharedKey),
         );
 
         const decryptedCiphertext = uint8ArrayToBigInt(
-            decryptMessage(ciphertext, readingEcdhSharedKey),
+            decryptMessage(ciphertext, packPublicKey(readingEcdhSharedKey)),
         ).toString(16);
 
         expect(decryptedCiphertext).toEqual(plaintext);

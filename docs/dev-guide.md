@@ -5,7 +5,7 @@ staking and rewards.
 
 ## Prerequisites
 
-- Clone `zkp-staking` from [GitLab](https://gitlab.com/pantherprotocol/zkp-staking).
+- Clone `panther-core` from [GitLab](https://gitlab.com/pantherprotocol/panther-core).
 
 - Clone `zkp-token` from [GitHub](https://github.com/pantherprotocol/zkp-token)
   or [GitLab](https://gitlab.com/pantherprotocol/zkp-token).
@@ -43,7 +43,7 @@ and then edit `.env` to point to the correct addresses.
 
 ### Deploying staking contracts
 
-In `zkp-staking`, set up the environment variables:
+In `panther-core`, set up the environment variables:
 
     cd contracts
     cp .env.example .env
@@ -139,9 +139,9 @@ account (i.e. zeroth signer).
 
 ### Register the classic staking type
 
-Go to `zkp-staking` repository. we need to call `addTerms()` on the `Staking` contract to register
-the `classic` type of staking with appropriate terms. There is a Hardhat
-task which makes this easy:
+Go to `panther-core` repository. we need to call `addTerms()` on the
+`Staking` contract to register the `classic` type of staking with
+appropriate terms. There is a Hardhat task which makes this easy:
 
     yarn hardhat terms:add --network localhost
 

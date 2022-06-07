@@ -1,0 +1,269 @@
+@startuml
+'https://plantuml.com/class-diagram
+'https://plantuml.com/object-diagram
+
+'UML "object" means Solidity contract instance here
+
+title **Advanced Staking Contracts interaction**
+
+together {
+    () UserM
+    () UserP
+}
+
+cloud Polygon {
+
+    object Multisig_polygon {
+        // Gnasys-safe
+    }
+
+    object AdvancedStakeActionMsgRelayer {
+        --hard-coded--
+        FX_CHILD: address
+        REWARD_MASTER: address
+        ACTION_MSG_SENDER: address
+        --functions--
+        processMessageFromRoot
+    }
+
+    object Staking_polygon {
+        --hard-coded--
+        OWNER: address
+        REWARD_MASTER: address
+        TOKEN: address
+        --functions--
+        stake()
+        unstake()
+        addTerms() onlyOwner
+        disableTerms() onlyOwner
+    }
+
+    object RewardMaster_polygon {
+        --hard-coded--
+        OWNER: address
+        REWARD_TOKEN: address
+        REWARD_POOL: address
+        --storage--
+        rewardAdvisers: address
+        --functions--
+        onAction()
+        addRewardAdviser() onlyOwner
+        removeRewardAdviser() onlyOwner
+        claimErc20() onlyOwner
+    }
+
+    object AdvancedStakeRewardController {
+        --hard-coded--
+        OWNER: address
+        REWARD_MASTER: address
+        PANTHER_POOL: address
+        ZKP_TOKEN: address
+        NFT_TOKEN: address
+        --functions--
+        rescueErc20() onlyOwner
+    }
+
+    object MaticRewardPool {
+    }
+
+    object PantherPoolV0_via_EIP173Proxy {
+        // panther-pool package
+        --hard-coded--
+        OWNER: address
+        --functions--
+         grant()
+         generateDeposits()
+         exit()
+    }
+
+    object Vault_via_EIP173Proxy {
+        // panther-pool package
+        --hard-coded--
+        OWNER: address
+        --functions--
+        lockAsset()
+        unlockAsset()
+    }
+
+    object PZkpToken {
+        // zkp-token package
+        --function--
+        transferFrom()
+    }
+
+    object PNftToken {
+        // zkp-token package
+        --function--
+        transferFrom()
+    }
+
+    object FxChild {
+        // PX-Portal (PoS Bridge)
+    }
+}
+
+cloud mainnet {
+    object Multisig_mainnet {
+        // Gnasys-safe
+    }
+
+    object Staking_mainnet {
+        --hard-coded--
+        OWNER: address
+        REWARD_MASTER: address
+        TOKEN: address
+        --functions--
+        stake()
+        unstake()
+        addTerms() onlyOwner
+        disableTerms() onlyOwner
+    }
+
+    object RewardMaster_mainnet {
+        --hard-coded--
+        OWNER: address
+        REWARD_TOKEN: address
+        REWARD_POOL: address
+        --storage--
+        rewardAdvisers: address
+        --functions--
+        onAction()
+        addRewardAdviser() onlyOwner
+        removeRewardAdviser() onlyOwner
+        claimErc20() onlyOwner onlyOwner
+    }
+
+    object AdvancedStakeRewardAdviserAndActionMsgSender {
+        --hard-coded--
+        REWARD_MASTER: address
+        FX_ROOT: address
+        --storage--
+    }
+
+    object RewardPool {
+    }
+
+    object ZKPToken {
+        // zkp-token package
+        --functions--
+        transferFrom()
+    }
+
+    object FxRoot {
+        // PX-Portal (PoS Bridge)
+        --functions--
+        sendMessageToChild()
+    }
+}
+
+'----------------- Layout ----------------------------------
+UserP -[hidden]down- Polygon
+Staking_polygon -[hidden]down- RewardMaster_polygon
+Staking_polygon -[hidden]right- AdvancedStakeActionMsgRelayer
+AdvancedStakeActionMsgRelayer -[hidden]down- RewardMaster_polygon
+RewardMaster_polygon -[hidden]down- AdvancedStakeRewardController
+AdvancedStakeRewardController -[hidden]down- PantherPoolV0_via_EIP173Proxy
+PantherPoolV0_via_EIP173Proxy -[hidden]down- Vault_via_EIP173Proxy
+Vault_via_EIP173Proxy -[hidden]down- PZkpToken
+Vault_via_EIP173Proxy -[hidden]down- PNftToken
+
+mainnet -[hidden]up- UserM
+UserM -[hidden]down- Staking_mainnet
+Staking_mainnet -[hidden]right- RewardMaster_mainnet
+RewardMaster_mainnet -[hidden]up- AdvancedStakeRewardAdviserAndActionMsgSender
+AdvancedStakeRewardAdviserAndActionMsgSender -[hidden]up- FxRoot
+FxRoot -[hidden]up- FxChild
+
+''----------------- Roles with contract ---------------------
+'
+''---- on mainnet
+'Staking_mainnet::OWNER -[dashed]-> Multisig_mainnet
+'Staking_mainnet::REWARD_MASTER -[dashed]-> RewardMaster_mainnet
+'Staking_mainnet::TOKEN -[dashed]-> ZKPToken
+'
+'RewardMaster_mainnet::OWNER -[dashed]-> Multisig_mainnet
+'RewardMaster_mainnet::REWARD_TOKEN -[dashed]-> ZKPToken
+'RewardMaster_mainnet::REWARD_POOL -[dashed]-> RewardPool
+'RewardMaster_mainnet::rewardAdvisers -[dashed]-> Staking_mainnet
+'RewardMaster_mainnet::rewardAdvisers -[dashed]-> AdvancedStakeRewardAdviserAndActionMsgSender
+'
+'AdvancedStakeRewardAdviserAndActionMsgSender::FX_ROOT -[dashed]-> FxRoot
+'AdvancedStakeRewardAdviserAndActionMsgSender::REWARD_MASTER -[dashed]-> RewardMaster_mainnet
+'
+''---- on Polygon
+'Staking_polygon::OWNER -[dashed]-> Multisig_polygon
+'Staking_polygon::REWARD_MASTER -[dashed]-> RewardMaster_polygon
+'Staking_polygon::TOKEN -[dashed]-> PZkpToken
+'
+'AdvancedStakeActionMsgRelayer::FX_CHILD -[dashed]-> FxChild
+'AdvancedStakeActionMsgRelayer::REWARD_MASTER -[dashed]-> RewardMaster_polygon
+'AdvancedStakeActionMsgRelayer::ACTION_MSG_SENDER -[dashed]-> AdvancedStakeRewardAdviserAndActionMsgSender
+'
+'RewardMaster_polygon::OWNER -[dashed]-> Multisig_polygon
+'RewardMaster_polygon::REWARD_TOKEN -[dashed]-> PZkpToken
+'RewardMaster_polygon::REWARD_POOL -[dashed]-> MaticRewardPool
+'RewardMaster_polygon::rewardAdvisers -[dashed]-> Staking_polygon
+'RewardMaster_polygon::rewardAdvisers -[dashed]-> AdvancedStakeRewardController
+'RewardMaster_polygon::rewardAdvisers -[dashed]-> AdvancedStakeActionMsgRelayer
+'
+'AdvancedStakeRewardController::OWNER -[dashed]-> Multisig_polygon
+'AdvancedStakeRewardController::REWARD_MASTER -[dashed]-> RewardMaster_polygon
+'AdvancedStakeRewardController::PANTHER_POOL -[dashed]-> PantherPoolV0_via_EIP173Proxy
+'AdvancedStakeRewardController::ZKP_TOKEN -[dashed]-> PZkpToken
+'AdvancedStakeRewardController::NFT_TOKEN -[dashed]-> PNftToken
+'
+'PantherPoolV0_via_EIP173Proxy::OWNER -[dashed]-> Multisig_polygon
+'Vault_via_EIP173Proxy::OWNER -[dashed]-> PantherPoolV0_via_EIP173Proxy
+'
+''----------------- Calls to contract from users ----------------
+''---- on mainnet
+'UserM -> Staking_mainnet: stake()
+'UserM -> Staking_mainnet: unstake()
+''---- on Polygon
+'UserP -> Staking_polygon: stake()
+'UserP -> Staking_polygon: unstake()
+'
+'UserM -> PantherPoolV0_via_EIP173Proxy: exit()
+'UserP -> PantherPoolV0_via_EIP173Proxy: exit()
+'
+''----------------- Calls between contract -----------------------
+'
+''---- on mainnet
+'Staking_mainnet -|> RewardMaster_mainnet::onAction
+'RewardMaster_mainnet -|> AdvancedStakeRewardAdviserAndActionMsgSender: getRewardAdvice
+'AdvancedStakeRewardAdviserAndActionMsgSender -|> FxRoot: sendMessageToChild
+'
+'
+'FxRoot --|> FxChild: "bridge message"
+'
+'
+'Multisig_mainnet -|> RewardMaster: addRewardAdviser()
+'Multisig_mainnet -|> RewardMaster: removeRewardAdviser()
+'Multisig_mainnet -|> RewardMaster: claimErc20()
+'
+'Multisig_mainnet -|> Staking_mainnet: addTerms()
+'Multisig_mainnet -|> Staking_mainnet: disableTerms()
+'
+'Multisig_mainnet -|> AdvancedStakeRewardController: rescueErc20()
+'
+''---- on Polygon
+'Staking_polygon -|> RewardMaster_polygon: onAction()
+'
+'FxChild -|> AdvancedStakeActionMsgRelayer: processMessageFromRoot()
+'AdvancedStakeActionMsgRelayer -|> RewardMaster_polygon: onAction()
+'
+'RewardMaster_polygon -|> AdvancedStakeRewardController: getRewardAdvice()
+'AdvancedStakeRewardController -|> PantherPoolV0_via_EIP173Proxy: grant()
+'AdvancedStakeRewardController -|> PantherPoolV0_via_EIP173Proxy: generateDeposits()
+'PantherPoolV0_via_EIP173Proxy -|> Vault_via_EIP173Proxy: lockAsset()
+'Vault_via_EIP173Proxy -|> PZkpToken: transferFrom()
+'Vault_via_EIP173Proxy -|> PNftToken: transferFrom()
+
+'--------------------------------dev notes and scratches follow
+'abstract class RewardAdvisersList
+'abstract class StakingMsgProcessor
+'abstract class AdvancedStakingDataDecoder
+'abstract class ImmutableOwnable
+'abstract class NonReentrant
+'abstract class Utils
+@enduml

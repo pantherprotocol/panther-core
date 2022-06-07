@@ -76,6 +76,7 @@ const config: HardhatUserConfig = {
             forking: process.env.HARDHAT_FORKING_URL
                 ? forkingConfig
                 : undefined,
+            chainId: parseInt(process.env.HARDHAT_CHAIN_ID || '31337'),
         },
         pchain: {url: 'http://127.0.0.1:8545'},
 

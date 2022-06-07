@@ -1,10 +1,9 @@
-import {utils} from 'ethers';
 import * as _ from 'lodash';
-
+import {utils} from 'ethers';
 import {RewardMaster} from '../types/contracts/RewardMaster';
 import {Staking} from '../types/contracts/Staking';
 import {StakeRewardController} from '../types/contracts/StakeRewardController';
-import {classicActionHash, STAKE, UNSTAKE} from './hash';
+import {classicActionHash, advancedActionHash, STAKE, UNSTAKE} from './hash';
 import {toDate} from './units-shortcuts';
 
 export async function showStake(
@@ -20,30 +19,37 @@ export async function showStake(
     ];
 }
 
-export async function replaceRewardAdviser(
+export async function addRewardAdviser(
     rewardMaster: RewardMaster,
     stakingAddress: string,
     newAdviserAddress: string,
+    config = {isClassic: true, replace: false},
 ) {
-    const txns = [];
+    const transactions = [];
     const receipts = [];
     for (const action of [STAKE, UNSTAKE]) {
-        const actionHash = classicActionHash(action);
-        const tx1 = await rewardMaster.removeRewardAdviser(
-            stakingAddress,
-            actionHash,
-        );
-        txns.push(tx1);
-        receipts.push(await tx1.wait());
-        const tx2 = await rewardMaster.addRewardAdviser(
+        const actionHash = config.isClassic
+            ? classicActionHash(action)
+            : advancedActionHash(action);
+
+        if (config.replace) {
+            const txToRemove = await rewardMaster.removeRewardAdviser(
+                stakingAddress,
+                actionHash,
+            );
+            transactions.push(txToRemove);
+            receipts.push(await txToRemove.wait());
+        }
+
+        const txToAdd = await rewardMaster.addRewardAdviser(
             stakingAddress,
             actionHash,
             newAdviserAddress,
         );
-        txns.push(tx2);
-        receipts.push(await tx2.wait());
+        transactions.push(txToAdd);
+        receipts.push(await txToAdd.wait());
     }
-    return {txns, receipts};
+    return {transactions, receipts};
 }
 
 interface HistoricalDatapoint {

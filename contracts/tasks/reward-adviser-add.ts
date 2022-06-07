@@ -1,45 +1,71 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {task} from 'hardhat/config';
-import {utils} from 'ethers';
+import {task, types} from 'hardhat/config';
+import {addRewardAdviser} from '../lib/staking';
+import {RewardMaster} from '../types/contracts';
+import {Contract} from 'ethers';
 
-import {
-    hash4bytesArray,
-    classicActionHash,
-    CLASSIC,
-    STAKE,
-    UNSTAKE,
-} from '../lib/hash';
+async function getAdviser(
+    hre: HardhatRuntimeEnvironment,
+    isMainnet: boolean,
+    isClassic: boolean,
+) {
+    let adviser: Contract;
 
-const TASK_ADVISER_ADD = 'adviser:add';
+    if (isMainnet && !isClassic) {
+        throw new Error('Advanced staking is not supported on mainnet');
+    }
+
+    if (isMainnet) {
+        console.log('getting adviser for mainnet...');
+
+        adviser = await hre.ethers.getContract('StakeRewardAdviser');
+    } else {
+        console.log('getting adviser for polygon...');
+        console.log('is classic:', isClassic);
+
+        adviser = isClassic
+            ? await hre.ethers.getContract('StakeRewardController2')
+            : await hre.ethers.getContract('AdvancedStakeRewardController');
+    }
+
+    return adviser;
+}
 
 task(
-    TASK_ADVISER_ADD,
-    'Adds adviser to RewardMaster for classic staking and unstaking',
-).setAction(async (_taskArgs, hre: HardhatRuntimeEnvironment) => {
-    const stakeRewardAdviser = await hre.ethers.getContract(
-        'StakeRewardAdviser',
-    );
-    const staking = await hre.ethers.getContract('Staking');
-    const rewardMaster = await hre.ethers.getContract('RewardMaster');
-    const stakeType = hash4bytesArray(CLASSIC);
+    'adviser:add',
+    'Adds reward controller to RewardMaster for classic/advanced staking and unstaking',
+)
+    .addParam('replace', 'Replace existing controller', false, types.boolean)
+    .addParam(
+        'mainnet',
+        'Whether to add to mainnet or polygon',
+        true,
+        types.boolean,
+    )
+    .addParam(
+        'classic',
+        'Whether to add classic adviser or advanced',
+        true,
+        types.boolean,
+    )
+    .setAction(async (_taskArgs, hre: HardhatRuntimeEnvironment) => {
+        const adviser = await getAdviser(
+            hre,
+            _taskArgs.mainnet,
+            _taskArgs.classic,
+        );
 
-    for await (const action of [STAKE, UNSTAKE]) {
-        const actionHash = hash4bytesArray(action);
-        console.log('Action hash:', utils.hexlify(actionHash));
-        console.log('Classic: ', utils.hexlify(stakeType));
+        const staking = await hre.ethers.getContract('Staking');
+        const rewardMaster = (await hre.ethers.getContract(
+            'RewardMaster',
+        )) as RewardMaster;
 
-        const actionType = classicActionHash(action);
-        console.log('Action type: ', actionType);
-
-        const tx = await rewardMaster.addRewardAdviser(
+        const {receipts} = await addRewardAdviser(
+            rewardMaster,
             staking.address,
-            actionType,
-            stakeRewardAdviser.address,
+            adviser.address,
+            {replace: _taskArgs.replace, isClassic: _taskArgs.classic},
         );
 
-        const receipt = await tx.wait();
-        console.log(
-            `${action} transaction receipt: ${receipt.transactionHash}`,
-        );
-    }
-});
+        console.log('transaction receipt:', receipts);
+    });

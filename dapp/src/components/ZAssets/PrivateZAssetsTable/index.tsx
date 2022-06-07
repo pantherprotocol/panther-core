@@ -11,7 +11,7 @@ import TableRow from '@mui/material/TableRow';
 
 import infoIcon from '../../../images/info-icon.svg';
 
-import PrivateZAsset from './PrivateZAsset';
+import PrivateZAsset from './PrivateZAssetRow';
 
 import './styles.scss';
 

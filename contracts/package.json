@@ -16,6 +16,7 @@
     "contracts": "yarn export-jq '.contracts | with_entries(.value = .value.address)'",
     "coverage": "HARDHAT_NO_MNEMONIC=yes hardhat coverage",
     "deploy": "hardhat deploy",
+    "verify": "hardhat etherscan-verify",
     "deploy:chain": "HARDHAT_NO_MNEMONIC=yes hardhat deploy --network localhost",
     "flatten": "HARDHAT_NO_MNEMONIC=yes hardhat flatten",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:list-different",

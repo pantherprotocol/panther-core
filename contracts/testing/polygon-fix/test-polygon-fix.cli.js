@@ -14,7 +14,7 @@ u = ethers.utils; null;
 let {fe, pe, BN, toBN, td} = require('./lib/units-shortcuts');
 hnp = hre.network.provider;
 let {increaseTime, impersonate} = require('./lib/hardhat');
-let {showStake: _showStake, replaceRewardAdviser} = require('./lib/staking');
+let {showStake: _showStake, addRewardAdviser} = require('./lib/staking');
 imp = impersonate;
 let {getBalanceFetcher, showBalances} = require('./lib/polygon-fix');
 
@@ -74,7 +74,7 @@ tx = await deployer.sendTransaction({value: u.parseEther('1000'), to: owner.addr
 
 hash = require('./lib/hash');
 
-await replaceRewardAdviser(rewardMaster.connect(owner), staking.address, controller.address);
+await addRewardAdviser(rewardMaster.connect(owner), staking.address, controller.address,{replace:true,isClassic:true});
 
 staker = await imp('0x966d4b4965f3ad106ee1ce3e92f17c7f8505df78'); staker.address;
 await getBal(staker.address);

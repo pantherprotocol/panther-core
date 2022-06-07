@@ -57,7 +57,7 @@ const {
     mineBlock,
     ensureMinBalance,
 } = require('../../lib/hardhat');
-const {replaceRewardAdviser, saveHistoricalData} = require('../../lib/staking');
+const {addRewardAdviser, saveHistoricalData} = require('../../lib/staking');
 const {getEventFromReceipt} = require('../../lib/events');
 const {pe, fe, parseDate, toDate} = require('../../lib/units-shortcuts');
 const {getBlockTimestamp} = require('../../lib/provider');
@@ -135,10 +135,11 @@ module.exports = (hre, stakesData) => {
 
         await mintTo(rewardTreasury.address, oneMatic.mul(2e6));
 
-        await replaceRewardAdviser(
+        await addRewardAdviser(
             rewardMaster.connect(owner),
             staking.address,
             stakeRwdCtr.address,
+            {replace: true, isClassic: true},
         );
         console.log(
             'rewardMaster.rewardAdvisers.ACTION_STAKE: ',

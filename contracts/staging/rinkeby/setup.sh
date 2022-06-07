@@ -3,7 +3,7 @@
 # see ~/Panther/git/zkp-token/docs/staging/
 # for setting up the token and vesting pools
 
-cd ../zkp-staking/contracts
+cd ../panther-core/contracts
 cp .env.staging .env
 mv deployments/rinkeby{,.`fds -t`}
 

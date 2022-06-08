@@ -25,7 +25,6 @@ import {
     multiplyScalars,
 } from '../lib/keychain';
 
-('../lib/keychain');
 import { deployMockPantherPoolV0 } from './helpers/pantherPoolV0Tester';
 
 describe('PantherPoolV0', () => {

@@ -23,12 +23,10 @@ export function parseTxErrorMessage(error: any): string {
         // \"data\":{\"code\":-32000,\"message\":
         // \"transaction underpriced\"}}}'"
 
-        // looking for the message key in the error message
-        const regex = /(?<="message":")(.*?)(?=")/;
-        const message = regex.exec(error.message);
-
-        if (message?.[0]) {
-            return message[0];
+        // look for the message key in the error message
+        const message = error.message.match(/"message":"(.+?)"/);
+        if (message?.[1]) {
+            return message[1];
         }
 
         return error.message;

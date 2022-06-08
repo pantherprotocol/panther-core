@@ -22,7 +22,7 @@ export default function PrivateBalance() {
         : 0;
 
     const unclaimedPRP = useAppSelector(
-        totalSelector(StakingRewardTokenID.zZKP),
+        totalSelector(StakingRewardTokenID.PRP),
     );
 
     return (

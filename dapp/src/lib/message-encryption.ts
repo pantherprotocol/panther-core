@@ -2,7 +2,6 @@ import crypto from 'crypto';
 
 import {babyjub} from 'circomlibjs';
 
-import {formatPrivateKeyForBabyJub} from './keychain';
 import {
     ICiphertext,
     PrivateKey,
@@ -15,10 +14,7 @@ export const generateEcdhSharedKey = (
     privateKey: PrivateKey,
     publicKey: PublicKey,
 ): EcdhSharedKey => {
-    return babyjub.mulPointEscalar(
-        publicKey,
-        formatPrivateKeyForBabyJub(privateKey),
-    );
+    return babyjub.mulPointEscalar(publicKey, privateKey);
 };
 
 export function encryptMessage(

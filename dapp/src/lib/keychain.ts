@@ -3,23 +3,51 @@ Some of the functions are modified version or inspired by this code:
 https://github.com/appliedzkp/maci/blob/master/crypto/ts/index.ts
 */
 
-import assert from 'assert';
 import crypto from 'crypto';
 
 import createBlakeHash from 'blake-hash';
 import {babyjub, eddsa, poseidon} from 'circomlibjs';
 import * as ff from 'ffjavascript';
 
+import {
+    assertInBN254Field,
+    assertInBabyJubJubField,
+    assert,
+} from './assertions';
 import {IKeypair, PrivateKey, PublicKey} from './types';
 
 export const SNARK_FIELD_SIZE = BigInt(
     '21888242871839275222246405745257275088548364400416034343698204186575808495617',
 );
 
+export const isChildPubKeyValid = (
+    childPubKey: PublicKey,
+    rootKeypair: IKeypair,
+    randomSecret: bigint,
+): boolean => {
+    console.time('isChildPubKeyValid()');
+    assertInBN254Field(childPubKey[0], 'Child public key X');
+    assertInBN254Field(childPubKey[1], 'Child public key Y');
+    assertInBN254Field(rootKeypair.publicKey[0], 'Root public key X');
+    assertInBN254Field(rootKeypair.publicKey[1], 'Root public key Y');
+    const rs = multiplyScalars(rootKeypair.privateKey, randomSecret);
+    const rs_B = generatePublicKey(rs);
+    const s_rB = generateChildPublicKey(rootKeypair.publicKey, randomSecret);
+    const isValid =
+        childPubKey[0] === rs_B[0] &&
+        childPubKey[1] === rs_B[1] &&
+        s_rB[0] === childPubKey[0] &&
+        s_rB[1] === childPubKey[1];
+
+    console.debug(`generated public key is${isValid ? '' : ' NOT'} valid`);
+    console.timeEnd('isChildPubKeyValid()');
+    return isValid;
+};
+
 export const deriveKeypairFromSeed = (
     seed = generateRandomBabyJubValue(),
 ): IKeypair => {
-    const privateKey = truncateToSnarkField(seed); //
+    const privateKey = truncateToBabyjubSubOrder(seed); //
     const publicKey = generatePublicKey(privateKey);
     return {
         privateKey: privateKey,
@@ -33,10 +61,17 @@ export const generateChildPublicKey = (
     rootPublicKey: PublicKey,
     scalar: bigint,
 ): PublicKey => {
-    return babyjub.mulPointEscalar(rootPublicKey, scalar);
+    console.time('generateChildPublicKey()');
+    const childPublicKey = babyjub.mulPointEscalar(rootPublicKey, scalar);
+    assertInBN254Field(childPublicKey[0], 'Child public key X');
+    assertInBN254Field(childPublicKey[1], 'Child public key Y');
+    console.timeEnd('generateChildPublicKey()');
+    return childPublicKey;
 };
 
 export const multiplyScalars = (a: bigint, b: bigint): bigint => {
+    assertInBabyJubJubField(a, 'Scalar a');
+    assertInBabyJubJubField(b, 'Scalar b');
     return (a * b) % babyjub.subOrder;
 };
 
@@ -49,26 +84,32 @@ export const deriveKeypairFromSignature = (signature: string): IKeypair => {
 };
 
 export const truncateToSnarkField = (v: bigint): bigint => {
+    // The public keys need to be truncated in the SNARK field.
     return v % SNARK_FIELD_SIZE;
 };
 
+export function truncateToBabyjubSubOrder(v: bigint): bigint {
+    // The private key lives in the scalar field of the babyjubjub suborder.
+    return v % babyjub.subOrder;
+}
+
 export const generatePublicKey = (privateKey: PrivateKey): PublicKey => {
-    assert(privateKey < SNARK_FIELD_SIZE);
-    return babyjub.mulPointEscalar(
-        babyjub.Base8,
-        formatPrivateKeyForBabyJub(privateKey),
-    );
+    assertInBabyJubJubField(privateKey, 'privateKey');
+    const pubKey = babyjub.mulPointEscalar(babyjub.Base8, privateKey);
+    assertInBN254Field(pubKey[0], 'public key X');
+    assertInBN254Field(pubKey[1], 'public key Y');
+    return pubKey;
 };
 
 /*
- * An internal function which formats a random private key to be compatible
- * with the BabyJub curve. This is the format which should be passed into the
- * PublicKey and other circuits.
+ * A function intended to improve a randomness of the seed as in
+ * the EdDSA key generation algorithm.
+ *  https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5
  */
-export const formatPrivateKeyForBabyJub = (privateKey: PrivateKey) => {
+export const hashAndBitShift = (seed: bigint): bigint => {
     const sBuff = eddsa.pruneBuffer(
         createBlakeHash('blake512')
-            .update(bigIntToBuffer(privateKey))
+            .update(bigIntToBuffer(seed))
             .digest()
             .slice(0, 32),
     );
@@ -99,11 +140,9 @@ const bigIntToBuffer = (i: BigInt): Buffer => {
 };
 
 export const generateRandomBabyJubValue = (): bigint => {
-    const random = generateRandomness();
-    const privateKey: PrivateKey = formatPrivateKeyForBabyJub(
-        random % SNARK_FIELD_SIZE,
-    );
-    assert(privateKey < SNARK_FIELD_SIZE);
+    const seed = hashAndBitShift(generateRandomness());
+    const privateKey = truncateToBabyjubSubOrder(seed);
+    assertInBabyJubJubField(privateKey, 'privateKey');
     return privateKey;
 };
 
@@ -111,18 +150,16 @@ export const extractSecretsPair = (
     signature: string,
 ): [r: bigint, s: bigint] => {
     if (!signature) {
-        throwKeychainError('Signature must be provided');
+        throw new Error('Signature must be provided');
     }
-    if (signature.length !== 132) {
-        throwKeychainError(
-            `Tried to create keypair from signature of length '${signature.length}'`,
-        );
-    }
-    if (signature.slice(0, 2) !== '0x') {
-        throwKeychainError(
-            `Tried to create keypair from signature without 0x prefix`,
-        );
-    }
+    assert(
+        signature.length === 132,
+        `Tried to create keypair from signature of length '${signature.length}'`,
+    );
+    assert(
+        signature.slice(0, 2) === '0x',
+        `Tried to create keypair from signature without 0x prefix`,
+    );
     // We will never verify this signature; we're only using it as a
     // deterministic source of entropy which can be used in a ZK proof.
     // So we can discard the LSB v which has the least entropy.
@@ -137,11 +174,9 @@ export const extractSecretsPair = (
 export const derivePrivateKeyFromSignature = (signature: string): bigint => {
     const pair = extractSecretsPair(signature);
     if (!pair) {
-        throwKeychainError('Failed to extract secrets pair from signature');
+        throw new Error('Failed to extract secrets pair from signature');
     }
-    return poseidon(pair);
-};
-
-const throwKeychainError = (errMsg: string) => {
-    throw new Error(`Keychain error: ${errMsg}`);
+    const privKey = truncateToBabyjubSubOrder(poseidon(pair));
+    assertInBabyJubJubField(privKey, 'privateKey');
+    return privKey;
 };

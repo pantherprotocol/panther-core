@@ -8,7 +8,6 @@ import {Wallet} from 'ethers';
 import {
     deriveKeypairFromSignature,
     deriveKeypairFromSeed,
-    formatPrivateKeyForBabyJub,
     packPublicKey,
 } from '../src/lib/keychain';
 import {
@@ -54,10 +53,7 @@ describe('Transaction integration test', () => {
 
         // Sender actions:
         const rR = deriveKeypairFromSeed(); // Random (r, R)
-        const Sprime = babyjub.mulPointEscalar(
-            sS.publicKey,
-            formatPrivateKeyForBabyJub(rR.privateKey),
-        );
+        const Sprime = babyjub.mulPointEscalar(sS.publicKey, rR.privateKey);
 
         const K = generateEcdhSharedKey(rR.privateKey, vV.publicKey);
         const packedK = packPublicKey(K);
@@ -83,10 +79,7 @@ describe('Transaction integration test', () => {
         const decryptedText = uint8ArrayToBigInt(
             decryptMessage(C, packedDerivedK),
         );
-        const sPrime = babyjub.mulPointEscalar(
-            rR.publicKey,
-            formatPrivateKeyForBabyJub(sS.privateKey),
-        );
+        const sPrime = babyjub.mulPointEscalar(rR.publicKey, sS.privateKey);
 
         expect(decryptedText.toString(16)).toEqual(plainText);
         expect(sPrime[0]).toEqual(Sprime[0]);

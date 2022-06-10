@@ -1,66 +1,57 @@
 import * as React from 'react';
 
-import {
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Tooltip,
-} from '@mui/material';
+import {Tooltip} from '@mui/material';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 
 import infoIcon from '../../../images/info-icon.svg';
-import {useAppSelector} from '../../../redux/hooks';
-import {advancedStakesRewardsSelector} from '../../../redux/slices/advancedStakesRewards';
-import {AdvancedStakeRewards} from '../../../types/staking';
 
-import PrivateZAsset from './PrivateZAsset';
+import PrivateZAsset from './PrivateZAssetRow';
 
 import './styles.scss';
 
 export default function PrivateZAssetsTable() {
-    const advancedStakeRewards = useAppSelector(advancedStakesRewardsSelector);
-
     const zAssetTooltip = `$zZKP in a MASP. This reward is calculated based on your
-    Stake but created as a transaction in the MASP. You will be able to redeem $zZKP
-    for $ZKP using the Withdraw option at the end of the Advanced Staking period.`;
+        Stake but created as a transaction in the MASP. You will be able to redeem $zZKP
+        for $ZKP using the Withdraw option at the end of the Advanced Staking period.`;
 
     const prpTooltip = `PRPs (Panther Reward Points). This additional reward, aimed
-    toward incentivizing Advanced Staking, will also be created in the Shielded Pool as
-    a calculation based on the number of $zZKP for a given user. Users will be able to
-    convert PRPs to $ZKP using the Reward Converter when the core protocol (Panther Core
-    V1) launches.`;
+        toward incentivizing Advanced Staking, will also be created in the Shielded Pool as
+        a calculation based on the number of $zZKP for a given user. Users will be able to
+        convert PRPs to $ZKP using the Reward Converter when the core protocol (Panther Core
+        V1) launches.`;
 
     return (
-        <TableContainer className="private-zasset-container" component={Paper}>
-            <Table aria-label="unstaking table">
+        <TableContainer className="private-zAsset-container" component={Paper}>
+            <Table aria-label="collapsible table">
                 <TableHead>
-                    <TableRow className="header-row">
-                        <TableCell
-                            align="left"
-                            colSpan={2}
-                            className="column-title"
-                        >
-                            Private zAssets
+                    <TableRow>
+                        <TableCell align="left" colSpan={3}>
+                            Private zAssets:
                             <Tooltip
                                 title={zAssetTooltip}
                                 data-html="true"
                                 placement="top"
-                                className="icon"
+                                className="tooltip-icon"
                             >
                                 <img src={infoIcon} />
                             </Tooltip>
                         </TableCell>
-                        <TableCell align="left">Network</TableCell>
+                        <TableCell align="left" colSpan={1}>
+                            Network:
+                        </TableCell>
                         <TableCell align="left" colSpan={2}>
-                            Privacy Rewards
+                            Privacy Rewards:
                             <Tooltip
                                 title={prpTooltip}
                                 data-html="true"
                                 placement="top"
-                                className="icon"
+                                className="tooltip-icon"
                             >
                                 <img src={infoIcon} />
                             </Tooltip>
@@ -68,11 +59,7 @@ export default function PrivateZAssetsTable() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {advancedStakeRewards.map(
-                        (item: AdvancedStakeRewards, key: number) => (
-                            <PrivateZAsset key={key} item={item} />
-                        ),
-                    )}
+                    <PrivateZAsset />
                 </TableBody>
             </Table>
         </TableContainer>

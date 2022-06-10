@@ -4,7 +4,7 @@ import {Box, Typography} from '@mui/material';
 
 import './styles.scss';
 
-export default function Balance(props?: {
+export default function Balance(props: {
     balance: string;
     balanceValue: string;
     name: string;
@@ -12,11 +12,11 @@ export default function Balance(props?: {
     return (
         <Box className="asset-balance">
             <Typography>
-                {props?.balance}
-                <span> {props?.name} </span>
+                {props.balance}
+                <span> {props.name} </span>
             </Typography>
             <Typography>
-                <span> {props?.balanceValue} </span>
+                <span> {props.balanceValue} </span>
             </Typography>
         </Box>
     );

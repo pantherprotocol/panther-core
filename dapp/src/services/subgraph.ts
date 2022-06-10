@@ -7,9 +7,9 @@ export function getAdvancedStakingRewardQuery(staker: string): string {
           lastBlockNumber
           advancedStakingRewards {
             id
-            leftLeafId
             creationTime
             commitments
+            utxoData
             zZkpAmount
             prpAmount
           }

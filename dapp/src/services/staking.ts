@@ -612,14 +612,18 @@ export async function getZKPMarketPrice(): Promise<BigNumber | null> {
     return price;
 }
 
-export async function getAdvancedStakingReward(staker: string) {
-    const query = getAdvancedStakingRewardQuery(staker);
+export async function getAdvancedStakingReward(address: string) {
+    const query = getAdvancedStakingRewardQuery(address);
     const subgraphEndpoint = env.SUBGRAPH_URL_80001 as string;
 
     try {
         const data = await axios.post(subgraphEndpoint, {
             query,
         });
+
+        if (data.data.errors?.[0]?.message) {
+            throw new Error(data.data.errors[0].message);
+        }
 
         if (data.status === 200) {
             return data.data.data;

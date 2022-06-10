@@ -1,6 +1,6 @@
 {
   "name": "panther-core",
-  "description": "Panther Protocol Staking monorepo",
+  "description": "Panther Protocol monorepo",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,10 @@
     "build:dapp": "yarn workspace @panther-core/dapp build",
     "build:types": "HARDHAT_NO_MNEMONIC=yes yarn build:contracts && yarn workspace @panther-core/contracts build:types && yarn workspace @panther-core/dapp build:types && yarn build:crypto",
     "chain": "yarn workspace @panther-core/contracts chain",
+    "circuits:compile": "yarn workspace @panther-core/circuits compile",
+    "circuits:compile:docker": "yarn workspace @panther-core/circuits compile:docker",
+    "circuits:test": "yarn workspace @panther-core/circuits test",
+    "circuits:test:docker": "yarn workspace @panther-core/circuits test:docker",
     "console": "yarn workspace @panther-core/contracts console",
     "contracts": "yarn workspace @panther-core/contracts contracts",
     "dapp:start": "yarn workspace @panther-core/dapp start",
@@ -26,6 +30,7 @@
   },
   "workspaces": {
     "packages": [
+      "circuits",
       "contracts",
       "crypto",
       "dapp"

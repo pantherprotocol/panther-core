@@ -9,6 +9,7 @@ const REQUIRED_ENV_VARS: string[] = [
     'FAUCET_CHAIN_IDS',
     'FAUCET_CONTRACT_80001',
     'FAUCET_BASE_URL',
+    'SUBGRAPH_URL_80001',
 ];
 
 const REQUIRED_CHAIN_ENV_VAR_PREFIXES: string[] = [
@@ -109,6 +110,8 @@ export const env: EnvVariables = {
     FAUCET_CONTRACT_80001: process.env.FAUCET_CONTRACT_80001,
     FAUCET_CONTRACT_31337: process.env.FAUCET_CONTRACT_31337,
     FAUCET_CONTRACT_137: process.env.FAUCET_CONTRACT_137,
+
+    SUBGRAPH_URL_80001: process.env.SUBGRAPH_URL_80001,
 };
 
 export const CHAIN_IDS = env.CHAIN_IDS

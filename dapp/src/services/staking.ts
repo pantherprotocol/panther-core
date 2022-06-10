@@ -33,10 +33,12 @@ import {
 } from './contracts';
 import {env} from './env';
 import {notifyError} from './errors';
+import axios from './http';
 import {deriveRootKeypairs} from './keychain';
 import {encryptEphemeralKey} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
 import {calculateRewardsForStake} from './rewards';
+import {getAdvancedStakingRewardQuery} from './subgraph';
 
 const CoinGeckoClient = new CoinGecko();
 
@@ -608,6 +610,23 @@ export async function getZKPMarketPrice(): Promise<BigNumber | null> {
     }
     const price = utils.parseUnits(String(priceData.data[symbol]['usd']), 18);
     return price;
+}
+
+export async function getAdvancedStakingReward(staker: string) {
+    const query = getAdvancedStakingRewardQuery(staker);
+    const subgraphEndpoint = env.SUBGRAPH_URL_80001 as string;
+
+    try {
+        const data = await axios.post(subgraphEndpoint, {
+            query,
+        });
+
+        if (data.status === 200) {
+            return data.data.data;
+        }
+    } catch (error) {
+        throw new Error(`Error on sending query to subgraph: ${error}`);
+    }
 }
 
 export async function getStakingTermsFromContract(

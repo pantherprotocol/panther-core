@@ -6,7 +6,7 @@ This merge request solves the problem by ...
 
 Issue-URL: ... <!-- Add Asana or ClickUp link here -->
 
-ClickUp: #u7hu[completed] <!-- replace ClickUp ID here -->
+ClickUp: #u7hu <!-- replace ClickUp ID here -->
 
 ## How to reproduce the problem
 

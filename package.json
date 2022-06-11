@@ -36,6 +36,8 @@
       "dapp"
     ],
     "nohoist": [
+      "**/circomlib",
+      "**/circomlib/*",
       "**/@nomiclabs/hardhat-ethers",
       "**/typechain",
       "**/@typechain/*",

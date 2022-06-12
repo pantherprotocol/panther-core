@@ -56,9 +56,7 @@ describe('TriadIncrementalMerkleTrees: Switching Tree ', function () {
                     await trees.fakeNextLeafId(16382 * 4);
 
                     // Insert the 16383rd triad
-                    await expect(
-                        trees.internalInsertBatch(for16383thCallTriad),
-                    );
+                    await trees.internalInsertBatch(for16383thCallTriad);
                 });
 
                 it('should have 49149 leaves', async () => {
@@ -141,9 +139,7 @@ describe('TriadIncrementalMerkleTrees: Switching Tree ', function () {
                     await trees.fakeNextLeafId((16384 + 16382) * 4);
 
                     // Insert the 32767th triad
-                    await expect(
-                        trees.internalInsertBatch(for32767thCallTriad),
-                    );
+                    await trees.internalInsertBatch(for32767thCallTriad);
                 });
 
                 it('should have 98301 leaves', async () => {

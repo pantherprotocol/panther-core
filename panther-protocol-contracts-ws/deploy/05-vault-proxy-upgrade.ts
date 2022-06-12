@@ -8,12 +8,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const vaultProxy = await ethers.getContract('Vault_Proxy');
     const vaultImpl = await ethers.getContract('Vault_Implementation');
 
-    // Get EIP-1967 implementation slot data
-    const oldImpl: string = ethers.utils.hexStripZeros(
-        await ethers.provider.getStorageAt(
-            vaultProxy.address,
-            '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc',
-        ),
+    // `.send` used instead of `.getStorageAt` to work w/ both `ganache-cli` and `hardhat`
+    // (`.getStorageAt` fails on '0x', which `ganache-cli` returns if the slot is empty)
+    const response = await ethers.provider.send('eth_getStorageAt', [
+        vaultProxy.address,
+        // EIP-1967 implementation slot
+        '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc',
+    ]);
+    const oldImpl: string = ethers.utils.hexZeroPad(
+        ethers.utils.hexStripZeros(response),
+        20,
     );
     if (oldImpl == vaultImpl.address.toLowerCase()) {
         console.log(

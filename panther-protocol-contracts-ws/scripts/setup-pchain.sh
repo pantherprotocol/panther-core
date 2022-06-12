@@ -7,7 +7,7 @@ trap on_exit EXIT
 ganache_port=8545
 log_file="/dev/null"
 start_only=
-pid_file=
+MNEMONIC_STR="novel grunt steel pioneer erosion heavy mountain illegal knock black version monkey"
 
 on_exit() {
   [ -n "${start_only}" ] && return
@@ -19,10 +19,9 @@ is_ganache_running() {
 }
 
 shutdown_ganache() {
-  if [ -n "$ganache_pid" ] && is_ganache_running; then
-    kill -9 $ganache_pid
-    [ "$?" == "0" ] && echo -e "\nganache-cli (${ganache_pid}) killed"
-  fi
+  PIDs=$(pgrep -f "${MNEMONIC_STR}")
+  kill -9 ${PIDs}
+  [ "$?" == "0" ] && echo -e "\nganache-cli killed"
 }
 
 while [[ $# -gt 0 ]]
@@ -49,15 +48,16 @@ case $1 in
   shift
   ;;
   --log-file=*)
-  log_file="${i#*=}"
+  log_file="${1#*=}"
   shift
   ;;
-  --pid-file=*)
-  pid_file="${i#*=}"
+  --ganache-args=*)
+  GANACHE_ARGS="${1#*=}"
   shift
   ;;
   *)
   echo "Unknown argument provided!"
+  echo "arg: $1"
   exit 1
   ;;
 esac
@@ -84,22 +84,20 @@ echo "Starting new ganache-cli instance."
 npx --quiet ganache-cli \
   --port "$ganache_port" \
   --networkId "1994" \
-  --gasLimit "8000000" \
+  --gasLimit "25000000" \
   --defaultBalanceEther "1000000" \
-  --deterministic --mnemonic "novel grunt steel pioneer erosion heavy mountain illegal knock black version monkey" \
+  --deterministic \
+  --mnemonic "${MNEMONIC_STR}" \
+  ${GANACHE_ARGS} \
   `if [[ -n "$FROM_SNAPSHOT" || -n "$TAKE_SNAPSHOT" ]]; then echo --db "./pchain/snapshot"; fi` \
   1>"${log_file}" &
 
 ganache_pid=$!
-[ -n "${pid_file}" ] && {
-  disown
-  echo "${ganache_pid}" > "${pid_file}"
-}
-
+disown
 sleep 1
 
 if [[ -z "$NO_DEPLOY" ]]; then
-  npx --quiet hardhat deploy --network pchain --tags deploy-pchain
+  npx --quiet hardhat deploy --network pchain --tags pchain
 fi
 
 if [[ -n "$TAKE_SNAPSHOT" ]]; then

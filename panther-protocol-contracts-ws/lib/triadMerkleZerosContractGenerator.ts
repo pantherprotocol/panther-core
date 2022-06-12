@@ -53,7 +53,7 @@ if (require.main === module) {
     if (treeDepth > 32) throw "treeDepth can't exceed 32";
 
     const generated = genZerosContract(zeroSeed, treeDepth);
-    console.log(generated);
+    process.stdout.write(generated);
 }
 
 export { genZerosContract };

@@ -1,0 +1,17 @@
+type Staker @entity {
+    id: ID!
+    lastUpdatedTime: Int!
+    lastBlockNumber: Int!
+    advancedStakingRewards: [AdvancedStakingReward!]!
+        @derivedFrom(field: "staker")
+}
+
+type AdvancedStakingReward @entity {
+    id: ID!
+    creationTime: Int!
+    commitments: [Bytes!]
+    utxoData: Bytes
+    zZkpAmount: BigInt
+    prpAmount: BigInt
+    staker: Staker!
+}

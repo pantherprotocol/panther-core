@@ -1,0 +1,21 @@
+{
+  "name": "@panther-core/subgraph",
+  "license": "UNLICENSED",
+  "version": "0.0.1",
+  "scripts": {
+    "codegen": "graph codegen",
+    "auth": "graph auth --product hosted-service",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/",
+    "create-local": "graph create --node http://localhost:8020/",
+    "remove-local": "graph remove --node http://localhost:8020/",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.30.4",
+    "@graphprotocol/graph-ts": "0.27.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.6.0"
+  }
+}

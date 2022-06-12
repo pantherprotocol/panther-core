@@ -6,6 +6,7 @@
   "scripts": {
     "build:contracts": "TS_NODE_TRANSPILE_ONLY=1 yarn workspace @panther-core/contracts compile",
     "build:crypto": "yarn workspace @panther-core/crypto build",
+    "build:graph": "yarn workspace @panther-core/subgraph codegen && yarn workspace @panther-core/subgraph build",
     "build:dapp": "yarn workspace @panther-core/dapp build",
     "build:types": "HARDHAT_NO_MNEMONIC=yes yarn build:contracts && yarn workspace @panther-core/contracts build:types && yarn workspace @panther-core/dapp build:types && yarn build:crypto",
     "chain": "yarn workspace @panther-core/contracts chain",
@@ -16,7 +17,11 @@
     "console": "yarn workspace @panther-core/contracts console",
     "contracts": "yarn workspace @panther-core/contracts contracts",
     "dapp:start": "yarn workspace @panther-core/dapp start",
+    "graph:setup": "yarn workspace @panther-core/subgraph node setupSubgraph.ts ",
+    "graph:auth": "yarn workspace @panther-core/subgraph auth",
     "deploy:chain": "yarn workspace @panther-core/contracts deploy:chain",
+    "deploy:graph": "yarn workspace @panther-core/subgraph deploy",
+    "deploy:contracts": "yarn workspace @panther-core/contracts deploy",
     "hardhat": "yarn workspace @panther-core/contracts hardhat",
     "lint": "yarn prettier:check && yarn workspace @panther-core/contracts lint:sol && yarn workspace @panther-core/contracts lint:ts && yarn workspace @panther-core/contracts lint:ts && yarn workspace @panther-core/dapp lint:ts",
     "postinstall": "git config commit.template .gitmessage; husky install",
@@ -33,7 +38,8 @@
       "circuits",
       "contracts",
       "crypto",
-      "dapp"
+      "dapp",
+      "subgraph"
     ],
     "nohoist": [
       "**/circomlib",

@@ -1,0 +1,44 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: AdvancedStakeRewardController
+    network: mumbai
+    source:
+      address: '<% AdvancedStakeRewardController_ADDRESS %>'
+      abi: AdvancedStakeRewardController
+      startBlock: <% AdvancedStakeRewardController_STARTBLOCK %>
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - RewardGenerated
+      abis:
+        - name: AdvancedStakeRewardController
+          file: ./abis/AdvancedStakeRewardController.json
+      eventHandlers:
+        - event: RewardGenerated(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleRewardGenerated
+      file: ./src/handleAdvancedStakingRewards.ts
+  - kind: ethereum
+    name: PantherPoolV0
+    network: mumbai
+    source:
+      address: '<% PantherPoolV0_ADDRESS %>'
+      abi: PantherPoolV0
+      startBlock: <% PantherPoolV0_STARTBLOCK %>
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - NewCommitments
+      abis:
+        - name: PantherPoolV0
+          file: ./abis/PantherPoolV0.json
+      eventHandlers:
+        - event: NewCommitments(indexed uint256,uint256,bytes32[3],bytes)
+          handler: handleNewCommitments
+      file: ./src/handleAdvancedStakingRewards.ts

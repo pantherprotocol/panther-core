@@ -7,8 +7,6 @@ import { poseidon } from 'circomlibjs';
 const { keccak256, toBN } = Web3.utils;
 
 const genZerosContract = (zeroSeed: string, treeDepth: number): string => {
-    const FIELD_NOTE =
-        'Order of alt_bn128 and the field prime of Baby Jubjub and Poseidon hash';
     // Defined in "../contracts/crypto/SnarkContracts.sol" as well
     const SCALAR_FIELD =
         '21888242871839275222246405745257275088548364400416034343698204186575808495617';
@@ -42,7 +40,6 @@ const genZerosContract = (zeroSeed: string, treeDepth: number): string => {
     }
 
     return template
-        .replace('<% NOTE %>', FIELD_NOTE)
         .replace('<% SEED %>', zeroSeed)
         .replace('<% ZERO %>', '0x' + zeroVal.toString(16))
         .replace('<% ROOT %>', '0x' + zeros[treeDepth].toString(16))

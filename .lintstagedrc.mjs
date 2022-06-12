@@ -71,4 +71,14 @@ export default {
         );
         return run('yarn workspace @panther-core/dapp lint:eslint', toLint);
     },
+    'circuits/**/*.*': async files => {
+        const prefix = process.cwd() + '/circuits/';
+        const toLint = await removeIgnoredFiles(
+            prefix,
+            'circuits/.eslintrc.json',
+            'circuits/.eslintignore',
+            files,
+        );
+        return run('yarn workspace @panther-core/circuits lint', toLint);
+    },
 };

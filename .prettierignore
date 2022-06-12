@@ -36,3 +36,10 @@ plantuml.skin
 *.svg
 .env
 .env.*
+circuits/circuits/*/*.circom
+circuits/circuits/*.circom
+circuits/test/*.tar.gz
+circuits/test/*.info
+circuits/test/*.sh
+circuits/test/*.keys
+circuits/test/circuits/*.circom

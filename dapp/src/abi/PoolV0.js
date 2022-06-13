@@ -1,24 +1,125 @@
 export const abi = [
     {
+        anonymous: false,
         inputs: [
             {
+                indexed: true,
                 internalType: 'address',
-                name: '_owner',
+                name: 'previousOwner',
                 type: 'address',
             },
             {
-                internalType: 'uint256',
-                name: 'exitTime',
-                type: 'uint256',
-            },
-            {
+                indexed: true,
                 internalType: 'address',
-                name: 'vault',
+                name: 'newOwner',
                 type: 'address',
             },
         ],
+        name: 'OwnershipTransferred',
+        type: 'event',
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'previousImplementation',
+                type: 'address',
+            },
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'newImplementation',
+                type: 'address',
+            },
+        ],
+        name: 'ProxyImplementationUpdated',
+        type: 'event',
+    },
+    {
+        stateMutability: 'payable',
+        type: 'fallback',
+    },
+    {
+        inputs: [],
+        name: 'owner',
+        outputs: [
+            {
+                internalType: 'address',
+                name: '',
+                type: 'address',
+            },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+    },
+    {
+        inputs: [
+            {
+                internalType: 'bytes4',
+                name: 'id',
+                type: 'bytes4',
+            },
+        ],
+        name: 'supportsInterface',
+        outputs: [
+            {
+                internalType: 'bool',
+                name: '',
+                type: 'bool',
+            },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'newOwner',
+                type: 'address',
+            },
+        ],
+        name: 'transferOwnership',
+        outputs: [],
         stateMutability: 'nonpayable',
-        type: 'constructor',
+        type: 'function',
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'newImplementation',
+                type: 'address',
+            },
+        ],
+        name: 'upgradeTo',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'newImplementation',
+                type: 'address',
+            },
+            {
+                internalType: 'bytes',
+                name: 'data',
+                type: 'bytes',
+            },
+        ],
+        name: 'upgradeToAndCall',
+        outputs: [],
+        stateMutability: 'payable',
+        type: 'function',
+    },
+    {
+        stateMutability: 'payable',
+        type: 'receive',
     },
     {
         anonymous: false,
@@ -301,6 +402,19 @@ export const abi = [
                 internalType: 'address',
                 name: '',
                 type: 'address',
+            },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+    },
+    {
+        inputs: [],
+        name: 'PRP_ZASSET_ID',
+        outputs: [
+            {
+                internalType: 'uint160',
+                name: '',
+                type: 'uint160',
             },
         ],
         stateMutability: 'view',
@@ -1016,5 +1130,59 @@ export const abi = [
         ],
         stateMutability: 'pure',
         type: 'function',
+    },
+    {
+        inputs: [
+            {
+                internalType: 'bytes32',
+                name: 'merkleRoot',
+                type: 'bytes32',
+            },
+            {
+                internalType: 'uint256',
+                name: 'triadIndex',
+                type: 'uint256',
+            },
+            {
+                internalType: 'uint256',
+                name: 'triadNodeIndex',
+                type: 'uint256',
+            },
+            {
+                internalType: 'bytes32',
+                name: 'leaf',
+                type: 'bytes32',
+            },
+            {
+                internalType: 'bytes32[16]',
+                name: 'pathElements',
+                type: 'bytes32[16]',
+            },
+        ],
+        name: 'verifyMerkleProof',
+        outputs: [],
+        stateMutability: 'pure',
+        type: 'function',
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'implementationAddress',
+                type: 'address',
+            },
+            {
+                internalType: 'address',
+                name: 'ownerAddress',
+                type: 'address',
+            },
+            {
+                internalType: 'bytes',
+                name: 'data',
+                type: 'bytes',
+            },
+        ],
+        stateMutability: 'payable',
+        type: 'constructor',
     },
 ];

@@ -16,8 +16,13 @@ export type StakeRewardBN = ClassicStakeRewardBN | AdvancedStakeRewardsBN;
 export type ClassicStakeRewardBN = BigNumber;
 
 export type AdvancedStakeRewards = {
-// BigNumber string to allow serialization in Redux
-    [key in AdvancedStakeTokenIDs]: string;
+    id: string;
+    creationTime: string;
+    commitments: string[];
+    utxoData: string;
+    utxoIsSpent: boolean;
+    zZKP: string;
+    PRP: string;
 };
 
 export type AdvancedStakeRewardsBN = {

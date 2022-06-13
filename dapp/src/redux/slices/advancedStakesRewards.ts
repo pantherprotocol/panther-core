@@ -3,17 +3,9 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {BigNumber, constants} from 'ethers';
 
-import {zZkpReward, prpReward} from '../../services/rewards';
-import {
-    StakeRow,
-    getStakesAndRewards,
-    ADVANCED_TYPE_HEX,
-} from '../../services/staking';
-import {
-    AdvancedStakeRewards,
-    StakingRewardTokenID,
-    AdvancedStakeTokenIDs,
-} from '../../types/staking';
+import {getAdvancedStakingReward} from '../../services/staking';
+import {AdvancedStakeRewardsResponse} from '../../services/subgraph';
+import {AdvancedStakeRewards, AdvancedStakeTokenIDs} from '../../types/staking';
 import {RootState} from '../store';
 
 interface AdvancedStakesRewardsState {
@@ -31,31 +23,34 @@ export const getAdvancedStakesRewards = createAsyncThunk(
     async (
         context: Web3ReactContextInterface<Web3Provider>,
     ): Promise<AdvancedStakeRewards[]> => {
-        const {account, library, chainId} = context;
-        if (!library || !chainId || !account) return [];
+        const {account} = context;
+        if (!account) return [];
 
-        const [_, stakeRows] = await getStakesAndRewards(
-            library,
-            chainId,
-            account,
-        );
+        let rewards;
+        try {
+            rewards = await getAdvancedStakingReward(account);
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
 
-        const advancedRewards: AdvancedStakeRewards[] = stakeRows
-            .filter((stake: StakeRow) => {
-                return stake.stakeType === ADVANCED_TYPE_HEX;
-            })
-            .map((stake: StakeRow) => {
-                return {
-                    [StakingRewardTokenID.zZKP]: zZkpReward(
-                        stake.amount,
-                        stake.stakedAt * 1000,
-                    ).toString(),
-                    [StakingRewardTokenID.PRP]: prpReward(
-                        stake.amount,
-                    ).toString(),
-                };
-            });
+        if (!rewards) return [];
+        const advancedRewards: AdvancedStakeRewards[] =
+            rewards.staker.advancedStakingRewards.map(
+                (r: AdvancedStakeRewardsResponse) => {
+                    return {
+                        id: r.id,
+                        creationTime: r.creationTime.toString(),
+                        commitments: r.commitments,
+                        utxoData: r.utxoData,
+                        utxoIsSpent: false,
+                        zZKP: r.zZkpAmount,
+                        PRP: r.prpAmount,
+                    };
+                },
+            );
 
+        // TODO: check if Nullifier spent for each adv. stake
         return advancedRewards;
     },
 );
@@ -67,6 +62,13 @@ export const advancedStakesRewardsSlice = createSlice({
         resetAdvancedStakesRewards: state => {
             state.value = initialState.value;
             state.status = initialState.status;
+        },
+        markRewardsAsSpent: (state, action) => {
+            const id = action.payload;
+            const reward = state.value.find(r => r.id === id);
+            if (reward) {
+                reward.utxoIsSpent = true;
+            }
         },
     },
     extraReducers: builder => {
@@ -103,6 +105,7 @@ export function totalSelector(
     };
 }
 
-export const {resetAdvancedStakesRewards} = advancedStakesRewardsSlice.actions;
+export const {resetAdvancedStakesRewards, markRewardsAsSpent} =
+    advancedStakesRewardsSlice.actions;
 
 export default advancedStakesRewardsSlice.reducer;

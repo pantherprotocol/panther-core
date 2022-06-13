@@ -5,6 +5,8 @@ import {
     deriveKeypairFromSignature,
     multiplyScalars,
     deriveKeypairFromSeed,
+    generateChildPublicKey,
+    isChildPubKeyValid,
 } from '../lib/keychain';
 import {IKeypair, PrivateKey} from '../lib/types';
 
@@ -31,5 +33,34 @@ Keypair version: 1`;
     return [
         deriveKeypairFromSignature(signature),
         deriveKeypairFromSeed(hashedSignature),
+    ];
+}
+
+export function deriveSpendingChildKeypair(
+    rootSpendingKeypair: IKeypair,
+    randomSecret: bigint,
+): [IKeypair, boolean] {
+    console.time('deriveSpendingChildKeypair()');
+    const childSpendingPrivateKey = multiplyScalars(
+        rootSpendingKeypair.privateKey,
+        randomSecret,
+    );
+
+    const spendingChildPubKey = generateChildPublicKey(
+        rootSpendingKeypair.publicKey,
+        randomSecret,
+    );
+
+    console.debug('derived spenderChildPubKey:', spendingChildPubKey);
+    const isValid = isChildPubKeyValid(
+        spendingChildPubKey,
+        rootSpendingKeypair,
+        randomSecret,
+    );
+
+    console.timeEnd('deriveSpendingChildKeypair()');
+    return [
+        {privateKey: childSpendingPrivateKey, publicKey: spendingChildPubKey},
+        isValid,
     ];
 }

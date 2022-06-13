@@ -1,3 +1,13 @@
+export type AdvancedStakeRewardsResponse = {
+    id: string;
+    leftLeafId: string;
+    creationTime: number;
+    commitments: string[];
+    utxoData: string;
+    zZkpAmount: string;
+    prpAmount: string;
+};
+
 export function getAdvancedStakingRewardQuery(staker: string): string {
     return `
     query{

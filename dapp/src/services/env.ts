@@ -117,6 +117,8 @@ export const env: EnvVariables = {
     POOL_V0_CONTRACT_80001: process.env.POOL_V0_CONTRACT_80001,
     POOL_V0_CONTRACT_31337: process.env.POOL_V0_CONTRACT_31337,
     POOL_V0_CONTRACT_137: process.env.POOL_V0_CONTRACT_137,
+
+    COMMITMENT_TREE_URL_80001: process.env.COMMITMENT_TREE_URL_80001,
 };
 
 export const CHAIN_IDS = env.CHAIN_IDS

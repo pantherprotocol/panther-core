@@ -48,6 +48,7 @@ string constant ERR_TOO_LARGE_PRIVKEY = "P0:E3";
 string constant ERR_WRONG_DEPOSIT = "P0:E4";
 
 // PrpGrantor contract
+string constant ERR_ZERO_PROCESSOR_ADDR = "GR:E0";
 string constant ERR_ZERO_CURATOR_ADDR = "GR:E1";
 string constant ERR_ZERO_GRANTEE_ADDR = "GR:E2";
 string constant ERR_GRANT_TYPE_EXISTS = "GR:E3";

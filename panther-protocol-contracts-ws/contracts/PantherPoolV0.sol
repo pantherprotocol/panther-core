@@ -7,11 +7,11 @@ import "./common/ErrorMsgs.sol";
 import "./common/ImmutableOwnable.sol";
 import "./common/NonReentrant.sol";
 import "./common/Types.sol";
+import "./interfaces/IPrpGrantor.sol";
 import "./interfaces/IVault.sol";
 import "./common/Claimable.sol";
 import "./pantherPool/CommitmentGenerator.sol";
 import "./pantherPool/CommitmentsTrees.sol";
-import "./pantherPool/PrpGrantor.sol";
 import "./pantherPool/ZAssetsRegistry.sol";
 import "./pantherPool/v0/MerkleProofVerifier.sol";
 import "./pantherPool/v0/NullifierGenerator.sol";
@@ -24,10 +24,14 @@ import "./pantherPool/v0/PubKeyGenerator.sol";
  * @dev It is the "version 0" of the Panther Protocol Multi-Asset Shielded Pool ("MASP").
  * It locks assets (ERC-20, ERC-721 or ERC-1155 tokens) of a user with the `Vault` smart
  * contract and generates UTXO's in the MASP the user owns (i.e. builds merkle trees of
- * UTXO's commitments), but it does not implement the functionality for spending UTXO's
- * (other than the "exit" described further).
- * This contract is supposed to be upgraded with the new one, the MASP "v.1", which will
- * implement spending of UTXO's using zero-knowledge proves.
+ * UTXO's commitments).
+ * It can also generate UTX0's with "Panther Reward Points" (aka "PRP", a special unit).
+ * To get a PRP UTXO, a user must be given a "grant" booked in the `PrpGrantor` contract.
+ * The present contract is assumed to have the "grant processor" role with the latest.
+ * This contract does not implement the functionality for spending UTXO's (other than the
+ * `exit` described further) and is supposed to be upgraded with the new one.
+ * The new contract, the "v.1" of the MASP, is planned to implement spending of UTXO's
+ * using zero-knowledge proves.
  * To be upgradable, this contract is assumed to run as an "implementation" for a proxy
  * that DELEGATECALL's the implementation.
  * To protect holders against lost of assets in case this contract is not upgraded, it
@@ -40,14 +44,13 @@ contract PantherPoolV0 is
     Claimable,
     CommitmentsTrees,
     ZAssetsRegistry,
-    PrpGrantor,
     CommitmentGenerator,
     MerkleProofVerifier,
     NullifierGenerator,
     PubKeyGenerator
 {
-    // NOTE: The contract is supposed to run behind a proxy DELEGATECALLing it.
-    // For compatibility on upgrades, decrease `__gap` if new variables added.
+    // The contract is supposed to run behind a proxy DELEGATECALLing it.
+    // On upgrades, adjust `__gap` to match changes of the storage layout.
     uint256[50] private __gap;
 
     // solhint-disable var-name-mixedcase
@@ -57,6 +60,9 @@ contract PantherPoolV0 is
 
     /// @notice Address of the Vault contract
     address public immutable VAULT;
+
+    /// @notice Address of the PrpGrantor contract
+    address public immutable PRP_GRANTOR;
 
     // solhint-enable var-name-mixedcase
 
@@ -72,19 +78,19 @@ contract PantherPoolV0 is
     constructor(
         address _owner,
         uint256 _exitTime,
-        address vault
-    )
-        ImmutableOwnable(_owner)
-        PrpGrantor(getZAssetId(PRP_VIRTUAL_CONTRACT, 0))
-    {
+        address vault,
+        address prpGrantor
+    ) ImmutableOwnable(_owner) {
         require(TRIAD_SIZE == OUT_UTXOs, "E0");
         require(_exitTime > timeNow() && _exitTime < MAX_TIMESTAMP, "E1");
         revertZeroAddress(vault);
+        revertZeroAddress(prpGrantor);
 
         // As it runs behind the DELEGATECALL'ing proxy, initialization of
         // immutable "vars" only is allowed in the constructor
         EXIT_TIME = _exitTime;
         VAULT = vault;
+        PRP_GRANTOR = prpGrantor;
     }
 
     /// @notice Reads and returns the exit time.
@@ -250,26 +256,6 @@ contract PantherPoolV0 is
         _changeAssetStatus(zAssetRootId, newStatus);
     }
 
-    /// @notice Add a new "grant type", with the specified amount (in PRPs) of the grant,
-    /// and allow the specified "curator" to issue grants of this type
-    /// @dev The "owner" may call only
-    function enableGrants(
-        address curator,
-        bytes4 grantType,
-        uint256 prpAmount
-    ) external onlyOwner {
-        enableGrantType(curator, grantType, prpAmount);
-    }
-
-    /// @notice Disable previously enabled "grant type"
-    /// @dev The "owner" may call only
-    function disableGrants(address curator, bytes4 grantType)
-        external
-        onlyOwner
-    {
-        disableGrantType(curator, grantType);
-    }
-
     /// @notice Withdraw accidentally sent tokens or ETH from this contract
     /// @dev The "owner" may call only
     function claimEthOrErc20(
@@ -299,7 +285,8 @@ contract PantherPoolV0 is
         // Use a PRP grant, if it's a "deposit" in PRPs
         if (token == PRP_VIRTUAL_CONTRACT) {
             require(tokenId == 0, ERR_ZERO_TOKENID_EXPECTED);
-            useGrant(msg.sender, extAmount);
+            // No reentrancy guard needed for the trusted contract call
+            IPrpGrantor(PRP_GRANTOR).redeemGrant(msg.sender, extAmount);
             // No extAmount scaling for PRPs
             return (PRP_ZASSET_ID, safe96(extAmount));
         }

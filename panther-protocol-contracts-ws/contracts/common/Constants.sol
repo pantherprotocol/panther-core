@@ -39,7 +39,7 @@ uint8 constant zASSET_ENABLED = 0x01;
 uint8 constant zASSET_DISABLED = 0x02;
 uint8 constant zASSET_UNKNOWN = 0x00;
 
-// UTXO data (opeing values - encrypted and public) foromats
+// UTXO data (opening values - encrypted and public) formats
 uint8 constant UTXO_DATA_TYPE_ZERO = 0xA0; // no data (for zero UTXO)
 uint8 constant UTXO_DATA_TYPE0 = 0xAA;
 uint8 constant UTXO_DATA_TYPE1 = 0xAB;
@@ -47,5 +47,12 @@ uint8 constant UTXO_DATA_TYPE1 = 0xAB;
 // Address of the "virtual token contract" for PRPs.
 // "Virtual" since PRP is NOT a token, and it does not have a token contract.
 // Other contracts must use it to identify PRPs, whenever needed.
-// Calculated as `keccak256('Privacy Reward Point') >> 96`.
+// Calculated as: keccak256('Privacy Reward Point') >> 96.
 address constant PRP_VIRTUAL_CONTRACT = 0x1afa2212970b809aE15D51AF00C502D5c8eB3bAf;
+// zAssetId (i.e. "token" in the UTXO preimage) of PRPs
+// Other contracts must use it to encode/decode PRPs in UTXOs.
+// Calculated as:
+// uint160(
+//   uint256(keccak256(abi.encode(uint256(PRP_VIRTUAL_CONTRACT), uint256(0)))) >> 96
+// )`
+uint160 constant PRP_ZASSET_ID = 0x000a1ebe17885f8603834b4c02054ce84cedf8756e;

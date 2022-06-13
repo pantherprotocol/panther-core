@@ -5,6 +5,7 @@ pragma solidity ^0.8.4;
 import "../PantherPoolV0.sol";
 import "../Vault.sol";
 import "../common/Types.sol";
+import "./FakePrpGrantor.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
@@ -51,7 +52,8 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
         PantherPoolV0(
             address(this),
             timeNow() + 1,
-            address(vault = new Vault(address(this))) // This mock is an owner of Vault
+            address(vault = new Vault(address(this))), // This mock is an owner of Vault
+            address(new FakePrpGrantor())
         )
     {
         _owner = msg.sender;

@@ -8,8 +8,9 @@ contract MockPantherPoolV0 is PantherPoolV0 {
     constructor(
         address _owner,
         uint256 exitTime,
-        address vault
-    ) PantherPoolV0(_owner, exitTime, vault) {}
+        address vault,
+        address prpGrantor
+    ) PantherPoolV0(_owner, exitTime, vault, prpGrantor) {}
 
     event RESULT_processDepositedAsset(uint160 zAssetId, uint96 scaledAmount);
 

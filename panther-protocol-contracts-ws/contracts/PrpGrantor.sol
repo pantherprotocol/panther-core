@@ -2,33 +2,42 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import "../common/ErrorMsgs.sol";
+import "./common/ErrorMsgs.sol";
+import "./common/ImmutableOwnable.sol";
+import "./interfaces/IPrpGrantor.sol";
 
 /**
  * @title PrpGrantor
  * @notice It registers issuing and redemption of PRP-nominated "grants"
- * @dev Authorized "curators" may call `grant` on this contract to issue a "grant" of a specified
- * "grant type" to a "grantee" .
- * Grants are nominated in Panther Reward Points ("PRP"). The amount of a grant is defined by its
- * type. Every grant increases the amount (in PRPs) of "unused grants" for a grantee.
- * The child contract (i.e. the `PantherPool`) calls `useGrant` to account for redemption ("use")
- * of grants (i.e. to decrease the unused grant amount for a grantee).
- * Granted amounts are supposed to be "redeemed" when the Panther Protocol Multi-Asset Shielded
- * Pool (the "MASP") creates for a user a new UTXO, nominated in PRPs, in the "redeemed" amount.
+ * @dev The owner may add (enable) new "grant types" or remove (disable) existing types. For every
+ * type, the owner specifies (authorizes) the account of the "curator" and the amount of the grant
+ * (in Panther Reward Points, aka "PRPs").
+ * A curator calls `issueGrant` on this contract to issue a "grant" of a certain type to a grantee.
+ * The curator must be authorized by the owner for this grant type. The `issueGrant` call increases
+ * the amount (in PRPs) of "unused grants" for a grantee.
+ * The authorized "processor" (one for all grant types) may call `redeemGrant` to account for usage
+ * (i.e.  redemption) of grants. Every `redeemGrant` call decreases the amount of unused grants for
+ * a grantee.
+ * Assumed:
+ * - the "processor" is the `PantherPool` contract
+ * - a grant is redeemed when the PantherPool creates a PRP-nominated UTXO for a grantee.
  */
-abstract contract PrpGrantor {
+contract PrpGrantor is ImmutableOwnable, IPrpGrantor {
+    // The contract is supposed to run behind a proxy DELEGATECALLing it.
+    // On upgrades, adjust `__gap` to match changes of the storage layout.
+    uint256[50] private __gap;
+
     // solhint-disable var-name-mixedcase
 
     // Max amount in PRPs
-    uint256 internal constant MAX_PRP_GRANT = 2**64;
+    uint256 private constant MAX_PRP_GRANT = 2**64;
 
     // To distinguish "undefined" from "zero"
-    uint256 internal constant ZERO_AMOUNT = 1;
+    uint256 private constant ZERO_AMOUNT = 1;
     uint256 private constant UNDEF_AMOUNT = 0;
 
-    // zAssetId (i.e. "token" in the UTXO preimage) of PRPs
-    // Other contracts must use it to encode/decode PRPs in UTXOs.
-    uint160 public immutable PRP_ZASSET_ID;
+    // Account authorized to call `redeemGrant`
+    address private immutable GRANT_PROCESSOR;
 
     // solhint-enable var-name-mixedcase
 
@@ -39,45 +48,42 @@ abstract contract PrpGrantor {
     /// @dev mapping from "grantee" to the PRP amount that may be "used"
     mapping(address => uint256) private _unusedPrpGrants;
 
-    /// @notice Total amount (in PRPs) of booked grants
-    uint256 public totalPrpGranted;
-    /// @notice Total amount (in PRPs) of used grants
-    uint256 public totalUsedPrpGrants;
+    // Total amount (in PRPs) of grants issued so far
+    uint256 public override totalGrantsIssued;
 
-    /// @notice PRP grant issued
-    event PrpGrantIssued(
-        bytes4 indexed grantType,
-        address grantee,
-        uint256 prpAmount
-    );
-    /// @notice PRP grant used (redeemed)
-    event PrpGrantUsed(address grantee, uint256 prpAmount);
-    /// @notice PRP grant burnt
-    event PrpGrantBurnt(address grantee, uint256 prpAmount);
+    // Total amount (in PRPs) of grants redeemed so far
+    // (excluding burnt grants amounts)
+    uint256 public override totalGrantsRedeemed;
 
-    /// @dev New grant type added
-    event PrpGrantEnabled(address curator, bytes4 grantType, uint256 prpAmount);
-    /// @dev Existing grant type disabled
-    event PrpGrantDisabled(address curator, bytes4 grantType);
-
-    // Proxy-friendly - it does not change the storage
-    constructor(uint160 prpZAssetId) {
-        PRP_ZASSET_ID = prpZAssetId;
+    constructor(address _owner, address _grantProcessor)
+        ImmutableOwnable(_owner)
+    {
+        // As it runs behind the DELEGATECALL'ing proxy, initialization of
+        // immutable "vars" only is allowed in the constructor
+        require(_grantProcessor != address(0), ERR_ZERO_PROCESSOR_ADDR);
+        GRANT_PROCESSOR = _grantProcessor;
     }
 
-    /// @notice It returns the total amount (in PRPs) of unused grants for the given grantee
-    function getUnusedGrant(address grantee)
+    /// @inheritdoc IPrpGrantor
+    function grantProcessor() external view override returns (address) {
+        return GRANT_PROCESSOR;
+    }
+
+    /// @inheritdoc IPrpGrantor
+    function getUnusedGrantAmount(address grantee)
         external
         view
+        override
         returns (uint256 prpAmount)
     {
         return _unusedPrpGrants[grantee];
     }
 
-    /// @notice It returns the PRP amount of the grant specified by a given curator and type
+    /// @inheritdoc IPrpGrantor
     function getGrantAmount(address curator, bytes4 grantType)
         external
         view
+        override
         returns (uint256 prpAmount)
     {
         prpAmount = _prpGrantsAmounts[curator][grantType];
@@ -87,12 +93,10 @@ abstract contract PrpGrantor {
         }
     }
 
-    /// @notice Increase the "unused grants" amount (in PRPs) of the given grantee by the amount
-    /// defined by the given "grant type"
-    /// @return prpAmount The amount (in PRPs) of the grant
-    /// @dev An authorized "curator" may call with the enabled (added) "grant type" only
-    function grant(address grantee, bytes4 grantType)
+    /// @inheritdoc IPrpGrantor
+    function issueGrant(address grantee, bytes4 grantType)
         external
+        override
         nonZeroGrantType(grantType)
         returns (uint256 prpAmount)
     {
@@ -111,43 +115,43 @@ abstract contract PrpGrantor {
                 _revertOnTooBigPrpAmount(newBalance);
                 _unusedPrpGrants[grantee] = newBalance;
                 // Can't overflow since grants amounts are limited
-                totalPrpGranted += prpAmount;
+                totalGrantsIssued += prpAmount;
             }
         }
         emit PrpGrantIssued(grantType, grantee, prpAmount);
     }
 
-    /// @notice Burn unused grants for the msg.sender in the specified PRP amount
-    function burnGrant(uint256 prpAmount) external {
+    /// @inheritdoc IPrpGrantor
+    function burnGrant(uint256 prpAmount) external override {
         uint256 oldBalance = _unusedPrpGrants[msg.sender];
         require(oldBalance >= prpAmount, ERR_LOW_GRANT_BALANCE);
         unchecked {
             _unusedPrpGrants[msg.sender] = oldBalance - prpAmount;
-            totalPrpGranted -= prpAmount;
+            totalGrantsIssued -= prpAmount;
         }
         emit PrpGrantBurnt(msg.sender, prpAmount);
     }
 
-    /// @dev Account for redemption of "unused grants" in the given PRP amount for the given grantee
-    /// The child contract calls it when the MASP creates a new UTXO in the amount being redeemed
-    function useGrant(address grantee, uint256 prpAmount) internal {
+    /// @inheritdoc IPrpGrantor
+    function redeemGrant(address grantee, uint256 prpAmount) external override {
+        require(msg.sender == GRANT_PROCESSOR, ERR_UNAUTHORIZED_CALL);
         uint256 oldBalance = _unusedPrpGrants[grantee];
         require(oldBalance >= prpAmount, ERR_LOW_GRANT_BALANCE);
         unchecked {
             _unusedPrpGrants[grantee] = oldBalance - prpAmount;
-            totalUsedPrpGrants += prpAmount;
+            totalGrantsRedeemed += prpAmount;
         }
-        emit PrpGrantUsed(grantee, prpAmount);
+        emit PrpGrantRedeemed(grantee, prpAmount);
     }
 
     /// @dev Add a new "grant type", with the specified amount (in PRPs) of the grant, and
-    /// allow the specified "curator" to issue grants of this type (by calling `grant`).
-    /// It's supposed to be called by a privileged account ("owner") only.
+    /// allow the specified "curator" to issue grants of this type (by calling `issueGrant`).
+    /// Only the owner may call.
     function enableGrantType(
         address curator,
         bytes4 grantType,
         uint256 prpAmount
-    ) internal nonZeroGrantType(grantType) {
+    ) external onlyOwner nonZeroGrantType(grantType) {
         require(curator != address(0), ERR_ZERO_CURATOR_ADDR);
         _revertOnTooBigPrpAmount(prpAmount);
         require(
@@ -159,9 +163,10 @@ abstract contract PrpGrantor {
     }
 
     /// @dev Disable previously enabled "grant type".
-    /// It's supposed to be called by a privileged account ("owner") only.
+    /// Only the owner may call.
     function disableGrantType(address curator, bytes4 grantType)
-        internal
+        external
+        onlyOwner
         nonZeroGrantType(grantType)
     {
         _revertOnUndefPrpAmount(_prpGrantsAmounts[curator][grantType]);
@@ -183,8 +188,4 @@ abstract contract PrpGrantor {
     function _revertOnUndefPrpAmount(uint256 prpAmount) private pure {
         require(prpAmount != UNDEF_AMOUNT, ERR_UNDEF_GRANT);
     }
-
-    // The contract is supposed to run behind a proxy DELEGATECALLing it.
-    // For compatibility on upgrades, decrease `__gap` if new variables added.
-    uint256[50] private __gap;
 }

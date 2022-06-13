@@ -3,32 +3,18 @@
 pragma solidity ^0.8.4;
 
 import "../PantherPoolV0.sol";
-import "../Vault.sol";
-import "../common/Types.sol";
-import "hardhat/console.sol";
-
-contract MockVault is IVault {
-    event DebugData(LockData data);
-
-    function lockAsset(LockData calldata data) external override {
-        emit DebugData(data);
-    }
-
-    function unlockAsset(LockData memory data) external override {
-        emit DebugData(data);
-    }
-}
+import "./FakeVault.sol";
+import "./FakePrpGrantor.sol";
 
 contract PantherPoolV0Tester is PantherPoolV0 {
-    MockVault vault;
-
-    address _owner;
+    address private immutable _owner;
 
     constructor()
         PantherPoolV0(
             address(this),
             timeNow() + 1,
-            address(vault = new MockVault())
+            address(new FakeVault()),
+            address(new FakePrpGrantor())
         )
     {
         _owner = msg.sender;

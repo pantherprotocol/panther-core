@@ -3,16 +3,20 @@ import {BigNumber, utils} from 'ethers';
 import {getLocale} from './i18n';
 import {roundDown} from './numbers';
 
-export const formatTime = (date: number | null): string | null => {
+export const formatTime = (
+    date: number | null,
+    options?: {style?: 'long' | 'full' | 'medium' | 'short'},
+): string | null => {
     if (!date) return null;
     const localDate = new Date(date);
+    const style = options?.style ?? 'long';
     return (
         localDate.toLocaleDateString(getLocale(), {
-            dateStyle: 'long',
+            dateStyle: style,
         }) +
         ' ' +
         localDate.toLocaleTimeString(getLocale(), {
-            timeStyle: 'long',
+            timeStyle: style,
         })
     );
 };

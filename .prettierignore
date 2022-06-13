@@ -38,8 +38,8 @@ plantuml.skin
 .env.*
 circuits/circuits/*/*.circom
 circuits/circuits/*.circom
-circuits/test/*.tar.gz
-circuits/test/*.info
+circuits/test/data/*.tar.gz
+circuits/test/data/*.info
+circuits/test/data/*.keys
 circuits/test/*.sh
-circuits/test/*.keys
 circuits/test/circuits/*.circom

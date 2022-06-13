@@ -5,6 +5,7 @@ https://github.com/appliedzkp/maci/blob/master/crypto/ts/index.ts
 
 import crypto from 'crypto';
 
+import {bigIntToBuffer} from '@panther-core/crypto/lib/bigint-conversions';
 import createBlakeHash from 'blake-hash';
 import {babyjub, eddsa, poseidon} from 'circomlibjs';
 import * as ff from 'ffjavascript';
@@ -129,14 +130,6 @@ const generateRandomness = (): bigint => {
         }
     }
     return randomness;
-};
-
-const bigIntToBuffer = (i: BigInt): Buffer => {
-    let hexStr = i.toString(16);
-    while (hexStr.length < 64) {
-        hexStr = '0' + hexStr;
-    }
-    return Buffer.from(hexStr, 'hex');
 };
 
 export const generateRandomBabyJubValue = (): bigint => {

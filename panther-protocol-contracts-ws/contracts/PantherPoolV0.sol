@@ -297,15 +297,18 @@ contract PantherPoolV0 is
             return (PRP_ZASSET_ID, safe96(extAmount));
         }
 
-        // If it comes here, a supported token (asset) is being deposited
-
+        // At this point, a non-zero deposit of a real asset (token) expected
         ZAsset memory asset;
         (asset, zAssetId) = getZAssetAndId(token, tokenId);
         require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);
 
+        // Scale extAmount, if asset.scale provides for it
         scaledAmount = scaleAmount(extAmount, asset.scale);
-        // revert, if extAmount gets scaled to zero
-        require(scaledAmount != 0, ERR_TOO_SMALL_AMOUNT);
+        if (scaledAmount != extAmount) {
+            // Ensure that extAmount scales w/o a reminder
+            uint256 restoredAmount = unscaleAmount(scaledAmount, asset.scale);
+            require(extAmount == restoredAmount, ERR_CANT_BE_SCALED);
+        }
 
         IVault(VAULT).lockAsset(
             LockData(
@@ -317,7 +320,6 @@ contract PantherPoolV0 is
             )
         );
 
-        // Scale extAmount, if asset.scale provides for it
-        return (zAssetId, scaleAmount(extAmount, asset.scale));
+        return (zAssetId, scaledAmount);
     }
 }

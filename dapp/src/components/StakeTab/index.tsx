@@ -21,7 +21,7 @@ import {
     termsSelector,
 } from '../../redux/slices/stakeTerms';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
-import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
+import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {
     zkpTokenBalanceSelector,
@@ -108,7 +108,7 @@ export default function StakeTab() {
             dispatch(getTotalStaked, context);
             dispatch(getZkpStakedBalance, context);
             dispatch(getZkpTokenBalance, context);
-            dispatch(getUnclaimedRewards, context);
+            dispatch(getTotalUnclaimedClassicRewards, context);
         },
         [
             library,

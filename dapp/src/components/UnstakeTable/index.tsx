@@ -15,7 +15,7 @@ import {BigNumber, constants} from 'ethers';
 import {formatCurrency, formatTime} from '../../lib/format';
 import {useAppDispatch} from '../../redux/hooks';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
-import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
+import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 import {chainHasAdvancedStaking} from '../../services/contracts';
@@ -85,7 +85,7 @@ export default function UnstakeTable() {
             await unstake(library, chainId, account, stakeID, data, false);
             dispatch(getTotalStaked, context);
             dispatch(getZkpStakedBalance, context);
-            dispatch(getUnclaimedRewards, context);
+            dispatch(getTotalUnclaimedClassicRewards, context);
             dispatch(getZkpTokenBalance, context);
             fetchStakedData();
         },

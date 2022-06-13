@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import {useWeb3React} from '@web3-react/core';
 
 import {useAppDispatch} from '../../redux/hooks';
-import {resetUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
+import {resetUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
 import {resetZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {resetZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 
@@ -20,7 +20,7 @@ export const LogoutButton = () => {
             deactivate();
             dispatch(resetZkpTokenBalance);
             dispatch(resetZkpStakedBalance);
-            dispatch(resetUnclaimedRewards);
+            dispatch(resetUnclaimedClassicRewards);
         }
     }, [active, chainId, deactivate, dispatch]);
 

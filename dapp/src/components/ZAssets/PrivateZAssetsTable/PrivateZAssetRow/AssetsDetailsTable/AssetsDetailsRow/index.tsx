@@ -5,7 +5,7 @@ import {Button, Typography, Box} from '@mui/material';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 
 import rightSideArrow from '../../../../../../images/right-arrow-icon.svg';
 import {formatCurrency, formatTime} from '../../../../../../lib/format';
@@ -24,7 +24,7 @@ const AssetsDetailsRow = (props: {rewards: AdvancedStakeRewards}) => {
     const dispatch = useAppDispatch();
 
     const balance = formatCurrency(BigNumber.from(props.rewards.zZKP));
-    const prp = formatCurrency(BigNumber.from(props.rewards.PRP));
+    const prp = formatCurrency(utils.parseEther(props.rewards.PRP));
     const lockedTill = useAppSelector(
         termsSelector(chainId!, StakeType.Advanced, 'lockedTill'),
     );

@@ -6,7 +6,7 @@ import blurReducer from './slices/blur';
 import chainBalanceReducer from './slices/chainBalance';
 import stakeTermsReducer from './slices/stakeTerms';
 import totalStakedReducer from './slices/totalStaked';
-import unclaimedStakesRewardsReducer from './slices/unclaimedStakesRewards';
+import totalUnclaimedClassicRewardsReducer from './slices/totalUnclaimedClassicRewards';
 import zkpMarketPriceReducer from './slices/zkpMarketPrice';
 import zkpStakedBalanceReducer from './slices/zkpStakedBalance';
 import zkpTokenBalanceReducer from './slices/zkpTokenBalance';
@@ -20,7 +20,7 @@ export const store = configureStore({
         zkpTokenBalance: zkpTokenBalanceReducer,
         zkpStakedBalance: zkpStakedBalanceReducer,
         advancedStakeInputRewards: advancedStakeInputRewardsReducer,
-        unclaimedStakesRewards: unclaimedStakesRewardsReducer,
+        totalUnclaimedClassicRewards: totalUnclaimedClassicRewardsReducer,
         advancedStakesRewards: advancedStakesRewardsReducer,
         stakeTerms: stakeTermsReducer,
     },

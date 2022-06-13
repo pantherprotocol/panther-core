@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import {Box, Typography} from '@mui/material';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 
 import {formatCurrency, formatUSD} from '../../../lib/format';
 import {fiatPrice} from '../../../lib/tokenPrice';
@@ -35,8 +35,12 @@ export default function PrivateBalance() {
                     {totalPrice ? formatUSD(totalPrice, {decimals: 2}) : '-'}
                 </Typography>
                 <Typography className="zkp-rewards">
-                    {unclaimedPRP ? formatCurrency(unclaimedPRP) : '-'} Total
-                    Privacy Reward Points (PRP)
+                    {unclaimedPRP
+                        ? formatCurrency(
+                              utils.parseEther(unclaimedPRP.toString()),
+                          )
+                        : '-'}{' '}
+                    Total Privacy Reward Points (PRP)
                 </Typography>
             </Box>
             {/* <Box>

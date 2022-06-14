@@ -1,59 +1,93 @@
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
+import {poseidon} from 'circomlibjs';
 import {BigNumber, constants} from 'ethers';
 
 import {getAdvancedStakingReward} from '../../services/staking';
 import {AdvancedStakeRewardsResponse} from '../../services/subgraph';
-import {AdvancedStakeRewards, AdvancedStakeTokenIDs} from '../../types/staking';
+import {
+    AdvancedStakeRewards,
+    AdvancedStakeTokenIDs,
+    UTXOStatus,
+} from '../../types/staking';
 import {RootState} from '../store';
 
+export interface AdvancedStakeRewardsById {
+    [id: string]: AdvancedStakeRewards;
+}
+
+export interface AdvancedStakeRewardsByHashedAddressAndById {
+    [addressHex: string]: AdvancedStakeRewardsById;
+}
 interface AdvancedStakesRewardsState {
-    value: AdvancedStakeRewards[];
+    value: AdvancedStakeRewardsByHashedAddressAndById;
     status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: AdvancedStakesRewardsState = {
-    value: [],
+    value: {},
     status: 'idle',
 };
 
+function shortAddressHash(address: string): string {
+    // keyWidth is an arbitrary number just to ensure no collisions of hexed
+    // addresses for one user
+    const keyWidth = 10;
+    return poseidon([address]).toString(16).slice(-keyWidth);
+}
+
 export const getAdvancedStakesRewards = createAsyncThunk(
-    'advancedStakesRewards/get',
+    'advancedStakesRewards',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
-    ): Promise<AdvancedStakeRewards[]> => {
+        {getState},
+    ): Promise<[string, AdvancedStakeRewardsById] | undefined> => {
         const {account} = context;
-        if (!account) return [];
+        if (!account) return;
 
         let rewards;
         try {
             rewards = await getAdvancedStakingReward(account);
         } catch (error) {
             console.error(error);
-            return [];
+            return;
         }
 
-        if (!rewards) return [];
-        if (!rewards.staker) return [];
+        if (!rewards) return;
+        if (!rewards.staker) return;
 
-        const advancedRewards: AdvancedStakeRewards[] =
-            rewards.staker.advancedStakingRewards.map(
-                (r: AdvancedStakeRewardsResponse) => {
-                    return {
-                        id: r.id,
-                        creationTime: r.creationTime.toString(),
-                        commitments: r.commitments,
-                        utxoData: r.utxoData,
-                        utxoIsSpent: false,
-                        zZKP: r.zZkpAmount,
-                        PRP: r.prpAmount,
-                    };
-                },
-            );
+        const state = getState() as RootState;
+        const currentAdvancedRewards =
+            advancedStakesRewardsSelector(account)(state);
+        const rewardsFetchedFromSubgraph: AdvancedStakeRewardsById = {};
 
-        // TODO: check if Nullifier spent for each adv. stake
-        return advancedRewards;
+        rewards.staker.advancedStakingRewards.forEach(
+            (r: AdvancedStakeRewardsResponse) => {
+                rewardsFetchedFromSubgraph[r.id] = {
+                    id: r.id,
+                    creationTime: r.creationTime.toString(),
+                    commitments: r.commitments,
+                    utxoData: r.utxoData,
+                    utxoStatus: UTXOStatus.UNDEFINED,
+                    zZKP: r.zZkpAmount,
+                    PRP: r.prpAmount,
+                };
+            },
+        );
+
+        // merging the state in a such way that if previous rewards existed,
+        // they will not be overwritten by the new rewards fetched from the
+        // subgraph.
+        return [
+            // hash of the account address to increase privacy as we store
+            // advanced rewards in the local storage
+            shortAddressHash(account),
+            {
+                ...(rewardsFetchedFromSubgraph as AdvancedStakeRewardsById),
+                ...(currentAdvancedRewards as AdvancedStakeRewardsById),
+            },
+        ];
     },
 );
 
@@ -65,11 +99,12 @@ export const advancedStakesRewardsSlice = createSlice({
             state.value = initialState.value;
             state.status = initialState.status;
         },
-        markRewardsAsSpent: (state, action) => {
-            const id = action.payload;
-            const reward = state.value.find(r => r.id === id);
+        updateUTXOStatus: (state, action) => {
+            const [address, id, status] = action.payload;
+            const addrHash = shortAddressHash(address);
+            const reward = state.value?.[addrHash]?.[id];
             if (reward) {
-                reward.utxoIsSpent = true;
+                reward.utxoStatus = status;
             }
         },
     },
@@ -80,26 +115,48 @@ export const advancedStakesRewardsSlice = createSlice({
             })
             .addCase(getAdvancedStakesRewards.fulfilled, (state, action) => {
                 state.status = 'idle';
-                state.value = action.payload;
+                if (action.payload) {
+                    const [addressHex, rewards] = action.payload;
+                    state.value[addressHex] = rewards;
+                }
             })
             .addCase(getAdvancedStakesRewards.rejected, state => {
                 state.status = 'failed';
-                state.value = [];
             });
     },
 });
 
 export const advancedStakesRewardsSelector = (
-    state: RootState,
-): AdvancedStakeRewards[] => {
-    return state.advancedStakesRewards.value;
+    address: string | null | undefined,
+): ((state: RootState) => AdvancedStakeRewardsById) => {
+    return (state: RootState): AdvancedStakeRewardsById => {
+        if (!address) return {};
+
+        const rewardsByAddressAndId = (
+            state.advancedStakesRewards as AdvancedStakesRewardsState
+        ).value as AdvancedStakeRewardsByHashedAddressAndById;
+
+        const addrHash = shortAddressHash(address);
+        return rewardsByAddressAndId?.[addrHash] ?? {};
+    };
 };
 
 export function totalSelector(
+    address: string | null | undefined,
     tid: AdvancedStakeTokenIDs,
-): (state: RootState) => BigNumber | null {
-    return (state: RootState): BigNumber | null => {
-        return advancedStakesRewardsSelector(state)
+): (state: RootState) => BigNumber {
+    return (state: RootState): BigNumber => {
+        if (!address) return constants.Zero;
+
+        const rewards = advancedStakesRewardsSelector(address)(state);
+        if (!rewards) return constants.Zero;
+
+        return Object.values(rewards)
+            .filter((rewards: AdvancedStakeRewards) =>
+                [UTXOStatus.UNDEFINED, UTXOStatus.UNSPENT].includes(
+                    rewards.utxoStatus,
+                ),
+            )
             .map((reward: AdvancedStakeRewards) => {
                 return reward[tid];
             })
@@ -107,7 +164,7 @@ export function totalSelector(
     };
 }
 
-export const {resetAdvancedStakesRewards, markRewardsAsSpent} =
+export const {resetAdvancedStakesRewards, updateUTXOStatus} =
     advancedStakesRewardsSlice.actions;
 
 export default advancedStakesRewardsSlice.reducer;

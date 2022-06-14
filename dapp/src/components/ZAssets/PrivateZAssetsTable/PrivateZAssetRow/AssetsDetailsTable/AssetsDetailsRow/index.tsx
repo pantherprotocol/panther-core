@@ -10,7 +10,7 @@ import {BigNumber, utils} from 'ethers';
 import rightSideArrow from '../../../../../../images/right-arrow-icon.svg';
 import {formatCurrency, formatTime} from '../../../../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../../../../redux/hooks';
-import {markRewardsAsSpent} from '../../../../../../redux/slices/advancedStakesRewards';
+import {updateUTXOStatus} from '../../../../../../redux/slices/advancedStakesRewards';
 import {termsSelector} from '../../../../../../redux/slices/stakeTerms';
 import {exit} from '../../../../../../services/pool';
 import {AdvancedStakeRewards, StakeType} from '../../../../../../types/staking';
@@ -30,7 +30,7 @@ const AssetsDetailsRow = (props: {rewards: AdvancedStakeRewards}) => {
     );
 
     const redeem = useCallback(async () => {
-        const utxoIsSpent = await exit(
+        const utxoStatus = await exit(
             library,
             account as string,
             chainId as number,
@@ -39,9 +39,7 @@ const AssetsDetailsRow = (props: {rewards: AdvancedStakeRewards}) => {
             Number(props.rewards.creationTime),
             props.rewards.commitments,
         );
-        if (utxoIsSpent) {
-            dispatch(markRewardsAsSpent, props.rewards.id);
-        }
+        dispatch(updateUTXOStatus, [account, props.rewards.id, utxoStatus]);
     }, [dispatch, library, account, chainId, props.rewards]);
 
     const isRedemptionPossible =

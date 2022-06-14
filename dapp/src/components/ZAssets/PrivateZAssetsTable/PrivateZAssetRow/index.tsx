@@ -7,7 +7,8 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {BigNumber, utils} from 'ethers';
+import {useWeb3React} from '@web3-react/core';
+import {utils} from 'ethers';
 
 import pantherIcon from '../../../../images/zAssets-panther-logo.svg';
 import {formatCurrency} from '../../../../lib/format';
@@ -24,14 +25,15 @@ import AssetsDetails from './AssetsDetailsTable';
 import './styles.scss';
 
 export default function PrivateZAssetRow() {
+    const {account} = useWeb3React();
     const zkpPrice = useAppSelector(marketPriceSelector);
     const unclaimedZZKP = useAppSelector(
-        totalSelector(StakingRewardTokenID.zZKP),
+        totalSelector(account, StakingRewardTokenID.zZKP),
     );
     const unclaimedPRP = useAppSelector(
-        totalSelector(StakingRewardTokenID.PRP),
+        totalSelector(account, StakingRewardTokenID.PRP),
     );
-    const balanceValue = calcUSDPrice(BigNumber.from(unclaimedZZKP), zkpPrice);
+    const balanceValue = calcUSDPrice(unclaimedZZKP, zkpPrice);
 
     const [open, setOpen] = useState(true);
     return (

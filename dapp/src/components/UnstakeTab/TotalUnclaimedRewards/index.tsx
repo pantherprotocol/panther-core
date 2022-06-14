@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {Box, Typography} from '@mui/material';
+import {useWeb3React} from '@web3-react/core';
 import {constants} from 'ethers';
 
 import {formatCurrency} from '../../../lib/format';
@@ -12,11 +13,12 @@ import {StakingRewardTokenID} from '../../../types/staking';
 import './styles.scss';
 
 const TotalUnclaimedRewards = () => {
+    const {account} = useWeb3React();
     const zkpRewardsBalance = useAppSelector(
         totalUnclaimedClassicRewardsSelector,
     );
     const zZkpRewardsBalance = useAppSelector(
-        totalSelector(StakingRewardTokenID.zZKP),
+        totalSelector(account, StakingRewardTokenID.zZKP),
     );
     const zkpGreaterThanZero =
         zkpRewardsBalance && zkpRewardsBalance.gt(constants.Zero);

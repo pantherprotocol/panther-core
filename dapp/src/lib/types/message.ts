@@ -1,5 +1,5 @@
 export interface ICiphertext {
-    iv: string;
+    iv: Uint8Array;
     data: Uint8Array;
 }
 

@@ -4,6 +4,7 @@ export type {
     PublicKey,
     PublicKeyX,
     EcdhSharedKey,
+    PackedEcdhSharedKey,
 } from './keypair';
 export type {Plaintext, ICiphertext} from './message';
 export type {

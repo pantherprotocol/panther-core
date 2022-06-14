@@ -33,19 +33,24 @@ interface MerkleProof {
     leaf: bigint;
 }
 
-export async function generateMerkleProof(
+export function generateMerkleProof(
     leafId: bigint,
     tree: TriadMerkleTree,
-): Promise<[MerkleProof, number]> {
-    const [treeId, triadLeafIndex] = leafIdToTreeIdAndTriadId(leafId);
-    const root = tree.root ? toBytes32(tree.root) : 'null';
-    console.debug(
-        `Generating Merkle proof for leafId=${leafId} treeId=${treeId} ` +
-            `triadLeafIndex=${triadLeafIndex} root=${root}`,
+): [MerkleProof, number] {
+    const [treeId, triadLeafIndex] = leafIdToTreeIdAndTriadId(
+        leafId,
+        tree.depth,
     );
-    const path = tree.genMerklePath(triadLeafIndex);
-    assert(TriadMerkleTree.verifyMerklePath(path, poseidon2or3));
-    return [path, treeId];
+    const root = tree.root ? toBytes32(tree.root) : 'null';
+    const proof = tree.genMerklePath(triadLeafIndex);
+    console.debug(
+        `Generating Merkle proof for leafId=${leafId}. Got treeId=${treeId} ` +
+            `triadLeafIndex=${triadLeafIndex} leafHex=${toBytes32(
+                proof.leaf,
+            )} root=${root}`,
+    );
+    assert(TriadMerkleTree.verifyMerklePath(proof, poseidon2or3));
+    return [proof, treeId];
 }
 
 const calcInitialVals = (

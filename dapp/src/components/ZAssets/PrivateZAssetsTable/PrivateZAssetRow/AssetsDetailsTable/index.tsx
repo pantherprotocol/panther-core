@@ -32,11 +32,14 @@ const AssetsDetailsTable = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {advancedStakesRewards.map(
-                        (asset: AdvancedStakeRewards, key: number) => (
-                            <AssetsDetailsRow reward={asset} key={key} />
-                        ),
-                    )}
+                    {advancedStakesRewards
+                        .filter(
+                            (rewards: AdvancedStakeRewards) =>
+                                !rewards.utxoIsSpent,
+                        )
+                        .map((rewards: AdvancedStakeRewards, key: number) => (
+                            <AssetsDetailsRow rewards={rewards} key={key} />
+                        ))}
                 </TableBody>
             </Table>
         </Box>

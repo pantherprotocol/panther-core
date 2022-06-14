@@ -8,11 +8,14 @@ import {
     deriveKeypairFromSignature,
     derivePrivateKeyFromSignature,
     extractSecretsPair,
+    generatePublicKey,
     generateRandomBabyJubValue,
+    isChildPubKeyValid,
     multiplyScalars,
 } from '../../src/lib/keychain';
 
 describe('Keychain', () => {
+    const bigOne = BigInt(1);
     const randomAccount = Wallet.createRandom();
     let signature: string;
 
@@ -38,27 +41,27 @@ describe('Keychain', () => {
 
         it('should throw error if signature is not valid', () => {
             expect(() => extractSecretsPair('invalid signature')).toThrow(
-                "Keychain error: Tried to create keypair from signature of length '17'",
+                "Tried to create keypair from signature of length '17'",
             );
         });
 
         it('should throw error if signature is null', () => {
             expect(() => extractSecretsPair('')).toThrow(
-                'Keychain error: Signature must be provided',
+                'Signature must be provided',
             );
         });
 
         it('should throw error if signature is not starting with 0x', () => {
             expect(() => extractSecretsPair('0'.repeat(132))).toThrow(
-                'Keychain error: Tried to create keypair from signature without 0x prefix',
+                'Tried to create keypair from signature without 0x prefix',
             );
         });
     });
 
-    describe('Keypair', () => {
-        it('should be smaller than snark FIELD_SIZE', () => {
+    describe('Private and public key of keypair derived from signature', () => {
+        it('should be smaller within babyjubjub and SNARK filed sizes, respectively', () => {
             const keypair = deriveKeypairFromSignature(signature);
-            expect(keypair.privateKey < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair.privateKey < babyjub.subOrder).toBeTruthy();
             expect(keypair.publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
             expect(keypair.publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
         });
@@ -71,10 +74,10 @@ describe('Keychain', () => {
         });
     });
 
-    describe('Random keypair', () => {
-        it('should be smaller than snark FIELD_SIZE', () => {
+    describe('Private and public key of random keypair', () => {
+        it('should be smaller within babyjubjub and SNARK filed sizes, respectively', () => {
             const keypair = deriveKeypairFromSeed();
-            expect(keypair.privateKey < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair.privateKey < babyjub.subOrder).toBeTruthy();
             expect(keypair.publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
             expect(keypair.publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
         });
@@ -113,6 +116,131 @@ describe('Keychain', () => {
             it('r(sB) == s(rB)', () => {
                 expect(s_rB[0].toString()).toEqual(r_sB[0].toString());
                 expect(s_rB[1].toString()).toEqual(r_sB[1].toString());
+            });
+        });
+    });
+
+    describe('Check the field of definition', () => {
+        describe('Private key outside babyjubjub filed', () => {
+            describe('multiplication of scalars', () => {
+                const r = generateRandomBabyJubValue();
+                it('should throw error if scalar a is outside BabyJubJub', () => {
+                    expect(() => multiplyScalars(SNARK_FIELD_SIZE, r)).toThrow(
+                        'Scalar a is not in the BabyJubJub field',
+                    );
+                });
+                it('should throw error if scalar b is outside BabyJubJub', () => {
+                    expect(() => multiplyScalars(r, SNARK_FIELD_SIZE)).toThrow(
+                        'Scalar b is not in the BabyJubJub field',
+                    );
+                });
+            });
+            it('should throw error during generation of public key', () => {
+                expect(() => generatePublicKey(SNARK_FIELD_SIZE)).toThrow(
+                    'privateKey is not in the BabyJubJub field',
+                );
+            });
+        });
+
+        describe('Public key outside BN254 filed', () => {
+            const r = generateRandomBabyJubValue();
+            const pubKeyWithinSnark = [
+                SNARK_FIELD_SIZE - bigOne,
+                SNARK_FIELD_SIZE - bigOne,
+            ];
+            const pubKeyXNotWithinSnark = [
+                SNARK_FIELD_SIZE + bigOne,
+                SNARK_FIELD_SIZE - bigOne,
+            ];
+            const pubKeyYotWithinSnark = [
+                SNARK_FIELD_SIZE - bigOne,
+                SNARK_FIELD_SIZE + bigOne,
+            ];
+            describe('validity check in isChildPubKeyValid()', () => {
+                describe('Child public key', () => {
+                    it('should throw error for X coordinate', () => {
+                        expect(() =>
+                            isChildPubKeyValid(
+                                pubKeyXNotWithinSnark,
+                                {privateKey: r, publicKey: pubKeyWithinSnark},
+                                r,
+                            ),
+                        ).toThrow(
+                            'Child public key X is not in the BN254 field',
+                        );
+                    });
+                    it('should throw error for Y coordinate', () => {
+                        expect(() =>
+                            isChildPubKeyValid(
+                                pubKeyYotWithinSnark,
+                                {privateKey: r, publicKey: pubKeyWithinSnark},
+                                r,
+                            ),
+                        ).toThrow(
+                            'Child public key Y is not in the BN254 field',
+                        );
+                    });
+                });
+
+                describe('Root public key', () => {
+                    it('should throw error for root', () => {
+                        expect(() =>
+                            isChildPubKeyValid(
+                                pubKeyWithinSnark,
+                                {
+                                    privateKey: r,
+                                    publicKey: pubKeyXNotWithinSnark,
+                                },
+                                r,
+                            ),
+                        ).toThrow(
+                            'Root public key X is not in the BN254 field',
+                        );
+                    });
+                });
+            });
+        });
+    });
+    describe('Validity check in generateChildPublicKey()', () => {
+        const rootKeypair = deriveKeypairFromSeed();
+        const secret = generateRandomBabyJubValue();
+        const validChildPubKey = babyjub.mulPointEscalar(
+            rootKeypair.publicKey,
+            secret,
+        );
+        const invalidChildPubKeyX = [
+            validChildPubKey[0] + bigOne,
+            validChildPubKey[1],
+        ];
+        const invalidChildPubKeyY = [
+            validChildPubKey[0],
+            validChildPubKey[1] + bigOne,
+        ];
+
+        describe('Child public key', () => {
+            it('should return true if the key is valid', () => {
+                expect(
+                    isChildPubKeyValid(validChildPubKey, rootKeypair, secret),
+                ).toBeTruthy();
+            });
+
+            it('should return false if X of the key is invalid', () => {
+                expect(
+                    isChildPubKeyValid(
+                        invalidChildPubKeyX,
+                        rootKeypair,
+                        secret,
+                    ),
+                ).toBeFalsy();
+            });
+            it('should return false if Y of the key is invalid', () => {
+                expect(
+                    isChildPubKeyValid(
+                        invalidChildPubKeyY,
+                        rootKeypair,
+                        secret,
+                    ),
+                ).toBeFalsy();
             });
         });
     });

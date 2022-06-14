@@ -2,7 +2,8 @@
 // differentiate between master keypair and derived
 // rootkeypair, keypair and derived keypair
 
-export type EcdhSharedKey = bigint;
+export type EcdhSharedKey = bigint[];
+export type PackedEcdhSharedKey = Uint8Array;
 
 export type PrivateKey = bigint;
 export type PublicKeyX = bigint;

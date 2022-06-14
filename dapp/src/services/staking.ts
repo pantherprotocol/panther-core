@@ -10,11 +10,12 @@ import {BigNumber, constants, utils} from 'ethers';
 import {MessageWithTx} from '../components/Common/MessageWithTx';
 import {CONFIRMATIONS_NUM} from '../lib/constants';
 import {parseTxErrorMessage} from '../lib/errors';
+import {getEventFromReceipt} from '../lib/events';
 import {
-    generateEphemeralKeypair,
     generateChildPublicKey,
+    generateRandomBabyJubValue,
+    isChildPubKeyValid,
 } from '../lib/keychain';
-import {getEventFromReceipt} from '../lib/transactions';
 import type {IStakingTypes, Staking} from '../types/contracts/Staking';
 import {StakeRewardBN, StakeTypes} from '../types/staking';
 
@@ -35,7 +36,7 @@ import {env} from './env';
 import {notifyError} from './errors';
 import axios from './http';
 import {deriveRootKeypairs} from './keychain';
-import {encryptEphemeralKey} from './message-encryption';
+import {encryptRandomSecret} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
 import {calculateRewardsForStake} from './rewards';
 import {getAdvancedStakingRewardQuery} from './subgraph';
@@ -104,7 +105,7 @@ export async function generatePermitSignature(
 
 // craftAdvancedStakeData is a helper function to create the bytes data argument for
 // stake() function in Staking.sol smart contract with 'advanced' stake type.
-async function craftAdvancedStakeData(signer: Signer): Promise<string> {
+async function craftAdvancedStakeData(signer: Signer): Promise<string | Error> {
     /*
     returned value is hex string in the following format:
     const advStakeData: string =
@@ -113,13 +114,13 @@ async function craftAdvancedStakeData(signer: Signer): Promise<string> {
         S’[1].x, S’[1].y,
         S’[2].x, S’[2].y,
         IV[0],
-        R[0].x,
+        packedR[0],
         encrypted(prolog, r[0])),
         IV[1],
-        R[1].x,
+        packedR[1],
         encrypted(prolog, r[1])),
         IV[2],
-        R[2].x,
+        packedR[2],
         encrypted(prolog, r[2])),
     ).join('')
     */
@@ -133,17 +134,30 @@ async function craftAdvancedStakeData(signer: Signer): Promise<string> {
     // generate 3 spending pubKeys and secret messages:
     // one for each reward in zZKP, PRP, and NFT
     for (let index = 0; index < 3; index++) {
-        const ephemeralKeypair = generateEphemeralKeypair();
-        const publicSpendingKey = generateChildPublicKey(
+        const randomSecret = generateRandomBabyJubValue();
+        const spendingChiildPublicKey = generateChildPublicKey(
             rootSpendingKeypair.publicKey,
-            ephemeralKeypair.privateKey,
+            randomSecret,
         );
-        const msg = encryptEphemeralKey(
-            ephemeralKeypair,
+
+        const isValid = isChildPubKeyValid(
+            spendingChiildPublicKey,
+            rootSpendingKeypair,
+            randomSecret,
+        );
+        if (!isValid) {
+            const msg = `publicSpendingKey ${spendingChiildPublicKey} is not valid.`;
+            console.error(msg, {publicSpendingKey: spendingChiildPublicKey});
+            return new Error(msg);
+        }
+        console.debug('publicSpendingKey:', spendingChiildPublicKey);
+
+        const msg = encryptRandomSecret(
+            randomSecret,
             rootReadingKeypair.publicKey,
         );
 
-        publicSpendingKey.forEach((key: bigint) => {
+        spendingChiildPublicKey.forEach((key: bigint) => {
             publicSpendingKeys.push(bigintToBytes32(key).slice(2));
         });
 
@@ -159,7 +173,7 @@ async function craftAdvancedStakeData(signer: Signer): Promise<string> {
     if (advStakeData.length % 2 !== 0) {
         const msg = `Advanced stake data has odd length of ${advStakeData.length}`;
         console.error(msg, {advStakeData, publicSpendingKeys, secretMsgs});
-        throw new Error(msg);
+        return new Error(msg);
     }
 
     return advStakeData;
@@ -183,6 +197,13 @@ export async function advancedStake(
 
     const signer = library.getSigner(account);
     const data = await craftAdvancedStakeData(signer);
+    if (data instanceof Error) {
+        return notifyError('Error during stake', data.toString(), {
+            error: data,
+            account,
+            amount,
+        });
+    }
     console.debug(`advanced stake data: ${data}`);
 
     return stake(library, chainId, account, amount, 'advanced', data);
@@ -612,14 +633,18 @@ export async function getZKPMarketPrice(): Promise<BigNumber | null> {
     return price;
 }
 
-export async function getAdvancedStakingReward(staker: string) {
-    const query = getAdvancedStakingRewardQuery(staker);
+export async function getAdvancedStakingReward(address: string) {
+    const query = getAdvancedStakingRewardQuery(address);
     const subgraphEndpoint = env.SUBGRAPH_URL_80001 as string;
 
     try {
         const data = await axios.post(subgraphEndpoint, {
             query,
         });
+
+        if (data.data.errors?.[0]?.message) {
+            throw new Error(data.data.errors[0].message);
+        }
 
         if (data.status === 200) {
             return data.data.data;

@@ -8,7 +8,7 @@ import {Wallet} from 'ethers';
 import {
     deriveKeypairFromSignature,
     deriveKeypairFromSeed,
-    formatPrivateKeyForBabyJub,
+    packPublicKey,
 } from '../src/lib/keychain';
 import {
     encryptMessage,
@@ -53,16 +53,14 @@ describe('Transaction integration test', () => {
 
         // Sender actions:
         const rR = deriveKeypairFromSeed(); // Random (r, R)
-        const Sprime = babyjub.mulPointEscalar(
-            sS.publicKey,
-            formatPrivateKeyForBabyJub(rR.privateKey),
-        );
+        const Sprime = babyjub.mulPointEscalar(sS.publicKey, rR.privateKey);
 
         const K = generateEcdhSharedKey(rR.privateKey, vV.publicKey);
+        const packedK = packPublicKey(K);
         const plainText = rR.privateKey.toString(16);
         const C = encryptMessage(
             bigIntToUint8Array(BigInt('0x' + plainText)),
-            K,
+            packedK,
         );
 
         // sender calls the contract with data
@@ -77,11 +75,11 @@ describe('Transaction integration test', () => {
 
         // Receiver actions from here:
         const derivedK = generateEcdhSharedKey(vV.privateKey, rR.publicKey);
-        const decryptedText = uint8ArrayToBigInt(decryptMessage(C, derivedK));
-        const sPrime = babyjub.mulPointEscalar(
-            rR.publicKey,
-            formatPrivateKeyForBabyJub(sS.privateKey),
+        const packedDerivedK = packPublicKey(derivedK);
+        const decryptedText = uint8ArrayToBigInt(
+            decryptMessage(C, packedDerivedK),
         );
+        const sPrime = babyjub.mulPointEscalar(rR.publicKey, sS.privateKey);
 
         expect(decryptedText.toString(16)).toEqual(plainText);
         expect(sPrime[0]).toEqual(Sprime[0]);

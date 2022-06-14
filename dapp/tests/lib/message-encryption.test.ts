@@ -4,7 +4,11 @@ import {
     uint8ArrayToBigInt,
 } from '@panther-core/crypto/lib/bigint-conversions';
 
-import {deriveKeypairFromSeed, SNARK_FIELD_SIZE} from '../../src/lib/keychain';
+import {
+    deriveKeypairFromSeed,
+    packPublicKey,
+    SNARK_FIELD_SIZE,
+} from '../../src/lib/keychain';
 import {
     generateEcdhSharedKey,
     encryptMessage,
@@ -27,10 +31,10 @@ describe('Cryptographic operations', () => {
     const plaintext = deriveKeypairFromSeed().privateKey;
     const ciphertext = encryptMessage(
         bigIntToUint8Array(plaintext),
-        ecdhSharedKey12,
+        packPublicKey(ecdhSharedKey12),
     );
     const decryptedCiphertext = uint8ArrayToBigInt(
-        decryptMessage(ciphertext, ecdhSharedKey21),
+        decryptMessage(ciphertext, packPublicKey(ecdhSharedKey21)),
     );
 
     describe('Private key', () => {
@@ -54,11 +58,6 @@ describe('Cryptographic operations', () => {
                 ecdhSharedKey21.toString(),
             );
         });
-
-        it('should be smaller than the snark field size', () => {
-            // TODO: Figure out if this check is correct and enough
-            expect(ecdhSharedKey12 < SNARK_FIELD_SIZE).toBeTruthy();
-        });
     });
 
     describe('Ciphertext', () => {
@@ -76,7 +75,7 @@ describe('Cryptographic operations', () => {
 
         it('should be smaller than the snark field size', () => {
             expect(
-                BigInt(`0x${ciphertext.iv}`) < SNARK_FIELD_SIZE,
+                uint8ArrayToBigInt(ciphertext.iv) < SNARK_FIELD_SIZE,
             ).toBeTruthy();
         });
 
@@ -101,7 +100,10 @@ describe('Cryptographic operations', () => {
             );
 
             expect(() => {
-                const decrypted = decryptMessage(ciphertext, differentKey);
+                const decrypted = decryptMessage(
+                    ciphertext,
+                    packPublicKey(differentKey),
+                );
                 // this part only for debugging purposes:
                 console.log('Diagnostics for sometimes failing test:', {
                     decrypted,

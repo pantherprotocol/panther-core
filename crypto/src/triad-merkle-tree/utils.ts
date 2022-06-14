@@ -43,10 +43,15 @@ export function toBytes32(n: number | string | bigint) {
 }
 
 // converts the Quad Leaf ID to Tree ID and Triad Leaf ID
-export const leafIdToTreeIdAndTriadId = (leafId: BigInt): [number, number] => {
+export const leafIdToTreeIdAndTriadId = (
+    leafId: BigInt,
+    treeDepth: number,
+): [number, number] => {
     const nLeafId = Number(leafId);
-    const treeId = Math.floor(nLeafId / 2048);
-    const triadIndex = (nLeafId % 2048) - Math.floor((nLeafId % 2048) / 4);
+    const maxQuadLeafId = 2 ** (treeDepth - 1) * 4;
+    const treeId = Math.floor(nLeafId / maxQuadLeafId);
+    const triadIndex =
+        (nLeafId % maxQuadLeafId) - Math.floor((nLeafId % maxQuadLeafId) / 4);
     return [treeId, triadIndex];
 };
 

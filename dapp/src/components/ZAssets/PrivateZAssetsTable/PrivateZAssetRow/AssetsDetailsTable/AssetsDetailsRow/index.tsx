@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useCallback} from 'react';
 
-import {Button} from '@mui/material';
+import {Button, Typography, Box} from '@mui/material';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
@@ -9,10 +9,11 @@ import {BigNumber} from 'ethers';
 
 import rightSideArrow from '../../../../../../images/right-arrow-icon.svg';
 import {formatCurrency, formatTime} from '../../../../../../lib/format';
-import {useAppDispatch} from '../../../../../../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../../../../../../redux/hooks';
 import {markRewardsAsSpent} from '../../../../../../redux/slices/advancedStakesRewards';
+import {termsSelector} from '../../../../../../redux/slices/stakeTerms';
 import {exit} from '../../../../../../services/pool';
-import {AdvancedStakeRewards} from '../../../../../../types/staking';
+import {AdvancedStakeRewards, StakeType} from '../../../../../../types/staking';
 
 import './styles.scss';
 
@@ -24,6 +25,9 @@ const AssetsDetailsRow = (props: {rewards: AdvancedStakeRewards}) => {
 
     const balance = formatCurrency(BigNumber.from(props.rewards.zZKP));
     const prp = formatCurrency(BigNumber.from(props.rewards.PRP));
+    const lockedTill = useAppSelector(
+        termsSelector(chainId!, StakeType.Advanced, 'lockedTill'),
+    );
 
     const redeem = useCallback(async () => {
         const utxoIsSpent = await exit(
@@ -39,6 +43,32 @@ const AssetsDetailsRow = (props: {rewards: AdvancedStakeRewards}) => {
             dispatch(markRewardsAsSpent, props.rewards.id);
         }
     }, [dispatch, library, account, chainId, props.rewards]);
+
+    const isRedemptionPossible =
+        lockedTill && Number(lockedTill) * 1000 < Date.now();
+
+    const redeemButton = (
+        <Button
+            className="redeem-button"
+            variant="contained"
+            endIcon={isRedemptionPossible ? <img src={rightSideArrow} /> : null}
+            disabled={!isRedemptionPossible}
+            onClick={() => redeem()}
+        >
+            {isRedemptionPossible ? (
+                'Redeem zZKP'
+            ) : (
+                <Box>
+                    <Typography>Locked Until:</Typography>
+                    <Typography>
+                        {formatTime(Number(lockedTill) * 1000, {
+                            style: 'short',
+                        })}
+                    </Typography>
+                </Box>
+            )}
+        </Button>
+    );
 
     return (
         <TableRow key={props.rewards.id}>
@@ -59,16 +89,7 @@ const AssetsDetailsRow = (props: {rewards: AdvancedStakeRewards}) => {
             <TableCell align="right" className="bold-beige">
                 60%
             </TableCell>
-            <TableCell align="center">
-                <Button
-                    variant="contained"
-                    className="redeem-button"
-                    endIcon={<img src={rightSideArrow} />}
-                    onClick={() => redeem()}
-                >
-                    <span>Redeem zZKP</span>
-                </Button>
-            </TableCell>
+            <TableCell align="center">{redeemButton}</TableCell>
         </TableRow>
     );
 };

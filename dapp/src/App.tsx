@@ -3,10 +3,11 @@ import React from 'react';
 import {createTheme} from '@mui/material';
 import {ThemeProvider} from '@mui/material/styles';
 import {ReactNotifications} from 'react-notifications-component';
-import {Route, Redirect} from 'react-router';
-import {BrowserRouter as Router} from 'react-router-dom';
+import {Route} from 'react-router';
+import {BrowserRouter as Router, Switch} from 'react-router-dom';
 
 import Faucet from './pages/Faucet';
+import NotFoundPage from './pages/NotFound';
 import Staking from './pages/Staking';
 import ZAssets from './pages/ZAssets';
 import {getMissingEnvVars, env} from './services/env';
@@ -89,8 +90,10 @@ function App() {
             <ReactNotifications />
             <div className="App">
                 <Router>
-                    {...buildRouting()}
-                    <Route render={() => <Redirect to="/" />} />
+                    <Switch>
+                        {...buildRouting()},
+                        <Route component={NotFoundPage} />,
+                    </Switch>
                 </Router>
             </div>
         </ThemeProvider>

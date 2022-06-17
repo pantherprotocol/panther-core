@@ -1,5 +1,5 @@
 import {describe, expect} from '@jest/globals';
-import {BigNumber, utils} from 'ethers';
+import {BigNumber} from 'ethers';
 
 describe('Advanced stakes', () => {
     process.env.ADVANCED_STAKING_T_START = '1652356800000';
@@ -94,7 +94,7 @@ describe('Advanced stakes', () => {
     describe('PRP rewards', () => {
         it('should always be 10,000', () => {
             const reward = prpReward().toString();
-            expect(reward).toBe(utils.parseEther('10000').toString());
+            expect(reward).toBe('10000');
         });
     });
 });

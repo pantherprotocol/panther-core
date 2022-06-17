@@ -18,10 +18,7 @@ export const T_END = Number(process.env.ADVANCED_STAKING_T_END);
 const APY_START = 70;
 const APY_END = 45;
 const DAPY_DT = (APY_END - APY_START) / (T_END - T_START);
-// The actual PRP reward coefficient is 1e-3,
-// i.e., 1 PRP reward for every 1000 $ZKP staked.
-// We use the inverse of 1e-3 for BigNumber math convenience
-const PRP_COEF_INV = 1000;
+const PRP_REWARD_PER_STAKE = '10000';
 
 export function zZkpReward(amount: BigNumber, timeStaked: number): BigNumber {
     if (timeStaked < T_START) {
@@ -48,8 +45,8 @@ export function zZkpReward(amount: BigNumber, timeStaked: number): BigNumber {
     return amount.mul(rewardCoefE6).div(e6);
 }
 
-export function prpReward(amount: BigNumber): BigNumber {
-    return amount.div(PRP_COEF_INV);
+export function prpReward(): BigNumber {
+    return BigNumber.from(PRP_REWARD_PER_STAKE);
 }
 
 export function getAdvStakingAPY(currentTime: number): number {
@@ -135,7 +132,7 @@ export function calculateRewardsForAdvancedStake(
             stake.amount,
             stake.stakedAt * 1000,
         ),
-        [StakingRewardTokenID.PRP]: prpReward(stake.amount),
+        [StakingRewardTokenID.PRP]: prpReward(),
     };
 }
 

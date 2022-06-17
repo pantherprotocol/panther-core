@@ -35,6 +35,8 @@ export const getAdvancedStakesRewards = createAsyncThunk(
         }
 
         if (!rewards) return [];
+        if (!rewards.staker) return [];
+
         const advancedRewards: AdvancedStakeRewards[] =
             rewards.staker.advancedStakingRewards.map(
                 (r: AdvancedStakeRewardsResponse) => {

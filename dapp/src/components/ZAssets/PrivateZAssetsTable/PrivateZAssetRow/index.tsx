@@ -7,7 +7,7 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 
 import pantherIcon from '../../../../images/zAssets-panther-logo.svg';
 import {formatCurrency} from '../../../../lib/format';
@@ -74,7 +74,12 @@ export default function PrivateZAssetRow() {
                     <Network networkName={'Polygon zAsset'} />
                 </TableCell>
                 <TableCell align="left" className="bold-beige ">
-                    {unclaimedPRP ? formatCurrency(unclaimedPRP) : '-'} PRP
+                    {unclaimedPRP
+                        ? formatCurrency(
+                              utils.parseEther(unclaimedPRP.toString()),
+                          )
+                        : '-'}{' '}
+                    PRP
                 </TableCell>
             </TableRow>
             <TableRow className="private-zAsset-row">

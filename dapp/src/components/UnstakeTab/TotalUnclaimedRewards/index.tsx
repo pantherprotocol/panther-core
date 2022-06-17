@@ -5,16 +5,19 @@ import {constants} from 'ethers';
 
 import {formatCurrency} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
-import {
-    zkpUnclaimedRewardsSelector,
-    zZkpUnclaimedRewardsSelector,
-} from '../../../redux/slices/unclaimedStakesRewards';
+import {totalSelector} from '../../../redux/slices/advancedStakesRewards';
+import {totalUnclaimedClassicRewardsSelector} from '../../../redux/slices/totalUnclaimedClassicRewards';
+import {StakingRewardTokenID} from '../../../types/staking';
 
 import './styles.scss';
 
 const TotalUnclaimedRewards = () => {
-    const zkpRewardsBalance = useAppSelector(zkpUnclaimedRewardsSelector);
-    const zZkpRewardsBalance = useAppSelector(zZkpUnclaimedRewardsSelector);
+    const zkpRewardsBalance = useAppSelector(
+        totalUnclaimedClassicRewardsSelector,
+    );
+    const zZkpRewardsBalance = useAppSelector(
+        totalSelector(StakingRewardTokenID.zZKP),
+    );
     const zkpGreaterThanZero =
         zkpRewardsBalance && zkpRewardsBalance.gt(constants.Zero);
     const zZkpGreaterThanZero =

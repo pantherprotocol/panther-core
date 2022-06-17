@@ -92,18 +92,9 @@ describe('Advanced stakes', () => {
     });
 
     describe('PRP rewards', () => {
-        it('should always be less than staked amount', () => {
-            const stake = BigNumber.from(10).pow(18);
-            const reward = prpReward(stake);
-            expect(stake.gte(reward)).toBe(true);
-        });
-
-        it('should be 1000 times smaller', () => {
-            const stake = BigNumber.from(1000).pow(18);
-            const reward = prpReward(stake);
-            expect(
-                reward.eq(BigNumber.from(1000).pow(18).div(1000)),
-            ).toBeTruthy();
+        it('should always be 10,000', () => {
+            const reward = prpReward().toString();
+            expect(reward).toBe('10000');
         });
     });
 });

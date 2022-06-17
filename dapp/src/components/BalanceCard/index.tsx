@@ -4,20 +4,15 @@ import {IconButton, Box, Card, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
 import ethLogo from '../../images/eth-logo.svg';
+import {fiatPrice} from '../../lib/tokenPrice';
 import {useAppSelector} from '../../redux/hooks';
-import {
-    zkpTokenUSDMarketPriceSelector,
-    zZkpTokenUSDMarketPriceSelector,
-    prpUnclaimedRewardsSelector,
-    zZkpUnclaimedRewardsSelector,
-    zkpUnclaimedRewardsSelector,
-} from '../../redux/slices/unclaimedStakesRewards';
-import {
-    zkpStakedBalanceSelector,
-    zkpUSDStakedBalanceSelector,
-} from '../../redux/slices/zkpStakedBalance';
+import {totalSelector} from '../../redux/slices/advancedStakesRewards';
+import {totalUnclaimedClassicRewardsSelector} from '../../redux/slices/totalUnclaimedClassicRewards';
+import {marketPriceSelector} from '../../redux/slices/zkpMarketPrice';
+import {zkpStakedBalanceSelector} from '../../redux/slices/zkpStakedBalance';
 import {Network, supportedNetworks} from '../../services/connectors';
 import {chainHasAdvancedStaking} from '../../services/contracts';
+import {StakingRewardTokenID} from '../../types/staking';
 import AccountBalance from '../Header/AccountBalance';
 
 import AddressBalances from './AddressBalances';
@@ -32,16 +27,27 @@ const BalanceCard = () => {
     const {account, chainId} = context;
     const currentNetwork: Network | null =
         context && chainId ? supportedNetworks[chainId] : null;
+
+    const zkpPrice = useAppSelector(marketPriceSelector);
+
     const zkpStakedBalance = useAppSelector(zkpStakedBalanceSelector);
-    const zkpStakedUSDValue = useAppSelector(zkpUSDStakedBalanceSelector);
+    const zkpStakedUSDValue = fiatPrice(zkpStakedBalance, zkpPrice);
 
-    const zkpRewardBalance = useAppSelector(zkpUnclaimedRewardsSelector);
-    const zkpRewardsUSDValue = useAppSelector(zkpTokenUSDMarketPriceSelector);
+    const zkpRewardBalance = useAppSelector(
+        totalUnclaimedClassicRewardsSelector,
+    );
 
-    const zZkpRewardBalance = useAppSelector(zZkpUnclaimedRewardsSelector);
-    const zZkpRewardsUSDValue = useAppSelector(zZkpTokenUSDMarketPriceSelector);
+    const zkpRewardsUSDValue = fiatPrice(zkpRewardBalance, zkpPrice);
 
-    const prpRewardBalance = useAppSelector(prpUnclaimedRewardsSelector);
+    const zZkpRewardBalance = useAppSelector(
+        totalSelector(StakingRewardTokenID.zZKP),
+    );
+
+    const zZkpRewardsUSDValue = fiatPrice(zZkpRewardBalance, zkpPrice);
+
+    const prpRewardBalance = useAppSelector(
+        totalSelector(StakingRewardTokenID.PRP),
+    );
 
     return (
         <Box className="balance-card-holder">

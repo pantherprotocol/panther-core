@@ -12,9 +12,10 @@ import {MainPageWrapper} from '../../components/MainPageWrapper';
 import StakingUnstakingCard from '../../components/StakingUnstakingCard';
 import background from '../../images/background-adv.png';
 import {useAppDispatch} from '../../redux/hooks';
+import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
 import {getStakeTerms} from '../../redux/slices/stakeTerms';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
-import {getUnclaimedRewards} from '../../redux/slices/unclaimedStakesRewards';
+import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
 import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
@@ -32,7 +33,8 @@ const Staking = (): React.ReactElement => {
         dispatch(getTotalStaked, context);
         dispatch(getZkpTokenBalance, context);
         dispatch(getZkpStakedBalance, context);
-        dispatch(getUnclaimedRewards, context);
+        dispatch(getTotalUnclaimedClassicRewards, context);
+        dispatch(getAdvancedStakesRewards, context);
         dispatch(getStakeTerms, context);
     }, [context, dispatch]);
 

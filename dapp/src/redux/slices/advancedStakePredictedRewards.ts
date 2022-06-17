@@ -30,9 +30,7 @@ export const calculatedRewardSlice = createSlice({
                         BigNumber.from(amountToStake),
                         timeStaked,
                     ).toString(),
-                    [StakingRewardTokenID.PRP]: prpReward(
-                        BigNumber.from(amountToStake),
-                    ).toString(),
+                    [StakingRewardTokenID.PRP]: prpReward().toString(),
                 };
 
                 state.value = rewards;

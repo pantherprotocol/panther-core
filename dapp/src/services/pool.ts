@@ -10,6 +10,7 @@ import {
 } from '@panther-core/crypto/lib/triad-merkle-tree';
 import poseidon from 'circomlibjs/src/poseidon';
 import {utils, Contract, BigNumber} from 'ethers';
+import {UTXOStatus} from 'staking';
 
 import {CONFIRMATIONS_NUM} from '../lib/constants';
 import {parseTxErrorMessage} from '../lib/errors';
@@ -28,7 +29,7 @@ exit decodes UTXO data received from the subgraph, deciphers the random secret,
 generates child spending keys, checks if the  nullifier is not spent, verifies
 that the commitment (leaf) of the Merkle tree is the same as the commitment of
 the UTXO, generates and checks Merkle path, and finally submits exit()
-transaction. Returns a boolean indicating whether the UTXO is spent.
+transaction. Returns a UTXOStatus indicating whether the UTXO is spent or not.
 */
 export async function exit(
     library: any,
@@ -38,9 +39,7 @@ export async function exit(
     leafId: bigint,
     creationTime: number,
     commitments: string[],
-): Promise<boolean> {
-    let utxoIsSpent: boolean;
-
+): Promise<UTXOStatus> {
     const decoded = decodeUTXOData(utxoData);
     if (decoded instanceof Error) {
         notifyError(
@@ -48,8 +47,7 @@ export async function exit(
             `Cannot decode utxoData. ${parseTxErrorMessage(decoded)}`,
             decoded,
         );
-        utxoIsSpent = false;
-        return utxoIsSpent;
+        return UTXOStatus.UNDEFINED;
     }
     const [ciphertextMsg, tokenAddress, amounts, tokenId] = decoded;
 
@@ -79,8 +77,7 @@ export async function exit(
             childSpendingPubKey: childSpendingKeypair.publicKey,
             rootSpendingPubKey: rootSpendingKeypair.publicKey,
         });
-        utxoIsSpent = false;
-        return utxoIsSpent;
+        return UTXOStatus.UNDEFINED;
     }
 
     const [isSpent, nullifier] = await isNullifierSpent(
@@ -92,8 +89,7 @@ export async function exit(
         notifyError('Redemption error', 'zAsset is already spent', {
             nullifier,
         });
-        utxoIsSpent = true;
-        return utxoIsSpent;
+        return UTXOStatus.SPENT;
     }
 
     const zAssetId = await contract.getZAssetId(tokenAddress, tokenId);
@@ -113,15 +109,13 @@ export async function exit(
             commitmentInProof: commitmentHex,
             commitmentInEvent: zZkpCommitment,
         });
-        utxoIsSpent = false;
-        return utxoIsSpent;
+        return UTXOStatus.UNSPENT;
     }
 
     const path = await generateMerklePath(leafId, chainId);
     if (path instanceof Error) {
         notifyError('Redemption error', 'Cannot generate Merkle path', path);
-        utxoIsSpent = false;
-        return utxoIsSpent;
+        return UTXOStatus.UNSPENT;
     }
     const [pathElements, proofLeafHex, merkleTreeRoot, treeIndex] = path;
 
@@ -130,8 +124,7 @@ export async function exit(
             leafInProof: proofLeafHex,
             leafInEvent: zZkpCommitment,
         });
-        utxoIsSpent = false;
-        return utxoIsSpent;
+        return UTXOStatus.UNSPENT;
     }
 
     const isProofValid = await poolContractVerifyMerkleProof(
@@ -149,8 +142,7 @@ export async function exit(
             merkleTreeRoot,
             pathElements,
         });
-        utxoIsSpent = false;
-        return utxoIsSpent;
+        return UTXOStatus.UNSPENT;
     }
 
     const result = await poolContractExit(
@@ -166,12 +158,10 @@ export async function exit(
         BigInt(0), // cacheIndexHint
     );
     if (result instanceof Error) {
-        utxoIsSpent = false;
-        return utxoIsSpent;
+        return UTXOStatus.UNSPENT;
     }
 
-    utxoIsSpent = true;
-    return utxoIsSpent;
+    return UTXOStatus.SPENT;
 }
 
 async function generateMerklePath(

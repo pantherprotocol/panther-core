@@ -6,17 +6,21 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import {useWeb3React} from '@web3-react/core';
 
 import {useAppSelector} from '../../../../../redux/hooks';
 import {advancedStakesRewardsSelector} from '../../../../../redux/slices/advancedStakesRewards';
-import {AdvancedStakeRewards} from '../../../../../types/staking';
+import {AdvancedStakeRewards, UTXOStatus} from '../../../../../types/staking';
 
 import AssetsDetailsRow from './AssetsDetailsRow';
 
 import './styles.scss';
 
 const AssetsDetailsTable = () => {
-    const advancedStakesRewards = useAppSelector(advancedStakesRewardsSelector);
+    const {account} = useWeb3React();
+    const advancedStakesRewards = useAppSelector(
+        advancedStakesRewardsSelector(account),
+    );
 
     return (
         <Box sx={{margin: 1}}>
@@ -32,10 +36,11 @@ const AssetsDetailsTable = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {advancedStakesRewards
-                        .filter(
-                            (rewards: AdvancedStakeRewards) =>
-                                !rewards.utxoIsSpent,
+                    {Object.values(advancedStakesRewards)
+                        .filter((rewards: AdvancedStakeRewards) =>
+                            [UTXOStatus.UNDEFINED, UTXOStatus.UNSPENT].includes(
+                                rewards.utxoStatus,
+                            ),
                         )
                         .map((rewards: AdvancedStakeRewards, key: number) => (
                             <AssetsDetailsRow rewards={rewards} key={key} />

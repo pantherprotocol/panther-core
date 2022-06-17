@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import {Box, Typography} from '@mui/material';
+import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 
 import {formatCurrency, formatUSD} from '../../../lib/format';
@@ -13,16 +14,17 @@ import {StakingRewardTokenID} from '../../../types/staking';
 import './styles.scss';
 
 export default function PrivateBalance() {
+    const {account} = useWeb3React();
     const zkpPrice = useAppSelector(marketPriceSelector);
     const unclaimedZZKP = useAppSelector(
-        totalSelector(StakingRewardTokenID.zZKP),
+        totalSelector(account, StakingRewardTokenID.zZKP),
     );
     const totalPrice = zkpPrice
         ? fiatPrice(unclaimedZZKP, BigNumber.from(zkpPrice))
         : 0;
 
     const unclaimedPRP = useAppSelector(
-        totalSelector(StakingRewardTokenID.PRP),
+        totalSelector(account, StakingRewardTokenID.PRP),
     );
 
     return (

@@ -20,10 +20,16 @@ export type AdvancedStakeRewards = {
     creationTime: string;
     commitments: string[];
     utxoData: string;
-    utxoIsSpent: boolean;
+    utxoStatus: UTXOStatus;
     zZKP: string;
     PRP: string;
 };
+
+export enum UTXOStatus {
+    UNDEFINED = 'undefined',
+    UNSPENT = 'unspent',
+    SPENT = 'spent',
+}
 
 export type AdvancedStakeRewardsBN = {
     [key in AdvancedStakeTokenIDs]: BigNumber;

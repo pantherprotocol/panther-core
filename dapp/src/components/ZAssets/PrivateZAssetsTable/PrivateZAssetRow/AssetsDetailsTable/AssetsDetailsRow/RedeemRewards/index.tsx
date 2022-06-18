@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 
 import {
     Dialog,
@@ -19,15 +19,11 @@ import {useWeb3React} from '@web3-react/core';
 import backButtonLeftArrow from '../../../../../../../images/back-button-left-arrow.svg';
 import rightSideArrow from '../../../../../../../images/right-arrow-icon.svg';
 import {formatTime} from '../../../../../../../lib/format';
-import {useAppDispatch, useAppSelector} from '../../../../../../../redux/hooks';
+import {useAppDispatch} from '../../../../../../../redux/hooks';
 import {updateUTXOStatus} from '../../../../../../../redux/slices/advancedStakesRewards';
 import {removeBlur, setBlur} from '../../../../../../../redux/slices/blur';
-import {termsSelector} from '../../../../../../../redux/slices/stakeTerms';
-import {exit} from '../../../../../../../services/pool';
-import {
-    AdvancedStakeRewards,
-    StakeType,
-} from '../../../../../../../types/staking';
+import {getExitTime, exit} from '../../../../../../../services/pool';
+import {AdvancedStakeRewards} from '../../../../../../../types/staking';
 
 import './styles.scss';
 
@@ -36,12 +32,27 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
     const {library, account, chainId} = context;
     const dispatch = useAppDispatch();
 
-    const lockedTill = useAppSelector(
-        termsSelector(chainId!, StakeType.Advanced, 'lockedTill'),
-    );
-
+    const [exitTime, setExitTime] = useState<number>();
     const [open, setOpen] = useState(false);
     const [redeemConfirmed, setRedeemConfirmed] = useState(false);
+
+    const updateExitTime = useCallback(async () => {
+        if (!chainId) return;
+        const newExitTime = await getExitTime(library, chainId);
+        // setExitTime(newExitTime);
+        setExitTime(1655510842);
+        console.debug(
+            'early redemption allowed at',
+            formatTime(Number(newExitTime) * 1000, {
+                style: 'short',
+            }),
+            newExitTime,
+        );
+    }, [chainId, library]);
+
+    useEffect(() => {
+        updateExitTime();
+    }, [updateExitTime]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRedeemConfirmed(event.target.checked);
@@ -73,7 +84,7 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
     }, [dispatch, library, account, chainId, props.rewards, handleClose]);
 
     const isRedemptionPossible =
-        lockedTill && Number(lockedTill) * 1000 < Date.now();
+        exitTime && Number(exitTime) * 1000 < Date.now();
 
     return (
         <Box>
@@ -93,9 +104,11 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                     <Box>
                         <Typography>Locked Until:</Typography>
                         <Typography>
-                            {formatTime(Number(lockedTill) * 1000, {
-                                style: 'short',
-                            })}
+                            {exitTime
+                                ? formatTime(Number(exitTime) * 1000, {
+                                      style: 'short',
+                                  })
+                                : '?'}
                         </Typography>
                     </Box>
                 )}

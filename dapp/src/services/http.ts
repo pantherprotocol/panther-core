@@ -22,6 +22,19 @@ const errorHandler = (error: AxiosError) => {
 
 customAxios.interceptors.response.use(undefined, errorHandler);
 
+export async function safeFetch(url: string): Promise<Response | Error> {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            return new Error(`Failed to fetch ${url}: ${response.status}`);
+        }
+
+        return response;
+    } catch (error) {
+        return error as Error;
+    }
+}
+
 export default {
     get: customAxios.get,
     post: customAxios.post,

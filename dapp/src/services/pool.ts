@@ -10,16 +10,17 @@ import {
 } from '@panther-core/crypto/lib/triad-merkle-tree';
 import poseidon from 'circomlibjs/src/poseidon';
 import {utils, Contract, BigNumber} from 'ethers';
-import {UTXOStatus} from 'staking';
+import {AdvancedStakeRewards, UTXOStatus} from 'staking';
 
 import {CONFIRMATIONS_NUM} from '../lib/constants';
 import {parseTxErrorMessage} from '../lib/errors';
 import {getEventFromReceipt} from '../lib/events';
-import {PrivateKey} from '../lib/types';
+import {IKeypair, PrivateKey} from '../lib/types';
 
 import {getPoolContract, getSignableContract} from './contracts';
 import {env} from './env';
 import {notifyError} from './errors';
+import {safeFetch} from './http';
 import {deriveSpendingChildKeypair, deriveRootKeypairs} from './keychain';
 import {decryptRandomSecret as decryptRandomSecret} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
@@ -40,17 +41,6 @@ export async function exit(
     creationTime: number,
     commitments: string[],
 ): Promise<UTXOStatus> {
-    const decoded = decodeUTXOData(utxoData);
-    if (decoded instanceof Error) {
-        notifyError(
-            'Redemption error',
-            `Cannot decode utxoData. ${parseTxErrorMessage(decoded)}`,
-            decoded,
-        );
-        return UTXOStatus.UNDEFINED;
-    }
-    const [ciphertextMsg, tokenAddress, amounts, tokenId] = decoded;
-
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -63,29 +53,47 @@ export async function exit(
         signer,
     );
 
-    const randomSecret = decryptRandomSecret(
-        ciphertextMsg,
-        rootReadingKeypair.privateKey,
-    );
-
-    const [childSpendingKeypair, isValid] = deriveSpendingChildKeypair(
+    const {
+        status,
+        error,
+        cannotDecode,
+        isChildKeyInvalid,
+        childSpendingKeypair,
+        tokenAddress,
+        amounts,
+        tokenId,
+        nullifier,
+    } = await unpackUTXOAndDeriveKeys(
+        contract,
         rootSpendingKeypair,
-        randomSecret,
+        rootReadingKeypair.privateKey,
+        leafId,
+        utxoData,
     );
-    if (!isValid) {
-        notifyError('Redemption error', 'Invalid child spending public key', {
-            childSpendingPubKey: childSpendingKeypair.publicKey,
-            rootSpendingPubKey: rootSpendingKeypair.publicKey,
-        });
+    if (cannotDecode && error) {
+        notifyError(
+            'Redemption error',
+            `Cannot decode utxoData. ${parseTxErrorMessage(error)}`,
+            error,
+        );
         return UTXOStatus.UNDEFINED;
     }
 
-    const [isSpent, nullifier] = await isNullifierSpent(
-        contract,
-        childSpendingKeypair.privateKey,
-        leafId,
-    );
-    if (isSpent) {
+    if (isChildKeyInvalid || !childSpendingKeypair) {
+        notifyError(
+            'Redemption error',
+            error ? error.toString() : 'Cannot derive child spending key',
+            {
+                childSpendingPubKey: childSpendingKeypair
+                    ? childSpendingKeypair.publicKey
+                    : 'undefined',
+                rootSpendingPubKey: rootSpendingKeypair.publicKey,
+            },
+        );
+        return UTXOStatus.UNDEFINED;
+    }
+
+    if (status === UTXOStatus.SPENT) {
         notifyError('Redemption error', 'zAsset is already spent', {
             nullifier,
         });
@@ -147,7 +155,7 @@ export async function exit(
 
     const result = await poolContractExit(
         contract,
-        tokenAddress,
+        tokenAddress!,
         tokenId as bigint,
         amounts as bigint,
         Number(creationTime),
@@ -164,32 +172,101 @@ export async function exit(
     return UTXOStatus.SPENT;
 }
 
-async function generateMerklePath(
-    leafId: bigint,
+// refreshUTXOs refreshes the UTXOs statuses for the given account and UTXOs
+// list.
+export async function refreshUTXOs(
+    library: any,
+    account: string,
     chainId: number,
-): Promise<[string[], string, string, number] | Error> {
-    const treeUri = env[`COMMITMENT_TREE_URL_${chainId}`];
+    advancedRewards: AdvancedStakeRewards[],
+): Promise<AdvancedStakeRewards[]> {
+    const {contract} = getSignableContract(
+        library,
+        chainId,
+        account,
+        getPoolContract,
+    );
 
-    let treeJson;
-    try {
-        treeJson = await fetch(treeUri as string).then(response =>
-            response.json(),
+    const signer = library.getSigner(account);
+    const [rootSpendingKeypair, rootReadingKeypair] = await deriveRootKeypairs(
+        signer,
+    );
+
+    for await (const reward of advancedRewards) {
+        const {status} = await unpackUTXOAndDeriveKeys(
+            contract,
+            rootSpendingKeypair,
+            rootReadingKeypair.privateKey,
+            BigInt(reward.id),
+            reward.utxoData,
         );
-    } catch (error) {
-        return error as Error;
+        reward.utxoStatus = status;
     }
 
-    const tree = TriadMerkleTree.deserialize(treeJson);
-    const [merkleProof, treeId] = generateMerkleProof(leafId, tree);
-    const pathElements =
-        triadTreeMerkleProofToPathElements(merkleProof).map(bigintToBytes32);
+    return advancedRewards;
+}
 
-    return [
-        pathElements,
-        bigintToBytes32(merkleProof.leaf),
-        bigintToBytes32(merkleProof.root),
-        treeId,
-    ];
+async function unpackUTXOAndDeriveKeys(
+    contract: Contract,
+    rootSpendingKeypair: IKeypair,
+    rootReadingPrivateKey: PrivateKey,
+    leafId: bigint,
+    utxoData: string,
+): Promise<{
+    status: UTXOStatus;
+    error?: Error;
+    isChildKeyInvalid?: boolean;
+    cannotDecode?: boolean;
+    childSpendingKeypair?: IKeypair;
+    ciphertextMsg?: string;
+    tokenAddress?: string;
+    amounts?: bigint;
+    tokenId?: bigint;
+    nullifier?: string;
+}> {
+    const decoded = decodeUTXOData(utxoData);
+    if (decoded instanceof Error) {
+        return {
+            status: UTXOStatus.UNDEFINED,
+            error: decoded,
+            cannotDecode: true,
+        };
+    }
+    const [ciphertextMsg, tokenAddress, amounts, tokenId] = decoded;
+
+    const randomSecret = decryptRandomSecret(
+        ciphertextMsg,
+        rootReadingPrivateKey,
+    );
+
+    const [childSpendingKeypair, isChildKeyValid] = deriveSpendingChildKeypair(
+        rootSpendingKeypair,
+        randomSecret,
+    );
+    if (!isChildKeyValid) {
+        return {
+            status: UTXOStatus.UNDEFINED,
+            error: new Error('Invalid child spending public key'),
+            isChildKeyInvalid: !isChildKeyValid,
+        };
+    }
+
+    const [isSpent, nullifier] = await isNullifierSpent(
+        contract,
+        childSpendingKeypair.privateKey,
+        leafId,
+    );
+
+    const status = isSpent ? UTXOStatus.SPENT : UTXOStatus.UNSPENT;
+    return {
+        status,
+        childSpendingKeypair,
+        ciphertextMsg,
+        tokenAddress,
+        amounts,
+        tokenId,
+        nullifier,
+    };
 }
 
 function decodeUTXOData(
@@ -246,6 +323,31 @@ export async function isNullifierSpent(
     const isSpent = await poolContract.isSpent(nullifier);
     console.timeEnd('isNullifierSpent()');
     return [isSpent, nullifier];
+}
+
+async function generateMerklePath(
+    leafId: bigint,
+    chainId: number,
+): Promise<[string[], string, string, number] | Error> {
+    const treeUri = env[`COMMITMENT_TREE_URL_${chainId}`];
+
+    const treeResponse = await safeFetch(treeUri as string);
+    if (treeResponse instanceof Error) {
+        return treeResponse;
+    }
+
+    const treeJson = treeResponse.json();
+    const tree = TriadMerkleTree.deserialize(treeJson);
+    const [merkleProof, treeId] = generateMerkleProof(leafId, tree);
+    const pathElements =
+        triadTreeMerkleProofToPathElements(merkleProof).map(bigintToBytes32);
+
+    return [
+        pathElements,
+        bigintToBytes32(merkleProof.leaf),
+        bigintToBytes32(merkleProof.root),
+        treeId,
+    ];
 }
 
 async function poolContractExit(

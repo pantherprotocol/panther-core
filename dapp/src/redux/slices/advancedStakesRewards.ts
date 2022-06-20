@@ -228,6 +228,29 @@ export function totalSelector(
     };
 }
 
+export function hasUndefinedUTXOsSelector(
+    address: string | null | undefined,
+): (state: RootState) => boolean {
+    return (state: RootState): boolean => {
+        // if there is no address for any reason, then there are no undefined
+        // UTXOs
+        if (!address) return false;
+
+        const rewards = advancedStakesRewardsSelector(address)(state);
+        // if there are no rewards yet for this address for any reason, then  it
+        // is up to date too
+        if (Object.keys(rewards).length === 0) return false;
+
+        const rewardsWithUndefinedStatus = Object.values(rewards).find(
+            (r: AdvancedStakeRewards) => {
+                return r.utxoStatus === UTXOStatus.UNDEFINED;
+            },
+        );
+
+        return !!rewardsWithUndefinedStatus;
+    };
+}
+
 export const {resetAdvancedStakesRewards, updateUTXOStatus} =
     advancedStakesRewardsSlice.actions;
 

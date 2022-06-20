@@ -135,29 +135,29 @@ async function craftAdvancedStakeData(signer: Signer): Promise<string | Error> {
     // one for each reward in zZKP, PRP, and NFT
     for (let index = 0; index < 3; index++) {
         const randomSecret = generateRandomBabyJubValue();
-        const spendingChiildPublicKey = generateChildPublicKey(
+        const spendingChildPublicKey = generateChildPublicKey(
             rootSpendingKeypair.publicKey,
             randomSecret,
         );
 
         const isValid = isChildPubKeyValid(
-            spendingChiildPublicKey,
+            spendingChildPublicKey,
             rootSpendingKeypair,
             randomSecret,
         );
         if (!isValid) {
-            const msg = `publicSpendingKey ${spendingChiildPublicKey} is not valid.`;
-            console.error(msg, {publicSpendingKey: spendingChiildPublicKey});
+            const msg = `publicSpendingKey ${spendingChildPublicKey} is not valid.`;
+            console.error(msg, {publicSpendingKey: spendingChildPublicKey});
             return new Error(msg);
         }
-        console.debug('publicSpendingKey:', spendingChiildPublicKey);
+        console.debug('publicSpendingKey:', spendingChildPublicKey);
 
         const msg = encryptRandomSecret(
             randomSecret,
             rootReadingKeypair.publicKey,
         );
 
-        spendingChiildPublicKey.forEach((key: bigint) => {
+        spendingChildPublicKey.forEach((key: bigint) => {
             publicSpendingKeys.push(bigintToBytes32(key).slice(2));
         });
 

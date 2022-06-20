@@ -7,6 +7,7 @@ pragma solidity ^0.8.0;
  * mainnet/Goerli network. It passes data to s user-defined contract on the Polygon/Mumbai.
  * See https://docs.polygon.technology/docs/develop/l1-l2-communication/fx-portal
  */
-interface IStateSender {
-    function syncState(address receiver, bytes calldata data) external;
+interface IFxStateSender {
+    function sendMessageToChild(address _receiver, bytes calldata _data)
+        external;
 }

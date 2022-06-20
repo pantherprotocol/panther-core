@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import "./actions/AdvancedStakingBridgedDataCoder.sol";
 import "./actions/Constants.sol";
 import "./interfaces/IActionMsgReceiver.sol";
-import "./interfaces/IStateSender.sol";
+import "./interfaces/IFxStateSender.sol";
 import "./StakeZeroRewardAdviser.sol";
 
 /***
@@ -74,7 +74,10 @@ contract AdvancedStakeRewardAdviserAndMsgSender is
         uint24 _nonce = uint24(nonce);
         bytes memory content = _encodeBridgedData(_nonce, action, message);
 
-        IStateSender(FX_ROOT).syncState(ACTION_MSG_RECEIVER, content);
+        IFxStateSender(FX_ROOT).sendMessageToChild(
+            ACTION_MSG_RECEIVER,
+            content
+        );
 
         emit StakeMsgBridged(_nonce, content);
         // It may overflow and start from 0 again, which is OK

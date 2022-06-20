@@ -23,11 +23,13 @@ export interface AdvancedStakeRewardsByHashedAddressAndById {
 }
 interface AdvancedStakesRewardsState {
     value: AdvancedStakeRewardsByHashedAddressAndById;
+    lastRefreshTime: number | null;
     status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: AdvancedStakesRewardsState = {
     value: {},
+    lastRefreshTime: null,
     status: 'idle',
 };
 
@@ -134,6 +136,16 @@ export const advancedStakesRewardsSlice = createSlice({
                 reward.utxoStatus = status;
             }
         },
+        updateLastRefreshTime: state => {
+            // updating the lastRefreshTime to the current time only in
+            // case if the previous value of lastRefreshTime is
+            // undefined or less than the current time to prevent race
+            // conditions during multiple refreshes
+            const now = +Date.now();
+            if (state.lastRefreshTime === null || state.lastRefreshTime < now) {
+                state.lastRefreshTime = now;
+            }
+        },
     },
     extraReducers: builder => {
         builder
@@ -168,6 +180,9 @@ export const advancedStakesRewardsSlice = createSlice({
                         }
                     }
                 }
+                advancedStakesRewardsSlice.caseReducers.updateLastRefreshTime(
+                    state,
+                );
             })
             .addCase(refreshUTXOsStatuses.rejected, state => {
                 state.status = 'failed';

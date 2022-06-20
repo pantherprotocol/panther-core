@@ -172,14 +172,16 @@ export async function exit(
     return UTXOStatus.SPENT;
 }
 
-// refreshUTXOs refreshes the UTXOs statuses for the given account and UTXOs
-// list.
-export async function refreshUTXOs(
+export type UTXOStatusByID = [string, UTXOStatus];
+
+// getChangedUTXOsStatuses returns an array of UTXOStatusByID of the statuses
+// that need updates
+export async function getChangedUTXOsStatuses(
     library: any,
     account: string,
     chainId: number,
     advancedRewards: AdvancedStakeRewards[],
-): Promise<AdvancedStakeRewards[]> {
+): Promise<UTXOStatusByID[]> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -192,7 +194,13 @@ export async function refreshUTXOs(
         signer,
     );
 
+    const statusesNeedUpdate: UTXOStatusByID[] = [];
+
     for await (const reward of advancedRewards) {
+        if (reward.utxoStatus === UTXOStatus.SPENT) {
+            continue;
+        }
+
         const {status} = await unpackUTXOAndDeriveKeys(
             contract,
             rootSpendingKeypair,
@@ -200,10 +208,13 @@ export async function refreshUTXOs(
             BigInt(reward.id),
             reward.utxoData,
         );
-        reward.utxoStatus = status;
+
+        if (status !== reward.utxoStatus) {
+            statusesNeedUpdate.push([reward.id, status]);
+        }
     }
 
-    return advancedRewards;
+    return statusesNeedUpdate;
 }
 
 async function unpackUTXOAndDeriveKeys(

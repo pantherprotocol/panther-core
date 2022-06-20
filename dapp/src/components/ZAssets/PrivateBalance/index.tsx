@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useCallback} from 'react';
 
 import {Box, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
@@ -6,15 +7,19 @@ import {BigNumber, utils} from 'ethers';
 
 import {formatCurrency, formatUSD} from '../../../lib/format';
 import {fiatPrice} from '../../../lib/tokenPrice';
-import {useAppSelector} from '../../../redux/hooks';
-import {totalSelector} from '../../../redux/slices/advancedStakesRewards';
+import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
+import {
+    refreshUTXOsStatuses,
+    totalSelector,
+} from '../../../redux/slices/advancedStakesRewards';
 import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
 import {StakingRewardTokenID} from '../../../types/staking';
 
 import './styles.scss';
 
 export default function PrivateBalance() {
-    const {account} = useWeb3React();
+    const context = useWeb3React();
+    const {account} = context;
     const zkpPrice = useAppSelector(marketPriceSelector);
     const unclaimedZZKP = useAppSelector(
         totalSelector(account, StakingRewardTokenID.zZKP),
@@ -26,6 +31,14 @@ export default function PrivateBalance() {
     const unclaimedPRP = useAppSelector(
         totalSelector(account, StakingRewardTokenID.PRP),
     );
+
+    const dispatch = useAppDispatch();
+
+    // TODO: this check needs to be removed when new button will be added below
+    // eslint-disable-next-line
+    const refresh = useCallback(async () => {
+        dispatch(refreshUTXOsStatuses, context);
+    }, [context, dispatch]);
 
     return (
         <Box className="private-zAssets-balance-container">
@@ -45,14 +58,15 @@ export default function PrivateBalance() {
                     Total Privacy Reward Points (PRP)
                 </Typography>
             </Box>
-            {/* <Box>
-                <Link to={'/'}>
-                    {' '}
-                    <Button variant="contained" className="deposit-button">
-                        <span>Deposit Assets</span>
-                    </Button>
-                </Link>
-            </Box> */}
+            <Box>
+                {/* <Button
+                    variant="contained"
+                    className="deposit-button"
+                    onClick={refresh}
+                >
+                    <span>Refresh Assets (replace me)</span>
+                </Button> */}
+            </Box>
         </Box>
     );
 }

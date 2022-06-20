@@ -4,6 +4,7 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {poseidon} from 'circomlibjs';
 import {BigNumber, constants} from 'ethers';
 
+import {getChangedUTXOsStatuses, UTXOStatusByID} from '../../services/pool';
 import {getAdvancedStakingReward} from '../../services/staking';
 import {AdvancedStakeRewardsResponse} from '../../services/subgraph';
 import {
@@ -91,6 +92,32 @@ export const getAdvancedStakesRewards = createAsyncThunk(
     },
 );
 
+export const refreshUTXOsStatuses = createAsyncThunk(
+    'refreshUTXOsStatuses',
+    async (
+        context: Web3ReactContextInterface<Web3Provider>,
+        {getState},
+    ): Promise<[string, UTXOStatusByID[]] | undefined> => {
+        const {library, account, chainId} = context;
+        if (!library || !chainId || !account) {
+            return;
+        }
+
+        const state: RootState = getState() as RootState;
+        const advancedRewards = advancedStakesRewardsSelector(account)(state);
+
+        return [
+            account,
+            await getChangedUTXOsStatuses(
+                library,
+                account,
+                chainId,
+                Object.values(advancedRewards),
+            ),
+        ];
+    },
+);
+
 export const advancedStakesRewardsSlice = createSlice({
     name: 'advancedStakesRewards',
     initialState,
@@ -121,6 +148,28 @@ export const advancedStakesRewardsSlice = createSlice({
                 }
             })
             .addCase(getAdvancedStakesRewards.rejected, state => {
+                state.status = 'failed';
+            })
+            .addCase(refreshUTXOsStatuses.pending, state => {
+                state.status = 'loading';
+            })
+            .addCase(refreshUTXOsStatuses.fulfilled, (state, action) => {
+                state.status = 'idle';
+                if (action.payload) {
+                    const [address, statusesByID] = action.payload;
+                    const addrHash = shortAddressHash(address);
+                    for (const [id, status] of statusesByID) {
+                        const reward = state.value?.[addrHash]?.[id];
+                        if (reward) {
+                            console.debug(
+                                `Updating UTXO status ID ${id}: ${reward.utxoStatus} -> ${status}`,
+                            );
+                            reward.utxoStatus = status;
+                        }
+                    }
+                }
+            })
+            .addCase(refreshUTXOsStatuses.rejected, state => {
                 state.status = 'failed';
             });
     },

@@ -4,7 +4,7 @@ import {Wallet} from 'ethers';
 import {
     deriveKeypairFromSignature,
     generateRandomBabyJubValue,
-    SNARK_FIELD_SIZE,
+    BN254_FIELD_SIZE,
 } from '../../src/lib/keychain';
 import {IKeypair} from '../../src/lib/types';
 import {
@@ -36,13 +36,13 @@ describe('Spending child keypair', () => {
         expect(spendingChildKeypair.publicKey).toBeDefined();
     });
 
-    it('should be smaller than SNARK_FIELD_SIZE', () => {
-        expect(spendingChildKeypair.privateKey < SNARK_FIELD_SIZE).toBeTruthy();
+    it('should be smaller than BN254_FIELD_SIZE', () => {
+        expect(spendingChildKeypair.privateKey < BN254_FIELD_SIZE).toBeTruthy();
         expect(
-            spendingChildKeypair.publicKey[0] < SNARK_FIELD_SIZE,
+            spendingChildKeypair.publicKey[0] < BN254_FIELD_SIZE,
         ).toBeTruthy();
         expect(
-            spendingChildKeypair.publicKey[1] < SNARK_FIELD_SIZE,
+            spendingChildKeypair.publicKey[1] < BN254_FIELD_SIZE,
         ).toBeTruthy();
     });
 });
@@ -55,12 +55,12 @@ describe('Keychain', () => {
             const keypairs: IKeypair[] = await deriveRootKeypairs(
                 randomAccount,
             );
-            expect(keypairs[0].privateKey < SNARK_FIELD_SIZE).toBeTruthy();
-            expect(keypairs[0].publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
-            expect(keypairs[0].publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
-            expect(keypairs[1].privateKey < SNARK_FIELD_SIZE).toBeTruthy();
-            expect(keypairs[1].publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
-            expect(keypairs[1].publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[0].privateKey < BN254_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[0].publicKey[0] < BN254_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[0].publicKey[1] < BN254_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[1].privateKey < BN254_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[1].publicKey[0] < BN254_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[1].publicKey[1] < BN254_FIELD_SIZE).toBeTruthy();
         });
 
         it('should be deterministic', async () => {

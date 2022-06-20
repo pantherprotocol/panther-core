@@ -1,6 +1,6 @@
 import {babyjub} from 'circomlibjs';
 
-import {SNARK_FIELD_SIZE} from './keychain';
+import {BN254_FIELD_SIZE} from './keychain';
 
 export function assert(condition: boolean, message: string) {
     if (!condition) {
@@ -10,7 +10,7 @@ export function assert(condition: boolean, message: string) {
 
 export function assertInBN254Field(value: bigint, objectDescription: string) {
     assert(
-        value < SNARK_FIELD_SIZE,
+        value < BN254_FIELD_SIZE,
         `${objectDescription} is not in the BN254 field`,
     );
 }

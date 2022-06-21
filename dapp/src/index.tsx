@@ -4,9 +4,10 @@ import {Web3Provider} from '@ethersproject/providers';
 import {Web3ReactProvider} from '@web3-react/core';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
 
 import App from './App';
-import {store} from './redux/store';
+import {persistor, store} from './redux/store';
 import reportWebVitals from './reportWebVitals';
 
 import './styles.scss';
@@ -20,9 +21,11 @@ function getLibrary(provider: any): Web3Provider {
 ReactDOM.render(
     <React.StrictMode>
         <Provider store={store}>
-            <Web3ReactProvider getLibrary={getLibrary}>
-                <App />
-            </Web3ReactProvider>
+            <PersistGate loading={null} persistor={persistor}>
+                <Web3ReactProvider getLibrary={getLibrary}>
+                    <App />
+                </Web3ReactProvider>
+            </PersistGate>
         </Provider>
     </React.StrictMode>,
     document.getElementById('root'),

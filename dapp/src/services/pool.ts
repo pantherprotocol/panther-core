@@ -25,6 +25,15 @@ import {deriveSpendingChildKeypair, deriveRootKeypairs} from './keychain';
 import {decryptRandomSecret as decryptRandomSecret} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
 
+export async function getExitTime(
+    library: any,
+    chainId: number,
+): Promise<number> {
+    const contract = getPoolContract(library, chainId);
+    const exitTimeBN = await contract.EXIT_TIME();
+    return Number(exitTimeBN.toString());
+}
+
 /*
 exit decodes UTXO data received from the subgraph, deciphers the random secret,
 generates child spending keys, checks if the  nullifier is not spent, verifies

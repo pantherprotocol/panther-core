@@ -1,0 +1,104 @@
+@import '../../../../../../../variables.scss';
+
+.MuiPaper-root.MuiDialog-paper {
+    background: $modal-back;
+
+    mix-blend-mode: normal;
+    border: 1px solid rgba(102, 141, 198, 0.4);
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(1000px);
+    padding: 20px 10px;
+    border-radius: 15px;
+}
+.MuiDialogContent-root.MuiDialogContent-root {
+    padding: 15px 60px;
+    text-align: center;
+
+    .dialog-message {
+        font-size: 18px;
+        line-height: 30px;
+        text-align: center;
+        color: $white;
+        margin-bottom: 40px;
+
+        #dialog-warning {
+            color: $highlighted-text;
+            font-weight: 900;
+            font-size: 20px;
+            padding: 0px 3px;
+        }
+
+        .bold {
+            font-weight: 800;
+        }
+    }
+}
+.MuiFormControlLabel-root .MuiFormControlLabel-label {
+    font-weight: 800;
+    font-size: 20px;
+}
+.redeem-dialog-header {
+    align-items: flex-start;
+    width: 100%;
+
+    .back-button {
+        background: #475267;
+        border-radius: 8px;
+
+        #caption {
+            color: $white;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 2px 10px;
+        }
+    }
+}
+
+.MuiButtonBase-root.MuiButton-root.redeem-button {
+    background: $btn-blue;
+    color: $white;
+    padding: 10px 20px;
+    margin: 5px 15px;
+    border-radius: 8px;
+    text-transform: none;
+}
+
+.confirm-redemption-checkbox {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    color: $highlighted-text;
+}
+
+#redeem-dialog-title {
+    display: flex;
+    justify-content: center;
+    color: $white;
+    line-height: 42px;
+    font-weight: 800;
+    font-size: 24px;
+    padding-bottom: 20px;
+}
+
+.redeem-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-around !important;
+    margin: 20px 24px !important;
+    background: $grey-btn;
+    border-radius: 14px;
+
+    &.active {
+        color: $white;
+        background: $btn-blue;
+    }
+    .MuiButton-root.MuiButton-text {
+        text-align: center;
+        font-weight: $semi-bold-font-weight;
+        font-size: $title-font-size;
+        height: 40px;
+        box-shadow: none;
+        text-transform: none;
+        color: $black;
+    }
+}

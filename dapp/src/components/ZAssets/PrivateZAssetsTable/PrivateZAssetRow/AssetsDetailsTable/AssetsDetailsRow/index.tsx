@@ -8,11 +8,16 @@ import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 
 import rightSideArrow from '../../../../../../images/right-arrow-icon.svg';
-import {formatCurrency, formatTime} from '../../../../../../lib/format';
+import {
+    formatCurrency,
+    formatPercentage,
+    formatTime,
+} from '../../../../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../../../../redux/hooks';
 import {updateUTXOStatus} from '../../../../../../redux/slices/advancedStakesRewards';
 import {termsSelector} from '../../../../../../redux/slices/stakeTerms';
 import {exit} from '../../../../../../services/pool';
+import {getAdvStakingAPY} from '../../../../../../services/rewards';
 import {AdvancedStakeRewards, StakeType} from '../../../../../../types/staking';
 
 import './styles.scss';
@@ -25,6 +30,9 @@ const AssetsDetailsRow = (props: {rewards: AdvancedStakeRewards}) => {
 
     const balance = formatCurrency(BigNumber.from(props.rewards.zZKP));
     const prp = formatCurrency(utils.parseEther(props.rewards.PRP));
+    const advancedStakingAPY = getAdvStakingAPY(
+        Number(props.rewards.creationTime) * 1000,
+    );
     const lockedTill = useAppSelector(
         termsSelector(chainId!, StakeType.Advanced, 'lockedTill'),
     );
@@ -85,7 +93,7 @@ const AssetsDetailsRow = (props: {rewards: AdvancedStakeRewards}) => {
                 {prp} PRP
             </TableCell>
             <TableCell align="right" className="bold-beige">
-                60%
+                {formatPercentage(advancedStakingAPY / 100)}
             </TableCell>
             <TableCell align="center">{redeemButton}</TableCell>
         </TableRow>

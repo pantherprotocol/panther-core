@@ -10,9 +10,11 @@ import BalanceCard from '../../components/BalanceCard';
 import CurrentStakeAPY from '../../components/CurrentStakeAPY';
 import {MainPageWrapper} from '../../components/MainPageWrapper';
 import StakingUnstakingCard from '../../components/StakingUnstakingCard';
+import Welcome from '../../components/Welcome';
 import background from '../../images/background-adv.png';
-import {useAppDispatch} from '../../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
+import {firstVisitSelector} from '../../redux/slices/isFirstVisit';
 import {getStakeTerms} from '../../redux/slices/stakeTerms';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
@@ -38,37 +40,60 @@ const Staking = (): React.ReactElement => {
         dispatch(getStakeTerms, context);
     }, [context, dispatch]);
 
+    const firstVisit = useAppSelector(firstVisitSelector);
+
     return (
         <MainPageWrapper background={background}>
             <Box className="main-box-holder">
                 <Container className="main-container">
-                    <Grid container>
-                        <Grid item md={1} xs={12} />
-                        <Grid item container spacing={2} md={10} xs={12}>
-                            <Grid item xs={12} md={5}>
-                                <Box width={'100%'}>
-                                    <BalanceCard />
-                                </Box>
-                            </Grid>
+                    {firstVisit ? (
+                        <Grid container>
+                            <Grid item xs={12} md={2}></Grid>
+
                             <Grid
+                                container
+                                justifyContent="center"
+                                alignItems="center"
                                 item
+                                md={8}
                                 xs={12}
-                                md={7}
-                                className="apy-staking-right-panel"
                             >
-                                <Box width={'100%'}>
-                                    {chainHasAdvancedStaking(chainId) ? (
-                                        <AdvancedStakingRewards />
-                                    ) : (
-                                        <CurrentStakeAPY />
-                                    )}
-                                    <StakingUnstakingCard />
-                                </Box>
-                                <Grid item xs={12} md={3}></Grid>
+                                <Grid item xs={12} sm={12} md={12}>
+                                    <Welcome />
+                                </Grid>
                             </Grid>
+                            <Grid item xs={12} md={2}></Grid>
                         </Grid>
-                        <Grid item md={1} xs={12} />
-                    </Grid>
+                    ) : (
+                        <Grid container>
+                            <Grid item md={1} xs={12} />
+                            <Grid item container spacing={2} md={10} xs={12}>
+                                <Grid item xs={12} md={5}>
+                                    <Box width={'100%'}>
+                                        <BalanceCard />
+                                    </Box>
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    md={7}
+                                    className="apy-staking-right-panel"
+                                >
+                                    <Box width={'100%'}>
+                                        {chainHasAdvancedStaking(chainId) ? (
+                                            <AdvancedStakingRewards />
+                                        ) : (
+                                            <CurrentStakeAPY />
+                                        )}
+                                        <StakingUnstakingCard />
+                                    </Box>
+
+                                    <Grid item xs={12} md={3}></Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item md={1} xs={12} />
+                        </Grid>
+                    )}
                 </Container>
             </Box>
         </MainPageWrapper>

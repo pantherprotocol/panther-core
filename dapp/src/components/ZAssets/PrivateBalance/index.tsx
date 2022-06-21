@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useState} from 'react';
+import {useCallback} from 'react';
 
 import {Box, Button, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
@@ -7,11 +7,13 @@ import {BigNumber, utils} from 'ethers';
 
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
-import {formatCurrency, formatUSD} from '../../../lib/format';
+import {formatCurrency, formatTimeSince, formatUSD} from '../../../lib/format';
 import {fiatPrice} from '../../../lib/tokenPrice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {
+    lastRefreshTime,
     refreshUTXOsStatuses,
+    statusSelector,
     totalSelector,
 } from '../../../redux/slices/advancedStakesRewards';
 import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
@@ -33,7 +35,10 @@ export default function PrivateBalance() {
     const unclaimedPRP = useAppSelector(
         totalSelector(account, StakingRewardTokenID.PRP),
     );
-    const [loading, setLoading] = useState<boolean>(false);
+
+    const lastRefresh = useAppSelector(lastRefreshTime);
+    const status = useAppSelector(statusSelector);
+    const loading = status === 'loading';
 
     const dispatch = useAppDispatch();
 
@@ -42,6 +47,22 @@ export default function PrivateBalance() {
     const refresh = useCallback(async () => {
         dispatch(refreshUTXOsStatuses, context);
     }, [context, dispatch]);
+
+    const toolTip = (
+        <div>
+            <p>Shows when the last refresh was done.</p>
+            <p>
+                Some of your assets may not be shown if they were not updated
+                recently. You can refresh your assets by clicking the refresh
+                button above.
+            </p>
+            <p>
+                A signature request is required each time in order to generate
+                the root keys to your Panther wallet. These are highly security
+                sensitive, so they are not stored on disk.
+            </p>
+        </div>
+    );
 
     return (
         <Box className="private-zAssets-balance-container">
@@ -67,13 +88,7 @@ export default function PrivateBalance() {
                     variant="text"
                     className={`refresh-button`}
                     startIcon={!loading && <img src={refreshIcon} />}
-                    onClick={async () => {
-                        //Just for UI testing purposes
-                        setTimeout(() => {
-                            setLoading(false);
-                        }, 3000);
-                        setLoading(true);
-                    }}
+                    onClick={refresh}
                 >
                     {loading && (
                         <i
@@ -81,16 +96,15 @@ export default function PrivateBalance() {
                             style={{marginRight: '5px'}}
                         />
                     )}
-                    {loading && <span>Loading Data from Server</span>}
+                    {loading && <span>Scanning Panther wallet</span>}
                     {!loading && <span>Refresh Private Balance</span>}
                 </Button>
                 <Typography className="last-sync">
-                    <span>Last sync 4 days ago</span>
-                    <Tooltip
-                        title={'Last sync ...'}
-                        data-html="true"
-                        placement="top"
-                    >
+                    <span>
+                        Last sync{' '}
+                        {lastRefresh ? formatTimeSince(lastRefresh) : '-'}
+                    </span>
+                    <Tooltip title={toolTip} data-html="true" placement="top">
                         <img src={infoIcon} />
                     </Tooltip>
                 </Typography>

@@ -1,4 +1,5 @@
 import {BigNumber, utils} from 'ethers';
+import moment from 'moment';
 
 import {getLocale} from './i18n';
 import {roundDown} from './numbers';
@@ -20,6 +21,10 @@ export const formatTime = (
         })
     );
 };
+
+export function formatTimeSince(date: number | null): string {
+    return moment(date).fromNow();
+}
 
 export function formatPercentage(percentage: number): string {
     const percentFormat = new Intl.NumberFormat(getLocale(), {

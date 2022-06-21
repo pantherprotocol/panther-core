@@ -1,0 +1,81 @@
+@import '../../variables.scss';
+$welcome-title-background-color: linear-gradient(
+    92.53deg,
+    #ffdfbd 0%,
+    #d0a7a8 95.77%
+);
+$link-color: #ffdfbd;
+
+.welcome-container {
+    .welcome-holder {
+        background: #cadfff15;
+        border-radius: 15px;
+        direction: 'column';
+        justify-content: 'center';
+        align-items: 'center';
+
+        .high-resolution-logo {
+            margin-top: -120px;
+        }
+
+        .welcome-title {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            font-weight: 700;
+            font-size: 29px;
+            line-height: 42px;
+            background: $welcome-title-background-color;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .welcome-message {
+            font-size: 18px;
+            line-height: 24px;
+            color: $white;
+            opacity: 0.8;
+            padding: 5px 45px;
+            text-align: left;
+            a {
+                padding: 0 5px;
+
+                color: $link-color;
+            }
+        }
+
+        .features-holder {
+            margin: 10px 35px;
+
+            .welcome-feature {
+                min-height: 150px;
+                direction: 'row';
+                background: #cadfff20;
+                mix-blend-mode: normal;
+                border-radius: 8px;
+                margin: 10px;
+                color: $white;
+                text-align: left;
+                line-height: 25px;
+                font-size: 16px;
+                opacity: 0.8;
+
+                .feature-title {
+                    font-weight: 700;
+                    padding: 25px 20px 5px 25px;
+                    height: 100px;
+                }
+
+                .feature-message {
+                    padding: 5px 25px;
+                }
+            }
+        }
+
+        .continue-button-holder {
+            margin: 25px 45px;
+        }
+    }
+}

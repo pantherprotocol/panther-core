@@ -1,4 +1,4 @@
-import {configureStore} from '@reduxjs/toolkit';
+import {configureStore, combineReducers} from '@reduxjs/toolkit';
 import {
     persistReducer,
     persistStore,
@@ -15,6 +15,7 @@ import advancedStakeInputRewardsReducer from './slices/advancedStakePredictedRew
 import advancedStakesRewardsReducer from './slices/advancedStakesRewards';
 import blurReducer from './slices/blur';
 import chainBalanceReducer from './slices/chainBalance';
+import firstVisitReducer from './slices/isFirstVisit';
 import stakeTermsReducer from './slices/stakeTerms';
 import totalStakedReducer from './slices/totalStaked';
 import totalUnclaimedClassicRewardsReducer from './slices/totalUnclaimedClassicRewards';
@@ -23,26 +24,28 @@ import zkpStakedBalanceReducer from './slices/zkpStakedBalance';
 import zkpTokenBalanceReducer from './slices/zkpTokenBalance';
 
 const rootPersistConfig = {
-    key: 'advancedStakesRewards',
+    key: 'root',
     storage: storage,
+    whitelist: ['advancedStakesRewards', 'firstVisit'],
 };
+const rootReducer = combineReducers({
+    advancedStakesRewards: advancedStakesRewardsReducer,
+    blur: blurReducer,
+    chainBalance: chainBalanceReducer,
+    totalStaked: totalStakedReducer,
+    zkpMarketPrice: zkpMarketPriceReducer,
+    zkpTokenBalance: zkpTokenBalanceReducer,
+    zkpStakedBalance: zkpStakedBalanceReducer,
+    advancedStakeInputRewards: advancedStakeInputRewardsReducer,
+    stakeTerms: stakeTermsReducer,
+    totalUnclaimedClassicRewards: totalUnclaimedClassicRewardsReducer,
+    firstVisit: firstVisitReducer,
+});
+
+const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
 
 export const store = configureStore({
-    reducer: {
-        chainBalance: chainBalanceReducer,
-        totalStaked: totalStakedReducer,
-        zkpMarketPrice: zkpMarketPriceReducer,
-        blur: blurReducer,
-        zkpTokenBalance: zkpTokenBalanceReducer,
-        zkpStakedBalance: zkpStakedBalanceReducer,
-        advancedStakeInputRewards: advancedStakeInputRewardsReducer,
-        totalUnclaimedClassicRewards: totalUnclaimedClassicRewardsReducer,
-        advancedStakesRewards: persistReducer(
-            rootPersistConfig,
-            advancedStakesRewardsReducer as any,
-        ) as any,
-        stakeTerms: stakeTermsReducer,
-    },
+    reducer: persistedReducer,
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
             serializableCheck: {

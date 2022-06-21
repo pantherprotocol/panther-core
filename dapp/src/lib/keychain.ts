@@ -17,7 +17,7 @@ import {
 } from './assertions';
 import {IKeypair, PrivateKey, PublicKey} from './types';
 
-export const SNARK_FIELD_SIZE = BigInt(
+export const BN254_FIELD_SIZE = BigInt(
     '21888242871839275222246405745257275088548364400416034343698204186575808495617',
 );
 
@@ -86,7 +86,7 @@ export const deriveKeypairFromSignature = (signature: string): IKeypair => {
 
 export const truncateToSnarkField = (v: bigint): bigint => {
     // The public keys need to be truncated in the SNARK field.
-    return v % SNARK_FIELD_SIZE;
+    return v % BN254_FIELD_SIZE;
 };
 
 export function truncateToBabyjubSubOrder(v: bigint): bigint {
@@ -159,8 +159,8 @@ export const extractSecretsPair = (
     const r = signature.slice(2, 66);
     const s = signature.slice(66, 130);
     return [
-        BigInt('0x' + r) % SNARK_FIELD_SIZE,
-        BigInt('0x' + s) % SNARK_FIELD_SIZE,
+        BigInt('0x' + r) % BN254_FIELD_SIZE,
+        BigInt('0x' + s) % BN254_FIELD_SIZE,
     ];
 };
 

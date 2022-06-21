@@ -7,7 +7,7 @@ import {
 import {
     deriveKeypairFromSeed,
     packPublicKey,
-    SNARK_FIELD_SIZE,
+    BN254_FIELD_SIZE,
 } from '../../src/lib/keychain';
 import {
     generateEcdhSharedKey,
@@ -38,17 +38,17 @@ describe('Cryptographic operations', () => {
     );
 
     describe('Private key', () => {
-        it('should be smaller than the snark field size', () => {
-            expect(keypair1.privateKey < SNARK_FIELD_SIZE).toBeTruthy();
+        it('should be smaller than the SNARK field size (BN254)', () => {
+            expect(keypair1.privateKey < BN254_FIELD_SIZE).toBeTruthy();
             // TODO: add tests to ensure that the prune buffer step worked
         });
     });
 
     describe("Public key's constituent values ", () => {
-        it('should be smaller than the snark field size', () => {
+        it('should be smaller than the SNARK field size (BN254)', () => {
             // TODO: Figure out if these checks are correct and enough
-            expect(keypair1.publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
-            expect(keypair1.publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair1.publicKey[0] < BN254_FIELD_SIZE).toBeTruthy();
+            expect(keypair1.publicKey[1] < BN254_FIELD_SIZE).toBeTruthy();
         });
     });
 
@@ -73,9 +73,9 @@ describe('Cryptographic operations', () => {
             ).toBeTruthy();
         });
 
-        it('should be smaller than the snark field size', () => {
+        it('should be smaller than the SNARK field size (BN254)', () => {
             expect(
-                uint8ArrayToBigInt(ciphertext.iv) < SNARK_FIELD_SIZE,
+                uint8ArrayToBigInt(ciphertext.iv) < BN254_FIELD_SIZE,
             ).toBeTruthy();
         });
 

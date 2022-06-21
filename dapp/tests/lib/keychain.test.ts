@@ -59,7 +59,7 @@ describe('Keychain', () => {
     });
 
     describe('Private and public key of keypair derived from signature', () => {
-        it('should be smaller within babyjubjub and SNARK filed sizes, respectively', () => {
+        it('should be smaller than babyJubJub and BN254 field sizes, respectively', () => {
             const keypair = deriveKeypairFromSignature(signature);
             expect(keypair.privateKey < babyjub.subOrder).toBeTruthy();
             expect(keypair.publicKey[0] < BN254_FIELD_SIZE).toBeTruthy();
@@ -75,7 +75,7 @@ describe('Keychain', () => {
     });
 
     describe('Private and public key of random keypair', () => {
-        it('should be smaller within babyjubjub and SNARK filed sizes, respectively', () => {
+        it('should be smaller than babyJubJub and BN254 field sizes, respectively', () => {
             const keypair = deriveKeypairFromSeed();
             expect(keypair.privateKey < babyjub.subOrder).toBeTruthy();
             expect(keypair.publicKey[0] < BN254_FIELD_SIZE).toBeTruthy();
@@ -142,7 +142,7 @@ describe('Keychain', () => {
             });
         });
 
-        describe('Public key outside BN254 filed', () => {
+        describe('Public key outside BN254 field', () => {
             const r = generateRandomBabyJubValue();
             const pubKeyWithinSnark = [
                 BN254_FIELD_SIZE - bigOne,

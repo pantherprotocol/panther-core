@@ -54,6 +54,7 @@
     "easy-peasy": "^5.0.3",
     "ethers": "^5.5.1",
     "lodash": "^4.17.21",
+    "moment": "^2.29.3",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "query-string": "^7.0.1",
     "react": "^17.0.2",

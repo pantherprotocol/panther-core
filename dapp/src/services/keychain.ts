@@ -1,6 +1,7 @@
 import {poseidon} from 'circomlibjs';
 import {Signer} from 'ethers';
 
+import {parseTxErrorMessage} from '../lib/errors';
 import {
     deriveKeypairFromSignature,
     multiplyScalars,
@@ -20,7 +21,9 @@ export function generateSpendingChildKeypair(
     return deriveKeypairFromSeed(spendingChildPrivKey);
 }
 
-export async function deriveRootKeypairs(signer: Signer): Promise<IKeypair[]> {
+export async function deriveRootKeypairs(
+    signer: Signer,
+): Promise<IKeypair[] | Error> {
     const derivationMessage = `Greetings from Panther Protocol!
 
 Sign this message in order to obtain the keys to your Panther wallet.
@@ -28,7 +31,13 @@ Sign this message in order to obtain the keys to your Panther wallet.
 This signature will not cost you any fees.
 
 Keypair version: 1`;
-    const signature = await signer.signMessage(derivationMessage);
+    let signature: string;
+    try {
+        signature = await signer.signMessage(derivationMessage);
+    } catch (error) {
+        return new Error(parseTxErrorMessage(error));
+    }
+
     const hashedSignature = poseidon([signature]);
     return [
         deriveKeypairFromSignature(signature),

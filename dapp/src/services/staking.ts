@@ -124,10 +124,12 @@ async function craftAdvancedStakeData(signer: Signer): Promise<string | Error> {
         encrypted(prolog, r[2])),
     ).join('')
     */
-    const [rootSpendingKeypair, rootReadingKeypair] = await deriveRootKeypairs(
-        signer,
-    );
+    const keys = await deriveRootKeypairs(signer);
+    if (keys instanceof Error) {
+        return keys as Error;
+    }
 
+    const [rootSpendingKeypair, rootReadingKeypair] = keys;
     const publicSpendingKeys: string[] = [];
     const secretMsgs: string[] = [];
 

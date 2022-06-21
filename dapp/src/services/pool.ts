@@ -58,9 +58,16 @@ export async function exit(
     );
 
     const signer = library.getSigner(account);
-    const [rootSpendingKeypair, rootReadingKeypair] = await deriveRootKeypairs(
-        signer,
-    );
+    const keys = await deriveRootKeypairs(signer);
+    if (keys instanceof Error) {
+        notifyError(
+            'Redemption error',
+            `Cannot sign a message: ${keys.message}`,
+            keys,
+        );
+        return UTXOStatus.UNDEFINED;
+    }
+    const [rootSpendingKeypair, rootReadingKeypair] = keys;
 
     const {
         status,
@@ -82,16 +89,17 @@ export async function exit(
     if (cannotDecode && error) {
         notifyError(
             'Redemption error',
-            `Cannot decode utxoData. ${parseTxErrorMessage(error)}`,
+            `Cannot decode zAsset secret message: ${error.message}`,
             error,
         );
         return UTXOStatus.UNDEFINED;
     }
 
     if (isChildKeyInvalid || !childSpendingKeypair) {
+        const msg = error?.message;
         notifyError(
             'Redemption error',
-            error ? error.toString() : 'Cannot derive child spending key',
+            `Cannot derive the key to spend zAsset${msg ? `: ${msg}` : ''}`,
             {
                 childSpendingPubKey: childSpendingKeypair
                     ? childSpendingKeypair.publicKey
@@ -103,7 +111,7 @@ export async function exit(
     }
 
     if (status === UTXOStatus.SPENT) {
-        notifyError('Redemption error', 'zAsset is already spent', {
+        notifyError('Redemption error', 'zAsset is already spent.', {
             nullifier,
         });
         return UTXOStatus.SPENT;
@@ -122,7 +130,7 @@ export async function exit(
 
     const zZkpCommitment = commitments[0];
     if (commitmentHex !== zZkpCommitment) {
-        notifyError('Redemption error', 'Invalid commitment', {
+        notifyError('Redemption error', 'Invalid zAsset commitment.', {
             commitmentInProof: commitmentHex,
             commitmentInEvent: zZkpCommitment,
         });
@@ -131,16 +139,24 @@ export async function exit(
 
     const path = await generateMerklePath(leafId, chainId);
     if (path instanceof Error) {
-        notifyError('Redemption error', 'Cannot generate Merkle path', path);
+        notifyError(
+            'Redemption error',
+            `Cannot generate Merkle proof of valid zAsset: ${path.message}`,
+            path,
+        );
         return UTXOStatus.UNSPENT;
     }
     const [pathElements, proofLeafHex, merkleTreeRoot, treeIndex] = path;
 
     if (proofLeafHex !== zZkpCommitment) {
-        notifyError('Redemption error', 'Invalid commitment', {
-            leafInProof: proofLeafHex,
-            leafInEvent: zZkpCommitment,
-        });
+        notifyError(
+            'Redemption error',
+            "zAsset didn't match shielded pool entry.",
+            {
+                leafInProof: proofLeafHex,
+                leafInEvent: zZkpCommitment,
+            },
+        );
         return UTXOStatus.UNSPENT;
     }
 
@@ -153,12 +169,16 @@ export async function exit(
         pathElements,
     );
     if (isProofValid instanceof Error) {
-        notifyError('Redemption error', 'Merkle path is not correct', {
-            proofLeaf: proofLeafHex,
-            leafId: bigintToBytes32(leafId),
-            merkleTreeRoot,
-            pathElements,
-        });
+        notifyError(
+            'Redemption error',
+            'Merkle proof of zAsset in shielded pool is not correct.',
+            {
+                proofLeaf: proofLeafHex,
+                leafId: bigintToBytes32(leafId),
+                merkleTreeRoot,
+                pathElements,
+            },
+        );
         return UTXOStatus.UNSPENT;
     }
 
@@ -190,7 +210,7 @@ export async function getChangedUTXOsStatuses(
     account: string,
     chainId: number,
     advancedRewards: AdvancedStakeRewards[],
-): Promise<UTXOStatusByID[]> {
+): Promise<UTXOStatusByID[] | Error> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -199,9 +219,16 @@ export async function getChangedUTXOsStatuses(
     );
 
     const signer = library.getSigner(account);
-    const [rootSpendingKeypair, rootReadingKeypair] = await deriveRootKeypairs(
-        signer,
-    );
+    const keys = await deriveRootKeypairs(signer);
+    if (keys instanceof Error) {
+        notifyError(
+            'Failed to refresh zAssets',
+            `Cannot sign a message: ${parseTxErrorMessage(keys)}`,
+            keys,
+        );
+        return keys;
+    }
+    const [rootSpendingKeypair, rootReadingKeypair] = keys;
 
     const statusesNeedUpdate: UTXOStatusByID[] = [];
 
@@ -266,7 +293,7 @@ async function unpackUTXOAndDeriveKeys(
     if (!isChildKeyValid) {
         return {
             status: UTXOStatus.UNDEFINED,
-            error: new Error('Invalid child spending public key'),
+            error: new Error('Invalid spending public key'),
             isChildKeyInvalid: !isChildKeyValid,
         };
     }
@@ -299,11 +326,11 @@ function decodeUTXOData(
     // token id. See documentation for more details:
     // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k/
     if (utxoData.length !== 648) {
-        return new Error('Invalid utxoData length');
+        return new Error('Invalid zAssets data length');
     }
 
     if (utxoData.slice(0, 4) !== '0xab') {
-        return new Error('Invalid utxoData or MessageType');
+        return new Error('Invalid zAssets data or message type');
     }
     const decoded = utils.defaultAbiCoder.decode(
         ['uint256[3]', 'uint256', 'uint256'],
@@ -356,18 +383,24 @@ async function generateMerklePath(
         return treeResponse;
     }
 
-    const treeJson = treeResponse.json();
-    const tree = TriadMerkleTree.deserialize(treeJson);
-    const [merkleProof, treeId] = generateMerkleProof(leafId, tree);
-    const pathElements =
-        triadTreeMerkleProofToPathElements(merkleProof).map(bigintToBytes32);
+    try {
+        const treeJson = treeResponse.json();
+        const tree = TriadMerkleTree.deserialize(treeJson);
+        const [merkleProof, treeId] = generateMerkleProof(leafId, tree);
+        const pathElements =
+            triadTreeMerkleProofToPathElements(merkleProof).map(
+                bigintToBytes32,
+            );
 
-    return [
-        pathElements,
-        bigintToBytes32(merkleProof.leaf),
-        bigintToBytes32(merkleProof.root),
-        treeId,
-    ];
+        return [
+            pathElements,
+            bigintToBytes32(merkleProof.leaf),
+            bigintToBytes32(merkleProof.root),
+            treeId,
+        ];
+    } catch (error) {
+        return error as Error;
+    }
 }
 
 async function poolContractExit(
@@ -416,7 +449,7 @@ async function poolContractExit(
     if (event instanceof Error) {
         return notifyError(
             'Transaction error',
-            `Cannot find event in receipt. ${parseTxErrorMessage(event)}`,
+            `Cannot find event in receipt: ${parseTxErrorMessage(event)}`,
             event,
         );
     }

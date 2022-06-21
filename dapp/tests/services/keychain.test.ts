@@ -52,9 +52,9 @@ describe('Keychain', () => {
 
     describe('Root keypairs', () => {
         it('should be smaller than snark FIELD_SIZE', async () => {
-            const keypairs: IKeypair[] = await deriveRootKeypairs(
+            const keypairs: IKeypair[] = (await deriveRootKeypairs(
                 randomAccount,
-            );
+            )) as IKeypair[];
             expect(keypairs[0].privateKey < BN254_FIELD_SIZE).toBeTruthy();
             expect(keypairs[0].publicKey[0] < BN254_FIELD_SIZE).toBeTruthy();
             expect(keypairs[0].publicKey[1] < BN254_FIELD_SIZE).toBeTruthy();
@@ -64,8 +64,12 @@ describe('Keychain', () => {
         });
 
         it('should be deterministic', async () => {
-            const keypairsOne = await deriveRootKeypairs(randomAccount);
-            const keypairsTwo = await deriveRootKeypairs(randomAccount);
+            const keypairsOne = (await deriveRootKeypairs(
+                randomAccount,
+            )) as IKeypair[];
+            const keypairsTwo = (await deriveRootKeypairs(
+                randomAccount,
+            )) as IKeypair[];
             expect(keypairsOne[0].privateKey).toEqual(
                 keypairsTwo[0].privateKey,
             );

@@ -1,10 +1,12 @@
 import * as React from 'react';
-import {useCallback} from 'react';
+import {useCallback, useState} from 'react';
 
-import {Box, Typography} from '@mui/material';
+import {Box, Button, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 
+import infoIcon from '../../../images/info-icon.svg';
+import refreshIcon from '../../../images/refresh-icon.svg';
 import {formatCurrency, formatUSD} from '../../../lib/format';
 import {fiatPrice} from '../../../lib/tokenPrice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
@@ -31,6 +33,7 @@ export default function PrivateBalance() {
     const unclaimedPRP = useAppSelector(
         totalSelector(account, StakingRewardTokenID.PRP),
     );
+    const [loading, setLoading] = useState<boolean>(false);
 
     const dispatch = useAppDispatch();
 
@@ -58,14 +61,39 @@ export default function PrivateBalance() {
                     Total Privacy Reward Points (PRP)
                 </Typography>
             </Box>
-            <Box>
-                {/* <Button
-                    variant="contained"
-                    className="deposit-button"
-                    onClick={refresh}
+
+            <Box className="private-zAssets-refresh">
+                <Button
+                    variant="text"
+                    className={`refresh-button`}
+                    startIcon={!loading && <img src={refreshIcon} />}
+                    onClick={async () => {
+                        //Just for UI testing purposes
+                        setTimeout(() => {
+                            setLoading(false);
+                        }, 3000);
+                        setLoading(true);
+                    }}
                 >
-                    <span>Refresh Assets (replace me)</span>
-                </Button> */}
+                    {loading && (
+                        <i
+                            className="fa fa-refresh fa-spin"
+                            style={{marginRight: '5px'}}
+                        />
+                    )}
+                    {loading && <span>Loading Data from Server</span>}
+                    {!loading && <span>Refresh Private Balance</span>}
+                </Button>
+                <Typography className="last-sync">
+                    <span>Last sync 4 days ago</span>
+                    <Tooltip
+                        title={'Last sync ...'}
+                        data-html="true"
+                        placement="top"
+                    >
+                        <img src={infoIcon} />
+                    </Tooltip>
+                </Typography>
             </Box>
         </Box>
     );

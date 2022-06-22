@@ -384,7 +384,7 @@ async function generateMerklePath(
     }
 
     try {
-        const treeJson = treeResponse.json();
+        const treeJson = await treeResponse.json();
         const tree = TriadMerkleTree.deserialize(treeJson);
         const [merkleProof, treeId] = generateMerkleProof(leafId, tree);
         const pathElements =

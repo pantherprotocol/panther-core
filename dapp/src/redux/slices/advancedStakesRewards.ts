@@ -107,16 +107,17 @@ export const refreshUTXOsStatuses = createAsyncThunk(
 
         const state: RootState = getState() as RootState;
         const advancedRewards = advancedStakesRewardsSelector(account)(state);
-
-        return [
+        const statusesNeedUpdate = await getChangedUTXOsStatuses(
+            library,
             account,
-            await getChangedUTXOsStatuses(
-                library,
-                account,
-                chainId,
-                Object.values(advancedRewards),
-            ),
-        ];
+            chainId,
+            Object.values(advancedRewards),
+        );
+        if (statusesNeedUpdate instanceof Error) {
+            return;
+        }
+
+        return [account, statusesNeedUpdate];
     },
 );
 

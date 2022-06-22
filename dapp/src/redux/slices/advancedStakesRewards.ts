@@ -21,10 +21,13 @@ export interface AdvancedStakeRewardsById {
 export interface AdvancedStakeRewardsByHashedAddressAndById {
     [addressHex: string]: AdvancedStakeRewardsById;
 }
+
+type LoadingStatus = 'idle' | 'loading' | 'failed';
+
 interface AdvancedStakesRewardsState {
     value: AdvancedStakeRewardsByHashedAddressAndById;
     lastRefreshTime: number | null;
-    status: 'idle' | 'loading' | 'failed';
+    status: LoadingStatus;
 }
 
 const initialState: AdvancedStakesRewardsState = {
@@ -250,6 +253,14 @@ export function hasUndefinedUTXOsSelector(
 
         return !!rewardsWithUndefinedStatus;
     };
+}
+
+export function lastRefreshTime(state: RootState): number | null {
+    return state.advancedStakesRewards.lastRefreshTime;
+}
+
+export function statusSelector(state: RootState): LoadingStatus {
+    return state.advancedStakesRewards.status;
 }
 
 export const {resetAdvancedStakesRewards, updateUTXOStatus} =

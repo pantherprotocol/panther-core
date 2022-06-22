@@ -39,8 +39,7 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
     const updateExitTime = useCallback(async () => {
         if (!chainId) return;
         const newExitTime = await getExitTime(library, chainId);
-        // setExitTime(newExitTime);
-        setExitTime(1655510842);
+        setExitTime(newExitTime);
         console.debug(
             'early redemption allowed at',
             formatTime(Number(newExitTime) * 1000, {

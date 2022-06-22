@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 
+import {Box, Container} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
 import {MainPageWrapper} from '../../components/MainPageWrapper';
@@ -36,13 +37,13 @@ export default function ZAssets(): React.ReactElement {
     }, []);
 
     return (
-        <MainPageWrapper {...{background}}>
-            <div className="assets-holder">
-                <div className="assets-container">
+        <MainPageWrapper background={background}>
+            <Box className="assets-holder">
+                <Container className="assets-container">
                     <PrivateBalance />
                     <PrivateZAssetsTable />
-                </div>
-            </div>
+                </Container>
+            </Box>
         </MainPageWrapper>
     );
 }

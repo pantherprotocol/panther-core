@@ -5,20 +5,26 @@
     flex: 1 1 auto;
     background-position: center;
     background-size: cover;
+    padding-bottom: 5px !important;
     min-height: 100vh;
-    padding-bottom: 50px !important;
-}
 
-.isBlur {
-    flex-grow: 1;
-    filter: blur(4px);
-    -webkit-filter: blur(4px);
-}
+    &.isBlur {
+        flex-grow: 1;
+        filter: blur(4px);
+        -webkit-filter: blur(4px);
+    }
 
-img {
-    max-width: 100%;
-}
+    .header-container {
+        min-height: 10vh;
+    }
 
-.main-box-holder {
-    margin-top: 100px !important;
+    .body-container {
+        min-height: 78vh;
+        padding-top: 100px;
+        padding-bottom: 10px;
+    }
+
+    .footer-container {
+        min-height: 10vh;
+    }
 }

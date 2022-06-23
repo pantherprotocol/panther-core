@@ -2,8 +2,8 @@ import {BigNumber} from '@ethersproject/bignumber';
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
-import {constants} from 'ethers';
 
+import {sumBigNumbers} from '../../lib/numbers';
 import {chainHasStakesReporter} from '../../services/contracts';
 import {isClassic} from '../../services/rewards';
 import * as stakingService from '../../services/staking';
@@ -42,15 +42,12 @@ export const getTotalUnclaimedClassicRewards = createAsyncThunk(
             account,
         );
 
-        return reward[1]
+        const rewards = reward[1]
             .filter((row: stakingService.StakeRow) => {
                 return isClassic(row.reward);
             })
-            .reduce(
-                (acc, stake) => acc.add(BigNumber.from(stake.reward)),
-                constants.Zero,
-            )
-            .toString();
+            .map(stake => stake.reward);
+        return sumBigNumbers(rewards).toString();
     },
 );
 

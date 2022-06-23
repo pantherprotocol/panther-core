@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {ReactElement, useCallback, useEffect, useState} from 'react';
 
 import {
     Dialog,
@@ -22,10 +22,33 @@ import {formatTime} from '../../../../../../../lib/format';
 import {useAppDispatch} from '../../../../../../../redux/hooks';
 import {updateUTXOStatus} from '../../../../../../../redux/slices/advancedStakesRewards';
 import {removeBlur, setBlur} from '../../../../../../../redux/slices/blur';
+import {env} from '../../../../../../../services/env';
 import {getExitTime, exit} from '../../../../../../../services/pool';
 import {AdvancedStakeRewards} from '../../../../../../../types/staking';
 
 import './styles.scss';
+
+function getButtonContents(
+    exitTime: number | undefined,
+    afterExitTime: boolean,
+    treeUri: string | undefined,
+): string | ReactElement {
+    if (afterExitTime) {
+        return treeUri ? 'Redeem zZKP' : 'Redemption opens soon!';
+    }
+    return (
+        <Box>
+            <Typography>Locked Until:</Typography>
+            <Typography>
+                {exitTime
+                    ? formatTime(Number(exitTime) * 1000, {
+                          style: 'short',
+                      })
+                    : '?'}
+            </Typography>
+        </Box>
+    );
+}
 
 export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
     const context = useWeb3React();
@@ -82,8 +105,11 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
         dispatch(updateUTXOStatus, [account, props.rewards.id, utxoStatus]);
     }, [dispatch, library, account, chainId, props.rewards, handleClose]);
 
-    const isRedemptionPossible =
-        exitTime && Number(exitTime) * 1000 < Date.now();
+    const afterExitTime = exitTime
+        ? Number(exitTime) * 1000 < Date.now()
+        : false;
+    const treeUri = env[`COMMITMENT_TREE_URL_${chainId}`];
+    const isRedemptionPossible = treeUri && afterExitTime;
 
     return (
         <Box>
@@ -97,20 +123,7 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                 disabled={!isRedemptionPossible}
                 onClick={() => handleClickOpen()}
             >
-                {isRedemptionPossible ? (
-                    'Redeem zZKP'
-                ) : (
-                    <Box>
-                        <Typography>Locked Until:</Typography>
-                        <Typography>
-                            {exitTime
-                                ? formatTime(Number(exitTime) * 1000, {
-                                      style: 'short',
-                                  })
-                                : '?'}
-                        </Typography>
-                    </Box>
-                )}
+                {getButtonContents(exitTime, afterExitTime, treeUri)}
             </Button>
             <Dialog className="redeem-box" onClose={handleClose} open={open}>
                 <DialogTitle className="redeem-dialog-header">

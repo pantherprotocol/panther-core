@@ -80,7 +80,11 @@ export default function StakingInfo() {
                         contracts.
                     </Typography>
                     <p>
-                        You can still unstake{' '}
+                        Advanced stakes are locked until{' '}
+                        {lockedTill
+                            ? formatTime(Number(lockedTill) * 1000)
+                            : 'the end of the program'}
+                        ; however classic stakes can be unstaked{' '}
                         <SafeMuiLink
                             href="https://docs.pantherprotocol.io/dao/support/faq/staking#when-unstake"
                             underline="always"
@@ -88,13 +92,13 @@ export default function StakingInfo() {
                         >
                             at any time
                         </SafeMuiLink>
-                        , and there is no deadline for claiming rewards. However
-                        active stakes have ceased to earn further rewards.
+                        . There is no deadline for claiming rewards for either
+                        program.
                     </p>
                 </>
             ),
         };
-    }, [allowedTill]);
+    }, [allowedTill, lockedTill]);
 
     const getClassicStakingClosedText = useCallback((): {
         subtitle: string;

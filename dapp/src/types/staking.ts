@@ -42,3 +42,20 @@ export enum StakingRewardTokenID {
     zZKP = 'zZKP',
     PRP = 'PRP',
 }
+
+export type WalletActionStatus =
+    | 'in progress'
+    | 'succeeded'
+    | 'failed'
+    | 'unknown'
+    | 'none';
+
+export type WalletSignatureTrigger =
+    | 'undefined UTXOs'
+    | 'manual refresh'
+    | 'zZKP redemption';
+
+// In the future, there may be other types of trigger
+export type WalletActionTrigger = WalletSignatureTrigger;
+
+export type WalletActionCause = {caller: string; trigger: WalletActionTrigger};

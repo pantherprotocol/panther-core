@@ -20,6 +20,7 @@ import poolV0Reducer from './slices/poolV0';
 import stakeTermsReducer from './slices/stakeTerms';
 import totalStakedReducer from './slices/totalStaked';
 import totalUnclaimedClassicRewardsReducer from './slices/totalUnclaimedClassicRewards';
+import Web3WalletLastActionReducer from './slices/web3WalletLastAction';
 import zkpMarketPriceReducer from './slices/zkpMarketPrice';
 import zkpStakedBalanceReducer from './slices/zkpStakedBalance';
 import zkpTokenBalanceReducer from './slices/zkpTokenBalance';
@@ -42,6 +43,7 @@ const rootReducer = combineReducers({
     stakeTerms: stakeTermsReducer,
     totalUnclaimedClassicRewards: totalUnclaimedClassicRewardsReducer,
     firstVisit: firstVisitReducer,
+    Web3WalletLastAction: Web3WalletLastActionReducer,
 });
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer);

@@ -61,4 +61,14 @@ $modal-back: #151c2a;
         font-size: $header-font-size;
         padding: 0px 3px;
     }
+
+    .x-icon {
+        display: flex;
+        justify-content: end;
+        opacity: 0.5;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
 }

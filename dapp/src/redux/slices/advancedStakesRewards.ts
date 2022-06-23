@@ -4,6 +4,7 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {poseidon} from 'circomlibjs';
 import {BigNumber, constants} from 'ethers';
 
+import {IKeypair} from '../../lib/types';
 import {getChangedUTXOsStatuses, UTXOStatusByID} from '../../services/pool';
 import {getAdvancedStakingReward} from '../../services/staking';
 import {AdvancedStakeRewardsResponse} from '../../services/subgraph';
@@ -88,7 +89,6 @@ export const getAdvancedStakesRewards = createAsyncThunk(
                 };
             },
         );
-
         // merging the state in a such way that if previous rewards existed,
         // they will not be overwritten by the new rewards fetched from the
         // subgraph.
@@ -108,14 +108,17 @@ export const getAdvancedStakesRewards = createAsyncThunk(
 export const refreshUTXOsStatuses = createAsyncThunk(
     'refreshUTXOsStatuses',
     async (
-        context: Web3ReactContextInterface<Web3Provider>,
+        payload: {
+            context: Web3ReactContextInterface<Web3Provider>;
+            keys: IKeypair[];
+        },
         {getState},
     ): Promise<[number, string, UTXOStatusByID[]] | undefined> => {
+        const {context, keys} = payload;
         const {library, account, chainId} = context;
         if (!library || !chainId || !account) {
             return;
         }
-
         const state: RootState = getState() as RootState;
         const advancedRewards = advancedStakesRewardsSelector(
             chainId,
@@ -127,10 +130,8 @@ export const refreshUTXOsStatuses = createAsyncThunk(
             account,
             chainId,
             Object.values(advancedRewards),
+            keys,
         );
-        if (statusesNeedUpdate instanceof Error) {
-            return;
-        }
 
         return [chainId, account, statusesNeedUpdate];
     },

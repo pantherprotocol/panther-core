@@ -1,0 +1,11 @@
+@import '../../variables.scss';
+@import '../../styles/modal-dialog.scss';
+
+.signature-request {
+    .more-info {
+        color: $highlighted-text;
+        font-weight: 900;
+        font-size: $header-font-size;
+        padding: 0px 3px;
+    }
+}

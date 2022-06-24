@@ -1,7 +1,7 @@
 @import '../../variables';
 
 .assets-holder {
-    max-width: 1065px;
+    max-width: max-content;
     width: 100%;
     margin: 0 auto;
 
@@ -12,6 +12,7 @@
 
     .assets-container {
         width: 100%;
+        max-width: inherit;
         display: flex;
         flex-direction: column;
     }

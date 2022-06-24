@@ -112,38 +112,45 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                     </Box>
                 )}
             </Button>
-            <Dialog className="redeem-box" onClose={handleClose} open={open}>
-                <DialogTitle className="redeem-dialog-header">
+            <Dialog
+                className="modal-dialog redeem-dialog"
+                onClose={handleClose}
+                open={open}
+            >
+                <Box className="modal-dialog-back-button-holder">
                     <IconButton className="back-button" onClick={handleClose}>
                         <img src={backButtonLeftArrow} />
                         <Typography id="caption">Back</Typography>
                     </IconButton>
-                </DialogTitle>
-
-                <DialogContent>
-                    <Typography id="redeem-dialog-title">
+                </Box>
+                <DialogTitle>
+                    <Typography className="modal-dialog-title">
                         Early ZKP Redemption
                     </Typography>
+                </DialogTitle>
+
+                <DialogContent className="modal-dialog-content-holder">
                     <Typography
                         component="div"
-                        className="dialog-message"
+                        className="modal-dialog-content"
                         display="inline"
                     >
-                        <Box id="dialog-warning" display="inline">
+                        <Box className="warning" display="inline">
                             Warning!
                         </Box>
                         <Box display="inline">
                             If you redeem ZKP before v1.0 of the Multi-Asset
                             Shielded Pool has launched, you will only receive
                             ZKP in return for your zZKP,{' '}
-                        </Box>
-                        <Box className="bold" display="inline">
-                            and your PRP rewards will be lost forever.
+                            <strong>
+                                and your PRP rewards will be lost forever.
+                            </strong>
                         </Box>
                     </Typography>
-                    <FormGroup>
+                </DialogContent>
+                <Box>
+                    <FormGroup className="confirm-redemption-checkbox">
                         <FormControlLabel
-                            className="confirm-redemption-checkbox"
                             control={
                                 <Checkbox
                                     checked={redeemConfirmed}
@@ -153,8 +160,7 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                             label="I understand I will lose all PRP rewards"
                         />
                     </FormGroup>
-                </DialogContent>
-
+                </Box>
                 <DialogActions
                     className={`redeem-action ${
                         redeemConfirmed ? 'active' : ''

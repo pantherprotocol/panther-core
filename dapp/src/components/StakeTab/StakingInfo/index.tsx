@@ -167,7 +167,8 @@ export default function StakingInfo() {
                     </p>
                     <p>
                         <strong>
-                            Also, advanced staking is now in public testing!
+                            However, advanced staking is now in public testing
+                            on the Mumbai network!
                         </strong>{' '}
                         <SafeMuiLink
                             href="https://blog.pantherprotocol.io/incentivized-testing-for-zkp-advanced-staking-is-now-live-19b51bc6b42b"

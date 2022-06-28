@@ -21,7 +21,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const exitTime =
         process.env.POOL_EXIT_TIME || Math.ceil(Date.now() / 1000) + 60;
 
+    let contract = 'TestnetPantherPoolV0';
+
+    if (hre.network.name == 'mainnet' || hre.network.name == 'polygon') {
+        contract = 'PantherPoolV0';
+    }
+
     await deploy('PantherPoolV0', {
+        contract,
         from: deployer,
         args: [multisig, exitTime, vaultProxy.address],
         libraries: {
@@ -34,7 +41,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             owner: multisig,
         },
         log: true,
-        autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+        autoMine: true,
     });
 };
 

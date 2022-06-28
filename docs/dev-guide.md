@@ -143,7 +143,7 @@ Go to `panther-core` repository. we need to call `addTerms()` on the
 `Staking` contract to register the `classic` type of staking with
 appropriate terms. There is a Hardhat task which makes this easy:
 
-    yarn hardhat terms:add --network localhost
+    yarn hardhat terms:add --type classic --network localhost
 
 ### Register the reward adviser for staking and unstaking
 

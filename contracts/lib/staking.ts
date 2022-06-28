@@ -1,10 +1,18 @@
 import * as _ from 'lodash';
 import {utils} from 'ethers';
 import {RewardMaster} from '../types/contracts/RewardMaster';
-import {Staking} from '../types/contracts/Staking';
+import {Staking, IStakingTypes} from '../types/contracts/Staking';
 import {StakeRewardController} from '../types/contracts/StakeRewardController';
-import {classicActionHash, advancedActionHash, STAKE, UNSTAKE} from './hash';
+import {
+    classicActionHash,
+    advancedActionHash,
+    STAKE,
+    UNSTAKE,
+    hash4bytes,
+} from './hash';
 import {toDate} from './units-shortcuts';
+
+export type StakeType = 'classic' | 'advanced';
 
 export async function showStake(
     staking: Staking,
@@ -50,6 +58,19 @@ export async function addRewardAdviser(
         receipts.push(await txToAdd.wait());
     }
     return {transactions, receipts};
+}
+
+export async function addTerms(
+    staking: Staking,
+    terms: IStakingTypes.TermsStruct,
+    stakeType: StakeType,
+) {
+    console.log(`Adding terms for ${stakeType} staking:`, terms);
+
+    const tx = await staking.addTerms(hash4bytes(stakeType), terms);
+    const receipt = await tx.wait();
+
+    console.log(`Transaction submitted: ${receipt.transactionHash}`);
 }
 
 interface HistoricalDatapoint {

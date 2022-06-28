@@ -1,7 +1,8 @@
 #!/usr/bin/env ts-node
 
 // Script to extract advanced staking times from Staking terms
-// and early redemption time from PantherPoolV0.EXIT_TIME(),
+// and early redemption time from PantherPoolV0's EXIT_TIME()
+// or exitTime()
 // and then set the Amplify app's environment variables accordingly.
 //
 // Usage:
@@ -48,29 +49,46 @@ function getEnvVar(name: string): string {
     return stdout.replace(/\n$/, '');
 }
 
-function getExitTimeCallData(): string {
+function getExitTimeCallData(fnName: string): string {
     const iface = new ethers.utils.Interface([
-        'function EXIT_TIME() view returns (uint256)',
+        `function ${fnName}() view returns (uint256)`,
     ]);
-    return iface.encodeFunctionData('EXIT_TIME');
+    return iface.encodeFunctionData(fnName);
+}
+
+async function safeContractCall(
+    provider: ethers.providers.JsonRpcProvider,
+    addr: string,
+    data: string,
+): Promise<string | Error> {
+    try {
+        return await provider.call({
+            to: addr,
+            data,
+        });
+    } catch (err: any) {
+        return err;
+    }
 }
 
 async function getExitTime(provider: ethers.providers.JsonRpcProvider) {
     const poolAddress = getEnvVar('POOL_V0_CONTRACT_80001');
     console.log(`Reading PantherPoolV0 contract at ${poolAddress}`);
 
-    const data = getExitTimeCallData();
-    // const block = 'latest';
-    // const json = {
-    //     jsonrpc: '2.0',
-    //     method: 'eth_call',
-    //     params: [{to: poolAddress, data: sighash}, block],
-    //     id: 1,
-    // };
-    const response = await provider.call({
-        to: poolAddress,
-        data,
-    });
+    let data = getExitTimeCallData('exitTime');
+    let response = await safeContractCall(provider, poolAddress, data);
+    if (response instanceof Error) {
+        console.log(
+            'Failed to call exitTime(); falling back to EXIT_TIME() ...',
+        );
+        data = getExitTimeCallData('EXIT_TIME');
+        response = await safeContractCall(provider, poolAddress, data);
+    }
+    if (response instanceof Error) {
+        console.error('Failed to get exit time:');
+        console.error(response);
+        process.exit(1);
+    }
     return Number(ethers.BigNumber.from(response).toString());
 }
 

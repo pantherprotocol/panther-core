@@ -15,7 +15,7 @@ frontend:
               FAUCET_CONTRACT_{1,4,137,80001} \
               POOL_V0_CONTRACT_80001 SUBGRAPH_URL_80001 \
               {BLOCK_EXPLORER,SUGGESTED_RPC_URL,REWARD_POOL_SIZE,STAKING_PROGRAM_DURATION,HAS_ADVANCED_STAKING}_{1,4,137,80001} \
-              ADVANCED_STAKING_T_{START,END} COMMITMENT_TREE_URL_80001
+              ADVANCED_STAKING_T_{START,END,UNLOCK} COMMITMENT_TREE_URL_80001
           do
               if [ -n "${!var}" ]; then
                   echo "${var}=${!var}" >> dapp/.env

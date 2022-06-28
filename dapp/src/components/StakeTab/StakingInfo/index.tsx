@@ -27,6 +27,10 @@ export default function StakingInfo() {
         ? StakeType.Advanced
         : StakeType.Classic;
 
+    const allowedSince = useAppSelector(
+        termsSelector(chainId!, stakeType, 'allowedSince'),
+    );
+
     const allowedTill = useAppSelector(
         termsSelector(chainId!, stakeType, 'allowedTill'),
     );
@@ -44,9 +48,13 @@ export default function StakingInfo() {
         body: ReactElement;
     } => {
         let subtitle = 'Advanced staking is open';
+        if (allowedSince) {
+            const allowedSinceDate = formatTime(Number(allowedSince) * 1000);
+            subtitle += ` from ${allowedSinceDate}`;
+        }
         if (allowedTill) {
             const allowedTillDate = formatTime(Number(allowedTill) * 1000);
-            subtitle += ` till ${allowedTillDate}`;
+            subtitle += ` to ${allowedTillDate}`;
         }
         const body = (
             <Typography>
@@ -61,7 +69,7 @@ export default function StakingInfo() {
         );
 
         return {subtitle, body};
-    }, [allowedTill, lockedTill]);
+    }, [allowedSince, allowedTill, lockedTill]);
 
     const getAdvancedStakingClosedText = useCallback((): {
         subtitle: string;

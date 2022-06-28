@@ -7,6 +7,7 @@ import {formatTime} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {
     isStakingOpenSelector,
+    isStakingPostCloseSelector,
     termsSelector,
 } from '../../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
@@ -23,9 +24,17 @@ export default function StakingInfo() {
         isStakingOpenSelector(chainId!, StakeType.Advanced),
     );
 
+    const isAdvancedStakingPostClose = useAppSelector(
+        isStakingPostCloseSelector(chainId!, StakeType.Advanced),
+    );
+
     const stakeType = chainHasAdvancedStaking(chainId)
         ? StakeType.Advanced
         : StakeType.Classic;
+
+    const allowedSince = useAppSelector(
+        termsSelector(chainId!, stakeType, 'allowedSince'),
+    );
 
     const allowedTill = useAppSelector(
         termsSelector(chainId!, stakeType, 'allowedTill'),
@@ -39,29 +48,42 @@ export default function StakingInfo() {
         termsSelector(chainId!, stakeType, 'minLockPeriod'),
     );
 
-    const getAdvancedStakingOpenText = useCallback((): {
+    const getAdvancedStakingPreCloseText = useCallback((): {
         subtitle: string;
         body: ReactElement;
     } => {
-        let subtitle = 'Advanced staking is open';
-        if (allowedTill) {
-            const allowedTillDate = formatTime(Number(allowedTill) * 1000);
-            subtitle += ` till ${allowedTillDate}`;
+        let subtitle =
+            'Advanced staking ' +
+            (isAdvancedStakingOpen ? 'is open!' : 'will open');
+        if (!isAdvancedStakingOpen) {
+            if (allowedSince) {
+                const allowedSinceDate = formatTime(
+                    Number(allowedSince) * 1000,
+                );
+                subtitle += isAdvancedStakingOpen ? ' since' : ' on';
+                subtitle += ' ' + allowedSinceDate;
+            } else {
+                subtitle += isAdvancedStakingOpen ? '!' : ' soon!';
+            }
         }
+        const allowedTillDate =
+            allowedTill && formatTime(Number(allowedTill) * 1000);
         const body = (
             <Typography>
-                Advanced Staking will lock your tokens{' '}
+                Advanced Staking will{' '}
+                {allowedTill && `be open until ${allowedTillDate} and will `}
+                lock your tokens{' '}
                 {lockedTill &&
-                    `until ${formatTime(Number(lockedTill) * 1000)} `}
-                and create zZKP as rewards in the Multi-Asset Shielded Pool
-                (MASP). By staking your ZKP, you become one of the first people
-                to create zAssets and contribute to bootstrapping and testing of
+                    `until ${formatTime(Number(lockedTill) * 1000)} and `}
+                create zZKP as rewards in the Multi-Asset Shielded Pool (MASP).
+                By staking your ZKP, you become one of the first people to
+                create zAssets and contribute to bootstrapping and testing of
                 the MASP.
             </Typography>
         );
 
         return {subtitle, body};
-    }, [allowedTill, lockedTill]);
+    }, [isAdvancedStakingOpen, allowedSince, allowedTill, lockedTill]);
 
     const getAdvancedStakingClosedText = useCallback((): {
         subtitle: string;
@@ -80,7 +102,11 @@ export default function StakingInfo() {
                         contracts.
                     </Typography>
                     <p>
-                        You can still unstake{' '}
+                        Advanced stakes are locked until{' '}
+                        {lockedTill
+                            ? formatTime(Number(lockedTill) * 1000)
+                            : 'the end of the program'}
+                        ; however classic stakes can be unstaked{' '}
                         <SafeMuiLink
                             href="https://docs.pantherprotocol.io/dao/support/faq/staking#when-unstake"
                             underline="always"
@@ -88,13 +114,13 @@ export default function StakingInfo() {
                         >
                             at any time
                         </SafeMuiLink>
-                        , and there is no deadline for claiming rewards. However
-                        active stakes have ceased to earn further rewards.
+                        . There is no deadline for claiming rewards for either
+                        program.
                     </p>
                 </>
             ),
         };
-    }, [allowedTill]);
+    }, [allowedTill, lockedTill]);
 
     const getClassicStakingClosedText = useCallback((): {
         subtitle: string;
@@ -163,7 +189,8 @@ export default function StakingInfo() {
                     </p>
                     <p>
                         <strong>
-                            Also, advanced staking is now in public testing!
+                            However, advanced staking is now in public testing
+                            on the Mumbai network!
                         </strong>{' '}
                         <SafeMuiLink
                             href="https://blog.pantherprotocol.io/incentivized-testing-for-zkp-advanced-staking-is-now-live-19b51bc6b42b"
@@ -183,20 +210,39 @@ export default function StakingInfo() {
         subtitle: string;
         body: ReactElement;
     } => {
-        if (isAdvancedStakingOpen) {
-            return getAdvancedStakingOpenText();
+        if (isAdvancedStakingPostClose) {
+            return getAdvancedStakingClosedText();
         }
 
-        return getAdvancedStakingClosedText();
+        return getAdvancedStakingPreCloseText();
     }, [
-        isAdvancedStakingOpen,
-        getAdvancedStakingOpenText,
+        isAdvancedStakingPostClose,
+        getAdvancedStakingPreCloseText,
         getAdvancedStakingClosedText,
     ]);
 
-    const {subtitle, body} = chainHasAdvancedStaking(chainId)
-        ? getAdvancedStakingText()
-        : getClassicStakingClosedText();
+    const getDisconnectedText = useCallback((): {
+        subtitle: string;
+        body: ReactElement;
+    } => {
+        return {
+            subtitle: 'Connect your wallet',
+            body: (
+                <>
+                    <Typography>
+                        Advanced staking is now in progress. Connect your wallet
+                        to find out more!
+                    </Typography>
+                </>
+            ),
+        };
+    }, []);
+
+    const {subtitle, body} = chainId
+        ? chainHasAdvancedStaking(chainId)
+            ? getAdvancedStakingText()
+            : getClassicStakingClosedText()
+        : getDisconnectedText();
 
     return (
         <Card variant="outlined" className="staking-info-container">

@@ -79,6 +79,19 @@ function terms(
     return state.stakeTerms.value?.[chainId]?.[stakeType] ?? null;
 }
 
+function isStakingPostClose(terms: IStakingTypes.TermsStructOutput): boolean {
+    if (!terms.isEnabled) {
+        return false;
+    }
+    if (terms.allowedTill == 0) {
+        return false;
+    }
+    if (Date.now() / 1000 < terms.allowedTill) {
+        return false;
+    }
+    return true;
+}
+
 function isStakingOpen(terms: IStakingTypes.TermsStructOutput): boolean {
     if (!terms.isEnabled) {
         return false;
@@ -102,6 +115,19 @@ export function isStakingOpenSelector(
         if (!t) return false;
 
         return isStakingOpen(t);
+    };
+}
+
+export function isStakingPostCloseSelector(
+    chainId: number | undefined,
+    stakeType: StakeType,
+): (state: RootState) => boolean {
+    return (state: RootState): boolean => {
+        if (!chainId) return false;
+        const t = terms(state, chainId, stakeType);
+        if (!t) return false;
+
+        return isStakingPostClose(t);
     };
 }
 

@@ -22,6 +22,10 @@ export function formatTime(
     );
 }
 
+export function formatLongTime(date: number | null): string | null {
+    return formatTime(date, {style: 'long'});
+}
+
 export function formatTimeSince(date: number | null): string {
     return moment(date).fromNow();
 }

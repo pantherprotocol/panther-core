@@ -223,6 +223,7 @@ function checkEnvVars(
         ['ADVANCED_STAKING_EARLY_REDEMPTION', String(exitTime * 1000)],
         ['ADVANCED_STAKING_T_START', String(terms.allowedSince * 1000)],
         ['ADVANCED_STAKING_T_END', String(terms.allowedTill * 1000)],
+        ['ADVANCED_STAKING_T_UNLOCK', String(terms.lockedTill * 1000)],
     ];
     const changes: Change[] = [];
     for (const [name, value] of data) {

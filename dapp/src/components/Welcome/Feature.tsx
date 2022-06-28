@@ -2,7 +2,7 @@ import React from 'react';
 
 import {Box, Typography} from '@mui/material';
 
-import {formatTime} from '../../lib/format';
+import {formatLongTime} from '../../lib/format';
 
 type Featuretype = {
     title: string;
@@ -11,18 +11,12 @@ type Featuretype = {
 
 const T_START = Number(process.env.ADVANCED_STAKING_T_START);
 const T_END = Number(process.env.ADVANCED_STAKING_T_END);
-const beginingAtDate = formatTime(Number(T_START), {
-    style: 'long',
-});
-const allowedTillDate = formatTime(Number(T_END), {
-    style: 'long',
-});
-const unstakingAvailableSince = formatTime(
-    Number(Date.UTC(2022, 5, 17, 0, 0, 0)),
-    {
-        style: 'long',
-    },
-);
+const T_UNLOCK = Number(process.env.ADVANCED_STAKING_T_UNLOCK);
+
+const beginingAtDate = formatLongTime(T_START);
+const allowedTillDate = formatLongTime(T_END);
+const unstakingAvailableSince = formatLongTime(T_UNLOCK);
+
 export const featuredata: Featuretype[] = [
     {
         title: 'Advanced Staking is available from:',

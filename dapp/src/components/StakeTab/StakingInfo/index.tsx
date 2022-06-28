@@ -182,10 +182,9 @@ export default function StakingInfo() {
                             underline="always"
                             color="inherit"
                         >
-                            at any time
+                            classic stakes at any time
                         </SafeMuiLink>
-                        , and there is no deadline for claiming rewards. However
-                        active stakes have ceased to earn further rewards.
+                        , and there is no deadline for claiming rewards.
                     </p>
                     <p>
                         <strong>

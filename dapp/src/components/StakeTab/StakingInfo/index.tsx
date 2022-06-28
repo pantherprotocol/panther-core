@@ -7,6 +7,7 @@ import {formatTime} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {
     isStakingOpenSelector,
+    isStakingPostCloseSelector,
     termsSelector,
 } from '../../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
@@ -21,6 +22,10 @@ export default function StakingInfo() {
 
     const isAdvancedStakingOpen = useAppSelector(
         isStakingOpenSelector(chainId!, StakeType.Advanced),
+    );
+
+    const isAdvancedStakingPostClose = useAppSelector(
+        isStakingPostCloseSelector(chainId!, StakeType.Advanced),
     );
 
     const stakeType = chainHasAdvancedStaking(chainId)
@@ -43,33 +48,42 @@ export default function StakingInfo() {
         termsSelector(chainId!, stakeType, 'minLockPeriod'),
     );
 
-    const getAdvancedStakingOpenText = useCallback((): {
+    const getAdvancedStakingPreCloseText = useCallback((): {
         subtitle: string;
         body: ReactElement;
     } => {
-        let subtitle = 'Advanced staking is open';
-        if (allowedSince) {
-            const allowedSinceDate = formatTime(Number(allowedSince) * 1000);
-            subtitle += ` from ${allowedSinceDate}`;
+        let subtitle =
+            'Advanced staking ' +
+            (isAdvancedStakingOpen ? 'is open!' : 'will open');
+        if (!isAdvancedStakingOpen) {
+            if (allowedSince) {
+                const allowedSinceDate = formatTime(
+                    Number(allowedSince) * 1000,
+                );
+                subtitle += isAdvancedStakingOpen ? ' since' : ' on';
+                subtitle += ' ' + allowedSinceDate;
+            } else {
+                subtitle += isAdvancedStakingOpen ? '!' : ' soon!';
+            }
         }
-        if (allowedTill) {
-            const allowedTillDate = formatTime(Number(allowedTill) * 1000);
-            subtitle += ` to ${allowedTillDate}`;
-        }
+        const allowedTillDate =
+            allowedTill && formatTime(Number(allowedTill) * 1000);
         const body = (
             <Typography>
-                Advanced Staking will lock your tokens{' '}
+                Advanced Staking will{' '}
+                {allowedTill && `be open until ${allowedTillDate} and will `}
+                lock your tokens{' '}
                 {lockedTill &&
-                    `until ${formatTime(Number(lockedTill) * 1000)} `}
-                and create zZKP as rewards in the Multi-Asset Shielded Pool
-                (MASP). By staking your ZKP, you become one of the first people
-                to create zAssets and contribute to bootstrapping and testing of
+                    `until ${formatTime(Number(lockedTill) * 1000)} and `}
+                create zZKP as rewards in the Multi-Asset Shielded Pool (MASP).
+                By staking your ZKP, you become one of the first people to
+                create zAssets and contribute to bootstrapping and testing of
                 the MASP.
             </Typography>
         );
 
         return {subtitle, body};
-    }, [allowedSince, allowedTill, lockedTill]);
+    }, [isAdvancedStakingOpen, allowedSince, allowedTill, lockedTill]);
 
     const getAdvancedStakingClosedText = useCallback((): {
         subtitle: string;
@@ -196,14 +210,14 @@ export default function StakingInfo() {
         subtitle: string;
         body: ReactElement;
     } => {
-        if (isAdvancedStakingOpen) {
-            return getAdvancedStakingOpenText();
+        if (isAdvancedStakingPostClose) {
+            return getAdvancedStakingClosedText();
         }
 
-        return getAdvancedStakingClosedText();
+        return getAdvancedStakingPreCloseText();
     }, [
-        isAdvancedStakingOpen,
-        getAdvancedStakingOpenText,
+        isAdvancedStakingPostClose,
+        getAdvancedStakingPreCloseText,
         getAdvancedStakingClosedText,
     ]);
 

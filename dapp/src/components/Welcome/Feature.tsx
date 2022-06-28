@@ -9,9 +9,9 @@ type Featuretype = {
     message: string;
 };
 
-const T_START = Number(process.env.ADVANCED_STAKING_T_START);
-const T_END = Number(process.env.ADVANCED_STAKING_T_END);
-const T_UNLOCK = Number(process.env.ADVANCED_STAKING_T_UNLOCK);
+const T_START = Number(process.env.ADVANCED_STAKING_T_START) * 1000;
+const T_END = Number(process.env.ADVANCED_STAKING_T_END) * 1000;
+const T_UNLOCK = Number(process.env.ADVANCED_STAKING_T_UNLOCK) * 1000;
 
 const beginingAtDate = formatLongTime(T_START);
 const allowedTillDate = formatLongTime(T_END);

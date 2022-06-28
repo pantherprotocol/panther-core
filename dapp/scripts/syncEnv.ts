@@ -12,7 +12,7 @@
 //   yarn env:check
 //   yarn env:sync
 
-import {execSync} from 'child_process';
+import child_process from 'child_process';
 import fs from 'fs';
 
 import dotenv from 'dotenv';
@@ -34,8 +34,12 @@ type App = {
     name: string;
 };
 
+function exec(cmd: string): string {
+    return child_process.execSync(cmd, {encoding: 'utf8'});
+}
+
 function getAppId(): string {
-    const stdout = execSync('aws amplify list-apps', {encoding: 'utf8'});
+    const stdout = exec('aws amplify list-apps');
     const apps = JSON.parse(stdout).apps;
     const core = apps.find((app: App) => app.name == APP_NAME);
     console.log(`Amplify app_id: ${core.appId}`);
@@ -43,9 +47,7 @@ function getAppId(): string {
 }
 
 function getEnvVar(name: string): string {
-    const stdout = execSync(`source ${__dirname}/../.env && echo $${name}`, {
-        encoding: 'utf8',
-    });
+    const stdout = exec(`source ${__dirname}/../.env && echo $${name}`);
     return stdout.replace(/\n$/, '');
 }
 
@@ -141,9 +143,7 @@ function reportStakingTerms(terms: Terms) {
 type Environment = {[name: string]: string};
 
 function getAppEnvVars(appId: string): Environment {
-    const stdout = execSync(`aws amplify get-app --app-id ${appId}`, {
-        encoding: 'utf8',
-    });
+    const stdout = exec(`aws amplify get-app --app-id ${appId}`);
     const app = JSON.parse(stdout).app;
     return app.environmentVariables;
 }
@@ -162,8 +162,8 @@ function setAmplifyEnvVars(appId: string, env: Environment) {
     console.log('\nRunning:');
     console.log(cmd);
     console.log();
-    // const stdout = execSync(cmd);
-    // console.log(stdout);
+    const stdout = exec(cmd);
+    console.log(stdout);
 }
 
 function setFileEnvVars(file: string, changes: Change[]) {

@@ -4,10 +4,10 @@ import moment from 'moment';
 import {getLocale} from './i18n';
 import {roundDown} from './numbers';
 
-export const formatTime = (
+export function formatTime(
     date: number | null,
     options?: {style?: 'long' | 'full' | 'medium' | 'short'},
-): string | null => {
+): string | null {
     if (!date) return null;
     const localDate = new Date(date);
     const style = options?.style ?? 'long';
@@ -20,7 +20,11 @@ export const formatTime = (
             timeStyle: style,
         })
     );
-};
+}
+
+export function formatLongTime(date: number | null): string | null {
+    return formatTime(date, {style: 'long'});
+}
 
 export function formatTimeSince(date: number | null): string {
     return moment(date).fromNow();

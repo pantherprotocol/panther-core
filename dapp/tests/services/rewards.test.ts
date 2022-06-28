@@ -2,8 +2,8 @@ import {describe, expect} from '@jest/globals';
 import {BigNumber} from 'ethers';
 
 describe('Advanced stakes', () => {
-    process.env.ADVANCED_STAKING_T_START = '1652356800000';
-    process.env.ADVANCED_STAKING_T_END = '1656590400000';
+    process.env.ADVANCED_STAKING_T_START = '1652356800';
+    process.env.ADVANCED_STAKING_T_END = '1656590400';
 
     // Next line produces the following lint error, therefore disabled:
     // "Require statement not part of import statement

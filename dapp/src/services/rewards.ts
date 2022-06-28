@@ -13,8 +13,8 @@ import {CLASSIC_TYPE_HEX, ADVANCED_TYPE_HEX} from './staking';
 /* Constants are described in Advanced Staking Rewards document:
 https://docs.google.com/document/d/1lsZlE3RsUlk-Dx_dXAqKxXKWZD18ZuuNA-DKoEsArm4/edit
 */
-export const T_START = Number(process.env.ADVANCED_STAKING_T_START);
-export const T_END = Number(process.env.ADVANCED_STAKING_T_END);
+export const T_START = Number(process.env.ADVANCED_STAKING_T_START) * 1000;
+export const T_END = Number(process.env.ADVANCED_STAKING_T_END) * 1000;
 const APY_START = 70;
 const APY_END = 45;
 const DAPY_DT = (APY_END - APY_START) / (T_END - T_START);

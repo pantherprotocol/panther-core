@@ -198,9 +198,28 @@ export default function StakingInfo() {
         getAdvancedStakingClosedText,
     ]);
 
-    const {subtitle, body} = chainHasAdvancedStaking(chainId)
-        ? getAdvancedStakingText()
-        : getClassicStakingClosedText();
+    const getDisconnectedText = useCallback((): {
+        subtitle: string;
+        body: ReactElement;
+    } => {
+        return {
+            subtitle: 'Connect your wallet',
+            body: (
+                <>
+                    <Typography>
+                        Advanced staking is now in progress. Connect your wallet
+                        to find out more!
+                    </Typography>
+                </>
+            ),
+        };
+    }, []);
+
+    const {subtitle, body} = chainId
+        ? chainHasAdvancedStaking(chainId)
+            ? getAdvancedStakingText()
+            : getClassicStakingClosedText()
+        : getDisconnectedText();
 
     return (
         <Card variant="outlined" className="staking-info-container">

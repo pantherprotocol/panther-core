@@ -16,6 +16,7 @@ import {
     calculateRewards,
     resetRewards,
 } from '../../redux/slices/advancedStakePredictedRewards';
+import {getChainBalance} from '../../redux/slices/chainBalance';
 import {
     isStakingOpenSelector,
     termsSelector,
@@ -109,6 +110,7 @@ export default function StakeTab() {
             dispatch(getZkpStakedBalance, context);
             dispatch(getZkpTokenBalance, context);
             dispatch(getTotalUnclaimedClassicRewards, context);
+            dispatch(getChainBalance, context);
         },
         [
             library,

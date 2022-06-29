@@ -7,12 +7,14 @@ import "./common/ErrorMsgs.sol";
 import "./common/ImmutableOwnable.sol";
 import "./common/NonReentrant.sol";
 import "./common/Types.sol";
+import "./common/Utils.sol";
 import "./interfaces/IPrpGrantor.sol";
 import "./interfaces/IVault.sol";
+import "./interfaces/IZAssetsRegistry.sol";
 import "./common/Claimable.sol";
+import "./pantherPool/AmountConvertor.sol";
 import "./pantherPool/CommitmentGenerator.sol";
 import "./pantherPool/CommitmentsTrees.sol";
-import "./pantherPool/ZAssetsRegistry.sol";
 import "./pantherPool/v0/MerkleProofVerifier.sol";
 import "./pantherPool/v0/NullifierGenerator.sol";
 import "./pantherPool/v0/PubKeyGenerator.sol";
@@ -23,7 +25,7 @@ import "./pantherPool/v0/PubKeyGenerator.sol";
  * @notice Multi-Asset Shielded Pool main contract v0
  * @dev It is the "version 0" of the Panther Protocol Multi-Asset Shielded Pool ("MASP").
  * It locks assets (ERC-20, ERC-721 or ERC-1155 tokens) of a user with the `Vault` smart
- * contract and generates UTXO's in the MASP the user owns (i.e. builds merkle trees of
+ * contract and generates UTXO's in the MASP for the user (i.e. builds merkle trees of
  * UTXO's commitments).
  * It can also generate UTX0's with "Panther Reward Points" (aka "PRP", a special unit).
  * To get a PRP UTXO, a user must be given a "grant" booked in the `PrpGrantor` contract.
@@ -43,11 +45,12 @@ contract PantherPoolV0 is
     NonReentrant,
     Claimable,
     CommitmentsTrees,
-    ZAssetsRegistry,
+    AmountConvertor,
     CommitmentGenerator,
     MerkleProofVerifier,
     NullifierGenerator,
-    PubKeyGenerator
+    PubKeyGenerator,
+    Utils
 {
     // The contract is supposed to run behind a proxy DELEGATECALLing it.
     // On upgrades, adjust `__gap` to match changes of the storage layout.
@@ -57,6 +60,9 @@ contract PantherPoolV0 is
 
     /// @notice (UNIX) Time since when the `exit` calls get enabled
     uint256 private immutable EXIT_TIME;
+
+    /// @notice Address of the ZAssetRegistry contract
+    address public immutable ASSET_REGISTRY;
 
     /// @notice Address of the Vault contract
     address public immutable VAULT;
@@ -70,11 +76,18 @@ contract PantherPoolV0 is
     // nullifier hash => spent
     mapping(bytes32 => bool) public isSpent;
 
+    /// @dev New nullifier has been seen
     event Nullifier(bytes32 nullifier);
+
+    /// @dev A tiny disowned token amount gets locked in the Vault
+    /// (as a result of imprecise scaling of deposited amounts)
+    event Change(address indexed token, uint256 change);
 
     /// @param _owner Address of the `OWNER` who may call `onlyOwner` methods
     /// @param _exitTime (UNIX) Time since when the `exit` calls get enabled
+    /// @param assetRegistry Address of the ZAssetRegistry contract
     /// @param vault Address of the Vault contract
+    /// @param prpGrantor Address of the PrpGrantor contract
     constructor(
         address _owner,
         uint256 _exitTime,
@@ -104,16 +117,16 @@ contract PantherPoolV0 is
     /// @param tokens Address of the token contract for every UTXO
     /// @dev For PRP granted the address ot this contract (proxy) is supposed to be used
     /// @param tokenIds For ERC-721 and ERC-1155 - token ID or subId of the token, 0 for ERC-20
-    /// @param extAmounts Token amounts (external) to be deposited
+    /// @param amounts Token amounts (unscaled) to be deposited
     /// @param pubSpendingKeys Public Spending Key for every UTXO
     /// @param secrets Encrypted opening values for every UTXO
-    /// @param  createdAt Optional, if 0 network time used
+    /// @param createdAt Optional, if 0 the network time used
     /// @dev createdAt must be less (or equal) the network time
     /// @return leftLeafId The `leafId` of the first UTXO (leaf) in the batch
     function generateDeposits(
         address[OUT_UTXOs] calldata tokens,
         uint256[OUT_UTXOs] calldata tokenIds,
-        uint256[OUT_UTXOs] calldata extAmounts,
+        uint256[OUT_UTXOs] calldata amounts,
         G1Point[OUT_UTXOs] calldata pubSpendingKeys,
         uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
         uint32 createdAt
@@ -126,11 +139,12 @@ contract PantherPoolV0 is
 
         bytes32[OUT_UTXOs] memory commitments;
         bytes[OUT_UTXOs] memory perUtxoData;
+
         for (uint256 utxoIndex = 0; utxoIndex < OUT_UTXOs; utxoIndex++) {
             (uint160 zAssetId, uint96 scaledAmount) = _processDepositedAsset(
                 tokens[utxoIndex],
                 tokenIds[utxoIndex],
-                extAmounts[utxoIndex]
+                amounts[utxoIndex]
             );
 
             if (scaledAmount == 0) {
@@ -145,13 +159,13 @@ contract PantherPoolV0 is
                 commitments[utxoIndex] = generateCommitment(
                     pubSpendingKeys[utxoIndex].x,
                     pubSpendingKeys[utxoIndex].y,
-                    uint256(scaledAmount),
+                    uint96(scaledAmount),
                     zAssetId,
                     timestamp
                 );
 
                 uint256 tokenAndAmount = (uint256(uint160(tokens[utxoIndex])) <<
-                    96) | scaledAmount;
+                    96) | uint256(scaledAmount);
                 perUtxoData[utxoIndex] = abi.encodePacked(
                     uint8(UTXO_DATA_TYPE1),
                     secrets[utxoIndex],
@@ -166,8 +180,9 @@ contract PantherPoolV0 is
 
     /// @notice Spend an UTXO in the MASP and withdraw the asset from the Vault to the msg.sender
     /// @param token Address of the token contract
-    /// @param tokenId ERC-721/1155 tokenId, 0 for ERC-20
-    /// @param amount Token amount
+    /// @param subId '_tokenId'/'_id' for ERC-721/1155, 0 for the "default" zAsset of an ERC-20 token,
+    // or `subId` for an "alternative" zAsset of an ERC-20 (see ZAssetRegistry.sol for details)
+    /// @param scaledAmount Token scaled amount
     /// @param privSpendingKey UTXO's Private Spending Key
     /// @param leafId Id of the leaf with the UTXO commitments in the Merkle Trees
     /// @param pathElements Elements of the Merkle proof of inclusion
@@ -176,8 +191,8 @@ contract PantherPoolV0 is
     /// @dev `cacheIndexHint` needed for the "current" (partially populated) tree only
     function exit(
         address token,
-        uint256 tokenId,
-        uint256 amount,
+        uint256 subId,
+        uint96 scaledAmount,
         uint32 creationTime,
         uint256 privSpendingKey,
         uint256 leafId,
@@ -186,7 +201,6 @@ contract PantherPoolV0 is
         uint256 cacheIndexHint
     ) external nonReentrant {
         require(timeNow() >= exitTime(), ERR_TOO_EARLY_EXIT);
-        require(amount < MAX_EXT_AMOUNT, ERR_TOO_LARGE_AMOUNT);
         {
             bytes32 nullifier = generateNullifier(privSpendingKey, leafId);
             require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);
@@ -198,62 +212,42 @@ contract PantherPoolV0 is
             ERR_UNKNOWN_MERKLE_ROOT
         );
 
-        uint8 tokenType;
-        bytes32 commitment;
+        ZAsset memory asset;
+        uint256 _tokenId;
         {
-            uint160 zAssetId;
-            uint256 scaledAmount;
+            bytes32 commitment;
             {
-                ZAsset memory asset;
-                (asset, zAssetId) = getZAssetAndId(token, tokenId);
-                require(
-                    asset.status == zASSET_ENABLED ||
-                        asset.status == zASSET_DISABLED,
-                    ERR_WRONG_ASSET
+                uint160 zAssetId;
+                {
+                    (zAssetId, _tokenId, , asset) = IZAssetsRegistry(
+                        ASSET_REGISTRY
+                    ).getZAssetAndIds(token, subId);
+                    require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);
+                }
+                G1Point memory pubSpendingKey = generatePubSpendingKey(
+                    privSpendingKey
                 );
-                tokenType = asset.tokenType;
-                scaledAmount = uint256(scaleAmount(amount, asset.scale));
+                commitment = generateCommitment(
+                    pubSpendingKey.x,
+                    pubSpendingKey.y,
+                    scaledAmount,
+                    zAssetId,
+                    creationTime
+                );
             }
-
-            G1Point memory pubSpendingKey = generatePubSpendingKey(
-                privSpendingKey
-            );
-            commitment = generateCommitment(
-                pubSpendingKey.x,
-                pubSpendingKey.y,
-                scaledAmount,
-                zAssetId,
-                creationTime
+            verifyMerkleProof(
+                merkleRoot,
+                _getTriadIndex(leafId),
+                _getTriadNodeIndex(leafId),
+                commitment,
+                pathElements
             );
         }
 
-        verifyMerkleProof(
-            merkleRoot,
-            _getTriadIndex(leafId),
-            _getTriadNodeIndex(leafId),
-            commitment,
-            pathElements
-        );
-
+        uint96 amount = _unscaleAmount(scaledAmount, asset.scale);
         IVault(VAULT).unlockAsset(
-            LockData(tokenType, token, tokenId, msg.sender, safe96(amount))
+            LockData(asset.tokenType, token, _tokenId, msg.sender, amount)
         );
-    }
-
-    /// @notice Register a new asset with the given params as a "zAsset" with the MASP
-    /// @param asset Params of the asset (including its `ZAsset.status`)
-    /// @dev The "owner" may call only
-    function addAsset(ZAsset memory asset) external onlyOwner {
-        _addAsset(asset);
-    }
-
-    /// @notice Set the status of the given "zAsset" to the given value
-    /// @dev The "owner" may call only
-    function changeAssetStatus(uint160 zAssetRootId, uint8 newStatus)
-        external
-        onlyOwner
-    {
-        _changeAssetStatus(zAssetRootId, newStatus);
     }
 
     /// @notice Withdraw accidentally sent tokens or ETH from this contract
@@ -271,46 +265,49 @@ contract PantherPoolV0 is
     // Declared `internal` rather than `private` to ease testing
     function _processDepositedAsset(
         address token,
-        uint256 tokenId,
-        uint256 extAmount
+        uint256 subId,
+        uint256 amount
     ) internal returns (uint160 zAssetId, uint96 scaledAmount) {
         // Do nothing if it's the "zero" (or "dummy") deposit
-        if (extAmount == 0) {
-            // Both token and tokenId must be zeros for the "zero" deposit
-            require(token == address(0) && tokenId == 0, ERR_WRONG_DEPOSIT);
+        if (amount == 0) {
+            // Both token and subId must be zeros for the "zero" deposit
+            require(token == address(0) && subId == 0, ERR_WRONG_DEPOSIT);
             return (0, 0);
         }
-        // extAmount can't be zero here and further
+        // amount can't be zero here and further
 
         // Use a PRP grant, if it's a "deposit" in PRPs
         if (token == PRP_VIRTUAL_CONTRACT) {
-            require(tokenId == 0, ERR_ZERO_TOKENID_EXPECTED);
+            require(subId == 0, ERR_ZERO_TOKENID_EXPECTED);
+            // Check amount is within the limit (no amount scaling for PRPs)
+            uint96 _sanitizedAmount = _sanitizeScaledAmount(amount);
             // No reentrancy guard needed for the trusted contract call
-            IPrpGrantor(PRP_GRANTOR).redeemGrant(msg.sender, extAmount);
-            // No extAmount scaling for PRPs
-            return (PRP_ZASSET_ID, safe96(extAmount));
+            IPrpGrantor(PRP_GRANTOR).redeemGrant(msg.sender, amount);
+            return (PRP_ZASSET_ID, _sanitizedAmount);
         }
 
         // At this point, a non-zero deposit of a real asset (token) expected
+        uint256 _tokenId;
         ZAsset memory asset;
-        (asset, zAssetId) = getZAssetAndId(token, tokenId);
+        (zAssetId, _tokenId, , asset) = IZAssetsRegistry(ASSET_REGISTRY)
+            .getZAssetAndIds(token, subId);
         require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);
 
-        // Scale extAmount, if asset.scale provides for it
-        scaledAmount = scaleAmount(extAmount, asset.scale);
-        if (scaledAmount != extAmount) {
-            // Ensure that extAmount scales w/o a reminder
-            uint256 restoredAmount = unscaleAmount(scaledAmount, asset.scale);
-            require(extAmount == restoredAmount, ERR_CANT_BE_SCALED);
-        }
+        // Scale amount, if asset.scale provides for it (ERC-20 only)
+        uint256 change;
+        (scaledAmount, change) = _scaleAmount(amount, asset.scale);
+
+        // The `change` will remain locked in the Vault until it's claimed
+        // (when and if future upgrades implement change claiming)
+        if (change > 0) emit Change(token, change);
 
         IVault(VAULT).lockAsset(
             LockData(
                 asset.tokenType,
                 asset.token,
-                tokenId,
+                _tokenId,
                 msg.sender,
-                safe96(extAmount)
+                uint96(amount)
             )
         );
 

@@ -35,6 +35,7 @@ string constant ERR_WITHDRAW_OVER_LIMIT = "PP:E17";
 string constant ERR_WITHDRAW_TO_ZERO_ADDRESS = "PP:E18";
 string constant ERR_WRONG_ASSET = "PP:E19";
 string constant ERR_WRONG_ASSET_SCALE = "PP:20";
+string constant ERR_WRONG_ASSET_VER = "PP:27";
 string constant ERR_ZERO_DEPOSIT = "PP:E21";
 string constant ERR_ZERO_FEE_PAYER = "PP:E22";
 string constant ERR_ZERO_TOKEN_EXPECTED = "PP:E23";

@@ -6,10 +6,12 @@ import "../PantherPoolV0.sol";
 import "../Vault.sol";
 import "../common/Types.sol";
 import "./FakePrpGrantor.sol";
+import "./FakeZAssetsRegistry.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "hardhat/console.sol";
+
+// import "hardhat/console.sol";
 
 contract MyERC20 is ERC20 {
     constructor(uint256 index, address owner)
@@ -35,36 +37,34 @@ contract MyERC20 is ERC20 {
         console.logString("From");
         console.log(from);
         _spendAllowance(from, spender, amount);
-        _transfer(from, to, amount);
+        _transfer(from, to, scaledAmount);
         return true;
     }
     */
 }
 
 contract PantherPoolV0AndVaultTester is PantherPoolV0 {
-    Vault vault;
-
-    address _owner;
-
+    address private registry;
     MyERC20[OUT_UTXOs] Tokens;
 
     constructor()
         PantherPoolV0(
             address(this),
             timeNow() + 1,
-            address(vault = new Vault(address(this))), // This mock is an owner of Vault
+            registry = address(new FakeZAssetsRegistry()),
+            address(new Vault(address(this))), // This mock is an owner of Vault
             address(new FakePrpGrantor())
         )
     {
-        _owner = msg.sender;
         for (uint256 i = 0; i < OUT_UTXOs; ++i) {
             Tokens[i] = new MyERC20(i, address(this)); // This mock is an owner of MyERC20
             ZAsset memory z;
             z.tokenType = ERC20_TOKEN_TYPE;
+            z.version = 0;
             z.scale = 0;
             z.token = address(Tokens[i]);
             z.status = zASSET_ENABLED;
-            _addAsset(z);
+            FakeZAssetsRegistry(registry).addZAsset(z);
         }
     }
 
@@ -72,32 +72,10 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
         return address(Tokens[index]);
     }
 
-    function testGetZAssetId(uint256 token, uint256 tokenId)
-        external
-        pure
-        returns (uint256)
-    {
-        return getZAssetId(address(uint160(token)), tokenId);
-    }
-
-    function isKnownZAsset(uint256 token, uint256 tokenId)
-        external
-        view
-        returns (bool)
-    {
-        ZAsset memory asset;
-        uint160 zAssetId;
-        (asset, zAssetId) = getZAssetAndId(address(uint160(token)), tokenId);
-        if (asset.status == 1 || asset.status == 2) {
-            return true;
-        }
-        return false;
-    }
-
     function generateCommitments(
         uint256 pubSpendingKeyX,
         uint256 pubSpendingKeyY,
-        uint256 amount,
+        uint96 scaledAmount,
         uint160 zAssetId,
         uint32 creationTime
     ) external pure returns (uint256) {
@@ -106,7 +84,7 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
                 generateCommitment(
                     pubSpendingKeyX,
                     pubSpendingKeyY,
-                    amount,
+                    scaledAmount,
                     zAssetId,
                     creationTime
                 )
@@ -126,8 +104,8 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
 
     function testExit(
         uint256 token,
-        uint256 tokenId,
-        uint256 amount,
+        uint256 subId,
+        uint96 scaledAmount,
         uint32 creationTime,
         uint256 privSpendingKey,
         uint256 leafId,
@@ -137,8 +115,8 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
     ) external {
         this.exit(
             address(uint160(token)),
-            tokenId,
-            amount,
+            subId,
+            scaledAmount,
             creationTime,
             privSpendingKey,
             leafId,
@@ -149,7 +127,7 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
     }
 
     function approveVault(uint256 amount, uint256 index) external {
-        Tokens[index].approve(address(vault), amount);
+        Tokens[index].approve(VAULT, amount);
     }
 
     function generateDepositsExtended(
@@ -158,8 +136,6 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
         uint256[CIPHERTEXT1_WORDS] calldata secrets,
         uint32 createdAt
     ) external {
-        require(_owner == msg.sender, "OWNER IS NOT MESSAGE_SENDER");
-
         uint256[OUT_UTXOs] memory tokenIds;
         tokenIds[0] = 0;
         tokenIds[1] = 0;

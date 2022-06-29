@@ -5,53 +5,33 @@ pragma solidity ^0.8.4;
 import "../PantherPoolV0.sol";
 import "./FakeVault.sol";
 import "./FakePrpGrantor.sol";
+import "./FakeZAssetsRegistry.sol";
 
 contract PantherPoolV0Tester is PantherPoolV0 {
-    address private immutable _owner;
+    address private registry;
 
     constructor()
         PantherPoolV0(
             address(this),
             timeNow() + 1,
+            registry = address(new FakeZAssetsRegistry()),
             address(new FakeVault()),
             address(new FakePrpGrantor())
         )
     {
-        _owner = msg.sender;
         ZAsset memory z1;
         z1.tokenType = ERC20_TOKEN_TYPE;
+        z1.version = 0;
         z1.scale = 0;
         z1.token = address(uint160(111));
         z1.status = zASSET_ENABLED;
-        _addAsset(z1);
-    }
-
-    function testGetZAssetId(address token, uint256 tokenId)
-        external
-        pure
-        returns (uint256)
-    {
-        return getZAssetId(token, tokenId);
-    }
-
-    function testIsKnownZAsset(address token, uint256 tokenId)
-        external
-        view
-        returns (bool)
-    {
-        ZAsset memory asset;
-        uint160 zAssetId;
-        (asset, zAssetId) = getZAssetAndId(token, tokenId);
-        if (asset.status == 1 || asset.status == 2) {
-            return true;
-        }
-        return false;
+        FakeZAssetsRegistry(registry).addZAsset(z1);
     }
 
     function testGenerateCommitments(
         uint256 pubSpendingKeyX,
         uint256 pubSpendingKeyY,
-        uint256 amount,
+        uint96 scaledAmount,
         uint160 zAssetId,
         uint32 creationTime
     ) external pure returns (uint256) {
@@ -60,7 +40,7 @@ contract PantherPoolV0Tester is PantherPoolV0 {
                 generateCommitment(
                     pubSpendingKeyX,
                     pubSpendingKeyY,
-                    amount,
+                    scaledAmount,
                     zAssetId,
                     creationTime
                 )
@@ -84,8 +64,8 @@ contract PantherPoolV0Tester is PantherPoolV0 {
 
     function testExit(
         address token,
-        uint256 tokenId,
-        uint256 amount,
+        uint256 subId,
+        uint96 scaledAmount,
         uint32 creationTime,
         uint256 privSpendingKey,
         uint256 leafId,
@@ -95,8 +75,8 @@ contract PantherPoolV0Tester is PantherPoolV0 {
     ) external {
         this.exit(
             token,
-            tokenId,
-            amount,
+            subId,
+            scaledAmount,
             creationTime,
             privSpendingKey,
             leafId,
@@ -113,17 +93,15 @@ contract PantherPoolV0Tester is PantherPoolV0 {
         uint256[CIPHERTEXT1_WORDS] calldata secrets,
         uint32 createdAt
     ) external {
-        require(_owner == msg.sender, "OWNER IS NOT MESSAGE_SENDER");
-
         address[OUT_UTXOs] memory tokenss;
         tokenss[0] = tokens[0];
         tokenss[1] = tokens[1];
         tokenss[2] = tokens[2];
 
-        uint256[OUT_UTXOs] memory tokenIds;
-        tokenIds[0] = 0;
-        tokenIds[1] = 0;
-        tokenIds[2] = 0;
+        uint256[OUT_UTXOs] memory subIds;
+        subIds[0] = 0;
+        subIds[1] = 0;
+        subIds[2] = 0;
 
         G1Point[OUT_UTXOs] memory pubKeyss;
         pubKeyss[0] = G1Point(pubKeys[0], pubKeys[1]);
@@ -142,8 +120,8 @@ contract PantherPoolV0Tester is PantherPoolV0 {
         secretss[2][2] = secrets[2];
 
         this.generateDeposits(
-            tokenss,
-            tokenIds,
+            tokens,
+            subIds,
             extAmounts,
             pubKeyss,
             secretss,

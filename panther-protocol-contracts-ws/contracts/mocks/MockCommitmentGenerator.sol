@@ -8,7 +8,7 @@ contract MockCommitmentGenerator is CommitmentGenerator {
     function internalGenerateCommitment(
         uint256 pubSpendingKeyX,
         uint256 pubSpendingKeyY,
-        uint256 amount,
+        uint96 scaledAmount,
         uint160 zAssetId,
         uint32 creationTime
     ) external pure returns (bytes32 commitment) {
@@ -16,7 +16,7 @@ contract MockCommitmentGenerator is CommitmentGenerator {
             generateCommitment(
                 pubSpendingKeyX,
                 pubSpendingKeyY,
-                amount,
+                scaledAmount,
                 zAssetId,
                 creationTime
             );

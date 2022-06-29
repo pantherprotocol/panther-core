@@ -8,20 +8,21 @@ contract MockPantherPoolV0 is PantherPoolV0 {
     constructor(
         address _owner,
         uint256 exitTime,
+        address assetRegistry,
         address vault,
         address prpGrantor
-    ) PantherPoolV0(_owner, exitTime, vault, prpGrantor) {}
+    ) PantherPoolV0(_owner, exitTime, assetRegistry, vault, prpGrantor) {}
 
     event RESULT_processDepositedAsset(uint160 zAssetId, uint96 scaledAmount);
 
     function internalProcessDepositedAsset(
         address token,
-        uint256 tokenId,
+        uint256 subId,
         uint256 extAmount
     ) external {
         (uint160 zAssetId, uint96 scaledAmount) = _processDepositedAsset(
             token,
-            tokenId,
+            subId,
             extAmount
         );
         emit RESULT_processDepositedAsset(zAssetId, scaledAmount);

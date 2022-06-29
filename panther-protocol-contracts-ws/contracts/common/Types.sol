@@ -41,7 +41,9 @@ struct ElGamalCiphertext {
 // For MASP V0 and V1
 struct ZAsset {
     // reserved (for networkId, tokenIdPolicy. etc..)
-    uint72 _unused;
+    uint64 _unused;
+    // 0x00 by default
+    uint8 version;
     // Refer to Constants.sol
     uint8 status;
     // Refer to Constants.sol

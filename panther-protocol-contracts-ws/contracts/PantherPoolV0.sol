@@ -91,17 +91,20 @@ contract PantherPoolV0 is
     constructor(
         address _owner,
         uint256 _exitTime,
+        address assetRegistry,
         address vault,
         address prpGrantor
     ) ImmutableOwnable(_owner) {
         require(TRIAD_SIZE == OUT_UTXOs, "E0");
         require(_exitTime > timeNow() && _exitTime < MAX_TIMESTAMP, "E1");
+        revertZeroAddress(assetRegistry);
         revertZeroAddress(vault);
         revertZeroAddress(prpGrantor);
 
         // As it runs behind the DELEGATECALL'ing proxy, initialization of
         // immutable "vars" only is allowed in the constructor
         EXIT_TIME = _exitTime;
+        ASSET_REGISTRY = assetRegistry;
         VAULT = vault;
         PRP_GRANTOR = prpGrantor;
     }

@@ -3,8 +3,8 @@
 pragma solidity ^0.8.4;
 
 import "../triadTree/TriadIncrementalMerkleTrees.sol";
-import "../pantherPool/v0/MerkleProofVerifier.sol";
-import "../pantherPool/v0/PubKeyGenerator.sol";
+import "../pantherPool/MerkleProofVerifier.sol";
+import "../pantherPool/PubKeyGenerator.sol";
 
 contract MerkleProofVerifierTester is
     MerkleProofVerifier,

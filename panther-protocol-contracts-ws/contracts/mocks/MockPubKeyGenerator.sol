@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 import { G1Point } from "../common/Types.sol";
-import "../pantherPool/v0/PubKeyGenerator.sol";
+import "../pantherPool/PubKeyGenerator.sol";
 
 contract MockPubKeyGenerator is PubKeyGenerator {
     function internalGeneratePubSpendingKey(uint256 privKey)

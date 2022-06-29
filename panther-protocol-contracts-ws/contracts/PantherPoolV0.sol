@@ -15,9 +15,9 @@ import "./common/Claimable.sol";
 import "./pantherPool/AmountConvertor.sol";
 import "./pantherPool/CommitmentGenerator.sol";
 import "./pantherPool/CommitmentsTrees.sol";
-import "./pantherPool/v0/MerkleProofVerifier.sol";
-import "./pantherPool/v0/NullifierGenerator.sol";
-import "./pantherPool/v0/PubKeyGenerator.sol";
+import "./pantherPool/MerkleProofVerifier.sol";
+import "./pantherPool/NullifierGenerator.sol";
+import "./pantherPool/PubKeyGenerator.sol";
 
 /**
  * @title PantherPool
@@ -278,7 +278,7 @@ contract PantherPoolV0 is
 
         // Use a PRP grant, if it's a "deposit" in PRPs
         if (token == PRP_VIRTUAL_CONTRACT) {
-            require(subId == 0, ERR_ZERO_TOKENID_EXPECTED);
+            require(subId == 0, ERR_WRONG_PRP_SUBID);
             // Check amount is within the limit (no amount scaling for PRPs)
             uint96 _sanitizedAmount = _sanitizeScaledAmount(amount);
             // No reentrancy guard needed for the trusted contract call

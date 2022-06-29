@@ -2,13 +2,13 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import { ERC20_TOKEN_TYPE, MAX_SCALE, zASSET_ENABLED, zASSET_UNKNOWN } from "../common/Constants.sol";
-import { ERR_ASSET_ALREADY_REGISTERED, ERR_UNKNOWN_ASSET, ERR_ZERO_TOKENID_EXPECTED } from "../common/ErrorMsgs.sol";
-import { ERR_WRONG_ASSET_SCALE, ERR_WRONG_ASSET_STATUS, ERR_WRONG_ASSET_VER } from "../common/ErrorMsgs.sol";
-import { ERR_ZERO_TOKEN_ADDRESS } from "../common/ErrorMsgs.sol";
-import { ZAsset } from "../common/Types.sol";
-import "../common/ImmutableOwnable.sol";
-import "../interfaces/IZAssetsRegistry.sol";
+import { ERC20_TOKEN_TYPE, MAX_SCALE, zASSET_ENABLED, zASSET_UNKNOWN } from "./common/Constants.sol";
+import { ERR_ASSET_ALREADY_REGISTERED, ERR_UNKNOWN_ASSET, ERR_ZERO_SUBID_EXPECTED } from "./common/ErrorMsgs.sol";
+import { ERR_WRONG_ASSET_SCALE, ERR_WRONG_ASSET_STATUS, ERR_WRONG_ASSET_VER } from "./common/ErrorMsgs.sol";
+import { ERR_ZERO_TOKEN_ADDRESS } from "./common/ErrorMsgs.sol";
+import "./common/ImmutableOwnable.sol";
+import { ZAsset } from "./common/Types.sol";
+import "./interfaces/IZAssetsRegistry.sol";
 
 /**
  * @title ZAssetsRegistry
@@ -163,7 +163,7 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
         // For the default zAsset of an ERC-20 the `subId` must be 0
         require(
             subId == 0 || asset.tokenType != ERC20_TOKEN_TYPE,
-            ERR_ZERO_TOKENID_EXPECTED
+            ERR_ZERO_SUBID_EXPECTED
         );
         zAssetId = getZAssetId(token, _tokenId);
         return (zAssetId, _tokenId, zAssetRecId, asset);

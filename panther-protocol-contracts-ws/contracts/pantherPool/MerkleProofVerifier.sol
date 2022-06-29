@@ -2,9 +2,10 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import { PoseidonT3, PoseidonT4 } from "../../crypto/Poseidon.sol";
-import { ERR_UNKNOWN_MERKLE_ROOT, ERR_MERKLE_PROOF_VERIFICATION_FAILED, ERR_TRIAD_INDEX_MIN_VALUE, ERR_TRIAD_INDEX_MAX_VALUE } from "../../common/ErrorMsgs.sol";
-import "../../triadTree/TriadIncrementalMerkleTrees.sol";
+import { PoseidonT3, PoseidonT4 } from "../crypto/Poseidon.sol";
+import { ERR_UNKNOWN_MERKLE_ROOT, ERR_MERKLE_PROOF_VERIFICATION_FAILED } from "../common/ErrorMsgs.sol";
+import { ERR_TRIAD_INDEX_MIN_VALUE, ERR_TRIAD_INDEX_MAX_VALUE } from "../common/ErrorMsgs.sol";
+import "../triadTree/TriadIncrementalMerkleTrees.sol";
 
 abstract contract MerkleProofVerifier {
     // @dev Number of levels in a tree excluding the root level

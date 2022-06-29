@@ -53,7 +53,7 @@ contract PantherPoolV0 is
     // solhint-disable var-name-mixedcase
 
     /// @notice (UNIX) Time since when the `exit` calls get enabled
-    uint256 public immutable EXIT_TIME;
+    uint256 private immutable EXIT_TIME;
 
     /// @notice Address of the Vault contract
     address public immutable VAULT;
@@ -67,24 +67,31 @@ contract PantherPoolV0 is
     event Nullifier(bytes32 nullifier);
 
     /// @param _owner Address of the `OWNER` who may call `onlyOwner` methods
-    /// @param exitTime (UNIX) Time since when the `exit` calls get enabled
+    /// @param _exitTime (UNIX) Time since when the `exit` calls get enabled
     /// @param vault Address of the Vault contract
     constructor(
         address _owner,
-        uint256 exitTime,
+        uint256 _exitTime,
         address vault
     )
         ImmutableOwnable(_owner)
         PrpGrantor(getZAssetId(PRP_VIRTUAL_CONTRACT, 0))
     {
         require(TRIAD_SIZE == OUT_UTXOs, "E0");
-        require(exitTime > timeNow() && exitTime < MAX_TIMESTAMP, "E1");
+        require(_exitTime > timeNow() && _exitTime < MAX_TIMESTAMP, "E1");
         revertZeroAddress(vault);
 
         // As it runs behind the DELEGATECALL'ing proxy, initialization of
         // immutable "vars" only is allowed in the constructor
-        EXIT_TIME = exitTime;
+        EXIT_TIME = _exitTime;
         VAULT = vault;
+    }
+
+    /// @notice Reads and returns the exit time.
+    /// @dev This function helps to ease testing. It can be overridden in the
+    /// test contract
+    function exitTime() public view virtual returns (uint256) {
+        return EXIT_TIME;
     }
 
     /// @notice Transfer assets from the msg.sender to the VAULT and generate UTXOs in the MASP
@@ -172,7 +179,7 @@ contract PantherPoolV0 is
         bytes32 merkleRoot,
         uint256 cacheIndexHint
     ) external nonReentrant {
-        require(timeNow() >= EXIT_TIME, ERR_TOO_EARLY_EXIT);
+        require(timeNow() >= exitTime(), ERR_TOO_EARLY_EXIT);
         require(amount < MAX_EXT_AMOUNT, ERR_TOO_LARGE_AMOUNT);
         {
             bytes32 nullifier = generateNullifier(privSpendingKey, leafId);

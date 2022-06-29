@@ -45,30 +45,3 @@ string constant ERR_ZERO_DEPOSIT = "PP:E21";
 string constant ERR_ZERO_FEE_PAYER = "PP:E22";
 string constant ERR_ZERO_TOKEN_EXPECTED = "PP:E23";
 string constant ERR_ZERO_TOKEN_UNEXPECTED = "PP:E24";
-
-// PrpGrantor contract
-string constant ERR_ZERO_PROCESSOR_ADDR = "GR:E0";
-string constant ERR_ZERO_CURATOR_ADDR = "GR:E1";
-string constant ERR_ZERO_GRANTEE_ADDR = "GR:E2";
-string constant ERR_GRANT_TYPE_EXISTS = "GR:E3";
-string constant ERR_UNEXPECTED_GRANT_RECEIPIENT = "GR:E4";
-string constant ERR_LOW_GRANT_BALANCE = "GR:E5";
-string constant ERR_UKNOWN_GRANT_TYPE = "GR:E6";
-string constant ERR_TOO_LARGE_GRANT_AMOUNT = "GR:E6";
-string constant ERR_UNDEF_GRANT = "GR:E7";
-string constant ERR_UNAUTHORIZED_CALL = "GR:Unauthorized";
-
-// Vault contract
-string constant ERR_INVALID_TOKEN_TYPE = "VA:E1";
-string constant ERR_ZERO_LOCK_TOKEN_ADDR = "VA:E2";
-string constant ERR_ZERO_EXT_ACCOUNT_ADDR = "VA:E3";
-string constant ERR_ZERO_EXT_AMOUNT = "VA:E4";
-
-// ZAssetRegistry contract
-string constant ERR_ASSET_ALREADY_REGISTERED = "AR:E1";
-string constant ERR_UNKNOWN_ASSET = "AR:E2";
-string constant ERR_WRONG_ASSET_STATUS = "AR:E3";
-string constant ERR_WRONG_ASSET_SCALE = "AR:E4";
-string constant ERR_WRONG_ASSET_VER = "AR:E5";
-string constant ERR_ZERO_SUBID_EXPECTED = "AR:E6";
-string constant ERR_ZERO_TOKEN_ADDRESS = "AR:E7";

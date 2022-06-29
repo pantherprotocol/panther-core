@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 import { MAX_EXT_AMOUNT, MAX_IN_CIRCUIT_AMOUNT } from "../common/Constants.sol";
-import { ERR_TOO_LARGE_AMOUNT, ERR_TOO_LARGE_SCALED_AMOUNT } from "../common/ErrorMsgs.sol";
+import { ERR_TOO_LARGE_AMOUNT, ERR_TOO_LARGE_SCALED_AMOUNT } from "../errMsgs/PantherPoolErrMsgs.sol";
 
 /**
  * @title AmountConvertor

@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 
 import "../triadTree/TriadIncrementalMerkleTrees.sol";
 import { OUT_UTXOs, UTXO_SECRETS } from "../common/Constants.sol";
-import { ERR_TOO_LARGE_COMMITMENTS } from "../common/ErrorMsgs.sol";
+import { ERR_TOO_LARGE_COMMITMENTS } from "../errMsgs/PantherPoolErrMsgs.sol";
 
 /**
  * @title CommitmentsTrees

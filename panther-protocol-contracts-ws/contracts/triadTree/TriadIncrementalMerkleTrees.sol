@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 
 import "./Hasher.sol";
 import "./TriadMerkleZeros.sol";
-import { ERR_ZERO_ROOT } from "../common/ErrorMsgs.sol";
+import { ERR_ZERO_ROOT } from "../errMsgs/PantherPoolErrMsgs.sol";
 import "../interfaces/IRootsHistory.sol";
 
 /**

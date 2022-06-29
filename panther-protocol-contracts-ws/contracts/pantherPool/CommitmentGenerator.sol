@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 
 import { PoseidonT6 } from "../crypto/Poseidon.sol";
 
-import { ERR_TOO_LARGE_PUBKEY } from "../common/ErrorMsgs.sol";
+import { ERR_TOO_LARGE_PUBKEY } from "../errMsgs/PantherPoolErrMsgs.sol";
 import { FIELD_SIZE } from "../crypto/SnarkConstants.sol";
 
 abstract contract CommitmentGenerator {

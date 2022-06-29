@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import "./common/ErrorMsgs.sol";
+import "./errMsgs/PrpGrantorErrMsgs.sol";
 import "./common/ImmutableOwnable.sol";
 import "./interfaces/IPrpGrantor.sol";
 

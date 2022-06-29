@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 import "./common/Constants.sol";
-import "./common/ErrorMsgs.sol";
+import "./errMsgs/PantherPoolErrMsgs.sol";
 import "./common/ImmutableOwnable.sol";
 import "./common/NonReentrant.sol";
 import "./common/Types.sol";

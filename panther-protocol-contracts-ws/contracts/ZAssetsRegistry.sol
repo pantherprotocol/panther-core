@@ -3,9 +3,7 @@
 pragma solidity ^0.8.4;
 
 import { ERC20_TOKEN_TYPE, MAX_SCALE, zASSET_ENABLED, zASSET_UNKNOWN } from "./common/Constants.sol";
-import { ERR_ASSET_ALREADY_REGISTERED, ERR_UNKNOWN_ASSET, ERR_ZERO_SUBID_EXPECTED } from "./common/ErrorMsgs.sol";
-import { ERR_WRONG_ASSET_SCALE, ERR_WRONG_ASSET_STATUS, ERR_WRONG_ASSET_VER } from "./common/ErrorMsgs.sol";
-import { ERR_ZERO_TOKEN_ADDRESS } from "./common/ErrorMsgs.sol";
+import "./errMsgs/ZAssetsRegistryErrMsgs.sol";
 import "./common/ImmutableOwnable.sol";
 import { ZAsset } from "./common/Types.sol";
 import "./interfaces/IZAssetsRegistry.sol";

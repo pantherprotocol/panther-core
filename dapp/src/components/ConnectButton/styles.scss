@@ -1,6 +1,6 @@
 @import '../../variables';
 
-.primary-action-button-holder {
+.wallet-btn-holder {
     width: 100%;
     height: 100%;
     text-align: center;
@@ -12,7 +12,7 @@
 
     border-radius: 16px;
 
-    .primary-action-button {
+    .wallet-btn {
         height: 45px;
         width: 100%;
         display: flex;
@@ -21,8 +21,8 @@
         border-radius: 8px;
         color: $white;
         text-decoration: none;
-        font-weight: 800;
-        font-size: 18px;
+        font-weight: $bold-font-weight;
+        font-size: $title-font-size;
         text-transform: initial;
     }
 }

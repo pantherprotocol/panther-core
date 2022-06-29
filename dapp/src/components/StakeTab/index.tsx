@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
+import {NoEthereumProviderError} from '@web3-react/injected-connector';
 import {BigNumber, utils} from 'ethers';
 
 import StakingInfo from '../../components/StakeTab/StakingInfo';
@@ -28,10 +29,12 @@ import {
     getZkpTokenBalance,
 } from '../../redux/slices/zkpTokenBalance';
 import {onWrongNetwork} from '../../services/connectors';
+import {CHAIN_IDS} from '../../services/env';
 import {advancedStake} from '../../services/staking';
+import {switchNetwork} from '../../services/wallet';
 import {StakeType} from '../../types/staking';
+import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
-import {SwitchNetworkButton} from '../SwitchNetworkButton';
 
 import {ExpectedRewardsCard} from './ExpectedRewardsCard';
 import StakingBtn from './StakingBtn';
@@ -51,6 +54,7 @@ export default function StakeTab() {
     );
 
     const dispatch = useAppDispatch();
+    const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
     const [amountToStake, setAmountToStake] = useState<string>('');
     const [amountToStakeBN, setAmountToStakeBN] = useState<BigNumber | null>(
@@ -175,13 +179,34 @@ export default function StakeTab() {
 
             {wrongNetwork && (
                 <div className="buttons-holder">
-                    <SwitchNetworkButton />
+                    <ConnectButton
+                        text={'Switch network'}
+                        onClick={() => {
+                            const chainIdToSwitch = chainId
+                                ? chainId
+                                : CHAIN_IDS[0];
+                            switchNetwork(chainIdToSwitch);
+                        }}
+                    />
                 </div>
             )}
 
             {!active && !wrongNetwork && (
                 <div className="buttons-holder">
-                    <ConnectButton onConnect={onConnect} />
+                    <ConnectButton
+                        text={
+                            isNoEthereumProviderError
+                                ? 'Install MetaMask'
+                                : 'Connect Wallet'
+                        }
+                        onClick={() => {
+                            if (isNoEthereumProviderError) {
+                                safeOpenMetamask();
+                            } else {
+                                onConnect();
+                            }
+                        }}
+                    />
                 </div>
             )}
 

@@ -15,7 +15,6 @@ string constant ERR_TOO_LARGE_COMMITMENTS = "CT:E1"; // commitment exceeds maxim
 string constant ERR_INVALID_PUBKEYS = "RG:E1"; // Unexpected format of Pub Keys
 
 // PantherPool contract
-string constant ERR_CANT_BE_SCALED = "PP:E15";
 string constant ERR_DEPOSIT_OVER_LIMIT = "PP:E1";
 string constant ERR_DEPOSIT_FROM_ZERO_ADDRESS = "PP:E2";
 string constant ERR_EXPIRED_TX_TIME = "PP:E3";
@@ -29,6 +28,7 @@ string constant ERR_TOO_LARGE_AMOUNT = "PP:E10";
 string constant ERR_TOO_LARGE_COMMITMENT = "PP:E11";
 string constant ERR_TOO_LARGE_NULLIFIER = "PP:E12";
 string constant ERR_TOO_LARGE_ROOT = "PP:E13";
+string constant ERR_TOO_LARGE_SCALED_AMOUNT = "PP:E26";
 string constant ERR_TOO_LARGE_TIME = "PP:E14";
 string constant ERR_UNKNOWN_MERKLE_ROOT = "PP:E16";
 string constant ERR_WITHDRAW_OVER_LIMIT = "PP:E17";

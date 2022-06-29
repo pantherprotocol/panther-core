@@ -2,8 +2,8 @@ import React, {useCallback, useEffect, useState} from 'react';
 
 import {Box, Button, Card, Typography} from '@mui/material';
 import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
-import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
+import {SwitchNetworkButton} from '../../components/SwitchNetworkButton';
 import {useOnConnect} from '../../hooks/web3';
 import polygonIcon from '../../images/polygon-logo.svg';
 import {formatCurrency} from '../../lib/format';
@@ -20,8 +20,6 @@ import {
 } from '../../services/connectors';
 import {FAUCET_CHAIN_IDS} from '../../services/env';
 import {sendFaucetTransaction} from '../../services/faucet';
-import {switchNetwork} from '../../services/wallet';
-import {safeOpenMetamask} from '../Common/links';
 import {ConnectButton} from '../ConnectButton';
 
 import './styles.scss';
@@ -29,7 +27,6 @@ import './styles.scss';
 function ZafariFaucet() {
     const context = useWeb3React();
     const {library, account, active, error, chainId} = context;
-    const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
     const [wrongNetwork, setWrongNetwork] = useState(false);
     const onConnect = useOnConnect();
 
@@ -143,29 +140,13 @@ function ZafariFaucet() {
             <Box className="connect-button">
                 {wrongNetwork && (
                     <Box>
-                        <ConnectButton
-                            text={'Switch network'}
-                            onClick={() => {
-                                switchNetwork(FAUCET_CHAIN_IDS[0]);
-                            }}
+                        <SwitchNetworkButton
+                            defaultNetwork={FAUCET_CHAIN_IDS[0]}
                         />
                     </Box>
                 )}
                 {!active && !wrongNetwork && (
-                    <ConnectButton
-                        text={
-                            isNoEthereumProviderError
-                                ? 'Install MetaMask'
-                                : 'Connect Wallet to Start'
-                        }
-                        onClick={() => {
-                            if (isNoEthereumProviderError) {
-                                safeOpenMetamask();
-                            } else {
-                                onConnect();
-                            }
-                        }}
-                    />
+                    <ConnectButton onConnect={onConnect} />
                 )}
                 {active && !wrongNetwork && (
                     <Button

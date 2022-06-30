@@ -11,19 +11,26 @@ task(TASK_ZASSET_ADD, 'Add a ZAsset to the panther pool')
         '0',
         types.string,
     )
+    .addParam(
+        'zVersion',
+        '0 for "default" zAsset, an integer in [1..31] for "alternative" zAsset of an ERC-20',
+        '0',
+        types.string,
+    )
     .addParam('scale', 'Scale amount', '0', types.string)
     .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
         const zAsset = {
             _unused: 0,
+            version: taskArgs.zVersion,
             status: 1,
             tokenType: taskArgs.tokenType,
             scale: taskArgs.scale,
             token: taskArgs.token,
         };
 
-        const pantherPool = await hre.ethers.getContract('PantherPoolV0');
+        const registry = await hre.ethers.getContract('ZAssetsRegistry');
 
-        const tx = await pantherPool.addAsset(zAsset);
+        const tx = await registry.addZAsset(zAsset);
 
         const receipt = await tx.wait();
         console.log('transaction receipt:', receipt);

@@ -12,6 +12,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         (await getNamedAccounts()).multisig ||
         deployer;
 
+    const registry = await hre.ethers.getContract('ZAssetsRegistry_Proxy');
     const vaultProxy = await hre.ethers.getContract('Vault_Proxy');
     const grantorProxy = await hre.ethers.getContract('PrpGrantor_Proxy');
 
@@ -31,7 +32,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await deploy('PantherPoolV0', {
         contract,
         from: deployer,
-        args: [multisig, exitTime, vaultProxy.address, grantorProxy.address],
+        args: [
+            multisig,
+            exitTime,
+            registry.address,
+            vaultProxy.address,
+            grantorProxy.address,
+        ],
         libraries: {
             PoseidonT3: poseidonT3.address,
             PoseidonT4: poseidonT4.address,
@@ -54,4 +61,5 @@ func.dependencies = [
     'crypto-libs',
     'vault-proxy',
     'grantor-proxy',
+    'registry',
 ];

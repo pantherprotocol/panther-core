@@ -383,7 +383,7 @@ export const abi = [
     },
     {
         inputs: [],
-        name: 'EXIT_TIME',
+        name: 'exitTime',
         outputs: [
             {
                 internalType: 'uint256',

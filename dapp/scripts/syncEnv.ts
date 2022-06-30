@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
 // Script to extract advanced staking times from Staking terms
-// and early redemption time from PantherPoolV0's EXIT_TIME()
+// and early redemption time from PantherPoolV0's exitTime()
 // or exitTime()
 // and then set the Amplify app's environment variables accordingly.
 //
@@ -270,7 +270,7 @@ async function main() {
     );
     // console.log(await provider.getNetwork());
     const exitTime = await getExitTime(provider);
-    console.log(`EXIT_TIME is ${exitTime} (${new Date(exitTime * 1000)})`);
+    console.log(`exitTime is ${exitTime} (${new Date(exitTime * 1000)})`);
 
     console.log();
 

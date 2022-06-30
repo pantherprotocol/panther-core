@@ -30,7 +30,7 @@ export async function getExitTime(
     chainId: number,
 ): Promise<number> {
     const contract = getPoolContract(library, chainId);
-    const exitTimeBN = await contract.EXIT_TIME();
+    const exitTimeBN = await contract.exitTime();
     return Number(exitTimeBN.toString());
 }
 

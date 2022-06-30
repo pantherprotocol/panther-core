@@ -380,8 +380,10 @@ contract AdvancedStakeRewardController is
 
         // Finally, generate deposits (i.e. UTXOs in the MASP)
         address[OUT_UTXOs] memory tokens = [
-            ZKP_TOKEN,
-            PRP_VIRTUAL_CONTRACT,
+            // PantherPool reverts if non-zero address provided for zero amount
+            zkpAmount == 0 ? address(0) : ZKP_TOKEN,
+            prpAmount == 0 ? address(0) : PRP_VIRTUAL_CONTRACT,
+            // ternary skipped as NFT_TOKEN is surely 0 if nftAmount is 0
             NFT_TOKEN
         ];
         uint256[OUT_UTXOs] memory tokenIds = [0, 0, nftTokenId];

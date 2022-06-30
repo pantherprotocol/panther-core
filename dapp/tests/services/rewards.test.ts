@@ -1,9 +1,10 @@
 import {describe, expect} from '@jest/globals';
-import {BigNumber} from 'ethers';
+import {constants, utils} from 'ethers';
+import mockConsole from 'jest-mock-console';
 
 describe('Advanced stakes', () => {
-    process.env.ADVANCED_STAKING_T_START = '1652356800';
-    process.env.ADVANCED_STAKING_T_END = '1656590400';
+    process.env.ADVANCED_STAKING_T_START = '1652356800'; // 2022/05/12 12:00 UTC
+    process.env.ADVANCED_STAKING_T_END = '1656590400'; // 2022/06/30 12:00 UTC
 
     // Next line produces the following lint error, therefore disabled:
     // "Require statement not part of import statement
@@ -16,7 +17,7 @@ describe('Advanced stakes', () => {
         T_END,
     } = require('../../src/services/rewards'); // eslint-disable-line
 
-    const currentTime = new Date('2022-05-17T12:00:00Z');
+    const currentTime = new Date('2022-05-17T12:00:00Z'); // 5 days after start
     const tenDays = 3600 * 24 * 10 * 1000;
     const beforeStart = T_START - tenDays;
     const start = T_START;
@@ -59,35 +60,61 @@ describe('Advanced stakes', () => {
     });
 
     describe('zZKP rewards', () => {
+        let restoreConsole: any;
+
+        beforeEach(() => {
+            restoreConsole = mockConsole();
+        });
+
+        afterEach(() => {
+            restoreConsole();
+        });
+
         it('should always be less than staked amount', () => {
             const dates = [T_START, T_START + tenDays, T_END - tenDays, T_END];
             dates.forEach((date: number) => {
-                const stake = BigNumber.from(100);
+                const stake = utils.parseEther('1000');
                 const reward = zZkpReward(stake, date);
                 expect(stake.gte(reward)).toBe(true);
             });
         });
 
         it('should have exact value at beginning of staking', () => {
-            const stake = BigNumber.from(1e9);
+            const stake = utils.parseEther('1000');
             const reward = zZkpReward(stake, start);
-            expect(reward.toString()).toEqual('93972000');
+            expect(utils.formatEther(reward).toString()).toEqual('93.972');
         });
 
         it('should have exact value 10 days before end of staking', () => {
-            const stake = BigNumber.from(1e9);
+            const stake = utils.parseEther('1000');
             const reward = zZkpReward(stake, beforeEnd);
-            expect(reward.toString()).toEqual('13726000');
+            expect(utils.formatEther(reward).toString()).toEqual('13.726');
         });
 
-        it('should throw error if time is before start', () => {
-            const stake = BigNumber.from(100);
-            expect(() => zZkpReward(stake, T_START - tenDays)).toThrowError();
+        it('should return max rewards if time is before start', () => {
+            const stake = utils.parseEther('1000');
+            const reward = zZkpReward(stake, beforeStart);
+            expect(utils.formatEther(reward).toString()).toEqual('93.972');
+            expect(console.error).toHaveBeenCalledWith(
+                'Cannot estimate rewards: ' +
+                    'time staked 1651492800000 ' +
+                    '(Mon May 02 2022 12:00:00 GMT+0000 (Coordinated Universal Time)) ' +
+                    'is before the start of the rewards 1652356800000 ' +
+                    '(Thu May 12 2022 12:00:00 GMT+0000 (Coordinated Universal Time))',
+            );
         });
 
-        it('should throw error if time is after end', () => {
-            const stake = BigNumber.from(100);
-            expect(() => zZkpReward(stake, T_END + tenDays)).toThrowError();
+        it('should return 0 if time is after end', () => {
+            const stake = utils.parseEther('1000');
+            const reward = zZkpReward(stake, afterEnd);
+            expect(reward).toEqual(constants.Zero);
+            expect(console.error).toHaveBeenCalledWith(
+                'Cannot estimate rewards: ' +
+                    'time staked 1657454400000 ' +
+                    '(Sun Jul 10 2022 12:00:00 GMT+0000 (Coordinated Universal Time)) ' +
+                    'is after the end of the rewards 1656590400000 ' +
+                    '(Thu Jun 30 2022 12:00:00 GMT+0000 (Coordinated Universal Time))',
+            );
         });
     });
 

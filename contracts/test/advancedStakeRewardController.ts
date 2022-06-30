@@ -252,10 +252,10 @@ describe('AdvancedStakeRewardController', () => {
                 // Staked before the `rewardingStart`, till before the `rewardingEnd`
                 const stakedAt = rewardingStart - 4;
                 const lockedTill = rewardingStart + rewardedPeriod / 2;
-                const expReward = getRewardAmount(lockedTill, stakedAt);
-
-                // no rewards before the `rewardingStart`
-                assert(expReward.toString() == '0');
+                // reward shall be the same as for a stake done at rewardingStart ...
+                const expReward = getRewardAmount(lockedTill, rewardingStart);
+                // ... and it shall not be 0
+                assert(BigNumber.from(expReward).gt(0));
 
                 expect(
                     await asrController.internalComputeZkpReward(
@@ -350,8 +350,8 @@ describe('AdvancedStakeRewardController', () => {
             function getRewardAmount(lockedTill: number, stakedAt: number) {
                 assert(lockedTill > stakedAt);
 
-                // No rewards for stakes made before the `rewardingStart`
-                if (stakedAt < rewardingStart) return 0;
+                // No rewards for stakes withdrawn on or before the `rewardingStart`
+                if (lockedTill <= rewardingStart) return 0;
 
                 // No rewards for stakes made on or after the `rewardingEnd`
                 if (stakedAt >= rewardingEnd) return 0;

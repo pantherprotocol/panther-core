@@ -301,18 +301,18 @@ contract AdvancedStakeRewardController is
     // Some of them declared `internal` rather than `private` to ease testing
 
     function _generateRewards(bytes memory message) internal {
+        // (stakeId and claimedAt are irrelevant)
         (
             address staker,
-            uint96 stakeAmount, // stake id (irrelevant)
+            uint96 stakeAmount,
             ,
             uint32 stakedAt,
-            uint32 lockedTill, // claimedAt (irrelevant)
+            uint32 lockedTill,
             ,
             bytes memory data
         ) = _unpackStakingActionMsg(message);
 
         require(stakeAmount != 0, "ARC: unexpected zero stakeAmount");
-        require(stakedAt >= REWARDING_START, "ARC: unexpected stakedAt");
         require(lockedTill > stakedAt, "ARC: unexpected lockedTill");
 
         uint256 zkpAmount = 0;
@@ -330,19 +330,21 @@ contract AdvancedStakeRewardController is
                     stakedAt
                 );
 
-                uint256 newTotalZkpReward = uint256(_totals.zkpRewards) +
-                    zkpAmount;
-                require(
-                    zkpRewardsLimit >= newTotalZkpReward,
-                    "ARC: too less rewards available"
-                );
-                _totals.zkpRewards = safe96(newTotalZkpReward);
+                if (zkpAmount > 0) {
+                    uint256 newTotalZkpReward = uint256(_totals.zkpRewards) +
+                        zkpAmount;
+                    require(
+                        zkpRewardsLimit >= newTotalZkpReward,
+                        "ARC: too less rewards available"
+                    );
+                    _totals.zkpRewards = safe96(newTotalZkpReward);
 
-                uint256 newScZkpStaked = uint256(_totals.scZkpStaked) +
-                    uint256(stakeAmount) /
-                    1e15;
-                // Risk of overflow ignored as the $ZKP max total supply is 1e9 tokens
-                _totals.scZkpStaked = uint40(newScZkpStaked);
+                    uint256 newScZkpStaked = uint256(_totals.scZkpStaked) +
+                        uint256(stakeAmount) /
+                        1e15;
+                    // Overflow risk ignored as $ZKP max total supply is 1e9 tokens
+                    _totals.scZkpStaked = uint40(newScZkpStaked);
+                }
             }
 
             // Register PRP grant to this contract (it will be "burnt" for PRP UTXO)
@@ -357,7 +359,7 @@ contract AdvancedStakeRewardController is
             // Grant the total just once (for all stakes), then use a part (for every stake),
             // and finally burn unused grant amount, if it remains, in the end
 
-            // If the NFT token contract defined, mint the NFT
+            // If the NFT contract defined, mint the NFT
             if (NFT_TOKEN != address(0)) {
                 // trusted contract called - no reentrancy guard needed
                 nftTokenId = INftGrantor(NFT_TOKEN).grantOneToken(
@@ -376,7 +378,7 @@ contract AdvancedStakeRewardController is
             uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] memory secrets
         ) = unpackStakingData(data);
 
-        // Finally, generate deposits (i.e. UTXOs with the MASP)
+        // Finally, generate deposits (i.e. UTXOs in the MASP)
         address[OUT_UTXOs] memory tokens = [
             ZKP_TOKEN,
             PRP_VIRTUAL_CONTRACT,
@@ -415,13 +417,20 @@ contract AdvancedStakeRewardController is
         uint256 stakedAt
     ) internal view returns (uint256 zkpAmount) {
         // No rewarding after the REWARDING_END
-        if (stakedAt > REWARDING_END) return 0;
+        if (stakedAt >= REWARDING_END) return 0;
+        // No rewarding before the REWARDING_START
+        if (lockedTill <= REWARDING_START) return 0;
+
+        uint256 rewardedSince = REWARDING_START > stakedAt
+            ? REWARDING_START
+            : stakedAt;
+
         uint256 rewardedTill = lockedTill > REWARDING_END
             ? REWARDING_END
             : lockedTill;
 
-        uint256 period = rewardedTill - stakedAt;
-        uint256 apy = getZkpApyAt(stakedAt);
+        uint256 period = rewardedTill - rewardedSince;
+        uint256 apy = getZkpApyAt(rewardedSince);
         // 3153600000 = 365 * 24 * 3600 seconds * 100 percents
         zkpAmount = (stakeAmount * apy * period) / 3153600000;
     }

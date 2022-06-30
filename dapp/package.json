@@ -17,7 +17,7 @@
     "prettier:check": "cd .. && yarn prettier --check dapp",
     "prettier:fix": "cd .. && yarn prettier --write dapp",
     "prettier:list-different": "cd .. && yarn prettier --list-different dapp",
-    "test": "DOTENV_CONFIG_PATH=.env.test jest",
+    "test": "TZ=UTC DOTENV_CONFIG_PATH=.env.test jest",
     "env:sync": "yarn ts-node scripts/syncEnv.ts",
     "amplify:check": "yarn env:sync",
     "amplify:sync": "yarn env:sync --write",

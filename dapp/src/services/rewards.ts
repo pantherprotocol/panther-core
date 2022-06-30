@@ -22,20 +22,35 @@ const PRP_REWARD_PER_STAKE = '10000';
 
 export function zZkpReward(amount: BigNumber, timeStaked: number): BigNumber {
     if (timeStaked < T_START) {
-        throw new Error(
-            'Cannot estimate rewards: time staked is before the start of the rewards',
+        console.error(
+            `Cannot estimate rewards: time staked ${timeStaked} (${new Date(
+                timeStaked,
+            )}) is before the start of the rewards ${T_START} (${new Date(
+                T_START,
+            )})`,
         );
+        timeStaked = T_START;
     }
 
     if (timeStaked > T_END) {
-        throw new Error(
-            'Cannot estimate rewards: time staked is after the end of the rewards',
+        console.error(
+            `Cannot estimate rewards: time staked ${timeStaked} (${new Date(
+                timeStaked,
+            )}) is after the end of the rewards ${T_END} (${new Date(T_END)})`,
         );
+        return constants.Zero;
     }
 
     const oneYear = 3600 * 24 * 365 * 1000;
+
+    // Fraction of a year that the stake has accumulated rewards
     const timeFracStaked = (T_END - timeStaked) / oneYear;
+
+    // Reward amount as fraction of principal staked (calculated from annual APY
+    // scaled to time staked).
     const rewardCoef = (getAdvStakingAPY(timeStaked) / 100) * timeFracStaked;
+
+    // Calculate reward, truncating reward fraction to 6 decimals of precision.
     const rewardCoefE6 = Math.floor(rewardCoef * 1e6);
     if (rewardCoefE6 < 1) {
         return constants.Zero;

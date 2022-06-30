@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
@@ -8,8 +9,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
 
-import {useAppSelector} from '../../../../../redux/hooks';
+import {useAppSelector, useAppDispatch} from '../../../../../redux/hooks';
 import {advancedStakesRewardsSelector} from '../../../../../redux/slices/advancedStakesRewards';
+import {getPoolV0ExitTime} from '../../../../../redux/slices/poolV0';
 import {AdvancedStakeRewards, UTXOStatus} from '../../../../../types/staking';
 
 import AssetsDetailsRow from './AssetsDetailsRow';
@@ -17,10 +19,19 @@ import AssetsDetailsRow from './AssetsDetailsRow';
 import './styles.scss';
 
 const AssetsDetailsTable = () => {
-    const {account} = useWeb3React();
+    const context = useWeb3React();
+    const {account, chainId, library} = context;
     const advancedStakesRewards = useAppSelector(
         advancedStakesRewardsSelector(account),
     );
+    const dispatch = useAppDispatch();
+    const [gotExitTime, registerExitTimeCall] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (gotExitTime || !chainId || !library) return;
+        dispatch(getPoolV0ExitTime, context);
+        registerExitTimeCall(true);
+    }, [context, chainId, library, dispatch, gotExitTime]);
 
     return (
         <Box sx={{margin: 1}}>

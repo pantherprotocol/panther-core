@@ -16,6 +16,7 @@ import advancedStakesRewardsReducer from './slices/advancedStakesRewards';
 import blurReducer from './slices/blur';
 import chainBalanceReducer from './slices/chainBalance';
 import firstVisitReducer from './slices/isFirstVisit';
+import poolV0Reducer from './slices/poolV0';
 import stakeTermsReducer from './slices/stakeTerms';
 import totalStakedReducer from './slices/totalStaked';
 import totalUnclaimedClassicRewardsReducer from './slices/totalUnclaimedClassicRewards';
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
     advancedStakesRewards: advancedStakesRewardsReducer,
     blur: blurReducer,
     chainBalance: chainBalanceReducer,
+    poolV0: poolV0Reducer,
     totalStaked: totalStakedReducer,
     zkpMarketPrice: zkpMarketPriceReducer,
     zkpTokenBalance: zkpTokenBalanceReducer,

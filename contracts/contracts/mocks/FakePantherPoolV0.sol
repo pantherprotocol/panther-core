@@ -23,7 +23,7 @@ contract FakePantherPoolV0 is IPantherPoolV0 {
         );
 
     address public immutable override VAULT;
-    uint256 public immutable EXIT_TIME;
+    uint256 public immutable exitTime;
 
     // solhint-enable var-name-mixedcase
 
@@ -31,9 +31,9 @@ contract FakePantherPoolV0 is IPantherPoolV0 {
 
     mapping(bytes32 => bool) public isSpent;
 
-    constructor(address anyVaultAddress, uint256 exitTime) {
+    constructor(address anyVaultAddress, uint256 _exitTime) {
         VAULT = anyVaultAddress;
-        EXIT_TIME = exitTime;
+        exitTime = _exitTime;
     }
 
     // It fakes generation of deposits and emits
@@ -129,7 +129,7 @@ contract FakePantherPoolV0 is IPantherPoolV0 {
         uint256 // cacheIndexHint
     ) external override {
         require(
-            block.timestamp >= EXIT_TIME,
+            block.timestamp >= exitTime,
             "FakePantherPoolV0:ERR_TOO_EARLY_EXIT"
         );
         require(amount < 2**96, "FakePantherPoolV0:ERR_TOO_LARGE_AMOUNT");

@@ -95,12 +95,12 @@ describe('Advanced stakes', () => {
             const stake = utils.parseEther('1000');
             const reward = zZkpReward(stake, beforeStart);
             expect(utils.formatEther(reward).toString()).toEqual('93.972');
-            expect(console.error).toHaveBeenCalledWith(
-                'Cannot estimate rewards: ' +
-                    'time staked 1651492800000 ' +
-                    '(Mon May 02 2022 12:00:00 GMT+0000 (Coordinated Universal Time)) ' +
-                    'is before the start of the rewards 1652356800000 ' +
-                    '(Thu May 12 2022 12:00:00 GMT+0000 (Coordinated Universal Time))',
+            expect(console.warn).toHaveBeenCalledWith(
+                '1000.0 ZKP was staked at 1651492800000 ' +
+                    '(Mon May 02 2022 12:00:00 GMT+0000 (Coordinated Universal Time)), ' +
+                    'before the start of the rewards 1652356800000 ' +
+                    '(Thu May 12 2022 12:00:00 GMT+0000 (Coordinated Universal Time)); ' +
+                    'treating as if staked at the starting time.',
             );
         });
 
@@ -108,12 +108,12 @@ describe('Advanced stakes', () => {
             const stake = utils.parseEther('1000');
             const reward = zZkpReward(stake, afterEnd);
             expect(reward).toEqual(constants.Zero);
-            expect(console.error).toHaveBeenCalledWith(
-                'Cannot estimate rewards: ' +
-                    'time staked 1657454400000 ' +
-                    '(Sun Jul 10 2022 12:00:00 GMT+0000 (Coordinated Universal Time)) ' +
-                    'is after the end of the rewards 1656590400000 ' +
-                    '(Thu Jun 30 2022 12:00:00 GMT+0000 (Coordinated Universal Time))',
+            expect(console.warn).toHaveBeenCalledWith(
+                '1000.0 ZKP was staked at 1657454400000 ' +
+                    '(Sun Jul 10 2022 12:00:00 GMT+0000 (Coordinated Universal Time)), ' +
+                    'after the end of the rewards 1656590400000 ' +
+                    '(Thu Jun 30 2022 12:00:00 GMT+0000 (Coordinated Universal Time)); ' +
+                    'treating as zero reward.',
             );
         });
     });

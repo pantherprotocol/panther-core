@@ -1,4 +1,4 @@
-import {BigNumber, constants} from 'ethers';
+import {BigNumber, constants, utils} from 'ethers';
 
 import {IStakingTypes} from '../types/contracts/Staking';
 import {
@@ -22,21 +22,27 @@ const PRP_REWARD_PER_STAKE = '10000';
 
 export function zZkpReward(amount: BigNumber, timeStaked: number): BigNumber {
     if (timeStaked < T_START) {
-        console.error(
-            `Cannot estimate rewards: time staked ${timeStaked} (${new Date(
+        console.warn(
+            `${utils.formatEther(
+                amount,
+            )} ZKP was staked at ${timeStaked} (${new Date(
                 timeStaked,
-            )}) is before the start of the rewards ${T_START} (${new Date(
+            )}), before the start of the rewards ${T_START} (${new Date(
                 T_START,
-            )})`,
+            )}); treating as if staked at the starting time.`,
         );
         timeStaked = T_START;
     }
 
     if (timeStaked > T_END) {
-        console.error(
-            `Cannot estimate rewards: time staked ${timeStaked} (${new Date(
+        console.warn(
+            `${utils.formatEther(
+                amount,
+            )} ZKP was staked at ${timeStaked} (${new Date(
                 timeStaked,
-            )}) is after the end of the rewards ${T_END} (${new Date(T_END)})`,
+            )}), after the end of the rewards ${T_END} (${new Date(
+                T_END,
+            )}); treating as zero reward.`,
         );
         return constants.Zero;
     }

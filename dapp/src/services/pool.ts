@@ -15,6 +15,7 @@ import {AdvancedStakeRewards, UTXOStatus} from 'staking';
 import {CONFIRMATIONS_NUM} from '../lib/constants';
 import {parseTxErrorMessage} from '../lib/errors';
 import {getEventFromReceipt} from '../lib/events';
+import {formatTime} from '../lib/format';
 import {IKeypair, PrivateKey} from '../lib/types';
 
 import {getPoolContract, getSignableContract} from './contracts';
@@ -30,8 +31,13 @@ export async function getExitTime(
     chainId: number,
 ): Promise<number> {
     const contract = getPoolContract(library, chainId);
-    const exitTimeBN = await contract.EXIT_TIME();
-    return Number(exitTimeBN.toString());
+    const exitTimeBN = await contract.exitTime();
+    const exitTime = Number(exitTimeBN.toString());
+    const formatted = formatTime(exitTime * 1000, {
+        style: 'short',
+    });
+    console.debug(`early redemption allowed at ${exitTime} (${formatted})`);
+    return exitTime;
 }
 
 /*

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {ReactElement, useCallback, useEffect, useState} from 'react';
+import {ReactElement, useCallback, useState} from 'react';
 
 import {
     Dialog,
@@ -19,17 +19,18 @@ import {useWeb3React} from '@web3-react/core';
 import backButtonLeftArrow from '../../../../../../../images/back-button-left-arrow.svg';
 import rightSideArrow from '../../../../../../../images/right-arrow-icon.svg';
 import {formatTime} from '../../../../../../../lib/format';
-import {useAppDispatch} from '../../../../../../../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../../../../../../../redux/hooks';
 import {updateUTXOStatus} from '../../../../../../../redux/slices/advancedStakesRewards';
 import {removeBlur, setBlur} from '../../../../../../../redux/slices/blur';
+import {poolV0ExitTimeSelector} from '../../../../../../../redux/slices/poolV0';
 import {env} from '../../../../../../../services/env';
-import {getExitTime, exit} from '../../../../../../../services/pool';
+import {exit} from '../../../../../../../services/pool';
 import {AdvancedStakeRewards} from '../../../../../../../types/staking';
 
 import './styles.scss';
 
 function getButtonContents(
-    exitTime: number | undefined,
+    exitTime: number | null,
     afterExitTime: boolean,
     treeUri: string | undefined,
 ): string | ReactElement {
@@ -54,27 +55,10 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
     const context = useWeb3React();
     const {library, account, chainId} = context;
     const dispatch = useAppDispatch();
+    const exitTime = useAppSelector(poolV0ExitTimeSelector);
 
-    const [exitTime, setExitTime] = useState<number>();
     const [open, setOpen] = useState(false);
     const [redeemConfirmed, setRedeemConfirmed] = useState(false);
-
-    const updateExitTime = useCallback(async () => {
-        if (!chainId) return;
-        const newExitTime = await getExitTime(library, chainId);
-        setExitTime(newExitTime);
-        console.debug(
-            'early redemption allowed at',
-            formatTime(Number(newExitTime) * 1000, {
-                style: 'short',
-            }),
-            newExitTime,
-        );
-    }, [chainId, library]);
-
-    useEffect(() => {
-        updateExitTime();
-    }, [updateExitTime]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRedeemConfirmed(event.target.checked);
@@ -105,9 +89,7 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
         dispatch(updateUTXOStatus, [account, props.rewards.id, utxoStatus]);
     }, [dispatch, library, account, chainId, props.rewards, handleClose]);
 
-    const afterExitTime = exitTime
-        ? Number(exitTime) * 1000 < Date.now()
-        : false;
+    const afterExitTime = exitTime ? exitTime * 1000 < Date.now() : false;
     const treeUri = env[`COMMITMENT_TREE_URL_${chainId}`];
     const isRedemptionPossible = treeUri && afterExitTime;
 

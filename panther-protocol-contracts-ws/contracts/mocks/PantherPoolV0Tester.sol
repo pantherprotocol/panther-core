@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import "../PantherPoolV0.sol";
 import "./FakeVault.sol";
 import "./FakePrpGrantor.sol";
-import "./FakeZAssetsRegistry.sol";
+import "../ZAssetsRegistry.sol";
 
 contract PantherPoolV0Tester is PantherPoolV0 {
     address private registry;
@@ -14,7 +14,8 @@ contract PantherPoolV0Tester is PantherPoolV0 {
         PantherPoolV0(
             address(this),
             timeNow() + 1,
-            registry = address(new FakeZAssetsRegistry()),
+            // This mock is the owner of ZAssetsRegistry
+            registry = address(new ZAssetsRegistry(address(this))),
             address(new FakeVault()),
             address(new FakePrpGrantor())
         )
@@ -25,7 +26,7 @@ contract PantherPoolV0Tester is PantherPoolV0 {
         z1.scale = 0;
         z1.token = address(uint160(111));
         z1.status = zASSET_ENABLED;
-        FakeZAssetsRegistry(registry).addZAsset(z1);
+        ZAssetsRegistry(registry).addZAsset(z1);
     }
 
     function testGenerateCommitments(

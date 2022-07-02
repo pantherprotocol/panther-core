@@ -19,6 +19,7 @@ export enum TokenTypes {
 
 export type ZAsset = {
     _unused: number;
+    version: number;
     status: number;
     tokenType: number;
     scale: number;
@@ -43,6 +44,7 @@ export const getZAssets = (): ZAsset[] => {
     return [
         {
             _unused: 0,
+            version: 0,
             status: ZAssetStatus.ENABLED,
             tokenType: TokenTypes.ERC20,
             scale: 0,
@@ -50,6 +52,7 @@ export const getZAssets = (): ZAsset[] => {
         },
         {
             _unused: 0,
+            version: 0,
             status: ZAssetStatus.ENABLED,
             tokenType: TokenTypes.ERC721,
             scale: 0,
@@ -57,6 +60,7 @@ export const getZAssets = (): ZAsset[] => {
         },
         {
             _unused: 0,
+            version: 0,
             status: ZAssetStatus.ENABLED,
             tokenType: TokenTypes.ERC1155,
             scale: 0,
@@ -119,6 +123,7 @@ export const getMissingIds = () => [
 
 export const getZeroZAsset = () => ({
     _unused: 0,
+    version: 0,
     status: ZAssetStatus.UNKNOWN,
     tokenType: TokenTypes.ERC20,
     scale: 0,

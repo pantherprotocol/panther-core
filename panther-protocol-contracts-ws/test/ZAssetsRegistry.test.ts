@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { MockZAssetsRegistry } from '../types';
+import { ZAssetsRegistry } from '../types';
 import {
     getIds,
     getMissingIds,
@@ -11,17 +11,22 @@ import {
     ZAssetStatus,
 } from './data/zAssetsSample';
 import { revertSnapshot, takeSnapshot } from './helpers/hardhat';
+import { BigNumber } from 'ethers';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 describe('ZAssetsRegistry', function () {
-    let zAssetsRegistry: MockZAssetsRegistry;
+    let zAssetsRegistry: ZAssetsRegistry;
+    let owner: SignerWithAddress;
     let snapshot;
 
     before(async () => {
+        [owner] = await ethers.getSigners();
         const ZAssetsRegistry = await ethers.getContractFactory(
-            'MockZAssetsRegistry',
+            'ZAssetsRegistry',
         );
-        zAssetsRegistry =
-            (await ZAssetsRegistry.deploy()) as MockZAssetsRegistry;
+        zAssetsRegistry = (await ZAssetsRegistry.deploy(
+            owner.address,
+        )) as ZAssetsRegistry;
     });
 
     beforeEach(async () => {
@@ -32,10 +37,10 @@ describe('ZAssetsRegistry', function () {
         await revertSnapshot(snapshot);
     });
 
-    describe('Internal addAsset', () => {
+    describe('addAsset', () => {
         it('should emit AssetAdded event', async () => {
             for (const zAsset of getZAssets()) {
-                await expect(zAssetsRegistry.internalAddAsset(zAsset))
+                await expect(zAssetsRegistry.addZAsset(zAsset))
                     .to.emit(zAssetsRegistry, 'AssetAdded')
                     .withArgs(zAsset.token, Object.values(zAsset));
             }
@@ -44,51 +49,47 @@ describe('ZAssetsRegistry', function () {
         it('should revert if zAsset is already added', async () => {
             const zAsset = getZAssets()[2];
             await addAsset(zAsset);
-            await expect(
-                zAssetsRegistry.internalAddAsset(zAsset),
-            ).to.be.revertedWith('AR:E1');
+            await expect(zAssetsRegistry.addZAsset(zAsset)).to.be.revertedWith(
+                'AR:E1',
+            );
         });
 
         it('should revert when token address is zero', async () => {
             const zAsset = getZAssets()[2];
             zAsset.token = ethers.constants.AddressZero;
 
-            await expect(
-                zAssetsRegistry.internalAddAsset(zAsset),
-            ).to.be.revertedWith('AR:E4');
+            await expect(zAssetsRegistry.addZAsset(zAsset)).to.be.revertedWith(
+                'AR:E7',
+            );
         });
     });
 
-    describe('internal changeAssetStatus', () => {
+    describe('changeAssetStatus', () => {
         describe('for an asset has been added', () => {
-            let rootId;
+            let zAssetRecId: BigNumber;
             let oldStatus;
 
             beforeEach(async () => {
                 const zAsset = getZAssets()[2];
                 oldStatus = zAsset.status;
                 expect(oldStatus).to.be.equal(ZAssetStatus.ENABLED);
-                await addAsset(zAsset);
-                rootId = await zAssetsRegistry.getZAssetRootId(zAsset.token);
+                zAssetRecId = await addAsset(zAsset);
             });
 
             it('should update the zAsset status', async () => {
                 await expect(
-                    zAssetsRegistry.internalChangeAssetStatus(
-                        rootId,
+                    zAssetsRegistry.changeZAssetStatus(
+                        zAssetRecId,
                         ZAssetStatus.DISABLED,
                     ),
                 )
                     .to.emit(zAssetsRegistry, 'AssetStatusChanged')
-                    .withArgs(rootId, ZAssetStatus.DISABLED, oldStatus);
+                    .withArgs(zAssetRecId, ZAssetStatus.DISABLED, oldStatus);
             });
 
             it('should revert when status is same', async () => {
                 await expect(
-                    zAssetsRegistry.internalChangeAssetStatus(
-                        rootId,
-                        oldStatus,
-                    ),
+                    zAssetsRegistry.changeZAssetStatus(zAssetRecId, oldStatus),
                 ).to.be.revertedWith('AR:E3');
             });
         });
@@ -97,7 +98,7 @@ describe('ZAssetsRegistry', function () {
             it('should revert if zAsset is not added yet', async () => {
                 const { zAssetRootId } = getMissingIds()[1];
                 await expect(
-                    zAssetsRegistry.internalChangeAssetStatus(
+                    zAssetsRegistry.changeZAssetStatus(
                         zAssetRootId,
                         ZAssetStatus.DISABLED,
                     ),
@@ -132,31 +133,35 @@ describe('ZAssetsRegistry', function () {
         });
     });
 
-    describe('getZAssetAndId', () => {
+    describe('getZAssetAndIds', () => {
         beforeEach(addAllAssets);
 
         describe('if an asset has been added', () => {
-            it('should get asset along with its zAssetId', async () => {
+            it('should get asset along with its IDs', async () => {
                 for (const {
                     token,
-                    tokenId,
+                    tokenId: expectedTokenId,
                     zAssetId: expectedZAssetId,
                 } of getIds()) {
                     const expected = Object.assign(
                         getZeroZAsset(),
                         getZAssets().find(e => e.token == token),
                     );
-                    const { asset: actual, zAssetId: actualZAssetId } =
-                        await zAssetsRegistry.getZAssetAndId(
-                            expected.token,
-                            tokenId,
-                        );
+                    const {
+                        asset: actual,
+                        zAssetId: actualZAssetId,
+                        _tokenId: actualTokenId,
+                    } = await zAssetsRegistry.getZAssetAndIds(
+                        expected.token,
+                        expectedTokenId,
+                    );
 
                     checkZAssetProperties(expected, actual);
                     expect(actualZAssetId).to.equal(
                         expectedZAssetId,
                         'zAssetId',
                     );
+                    expect(actualTokenId).to.equal(expectedTokenId, '_tokenId');
                 }
             });
         });
@@ -165,7 +170,7 @@ describe('ZAssetsRegistry', function () {
             it('should return zero values in `zAsset`', async () => {
                 for (const missing of getMissingIds()) {
                     const { asset: actual } =
-                        await zAssetsRegistry.getZAssetAndId(
+                        await zAssetsRegistry.getZAssetAndIds(
                             missing.token,
                             missing.tokenId,
                         );
@@ -175,265 +180,59 @@ describe('ZAssetsRegistry', function () {
 
             it('should return zero `zAssetId`', async () => {
                 for (const { token, tokenId } of getMissingIds()) {
-                    const { zAssetId } = await zAssetsRegistry.getZAssetAndId(
+                    const { zAssetId } = await zAssetsRegistry.getZAssetAndIds(
                         token,
                         tokenId,
                     );
                     expect(zAssetId).to.equal(0);
                 }
             });
-        });
-    });
 
-    describe('getZAssetRootId', () => {
-        it('should get asset root id been zAsset.token', async () => {
-            for (const { token, zAssetRootId } of getIds()) {
-                expect(await zAssetsRegistry.getZAssetRootId(token)).to.be.eq(
-                    zAssetRootId,
-                );
-            }
+            it('should return zero `_tokenId`', async () => {
+                for (const { token, tokenId } of getMissingIds()) {
+                    const { _tokenId } = await zAssetsRegistry.getZAssetAndIds(
+                        token,
+                        tokenId,
+                    );
+                    expect(_tokenId).to.equal(0);
+                }
+            });
+
+            it('should return zero `zAssetRecId`', async () => {
+                for (const { token, tokenId } of getMissingIds()) {
+                    const { zAssetRecId } =
+                        await zAssetsRegistry.getZAssetAndIds(token, tokenId);
+                    expect(zAssetRecId).to.equal(0);
+                }
+            });
         });
     });
 
     describe('isZAssetWhitelisted', () => {
-        let rootId;
+        let zAssetRecId: BigNumber;
         beforeEach(async () => {
             const zAsset = getZAssets()[0];
-            await addAsset(zAsset);
-            rootId = await zAssetsRegistry.getZAssetRootId(zAsset.token);
+            zAssetRecId = await addAsset(zAsset);
         });
 
-        it('should return true if rootId is whitelisted', async () => {
-            expect(await zAssetsRegistry.isZAssetWhitelisted(rootId)).to.be
+        it('should return true if zAssetRecId is whitelisted', async () => {
+            expect(await zAssetsRegistry.isZAssetWhitelisted(zAssetRecId)).to.be
                 .true;
         });
 
-        it('should return false if rootId is not whitelisted', async () => {
-            const anotherMissingZAsset = getZAssets()[1];
-            const anotherMissingRootId = await zAssetsRegistry.getZAssetRootId(
-                anotherMissingZAsset.token,
-            );
-
+        it('should return false if zAssetRecId is not whitelisted', async () => {
+            const anotherMissingRootId = zAssetRecId.xor(33);
             expect(
                 await zAssetsRegistry.isZAssetWhitelisted(anotherMissingRootId),
             ).to.be.false;
         });
     });
 
-    describe('scaleAmount', () => {
-        const amount = ethers.BigNumber.from('1234567890123456789012');
-
-        it('should not change the amount when scale is 0', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 0)).to.be.eq(
-                amount,
-            );
-        });
-
-        it('should revert if scale is 8', async () => {
-            await expect(zAssetsRegistry.unscaleAmount(amount, 8)).to.be
-                .reverted;
-        });
-
-        it('should revert if scale is 16 or grater', async () => {
-            await expect(zAssetsRegistry.unscaleAmount(amount, 16)).to.be
-                .reverted;
-            await expect(zAssetsRegistry.unscaleAmount(amount, 131)).to.be
-                .reverted;
-        });
-
-        it('should divide the amount by 1e1 when scale is 1 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 1)).to.be.eq(
-                amount.div(1e1),
-            );
-        });
-
-        it('should divide the amount by 1e2 when amount scale is 2 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 2)).to.be.eq(
-                amount.div(1e2),
-            );
-        });
-
-        it('should divide the amount by 1e3 when amount scale is 3 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 3)).to.be.eq(
-                amount.div(1e3),
-            );
-        });
-
-        it('should divide the amount by 1e4 when amount scale is 4 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 4)).to.be.eq(
-                amount.div(1e4),
-            );
-        });
-
-        it('should divide the amount by 1e5 when amount scale is 5 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 5)).to.be.eq(
-                amount.div(1e5),
-            );
-        });
-
-        it('should divide the amount by 1e6 when amount scale is 6 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 6)).to.be.eq(
-                amount.div(1e6),
-            );
-        });
-
-        it('should divide the amount by 1e7 when amount scale is 7 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 7)).to.be.eq(
-                amount.div(1e7),
-            );
-        });
-
-        it('should multiply the amount by 1e1 when amount scale is 9 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 9)).to.be.eq(
-                amount.mul(1e1),
-            );
-        });
-
-        it('should multiply the amount by 1e2 when amount scale is 10 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 10)).to.be.eq(
-                amount.mul(1e2),
-            );
-        });
-
-        it('should multiply the amount by 1e3 when amount scale is 11 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 11)).to.be.eq(
-                amount.mul(1e3),
-            );
-        });
-
-        it('should multiply the amount by 1e4 when amount scale is 12 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 12)).to.be.eq(
-                amount.mul(1e4),
-            );
-        });
-
-        it('should multiply the amount by 1e5 when amount scale is 13 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 13)).to.be.eq(
-                amount.mul(1e5),
-            );
-        });
-
-        it('should multiply the amount by 1e6 when amount scale is 14 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 14)).to.be.eq(
-                amount.mul(1e6),
-            );
-        });
-
-        it('should multiply the amount by 1e7 when amount scale is 15 ', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 15)).to.be.eq(
-                amount.mul(1e7),
-            );
-        });
-    });
-
-    describe('unscaleAmount', () => {
-        const amount = ethers.BigNumber.from('32109876543210987654321');
-
-        it('should not change the amount when scale is 0', async () => {
-            expect(await zAssetsRegistry.scaleAmount(amount, 0)).to.be.eq(
-                amount,
-            );
-        });
-
-        it('should revert if scale is 8', async () => {
-            await expect(zAssetsRegistry.unscaleAmount(amount, 8)).to.be
-                .reverted;
-        });
-
-        it('should revert if scale is 16 or grater', async () => {
-            await expect(zAssetsRegistry.unscaleAmount(amount, 16)).to.be
-                .reverted;
-            await expect(zAssetsRegistry.unscaleAmount(amount, 131)).to.be
-                .reverted;
-        });
-
-        it('should multiple the amount by 1e1 when amount scale is 1 ', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 1)).to.be.eq(
-                amount.mul(1e1),
-            );
-        });
-
-        it('should multiple the amount by 1e2 when amount scale is 2', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 2)).to.be.eq(
-                amount.mul(1e2),
-            );
-        });
-
-        it('should multiple the amount by 1e3 when amount scale is 3 ', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 3)).to.be.eq(
-                amount.mul(1e3),
-            );
-        });
-
-        it('should multiple the amount by 1e4 when amount scale is 4', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 4)).to.be.eq(
-                amount.mul(1e4),
-            );
-        });
-
-        it('should multiple the amount by 1e5 when amount scale is 5', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 5)).to.be.eq(
-                amount.mul(1e5),
-            );
-        });
-
-        it('should multiple the amount by 1e6 when amount scale is 6', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 6)).to.be.eq(
-                amount.mul(1e6),
-            );
-        });
-
-        it('should multiple the amount by 1e7 when amount scale is 7', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 7)).to.be.eq(
-                amount.mul(1e7),
-            );
-        });
-
-        it('should divide the amount by 1e1 when amount scale is 9', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 9)).to.be.eq(
-                amount.div(1e1),
-            );
-        });
-
-        it('should divide the amount by 1e2 when amount scale is 10', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 10)).to.be.eq(
-                amount.div(1e2),
-            );
-        });
-
-        it('should divide the amount by 1e3 when amount scale is 11', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 11)).to.be.eq(
-                amount.div(1e3),
-            );
-        });
-
-        it('should divide the amount by 1e4 when amount scale is 12', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 12)).to.be.eq(
-                amount.div(1e4),
-            );
-        });
-
-        it('should divide the amount by 1e5 when amount scale is 13', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 13)).to.be.eq(
-                amount.div(1e5),
-            );
-        });
-
-        it('should divide the amount by 1e6 when amount scale is 14 ', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 14)).to.be.eq(
-                amount.div(1e6),
-            );
-        });
-
-        it('should divide the amount by 1e7 when amount scale is 15 ', async () => {
-            expect(await zAssetsRegistry.unscaleAmount(amount, 15)).to.be.eq(
-                amount.div(1e7),
-            );
-        });
-    });
-
-    async function addAsset(zAsset: ZAsset) {
-        await zAssetsRegistry.internalAddAsset(zAsset);
+    async function addAsset(zAsset: ZAsset): Promise<BigNumber> {
+        const tx = await zAssetsRegistry.addZAsset(zAsset);
+        const rcp = await tx.wait();
+        // event AssetAdded(uint160 indexed zAssetRecId, ...);
+        return BigNumber.from(rcp.logs[0].topics[1]);
     }
 
     async function addAllAssets() {

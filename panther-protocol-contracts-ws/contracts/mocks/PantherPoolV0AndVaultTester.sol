@@ -6,7 +6,7 @@ import "../PantherPoolV0.sol";
 import "../Vault.sol";
 import "../common/Types.sol";
 import "./FakePrpGrantor.sol";
-import "./FakeZAssetsRegistry.sol";
+import "../ZAssetsRegistry.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
@@ -51,8 +51,9 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
         PantherPoolV0(
             address(this),
             timeNow() + 1,
-            registry = address(new FakeZAssetsRegistry()),
-            address(new Vault(address(this))), // This mock is an owner of Vault
+            // This mock is the owner of ZAssetsRegistry and Vault
+            registry = address(new ZAssetsRegistry(address(this))),
+            address(new Vault(address(this))),
             address(new FakePrpGrantor())
         )
     {
@@ -64,12 +65,24 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
             z.scale = 0;
             z.token = address(Tokens[i]);
             z.status = zASSET_ENABLED;
-            FakeZAssetsRegistry(registry).addZAsset(z);
+            ZAssetsRegistry(registry).addZAsset(z);
         }
     }
 
     function getTokenAddress(uint256 index) external view returns (address) {
         return address(Tokens[index]);
+    }
+
+    function testGetZAssetId(uint256 token, uint256 tokenId)
+        external
+        view
+        returns (uint160)
+    {
+        return
+            ZAssetsRegistry(registry).getZAssetId(
+                address(uint160(token)),
+                tokenId
+            );
     }
 
     function generateCommitments(

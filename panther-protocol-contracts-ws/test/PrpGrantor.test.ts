@@ -193,6 +193,13 @@ describe('PrpGrantor contract', function () {
         });
     });
 
+    describe('function issueOwnerGrant', () => {
+        describe('', () => {
+            before(() => {});
+            xit('', async () => {});
+        });
+    });
+
     describe('function redeemGrant', () => {
         const grantAmount = 88888888;
 

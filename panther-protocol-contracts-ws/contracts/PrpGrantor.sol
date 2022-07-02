@@ -13,11 +13,14 @@ import "./interfaces/IPrpGrantor.sol";
  * type, the owner specifies (authorizes) the account of the "curator" and the amount of the grant
  * (in Panther Reward Points, aka "PRPs").
  * A curator calls `issueGrant` on this contract to issue a "grant" of a certain type to a grantee.
- * The curator must be authorized by the owner for this grant type. The `issueGrant` call increases
- * the amount (in PRPs) of "unused grants" for a grantee.
+ * The curator must be authorized by the owner for this grant type.
+ * Independently from curators, the owner may call `issueOwnerGrant` to issue a grant to a grantee.
+ * In this case the amount is specified as the call param, rather than via the grant type.
+ * Every `issueGrant` or `issueOwnerGrant` call increases the amount (in PRPs) of "unused grants"
+ * for the grantee.
  * The authorized "processor" (one for all grant types) may call `redeemGrant` to account for usage
  * (i.e.  redemption) of grants. Every `redeemGrant` call decreases the amount of unused grants for
- * a grantee.
+ * the grantee.
  * Assumed:
  * - the "processor" is the `PantherPool` contract
  * - a grant is redeemed when the PantherPool creates a PRP-nominated UTXO for a grantee.
@@ -30,11 +33,14 @@ contract PrpGrantor is ImmutableOwnable, IPrpGrantor {
     // solhint-disable var-name-mixedcase
 
     // Max amount in PRPs
-    uint256 private constant MAX_PRP_GRANT = 2**64;
+    uint256 private constant MAX_PRP_GRANT = 2**32;
 
     // To distinguish "undefined" from "zero"
     uint256 private constant ZERO_AMOUNT = 1;
     uint256 private constant UNDEF_AMOUNT = 0;
+
+    // bytes4(keccak('issueOwnerGrant(address,uint256)'))
+    bytes4 private constant OWNER_GRANT_TYPE = 0x479ed83f;
 
     // Account authorized to call `redeemGrant`
     address private immutable GRANT_PROCESSOR;
@@ -88,6 +94,11 @@ contract PrpGrantor is ImmutableOwnable, IPrpGrantor {
     {
         prpAmount = _prpGrantsAmounts[curator][grantType];
         _revertOnUndefPrpAmount(prpAmount);
+        // In this and other `unchecked` blocks, over/underflow impossible since:
+        // - prpAmount is limited when granted and can never exceed MAX_PRP_GRANT
+        // - prpAmount's summation (accumulation) can't practically exceed 2**256
+        // - prpAmount is checked to be equal or more than the value subtracted
+        // - prpAmount checked to be less or equal the value it's subtracted from
         unchecked {
             prpAmount -= ZERO_AMOUNT;
         }
@@ -103,22 +114,21 @@ contract PrpGrantor is ImmutableOwnable, IPrpGrantor {
         require(grantee != address(0), ERR_ZERO_GRANTEE_ADDR);
         prpAmount = _prpGrantsAmounts[msg.sender][grantType];
         _revertOnUndefPrpAmount(prpAmount);
-
         unchecked {
-            // Here and in other `unchecked` blocks, overflow/underflow is impossible since:
-            // - prpAmount is limited when granted and can never exceed MAX_PRP_GRANT
-            // - prpAmount is checked to be less or equal the value it's subtracted from
-            // - unrealistic to expect prpAmount additions exceed 2**256
             prpAmount -= ZERO_AMOUNT;
-            if (prpAmount != 0) {
-                uint256 newBalance = _unusedPrpGrants[grantee] + prpAmount;
-                _revertOnTooBigPrpAmount(newBalance);
-                _unusedPrpGrants[grantee] = newBalance;
-                // Can't overflow since grants amounts are limited
-                totalGrantsIssued += prpAmount;
-            }
         }
-        emit PrpGrantIssued(grantType, grantee, prpAmount);
+        _issueGrant(grantee, prpAmount, grantType);
+    }
+
+    /// @inheritdoc IPrpGrantor
+    function issueOwnerGrant(address grantee, uint256 prpAmount)
+        external
+        override
+        onlyOwner
+    {
+        require(grantee != address(0), ERR_ZERO_GRANTEE_ADDR);
+        _revertOnTooBigPrpAmount(prpAmount);
+        _issueGrant(grantee, prpAmount, OWNER_GRANT_TYPE);
     }
 
     /// @inheritdoc IPrpGrantor
@@ -187,5 +197,21 @@ contract PrpGrantor is ImmutableOwnable, IPrpGrantor {
 
     function _revertOnUndefPrpAmount(uint256 prpAmount) private pure {
         require(prpAmount != UNDEF_AMOUNT, ERR_UNDEF_GRANT);
+    }
+
+    function _issueGrant(
+        address grantee,
+        uint256 prpAmount,
+        bytes4 grantType
+    ) private {
+        unchecked {
+            if (prpAmount != 0) {
+                uint256 newBalance = _unusedPrpGrants[grantee] + prpAmount;
+                _revertOnTooBigPrpAmount(newBalance);
+                _unusedPrpGrants[grantee] = newBalance;
+                totalGrantsIssued += prpAmount;
+            }
+        }
+        emit PrpGrantIssued(grantType, grantee, prpAmount);
     }
 }

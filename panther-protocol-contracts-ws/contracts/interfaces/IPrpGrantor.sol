@@ -39,6 +39,11 @@ interface IPrpGrantor {
         external
         returns (uint256 prpAmount);
 
+    /// @notice Increase the amount of "unused" grants for the given grantee, by the amount
+    /// specified.
+    /// @dev Only the owner may call.
+    function issueOwnerGrant(address grantee, uint256 prpAmount) external;
+
     /// @notice Burn unused grants for the msg.sender in the specified PRP amount
     function burnGrant(uint256 prpAmount) external;
 

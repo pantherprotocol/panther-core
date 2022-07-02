@@ -4,7 +4,7 @@ import { expect } from 'chai';
 // @ts-ignore
 import { toBytes32, PathElementsType, Triad, Pair } from '../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { PantherPoolV0Tester } from '../types';
+import { PantherPoolV0Tester, ZAssetsRegistry } from '../types';
 import { poseidon, babyjub } from 'circomlibjs';
 import { TriadMerkleTree } from '../lib/tree';
 import assert from 'assert';
@@ -26,13 +26,19 @@ import {
 } from '../lib/keychain';
 
 import { deployMockPantherPoolV0 } from './helpers/pantherPoolV0Tester';
+import { ethers } from 'hardhat';
 
 describe('PantherPoolV0', () => {
     let poolV0: PantherPoolV0Tester;
+    let registry: ZAssetsRegistry;
     let snapshot: number;
 
     before(async () => {
         poolV0 = await deployMockPantherPoolV0();
+        const Registry = await ethers.getContractFactory('ZAssetsRegistry');
+        registry = (await Registry.attach(
+            await poolV0.ASSET_REGISTRY(),
+        )) as ZAssetsRegistry;
     });
 
     describe('Test GenerateDeposits & Exit with all token-types', () => {
@@ -319,7 +325,7 @@ describe('PantherPoolV0', () => {
 
             it('GenerateDeposits and try to Exit', async () => {
                 // This is ID of token that will be used inside circom
-                const zAssetIdSol = await poolV0.testGetZAssetId(
+                const zAssetIdSol = await registry.getZAssetId(
                     Token,
                     BigInt(0),
                 );
@@ -799,11 +805,6 @@ describe('PantherPoolV0', () => {
                 //console.log("MT:",toBytes32(BigInt(merkleProof[0].root).toString()) );
                 //console.log("CM:", toBytes32(commitments[0].toString()), pathElements[0], pathElements[1])
                 expect(checkRoot, 'isKnownRoot must be true').equal(true);
-                const checkZAsset = await poolV0.testIsKnownZAsset(
-                    Token,
-                    tokenId,
-                );
-                expect(checkZAsset, 'IsKnownZAsset must be true').equal(true);
                 await poolV0.testExit(
                     Token,
                     tokenId,

@@ -69,9 +69,12 @@ export async function addTerms(
     console.log(`Adding terms for ${stakeType} staking:`, terms);
 
     const tx = await staking.addTerms(hash4bytes(stakeType), terms);
-    const receipt = await tx.wait();
+    console.log(
+        `Transaction submitted: ${tx.hash}. Waiting for confirmation...`,
+    );
 
-    console.log(`Transaction submitted: ${receipt.transactionHash}`);
+    await tx.wait();
+    console.log('Transaction confirmed');
 }
 
 export async function updateTerms(
@@ -82,9 +85,12 @@ export async function updateTerms(
     console.log(`Updating terms for ${stakeType} staking:`, terms);
 
     const tx = await staking.updateTerms(hash4bytes(stakeType), terms);
-    const receipt = await tx.wait();
+    console.log(
+        `Transaction submitted: ${tx.hash}. Waiting for confirmation...`,
+    );
 
-    console.log(`Transaction confirmed: ${receipt.transactionHash}`);
+    await tx.wait();
+    console.log('Transaction confirmed');
 }
 
 interface HistoricalDatapoint {

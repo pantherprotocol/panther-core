@@ -23,7 +23,6 @@ uint256 constant MAX_EXT_AMOUNT = 2**96;
 uint256 constant MAX_IN_CIRCUIT_AMOUNT = 2**96;
 uint256 constant MAX_TIMESTAMP = 2**32;
 uint256 constant MAX_ZASSET_ID = 2**160;
-uint8 constant MAX_SCALE = 32;
 
 // Token types
 // (not `enum` to let protocol extensions use bits, if needed)

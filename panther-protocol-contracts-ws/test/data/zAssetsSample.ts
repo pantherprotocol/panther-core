@@ -39,6 +39,7 @@ const tokensAddresses = [
 ];
 
 const randomTokenId = '183937687536747896802517049574113297679861733038';
+const rootIdERC20V1 = '982136930340192156211689002266823588686285278156';
 
 export const getZAssets = (): ZAsset[] => {
     return [
@@ -65,6 +66,15 @@ export const getZAssets = (): ZAsset[] => {
             tokenType: TokenTypes.ERC1155,
             scale: 0,
             token: tokensAddresses[2],
+        },
+        // ERC-20 alternate asset
+        {
+            _unused: 0,
+            version: 1,
+            status: ZAssetStatus.ENABLED,
+            tokenType: TokenTypes.ERC20,
+            scale: 0,
+            token: tokensAddresses[0],
         },
     ];
 };
@@ -129,6 +139,15 @@ export const getZeroZAsset = () => ({
     scale: 0,
     token: '0x0000000000000000000000000000000000000000',
 });
+
+export const getERC20AlternateAssetId = () => [
+    {
+        token: tokensAddresses[0],
+        tokenId: 1,
+        zAssetRootId: toBigNum(rootIdERC20V1),
+        zAssetId: getZAssetId(tokensAddresses[0], 1),
+    },
+];
 
 export function getRootId(token: BigNumberish) {
     return toBigNum(token.toString());

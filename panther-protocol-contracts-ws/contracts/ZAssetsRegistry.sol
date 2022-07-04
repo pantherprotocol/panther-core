@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import { ERC20_TOKEN_TYPE, MAX_SCALE, zASSET_ENABLED, zASSET_UNKNOWN } from "./common/Constants.sol";
+import { ERC20_TOKEN_TYPE, zASSET_ENABLED, zASSET_UNKNOWN } from "./common/Constants.sol";
 import "./errMsgs/ZAssetsRegistryErrMsgs.sol";
 import "./common/ImmutableOwnable.sol";
 import { ZAsset } from "./common/Types.sol";
@@ -61,6 +61,9 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
     -- .. limits per a zAsset for max allowed amounts of deposits/withdrawals
        (e.g. with "alternative" zAssets and re-defining ZAsset._unused)
     */
+
+    uint8 private constant MAX_SCALE = 32;
+    uint8 private constant MIN_SCALE = 0;
 
     // Mapping from `zAssetRecId` to ZAsset (i.e. params of an zAsset)
     mapping(uint160 => ZAsset) private _registry;
@@ -128,7 +131,7 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
             // for an "alternative" zAsset, `subId` must be none-zero, ...
             uint256 ver = uint256(uint160(token)) ^ subId;
             // ... and `ver` must be in [1..31]
-            if (ver < 32 && ver != 0) {
+            if (ver < MAX_SCALE && ver != MIN_SCALE) {
                 // Likely, it's the alternative zAsset w/ `zAssetRecId = subId`
                 asset = _registry[uint160(subId)];
 
@@ -184,10 +187,11 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
         require(
             // ERC-20 zAsset only may be "alternative" ones
             asset.version == 0 ||
-                (asset.tokenType == ERC20_TOKEN_TYPE && asset.version < 32),
+                (asset.tokenType == ERC20_TOKEN_TYPE &&
+                    asset.version < MAX_SCALE),
             ERR_WRONG_ASSET_VER
         );
-        _checkScaleIsInRange(asset.scale);
+        _checkScaleIsInRange(asset);
 
         // note, `x ^ 0 == x`
         uint160 zAssetRecId = uint160(asset.token) ^ uint160(asset.version);
@@ -220,8 +224,14 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
         emit AssetStatusChanged(zAssetRecId, newStatus, oldStatus);
     }
 
-    function _checkScaleIsInRange(uint8 scale) private pure {
-        //  Valid range is [0..31]
-        require(scale < MAX_SCALE, ERR_WRONG_ASSET_SCALE);
+    function _checkScaleIsInRange(ZAsset memory asset) private pure {
+        // Valid range for ERC-20 is [0..31]
+        // Valid range for ERC-721/ERC-1155 is 0
+        require(
+            (asset.scale == 0 ||
+                ((asset.scale < MAX_SCALE) &&
+                    (asset.tokenType == ERC20_TOKEN_TYPE))),
+            ERR_WRONG_ASSET_SCALE
+        );
     }
 }

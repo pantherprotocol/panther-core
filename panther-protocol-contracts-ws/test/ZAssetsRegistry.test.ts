@@ -9,18 +9,19 @@ import {
     getZeroZAsset,
     ZAsset,
     ZAssetStatus,
+    getERC20AlternateAssetId,
 } from './data/zAssetsSample';
 import { revertSnapshot, takeSnapshot } from './helpers/hardhat';
 import { BigNumber } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-describe('ZAssetsRegistry', function () {
+describe('ZAssetsRegistry contract', function () {
     let zAssetsRegistry: ZAssetsRegistry;
-    let owner: SignerWithAddress;
+    let owner, notOwner: SignerWithAddress;
     let snapshot;
 
     before(async () => {
-        [owner] = await ethers.getSigners();
+        [owner, notOwner] = await ethers.getSigners();
         const ZAssetsRegistry = await ethers.getContractFactory(
             'ZAssetsRegistry',
         );
@@ -37,34 +38,104 @@ describe('ZAssetsRegistry', function () {
         await revertSnapshot(snapshot);
     });
 
-    describe('addAsset', () => {
-        it('should emit AssetAdded event', async () => {
-            for (const zAsset of getZAssets()) {
-                await expect(zAssetsRegistry.addZAsset(zAsset))
-                    .to.emit(zAssetsRegistry, 'AssetAdded')
-                    .withArgs(zAsset.token, Object.values(zAsset));
-            }
-        });
-
-        it('should revert if zAsset is already added', async () => {
-            const zAsset = getZAssets()[2];
-            await addAsset(zAsset);
-            await expect(zAssetsRegistry.addZAsset(zAsset)).to.be.revertedWith(
-                'AR:E1',
+    describe('function addZAsset', () => {
+        it('only owner should be able to register a new asset(ERC-20/ERC-721/ERC-1155) with the panther pool', async () => {
+            const zAsset = getZAssets()[0];
+            let nonOwner = await zAssetsRegistry.connect(notOwner);
+            await expect(nonOwner.addZAsset(zAsset)).to.be.revertedWith(
+                'ImmOwn: unauthorized',
             );
         });
 
-        it('should revert when token address is zero', async () => {
-            const zAsset = getZAssets()[2];
-            zAsset.token = ethers.constants.AddressZero;
+        it('zAsset token should not be a zero address for ERC-20/ERC-721/ERC-1155 tokens', async () => {
+            for (const zAsset of getZAssets()) {
+                zAsset.token = ethers.constants.AddressZero;
+                await expect(
+                    zAssetsRegistry.addZAsset(zAsset),
+                ).to.be.revertedWith('AR:E7');
+            }
+        });
 
+        it('zAsset token status should not be unknown for ERC-20/ERC-721/ERC-1155 tokens', async () => {
+            for (const zAsset of getZAssets()) {
+                zAsset.status = 0;
+                await expect(
+                    zAssetsRegistry.addZAsset(zAsset),
+                ).to.be.revertedWith('AR:E3');
+            }
+        });
+
+        it('zAsset token version should always be 0 for ERC-721/ERC-1155 tokens and should be [0-31] for ERC-20 tokens', async () => {
+            for (const zAsset of getZAssets()) {
+                zAsset.version = zAsset.tokenType === 0 ? 32 : 1;
+                await expect(
+                    zAssetsRegistry.addZAsset(zAsset),
+                ).to.be.revertedWith('AR:E5');
+            }
+        });
+
+        it('zAsset token scale should always be 0 for ERC-721/ERC-1155 tokens and should be [0-31] for ERC-20 tokens', async () => {
+            for (const zAsset of getZAssets()) {
+                zAsset.scale = zAsset.tokenType === 0 ? 32 : 1;
+                await expect(
+                    zAssetsRegistry.addZAsset(zAsset),
+                ).to.be.revertedWith('AR:E4');
+            }
+        });
+
+        it('should emit AssetAdded event when ERC-20(default)/ERC-721/ERC-1155 assets are added', async () => {
+            for (const zAsset of getZAssets()) {
+                if (zAsset.version === 0) {
+                    await expect(zAssetsRegistry.addZAsset(zAsset))
+                        .to.emit(zAssetsRegistry, 'AssetAdded')
+                        .withArgs(zAsset.token, Object.values(zAsset));
+                }
+            }
+        });
+
+        it('should revert if ERC-20(default)/ERC-721/ERC-1155 assets is already added', async () => {
+            for (const zAsset of getZAssets()) {
+                if (zAsset.version === 0) {
+                    await expect(zAssetsRegistry.addZAsset(zAsset))
+                        .to.emit(zAssetsRegistry, 'AssetAdded')
+                        .withArgs(zAsset.token, Object.values(zAsset));
+                }
+            }
+            for (const zAsset of getZAssets()) {
+                if (zAsset.version === 0) {
+                    await expect(
+                        zAssetsRegistry.addZAsset(zAsset),
+                    ).to.be.revertedWith('AR:E1');
+                }
+            }
+        });
+
+        it('should be able to add alternative zAssets for an existing ERC-20 token asset to Panther pool', async () => {
+            const zAsset = getZAssets()[3];
+            const rootId = getERC20AlternateAssetId()[0].zAssetRootId;
+            await expect(await zAssetsRegistry.addZAsset(zAsset))
+                .to.emit(zAssetsRegistry, 'AssetAdded')
+                .withArgs(rootId, Object.values(zAsset));
+        });
+
+        it('should not be able to add alternative zAssets for an existing ERC-721 token asset to Panther pool', async () => {
+            const zAsset = getZAssets()[1];
+            zAsset.version = 1;
             await expect(zAssetsRegistry.addZAsset(zAsset)).to.be.revertedWith(
-                'AR:E7',
+                'AR:E5',
+            );
+        });
+
+        it('should not be able to add alternative zAssets for an existing ERC-1155 token asset to Panther pool', async () => {
+            const zAsset = getZAssets()[2];
+            zAsset.version = 1;
+            await expect(zAssetsRegistry.addZAsset(zAsset)).to.be.revertedWith(
+                'AR:E5',
             );
         });
     });
 
-    describe('changeAssetStatus', () => {
+    describe('function changeZAssetStatus', () => {
         describe('for an asset has been added', () => {
             let zAssetRecId: BigNumber;
             let oldStatus;
@@ -87,6 +158,15 @@ describe('ZAssetsRegistry', function () {
                     .withArgs(zAssetRecId, ZAssetStatus.DISABLED, oldStatus);
             });
 
+            it('should revert when the status is set to unknown', async () => {
+                await expect(
+                    zAssetsRegistry.changeZAssetStatus(
+                        zAssetRecId,
+                        ZAssetStatus.UNKNOWN,
+                    ),
+                ).to.be.revertedWith('AR:E3');
+            });
+
             it('should revert when status is same', async () => {
                 await expect(
                     zAssetsRegistry.changeZAssetStatus(zAssetRecId, oldStatus),
@@ -107,7 +187,7 @@ describe('ZAssetsRegistry', function () {
         });
     });
 
-    describe('getZAsset', () => {
+    describe('function getZAsset', () => {
         beforeEach(addAllAssets);
 
         describe('if an asset has been added', () => {
@@ -133,11 +213,11 @@ describe('ZAssetsRegistry', function () {
         });
     });
 
-    describe('getZAssetAndIds', () => {
+    describe('function getZAssetAndIds', () => {
         beforeEach(addAllAssets);
 
         describe('if an asset has been added', () => {
-            it('should get asset along with its IDs', async () => {
+            it('should get asset(ERC-20(default), ERC-721, ERC-1155) along with its IDs', async () => {
                 for (const {
                     token,
                     tokenId: expectedTokenId,
@@ -163,6 +243,18 @@ describe('ZAssetsRegistry', function () {
                     );
                     expect(actualTokenId).to.equal(expectedTokenId, '_tokenId');
                 }
+            });
+
+            it('should get ERC-20 alternate asset along with its ID', async () => {
+                const alternateAsset = getERC20AlternateAssetId()[0];
+                const expectAsset = getZAssets()[3];
+                const { asset: actualAsset, zAssetRecId: actualzAssetRecId } =
+                    await zAssetsRegistry.getZAssetAndIds(
+                        alternateAsset.token,
+                        alternateAsset.zAssetRootId,
+                    );
+                checkZAssetProperties(expectAsset, actualAsset);
+                expect(alternateAsset.zAssetRootId).equal(actualzAssetRecId);
             });
         });
 
@@ -208,7 +300,7 @@ describe('ZAssetsRegistry', function () {
         });
     });
 
-    describe('isZAssetWhitelisted', () => {
+    describe('function isZAssetWhitelisted', () => {
         let zAssetRecId: BigNumber;
         beforeEach(async () => {
             const zAsset = getZAssets()[0];

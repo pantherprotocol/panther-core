@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import {utils} from 'ethers';
 import {RewardMaster} from '../types/contracts/RewardMaster';
+import {TestnetStaking} from './../types/contracts/TestnetStaking';
 import {Staking, IStakingTypes} from '../types/contracts/Staking';
 import {StakeRewardController} from '../types/contracts/StakeRewardController';
 import {
@@ -71,6 +72,19 @@ export async function addTerms(
     const receipt = await tx.wait();
 
     console.log(`Transaction submitted: ${receipt.transactionHash}`);
+}
+
+export async function updateTerms(
+    staking: TestnetStaking,
+    terms: IStakingTypes.TermsStruct,
+    stakeType: StakeType,
+) {
+    console.log(`Updating terms for ${stakeType} staking:`, terms);
+
+    const tx = await staking.updateTerms(hash4bytes(stakeType), terms);
+    const receipt = await tx.wait();
+
+    console.log(`Transaction confirmed: ${receipt.transactionHash}`);
 }
 
 interface HistoricalDatapoint {

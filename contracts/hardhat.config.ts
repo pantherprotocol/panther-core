@@ -8,6 +8,7 @@ import 'hardhat-gas-reporter';
 import 'solidity-coverage';
 
 import './tasks/terms-add';
+import './tasks/terms-update';
 import './tasks/terms-add-advanced-local';
 import './tasks/reward-adviser-add';
 import './tasks/reward-pool-init';

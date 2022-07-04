@@ -86,7 +86,12 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
             Number(props.rewards.creationTime),
             props.rewards.commitments,
         );
-        dispatch(updateUTXOStatus, [account, props.rewards.id, utxoStatus]);
+        dispatch(updateUTXOStatus, [
+            chainId,
+            account,
+            props.rewards.id,
+            utxoStatus,
+        ]);
     }, [dispatch, library, account, chainId, props.rewards, handleClose]);
 
     const afterExitTime = exitTime ? exitTime * 1000 < Date.now() : false;

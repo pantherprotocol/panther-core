@@ -13,12 +13,12 @@ import {StakingRewardTokenID} from '../../../types/staking';
 import './styles.scss';
 
 const TotalUnclaimedRewards = () => {
-    const {account} = useWeb3React();
+    const {account, chainId} = useWeb3React();
     const zkpRewardsBalance = useAppSelector(
         totalUnclaimedClassicRewardsSelector,
     );
     const zZkpRewardsBalance = useAppSelector(
-        totalSelector(account, StakingRewardTokenID.zZKP),
+        totalSelector(chainId, account, StakingRewardTokenID.zZKP),
     );
     const zkpGreaterThanZero =
         zkpRewardsBalance && zkpRewardsBalance.gt(constants.Zero);

@@ -23,17 +23,17 @@ import './styles.scss';
 
 export default function PrivateBalance() {
     const context = useWeb3React();
-    const {account} = context;
+    const {account, chainId} = context;
     const zkpPrice = useAppSelector(marketPriceSelector);
     const unclaimedZZKP = useAppSelector(
-        totalSelector(account, StakingRewardTokenID.zZKP),
+        totalSelector(chainId, account, StakingRewardTokenID.zZKP),
     );
     const totalPrice = zkpPrice
         ? fiatPrice(unclaimedZZKP, BigNumber.from(zkpPrice))
         : 0;
 
     const unclaimedPRP = useAppSelector(
-        totalSelector(account, StakingRewardTokenID.PRP),
+        totalSelector(chainId, account, StakingRewardTokenID.PRP),
     );
 
     const lastRefresh = useAppSelector(lastRefreshTime);

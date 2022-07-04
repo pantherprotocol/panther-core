@@ -14,18 +14,22 @@ import {
 } from '../../types/staking';
 import {RootState} from '../store';
 
-export interface AdvancedStakeRewardsById {
-    [id: string]: AdvancedStakeRewards;
+interface AdvancedStakeRewardsById {
+    [leafId: string]: AdvancedStakeRewards;
 }
 
-export interface AdvancedStakeRewardsByHashedAddressAndById {
+// map of chainId -> addressHash -> leafId -> AdvancedStakeRewards
+interface AdvancedStakeRewardsByChainId {
+    [chainId: number]: AdvancedStakeRewardsByShortAddress;
+}
+interface AdvancedStakeRewardsByShortAddress {
     [addressHex: string]: AdvancedStakeRewardsById;
 }
 
 type LoadingStatus = 'idle' | 'loading' | 'failed';
 
 interface AdvancedStakesRewardsState {
-    value: AdvancedStakeRewardsByHashedAddressAndById;
+    value: AdvancedStakeRewardsByChainId;
     lastRefreshTime: number | null;
     status: LoadingStatus;
 }
@@ -48,13 +52,14 @@ export const getAdvancedStakesRewards = createAsyncThunk(
     async (
         context: Web3ReactContextInterface<Web3Provider>,
         {getState},
-    ): Promise<[string, AdvancedStakeRewardsById] | undefined> => {
-        const {account} = context;
+    ): Promise<[number, string, AdvancedStakeRewardsById] | undefined> => {
+        const {account, chainId} = context;
         if (!account) return;
+        if (!chainId) return;
 
         let rewards;
         try {
-            rewards = await getAdvancedStakingReward(account);
+            rewards = await getAdvancedStakingReward(chainId, account);
         } catch (error) {
             console.error(error);
             return;
@@ -64,8 +69,10 @@ export const getAdvancedStakesRewards = createAsyncThunk(
         if (!rewards.staker) return;
 
         const state = getState() as RootState;
-        const currentAdvancedRewards =
-            advancedStakesRewardsSelector(account)(state);
+        const currentAdvancedRewards = advancedStakesRewardsSelector(
+            chainId,
+            account,
+        )(state);
         const rewardsFetchedFromSubgraph: AdvancedStakeRewardsById = {};
 
         rewards.staker.advancedStakingRewards.forEach(
@@ -86,6 +93,7 @@ export const getAdvancedStakesRewards = createAsyncThunk(
         // they will not be overwritten by the new rewards fetched from the
         // subgraph.
         return [
+            chainId,
             // hash of the account address to increase privacy as we store
             // advanced rewards in the local storage
             shortAddressHash(account),
@@ -102,14 +110,18 @@ export const refreshUTXOsStatuses = createAsyncThunk(
     async (
         context: Web3ReactContextInterface<Web3Provider>,
         {getState},
-    ): Promise<[string, UTXOStatusByID[]] | undefined> => {
+    ): Promise<[number, string, UTXOStatusByID[]] | undefined> => {
         const {library, account, chainId} = context;
         if (!library || !chainId || !account) {
             return;
         }
 
         const state: RootState = getState() as RootState;
-        const advancedRewards = advancedStakesRewardsSelector(account)(state);
+        const advancedRewards = advancedStakesRewardsSelector(
+            chainId,
+            account,
+        )(state);
+
         const statusesNeedUpdate = await getChangedUTXOsStatuses(
             library,
             account,
@@ -120,7 +132,7 @@ export const refreshUTXOsStatuses = createAsyncThunk(
             return;
         }
 
-        return [account, statusesNeedUpdate];
+        return [chainId, account, statusesNeedUpdate];
     },
 );
 
@@ -133,9 +145,9 @@ export const advancedStakesRewardsSlice = createSlice({
             state.status = initialState.status;
         },
         updateUTXOStatus: (state, action) => {
-            const [address, id, status] = action.payload;
+            const [chainId, address, id, status] = action.payload;
             const addrHash = shortAddressHash(address);
-            const reward = state.value?.[addrHash]?.[id];
+            const reward = state.value?.[chainId]?.[addrHash]?.[id];
             if (reward) {
                 reward.utxoStatus = status;
             }
@@ -159,8 +171,9 @@ export const advancedStakesRewardsSlice = createSlice({
             .addCase(getAdvancedStakesRewards.fulfilled, (state, action) => {
                 state.status = 'idle';
                 if (action.payload) {
-                    const [addressHex, rewards] = action.payload;
-                    state.value[addressHex] = rewards;
+                    const [chainId, shortAddressHash, rewards] = action.payload;
+                    state.value[chainId] = state.value[chainId] || {};
+                    state.value[chainId][shortAddressHash] = rewards;
                 }
             })
             .addCase(getAdvancedStakesRewards.rejected, state => {
@@ -172,10 +185,10 @@ export const advancedStakesRewardsSlice = createSlice({
             .addCase(refreshUTXOsStatuses.fulfilled, (state, action) => {
                 state.status = 'idle';
                 if (action.payload) {
-                    const [address, statusesByID] = action.payload;
+                    const [chainId, address, statusesByID] = action.payload;
                     const addrHash = shortAddressHash(address);
                     for (const [id, status] of statusesByID) {
-                        const reward = state.value?.[addrHash]?.[id];
+                        const reward = state.value?.[chainId]?.[addrHash]?.[id];
                         if (reward) {
                             console.debug(
                                 `Updating UTXO status ID ${id}: ${reward.utxoStatus} -> ${status}`,
@@ -195,28 +208,31 @@ export const advancedStakesRewardsSlice = createSlice({
 });
 
 export const advancedStakesRewardsSelector = (
+    chainId: number | null | undefined,
     address: string | null | undefined,
 ): ((state: RootState) => AdvancedStakeRewardsById) => {
     return (state: RootState): AdvancedStakeRewardsById => {
         if (!address) return {};
+        if (!chainId) return {};
 
         const rewardsByAddressAndId = (
             state.advancedStakesRewards as AdvancedStakesRewardsState
-        ).value as AdvancedStakeRewardsByHashedAddressAndById;
+        ).value as AdvancedStakeRewardsByChainId;
 
         const addrHash = shortAddressHash(address);
-        return rewardsByAddressAndId?.[addrHash] ?? {};
+        return rewardsByAddressAndId?.[chainId]?.[addrHash] ?? {};
     };
 };
 
 export function totalSelector(
+    chainId: number | null | undefined,
     address: string | null | undefined,
     tid: AdvancedStakeTokenIDs,
 ): (state: RootState) => BigNumber {
     return (state: RootState): BigNumber => {
         if (!address) return constants.Zero;
 
-        const rewards = advancedStakesRewardsSelector(address)(state);
+        const rewards = advancedStakesRewardsSelector(chainId, address)(state);
         if (!rewards) return constants.Zero;
 
         return Object.values(rewards)
@@ -233,14 +249,16 @@ export function totalSelector(
 }
 
 export function hasUndefinedUTXOsSelector(
+    chainId: number | null | undefined,
     address: string | null | undefined,
 ): (state: RootState) => boolean {
     return (state: RootState): boolean => {
-        // if there is no address for any reason, then there are no undefined
-        // UTXOs
+        // If there is no address or chainId for any reason, then we can't find
+        // any
         if (!address) return false;
+        if (!chainId) return false;
 
-        const rewards = advancedStakesRewardsSelector(address)(state);
+        const rewards = advancedStakesRewardsSelector(chainId, address)(state);
         // if there are no rewards yet for this address for any reason, then  it
         // is up to date too
         if (Object.keys(rewards).length === 0) return false;

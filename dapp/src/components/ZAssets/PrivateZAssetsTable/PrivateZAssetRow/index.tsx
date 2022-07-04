@@ -25,13 +25,13 @@ import AssetsDetails from './AssetsDetailsTable';
 import './styles.scss';
 
 export default function PrivateZAssetRow() {
-    const {account} = useWeb3React();
+    const {account, chainId} = useWeb3React();
     const zkpPrice = useAppSelector(marketPriceSelector);
     const unclaimedZZKP = useAppSelector(
-        totalSelector(account, StakingRewardTokenID.zZKP),
+        totalSelector(chainId, account, StakingRewardTokenID.zZKP),
     );
     const unclaimedPRP = useAppSelector(
-        totalSelector(account, StakingRewardTokenID.PRP),
+        totalSelector(chainId, account, StakingRewardTokenID.PRP),
     );
     const balanceValue = calcUSDPrice(unclaimedZZKP, zkpPrice);
 

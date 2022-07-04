@@ -22,7 +22,7 @@ const AssetsDetailsTable = () => {
     const context = useWeb3React();
     const {account, chainId, library} = context;
     const advancedStakesRewards = useAppSelector(
-        advancedStakesRewardsSelector(account),
+        advancedStakesRewardsSelector(chainId, account),
     );
     const dispatch = useAppDispatch();
     const [gotExitTime, registerExitTimeCall] = useState<boolean>(false);

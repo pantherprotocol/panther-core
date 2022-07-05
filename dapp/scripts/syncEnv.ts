@@ -286,6 +286,10 @@ async function main() {
 
     const changes = checkEnvVars(env, exitTime, terms, args.write);
     if (!args.write) {
+        if (changes.length > 0) {
+            const target = useAmplify ? 'amplify' : 'dotenv';
+            console.log(`\nRun yarn ${target}:sync to apply the changes.`);
+        }
         return;
     }
     if (changes.length == 0) {

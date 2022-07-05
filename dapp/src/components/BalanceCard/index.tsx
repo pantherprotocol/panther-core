@@ -40,13 +40,13 @@ const BalanceCard = () => {
     const zkpRewardsUSDValue = fiatPrice(zkpRewardBalance, zkpPrice);
 
     const zZkpRewardBalance = useAppSelector(
-        totalSelector(account, StakingRewardTokenID.zZKP),
+        totalSelector(chainId, account, StakingRewardTokenID.zZKP),
     );
 
     const zZkpRewardsUSDValue = fiatPrice(zZkpRewardBalance, zkpPrice);
 
     const prpRewardBalance = useAppSelector(
-        totalSelector(account, StakingRewardTokenID.PRP),
+        totalSelector(chainId, account, StakingRewardTokenID.PRP),
     );
 
     return (

@@ -18,10 +18,10 @@ import './styles.scss';
 
 export default function ZAssets(): React.ReactElement {
     const context = useWeb3React();
-    const {account} = context;
+    const {account, chainId} = context;
     const dispatch = useAppDispatch();
     const hasUndefinedUTXOs = useAppSelector(
-        hasUndefinedUTXOsSelector(account),
+        hasUndefinedUTXOsSelector(chainId, account),
     );
 
     useEffect(() => {

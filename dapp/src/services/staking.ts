@@ -39,7 +39,11 @@ import {deriveRootKeypairs} from './keychain';
 import {encryptRandomSecret} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
 import {calculateRewardsForStake} from './rewards';
-import {getAdvancedStakingRewardQuery} from './subgraph';
+import {
+    getAdvancedStakingRewardQuery,
+    getSubgraphUrl,
+    GraphResponse,
+} from './subgraph';
 
 const CoinGeckoClient = new CoinGecko();
 
@@ -635,9 +639,16 @@ export async function getZKPMarketPrice(): Promise<BigNumber | null> {
     return price;
 }
 
-export async function getAdvancedStakingReward(address: string) {
+export async function getAdvancedStakingReward(
+    chainId: number,
+    address: string,
+): Promise<GraphResponse | undefined> {
+    const subgraphEndpoint = getSubgraphUrl(chainId);
+    if (!subgraphEndpoint) {
+        return;
+    }
+
     const query = getAdvancedStakingRewardQuery(address);
-    const subgraphEndpoint = env.SUBGRAPH_URL_80001 as string;
 
     try {
         const data = await axios.post(subgraphEndpoint, {

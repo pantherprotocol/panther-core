@@ -1,3 +1,14 @@
+import {env} from './env';
+
+export type GraphResponse = {
+    staker: {
+        id: string;
+        advancedStakingRewards: AdvancedStakeRewardsResponse[];
+        lastBlockNumber: number;
+        lastUpdatedTime: number;
+    };
+};
+
 export type AdvancedStakeRewardsResponse = {
     id: string;
     leftLeafId: string;
@@ -26,4 +37,8 @@ export function getAdvancedStakingRewardQuery(staker: string): string {
         }
       }
      `;
+}
+
+export function getSubgraphUrl(chainId: number): string | undefined {
+    return env[`SUBGRAPH_URL_${chainId}`];
 }

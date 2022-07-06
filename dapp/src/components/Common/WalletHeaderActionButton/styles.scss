@@ -1,7 +1,9 @@
-@import '../../variables';
+@import '../../../variables';
 
-.add-token-button-holder {
-    .add-token-button {
+.wallet-header-action-button-holder {
+    height: 100%;
+
+    .wallet-header-action-button {
         font-weight: $light-font-weight;
         color: $white;
         height: 50px;

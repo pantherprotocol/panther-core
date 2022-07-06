@@ -1,14 +1,12 @@
 import React, {useCallback} from 'react';
 
-import Button from '@mui/material/Button';
 import {useWeb3React} from '@web3-react/core';
 
 import {useAppDispatch} from '../../redux/hooks';
 import {resetUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
 import {resetZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {resetZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
-
-import './styles.scss';
+import {WalletHeaderActionButton} from '../Common/WalletHeaderActionButton';
 
 export const LogoutButton = () => {
     const context = useWeb3React();
@@ -24,11 +22,5 @@ export const LogoutButton = () => {
         }
     }, [active, chainId, deactivate, dispatch]);
 
-    return (
-        <div className="logout-button-holder">
-            <Button className="logout-button" onClick={() => disconnect()}>
-                Logout
-            </Button>
-        </div>
-    );
+    return <WalletHeaderActionButton text="Logout" onClick={disconnect} />;
 };

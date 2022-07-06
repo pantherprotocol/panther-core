@@ -1,6 +1,5 @@
 import React, {useCallback} from 'react';
 
-import Button from '@mui/material/Button';
 import {useWeb3React} from '@web3-react/core';
 
 import metamaskIcon from '../../images/meta-mask-icon.svg';
@@ -8,8 +7,7 @@ import logo from '../../images/panther-logo.svg';
 import {DECIMALS} from '../../lib/constants';
 import {getTokenContract} from '../../services/contracts';
 import {openNotification} from '../../services/notification';
-
-import './styles.scss';
+import {WalletHeaderActionButton} from '../Common/WalletHeaderActionButton';
 
 export const AddTokenButton = () => {
     const context = useWeb3React();
@@ -54,15 +52,10 @@ export const AddTokenButton = () => {
     }, [library, chainId]);
 
     return (
-        <div className="add-token-button-holder">
-            <Button
-                variant="contained"
-                className="add-token-button"
-                onClick={addZKPToken}
-            >
-                <img src={metamaskIcon} alt={'Metamask logo'} />
-                <span>Add ZKP token</span>
-            </Button>
-        </div>
+        <WalletHeaderActionButton
+            text="Add ZKP token"
+            onClick={addZKPToken}
+            logo={{src: metamaskIcon, alt: 'Metamask logo'}}
+        />
     );
 };

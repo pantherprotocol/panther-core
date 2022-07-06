@@ -78,25 +78,4 @@ $token-symbol-color: #ffdfbd;
         margin-top: 20px;
         margin-bottom: 5px;
     }
-
-    .send-faucet-btn {
-        width: 100%;
-        text-align: center;
-        box-shadow: 0 0 1rem 0 $header-box-shadow;
-        background: $second-blue;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 16px;
-        height: 45px;
-        color: $white;
-        text-decoration: none;
-        font-weight: 800;
-        font-size: 18px;
-        text-transform: initial;
-
-        &:hover {
-            background: $second-blue;
-        }
-    }
 }

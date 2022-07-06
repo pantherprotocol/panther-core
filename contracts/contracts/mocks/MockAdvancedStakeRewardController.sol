@@ -9,8 +9,10 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
         address _owner,
         address rewardMaster,
         address pantherPool,
+        address prpGrantor,
         address zkpToken,
         address nftToken,
+        uint32 prpRewardPerStake,
         uint32 rewardingStart,
         uint32 rewardedPeriod
     )
@@ -18,8 +20,10 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
             _owner,
             rewardMaster,
             pantherPool,
+            prpGrantor,
             zkpToken,
             nftToken,
+            prpRewardPerStake,
             rewardingStart,
             rewardedPeriod
         )
@@ -34,5 +38,17 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
         uint32 stakedAt
     ) external view returns (uint256 zkpAmount) {
         return _computeZkpReward(stakeAmount, lockedTill, stakedAt);
+    }
+
+    function internalGenerateRewards(bytes calldata message) external {
+        _generateRewards(message);
+    }
+
+    function internalGetRewardLimit(
+        uint256 balance,
+        uint256 currentLimit,
+        uint256 rewarded
+    ) external pure returns (uint256) {
+        return _getRewardLimit(balance, currentLimit, rewarded);
     }
 }

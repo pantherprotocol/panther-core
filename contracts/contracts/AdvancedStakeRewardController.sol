@@ -14,6 +14,7 @@ import "./utils/Claimable.sol";
 import "./utils/ImmutableOwnable.sol";
 import "./utils/NonReentrant.sol";
 import "./utils/Utils.sol";
+import "./common/TransferHelper.sol";
 
 /**
  * @title AdvancedStakeRewardController
@@ -25,10 +26,6 @@ import "./utils/Utils.sol";
  * type and the stake data (the `message`) being the call parameters.
  * On the `getRewardAdvice` call received, this contract:
  * - computes the amount of the $ZKP reward to the staker
- * - calls `grant` on the `PantherPoolV0` with the `FOR_ADVANCED_STAKE_GRANT` as the "grant type",
- *  and the staker as the "grantee", getting the amount of PRPs granted from the response
- * - if the `NFT_TOKEN` is non-zero address, it calls `grantOneToken` on the NFT_TOKEN, and gets
- * the `tokenId` of the minted NFT token
  * - calls `generateDeposits` of the PantherPoolV0, providing amounts/parameters of $ZKP, PRP, and
  *   optional NFT as "deposits", as well as "spending pubKeys" and "secrets" (explained below)
  * - returns the "zero reward advice" (with zero `sharesToCreate`) to the RewardMaster.
@@ -57,9 +54,9 @@ import "./utils/Utils.sol";
  * As a prerequisite:
  * - this contract shall be authorized as:
  * -- "RewardAdviser" with the RewardMaster on Polygon for advanced stakes
- * -- "Curator" of the FOR_ADVANCED_STAKE_GRANT with the PantherPoolV0
- * -- "Minter" (or "grantor") with the NFT_TOKEN contract
  * - this contract shall hold enough $ZKP balance to reward stakers
+ * - this contract may hold enough NFT tokens to reward stakers
+ * - this contract shall be granted enough $PRP balance to reward stakers
  * - the Vault contract shall be approved to transfer $ZKPs and the NFT tokens from this contract
  * - the $ZKP and the NFT tokens shall be registered as zAssets on the PantherPoolV0.
  */
@@ -73,6 +70,8 @@ contract AdvancedStakeRewardController is
     IERC721Receiver,
     IRewardAdviser
 {
+    using TransferHelper for address;
+
     /// @dev Total amount of $ZKPs, PRPd and NFTs (ever) rewarded and staked
     struct Totals {
         uint96 zkpRewards;
@@ -88,11 +87,16 @@ contract AdvancedStakeRewardController is
     address public immutable REWARD_MASTER;
     /// @notice PantherPoolV0 contract instance
     address public immutable PANTHER_POOL;
+    /// @notice PrpGrantor contract instance
+    address private immutable PRP_GRANTOR;
 
     // Address of the $ZKP token contract
     address private immutable ZKP_TOKEN;
     // Address of the NFT token contract
     address private immutable NFT_TOKEN;
+
+    /// @notice Amount of PRPs allocated per Stake
+    uint256 public immutable PRP_REWARD_PER_STAKE;
 
     /// @notice (UNIX) Time when staking rewards start to accrue
     uint256 public immutable REWARDING_START;
@@ -118,8 +122,13 @@ contract AdvancedStakeRewardController is
     // solhint-enable var-name-mixedcase
 
     /// @notice Amount of $ZKPs allocated for rewards
-    /// @dev Unlike $ZKPs, PRPs and NFTs are unlimited (not allocated in advance)
     uint256 public zkpRewardsLimit;
+
+    /// @notice Amount of PRPs allocated for rewards
+    uint128 public prpRewardsLimit;
+
+    /// @notice Amount of PRPs allocated for rewards
+    uint128 public nftRewardsLimit;
 
     /// @notice Total amounts of $ZKP, PRP and NFT rewarded so far
     Totals public totals;
@@ -128,6 +137,10 @@ contract AdvancedStakeRewardController is
 
     /// @dev Emitted when new $ZKPs are allocated to reward stakers
     event ZkpRewardLimitUpdate(uint256 newLimit);
+    /// @dev Emitted when new $PRPs are allocated to reward stakers
+    event PrpRewardLimitUpdate(uint256 newLimit);
+    /// @dev Emitted when new NFTs are allocated to reward stakers
+    event NftRewardLimitUpdate(uint256 newLimit);
 
     /// @dev Emitted when the reward for a stake is generated
     event RewardGenerated(
@@ -143,8 +156,10 @@ contract AdvancedStakeRewardController is
         address _owner,
         address rewardMaster,
         address pantherPool,
+        address prpGrantor,
         address zkpToken,
         address nftToken,
+        uint32 prpRewardPerStake,
         uint32 rewardingStart,
         uint32 rewardedPeriod
     ) ImmutableOwnable(_owner) {
@@ -152,15 +167,19 @@ contract AdvancedStakeRewardController is
             // nftToken may be zero address
             rewardMaster != address(0) &&
                 pantherPool != address(0) &&
+                prpGrantor != address(0) &&
                 zkpToken != address(0),
             "ARC:E1"
         );
 
         REWARD_MASTER = rewardMaster;
         PANTHER_POOL = pantherPool;
+        PRP_GRANTOR = prpGrantor;
 
         ZKP_TOKEN = zkpToken;
         NFT_TOKEN = nftToken;
+
+        PRP_REWARD_PER_STAKE = uint256(prpRewardPerStake);
 
         require(
             uint256(rewardingStart) + uint256(rewardedPeriod) > timeNow(),
@@ -219,47 +238,82 @@ contract AdvancedStakeRewardController is
         }
     }
 
+    /// @notice Allocate the rewards: $ZKP, $PRP and, NFT and approve Vault to transfer them
+    /// @dev Anyone may call it.
+    function prepareRewardsLimit() external {
+        // Updating the rewards limits
+        setPrpRewardsLimit();
+        setNftRewardLimit();
+        setZkpRewardsLimit();
+
+        // Approving Vault to transfer the rewards from contract
+        increaseVaultAllowance();
+    }
+
+    /// @notice Allocate the $PRP amount, which has been granted to this contract, for rewards
+    /// @dev Anyone may call it.
+    function setPrpRewardsLimit() public {
+        uint256 unusedPrps = PRP_GRANTOR.safeGetUnusedGrantAmount(
+            address(this)
+        );
+
+        uint256 limit = _getRewardLimit(
+            unusedPrps,
+            prpRewardsLimit,
+            totals.prpRewards
+        );
+
+        if (limit > 0) {
+            prpRewardsLimit = uint128(limit);
+            emit PrpRewardLimitUpdate(limit);
+        }
+    }
+
+    /// @notice Allocate the $NFT amount, which this contract holds, for rewards
+    /// @dev Anyone may call it.
+    function setNftRewardLimit() public {
+        uint256 balance = NFT_TOKEN.safeBalanceOf(address(this));
+
+        uint256 limit = _getRewardLimit(
+            balance,
+            nftRewardsLimit,
+            totals.nftRewards
+        );
+
+        if (limit > 0) {
+            nftRewardsLimit = uint128(limit);
+            emit NftRewardLimitUpdate(limit);
+        }
+    }
+
     /// @notice Allocate the $ZKP amount, which this contract holds, for rewards
     /// @dev Anyone may call it
-    function setZkpRewardsLimit() external {
+    function setZkpRewardsLimit() public {
         // External calls here are to trusted contracts only - reentrancy guard unneeded
 
-        // TODO: replace low-levels using with `library TransferHelper` in `panther-core`
-        uint256 balance;
-        {
-            // solhint-disable-next-line avoid-low-level-calls
-            (bool success, bytes memory data) = ZKP_TOKEN.call(
-                // bytes4(keccak256(bytes('balanceOf(address)')));
-                abi.encodeWithSelector(0x70a08231, address(this))
-            );
-            require(success && (data.length != 0), "ARC:E5");
-            balance = abi.decode(data, (uint256));
+        uint256 balance = ZKP_TOKEN.safeBalanceOf(address(this));
+
+        uint256 limit = _getRewardLimit(
+            balance,
+            zkpRewardsLimit,
+            totals.zkpRewards
+        );
+
+        if (limit > 0) {
+            zkpRewardsLimit = limit;
+            emit ZkpRewardLimitUpdate(limit);
         }
+    }
 
-        uint256 limit = zkpRewardsLimit;
-        uint256 rewarded = uint256(totals.zkpRewards);
-        uint256 remaining = limit - rewarded;
+    /// @notice Approve the vault to trasfer the ZKP and NFT rewards from contract.
+    /// @dev Anyone may call it after updating the ZKP/NFT rewards limit.
+    function increaseVaultAllowance() public {
+        address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
 
-        if (balance > remaining) {
-            // Update the limit and approve the Vault to spend from this contract balance
-            uint256 newAllocation = balance - remaining;
-            uint256 newLimit = limit + newAllocation;
+        ZKP_TOKEN.safeApprove(vault, zkpRewardsLimit);
 
-            address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
-
-            // solhint-disable-next-line avoid-low-level-calls
-            (bool success, bytes memory data) = ZKP_TOKEN.call(
-                // bytes4(keccak256('approve(address,uint256)'));
-                abi.encodeWithSelector(0x095ea7b3, vault, newLimit)
-            );
-            require(
-                success && (data.length == 0 || abi.decode(data, (bool))),
-                "TransferHelper::safeApprove: approve failed"
-            );
-
-            zkpRewardsLimit = limit + newAllocation;
-            emit ZkpRewardLimitUpdate(zkpRewardsLimit);
-        }
+        if (NFT_TOKEN != address(0))
+            NFT_TOKEN.safeSetApprovalForAll(vault, true);
     }
 
     /// @notice Withdraws unclaimed rewards or accidentally sent token from this contract
@@ -297,9 +351,8 @@ contract AdvancedStakeRewardController is
                 : bytes4(0); // rejected
     }
 
-    /// Private and internal functions follow
+    // Private and internal functions follow
     // Some of them declared `internal` rather than `private` to ease testing
-
     function _generateRewards(bytes memory message) internal {
         // (stakeId and claimedAt are irrelevant)
         (
@@ -347,24 +400,18 @@ contract AdvancedStakeRewardController is
                 }
             }
 
-            // Register PRP grant to this contract (it will be "burnt" for PRP UTXO)
-            prpAmount = IPantherPoolV0(PANTHER_POOL).grant(
-                address(this),
-                FOR_ADVANCED_STAKE_GRANT
-            );
-            // `prpAmount` values assumed to be too small to cause overflow
-            _totals.prpRewards += uint96(prpAmount);
-
-            // TODO: enhance PRP granting to save gas
             // Grant the total just once (for all stakes), then use a part (for every stake),
             // and finally burn unused grant amount, if it remains, in the end
+            if (_totals.prpRewards < prpRewardsLimit) {
+                prpAmount = PRP_REWARD_PER_STAKE;
+                // `prpAmount` values assumed to be too small to cause overflow
+                _totals.prpRewards += uint96(prpAmount);
+            }
 
             // If the NFT contract defined, mint the NFT
-            if (NFT_TOKEN != address(0)) {
-                // trusted contract called - no reentrancy guard needed
-                nftTokenId = INftGrantor(NFT_TOKEN).grantOneToken(
-                    address(this)
-                );
+            if (
+                NFT_TOKEN != address(0) && _totals.nftRewards < nftRewardsLimit
+            ) {
                 nftAmount = 1;
                 _totals.nftRewards += 1;
             }
@@ -383,15 +430,16 @@ contract AdvancedStakeRewardController is
             // PantherPool reverts if non-zero address provided for zero amount
             zkpAmount == 0 ? address(0) : ZKP_TOKEN,
             prpAmount == 0 ? address(0) : PRP_VIRTUAL_CONTRACT,
-            // ternary skipped as NFT_TOKEN is surely 0 if nftAmount is 0
-            NFT_TOKEN
+            nftAmount == 0 ? address(0) : NFT_TOKEN
         ];
+
         uint256[OUT_UTXOs] memory tokenIds = [0, 0, nftTokenId];
         uint256[OUT_UTXOs] memory extAmounts = [
             zkpAmount,
             prpAmount,
             nftAmount
         ];
+
         uint32 createdAt = safe32TimeNow();
         uint256 leftLeafId = IPantherPoolV0(PANTHER_POOL).generateDeposits(
             tokens,
@@ -435,5 +483,23 @@ contract AdvancedStakeRewardController is
         uint256 apy = getZkpApyAt(rewardedSince);
         // 3153600000 = 365 * 24 * 3600 seconds * 100 percents
         zkpAmount = (stakeAmount * apy * period) / 3153600000;
+    }
+
+    // Calculates and returns the reward limit
+    function _getRewardLimit(
+        uint256 balance,
+        uint256 currentLimit,
+        uint256 rewarded
+    ) internal pure returns (uint256 newLimit) {
+        unchecked {
+            // impossible underflow/overflow: Limit is always greater than or equal to reward
+            uint256 remaining = currentLimit - rewarded;
+
+            if (balance > remaining) {
+                // impossible underflow/overflow because of if statement
+                uint256 newAllocation = balance - remaining;
+                newLimit = currentLimit + newAllocation;
+            }
+        }
     }
 }

@@ -106,6 +106,7 @@ const BalanceCard = () => {
                     <AddressBalances
                         title={'Privacy Reward Points Balance:'}
                         balance={prpRewardBalance}
+                        scale={0}
                         rewardsTokenSymbol={'PRP'}
                     />
                 )}

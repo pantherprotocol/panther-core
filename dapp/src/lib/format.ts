@@ -42,12 +42,12 @@ export function formatPercentage(percentage: number): string {
 
 export function formatCurrency(
     value: BigNumber | null,
-    options?: {decimals?: number},
+    options?: {decimals?: number; scale?: number},
 ) {
     if (!value) {
         return '';
     }
-    const num = Number(utils.formatEther(value));
+    const num = Number(utils.formatUnits(value, options?.scale ?? 18));
 
     const currencyFormat = new Intl.NumberFormat(getLocale(), {
         // minimumSignificantDigits: 10,

@@ -33,7 +33,7 @@ export default function PrivateBalance() {
         : 0;
 
     const unclaimedPRP = useAppSelector(
-        totalSelector(chainId, account, StakingRewardTokenID.PRP),
+        totalSelector(chainId, account, StakingRewardTokenID.PRP, true),
     );
 
     const lastRefresh = useAppSelector(lastRefreshTime);

@@ -8,7 +8,6 @@ import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
-import {utils} from 'ethers';
 
 import pantherIcon from '../../../../images/zAssets-panther-logo.svg';
 import {formatCurrency} from '../../../../lib/format';
@@ -77,9 +76,7 @@ export default function PrivateZAssetRow() {
                 </TableCell>
                 <TableCell align="left" className="bold-beige ">
                     {unclaimedPRP
-                        ? formatCurrency(
-                              utils.parseEther(unclaimedPRP.toString()),
-                          )
+                        ? formatCurrency(unclaimedPRP, {scale: 0})
                         : '-'}{' '}
                     PRP
                 </TableCell>

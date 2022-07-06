@@ -15,6 +15,7 @@ export default function AddressBalances(props: {
     title: string;
     rewardsTokenSymbol: string;
     balance: BigNumber | null;
+    scale?: number;
     amountUSD?: BigNumber | null;
     redeem?: () => void;
     tooltip?: string;
@@ -39,7 +40,11 @@ export default function AddressBalances(props: {
             <Box className="amount-box">
                 <Box className="balance-box">
                     <Typography className="balance" component="div">
-                        {balance ? formatCurrency(balance) : '-'}
+                        {balance
+                            ? formatCurrency(balance, {
+                                  scale: props.scale,
+                              })
+                            : '-'}
                     </Typography>
                     <Typography className="zkp-symbol">
                         {rewardsTokenSymbol}

@@ -3,7 +3,7 @@ import {useCallback} from 'react';
 
 import {Box, Button, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber, utils} from 'ethers';
+import {BigNumber} from 'ethers';
 
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
@@ -75,9 +75,7 @@ export default function PrivateBalance() {
                 </Typography>
                 <Typography className="zkp-rewards">
                     {unclaimedPRP
-                        ? formatCurrency(
-                              utils.parseEther(unclaimedPRP.toString()),
-                          )
+                        ? formatCurrency(unclaimedPRP, {scale: 0})
                         : '-'}{' '}
                     Total Privacy Reward Points (PRP)
                 </Typography>

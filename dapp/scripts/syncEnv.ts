@@ -25,9 +25,10 @@ dotenv.config();
 import {ethers} from 'ethers';
 import yargs from 'yargs/yargs';
 
-import {getStakingContract} from '../src/services/contracts';
+import {getPoolContract, getStakingContract} from '../src/services/contracts';
 
 const APP_NAME = 'panther-core';
+const CHAIN_ID = 80001;
 
 type App = {
     name: string;
@@ -55,48 +56,29 @@ function getAppId(): string {
     return core.appId;
 }
 
-function getEnvVar(name: string): string {
-    const stdout = exec(`source ${__dirname}/../.env && echo $${name}`);
-    return stdout.replace(/\n$/, '');
-}
-
-function getExitTimeCallData(fnName: string): string {
-    const iface = new ethers.utils.Interface([
-        `function ${fnName}() view returns (uint256)`,
-    ]);
-    return iface.encodeFunctionData(fnName);
-}
-
-async function safeContractCall(
-    provider: ethers.providers.JsonRpcProvider,
-    addr: string,
-    data: string,
+async function safeContractGetterCall(
+    contract: ethers.Contract,
+    getter: string,
 ): Promise<string | Error> {
     try {
-        return await provider.call({
-            to: addr,
-            data,
-        });
+        return await contract[getter]();
     } catch (err: any) {
         return err;
     }
 }
 
 async function getExitTime(provider: ethers.providers.JsonRpcProvider) {
-    const poolAddress = getEnvVar('POOL_V0_CONTRACT_80001');
-    console.log(`Reading PantherPoolV0 contract at ${poolAddress}`);
+    const pool = getPoolContract(provider, CHAIN_ID);
 
-    let data = getExitTimeCallData('exitTime');
-    let response = await safeContractCall(provider, poolAddress, data);
+    let response = await safeContractGetterCall(pool, 'exitTime');
     if (response instanceof Error) {
         console.log(
             'Failed to call exitTime(); falling back to EXIT_TIME() ...',
         );
-        data = getExitTimeCallData('EXIT_TIME');
-        response = await safeContractCall(provider, poolAddress, data);
+        response = await safeContractGetterCall(pool, 'EXIT_TIME');
     }
     if (response instanceof Error) {
-        console.error('Failed to get exit time:');
+        console.error('Failed to call EXIT_TIME:');
         console.error(response);
         process.exit(1);
     }

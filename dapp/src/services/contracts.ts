@@ -161,11 +161,13 @@ export function getStakeRewardController2Contract(
 export function getAdvancedStakeRewardControllerContract(
     library: any,
     chainId: number,
+    address?: string,
 ): AdvancedStakeRewardController {
     return getContract(
         ContractName.ADVANCED_STAKE_REWARD_CONTROLLER,
         library,
         chainId,
+        address,
     ) as AdvancedStakeRewardController;
 }
 

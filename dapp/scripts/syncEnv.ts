@@ -26,7 +26,12 @@ import {ethers} from 'ethers';
 import yargs from 'yargs/yargs';
 
 import {bnStrToNumber} from '../src/lib/numbers';
-import {getPoolContract, getStakingContract} from '../src/services/contracts';
+import {
+    getAdvancedStakeRewardControllerContract,
+    getPoolContract,
+    getRewardMasterContract,
+    getStakingContract,
+} from '../src/services/contracts';
 
 const APP_NAME = 'panther-core';
 const CHAIN_ID = 80001;
@@ -121,6 +126,44 @@ function reportStakingTerms(terms: Terms) {
     );
 }
 
+async function getControllerTimes(
+    provider: ethers.providers.JsonRpcProvider,
+): Promise<[number, number]> {
+    const staking = getStakingContract(provider, CHAIN_ID);
+    const rewardMasterAddress = await staking.REWARD_MASTER();
+    console.log(`Staking contract has REWARD_MASTER at ${rewardMasterAddress}`);
+
+    const rewardMaster = getRewardMasterContract(
+        provider,
+        CHAIN_ID,
+        rewardMasterAddress,
+    );
+    const controllerAddress = await rewardMaster.rewardAdvisers(
+        staking.address,
+        '0xcc995ce8',
+    );
+    console.log(
+        `RewardMaster has advisor (AdvancedStakeRewardController) at ${controllerAddress}`,
+    );
+    const controller = getAdvancedStakeRewardControllerContract(
+        provider,
+        CHAIN_ID,
+        controllerAddress,
+    );
+
+    const rewardingStart = (await controller.REWARDING_START()).toNumber();
+    const rewardingEnd = (await controller.REWARDING_END()).toNumber();
+    console.log(
+        `rewardingStart is ${rewardingStart} (${new Date(
+            rewardingStart * 1000,
+        )})`,
+    );
+    console.log(
+        `rewardingEnd is ${rewardingEnd} (${new Date(rewardingEnd * 1000)})`,
+    );
+    return [rewardingStart, rewardingEnd];
+}
+
 type Environment = {[name: string]: string};
 
 function getAppEnvVars(appId: string): Environment {
@@ -171,6 +214,50 @@ function setFileEnvVars(file: string, changes: Change[]) {
     }
     fs.writeFileSync(file, contents);
     console.log('Wrote to', file);
+}
+
+async function checkControllerTimes(
+    provider: ethers.providers.JsonRpcProvider,
+    env: Environment,
+): Promise<void> {
+    const [rewardingStart, rewardingEnd] = await getControllerTimes(provider);
+    console.log();
+
+    const envStart = Number(env.ADVANCED_STAKING_T_START);
+    if (rewardingStart == envStart) {
+        console.log(
+            `AdvancedStakeRewardController.REWARDING_START matched ADVANCED_STAKING_T_START`,
+        );
+    } else {
+        console.warn(
+            `AdvancedStakeRewardController.REWARDING_START was ${rewardingStart} (${new Date(
+                rewardingStart * 1000,
+            )})`,
+        );
+        console.warn(
+            `                 but ADVANCED_STAKING_T_START was ${envStart} (${new Date(
+                envStart * 1000,
+            )})`,
+        );
+    }
+
+    const envUnlock = Number(env.ADVANCED_STAKING_T_UNLOCK);
+    if (rewardingEnd == envUnlock) {
+        console.log(
+            `AdvancedStakeRewardController.REWARDING_END matched ADVANCED_STAKING_T_UNLOCK`,
+        );
+    } else {
+        console.warn(
+            `AdvancedStakeRewardController.REWARDING_END was ${rewardingEnd} (${new Date(
+                rewardingEnd * 1000,
+            )})`,
+        );
+        console.warn(
+            `                 but ADVANCED_STAKING_T_UNLOCK was ${envUnlock} (${new Date(
+                envUnlock * 1000,
+            )})`,
+        );
+    }
 }
 
 function checkEnvVar(
@@ -249,6 +336,7 @@ async function main() {
     const provider = new ethers.providers.JsonRpcProvider(
         'https://matic-mumbai.chainstacklabs.com',
     );
+
     // console.log(await provider.getNetwork());
     const exitTime = await getExitTime(provider);
     console.log(`exitTime is ${exitTime} (${new Date(exitTime * 1000)})`);
@@ -264,6 +352,12 @@ async function main() {
     const appId = useAmplify && getAppId();
     const env = appId ? getAppEnvVars(appId) : getFileEnvVars(args.file);
     // console.log('env: ', env);
+
+    console.log();
+
+    await checkControllerTimes(provider, env);
+
+    console.log();
 
     const changes = checkEnvVars(env, exitTime, terms, args.write);
     if (!args.write) {

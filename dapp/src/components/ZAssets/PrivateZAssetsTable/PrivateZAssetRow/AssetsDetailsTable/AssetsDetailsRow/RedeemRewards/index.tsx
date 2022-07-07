@@ -130,23 +130,44 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                 </DialogTitle>
 
                 <DialogContent className="modal-dialog-content-holder">
-                    <Typography
+                    <Box
                         component="div"
                         className="modal-dialog-content"
                         display="inline"
                     >
-                        <Box className="warning" display="inline">
-                            Warning!
+                        <Box display="inline" className="content-body">
+                            As an Advanced Staking user, you're qualified to
+                            receive:
+                            <ol>
+                                <li>
+                                    Staking rewards (zZKP in the MASP)
+                                    <br />
+                                    that accumulate PRPs - accrued PRPs.
+                                </li>
+                                <li>
+                                    10k Panther Reward Points
+                                    <br />
+                                    that will become redeemable for zZKP upon
+                                    launch.
+                                </li>
+                            </ol>
+                            <Box>
+                                <Typography
+                                    className="warning"
+                                    display="inline"
+                                >
+                                    WARNING!
+                                </Typography>{' '}
+                                By redeeming before our v1 launch, you will
+                                still be able to claim 10k PRPs after the launch
+                                but{' '}
+                                <strong>
+                                    will lose all additional accrued rewards
+                                </strong>{' '}
+                                (see point 1).
+                            </Box>
                         </Box>
-                        <Box display="inline">
-                            If you redeem ZKP before v1.0 of the Multi-Asset
-                            Shielded Pool has launched, you will only receive
-                            ZKP in return for your zZKP,{' '}
-                            <strong>
-                                and your PRP rewards will be lost forever.
-                            </strong>
-                        </Box>
-                    </Typography>
+                    </Box>
                 </DialogContent>
                 <Box>
                     <FormGroup className="confirm-redemption-checkbox">
@@ -157,7 +178,12 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                                     onChange={handleChange}
                                 />
                             }
-                            label="I understand I will lose all PRP rewards"
+                            label={
+                                <Typography>
+                                    I understand I will lose additional{' '}
+                                    <strong> accrued </strong> PRP rewards
+                                </Typography>
+                            }
                         />
                     </FormGroup>
                 </Box>
@@ -171,7 +197,10 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                         onClick={redeem}
                         disabled={!redeemConfirmed}
                     >
-                        Redeem zZKP and burn PRP rewards
+                        <Typography>
+                            Redeem zZKP and forfeit additional
+                            <strong> accrued </strong> PRP rewards
+                        </Typography>
                     </Button>
                 </DialogActions>
             </Dialog>

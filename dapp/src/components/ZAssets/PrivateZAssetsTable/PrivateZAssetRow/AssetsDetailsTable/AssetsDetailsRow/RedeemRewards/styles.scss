@@ -2,6 +2,13 @@
 @import '../../../../../../../styles/modal-dialog.scss';
 
 .redeem-dialog {
+    .content-body {
+        font-size: 0.95em;
+
+        li {
+            text-align: start;
+        }
+    }
     .confirm-redemption-checkbox {
         .MuiFormControlLabel-root .MuiFormControlLabel-label {
             font-weight: $bold-font-weight;
@@ -23,7 +30,9 @@
         border-radius: 14px;
 
         &.active {
-            color: $white;
+            button p {
+                color: $white;
+            }
             background: $btn-blue;
         }
 
@@ -42,7 +51,6 @@
         font-weight: 800;
     }
 }
-
 .redeem-button.MuiButtonBase-root.MuiButton-root {
     background: $btn-blue;
     color: $white;

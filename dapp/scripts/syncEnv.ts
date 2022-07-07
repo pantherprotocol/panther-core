@@ -15,20 +15,26 @@
 import child_process from 'child_process';
 import fs from 'fs';
 
-import dotenv from 'dotenv';
+// eslint-disable-next-line import/order
+import * as dotenv from 'dotenv';
+
+// This needs to come before imports which need the environment; see
+// https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config();
+
 import {ethers} from 'ethers';
 import yargs from 'yargs/yargs';
 
-const APP_NAME = 'panther-core';
+import {bnStrToNumber} from '../src/lib/numbers';
+import {
+    getAdvancedStakeRewardControllerContract,
+    getPoolContract,
+    getRewardMasterContract,
+    getStakingContract,
+} from '../src/services/contracts';
 
-const STAKING = JSON.parse(
-    fs.readFileSync(
-        `${__dirname}/../../contracts/artifacts/contracts/Staking.sol/Staking.json`,
-        {encoding: 'utf8'},
-    ),
-);
-const STAKING_ABI = STAKING.abi;
-const STAKING_INTERFACE = new ethers.utils.Interface(STAKING_ABI);
+const APP_NAME = 'panther-core';
+const CHAIN_ID = 80001;
 
 type App = {
     name: string;
@@ -56,57 +62,33 @@ function getAppId(): string {
     return core.appId;
 }
 
-function getEnvVar(name: string): string {
-    const stdout = exec(`source ${__dirname}/../.env && echo $${name}`);
-    return stdout.replace(/\n$/, '');
-}
-
-function getExitTimeCallData(fnName: string): string {
-    const iface = new ethers.utils.Interface([
-        `function ${fnName}() view returns (uint256)`,
-    ]);
-    return iface.encodeFunctionData(fnName);
-}
-
-async function safeContractCall(
-    provider: ethers.providers.JsonRpcProvider,
-    addr: string,
-    data: string,
+async function safeContractGetterCall(
+    contract: ethers.Contract,
+    getter: string,
 ): Promise<string | Error> {
     try {
-        return await provider.call({
-            to: addr,
-            data,
-        });
+        return await contract[getter]();
     } catch (err: any) {
         return err;
     }
 }
 
 async function getExitTime(provider: ethers.providers.JsonRpcProvider) {
-    const poolAddress = getEnvVar('POOL_V0_CONTRACT_80001');
-    console.log(`Reading PantherPoolV0 contract at ${poolAddress}`);
+    const pool = getPoolContract(provider, CHAIN_ID);
 
-    let data = getExitTimeCallData('exitTime');
-    let response = await safeContractCall(provider, poolAddress, data);
+    let response = await safeContractGetterCall(pool, 'exitTime');
     if (response instanceof Error) {
         console.log(
             'Failed to call exitTime(); falling back to EXIT_TIME() ...',
         );
-        data = getExitTimeCallData('EXIT_TIME');
-        response = await safeContractCall(provider, poolAddress, data);
+        response = await safeContractGetterCall(pool, 'EXIT_TIME');
     }
     if (response instanceof Error) {
-        console.error('Failed to get exit time:');
+        console.error('Failed to call EXIT_TIME:');
         console.error(response);
         process.exit(1);
     }
-    return Number(ethers.BigNumber.from(response).toString());
-}
-
-function getStakingTermsCallData(): string {
-    const ADVANCED = ethers.utils.id('advanced').slice(0, 10);
-    return STAKING_INTERFACE.encodeFunctionData('terms', [ADVANCED]);
+    return bnStrToNumber(response);
 }
 
 type Terms = {
@@ -118,15 +100,9 @@ type Terms = {
 async function getStakingTerms(
     provider: ethers.providers.JsonRpcProvider,
 ): Promise<Terms> {
-    const stakingAddress = getEnvVar('STAKING_CONTRACT_80001');
-    console.log(`Reading Staking contract at ${stakingAddress}`);
-
-    const data = getStakingTermsCallData();
-    const response = await provider.call({
-        to: stakingAddress,
-        data,
-    });
-    const terms = STAKING_INTERFACE.decodeFunctionResult('terms', response);
+    const staking = getStakingContract(provider, 80001);
+    const ADVANCED = ethers.utils.id('advanced').slice(0, 10);
+    const terms = await staking.terms(ADVANCED);
     const {allowedSince, allowedTill, lockedTill} = terms;
     return {allowedSince, allowedTill, lockedTill};
 }
@@ -148,6 +124,44 @@ function reportStakingTerms(terms: Terms) {
             lockedTill * 1000,
         )})`,
     );
+}
+
+async function getControllerTimes(
+    provider: ethers.providers.JsonRpcProvider,
+): Promise<[number, number]> {
+    const staking = getStakingContract(provider, CHAIN_ID);
+    const rewardMasterAddress = await staking.REWARD_MASTER();
+    console.log(`Staking contract has REWARD_MASTER at ${rewardMasterAddress}`);
+
+    const rewardMaster = getRewardMasterContract(
+        provider,
+        CHAIN_ID,
+        rewardMasterAddress,
+    );
+    const controllerAddress = await rewardMaster.rewardAdvisers(
+        staking.address,
+        '0xcc995ce8',
+    );
+    console.log(
+        `RewardMaster has advisor (AdvancedStakeRewardController) at ${controllerAddress}`,
+    );
+    const controller = getAdvancedStakeRewardControllerContract(
+        provider,
+        CHAIN_ID,
+        controllerAddress,
+    );
+
+    const rewardingStart = (await controller.REWARDING_START()).toNumber();
+    const rewardingEnd = (await controller.REWARDING_END()).toNumber();
+    console.log(
+        `rewardingStart is ${rewardingStart} (${new Date(
+            rewardingStart * 1000,
+        )})`,
+    );
+    console.log(
+        `rewardingEnd is ${rewardingEnd} (${new Date(rewardingEnd * 1000)})`,
+    );
+    return [rewardingStart, rewardingEnd];
 }
 
 type Environment = {[name: string]: string};
@@ -200,6 +214,50 @@ function setFileEnvVars(file: string, changes: Change[]) {
     }
     fs.writeFileSync(file, contents);
     console.log('Wrote to', file);
+}
+
+async function checkControllerTimes(
+    provider: ethers.providers.JsonRpcProvider,
+    env: Environment,
+): Promise<void> {
+    const [rewardingStart, rewardingEnd] = await getControllerTimes(provider);
+    console.log();
+
+    const envStart = Number(env.ADVANCED_STAKING_T_START);
+    if (rewardingStart == envStart) {
+        console.log(
+            `AdvancedStakeRewardController.REWARDING_START matched ADVANCED_STAKING_T_START`,
+        );
+    } else {
+        console.warn(
+            `AdvancedStakeRewardController.REWARDING_START was ${rewardingStart} (${new Date(
+                rewardingStart * 1000,
+            )})`,
+        );
+        console.warn(
+            `                 but ADVANCED_STAKING_T_START was ${envStart} (${new Date(
+                envStart * 1000,
+            )})`,
+        );
+    }
+
+    const envUnlock = Number(env.ADVANCED_STAKING_T_UNLOCK);
+    if (rewardingEnd == envUnlock) {
+        console.log(
+            `AdvancedStakeRewardController.REWARDING_END matched ADVANCED_STAKING_T_UNLOCK`,
+        );
+    } else {
+        console.warn(
+            `AdvancedStakeRewardController.REWARDING_END was ${rewardingEnd} (${new Date(
+                rewardingEnd * 1000,
+            )})`,
+        );
+        console.warn(
+            `                 but ADVANCED_STAKING_T_UNLOCK was ${envUnlock} (${new Date(
+                envUnlock * 1000,
+            )})`,
+        );
+    }
 }
 
 function checkEnvVar(
@@ -278,6 +336,7 @@ async function main() {
     const provider = new ethers.providers.JsonRpcProvider(
         'https://matic-mumbai.chainstacklabs.com',
     );
+
     // console.log(await provider.getNetwork());
     const exitTime = await getExitTime(provider);
     console.log(`exitTime is ${exitTime} (${new Date(exitTime * 1000)})`);
@@ -293,6 +352,12 @@ async function main() {
     const appId = useAmplify && getAppId();
     const env = appId ? getAppEnvVars(appId) : getFileEnvVars(args.file);
     // console.log('env: ', env);
+
+    console.log();
+
+    await checkControllerTimes(provider, env);
+
+    console.log();
 
     const changes = checkEnvVars(env, exitTime, terms, args.write);
     if (!args.write) {

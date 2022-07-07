@@ -25,6 +25,7 @@ dotenv.config();
 import {ethers} from 'ethers';
 import yargs from 'yargs/yargs';
 
+import {bnStrToNumber} from '../src/lib/numbers';
 import {getPoolContract, getStakingContract} from '../src/services/contracts';
 
 const APP_NAME = 'panther-core';
@@ -82,7 +83,7 @@ async function getExitTime(provider: ethers.providers.JsonRpcProvider) {
         console.error(response);
         process.exit(1);
     }
-    return Number(ethers.BigNumber.from(response).toString());
+    return bnStrToNumber(response);
 }
 
 type Terms = {

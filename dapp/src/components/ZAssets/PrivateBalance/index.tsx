@@ -42,8 +42,6 @@ export default function PrivateBalance() {
 
     const dispatch = useAppDispatch();
 
-    // TODO: this check needs to be removed when new button will be added below
-    // eslint-disable-next-line
     const refresh = useCallback(async () => {
         dispatch(refreshUTXOsStatuses, context);
     }, [context, dispatch]);

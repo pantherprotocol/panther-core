@@ -15,19 +15,19 @@
 import child_process from 'child_process';
 import fs from 'fs';
 
-import dotenv from 'dotenv';
+// eslint-disable-next-line import/order
+import * as dotenv from 'dotenv';
+
+// This needs to come before imports which need the environment; see
+// https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config();
+
 import {ethers} from 'ethers';
 import yargs from 'yargs/yargs';
 
-const APP_NAME = 'panther-core';
+import {getStakingContract} from '../src/services/contracts';
 
-const STAKING = JSON.parse(
-    fs.readFileSync(
-        `${__dirname}/../../contracts/artifacts/contracts/Staking.sol/Staking.json`,
-        {encoding: 'utf8'},
-    ),
-);
-const STAKING_ABI = STAKING.abi;
+const APP_NAME = 'panther-core';
 
 type App = {
     name: string;
@@ -112,10 +112,7 @@ type Terms = {
 async function getStakingTerms(
     provider: ethers.providers.JsonRpcProvider,
 ): Promise<Terms> {
-    const stakingAddress = getEnvVar('STAKING_CONTRACT_80001');
-    console.log(`Reading Staking contract at ${stakingAddress}`);
-
-    const staking = new ethers.Contract(stakingAddress, STAKING_ABI, provider);
+    const staking = getStakingContract(provider, 80001);
     const ADVANCED = ethers.utils.id('advanced').slice(0, 10);
     const terms = await staking.terms(ADVANCED);
     const {allowedSince, allowedTill, lockedTill} = terms;

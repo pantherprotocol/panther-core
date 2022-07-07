@@ -39,7 +39,17 @@ function exec(cmd: string): string {
 }
 
 function getAppId(): string {
-    const stdout = exec('aws amplify list-apps');
+    const cmd = 'aws amplify list-apps';
+    let stdout;
+    try {
+        stdout = exec(cmd);
+    } catch (err: any) {
+        console.error(
+            `Failed to run: ${cmd}\n` +
+                'Please check that you have correctly installed and configured the AWS CLI.',
+        );
+        process.exit(1);
+    }
     const apps = JSON.parse(stdout).apps;
     const core = apps.find((app: App) => app.name == APP_NAME);
     console.log(`Amplify app_id: ${core.appId}`);
@@ -286,6 +296,10 @@ async function main() {
 
     const changes = checkEnvVars(env, exitTime, terms, args.write);
     if (!args.write) {
+        if (changes.length > 0) {
+            const target = useAmplify ? 'amplify' : 'dotenv';
+            console.log(`\nRun yarn ${target}:sync to apply the changes.`);
+        }
         return;
     }
     if (changes.length == 0) {

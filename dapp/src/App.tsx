@@ -6,6 +6,7 @@ import {ReactNotifications} from 'react-notifications-component';
 import {Route} from 'react-router';
 import {BrowserRouter as Router, Switch} from 'react-router-dom';
 
+import ContractsPage from './pages/Contracts';
 import Faucet from './pages/Faucet';
 import NotFoundPage from './pages/NotFound';
 import Staking from './pages/Staking';
@@ -80,6 +81,12 @@ function App() {
                         path={'/faucet'}
                         exact={true}
                         component={Faucet}
+                    />,
+                    <Route
+                        key="contracts"
+                        path={'/contracts'}
+                        exact={true}
+                        component={ContractsPage}
                     />,
                 ];
         }

@@ -1,6 +1,7 @@
 import {JsonRpcSigner} from '@ethersproject/providers';
 import {Contract} from 'ethers';
 
+import {abi as ADVANCED_STAKE_REWARD_CONTROLLER_ABI} from '../abi/AdvancedStakeRewardController';
 import {abi as FAUCET_ABI} from '../abi/Faucet';
 import {abi as POOL_V0_ABI} from '../abi/PoolV0';
 import {abi as PZKPTOKEN_ABI} from '../abi/PZkpToken';
@@ -9,6 +10,7 @@ import {abi as STAKE_REWARD_CONTROLLER_2_ABI} from '../abi/StakeRewardController
 import {abi as STAKES_REPORTER_ABI} from '../abi/StakesReporter';
 import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as ZKPTOKEN_ABI} from '../abi/ZKPToken';
+import {AdvancedStakeRewardController} from '../types/contracts/AdvancedStakeRewardController';
 import {RewardMaster} from '../types/contracts/RewardMaster';
 import {StakeRewardController2} from '../types/contracts/StakeRewardController2';
 import {StakesReporter} from '../types/contracts/StakesReporter';
@@ -20,6 +22,7 @@ export enum ContractName {
     STAKING,
     STAKES_REPORTER,
     REWARD_MASTER,
+    ADVANCED_STAKE_REWARD_CONTROLLER,
     STAKE_REWARD_CONTROLLER_2,
     STAKING_TOKEN,
     ZKP_TESTNET_TOKEN,
@@ -68,12 +71,14 @@ export function getContractABI(
     chainId: number,
 ): any {
     switch (contractName) {
+        case ContractName.STAKING:
+            return STAKING_ABI;
         case ContractName.REWARD_MASTER:
             return REWARD_MASTER_ABI;
         case ContractName.STAKE_REWARD_CONTROLLER_2:
             return STAKE_REWARD_CONTROLLER_2_ABI;
-        case ContractName.STAKING:
-            return STAKING_ABI;
+        case ContractName.ADVANCED_STAKE_REWARD_CONTROLLER:
+            return ADVANCED_STAKE_REWARD_CONTROLLER_ABI;
         case ContractName.STAKES_REPORTER:
             return STAKES_REPORTER_ABI;
         case ContractName.FAUCET:
@@ -145,6 +150,17 @@ export function getStakeRewardController2Contract(
         library,
         chainId,
     ) as StakeRewardController2;
+}
+
+export function getAdvancedStakeRewardControllerContract(
+    library: any,
+    chainId: number,
+): AdvancedStakeRewardController {
+    return getContract(
+        ContractName.ADVANCED_STAKE_REWARD_CONTROLLER,
+        library,
+        chainId,
+    ) as AdvancedStakeRewardController;
 }
 
 type PossiblyTypedContract = Contract | RewardMaster | Staking;

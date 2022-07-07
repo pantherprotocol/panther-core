@@ -96,11 +96,15 @@ export function getContract(
     contractName: ContractName,
     library: any,
     chainId: number,
+    address?: string,
 ): Contract {
     // FIXME: add cache
-    const address = getContractAddress(contractName, chainId);
     const abi = getContractABI(contractName, chainId);
-    return new Contract(address, abi, library);
+    return new Contract(
+        address ?? getContractAddress(contractName, chainId),
+        abi,
+        library,
+    );
 }
 
 export function getTokenContract(library: any, chainId: number): Contract {
@@ -133,11 +137,13 @@ export function getStakesReporterContract(
 export function getRewardMasterContract(
     library: any,
     chainId: number,
+    address?: string,
 ): RewardMaster {
     return getContract(
         ContractName.REWARD_MASTER,
         library,
         chainId,
+        address,
     ) as RewardMaster;
 }
 

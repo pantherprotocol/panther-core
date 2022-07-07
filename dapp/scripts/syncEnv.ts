@@ -28,7 +28,6 @@ const STAKING = JSON.parse(
     ),
 );
 const STAKING_ABI = STAKING.abi;
-const STAKING_INTERFACE = new ethers.utils.Interface(STAKING_ABI);
 
 type App = {
     name: string;
@@ -104,11 +103,6 @@ async function getExitTime(provider: ethers.providers.JsonRpcProvider) {
     return Number(ethers.BigNumber.from(response).toString());
 }
 
-function getStakingTermsCallData(): string {
-    const ADVANCED = ethers.utils.id('advanced').slice(0, 10);
-    return STAKING_INTERFACE.encodeFunctionData('terms', [ADVANCED]);
-}
-
 type Terms = {
     allowedSince: number;
     allowedTill: number;
@@ -121,12 +115,9 @@ async function getStakingTerms(
     const stakingAddress = getEnvVar('STAKING_CONTRACT_80001');
     console.log(`Reading Staking contract at ${stakingAddress}`);
 
-    const data = getStakingTermsCallData();
-    const response = await provider.call({
-        to: stakingAddress,
-        data,
-    });
-    const terms = STAKING_INTERFACE.decodeFunctionResult('terms', response);
+    const staking = new ethers.Contract(stakingAddress, STAKING_ABI, provider);
+    const ADVANCED = ethers.utils.id('advanced').slice(0, 10);
+    const terms = await staking.terms(ADVANCED);
     const {allowedSince, allowedTill, lockedTill} = terms;
     return {allowedSince, allowedTill, lockedTill};
 }

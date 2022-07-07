@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build:contracts": "TS_NODE_TRANSPILE_ONLY=1 yarn workspace @panther-core/contracts compile",
+    "build:contracts": "yarn workspace @panther-core/contracts compile",
     "build:crypto": "yarn workspace @panther-core/crypto build",
     "build:graph": "yarn workspace @panther-core/subgraph codegen && yarn workspace @panther-core/subgraph build",
     "build:dapp": "yarn workspace @panther-core/dapp build",

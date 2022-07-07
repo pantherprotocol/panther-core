@@ -9,7 +9,7 @@
     "build:types": "cp -a types ../dapp/src",
     "chain": "HARDHAT_NO_MNEMONIC=yes hardhat node",
     "clean": "rm artifacts/ -rf && rm cache/solidity-files-cache.json -f && rm types/contracts/ -rf",
-    "compile": "HARDHAT_NO_MNEMONIC=yes hardhat compile",
+    "compile": "TS_NODE_TRANSPILE_ONLY=1 HARDHAT_NO_MNEMONIC=yes hardhat compile",
     "console": "HARDHAT_NO_MNEMONIC=yes hardhat console",
     "export-jq": "bash -c 'hardhat export --export >(cat) --network ${HH_NETWORK:-localhost}' | jq",
     "export-env": "yarn export-jq -r '.contracts | to_entries | map((.key|camel_to_snake|ascii_upcase) + \"_CONTRACT=\" + .value.address) | .[]'",

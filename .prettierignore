@@ -14,7 +14,10 @@ contracts/typing/
 crypto/coverage/
 crypto/lib/
 dapp/public/preparation/
-dapp/src/types/
+dapp/src/types/blake-hash/
+dapp/src/types/circomlibjs/
+dapp/src/types/contracts/
+dapp/src/types/ffjavascript/
 .eslintignore
 .gitignore
 .gitmessage

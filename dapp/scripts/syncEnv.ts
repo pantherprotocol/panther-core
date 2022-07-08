@@ -1,9 +1,15 @@
 #!/usr/bin/env ts-node
 
-// Script to extract advanced staking times from Staking terms
-// and early redemption time from PantherPoolV0's exitTime()
-// or exitTime()
-// and then set the Amplify app's environment variables accordingly.
+// Script to extract various values from smart contracts:
+//
+// - advanced staking start/end/unlock from Staking terms,
+// - reward period times AdvancedStakeRewardController
+// - early redemption time from PantherPoolV0's exitTime() or EXIT_TIME()
+//
+// and then accordingly check or update either:
+//
+// - the Amplify app's environment variables, or
+// - the local .env values.
 //
 // Usage:
 //
@@ -218,15 +224,15 @@ function setFileEnvVars(file: string, changes: Change[]) {
 
 async function checkControllerTimes(
     provider: ethers.providers.JsonRpcProvider,
-    env: Environment,
+    terms: Terms,
 ): Promise<void> {
     const [rewardingStart, rewardingEnd] = await getControllerTimes(provider);
     console.log();
 
-    const envStart = Number(env.ADVANCED_STAKING_T_START);
-    if (rewardingStart == envStart) {
+    const {allowedSince, lockedTill} = terms;
+    if (rewardingStart == allowedSince) {
         console.log(
-            `AdvancedStakeRewardController.REWARDING_START matched ADVANCED_STAKING_T_START`,
+            `AdvancedStakeRewardController.REWARDING_START matched allowedSince`,
         );
     } else {
         console.warn(
@@ -235,16 +241,15 @@ async function checkControllerTimes(
             )})`,
         );
         console.warn(
-            `                 but ADVANCED_STAKING_T_START was ${envStart} (${new Date(
-                envStart * 1000,
+            `                       but terms.allowedSince was ${allowedSince} (${new Date(
+                allowedSince * 1000,
             )})`,
         );
     }
 
-    const envUnlock = Number(env.ADVANCED_STAKING_T_UNLOCK);
-    if (rewardingEnd == envUnlock) {
+    if (rewardingEnd == lockedTill) {
         console.log(
-            `AdvancedStakeRewardController.REWARDING_END matched ADVANCED_STAKING_T_UNLOCK`,
+            `AdvancedStakeRewardController.REWARDING_END matched lockedTill`,
         );
     } else {
         console.warn(
@@ -253,8 +258,8 @@ async function checkControllerTimes(
             )})`,
         );
         console.warn(
-            `                 but ADVANCED_STAKING_T_UNLOCK was ${envUnlock} (${new Date(
-                envUnlock * 1000,
+            `                             but lockedTill was ${lockedTill} (${new Date(
+                lockedTill * 1000,
             )})`,
         );
     }
@@ -291,7 +296,7 @@ function checkEnvVars(
         ['ADVANCED_STAKING_EARLY_REDEMPTION', String(exitTime)],
         ['ADVANCED_STAKING_T_START', String(terms.allowedSince)],
         ['ADVANCED_STAKING_T_END', String(terms.allowedTill)],
-        ['ADVANCED_STAKING_T_UNLOCK', String(terms.lockedTill)],
+        ['lockedTill', String(terms.lockedTill)],
     ];
     const changes: Change[] = [];
     for (const [name, value] of data) {
@@ -355,7 +360,7 @@ async function main() {
 
     console.log();
 
-    await checkControllerTimes(provider, env);
+    await checkControllerTimes(provider, terms);
 
     console.log();
 

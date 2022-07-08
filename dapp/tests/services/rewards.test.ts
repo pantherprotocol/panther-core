@@ -4,7 +4,7 @@ import mockConsole from 'jest-mock-console';
 
 describe('Advanced stakes', () => {
     process.env.ADVANCED_STAKING_T_START = '1652356800'; // 2022/05/12 12:00 UTC
-    process.env.ADVANCED_STAKING_T_END = '1656590400'; // 2022/06/30 12:00 UTC
+    process.env.ADVANCED_STAKING_T_UNLOCK = '1656590400'; // 2022/06/30 12:00 UTC
 
     // Next line produces the following lint error, therefore disabled:
     // "Require statement not part of import statement
@@ -14,7 +14,7 @@ describe('Advanced stakes', () => {
         zZkpReward,
         prpReward,
         T_START,
-        T_END,
+        T_UNLOCK,
     } = require('../../src/services/rewards'); // eslint-disable-line
 
     const currentTime = new Date('2022-05-17T12:00:00Z'); // 5 days after start
@@ -22,9 +22,9 @@ describe('Advanced stakes', () => {
     const beforeStart = T_START - tenDays;
     const start = T_START;
     const afterStart = T_START + tenDays;
-    const beforeEnd = T_END - tenDays;
-    const end = T_END;
-    const afterEnd = T_END + tenDays;
+    const beforeEnd = T_UNLOCK - tenDays;
+    const end = T_UNLOCK;
+    const afterEnd = T_UNLOCK + tenDays;
 
     describe('Linear APY', () => {
         const currentApy = getAdvStakingAPY(Math.floor(currentTime.getTime()));
@@ -38,9 +38,9 @@ describe('Advanced stakes', () => {
                 T_START - tenDays,
                 T_START,
                 T_START + tenDays,
-                T_END - tenDays,
-                T_END,
-                T_END + tenDays,
+                T_UNLOCK - tenDays,
+                T_UNLOCK,
+                T_UNLOCK + tenDays,
             ];
             dates.forEach((date: number) => {
                 const apy = getAdvStakingAPY(date);
@@ -71,7 +71,12 @@ describe('Advanced stakes', () => {
         });
 
         it('should always be less than staked amount', () => {
-            const dates = [T_START, T_START + tenDays, T_END - tenDays, T_END];
+            const dates = [
+                T_START,
+                T_START + tenDays,
+                T_UNLOCK - tenDays,
+                T_UNLOCK,
+            ];
             dates.forEach((date: number) => {
                 const stake = utils.parseEther('1000');
                 const reward = zZkpReward(stake, date);

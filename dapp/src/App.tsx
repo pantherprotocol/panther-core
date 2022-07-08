@@ -6,6 +6,7 @@ import {ReactNotifications} from 'react-notifications-component';
 import {Route} from 'react-router';
 import {BrowserRouter as Router, Switch} from 'react-router-dom';
 
+import './lib/bigint-serialize';
 import ContractsPage from './pages/Contracts';
 import Faucet from './pages/Faucet';
 import NotFoundPage from './pages/NotFound';

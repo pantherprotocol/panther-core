@@ -20,8 +20,6 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
 
     // @notice enabling/disabling check for whitelisted addresses
     bool public restrictToWhitelisted;
-    // @notice enabling/disabling check for requests count
-    bool public restrictToMaxDrinkCount;
 
     constructor(
         address _owner,
@@ -54,13 +52,13 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
     }
 
     /**
-     * @notice if restrictToMaxDrinkCount is true, then
+     * @notice if maxDrinkCount is defined, then
      * check if the sender is already received token
      */
     modifier checkDrinkCount(address _address) {
         require(
-            !restrictToMaxDrinkCount || isAllowedToDrink(_address),
-            "Too much drink count"
+            maxDrinkCount == 0 || withinDrinkLimit(_address),
+            "Reached maximum drink count"
         );
         _;
     }
@@ -85,10 +83,10 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
 
     /**
      * @notice return true if the user request counts are
-     * less than or equal to maxDrinkCount, otherwise retuens false
+     * less than or equal to maxDrinkCount, otherwise returns false
      * @dev it helps when contract is restricted to requests count.
      */
-    function isAllowedToDrink(address _account) public view returns (bool) {
+    function withinDrinkLimit(address _account) public view returns (bool) {
         return drinkCount[_account] < maxDrinkCount;
     }
 
@@ -135,17 +133,10 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
 
     // Owner functions
     /**
-     * @notice toggle restrictToWhitelisted
+     * @notice update restrictToWhitelisted
      */
-    function toggleRestrictToWhitelisted() external onlyOwner {
-        restrictToWhitelisted = !restrictToWhitelisted;
-    }
-
-    /**
-     * @notice toggle restrictToMaxReq
-     */
-    function toggleRestrictToMaxDrinkCount() external onlyOwner {
-        restrictToMaxDrinkCount = !restrictToMaxDrinkCount;
+    function updateRestrictToWhitelisted(bool isRestricted) external onlyOwner {
+        restrictToWhitelisted = isRestricted;
     }
 
     /**
@@ -153,7 +144,7 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
      * @param _whitelistedAddresses array of addresses to be added
      * @param _whitelisted array of boolen values to be mapped to the addresses
      */
-    function addWhitelistedMultiple(
+    function whitelistBatch(
         address[] calldata _whitelistedAddresses,
         bool[] calldata _whitelisted
     ) external onlyOwner {
@@ -189,24 +180,30 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
      * drink function can be called
      */
     function updateMaxDrinkCount(uint256 _maxDrinkCount) external onlyOwner {
-        require(_maxDrinkCount > 0, "invalid max request count");
         maxDrinkCount = _maxDrinkCount;
     }
 
-    function claimErc20(
+    /**
+     * @notice whithdraws native or erc20 token from the contract
+     * @param _claimedToken The token address to claim
+     * @param _to the receiver address
+     * @param _amount the token amount to be withdrawn
+     * @dev The token address can be zero address in case the
+     * native token is going to be withdrawn.
+     */
+    function withdraw(
         address _claimedToken,
         address _to,
         uint256 _amount
     ) external onlyOwner {
         require(_to != address(0), "recipient cannot be 0");
+        require(_amount > 0, "amount cannot be 0");
 
-        _claimErc20(_claimedToken, _to, _amount);
-    }
-
-    function claimNative(address _to) external onlyOwner {
-        require(_to != address(0), "recipient cannot be 0");
-
-        (bool sent, ) = _to.call{ value: address(this).balance }(""); // solhint-disable-line avoid-low-level-calls
-        require(sent, "Failed to send native");
+        if (_claimedToken == address(0)) {
+            (bool sent, ) = _to.call{ value: _amount }(""); // solhint-disable-line avoid-low-level-calls
+            require(sent, "Failed to send native");
+        } else {
+            _claimErc20(_claimedToken, _to, _amount);
+        }
     }
 }

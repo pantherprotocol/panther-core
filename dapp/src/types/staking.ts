@@ -20,7 +20,7 @@ export type AdvancedStakeRewards = {
     creationTime: string;
     commitments: string[];
     utxoData: string;
-    utxoStatus: UTXOStatus;
+    zZkpUTXOStatus: UTXOStatus;
     zZKP: string;
     PRP: string;
 };

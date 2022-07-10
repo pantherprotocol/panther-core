@@ -50,7 +50,7 @@ const AssetsDetailsTable = () => {
                     {Object.values(advancedStakesRewards)
                         .filter((rewards: AdvancedStakeRewards) =>
                             [UTXOStatus.UNDEFINED, UTXOStatus.UNSPENT].includes(
-                                rewards.utxoStatus,
+                                rewards.zZkpUTXOStatus,
                             ),
                         )
                         .map((rewards: AdvancedStakeRewards, key: number) => (

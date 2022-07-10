@@ -239,7 +239,7 @@ export async function getChangedUTXOsStatuses(
     const statusesNeedUpdate: UTXOStatusByID[] = [];
 
     for await (const reward of advancedRewards) {
-        if (reward.utxoStatus === UTXOStatus.SPENT) {
+        if (reward.zZkpUTXOStatus === UTXOStatus.SPENT) {
             continue;
         }
 
@@ -251,7 +251,7 @@ export async function getChangedUTXOsStatuses(
             reward.utxoData,
         );
 
-        if (status !== reward.utxoStatus) {
+        if (status !== reward.zZkpUTXOStatus) {
             statusesNeedUpdate.push([reward.id, status]);
         }
     }

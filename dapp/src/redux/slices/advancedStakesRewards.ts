@@ -82,7 +82,7 @@ export const getAdvancedStakesRewards = createAsyncThunk(
                     creationTime: r.creationTime.toString(),
                     commitments: r.commitments,
                     utxoData: r.utxoData,
-                    utxoStatus: UTXOStatus.UNDEFINED,
+                    zZkpUTXOStatus: UTXOStatus.UNDEFINED,
                     zZKP: r.zZkpAmount,
                     PRP: r.prpAmount,
                 };
@@ -149,7 +149,7 @@ export const advancedStakesRewardsSlice = createSlice({
             const addrHash = shortAddressHash(address);
             const reward = state.value?.[chainId]?.[addrHash]?.[id];
             if (reward) {
-                reward.utxoStatus = status;
+                reward.zZkpUTXOStatus = status;
             }
         },
         updateLastRefreshTime: state => {
@@ -191,9 +191,9 @@ export const advancedStakesRewardsSlice = createSlice({
                         const reward = state.value?.[chainId]?.[addrHash]?.[id];
                         if (reward) {
                             console.debug(
-                                `Updating UTXO status ID ${id}: ${reward.utxoStatus} -> ${status}`,
+                                `Updating UTXO status ID ${id}: ${reward.zZkpUTXOStatus} -> ${status}`,
                             );
-                            reward.utxoStatus = status;
+                            reward.zZkpUTXOStatus = status;
                         }
                     }
                 }
@@ -228,6 +228,7 @@ export function totalSelector(
     chainId: number | null | undefined,
     address: string | null | undefined,
     tid: AdvancedStakeTokenIDs,
+    includeIfZZkpSpent = false,
 ): (state: RootState) => BigNumber {
     return (state: RootState): BigNumber => {
         if (!address) return constants.Zero;
@@ -235,16 +236,23 @@ export function totalSelector(
         const rewards = advancedStakesRewardsSelector(chainId, address)(state);
         if (!rewards) return constants.Zero;
 
-        return Object.values(rewards)
-            .filter((rewards: AdvancedStakeRewards) =>
-                [UTXOStatus.UNDEFINED, UTXOStatus.UNSPENT].includes(
-                    rewards.utxoStatus,
-                ),
-            )
-            .map((reward: AdvancedStakeRewards) => {
-                return reward[tid];
-            })
-            .reduce((acc: BigNumber, v) => acc.add(v), constants.Zero);
+        return (
+            Object.values(rewards)
+                // filter of spent statuses always ignores UNDEFINED Status
+                .filter((rewards: AdvancedStakeRewards) => {
+                    if (includeIfZZkpSpent) {
+                        return [UTXOStatus.SPENT, UTXOStatus.UNSPENT].includes(
+                            rewards.zZkpUTXOStatus,
+                        );
+                    } else {
+                        return UTXOStatus.UNSPENT === rewards.zZkpUTXOStatus;
+                    }
+                })
+                .map((reward: AdvancedStakeRewards) => {
+                    return reward[tid];
+                })
+                .reduce((acc: BigNumber, v) => acc.add(v), constants.Zero)
+        );
     };
 }
 
@@ -265,7 +273,7 @@ export function hasUndefinedUTXOsSelector(
 
         const rewardsWithUndefinedStatus = Object.values(rewards).find(
             (r: AdvancedStakeRewards) => {
-                return r.utxoStatus === UTXOStatus.UNDEFINED;
+                return r.zZkpUTXOStatus === UTXOStatus.UNDEFINED;
             },
         );
 

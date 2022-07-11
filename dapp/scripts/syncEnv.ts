@@ -31,6 +31,7 @@ dotenv.config();
 import {ethers} from 'ethers';
 import yargs from 'yargs/yargs';
 
+import {info, success, warn, die} from '../src/lib/log';
 import {bnStrToNumber} from '../src/lib/numbers';
 import {
     getAdvancedStakeRewardControllerContract,
@@ -52,19 +53,20 @@ function exec(cmd: string): string {
 
 function getAppId(): string {
     const cmd = 'aws amplify list-apps';
-    let stdout;
+    let stdout: string | undefined;
     try {
         stdout = exec(cmd);
     } catch (err: any) {
-        console.error(
+        die(
             `Failed to run: ${cmd}\n` +
                 'Please check that you have correctly installed and configured the AWS CLI.',
         );
-        process.exit(1);
+        return '';
     }
     const apps = JSON.parse(stdout).apps;
     const core = apps.find((app: App) => app.name == APP_NAME);
     console.log(`Amplify app_id: ${core.appId}`);
+    console.log();
     return core.appId;
 }
 
@@ -84,9 +86,7 @@ async function getExitTime(provider: ethers.providers.JsonRpcProvider) {
 
     let response = await safeContractGetterCall(pool, 'exitTime');
     if (response instanceof Error) {
-        console.log(
-            'Failed to call exitTime(); falling back to EXIT_TIME() ...',
-        );
+        warn('Failed to call exitTime(); falling back to EXIT_TIME() ...');
         response = await safeContractGetterCall(pool, 'EXIT_TIME');
     }
     if (response instanceof Error) {
@@ -115,17 +115,17 @@ async function getStakingTerms(
 
 function reportStakingTerms(terms: Terms) {
     const {allowedSince, allowedTill, lockedTill} = terms;
-    console.log(
+    info(
         `Advanced staking allowed from ${allowedSince} (${new Date(
             allowedSince * 1000,
         )})`,
     );
-    console.log(
+    info(
         `Advanced staking allowed till ${allowedTill} (${new Date(
             allowedTill * 1000,
         )})`,
     );
-    console.log(
+    info(
         `Advanced staking locked till ${lockedTill} (${new Date(
             lockedTill * 1000,
         )})`,
@@ -137,7 +137,7 @@ async function getControllerTimes(
 ): Promise<[number, number]> {
     const staking = getStakingContract(provider, CHAIN_ID);
     const rewardMasterAddress = await staking.REWARD_MASTER();
-    console.log(`Staking contract has REWARD_MASTER at ${rewardMasterAddress}`);
+    info(`Staking contract has REWARD_MASTER at ${rewardMasterAddress}`);
 
     const rewardMaster = getRewardMasterContract(
         provider,
@@ -148,7 +148,7 @@ async function getControllerTimes(
         staking.address,
         '0xcc995ce8',
     );
-    console.log(
+    info(
         `RewardMaster has advisor (AdvancedStakeRewardController) at ${controllerAddress}`,
     );
     const controller = getAdvancedStakeRewardControllerContract(
@@ -159,14 +159,12 @@ async function getControllerTimes(
 
     const rewardingStart = (await controller.REWARDING_START()).toNumber();
     const rewardingEnd = (await controller.REWARDING_END()).toNumber();
-    console.log(
+    info(
         `rewardingStart is ${rewardingStart} (${new Date(
             rewardingStart * 1000,
         )})`,
     );
-    console.log(
-        `rewardingEnd is ${rewardingEnd} (${new Date(rewardingEnd * 1000)})`,
-    );
+    info(`rewardingEnd is ${rewardingEnd} (${new Date(rewardingEnd * 1000)})`);
     return [rewardingStart, rewardingEnd];
 }
 
@@ -231,16 +229,16 @@ async function checkControllerTimes(
 
     const {allowedSince, lockedTill} = terms;
     if (rewardingStart == allowedSince) {
-        console.log(
+        success(
             `AdvancedStakeRewardController.REWARDING_START matched allowedSince`,
         );
     } else {
-        console.warn(
+        warn(
             `AdvancedStakeRewardController.REWARDING_START was ${rewardingStart} (${new Date(
                 rewardingStart * 1000,
             )})`,
         );
-        console.warn(
+        warn(
             `                       but terms.allowedSince was ${allowedSince} (${new Date(
                 allowedSince * 1000,
             )})`,
@@ -248,16 +246,16 @@ async function checkControllerTimes(
     }
 
     if (rewardingEnd == lockedTill) {
-        console.log(
+        success(
             `AdvancedStakeRewardController.REWARDING_END matched lockedTill`,
         );
     } else {
-        console.warn(
+        warn(
             `AdvancedStakeRewardController.REWARDING_END was ${rewardingEnd} (${new Date(
                 rewardingEnd * 1000,
             )})`,
         );
-        console.warn(
+        warn(
             `                             but lockedTill was ${lockedTill} (${new Date(
                 lockedTill * 1000,
             )})`,
@@ -272,11 +270,11 @@ function checkEnvVar(
     update: boolean,
 ): [string, string] | undefined {
     if (env[name] == value) {
-        console.log(`${name} already set to ${value}; no change needed.`);
+        success(`${name} already set to ${value}; no change needed.`);
         return;
     } else {
         const action = update ? 'Updating' : 'Would update';
-        console.log(`${action} ${name} from ${env[name]} to ${value}.`);
+        warn(`${action} ${name} from ${env[name]} to ${value}.`);
         if (update) {
             env[name] = value;
         }
@@ -344,7 +342,7 @@ async function main() {
 
     // console.log(await provider.getNetwork());
     const exitTime = await getExitTime(provider);
-    console.log(`exitTime is ${exitTime} (${new Date(exitTime * 1000)})`);
+    info(`exitTime is ${exitTime} (${new Date(exitTime * 1000)})`);
 
     console.log();
 
@@ -357,8 +355,6 @@ async function main() {
     const appId = useAmplify && getAppId();
     const env = appId ? getAppEnvVars(appId) : getFileEnvVars(args.file);
     // console.log('env: ', env);
-
-    console.log();
 
     await checkControllerTimes(provider, terms);
 

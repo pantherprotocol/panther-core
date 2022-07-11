@@ -106,6 +106,7 @@
     "babel-preset-stage-0": "^6.24.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "chalk": "^4.0",
     "coingecko-api": "^1.0.10",
     "css-loader": "^6.2.0",
     "easy-peasy": "^5.0.3",

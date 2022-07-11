@@ -13,6 +13,7 @@ import {
     progressToNewWalletAction,
     registerWalletActionFailure,
     registerWalletActionSuccess,
+    showWalletActionInProgressSelector,
     startWalletAction,
     StartWalletActionPayload,
 } from '../../../../../../../redux/slices/web3WalletLastAction';
@@ -29,10 +30,12 @@ import RedeemRewardsWarningDialog from '../RedeemRewardsWarningDialog';
 import './styles.scss';
 
 function getButtonContents(
+    inProgress: boolean,
     exitTime: number | null,
     afterExitTime: boolean,
     treeUri: string | undefined,
 ): string | ReactElement {
+    if (inProgress) return 'Redeeming zZKP';
     if (afterExitTime) {
         return treeUri ? 'Redeem zZKP' : 'Redemption opens soon!';
     }
@@ -72,6 +75,10 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
     const handleCloseWarningDialog = () => {
         setWarningDialogShown(false);
     };
+
+    const showExitInProgress = useAppSelector(
+        showWalletActionInProgressSelector('exit'),
+    );
 
     const redeem = useCallback(async () => {
         const trigger = 'zZKP redemption';
@@ -130,12 +137,25 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                 variant="contained"
                 className="redeem-button"
                 endIcon={
-                    isRedemptionPossible ? <img src={rightSideArrow} /> : null
+                    isRedemptionPossible && !showExitInProgress ? (
+                        <img src={rightSideArrow} />
+                    ) : null
                 }
-                disabled={!isRedemptionPossible}
+                disabled={!isRedemptionPossible || showExitInProgress}
                 onClick={() => openWarningDialog()}
             >
-                {getButtonContents(exitTime, afterExitTime, treeUri)}
+                {showExitInProgress && (
+                    <i
+                        className="fa fa-refresh fa-spin"
+                        style={{marginRight: '5px'}}
+                    />
+                )}
+                {getButtonContents(
+                    showExitInProgress,
+                    exitTime,
+                    afterExitTime,
+                    treeUri,
+                )}
             </Button>
             {warningDialogShown && (
                 <RedeemRewardsWarningDialog

@@ -22,7 +22,7 @@ import {getPoolContract, getSignableContract} from './contracts';
 import {env} from './env';
 import {notifyError} from './errors';
 import {safeFetch} from './http';
-import {deriveSpendingChildKeypair, deriveRootKeypairs} from './keychain';
+import {deriveSpendingChildKeypair} from './keychain';
 import {decryptRandomSecret as decryptRandomSecret} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
 
@@ -55,6 +55,7 @@ export async function exit(
     leafId: bigint,
     creationTime: number,
     commitments: string[],
+    keys: IKeypair[],
 ): Promise<UTXOStatus> {
     const {contract} = getSignableContract(
         library,
@@ -63,16 +64,6 @@ export async function exit(
         getPoolContract,
     );
 
-    const signer = library.getSigner(account);
-    const keys = await deriveRootKeypairs(signer);
-    if (keys instanceof Error) {
-        notifyError(
-            'Redemption error',
-            `Cannot sign a message: ${keys.message}`,
-            keys,
-        );
-        return UTXOStatus.UNDEFINED;
-    }
     const [rootSpendingKeypair, rootReadingKeypair] = keys;
 
     const {
@@ -216,7 +207,8 @@ export async function getChangedUTXOsStatuses(
     account: string,
     chainId: number,
     advancedRewards: AdvancedStakeRewards[],
-): Promise<UTXOStatusByID[] | Error> {
+    keys: IKeypair[],
+): Promise<UTXOStatusByID[]> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -224,16 +216,6 @@ export async function getChangedUTXOsStatuses(
         getPoolContract,
     );
 
-    const signer = library.getSigner(account);
-    const keys = await deriveRootKeypairs(signer);
-    if (keys instanceof Error) {
-        notifyError(
-            'Failed to refresh zAssets',
-            `Cannot sign a message: ${parseTxErrorMessage(keys)}`,
-            keys,
-        );
-        return keys;
-    }
     const [rootSpendingKeypair, rootReadingKeypair] = keys;
 
     const statusesNeedUpdate: UTXOStatusByID[] = [];

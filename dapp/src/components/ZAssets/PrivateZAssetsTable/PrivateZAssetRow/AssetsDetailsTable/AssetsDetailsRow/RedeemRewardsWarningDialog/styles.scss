@@ -1,0 +1,54 @@
+@import '../../../../../../../variables.scss';
+@import '../../../../../../../styles/modal-dialog.scss';
+
+.redeem-dialog {
+    .content-body {
+        font-size: 0.95em;
+
+        li {
+            text-align: start;
+        }
+    }
+
+    .confirm-redemption-checkbox {
+        .MuiFormControlLabel-root .MuiFormControlLabel-label {
+            font-weight: $bold-font-weight;
+            font-size: $header-font-size;
+        }
+
+        margin: 15px 0px;
+        display: flex;
+        align-content: space-around;
+        color: $highlighted-text;
+    }
+
+    .redeem-action {
+        display: flex;
+        align-items: center;
+        justify-content: space-around !important;
+        margin: 20px 24px !important;
+        background: $grey-btn;
+        border-radius: 14px;
+
+        &.active {
+            button p {
+                color: $white;
+            }
+            background: $btn-blue;
+        }
+
+        .MuiButton-root.MuiButton-text {
+            text-align: center;
+            font-weight: $semi-bold-font-weight;
+            font-size: $title-font-size;
+            height: 40px;
+            box-shadow: none;
+            text-transform: none;
+            color: $black;
+        }
+    }
+
+    strong {
+        font-weight: 800;
+    }
+}

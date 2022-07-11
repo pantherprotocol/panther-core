@@ -1,0 +1,15 @@
+@import '../../variables.scss';
+@import '../../styles/modal-dialog.scss';
+
+.signature-request {
+    .MuiDialogTitle-root {
+        padding-top: 0px;
+    }
+
+    .more-info {
+        color: $highlighted-text;
+        font-weight: 900;
+        font-size: $header-font-size;
+        padding: 10px 0px 15px 0px;
+    }
+}

@@ -1,4 +1,4 @@
-import {BigNumber} from 'ethers'
+import {BigNumber} from 'ethers';
 
 export type StakeTypes = 'classic' | 'advanced';
 
@@ -8,7 +8,7 @@ export enum StakeType {
 }
 
 export type StakeReward = {
-// BigNumber string to allow serialization in Redux
+    // BigNumber string to allow serialization in Redux
     [key in StakingRewardTokenID]?: string | null;
 };
 export type StakeRewardBN = ClassicStakeRewardBN | AdvancedStakeRewardsBN;

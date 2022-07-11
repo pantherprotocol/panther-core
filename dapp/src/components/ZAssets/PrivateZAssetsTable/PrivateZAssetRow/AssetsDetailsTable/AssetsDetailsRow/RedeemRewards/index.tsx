@@ -1,39 +1,41 @@
 import * as React from 'react';
 import {ReactElement, useCallback, useState} from 'react';
 
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    IconButton,
-    Typography,
-    Button,
-    Box,
-    Checkbox,
-} from '@mui/material';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
+import {Typography, Button, Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
-import backButtonLeftArrow from '../../../../../../../images/back-button-left-arrow.svg';
 import rightSideArrow from '../../../../../../../images/right-arrow-icon.svg';
 import {formatTime} from '../../../../../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../../../../../redux/hooks';
 import {updateUTXOStatus} from '../../../../../../../redux/slices/advancedStakesRewards';
-import {removeBlur, setBlur} from '../../../../../../../redux/slices/blur';
 import {poolV0ExitTimeSelector} from '../../../../../../../redux/slices/poolV0';
+import {
+    progressToNewWalletAction,
+    registerWalletActionFailure,
+    registerWalletActionSuccess,
+    showWalletActionInProgressSelector,
+    startWalletAction,
+    StartWalletActionPayload,
+} from '../../../../../../../redux/slices/web3WalletLastAction';
 import {env} from '../../../../../../../services/env';
+import {notifyError} from '../../../../../../../services/errors';
+import {deriveRootKeypairs} from '../../../../../../../services/keychain';
 import {exit} from '../../../../../../../services/pool';
-import {AdvancedStakeRewards} from '../../../../../../../types/staking';
+import {
+    UTXOStatus,
+    AdvancedStakeRewards,
+} from '../../../../../../../types/staking';
+import RedeemRewardsWarningDialog from '../RedeemRewardsWarningDialog';
 
 import './styles.scss';
 
 function getButtonContents(
+    inProgress: boolean,
     exitTime: number | null,
     afterExitTime: boolean,
     treeUri: string | undefined,
 ): string | ReactElement {
+    if (inProgress) return 'Redeeming zZKP';
     if (afterExitTime) {
         return treeUri ? 'Redeem zZKP' : 'Redemption opens soon!';
     }
@@ -52,47 +54,77 @@ function getButtonContents(
 }
 
 export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
+    const {rewards} = props;
+
     const context = useWeb3React();
-    const {library, account, chainId} = context;
+    const {account, chainId, library} = context;
     const dispatch = useAppDispatch();
     const exitTime = useAppSelector(poolV0ExitTimeSelector);
 
-    const [open, setOpen] = useState(false);
-    const [redeemConfirmed, setRedeemConfirmed] = useState(false);
+    const [warningDialogShown, setWarningDialogShown] = useState(false);
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRedeemConfirmed(event.target.checked);
+    const openWarningDialog = () => {
+        setWarningDialogShown(true);
     };
 
-    const handleClickOpen = () => {
-        setRedeemConfirmed(false);
-        setOpen(true);
-        dispatch(setBlur);
+    const handleRedeemButtonClick = () => {
+        handleCloseWarningDialog();
+        redeem();
     };
 
-    const handleClose = useCallback(() => {
-        setOpen(false);
-        dispatch(removeBlur);
-    }, [dispatch]);
+    const handleCloseWarningDialog = () => {
+        setWarningDialogShown(false);
+    };
+
+    const showExitInProgress = useAppSelector(
+        showWalletActionInProgressSelector('exit'),
+    );
 
     const redeem = useCallback(async () => {
-        handleClose();
+        const trigger = 'zZKP redemption';
+        dispatch(startWalletAction, {
+            name: 'signMessage',
+            cause: {caller: 'RedeemRewards', trigger},
+            data: {account},
+        } as StartWalletActionPayload);
+        const signer = library.getSigner(account);
+        const keys = await deriveRootKeypairs(signer);
+        if (keys instanceof Error) {
+            notifyError(
+                'Panther wallet error',
+                `Failed to generate Panther wallet secrets from signature: ${keys.message}`,
+                keys,
+            );
+            dispatch(registerWalletActionFailure, 'signMessage');
+            return;
+        }
+        dispatch(progressToNewWalletAction, {
+            oldAction: 'signMessage',
+            newAction: {
+                name: 'exit',
+                cause: {caller: 'PrivateBalance', trigger},
+                data: {account, caller: 'redeem button'},
+            },
+        });
+
         const utxoStatus = await exit(
             library,
             account as string,
             chainId as number,
-            props.rewards.utxoData,
-            BigInt(props.rewards.id),
-            Number(props.rewards.creationTime),
-            props.rewards.commitments,
+            rewards.utxoData,
+            BigInt(rewards.id),
+            Number(rewards.creationTime),
+            rewards.commitments,
+            keys,
         );
-        dispatch(updateUTXOStatus, [
-            chainId,
-            account,
-            props.rewards.id,
-            utxoStatus,
-        ]);
-    }, [dispatch, library, account, chainId, props.rewards, handleClose]);
+        dispatch(
+            utxoStatus == UTXOStatus.UNDEFINED
+                ? registerWalletActionFailure
+                : registerWalletActionSuccess,
+            'exit',
+        );
+        dispatch(updateUTXOStatus, [chainId, account, rewards.id, utxoStatus]);
+    }, [dispatch, library, account, chainId, rewards]);
 
     const afterExitTime = exitTime ? exitTime * 1000 < Date.now() : false;
     const treeUri = env[`COMMITMENT_TREE_URL_${chainId}`];
@@ -105,105 +137,32 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                 variant="contained"
                 className="redeem-button"
                 endIcon={
-                    isRedemptionPossible ? <img src={rightSideArrow} /> : null
+                    isRedemptionPossible && !showExitInProgress ? (
+                        <img src={rightSideArrow} />
+                    ) : null
                 }
-                disabled={!isRedemptionPossible}
-                onClick={() => handleClickOpen()}
+                disabled={!isRedemptionPossible || showExitInProgress}
+                onClick={() => openWarningDialog()}
             >
-                {getButtonContents(exitTime, afterExitTime, treeUri)}
+                {showExitInProgress && (
+                    <i
+                        className="fa fa-refresh fa-spin"
+                        style={{marginRight: '5px'}}
+                    />
+                )}
+                {getButtonContents(
+                    showExitInProgress,
+                    exitTime,
+                    afterExitTime,
+                    treeUri,
+                )}
             </Button>
-            <Dialog
-                className="modal-dialog redeem-dialog"
-                onClose={handleClose}
-                open={open}
-            >
-                <Box className="modal-dialog-back-button-holder">
-                    <IconButton className="back-button" onClick={handleClose}>
-                        <img src={backButtonLeftArrow} />
-                        <Typography id="caption">Back</Typography>
-                    </IconButton>
-                </Box>
-                <DialogTitle>
-                    <Typography className="modal-dialog-title">
-                        Early ZKP Redemption
-                    </Typography>
-                </DialogTitle>
-
-                <DialogContent className="modal-dialog-content-holder">
-                    <Box
-                        component="div"
-                        className="modal-dialog-content"
-                        display="inline"
-                    >
-                        <Box display="inline" className="content-body">
-                            As an Advanced Staking user, you're qualified to
-                            receive:
-                            <ol>
-                                <li>
-                                    Staking rewards (zZKP in the MASP)
-                                    <br />
-                                    that accumulate PRPs - accrued PRPs.
-                                </li>
-                                <li>
-                                    10k Panther Reward Points
-                                    <br />
-                                    that will become redeemable for zZKP upon
-                                    launch.
-                                </li>
-                            </ol>
-                            <Box>
-                                <Typography
-                                    className="warning"
-                                    display="inline"
-                                >
-                                    WARNING!
-                                </Typography>{' '}
-                                By redeeming before our v1 launch, you will
-                                still be able to claim 10k PRPs after the launch
-                                but{' '}
-                                <strong>
-                                    will lose all additional accrued rewards
-                                </strong>{' '}
-                                (see point 1).
-                            </Box>
-                        </Box>
-                    </Box>
-                </DialogContent>
-                <Box>
-                    <FormGroup className="confirm-redemption-checkbox">
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={redeemConfirmed}
-                                    onChange={handleChange}
-                                />
-                            }
-                            label={
-                                <Typography>
-                                    I understand I will lose additional{' '}
-                                    <strong> accrued </strong> PRP rewards
-                                </Typography>
-                            }
-                        />
-                    </FormGroup>
-                </Box>
-                <DialogActions
-                    className={`redeem-action ${
-                        redeemConfirmed ? 'active' : ''
-                    }`}
-                >
-                    <Button
-                        autoFocus
-                        onClick={redeem}
-                        disabled={!redeemConfirmed}
-                    >
-                        <Typography>
-                            Redeem zZKP and forfeit additional
-                            <strong> accrued </strong> PRP rewards
-                        </Typography>
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            {warningDialogShown && (
+                <RedeemRewardsWarningDialog
+                    handleClose={handleCloseWarningDialog}
+                    handleRedeemButtonClick={handleRedeemButtonClick}
+                />
+            )}
         </Box>
     );
 }

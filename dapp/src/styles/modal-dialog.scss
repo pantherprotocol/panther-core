@@ -33,6 +33,7 @@ $modal-back: #151c2a;
             text-align: center;
             color: $white;
             margin-bottom: 40px;
+            padding-bottom: 5px;
         }
     }
 
@@ -60,5 +61,15 @@ $modal-back: #151c2a;
         font-weight: 900;
         font-size: $header-font-size;
         padding: 0px 3px;
+    }
+
+    .x-icon {
+        display: flex;
+        justify-content: end;
+        opacity: 0.5;
+
+        &:hover {
+            opacity: 1;
+        }
     }
 }

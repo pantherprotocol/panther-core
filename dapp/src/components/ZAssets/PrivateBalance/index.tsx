@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useEffect} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 
 import {Box, Button, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
@@ -41,6 +41,14 @@ export default function PrivateBalance() {
     const {account, chainId, library} = context;
     const dispatch = useAppDispatch();
 
+    // We need a preliminary scan of undefined UTXOs (if any) on initial page
+    // load.  We need to keep track of whether this is in progress or complete
+    // in order not to trigger additional scans via the useEffect being
+    // triggered by any Redux dispatch during the first load.
+    const [firstUTXOscan, setFirstUTXOScan] = useState<
+        'needed' | 'in progress' | 'complete'
+    >('needed');
+
     const zkpPrice = useAppSelector(marketPriceSelector);
     const unclaimedZZKP = useAppSelector(
         totalSelector(chainId, account, StakingRewardTokenID.zZKP),
@@ -64,6 +72,7 @@ export default function PrivateBalance() {
 
     const refreshUTXOs = useCallback(
         async (trigger: WalletSignatureTrigger) => {
+            setFirstUTXOScan('in progress');
             dispatch(startWalletAction, {
                 name: 'signMessage',
                 cause: {caller: 'PrivateBalance', trigger},
@@ -78,6 +87,7 @@ export default function PrivateBalance() {
                     `Cannot sign a message: ${parseTxErrorMessage(keys)}`,
                     keys,
                 );
+                setFirstUTXOScan('needed');
                 return;
             }
             dispatch(progressToNewWalletAction, {
@@ -90,20 +100,44 @@ export default function PrivateBalance() {
             });
             dispatch(refreshUTXOsStatuses, {context, keys});
             dispatch(registerWalletActionSuccess, 'refreshUTXOsStatuses');
+            setFirstUTXOScan('complete');
         },
         [account, context, dispatch, library],
     );
 
-    const refreshIfUndefinedUTXOs = async () => {
-        if (walletActionStatus === 'in progress' || !hasUndefinedUTXOs) return;
+    const refreshIfUndefinedUTXOs = useCallback(async () => {
+        if (!account || !library) {
+            return;
+        }
+        if (walletActionStatus === 'in progress') {
+            console.debug(
+                `Wallet action already in progress; won't refresh for undefined UTXOs`,
+            );
+            return;
+        }
+        if (firstUTXOscan != 'needed') {
+            console.debug(
+                `Skipping refresh for undefined UTXOs; already ${firstUTXOscan}`,
+            );
+            return;
+        }
+        if (!hasUndefinedUTXOs) {
+            console.debug('no undefined UTXOs');
+            return;
+        }
         await refreshUTXOs('undefined UTXOs');
-    };
+    }, [
+        account,
+        library,
+        walletActionStatus,
+        hasUndefinedUTXOs,
+        refreshUTXOs,
+        firstUTXOscan,
+    ]);
 
     useEffect(() => {
         refreshIfUndefinedUTXOs();
-        // Empty dependency array as it needs to be run only once on the load
-        // eslint-disable-next-line
-    }, []);
+    }, [refreshIfUndefinedUTXOs]);
 
     const toolTip = (
         <div>

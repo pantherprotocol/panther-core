@@ -25,15 +25,13 @@ import {
     showWalletActionInProgressSelector,
     startWalletAction,
     StartWalletActionPayload,
+    WalletSignatureTrigger,
     walletActionStatusSelector,
 } from '../../../redux/slices/web3WalletLastAction';
 import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
 import {notifyError} from '../../../services/errors';
 import {deriveRootKeypairs} from '../../../services/keychain';
-import {
-    StakingRewardTokenID,
-    WalletSignatureTrigger,
-} from '../../../types/staking';
+import {StakingRewardTokenID} from '../../../types/staking';
 import SignatureRequestModal from '../../SignatureRequestModal';
 
 import './styles.scss';

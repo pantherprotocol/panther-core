@@ -1,12 +1,31 @@
 // eslint-disable-next-line import/named
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
-import {WalletActionStatus, WalletActionCause} from '../../types/staking';
 import {RootState} from '../store';
+
+export type WalletActionStatus =
+    | 'in progress'
+    | 'succeeded'
+    | 'failed'
+    | 'unknown'
+    | 'none';
+
+export type WalletSignatureTrigger =
+    | 'undefined UTXOs'
+    | 'manual refresh'
+    | 'zZKP redemption';
+
+// In the future, there may be other types of trigger
+export type WalletActionTrigger = WalletSignatureTrigger;
+
+export type Web3WalletActionCause = {
+    caller: string;
+    trigger: WalletActionTrigger;
+};
 
 export interface Web3WalletLastActionState {
     action: string; // e.g. 'signMessage'
-    cause: WalletActionCause | null;
+    cause: Web3WalletActionCause | null;
     acknowledgedByUser: boolean; // true if user has acknowledged a notification or modal dialog for this action
     data: any; // e.g. data provided to signMessage(), only useful for debugging
     status: WalletActionStatus;
@@ -22,20 +41,22 @@ const initialState: Web3WalletLastActionState = {
 
 export type StartWalletActionPayload = {
     name: string;
-    cause: WalletActionCause;
+    cause: Web3WalletActionCause;
     data: any;
 };
 
 function startAction(
     state: Web3WalletLastActionState,
     name: string,
+    cause: Web3WalletActionCause,
     data: any,
 ) {
     state.action = name;
     state.acknowledgedByUser = false;
     state.data = data;
+    state.cause = cause;
     state.status = 'in progress';
-    console.debug(`Started new web3 wallet action ${name}`, data);
+    console.debug(`Started new web3 wallet action ${name}`, cause, data);
 }
 
 export const Web3WalletLastActionSlice = createSlice({
@@ -50,7 +71,12 @@ export const Web3WalletLastActionSlice = createSlice({
                 throw new Error(
                     `Tried to start the action ${action.payload.name} while the action ${state.action} has state '${state.status}'`,
                 );
-            startAction(state, action.payload.name, action.payload.data);
+            startAction(
+                state,
+                action.payload.name,
+                action.payload.cause,
+                action.payload.data,
+            );
         },
         registerWalletActionSuccess: (state, action: PayloadAction<string>) => {
             checkActionInProgress(state.action, action.payload, 'success');
@@ -71,6 +97,7 @@ export const Web3WalletLastActionSlice = createSlice({
             startAction(
                 state,
                 action.payload.newAction.name,
+                action.payload.newAction.cause,
                 action.payload.newAction.data,
             );
         },

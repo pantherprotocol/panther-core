@@ -5,6 +5,7 @@ import {Box, Button, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 
+import attentionIcon from '../../../images/attention-triangle-icon.svg';
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
 import {parseTxErrorMessage} from '../../../lib/errors';
@@ -46,7 +47,7 @@ export default function PrivateBalance() {
     // in order not to trigger additional scans via the useEffect being
     // triggered by any Redux dispatch during the first load.
     const [firstUTXOscan, setFirstUTXOScan] = useState<
-        'needed' | 'in progress' | 'complete'
+        'needed' | 'in progress' | 'complete' | 'failed'
     >('needed');
 
     const zkpPrice = useAppSelector(marketPriceSelector);
@@ -87,7 +88,7 @@ export default function PrivateBalance() {
                     `Cannot sign a message: ${parseTxErrorMessage(keys)}`,
                     keys,
                 );
-                setFirstUTXOScan('needed');
+                setFirstUTXOScan('failed');
                 return;
             }
             dispatch(progressToNewWalletAction, {
@@ -183,7 +184,17 @@ export default function PrivateBalance() {
                     <Button
                         variant="text"
                         className={`refresh-button`}
-                        startIcon={!loading && <img src={refreshIcon} />}
+                        startIcon={
+                            !loading && (
+                                <img
+                                    src={
+                                        firstUTXOscan === 'failed'
+                                            ? attentionIcon
+                                            : refreshIcon
+                                    }
+                                />
+                            )
+                        }
                         onClick={() => refreshUTXOs('manual refresh')}
                     >
                         {loading && (

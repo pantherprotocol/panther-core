@@ -15,7 +15,6 @@ import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {removeBlur, setBlur} from '../../redux/slices/blur';
 import {
     acknowledgeByUser,
-    showWalletActionInProgressSelector,
     walletActionCauseSelector,
 } from '../../redux/slices/web3WalletLastAction';
 
@@ -23,9 +22,6 @@ import './styles.scss';
 
 const SignatureRequestModal = () => {
     const dispatch = useAppDispatch();
-    const showWalletActionInProgress = useAppSelector(
-        showWalletActionInProgressSelector,
-    );
     const cause = useAppSelector(walletActionCauseSelector);
 
     const handleClose = () => {
@@ -33,15 +29,14 @@ const SignatureRequestModal = () => {
         dispatch(acknowledgeByUser, 'signMessage');
     };
 
-    useEffect(() => {
-        dispatch(showWalletActionInProgress ? setBlur : removeBlur);
-    }, [dispatch, showWalletActionInProgress]);
+    useEffect((): (() => void) => {
+        dispatch(setBlur);
+        return () => dispatch(removeBlur);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
-        <Dialog
-            className="modal-dialog signature-request"
-            open={showWalletActionInProgress}
-        >
+        <Dialog className="modal-dialog signature-request" open={true}>
             <Box className="x-icon">
                 <Tooltip title={'Click to close Dialog box'} placement="top">
                     <IconButton onClick={handleClose}>

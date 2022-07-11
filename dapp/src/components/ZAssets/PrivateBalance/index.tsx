@@ -21,6 +21,7 @@ import {
 import {
     registerWalletActionFailure,
     registerWalletActionSuccess,
+    showWalletActionInProgressSelector,
     startWalletAction,
     StartWalletActionPayload,
     walletActionStatusSelector,
@@ -119,10 +120,13 @@ export default function PrivateBalance() {
             </p>
         </div>
     );
+    const showWalletActionInProgress = useAppSelector(
+        showWalletActionInProgressSelector,
+    );
 
     return (
         <>
-            <SignatureRequestModal />
+            {showWalletActionInProgress && <SignatureRequestModal />}
             <Box className="private-zAssets-balance-container">
                 <Box className="private-zAssets-balance">
                     <Typography className="title">

@@ -1,0 +1,19 @@
+@import '../../variables.scss';
+
+.back-button-holder {
+    align-items: flex-start;
+    width: 100%;
+
+    .back-button.MuiIconButton-root {
+        border-radius: 8px;
+        margin-top: 20px;
+        margin-left: 25px;
+
+        #caption {
+            color: $white;
+            font-weight: $semi-bold-font-weight;
+            font-size: $small-font-size;
+            padding: 2px 10px;
+        }
+    }
+}

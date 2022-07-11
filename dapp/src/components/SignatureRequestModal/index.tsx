@@ -16,9 +16,30 @@ import {removeBlur, setBlur} from '../../redux/slices/blur';
 import {
     acknowledgeByUser,
     walletActionCauseSelector,
+    WalletSignatureTrigger,
 } from '../../redux/slices/web3WalletLastAction';
 
 import './styles.scss';
+
+const getText = (
+    trigger: WalletSignatureTrigger | undefined,
+): [string, string] => {
+    switch (trigger) {
+        case 'undefined UTXOs':
+            return [
+                'Scanning Panther wallet',
+                'New zAssets have been found in your wallet. Please ',
+            ];
+        case 'zZKP redemption':
+            return ['Redeeming zZKP', 'To redeem your zZKP reward, please '];
+        case 'manual refresh':
+        default:
+            return [
+                'Refreshing Panther wallet',
+                'To refresh your wallet, please ',
+            ];
+    }
+};
 
 const SignatureRequestModal = () => {
     const dispatch = useAppDispatch();
@@ -35,6 +56,8 @@ const SignatureRequestModal = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const [title, text] = getText(cause?.trigger);
+
     return (
         <Dialog className="modal-dialog signature-request" open={true}>
             <Box className="x-icon">
@@ -46,9 +69,7 @@ const SignatureRequestModal = () => {
             </Box>
 
             <DialogTitle>
-                <Typography className="modal-dialog-title">
-                    Scanning Panther wallet
-                </Typography>
+                <Typography className="modal-dialog-title">{title}</Typography>
             </DialogTitle>
 
             <DialogContent className="modal-dialog-content-holder">
@@ -58,9 +79,7 @@ const SignatureRequestModal = () => {
                     display="inline"
                 >
                     <Box display="inline">
-                        {cause?.trigger == 'undefined UTXOs'
-                            ? 'New zAssets have been found in your wallet. Please '
-                            : 'To refresh your wallet, please '}
+                        {text}
                         sign the message to derive your Panther wallet keys,
                         which will then be used to scan the blockchain for the
                         latest data about your zAssets.

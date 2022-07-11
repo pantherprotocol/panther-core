@@ -155,13 +155,13 @@ export default function PrivateBalance() {
             </p>
         </div>
     );
-    const showWalletActionInProgress = useAppSelector(
-        showWalletActionInProgressSelector,
+    const showWalletSignatureInProgress = useAppSelector(
+        showWalletActionInProgressSelector('signMessage'),
     );
 
     return (
         <>
-            {showWalletActionInProgress && <SignatureRequestModal />}
+            {showWalletSignatureInProgress && <SignatureRequestModal />}
             <Box className="private-zAssets-balance-container">
                 <Box className="private-zAssets-balance">
                     <Typography className="title">

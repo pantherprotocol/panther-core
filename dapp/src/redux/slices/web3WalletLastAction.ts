@@ -120,9 +120,14 @@ export const Web3WalletLastActionSlice = createSlice({
 export const walletActionStatusSelector = (state: RootState) =>
     state.Web3WalletLastAction.status;
 
-export const showWalletActionInProgressSelector = (state: RootState) =>
-    state.Web3WalletLastAction.status == 'in progress' &&
-    !state.Web3WalletLastAction.acknowledgedByUser;
+export function showWalletActionInProgressSelector(
+    action: string,
+): (state: RootState) => boolean {
+    return (state: RootState) =>
+        state.Web3WalletLastAction.status == 'in progress' &&
+        state.Web3WalletLastAction.action == action &&
+        !state.Web3WalletLastAction.acknowledgedByUser;
+}
 
 export const walletActionCauseSelector = (state: RootState) =>
     state.Web3WalletLastAction.cause;

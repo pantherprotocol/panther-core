@@ -39,6 +39,7 @@ import {
     getRewardMasterContract,
     getStakingContract,
 } from '../src/services/contracts';
+import {env as servicesEnv} from '../src/services/env';
 import {Staking} from '../src/types/contracts/Staking';
 
 const APP_NAME = 'panther-core';
@@ -286,7 +287,37 @@ function checkEnvVar(
 
 type Change = [name: string, value: string];
 
-function checkEnvVars(
+function checkEnvVarsAgainstAmplify(env: Environment): void {
+    const vars = Object.keys(servicesEnv);
+    const ALLOW_MISMATCH = [
+        'FAUCET_BASE_URL',
+        'CHAIN_IDS',
+        'COMMITMENT_TREE_URL_80001',
+    ];
+    for (const name of vars) {
+        if (ALLOW_MISMATCH.includes(name)) continue;
+
+        const amplify = env[name];
+        if (amplify === undefined) continue;
+
+        const local = process.env[name];
+        if (local === undefined) continue;
+
+        if (local !== amplify) {
+            if (local.toLowerCase() === amplify.toLowerCase()) {
+                warn(
+                    `${name} is "${local}" locally but different case in Amplify: "${amplify}"`,
+                );
+            } else {
+                warn(
+                    `${name} is "${local}" locally but "${amplify}" in Amplify`,
+                );
+            }
+        }
+    }
+}
+
+function checkEnvVarsForSync(
     env: Environment,
     exitTime: number,
     terms: Terms,
@@ -358,12 +389,15 @@ async function main() {
     const appId = useAmplify && getAppId();
     const env = appId ? getAppEnvVars(appId) : getFileEnvVars(args.file);
     // console.log('env: ', env);
+    if (useAmplify) {
+        checkEnvVarsAgainstAmplify(env);
+    }
 
     await checkControllerTimes(provider, staking, terms);
 
     console.log();
 
-    const changes = checkEnvVars(env, exitTime, terms, args.write);
+    const changes = checkEnvVarsForSync(env, exitTime, terms, args.write);
     if (!args.write) {
         if (changes.length > 0) {
             const target = useAmplify ? 'amplify' : 'dotenv';

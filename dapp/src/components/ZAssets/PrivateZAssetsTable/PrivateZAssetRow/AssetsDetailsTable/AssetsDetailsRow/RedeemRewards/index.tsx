@@ -10,6 +10,7 @@ import {useAppDispatch, useAppSelector} from '../../../../../../../redux/hooks';
 import {updateUTXOStatus} from '../../../../../../../redux/slices/advancedStakesRewards';
 import {poolV0ExitTimeSelector} from '../../../../../../../redux/slices/poolV0';
 import {
+    progressToNewWalletAction,
     registerWalletActionFailure,
     registerWalletActionSuccess,
     startWalletAction,
@@ -90,13 +91,15 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
             dispatch(registerWalletActionFailure, 'signMessage');
             return;
         }
-        dispatch(registerWalletActionSuccess, 'signMessage');
-
-        dispatch(startWalletAction, {
-            name: 'exit',
-            cause: {caller: 'PrivateBalance', trigger},
-            data: {account, caller: 'redeem button'},
+        dispatch(progressToNewWalletAction, {
+            oldAction: 'signMessage',
+            newAction: {
+                name: 'exit',
+                cause: {caller: 'PrivateBalance', trigger},
+                data: {account, caller: 'redeem button'},
+            },
         });
+
         const utxoStatus = await exit(
             library,
             account as string,

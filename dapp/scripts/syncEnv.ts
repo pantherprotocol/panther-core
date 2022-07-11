@@ -39,6 +39,7 @@ import {
     getRewardMasterContract,
     getStakingContract,
 } from '../src/services/contracts';
+import {Staking} from '../src/types/contracts/Staking';
 
 const APP_NAME = 'panther-core';
 const CHAIN_ID = 80001;
@@ -103,10 +104,7 @@ type Terms = {
     lockedTill: number;
 };
 
-async function getStakingTerms(
-    provider: ethers.providers.JsonRpcProvider,
-): Promise<Terms> {
-    const staking = getStakingContract(provider, 80001);
+async function getStakingTerms(staking: Staking): Promise<Terms> {
     const ADVANCED = ethers.utils.id('advanced').slice(0, 10);
     const terms = await staking.terms(ADVANCED);
     const {allowedSince, allowedTill, lockedTill} = terms;
@@ -134,10 +132,10 @@ function reportStakingTerms(terms: Terms) {
 
 async function getControllerTimes(
     provider: ethers.providers.JsonRpcProvider,
+    staking: Staking,
 ): Promise<[number, number]> {
-    const staking = getStakingContract(provider, CHAIN_ID);
     const rewardMasterAddress = await staking.REWARD_MASTER();
-    info(`Staking contract has REWARD_MASTER at ${rewardMasterAddress}`);
+    console.log(`Staking contract has REWARD_MASTER at ${rewardMasterAddress}`);
 
     const rewardMaster = getRewardMasterContract(
         provider,
@@ -148,7 +146,7 @@ async function getControllerTimes(
         staking.address,
         '0xcc995ce8',
     );
-    info(
+    console.log(
         `RewardMaster has advisor (AdvancedStakeRewardController) at ${controllerAddress}`,
     );
     const controller = getAdvancedStakeRewardControllerContract(
@@ -222,9 +220,13 @@ function setFileEnvVars(file: string, changes: Change[]) {
 
 async function checkControllerTimes(
     provider: ethers.providers.JsonRpcProvider,
+    staking: Staking,
     terms: Terms,
 ): Promise<void> {
-    const [rewardingStart, rewardingEnd] = await getControllerTimes(provider);
+    const [rewardingStart, rewardingEnd] = await getControllerTimes(
+        provider,
+        staking,
+    );
     console.log();
 
     const {allowedSince, lockedTill} = terms;
@@ -346,7 +348,8 @@ async function main() {
 
     console.log();
 
-    const terms = await getStakingTerms(provider);
+    const staking = getStakingContract(provider, 80001);
+    const terms = await getStakingTerms(staking);
     reportStakingTerms(terms);
 
     console.log();
@@ -356,7 +359,7 @@ async function main() {
     const env = appId ? getAppEnvVars(appId) : getFileEnvVars(args.file);
     // console.log('env: ', env);
 
-    await checkControllerTimes(provider, terms);
+    await checkControllerTimes(provider, staking, terms);
 
     console.log();
 

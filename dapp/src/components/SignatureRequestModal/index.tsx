@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, ReactElement} from 'react';
 
 import {
     Box,
@@ -23,20 +23,37 @@ import './styles.scss';
 
 const getText = (
     trigger: WalletSignatureTrigger | undefined,
-): [string, string] => {
+): [string, ReactElement] => {
     switch (trigger) {
         case 'undefined UTXOs':
             return [
                 'Scanning Panther wallet',
-                'New zAssets have been found in your wallet. Please ',
+                <span key={trigger}>
+                    New zAssets have been found in your wallet. Please sign the
+                    message to derive your Panther wallet keys, which will then
+                    be used to scan the blockchain for the latest data about
+                    your zAssets.
+                </span>,
             ];
         case 'zZKP redemption':
-            return ['Redeeming zZKP', 'To redeem your zZKP reward, please '];
+            return [
+                'Redeeming zZKP',
+                <span key={trigger}>
+                    To redeem your zZKP reward, please sign the message to
+                    derive your Panther wallet keys, which will then be used to
+                    generate the reading and spending keys allowing this reward
+                    UTXO to be claimed.
+                </span>,
+            ];
         case 'manual refresh':
         default:
             return [
                 'Refreshing Panther wallet',
-                'To refresh your wallet, please ',
+                <span key={trigger || 'default'}>
+                    To refresh your wallet, please sign the message to derive
+                    your Panther wallet keys, which will then be used to scan
+                    the blockchain for the latest data about your zAssets.
+                </span>,
             ];
     }
 };
@@ -78,12 +95,7 @@ const SignatureRequestModal = () => {
                     className="modal-dialog-content"
                     display="inline"
                 >
-                    <Box display="inline">
-                        {text}
-                        sign the message to derive your Panther wallet keys,
-                        which will then be used to scan the blockchain for the
-                        latest data about your zAssets.
-                    </Box>
+                    <Box display="inline">{text}</Box>
                     <Box className="more-info">
                         This signature is totally free and does not spend any
                         gas.

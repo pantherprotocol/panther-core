@@ -19,6 +19,7 @@ import {
     refreshUTXOsStatuses,
 } from '../../../redux/slices/advancedStakesRewards';
 import {
+    progressToNewWalletAction,
     registerWalletActionFailure,
     registerWalletActionSuccess,
     showWalletActionInProgressSelector,
@@ -81,13 +82,14 @@ export default function PrivateBalance() {
                 );
                 return;
             }
-            dispatch(registerWalletActionSuccess, 'signMessage');
-
-            dispatch(startWalletAction, {
-                name: 'refreshUTXOsStatuses',
-                cause: {caller: 'PrivateBalance', trigger},
-                data: {account, caller: 'components/PrivateBalance'},
-            } as StartWalletActionPayload);
+            dispatch(progressToNewWalletAction, {
+                oldAction: 'signMessage',
+                newAction: {
+                    name: 'refreshUTXOsStatuses',
+                    cause: {caller: 'PrivateBalance', trigger},
+                    data: {account, caller: 'components/PrivateBalance'},
+                },
+            });
             dispatch(refreshUTXOsStatuses, {context, keys});
             dispatch(registerWalletActionSuccess, 'refreshUTXOsStatuses');
         },

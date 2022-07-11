@@ -26,6 +26,18 @@ export type StartWalletActionPayload = {
     data: any;
 };
 
+function startAction(
+    state: Web3WalletLastActionState,
+    name: string,
+    data: any,
+) {
+    state.action = name;
+    state.acknowledgedByUser = false;
+    state.data = data;
+    state.status = 'in progress';
+    console.debug(`Started new web3 wallet action ${name}`, data);
+}
+
 export const Web3WalletLastActionSlice = createSlice({
     name: 'Web3WalletLastAction',
     initialState,
@@ -38,14 +50,29 @@ export const Web3WalletLastActionSlice = createSlice({
                 throw new Error(
                     `Tried to start the action ${action.payload.name} while the action ${state.action} has state '${state.status}'`,
                 );
-            state.action = action.payload.name;
-            state.acknowledgedByUser = false;
-            state.data = action.payload.data;
-            state.status = 'in progress';
+            startAction(state, action.payload.name, action.payload.data);
         },
         registerWalletActionSuccess: (state, action: PayloadAction<string>) => {
             checkActionInProgress(state.action, action.payload, 'success');
             state.status = 'succeeded';
+        },
+        progressToNewWalletAction: (
+            state,
+            action: PayloadAction<{
+                oldAction: string;
+                newAction: StartWalletActionPayload;
+            }>,
+        ) => {
+            checkActionInProgress(
+                state.action,
+                action.payload.oldAction,
+                'switch',
+            );
+            startAction(
+                state,
+                action.payload.newAction.name,
+                action.payload.newAction.data,
+            );
         },
         registerWalletActionFailure: (state, action: PayloadAction<string>) => {
             checkActionInProgress(state.action, action.payload, 'failure');
@@ -76,6 +103,7 @@ export const walletActionCauseSelector = (state: RootState) =>
 export const {
     startWalletAction,
     registerWalletActionSuccess,
+    progressToNewWalletAction,
     registerWalletActionFailure,
     acknowledgeByUser,
 } = Web3WalletLastActionSlice.actions;

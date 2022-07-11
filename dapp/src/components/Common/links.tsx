@@ -7,11 +7,11 @@ import {env} from '../../services/env';
 
 export function SafeLink(props: {
     href: string;
-    children: string | ReactElement;
+    children?: string | ReactElement;
 }): ReactElement {
     return (
         <a href={props.href} target="_blank" rel="noopener noreferrer">
-            {props.children}
+            {props.children || props.href}
         </a>
     );
 }

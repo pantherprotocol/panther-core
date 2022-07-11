@@ -39,29 +39,28 @@ export default function Welcome() {
                     <Grid item xs={12} md={12}>
                         <Box>
                             <Typography className="welcome-title">
-                                Welcome to Advanced Staking (Testnet).
+                                Welcome to Panther Staking!
                             </Typography>
                             <Typography className="welcome-message">
-                                Classic Staking rewards have ended.
+                                Classic Staking rewards on Ethereum and Polygon
+                                have ended.
                             </Typography>
                             <Typography className="welcome-message">
-                                Welcome to Panther’s Advanced Staking.
+                                However you can now test Advanced Staking
+                                according to the dates shown below.
+                            </Typography>
+
+                            <Typography className="welcome-message">
+                                <strong>To get test $ZKP</strong>, use the
+                                faucet:{' '}
+                                <SafeLink href="https://faucet.pantherprotocol.io"></SafeLink>
                             </Typography>
                             <Typography className="welcome-message">
-                                You can see the dates for testing in your
-                                dashboard.
-                            </Typography>
-                            <Typography className="welcome-message">
-                                Test $ZKP faucet:{' '}
-                                <SafeLink href="https://faucet.pantherprotocol.io">
-                                    faucet.pantherprotocol.io
-                                </SafeLink>{' '}
-                            </Typography>
-                            <Typography className="welcome-message">
-                                Test feedback form:{' '}
-                                <SafeLink href=" https://docs.google.com/forms/d/e/1FAIpQLSftCbVmbosspDfFDLMwL5qfDyq4O7bRcijicZKPXLBhISUTGA/viewform">
-                                    https://bit.ly/3xI5rcN
-                                </SafeLink>
+                                <strong>
+                                    To participate in testing and earn rewards
+                                </strong>
+                                , please report bugs using the following form:{' '}
+                                <SafeLink href="https://bit.ly/3xI5rcN"></SafeLink>
                             </Typography>
                         </Box>
                     </Grid>

@@ -44,11 +44,11 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
         _generateRewards(message);
     }
 
-    function internalGetRewardLimit(
-        uint256 balance,
-        uint256 currentLimit,
-        uint256 rewarded
-    ) external pure returns (uint256) {
-        return _getRewardLimit(balance, currentLimit, rewarded);
+    function internalGetUpdatedLimit(
+        uint256 available,
+        uint96 currentLimit,
+        uint96 usedLimit
+    ) external pure returns (bool isUpdated, uint96 limit) {
+        return _getUpdatedLimit(available, currentLimit, usedLimit);
     }
 }

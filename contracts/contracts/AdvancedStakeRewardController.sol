@@ -25,7 +25,7 @@ import "./common/TransferHelper.sol";
  * receives the `getRewardAdvice` call from the `RewardMaster` contract with the `STAKE` action
  * type and the stake data (the `message`) being the call parameters.
  * On the `getRewardAdvice` call received, this contract:
- * - computes the amount of the $ZKP reward to the staker
+ * - computes the amounts of the $ZKP reward, the PRP reward, and the optional NFT reward
  * - calls `generateDeposits` of the PantherPoolV0, providing amounts/parameters of $ZKP, PRP, and
  *   optional NFT as "deposits", as well as "spending pubKeys" and "secrets" (explained below)
  * - returns the "zero reward advice" (with zero `sharesToCreate`) to the RewardMaster.
@@ -52,11 +52,10 @@ import "./common/TransferHelper.sol";
  * Staking on the Polygon.
  *
  * As a prerequisite:
- * - this contract shall be authorized as:
- * -- "RewardAdviser" with the RewardMaster on Polygon for advanced stakes
- * - this contract shall hold enough $ZKP balance to reward stakers
- * - this contract may hold enough NFT tokens to reward stakers
- * - this contract shall be granted enough $PRP balance to reward stakers
+ * - this contract shall:
+ * -- be authorized as the "RewardAdviser" with the RewardMaster on the Polygon for advanced stakes
+ * -- hold enough $ZKP and optional NFT balances to reward stakers
+ * -- be given a PRP grant of the size enough to reward stakers
  * - the Vault contract shall be approved to transfer $ZKPs and the NFT tokens from this contract
  * - the $ZKP and the NFT tokens shall be registered as zAssets on the PantherPoolV0.
  */
@@ -72,13 +71,20 @@ contract AdvancedStakeRewardController is
 {
     using TransferHelper for address;
 
-    /// @dev Total amount of $ZKPs, PRPd and NFTs (ever) rewarded and staked
+    /// @dev Total amount of $ZKPs, PRPs and NFTs (ever) rewarded and staked
     struct Totals {
         uint96 zkpRewards;
         uint96 prpRewards;
         uint24 nftRewards;
         // Accumulated amount of $ZKP (ever) staked, scaled (divided) by 1e15
         uint40 scZkpStaked;
+    }
+
+    /// @dev Maximum amounts of $ZKPs, PRPs and NFTs which may be rewarded
+    struct Limits {
+        uint96 zkpRewards;
+        uint96 prpRewards;
+        uint24 nftRewards;
     }
 
     // solhint-disable var-name-mixedcase
@@ -121,26 +127,16 @@ contract AdvancedStakeRewardController is
 
     // solhint-enable var-name-mixedcase
 
-    /// @notice Amount of $ZKPs allocated for rewards
-    uint256 public zkpRewardsLimit;
+    uint8 private _reentrancyStatus;
 
-    /// @notice Amount of PRPs allocated for rewards
-    uint128 public prpRewardsLimit;
-
-    /// @notice Amount of PRPs allocated for rewards
-    uint128 public nftRewardsLimit;
+    /// @notice Amounts of $ZKP, PRP and NFT allocated for rewards
+    Limits public limits;
 
     /// @notice Total amounts of $ZKP, PRP and NFT rewarded so far
     Totals public totals;
 
-    uint8 private _reentrancyStatus;
-
-    /// @dev Emitted when new $ZKPs are allocated to reward stakers
-    event ZkpRewardLimitUpdate(uint256 newLimit);
-    /// @dev Emitted when new $PRPs are allocated to reward stakers
-    event PrpRewardLimitUpdate(uint256 newLimit);
-    /// @dev Emitted when new NFTs are allocated to reward stakers
-    event NftRewardLimitUpdate(uint256 newLimit);
+    /// @dev Emitted when new amounts are allocated to reward stakers
+    event RewardLimitUpdated(Limits newLimits);
 
     /// @dev Emitted when the reward for a stake is generated
     event RewardGenerated(
@@ -238,82 +234,27 @@ contract AdvancedStakeRewardController is
         }
     }
 
-    /// @notice Allocate the rewards: $ZKP, $PRP and, NFT and approve Vault to transfer them
+    /// @notice Allocate rewards: $ZKP, PRP and, NFT and approve the Vault to transfer them
     /// @dev Anyone may call it.
     function prepareRewardsLimit() external {
-        // Updating the rewards limits
-        setPrpRewardsLimit();
-        setNftRewardLimit();
-        setZkpRewardsLimit();
-
-        // Approving Vault to transfer the rewards from contract
-        increaseVaultAllowance();
-    }
-
-    /// @notice Allocate the $PRP amount, which has been granted to this contract, for rewards
-    /// @dev Anyone may call it.
-    function setPrpRewardsLimit() public {
-        uint256 unusedPrps = PRP_GRANTOR.safeGetUnusedGrantAmount(
-            address(this)
-        );
-
-        uint256 limit = _getRewardLimit(
-            unusedPrps,
-            prpRewardsLimit,
-            totals.prpRewards
-        );
-
-        if (limit > 0) {
-            prpRewardsLimit = uint128(limit);
-            emit PrpRewardLimitUpdate(limit);
-        }
-    }
-
-    /// @notice Allocate the $NFT amount, which this contract holds, for rewards
-    /// @dev Anyone may call it.
-    function setNftRewardLimit() public {
-        uint256 balance = NFT_TOKEN.safeBalanceOf(address(this));
-
-        uint256 limit = _getRewardLimit(
-            balance,
-            nftRewardsLimit,
-            totals.nftRewards
-        );
-
-        if (limit > 0) {
-            nftRewardsLimit = uint128(limit);
-            emit NftRewardLimitUpdate(limit);
-        }
-    }
-
-    /// @notice Allocate the $ZKP amount, which this contract holds, for rewards
-    /// @dev Anyone may call it
-    function setZkpRewardsLimit() public {
-        // External calls here are to trusted contracts only - reentrancy guard unneeded
-
-        uint256 balance = ZKP_TOKEN.safeBalanceOf(address(this));
-
-        uint256 limit = _getRewardLimit(
-            balance,
-            zkpRewardsLimit,
-            totals.zkpRewards
-        );
-
-        if (limit > 0) {
-            zkpRewardsLimit = limit;
-            emit ZkpRewardLimitUpdate(limit);
-        }
-    }
-
-    /// @notice Approve the vault to trasfer the ZKP and NFT rewards from contract.
-    /// @dev Anyone may call it after updating the ZKP/NFT rewards limit.
-    function increaseVaultAllowance() public {
+        Limits memory _limits = limits;
+        Totals memory _totals = totals;
         address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
 
-        ZKP_TOKEN.safeApprove(vault, zkpRewardsLimit);
+        // Updating the rewards limits
+        bool isUpdated;
+        isUpdated = _updateZkpRewardsLimitAndAllowance(_limits, _totals, vault);
+        isUpdated = _updatePrpRewardsLimit(_limits, _totals) || isUpdated;
 
         if (NFT_TOKEN != address(0))
-            NFT_TOKEN.safeSetApprovalForAll(vault, true);
+            isUpdated =
+                _updateNftRewardsLimitAndAllowance(_limits, _totals, vault) ||
+                isUpdated;
+
+        if (isUpdated) {
+            limits = _limits;
+            emit RewardLimitUpdated(_limits);
+        }
     }
 
     /// @notice Withdraws unclaimed rewards or accidentally sent token from this contract
@@ -353,6 +294,7 @@ contract AdvancedStakeRewardController is
 
     // Private and internal functions follow
     // Some of them declared `internal` rather than `private` to ease testing
+
     function _generateRewards(bytes memory message) internal {
         // (stakeId and claimedAt are irrelevant)
         (
@@ -374,6 +316,7 @@ contract AdvancedStakeRewardController is
         uint256 nftTokenId = 0;
         {
             Totals memory _totals = totals;
+            Limits memory _limits = limits;
 
             // Compute amount of the $ZKP reward  and check the limit
             {
@@ -387,10 +330,11 @@ contract AdvancedStakeRewardController is
                     uint256 newTotalZkpReward = uint256(_totals.zkpRewards) +
                         zkpAmount;
                     require(
-                        zkpRewardsLimit >= newTotalZkpReward,
+                        _limits.zkpRewards >= newTotalZkpReward,
                         "ARC: too less rewards available"
                     );
-                    _totals.zkpRewards = safe96(newTotalZkpReward);
+                    // Can't exceed uint96 here due to the `require` above
+                    _totals.zkpRewards = uint96(newTotalZkpReward);
 
                     uint256 newScZkpStaked = uint256(_totals.scZkpStaked) +
                         uint256(stakeAmount) /
@@ -400,9 +344,7 @@ contract AdvancedStakeRewardController is
                 }
             }
 
-            // Grant the total just once (for all stakes), then use a part (for every stake),
-            // and finally burn unused grant amount, if it remains, in the end
-            if (_totals.prpRewards < prpRewardsLimit) {
+            if (_totals.prpRewards < _limits.prpRewards) {
                 prpAmount = PRP_REWARD_PER_STAKE;
                 // `prpAmount` values assumed to be too small to cause overflow
                 _totals.prpRewards += uint96(prpAmount);
@@ -410,7 +352,8 @@ contract AdvancedStakeRewardController is
 
             // If the NFT contract defined, mint the NFT
             if (
-                NFT_TOKEN != address(0) && _totals.nftRewards < nftRewardsLimit
+                NFT_TOKEN != address(0) &&
+                _totals.nftRewards < _limits.nftRewards
             ) {
                 nftAmount = 1;
                 _totals.nftRewards += 1;
@@ -485,20 +428,104 @@ contract AdvancedStakeRewardController is
         zkpAmount = (stakeAmount * apy * period) / 3153600000;
     }
 
-    // Calculates and returns the reward limit
-    function _getRewardLimit(
-        uint256 balance,
-        uint256 currentLimit,
-        uint256 rewarded
-    ) internal pure returns (uint256 newLimit) {
-        unchecked {
-            // impossible underflow/overflow: Limit is always greater than or equal to reward
-            uint256 remaining = currentLimit - rewarded;
+    // Allocate for rewards the entire $ZKP balance this contract holds,
+    // and update allowance for the VAULT to spend for $ZKP from the balance
+    function _updateZkpRewardsLimitAndAllowance(
+        Limits memory _limits,
+        Totals memory _totals,
+        address vault
+    ) private returns (bool isUpdated) {
+        // Reentrancy guard unneeded for the trusted contract call
+        uint256 balance = ZKP_TOKEN.safeBalanceOf(address(this));
 
-            if (balance > remaining) {
-                // impossible underflow/overflow because of if statement
-                uint256 newAllocation = balance - remaining;
-                newLimit = currentLimit + newAllocation;
+        uint96 newLimit;
+        (isUpdated, newLimit) = _getUpdatedLimit(
+            balance,
+            _limits.zkpRewards,
+            _totals.zkpRewards
+        );
+
+        if (isUpdated) {
+            _limits.zkpRewards = newLimit;
+
+            // Approve the vault to transfer tokens from this contract
+            // Reentrancy guard unneeded for the trusted contract call
+            ZKP_TOKEN.safeApprove(vault, uint256(newLimit));
+        }
+    }
+
+    // Allocate for rewards the PRP amount this contract has been granted with
+    function _updatePrpRewardsLimit(
+        Limits memory _limits,
+        Totals memory _totals
+    ) private returns (bool isUpdated) {
+        // Reentrancy guard unneeded for the trusted contract call
+        uint256 unusedPrps = PRP_GRANTOR.safeGetUnusedGrantAmount(
+            address(this)
+        );
+
+        uint96 newLimit;
+        (isUpdated, newLimit) = _getUpdatedLimit(
+            unusedPrps,
+            _limits.prpRewards,
+            _totals.prpRewards
+        );
+
+        if (isUpdated) _limits.prpRewards = newLimit;
+    }
+
+    // Allocate for rewards the entire NFT amount this contract holds,
+    // and update allowance for the VAULT to spend that NFT
+    function _updateNftRewardsLimitAndAllowance(
+        Limits memory _limits,
+        Totals memory _totals,
+        address vault
+    ) private returns (bool isUpdated) {
+        // Reentrancy guard unneeded for the trusted contract call
+        uint256 balance = NFT_TOKEN.safeBalanceOf(address(this));
+
+        uint96 newLimit;
+        (isUpdated, newLimit) = _getUpdatedLimit(
+            balance,
+            _limits.nftRewards,
+            _totals.nftRewards
+        );
+
+        if (isUpdated) {
+            bool isAllowanceToBeUpdated = _limits.nftRewards == 0;
+
+            // Overflow is unrealistic and therefore ignored
+            _limits.nftRewards = uint24(newLimit);
+
+            if (isAllowanceToBeUpdated)
+                // Approve the vault to transfer tokens from this contract
+                // Reentrancy guard unneeded for the trusted contract call
+                NFT_TOKEN.safeSetApprovalForAll(vault, true);
+        }
+    }
+
+    // Declared `internal` for testing
+    // Calculates and returns the updated reward limit
+    function _getUpdatedLimit(
+        uint256 available,
+        uint96 currentLimit,
+        uint96 usedLimit
+    ) internal pure returns (bool isUpdated, uint96 limit) {
+        uint256 unusedLimit = uint256(currentLimit) - uint256(usedLimit);
+
+        if (available == unusedLimit) return (false, currentLimit);
+
+        isUpdated = true;
+        // underflow is impossible due to `if` checks
+        unchecked {
+            if (available > unusedLimit) {
+                // new tokens for rewarding have been provided
+                uint256 newAllocation = available - unusedLimit;
+                limit = safe96(newAllocation + currentLimit);
+            } else {
+                // gracefully handle this unexpected situation
+                uint96 shortage = safe96(unusedLimit - available);
+                limit = currentLimit > shortage ? currentLimit - shortage : 0;
             }
         }
     }

@@ -3,7 +3,7 @@ import {
     mineBlock,
     revertSnapshot,
     takeSnapshot,
-} from './../lib/hardhat';
+} from '../lib/hardhat';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {ethers} from 'hardhat';
 import {assert, expect} from 'chai';
@@ -25,6 +25,9 @@ describe('AdvancedStakeRewardController', () => {
     const endApy = 40;
     const rewardedPeriod = 200;
     const advStake = '0xcc995ce8';
+    const asrControllerZkpBalance = BigNumber.from(10).pow(24);
+    const asrControllerPrpBalance = BigNumber.from(100000);
+    const asrControllerNftBalance = BigNumber.from(10);
 
     let asrController: MockAdvancedStakeRewardController;
     let zkpToken: TokenMock;
@@ -38,14 +41,9 @@ describe('AdvancedStakeRewardController', () => {
     let rewardingStart: number;
     let rewardingEnd: number;
     let prpRewardPerStake: number;
-    let asrControllerZkpBalance: BigNumber;
-    let asrControllerPrpBalance: BigNumber;
-    let asrControllerNftBalance: BigNumber;
     let snapshotId: number;
 
     before(async () => {
-        snapshotId = await takeSnapshot();
-
         start = await getBlockTimestamp();
         rewardingStart = start + 10;
         rewardingEnd = rewardingStart + rewardedPeriod;
@@ -91,10 +89,6 @@ describe('AdvancedStakeRewardController', () => {
         )) as MockAdvancedStakeRewardController;
 
         // send some zkpTokens to the AdvancedStakeRewardController contract
-        asrControllerZkpBalance = BigNumber.from(10).pow(24);
-        asrControllerPrpBalance = BigNumber.from(100000);
-        asrControllerNftBalance = BigNumber.from(10);
-
         await zkpToken
             .connect(owner)
             .transfer(asrController.address, asrControllerZkpBalance);
@@ -109,11 +103,7 @@ describe('AdvancedStakeRewardController', () => {
         );
     });
 
-    after(async function () {
-        await revertSnapshot(snapshotId);
-    });
-
-    describe('getZkpApyAt', () => {
+    describe('getZkpApyAt (public view)', () => {
         it('should return 0 if called before `rewardingStart`', async () => {
             expect(await asrController.getZkpApyAt(rewardingStart - 5)).to.eq(
                 0,
@@ -161,7 +151,7 @@ describe('AdvancedStakeRewardController', () => {
         });
     });
 
-    describe('internal _computeZkpReward', () => {
+    describe('_computeZkpReward (internal view)', () => {
         describe('for a deposit of 0 (zero $ZKPs staked)', () => {
             const stakedAmount = BigNumber.from(0);
 
@@ -422,7 +412,217 @@ describe('AdvancedStakeRewardController', () => {
         });
     });
 
-    describe('internal _generateRewards', () => {
+    describe('_getUpdatedLimit (internal pure)', () => {
+        describe('if no limits have been used so far (i.e. `usedLimit == 0`)', () => {
+            describe('when `available` equals to `currentLimit`', () => {
+                it('should return (not-updated) `currentLimit`', async () => {
+                    const {isUpdated, limit} =
+                        await asrController.internalGetUpdatedLimit(
+                            1000,
+                            1000,
+                            0,
+                        );
+
+                    expect(isUpdated).to.be.eq(false);
+                    expect(limit).to.be.eq(1000);
+                });
+            });
+
+            describe('when `available` exceeds `currentLimit`', () => {
+                it('should return (updated) `available`', async () => {
+                    const {isUpdated, limit} =
+                        await asrController.internalGetUpdatedLimit(
+                            1100,
+                            1000,
+                            0,
+                        );
+
+                    expect(isUpdated).to.be.eq(true);
+                    expect(limit).to.be.eq(1100);
+                });
+            });
+
+            describe('when `available` is less than `currentLimit`', () => {
+                it('should return (updated) `available`', async () => {
+                    const {isUpdated, limit} =
+                        await asrController.internalGetUpdatedLimit(
+                            900,
+                            1000,
+                            0,
+                        );
+
+                    expect(isUpdated).to.be.eq(true);
+                    expect(limit).to.be.eq(900);
+                });
+            });
+
+            describe('when `available` is zero while `currentLimit` is non-zero', () => {
+                it('should return (updated) zero', async () => {
+                    const {isUpdated, limit} =
+                        await asrController.internalGetUpdatedLimit(0, 1000, 0);
+
+                    expect(isUpdated).to.be.eq(true);
+                    expect(limit).to.be.eq(0);
+                });
+            });
+
+            describe('when both `available` and `currentLimit` are zeros', () => {
+                it('should return (non-updated) zero', async () => {
+                    const {isUpdated, limit} =
+                        await asrController.internalGetUpdatedLimit(0, 0, 0);
+
+                    expect(isUpdated).to.be.eq(false);
+                    expect(limit).to.be.eq(0);
+                });
+            });
+        });
+
+        describe('when some limits have been already used', () => {
+            describe('if `available` equals to the unused limit (i.e. `currentLimit - usedLimit`)', () => {
+                it('should return (non-updated) `currentLimit`', async () => {
+                    const {isUpdated, limit} =
+                        await asrController.internalGetUpdatedLimit(
+                            1001,
+                            2003,
+                            1002,
+                        );
+
+                    expect(isUpdated).to.be.eq(false);
+                    expect(limit).to.be.eq(2003);
+                });
+            });
+
+            describe('if `available` exceeds the unused limit', () => {
+                it('should return (updated) `currentLimit` increased by the surplus', async () => {
+                    const {isUpdated, limit} =
+                        await asrController.internalGetUpdatedLimit(
+                            1000,
+                            1000,
+                            900,
+                        );
+
+                    expect(isUpdated).to.be.eq(true);
+                    expect(limit).to.be.eq(1900);
+                });
+            });
+
+            describe('if `available` is less than the unused limit', () => {
+                describe('but `available` is still more than the shortage', () => {
+                    it('should return (updated) `currentLimit` decreased by the shortage', async () => {
+                        const {isUpdated, limit} =
+                            await asrController.internalGetUpdatedLimit(
+                                900,
+                                1000,
+                                80,
+                            );
+
+                        expect(isUpdated).to.be.eq(true);
+                        expect(limit).to.be.eq(980);
+                    });
+                });
+
+                describe('and the shortage exceeds `available`', () => {
+                    it('should return (updated) `usedLimit`', async () => {
+                        const {isUpdated, limit} =
+                            await asrController.internalGetUpdatedLimit(
+                                100,
+                                1000,
+                                810,
+                            );
+
+                        expect(isUpdated).to.be.eq(true);
+                        expect(limit).to.be.eq(910);
+                    });
+                });
+            });
+
+            describe('when `available` is zero while `currentLimit` is non-zero', () => {
+                describe('if `currentLimit` equals to `usedLimit`', () => {
+                    it('should return (non-updated) `currentLimit`', async () => {
+                        const {isUpdated, limit} =
+                            await asrController.internalGetUpdatedLimit(
+                                0,
+                                1000,
+                                1000,
+                            );
+
+                        expect(isUpdated).to.be.eq(false);
+                        expect(limit).to.be.eq(1000);
+                    });
+                });
+
+                describe('if `currentLimit` exceeds `usedLimit`', () => {
+                    it('should return (updated) `usedLimit`', async () => {
+                        const {isUpdated, limit} =
+                            await asrController.internalGetUpdatedLimit(
+                                0,
+                                1000,
+                                999,
+                            );
+
+                        expect(isUpdated).to.be.eq(true);
+                        expect(limit).to.be.eq(999);
+                    });
+                });
+            });
+
+            describe('if `usedLimit` exceeds `currentLimit`', () => {
+                it('should revert', async () => {
+                    await expect(
+                        asrController.internalGetUpdatedLimit(100, 1000, 1001),
+                    ).to.be.reverted;
+                });
+            });
+        });
+    });
+
+    describe('prepareRewardsLimit (external)', () => {
+        beforeEach(async () => {
+            snapshotId = await takeSnapshot();
+
+            // Make sure the allowance is not yet set
+            expect(
+                await zkpToken.allowance(
+                    asrController.address,
+                    fakeVaultAddress,
+                ),
+            ).to.be.eq(BigNumber.from(0));
+            assert(
+                !(await nftToken.isApprovedForAll(
+                    asrController.address,
+                    fakeVaultAddress,
+                )),
+            );
+        });
+
+        afterEach(async () => {
+            await revertSnapshot(snapshotId);
+        });
+
+        it('should approve the Vault to spend $ZKP balance', async () => {
+            await asrController.prepareRewardsLimit();
+
+            expect(
+                await zkpToken.allowance(
+                    asrController.address,
+                    fakeVaultAddress,
+                ),
+            ).to.be.eq(asrControllerZkpBalance);
+        });
+
+        it('should set the Vault as the operator for the NFT', async () => {
+            await asrController.prepareRewardsLimit();
+
+            expect(
+                await nftToken.isApprovedForAll(
+                    asrController.address,
+                    fakeVaultAddress,
+                ),
+            ).to.be.eq(true);
+        });
+    });
+
+    describe('_generateRewards (internal)', () => {
         let message: string;
         const amountToStake = ethers.utils.hexZeroPad(
             ethers.utils.parseEther('1000').toHexString(),
@@ -444,7 +644,7 @@ describe('AdvancedStakeRewardController', () => {
                 lockedTill.replace('0x', '') + // lockedTill
                 '01324649' + // claimedAt
                 data.replace('0x', '')
-            );
+            ).toLowerCase();
         }
 
         function checkTotals(
@@ -453,29 +653,37 @@ describe('AdvancedStakeRewardController', () => {
             prpRewards: BigNumberish,
             nftRewards: BigNumberish,
         ) {
-            it('should check total scaled ZKP staked', async () => {
+            it('should return expected total (scaled) amount of $ZKPs staked so far', async () => {
                 expect((await asrController.totals()).scZkpStaked).to.be.eq(
                     BigNumber.from(scZkpStaked),
                 );
             });
 
-            it('should check total rewards of ZKP', async () => {
+            it('should return expected total amount of $ZKPs rewarded so far', async () => {
                 expect((await asrController.totals()).zkpRewards).to.be.eq(
                     BigNumber.from(zkpRewards),
                 );
             });
-            it('should check total rewards of PRP', async () => {
+            it('should return expected total amount of PRPs rewarded so far', async () => {
                 expect((await asrController.totals()).prpRewards).to.be.eq(
                     prpRewards,
                 );
             });
 
-            it('should check total rewards of NFT', async () => {
+            it('should return expected total number of NFTs rewarded so far', async () => {
                 expect((await asrController.totals()).nftRewards).to.be.eq(
                     nftRewards,
                 );
             });
         }
+
+        before(async () => {
+            snapshotId = await takeSnapshot();
+        });
+
+        after(async () => {
+            await revertSnapshot(snapshotId);
+        });
 
         describe('Failure', () => {
             it('should revert when stake amount is 0', async () => {
@@ -519,7 +727,7 @@ describe('AdvancedStakeRewardController', () => {
         });
 
         describe('Generate rewards', () => {
-            before(async () => {
+            beforeEach(async () => {
                 await asrController.prepareRewardsLimit();
 
                 message = generateMessage(
@@ -532,53 +740,65 @@ describe('AdvancedStakeRewardController', () => {
                 //? note: In the above message, the stake time is reward start time and lock time is at the end of reward period. The staked amount is 1000e18 ZKP, so the ZKP reward will be (1000e18 * 0.7)  * (200 / 365 * 86400) = 4439370877727042. The scaled staked zkp for each reward is also 1000e18 / 1e15 = 1000e3
             });
 
-            it('should generate rewards for first stake', async () => {
-                await asrController.setZkpRewardsLimit();
+            describe('when called for the 1st time', () => {
+                it('should emit `RewardGenerated` event w/ expected params', async () => {
+                    await expect(asrController.internalGenerateRewards(message))
+                        .to.emit(asrController, 'RewardGenerated')
+                        .withArgs(
+                            owner.address,
+                            0,
+                            '4439370877727042',
+                            prpRewardPerStake,
+                            1,
+                        );
+                });
 
-                await expect(asrController.internalGenerateRewards(message))
-                    .to.emit(asrController, 'RewardGenerated')
-                    .withArgs(
-                        owner.address,
-                        0,
-                        '4439370877727042',
-                        prpRewardPerStake,
-                        1,
-                    );
+                checkTotals('1000000', '4439370877727042', 10000, 1);
             });
 
-            checkTotals('1000000', '4439370877727042', 10000, 1);
+            describe('when called for the 2nd time', () => {
+                it('should emit `RewardGenerated` event w/ expected params', async () => {
+                    await expect(asrController.internalGenerateRewards(message))
+                        .to.emit(asrController, 'RewardGenerated')
+                        .withArgs(
+                            owner.address,
+                            4,
+                            '4439370877727042',
+                            prpRewardPerStake,
+                            1,
+                        );
+                });
 
-            it('should generate rewards for second stake', async () => {
-                await expect(asrController.internalGenerateRewards(message))
-                    .to.emit(asrController, 'RewardGenerated')
-                    .withArgs(
-                        owner.address,
-                        4,
-                        '4439370877727042',
-                        prpRewardPerStake,
-                        1,
-                    );
+                checkTotals('2000000', '8878741755454084', 20000, 2);
             });
 
-            checkTotals('2000000', '8878741755454084', 20000, 2);
+            describe('when called for the 3rd time', () => {
+                it('should emit `RewardGenerated` event w/ expected params', async () => {
+                    await expect(asrController.internalGenerateRewards(message))
+                        .to.emit(asrController, 'RewardGenerated')
+                        .withArgs(
+                            owner.address,
+                            8,
+                            '4439370877727042',
+                            prpRewardPerStake,
+                            1,
+                        );
+                });
 
-            it('should generate rewards for third stake', async () => {
-                await expect(asrController.internalGenerateRewards(message))
-                    .to.emit(asrController, 'RewardGenerated')
-                    .withArgs(
-                        owner.address,
-                        8,
-                        '4439370877727042',
-                        prpRewardPerStake,
-                        1,
-                    );
+                checkTotals('3000000', '13318112633181126', 30000, 3);
             });
-
-            checkTotals('3000000', '13318112633181126', 30000, 3);
         });
     });
 
-    describe('getRewardAdvice', () => {
+    describe('getRewardAdvice (external)', () => {
+        beforeEach(async () => {
+            snapshotId = await takeSnapshot();
+        });
+
+        afterEach(async () => {
+            await revertSnapshot(snapshotId);
+        });
+
         describe('Failure', () => {
             it('should revert when caller is not reward master', async () => {
                 await expect(
@@ -596,7 +816,14 @@ describe('AdvancedStakeRewardController', () => {
         });
     });
 
-    describe('rescueErc20', () => {
+    describe('rescueErc20 (external)', () => {
+        beforeEach(async () => {
+            snapshotId = await takeSnapshot();
+        });
+
+        afterEach(async () => {
+            await revertSnapshot(snapshotId);
+        });
         describe('Failure', () => {
             it('should revert when called by non owner', async () => {
                 await expect(
@@ -633,58 +860,6 @@ describe('AdvancedStakeRewardController', () => {
                     initialOwnerBalance.add(1000),
                 );
             });
-        });
-    });
-
-    describe('increaseVaultAllowance', () => {
-        it('should approve the vault to spend ZKP and NFT', async () => {
-            await asrController.increaseVaultAllowance();
-
-            expect(
-                await zkpToken.allowance(
-                    asrController.address,
-                    fakeVaultAddress,
-                ),
-            ).to.be.eq(asrControllerZkpBalance);
-
-            expect(
-                await nftToken.isApprovedForAll(
-                    asrController.address,
-                    fakeVaultAddress,
-                ),
-            ).to.be.eq(true);
-        });
-    });
-
-    describe('internal _getRewardLimit', () => {
-        it('should return 0 when balance has not been spent yet', async () => {
-            const limit = await asrController.internalGetRewardLimit(
-                1000,
-                1000,
-                0,
-            );
-
-            expect(limit).to.be.eq(0);
-        });
-
-        it('should return 0 when balance has been spent but limit has not been increased', async () => {
-            const limit = await asrController.internalGetRewardLimit(
-                900,
-                1000,
-                100,
-            );
-
-            expect(limit).to.be.eq(0);
-        });
-
-        it('should return new limit when balance has been spent and limit has been increased', async () => {
-            const limit = await asrController.internalGetRewardLimit(
-                1500,
-                1000,
-                100,
-            );
-
-            expect(limit).to.be.eq(1600);
         });
     });
 });

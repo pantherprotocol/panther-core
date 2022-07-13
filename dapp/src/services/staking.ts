@@ -272,7 +272,7 @@ export async function stake(
         'Stake completed successfully',
         'Congratulations! Your staking transaction was processed!',
         'info',
-        15000,
+        10000,
     );
 
     return event?.args?.stakeID;
@@ -433,7 +433,7 @@ export async function unstake(
         'Unstaking completed successfully',
         'Congratulations! Your unstaking transaction was processed!',
         'info',
-        15000,
+        10000,
     );
 }
 

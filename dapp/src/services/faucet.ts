@@ -71,7 +71,7 @@ export async function sendFaucetTransaction(
         'Faucet sending completed successfully',
         'Congratulations! Your faucet transaction was processed!',
         'info',
-        15000,
+        10000,
     );
 
     return true;

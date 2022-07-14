@@ -1,4 +1,4 @@
-import {utils, BigNumber} from 'ethers';
+import {utils, BigNumber, constants} from 'ethers';
 import {escapeRegExp} from 'lodash';
 
 import {getDecimalSeparator} from './i18n';
@@ -29,3 +29,12 @@ export function safeParseUnits(s: string | null): BigNumber | null {
 export function bnStrToNumber(bnStr: string) {
     return BigNumber.from(bnStr).toNumber();
 }
+
+export const sumBigNumbers = (arr: any[], initialValue = constants.Zero) => {
+    const sum = arr?.reduce(
+        (total, item) => total.add(BigNumber.from(item)),
+        initialValue,
+    );
+
+    return sum;
+};

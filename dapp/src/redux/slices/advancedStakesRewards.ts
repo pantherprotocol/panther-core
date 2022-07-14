@@ -4,6 +4,7 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {poseidon} from 'circomlibjs';
 import {BigNumber, constants} from 'ethers';
 
+import {sumBigNumbers} from '../../lib/numbers';
 import {IKeypair} from '../../lib/types';
 import {getChangedUTXOsStatuses, UTXOStatusByID} from '../../services/pool';
 import {getAdvancedStakingReward} from '../../services/staking';
@@ -237,23 +238,21 @@ export function totalSelector(
         const rewards = advancedStakesRewardsSelector(chainId, address)(state);
         if (!rewards) return constants.Zero;
 
-        return (
-            Object.values(rewards)
-                // filter of spent statuses always ignores UNDEFINED Status
-                .filter((rewards: AdvancedStakeRewards) => {
-                    if (includeIfZZkpSpent) {
-                        return [UTXOStatus.SPENT, UTXOStatus.UNSPENT].includes(
-                            rewards.zZkpUTXOStatus,
-                        );
-                    } else {
-                        return UTXOStatus.UNSPENT === rewards.zZkpUTXOStatus;
-                    }
-                })
-                .map((reward: AdvancedStakeRewards) => {
-                    return reward[tid];
-                })
-                .reduce((acc: BigNumber, v) => acc.add(v), constants.Zero)
-        );
+        const rewardItems = Object.values(rewards)
+            // filter of spent statuses always ignores UNDEFINED Status
+            .filter((rewards: AdvancedStakeRewards) => {
+                if (includeIfZZkpSpent) {
+                    return [UTXOStatus.SPENT, UTXOStatus.UNSPENT].includes(
+                        rewards.zZkpUTXOStatus,
+                    );
+                } else {
+                    return UTXOStatus.UNSPENT === rewards.zZkpUTXOStatus;
+                }
+            })
+            .map((reward: AdvancedStakeRewards) => {
+                return reward[tid];
+            });
+        return sumBigNumbers(rewardItems);
     };
 }
 

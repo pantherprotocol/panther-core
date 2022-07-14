@@ -9,6 +9,7 @@ import {BigNumber, utils} from 'ethers';
 import fs from 'fs';
 import {Stake} from './staking-list';
 import {Contract} from 'ethers';
+import {sumBigNumbers} from '../../dapp/src/lib/numbers';
 
 task('unstaked:rewards', 'Output staking events data as JSON')
     .addParam(
@@ -30,7 +31,11 @@ task('unstaked:rewards', 'Output staking events data as JSON')
             stakesCreated,
             stakesClaimed,
         );
-        const totalUnstaked = sumAmount(unclaimedStakes);
+
+        const mappedItems = unclaimedStakes.map(stake => stake?.amount ?? 0);
+
+        const totalUnstaked = sumBigNumbers(mappedItems);
+
         console.log(`${unclaimedStakes.length} unstaked stakes`);
         console.log('With total:', utils.formatEther(totalUnstaked));
 
@@ -72,7 +77,9 @@ async function getContract(
 function calculateTotalRewards(groupedStakes: Stake[][]): BigNumber {
     let totalRewards = BigNumber.from(0);
     groupedStakes.forEach((stakes: Stake[]) => {
-        totalRewards = totalRewards.add(sumRewards(stakes));
+        const mappedItems = stakes.map(stake => stake?.reward ?? 0);
+
+        totalRewards = totalRewards.add(sumBigNumbers(mappedItems));
     });
 
     console.log('totalRewards:', utils.formatEther(totalRewards));
@@ -120,7 +127,10 @@ async function fetchAndUpdateRewardsWithRewardMaster(
 ): Promise<Stake[]> {
     const address = stakes[0].address;
     const reward = await rewardMaster.entitled(address);
-    const totalForAddress = sumAmount(stakes);
+
+    const mappedItems = stakes.map(stake => stake?.amount ?? 0);
+
+    const totalForAddress = sumBigNumbers(mappedItems);
     for await (const stake of stakes) {
         stake.reward = reward.mul(stake.amount).div(totalForAddress).toString();
     }
@@ -156,26 +166,14 @@ function filterUnclaimedStakes(stakesCreated: Stake[], stakesClaimed: Stake[]) {
 function readFileWithStakes(filepath: string): Stake[] {
     const stakes = JSON.parse(fs.readFileSync(filepath, 'utf8'));
     console.log(`\t${stakes.length} stakes in file ${filepath}`);
-    const total = sumAmount(stakes);
+
+    const mappedStakes = stakes.map((stake: Stake) => stake?.amount ?? 0);
+
+    const total = sumBigNumbers(mappedStakes);
+
     if (total.gt(0)) {
         const round = Math.round(Number(utils.formatEther(total)) * 100) / 100;
         console.log(`\t\twith total amount of ${round} ZKP`);
     }
     return stakes;
-}
-
-function sumAmount(stakes: Stake[]): BigNumber {
-    return stakes.reduce(
-        (a: BigNumber, s: Stake) =>
-            a.add(BigNumber.from(s?.amount ? s.amount : 0)),
-        BigNumber.from(0),
-    );
-}
-
-function sumRewards(stakes: Stake[]): BigNumber {
-    return stakes.reduce(
-        (a: BigNumber, s: Stake) =>
-            a.add(BigNumber.from(s?.reward ? s.reward : 0)),
-        BigNumber.from(0),
-    );
 }

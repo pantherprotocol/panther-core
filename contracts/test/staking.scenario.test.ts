@@ -1,4 +1,4 @@
-import {BigNumber, Contract} from 'ethers';
+import {Contract} from 'ethers';
 import chai from 'chai';
 import {ethers} from 'hardhat';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
@@ -9,9 +9,9 @@ import abiZkpToken from './assets/ZKPToken.json';
 import abiVestingPools from './assets/VestingPools.json';
 import {getScenario, Scenario} from './assets/staking.scenario.data';
 import {mineBlock, revertSnapshot, takeSnapshot} from '../lib/hardhat';
+import {sumBigNumbers} from '../../dapp/src/lib/numbers';
 
 const expect = chai.expect;
-const toBN = ethers.BigNumber.from;
 
 // bytes4(keccak256("classic"))
 const CLASSIC = '0x4ab0941a';
@@ -253,7 +253,7 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
             const {timestamp, stakedBalances} = scenario.points[pInd];
             expect(await getTime(), 'timestamp').to.be.eq(timestamp);
             expect(await zkpToken.balanceOf(staking.address)).to.be.eq(
-                arrayTotal(stakedBalances),
+                sumBigNumbers(stakedBalances),
             );
         });
 
@@ -261,7 +261,7 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
             const {timestamp, sharesBalances} = scenario.points[pInd];
             expect(await getTime(), 'timestamp').to.be.eq(timestamp);
             expect(await rewardMaster.totalShares()).to.be.eq(
-                arrayTotal(sharesBalances),
+                sumBigNumbers(sharesBalances),
             );
         });
 
@@ -269,7 +269,7 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
             const {timestamp, rewardTokenBalances} = scenario.points[pInd];
             expect(await getTime(), 'timestamp').to.be.eq(timestamp);
             expect(await zkpToken.balanceOf(rewardMaster.address)).to.be.eq(
-                arrayTotal(rewardTokenBalances),
+                sumBigNumbers(rewardTokenBalances),
             );
         });
 
@@ -283,7 +283,7 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
             const {timestamp, stakedBalances} = scenario.points[pInd];
             expect(await getTime(), 'timestamp').to.be.eq(timestamp);
             expect(await zkpToken.balanceOf(staking.address)).to.be.eq(
-                arrayTotal(stakedBalances),
+                sumBigNumbers(stakedBalances),
             );
         });
 
@@ -340,8 +340,4 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
             executeScenarios(isRewarded);
         });
     });
-
-    function arrayTotal(bigNumbers: BigNumber[]): BigNumber {
-        return bigNumbers.reduce((acc: BigNumber, v) => acc.add(v), toBN(0));
-    }
 });

@@ -71,7 +71,7 @@ const getButtonText = (
         ];
     }
     console.debug('Below minimum stake amount:', utils.formatEther(amountBN));
-    return ['Stake amount must be at least 100 ZKP', false];
+    return [`Stake amount must be at least ${minStake} ZKP`, false];
 };
 
 const StakingBtn = (props: {

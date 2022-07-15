@@ -3,11 +3,20 @@ import {useState} from 'react';
 
 import {Box, Input, InputAdornment, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber, utils} from 'ethers';
+import {utils} from 'ethers';
 
 import logo from '../../../images/panther-logo.svg';
 import {formatCurrency} from '../../../lib/format';
-import {useAppSelector} from '../../../redux/hooks';
+import {safeParseUnits} from '../../../lib/numbers';
+import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
+import {
+    calculateRewards,
+    resetRewards,
+} from '../../../redux/slices/advancedStakePredictedRewards';
+import {
+    resetStakeAmount,
+    setStakeAmount,
+} from '../../../redux/slices/stakeAmount';
 import {isStakingOpenSelector} from '../../../redux/slices/stakeTerms';
 import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
 import {currentNetwork} from '../../../services/connectors';
@@ -16,11 +25,8 @@ import {networkLogo} from '../../Common/NetworkLogo';
 
 import './styles.scss';
 
-export default function StakingInput(props: {
-    amountToStake: string | null;
-    setStakingAmount: (amount: string) => void;
-    setStakingAmountBN: (amount: BigNumber) => void;
-}) {
+export default function StakingInput(props: {amountToStake: string | null}) {
+    const dispatch = useAppDispatch();
     const context = useWeb3React();
     const {account, chainId} = context;
 
@@ -42,7 +48,15 @@ export default function StakingInput(props: {
         }
         if (tokenBalance && Number(tokenBalance)) {
             const amount = e.target.value.toString();
-            props.setStakingAmount(amount);
+            const bn = safeParseUnits(amount);
+            if (bn) {
+                dispatch(setStakeAmount, amount as string);
+                dispatch(calculateRewards, bn.toString());
+            } else {
+                dispatch(resetStakeAmount);
+                dispatch(resetRewards);
+            }
+
             return true;
         } else {
             return false;
@@ -126,10 +140,11 @@ export default function StakingInput(props: {
                     className="staking-input-max"
                     onClick={() => {
                         if (tokenBalance) {
-                            props.setStakingAmountBN(tokenBalance);
-                            setInputTextLength(
-                                utils.formatEther(tokenBalance).length,
+                            dispatch(
+                                setStakeAmount,
+                                utils.formatEther(tokenBalance),
                             );
+                            dispatch(calculateRewards, tokenBalance.toString());
                         }
                     }}
                 >

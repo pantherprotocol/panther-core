@@ -6,6 +6,7 @@ import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 
 import {formatCurrency} from '../../../lib/format';
+import {safeParseUnits} from '../../../lib/numbers';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/advancedStakesRewards';
 import {getChainBalance} from '../../../redux/slices/chainBalance';
@@ -76,21 +77,19 @@ const getButtonText = (
 
 const StakingBtn = (props: {
     amountToStake: string | null;
-    amountToStakeBN: BigNumber | null;
     minStake: number | null;
     tokenBalance: BigNumber | null;
-    setStakingAmount: (amount: string) => void;
 }) => {
+    const amountToStakeBN = safeParseUnits(props.amountToStake);
     const context = useWeb3React();
     const {account, library, chainId} = context;
     const dispatch = useAppDispatch();
 
     const {
         amountToStake,
-        amountToStakeBN,
+
         minStake,
         tokenBalance,
-        setStakingAmount,
     } = props;
 
     const [buttonText, ready] = getButtonText(
@@ -156,7 +155,6 @@ const StakingBtn = (props: {
                 return;
             }
             dispatch(registerWalletActionSuccess, 'stake');
-            setStakingAmount('');
             dispatch(progressToNewWalletAction, {
                 oldAction: 'stake',
                 newAction: {
@@ -181,15 +179,7 @@ const StakingBtn = (props: {
             dispatch(getTotalUnclaimedClassicRewards, context);
             dispatch(getChainBalance, context);
         },
-        [
-            library,
-            account,
-            chainId,
-            setStakingAmount,
-            context,
-            dispatch,
-            tokenBalance,
-        ],
+        [library, account, chainId, context, dispatch, tokenBalance],
     );
 
     return (

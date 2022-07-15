@@ -1,19 +1,14 @@
-import {useCallback, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import * as React from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber, utils} from 'ethers';
 
 import StakingInfo from '../../components/StakeTab/StakingInfo';
-import {safeParseUnits} from '../../lib/numbers';
-import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {
-    calculateRewards,
-    resetRewards,
-} from '../../redux/slices/advancedStakePredictedRewards';
+import {useAppSelector} from '../../redux/hooks';
+import {stakeAmountSelector} from '../../redux/slices/stakeAmount';
 import {
     isStakingOpenSelector,
     termsSelector,
@@ -38,46 +33,13 @@ export default function StakeTab() {
     const minStake = useAppSelector(
         termsSelector(chainId, StakeType.Advanced, 'minAmountScaled'),
     );
-    const minLockPeriod = useAppSelector(
-        termsSelector(chainId, StakeType.Advanced, 'minLockPeriod'),
-    );
 
     const isAdvancedStakingOpen = useAppSelector(
         isStakingOpenSelector(chainId, StakeType.Advanced),
     );
+    const amountToStake = useAppSelector(stakeAmountSelector);
 
-    const dispatch = useAppDispatch();
     const [wrongNetwork, setWrongNetwork] = useState(false);
-    const [amountToStake, setAmountToStake] = useState<string>('');
-    const [amountToStakeBN, setAmountToStakeBN] = useState<BigNumber | null>(
-        null,
-    );
-
-    // For use when user types input
-    const setStakingAmount = useCallback(
-        (amount: string) => {
-            setAmountToStake(amount);
-            const bn = safeParseUnits(amount);
-            if (bn) {
-                setAmountToStakeBN(bn);
-                dispatch(calculateRewards, [bn.toString(), minLockPeriod]);
-            } else {
-                dispatch(resetRewards);
-            }
-        },
-        [dispatch, minLockPeriod],
-    );
-
-    // For use when user clicks Max button
-    const setStakingAmountBN = useCallback(
-        (amountBN: BigNumber) => {
-            const amount = utils.formatEther(amountBN);
-            setAmountToStake(amount);
-            setAmountToStakeBN(amountBN);
-            dispatch(calculateRewards, [amountBN.toString(), minLockPeriod]);
-        },
-        [dispatch, minLockPeriod],
-    );
 
     useEffect((): any => {
         const wrongNetwork = isWrongNetwork(context, CHAIN_IDS);
@@ -106,11 +68,7 @@ export default function StakeTab() {
         <Box className="staking-tab-holder">
             {isAdvancedStakingOpen ? (
                 <>
-                    <StakingInput
-                        setStakingAmount={setStakingAmount}
-                        setStakingAmountBN={setStakingAmountBN}
-                        amountToStake={amountToStake}
-                    />
+                    <StakingInput amountToStake={amountToStake} />
                     <Card variant="outlined" className="staking-info-card">
                         <CardContent className="staking-info-card-content">
                             <StakingInfo />
@@ -138,10 +96,8 @@ export default function StakeTab() {
             {isAdvancedStakingOpen && active && !wrongNetwork && (
                 <StakingBtn
                     amountToStake={amountToStake}
-                    amountToStakeBN={amountToStakeBN}
                     tokenBalance={tokenBalance}
                     minStake={minStake as number}
-                    setStakingAmount={setStakingAmount}
                 />
             )}
         </Box>

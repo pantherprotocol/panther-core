@@ -446,7 +446,7 @@ async function poolContractExit(
         'Withdrawal completed successfully',
         'Congratulations! Your withdrawal transaction was processed!',
         'info',
-        15000,
+        10000,
     );
 }
 

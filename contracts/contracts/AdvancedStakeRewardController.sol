@@ -8,6 +8,7 @@ import "./actions/StakingMsgProcessor.sol";
 import { PRP_VIRTUAL_CONTRACT } from "./common/Constants.sol";
 import "./interfaces/IERC721Receiver.sol";
 import "./interfaces/INftGrantor.sol";
+import "./interfaces/IPrpGrantor.sol";
 import "./interfaces/IPantherPoolV0.sol";
 import "./interfaces/IRewardAdviser.sol";
 import "./utils/Claimable.sol";
@@ -26,6 +27,8 @@ import "./common/TransferHelper.sol";
  * type and the stake data (the `message`) being the call parameters.
  * On the `getRewardAdvice` call received, this contract:
  * - computes the amounts of the $ZKP reward, the PRP reward, and the optional NFT reward
+ * - if the `NFT_TOKEN` is non-zero address, it calls `grantOneToken` on the NFT_TOKEN, and gets
+ * the `tokenId` of the minted NFT token
  * - calls `generateDeposits` of the PantherPoolV0, providing amounts/parameters of $ZKP, PRP, and
  *   optional NFT as "deposits", as well as "spending pubKeys" and "secrets" (explained below)
  * - returns the "zero reward advice" (with zero `sharesToCreate`) to the RewardMaster.
@@ -54,7 +57,8 @@ import "./common/TransferHelper.sol";
  * As a prerequisite:
  * - this contract shall:
  * -- be authorized as the "RewardAdviser" with the RewardMaster on the Polygon for advanced stakes
- * -- hold enough $ZKP and optional NFT balances to reward stakers
+ * -- be authorized as "Minter" (aka "grantor") with the NFT_TOKEN contract
+ * -- hold enough $ZKP to reward stakers
  * -- be given a PRP grant of the size enough to reward stakers
  * - the Vault contract shall be approved to transfer $ZKPs and the NFT tokens from this contract
  * - the $ZKP and the NFT tokens shall be registered as zAssets on the PantherPoolV0.
@@ -234,9 +238,37 @@ contract AdvancedStakeRewardController is
         }
     }
 
-    /// @notice Allocate rewards: $ZKP, PRP and, NFT and approve the Vault to transfer them
+    /// @notice Allocate NFT rewards and approve the Vault to transfer them
+    /// @dev Only owner may call it.
+    function setNftRewardLimit(uint256 _desiredNftRewards) external onlyOwner {
+        if (NFT_TOKEN == address(0)) return;
+
+        Totals memory _totals = totals;
+        Limits memory _limits = limits;
+
+        require(
+            _desiredNftRewards > _totals.nftRewards,
+            "ARC: low nft rewards limit"
+        );
+
+        address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
+
+        bool isUpdated = _updateNftRewardsLimitAndAllowance(
+            _desiredNftRewards,
+            _limits,
+            _totals,
+            vault
+        );
+
+        if (isUpdated) {
+            limits = _limits;
+            emit RewardLimitUpdated(_limits);
+        }
+    }
+
+    /// @notice Allocate rewards: $ZKP and PRP and approve the Vault to transfer them
     /// @dev Anyone may call it.
-    function prepareRewardsLimit() external {
+    function updateZkpAndPrpRewardsLimit() external {
         Limits memory _limits = limits;
         Totals memory _totals = totals;
         address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
@@ -245,11 +277,6 @@ contract AdvancedStakeRewardController is
         bool isUpdated;
         isUpdated = _updateZkpRewardsLimitAndAllowance(_limits, _totals, vault);
         isUpdated = _updatePrpRewardsLimit(_limits, _totals) || isUpdated;
-
-        if (NFT_TOKEN != address(0))
-            isUpdated =
-                _updateNftRewardsLimitAndAllowance(_limits, _totals, vault) ||
-                isUpdated;
 
         if (isUpdated) {
             limits = _limits;
@@ -350,11 +377,13 @@ contract AdvancedStakeRewardController is
                 _totals.prpRewards += uint96(prpAmount);
             }
 
-            // If the NFT contract defined, mint the NFT
-            if (
-                NFT_TOKEN != address(0) &&
-                _totals.nftRewards < _limits.nftRewards
-            ) {
+            // if _limits.nftRewards is greater than 0, so the NFT address has definitely been defined
+            if (_totals.nftRewards < _limits.nftRewards) {
+                // trusted contract called - no reentrancy guard needed
+                nftTokenId = INftGrantor(NFT_TOKEN).grantOneToken(
+                    address(this)
+                );
+
                 nftAmount = 1;
                 _totals.nftRewards += 1;
             }
@@ -458,9 +487,9 @@ contract AdvancedStakeRewardController is
     function _updatePrpRewardsLimit(
         Limits memory _limits,
         Totals memory _totals
-    ) private returns (bool isUpdated) {
+    ) private view returns (bool isUpdated) {
         // Reentrancy guard unneeded for the trusted contract call
-        uint256 unusedPrps = PRP_GRANTOR.safeGetUnusedGrantAmount(
+        uint256 unusedPrps = IPrpGrantor(PRP_GRANTOR).getUnusedGrantAmount(
             address(this)
         );
 
@@ -474,19 +503,17 @@ contract AdvancedStakeRewardController is
         if (isUpdated) _limits.prpRewards = newLimit;
     }
 
-    // Allocate for rewards the entire NFT amount this contract holds,
+    // Allocate for rewards the entire NFT amount this contract can mint,
     // and update allowance for the VAULT to spend that NFT
     function _updateNftRewardsLimitAndAllowance(
+        uint256 _desiredNftRewards,
         Limits memory _limits,
         Totals memory _totals,
         address vault
     ) private returns (bool isUpdated) {
-        // Reentrancy guard unneeded for the trusted contract call
-        uint256 balance = NFT_TOKEN.safeBalanceOf(address(this));
-
         uint96 newLimit;
         (isUpdated, newLimit) = _getUpdatedLimit(
-            balance,
+            _desiredNftRewards,
             _limits.nftRewards,
             _totals.nftRewards
         );

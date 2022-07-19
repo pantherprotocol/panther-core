@@ -6,19 +6,6 @@ pragma solidity ^0.8.0;
 /// @dev Helper methods for interacting with ERC20, ERC721, ERC1155 tokens and sending ETH
 /// Based on the Uniswap/solidity-lib/contracts/libraries/TransferHelper.sol
 library TransferHelper {
-    /// @dev Get the PRP balance of `grantee`
-    function safeGetUnusedGrantAmount(address prpGrantor, address grantee)
-        internal
-        returns (uint256 balance)
-    {
-        (bool success, bytes memory data) = prpGrantor.call(
-            // bytes4(keccak256(bytes('getUnusedGrantAmount(address)')));
-            abi.encodeWithSelector(0x8e698e93, grantee)
-        );
-        require(success && (data.length != 0), "ARC:E5");
-        balance = abi.decode(data, (uint256));
-    }
-
     /// @dev Approve the `operator` to spend all of ERC720 tokens on behalf of `owner`.
     function safeSetApprovalForAll(
         address token,

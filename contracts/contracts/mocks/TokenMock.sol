@@ -17,10 +17,17 @@ contract ERC721Mock is ERC721 {
     // solhint-disable-next-line no-empty-blocks
     constructor() ERC721("TEST", "TT") {}
 
-    function mint(address _to, uint256 _amount) external {
+    function mintBatch(address _to, uint256 _amount) external {
         for (uint256 i = 0; i < _amount; i++) {
             _mint(_to, _tokenId);
             _tokenId++;
         }
+    }
+
+    function grantOneToken(address _to) external returns (uint256 id) {
+        id = _tokenId;
+        _mint(_to, id);
+
+        _tokenId++;
     }
 }

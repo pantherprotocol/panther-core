@@ -27,7 +27,7 @@ describe('AdvancedStakeRewardController', () => {
     const advStake = '0xcc995ce8';
     const asrControllerZkpBalance = BigNumber.from(10).pow(24);
     const asrControllerPrpBalance = BigNumber.from(100000);
-    const asrControllerNftBalance = BigNumber.from(10);
+    const asrControllerNftRewardsLimit = BigNumber.from(10);
 
     let asrController: MockAdvancedStakeRewardController;
     let zkpToken: TokenMock;
@@ -92,10 +92,6 @@ describe('AdvancedStakeRewardController', () => {
         await zkpToken
             .connect(owner)
             .transfer(asrController.address, asrControllerZkpBalance);
-
-        await nftToken
-            .connect(owner)
-            .mint(asrController.address, asrControllerNftBalance);
 
         await prpGrantor.issueOwnerGrant(
             asrController.address,
@@ -576,7 +572,7 @@ describe('AdvancedStakeRewardController', () => {
         });
     });
 
-    describe('prepareRewardsLimit (external)', () => {
+    describe('updateZkpAndPrpRewardsLimit (external)', () => {
         beforeEach(async () => {
             snapshotId = await takeSnapshot();
 
@@ -587,6 +583,40 @@ describe('AdvancedStakeRewardController', () => {
                     fakeVaultAddress,
                 ),
             ).to.be.eq(BigNumber.from(0));
+        });
+
+        afterEach(async () => {
+            await revertSnapshot(snapshotId);
+        });
+
+        it('should update the PRP reward limits', async () => {
+            await asrController.updateZkpAndPrpRewardsLimit();
+
+            expect((await asrController.limits()).prpRewards).to.be.eq(
+                asrControllerPrpBalance,
+            );
+        });
+
+        it('should update the ZKP reward limits and approve the Vault to spend $ZKP balance', async () => {
+            await asrController.updateZkpAndPrpRewardsLimit();
+
+            expect((await asrController.limits()).zkpRewards).to.be.eq(
+                asrControllerZkpBalance,
+            );
+
+            expect(
+                await zkpToken.allowance(
+                    asrController.address,
+                    fakeVaultAddress,
+                ),
+            ).to.be.eq(asrControllerZkpBalance);
+        });
+    });
+
+    describe('setNftRewardLimit (external)', () => {
+        beforeEach(async () => {
+            snapshotId = await takeSnapshot();
+
             assert(
                 !(await nftToken.isApprovedForAll(
                     asrController.address,
@@ -599,19 +629,14 @@ describe('AdvancedStakeRewardController', () => {
             await revertSnapshot(snapshotId);
         });
 
-        it('should approve the Vault to spend $ZKP balance', async () => {
-            await asrController.prepareRewardsLimit();
+        it('should update the NFT rewards limit and set the Vault as the operator for the NFT by owner', async () => {
+            await asrController
+                .connect(owner)
+                .setNftRewardLimit(asrControllerNftRewardsLimit);
 
-            expect(
-                await zkpToken.allowance(
-                    asrController.address,
-                    fakeVaultAddress,
-                ),
-            ).to.be.eq(asrControllerZkpBalance);
-        });
-
-        it('should set the Vault as the operator for the NFT', async () => {
-            await asrController.prepareRewardsLimit();
+            expect((await asrController.limits()).nftRewards).to.be.eq(
+                asrControllerNftRewardsLimit,
+            );
 
             expect(
                 await nftToken.isApprovedForAll(
@@ -619,6 +644,18 @@ describe('AdvancedStakeRewardController', () => {
                     fakeVaultAddress,
                 ),
             ).to.be.eq(true);
+        });
+
+        it('should revert if the desired nft limit is less/equal than the current limit', async () => {
+            await expect(
+                asrController.connect(owner).setNftRewardLimit(0),
+            ).revertedWith('ARC: low nft rewards limit');
+        });
+
+        it('should revert if executed by non-owner', async () => {
+            await expect(
+                asrController.setNftRewardLimit(asrControllerNftRewardsLimit),
+            ).revertedWith('ImmOwn: unauthorized');
         });
     });
 
@@ -728,7 +765,10 @@ describe('AdvancedStakeRewardController', () => {
 
         describe('Generate rewards', () => {
             beforeEach(async () => {
-                await asrController.prepareRewardsLimit();
+                await asrController.updateZkpAndPrpRewardsLimit();
+                await asrController
+                    .connect(owner)
+                    .setNftRewardLimit(asrControllerNftRewardsLimit);
 
                 message = generateMessage(
                     owner.address,
@@ -845,7 +885,7 @@ describe('AdvancedStakeRewardController', () => {
         describe('Rescue ZKP', () => {
             it('should rescue ZKP', async () => {
                 // fast forward to forbidden period
-                await increaseTime(90 * 86400);
+                await increaseTime(90 * 86400 + 100);
                 await mineBlock();
 
                 const initialOwnerBalance = await zkpToken.balanceOf(

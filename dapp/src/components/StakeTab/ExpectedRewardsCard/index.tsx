@@ -29,7 +29,7 @@ export function ExpectedRewardsCard() {
                         ZKP Staking Reward:
                     </Typography>
                     <Typography className="amount">
-                        {zZkpBN ? formatCurrency(zZkpBN) : '-'} zZKP
+                        {zZkpBN ? formatCurrency(zZkpBN) : '0.00'} zZKP
                     </Typography>
                 </Box>
                 <Box className="expected-rewards-card-content">
@@ -41,7 +41,7 @@ export function ExpectedRewardsCard() {
                             ? formatCurrency(prpBN, {
                                   decimals: 0,
                               })
-                            : '-'}{' '}
+                            : '0.00'}{' '}
                         PRP
                     </Typography>
                 </Box>

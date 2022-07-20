@@ -2,21 +2,39 @@ import * as React from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {BigNumber, utils} from 'ethers';
+import {BigNumber} from 'ethers';
 
 import {formatCurrency} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {calculatedRewardsSelector} from '../../../redux/slices/advancedStakePredictedRewards';
+import {remainingPrpRewardsSelector} from '../../../redux/slices/remainingPrpRewards';
 import {StakingRewardTokenID} from '../../../types/staking';
 
 import './styles.scss';
+
+function expectedPrpRewards(
+    predictedRewards: string | null | undefined,
+    remainingRewards: string | null,
+): BigNumber {
+    const remainingRewardsBN = BigNumber.from(remainingRewards ?? '0');
+    const predictedRewardsBN = BigNumber.from(predictedRewards ?? '0');
+
+    return remainingRewardsBN.lt(predictedRewardsBN)
+        ? remainingRewardsBN
+        : predictedRewardsBN;
+}
 
 export function ExpectedRewardsCard() {
     const rewards = useAppSelector(calculatedRewardsSelector);
     const zZkp = rewards?.[StakingRewardTokenID.zZKP]; // string, 18 decimals
     const zZkpBN = zZkp && BigNumber.from(zZkp);
-    const prp = rewards?.[StakingRewardTokenID.PRP]; // string, no decimals
-    const prpBN = prp && utils.parseEther(prp);
+    const predictedRewards = rewards?.[StakingRewardTokenID.PRP]; // string, no decimals
+    const remainingRewards = useAppSelector(remainingPrpRewardsSelector);
+
+    const prpBN: BigNumber = expectedPrpRewards(
+        predictedRewards,
+        remainingRewards,
+    );
 
     return (
         <Box className="expected-rewards-card">
@@ -37,11 +55,10 @@ export function ExpectedRewardsCard() {
                         Privacy Reward Points:
                     </Typography>
                     <Typography className="amount">
-                        {prpBN
-                            ? formatCurrency(prpBN, {
-                                  decimals: 0,
-                              })
-                            : '0.00'}{' '}
+                        {formatCurrency(prpBN, {
+                            decimals: 0,
+                            scale: 0,
+                        })}{' '}
                         PRP
                     </Typography>
                 </Box>

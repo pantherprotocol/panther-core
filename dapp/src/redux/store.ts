@@ -17,6 +17,7 @@ import blurReducer from './slices/blur';
 import chainBalanceReducer from './slices/chainBalance';
 import firstVisitReducer from './slices/isFirstVisit';
 import poolV0Reducer from './slices/poolV0';
+import remainingPrpRewardsReducer from './slices/remainingPrpRewards';
 import stakeTermsReducer from './slices/stakeTerms';
 import totalStakedReducer from './slices/totalStaked';
 import totalUnclaimedClassicRewardsReducer from './slices/totalUnclaimedClassicRewards';
@@ -44,6 +45,7 @@ const rootReducer = combineReducers({
     totalUnclaimedClassicRewards: totalUnclaimedClassicRewardsReducer,
     firstVisit: firstVisitReducer,
     Web3WalletLastAction: Web3WalletLastActionReducer,
+    remainingPrpRewards: remainingPrpRewardsReducer,
 });
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer);

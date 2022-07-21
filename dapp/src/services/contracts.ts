@@ -10,6 +10,7 @@ import {abi as REWARD_MASTER_ABI} from '../abi/RewardMaster';
 import {abi as STAKE_REWARD_CONTROLLER_2_ABI} from '../abi/StakeRewardController2';
 import {abi as STAKES_REPORTER_ABI} from '../abi/StakesReporter';
 import {abi as STAKING_ABI} from '../abi/Staking';
+import {abi as Z_ASSETS_REGISTRY_ABI} from '../abi/ZAssetsRegistry';
 import {abi as ZKPTOKEN_ABI} from '../abi/ZKPToken';
 import {AdvancedStakeRewardController} from '../types/contracts/AdvancedStakeRewardController';
 import {RewardMaster} from '../types/contracts/RewardMaster';
@@ -30,6 +31,7 @@ export enum ContractName {
     FAUCET,
     POOL_V0,
     PRP_GRANTOR,
+    Z_ASSETS_REGISTRY,
 }
 
 export function getContractEnvVar(
@@ -89,6 +91,8 @@ export function getContractABI(
             return POOL_V0_ABI;
         case ContractName.PRP_GRANTOR:
             return PRP_GRANTOR_ABI;
+        case ContractName.Z_ASSETS_REGISTRY:
+            return Z_ASSETS_REGISTRY_ABI;
         case ContractName.STAKING_TOKEN:
             if ([1, 4, 31337].includes(chainId)) return ZKPTOKEN_ABI;
             if ([137, 80001].includes(chainId)) return PZKPTOKEN_ABI;
@@ -129,6 +133,13 @@ export function getPoolContract(library: any, chainId: number): Contract {
 
 export function getPrpGrantorContract(library: any, chainId: number): Contract {
     return getContract(ContractName.PRP_GRANTOR, library, chainId);
+}
+
+export function getZAssetsRegistryContract(
+    library: any,
+    chainId: number,
+): Contract {
+    return getContract(ContractName.Z_ASSETS_REGISTRY, library, chainId);
 }
 
 export function getStakesReporterContract(

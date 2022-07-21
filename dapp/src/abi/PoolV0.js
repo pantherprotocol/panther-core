@@ -1,125 +1,34 @@
 export const abi = [
     {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'previousOwner',
-                type: 'address',
-            },
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'newOwner',
-                type: 'address',
-            },
-        ],
-        name: 'OwnershipTransferred',
-        type: 'event',
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'previousImplementation',
-                type: 'address',
-            },
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'newImplementation',
-                type: 'address',
-            },
-        ],
-        name: 'ProxyImplementationUpdated',
-        type: 'event',
-    },
-    {
-        stateMutability: 'payable',
-        type: 'fallback',
-    },
-    {
-        inputs: [],
-        name: 'owner',
-        outputs: [
-            {
-                internalType: 'address',
-                name: '',
-                type: 'address',
-            },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'bytes4',
-                name: 'id',
-                type: 'bytes4',
-            },
-        ],
-        name: 'supportsInterface',
-        outputs: [
-            {
-                internalType: 'bool',
-                name: '',
-                type: 'bool',
-            },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-    },
-    {
         inputs: [
             {
                 internalType: 'address',
-                name: 'newOwner',
+                name: '_owner',
+                type: 'address',
+            },
+            {
+                internalType: 'uint256',
+                name: '_exitTime',
+                type: 'uint256',
+            },
+            {
+                internalType: 'address',
+                name: 'assetRegistry',
+                type: 'address',
+            },
+            {
+                internalType: 'address',
+                name: 'vault',
+                type: 'address',
+            },
+            {
+                internalType: 'address',
+                name: 'prpGrantor',
                 type: 'address',
             },
         ],
-        name: 'transferOwnership',
-        outputs: [],
         stateMutability: 'nonpayable',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'address',
-                name: 'newImplementation',
-                type: 'address',
-            },
-        ],
-        name: 'upgradeTo',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'address',
-                name: 'newImplementation',
-                type: 'address',
-            },
-            {
-                internalType: 'bytes',
-                name: 'data',
-                type: 'bytes',
-            },
-        ],
-        name: 'upgradeToAndCall',
-        outputs: [],
-        stateMutability: 'payable',
-        type: 'function',
-    },
-    {
-        stateMutability: 'payable',
-        type: 'receive',
+        type: 'constructor',
     },
     {
         anonymous: false,
@@ -145,77 +54,6 @@ export const abi = [
         inputs: [
             {
                 indexed: true,
-                internalType: 'uint160',
-                name: 'zAssetRootId',
-                type: 'uint160',
-            },
-            {
-                components: [
-                    {
-                        internalType: 'uint72',
-                        name: '_unused',
-                        type: 'uint72',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'status',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'tokenType',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'scale',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'address',
-                        name: 'token',
-                        type: 'address',
-                    },
-                ],
-                indexed: false,
-                internalType: 'struct ZAsset',
-                name: 'asset',
-                type: 'tuple',
-            },
-        ],
-        name: 'AssetAdded',
-        type: 'event',
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: 'uint160',
-                name: 'zAssetRootId',
-                type: 'uint160',
-            },
-            {
-                indexed: false,
-                internalType: 'uint8',
-                name: 'newStatus',
-                type: 'uint8',
-            },
-            {
-                indexed: false,
-                internalType: 'uint8',
-                name: 'oldStatus',
-                type: 'uint8',
-            },
-        ],
-        name: 'AssetStatusChanged',
-        type: 'event',
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
                 internalType: 'uint256',
                 name: 'treeId',
                 type: 'uint256',
@@ -228,6 +66,25 @@ export const abi = [
             },
         ],
         name: 'CachedRoot',
+        type: 'event',
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'token',
+                type: 'address',
+            },
+            {
+                indexed: false,
+                internalType: 'uint256',
+                name: 'change',
+                type: 'uint256',
+            },
+        ],
+        name: 'Change',
         type: 'event',
     },
     {
@@ -275,120 +132,13 @@ export const abi = [
         type: 'event',
     },
     {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: false,
-                internalType: 'address',
-                name: 'grantee',
-                type: 'address',
-            },
-            {
-                indexed: false,
-                internalType: 'uint256',
-                name: 'prpAmount',
-                type: 'uint256',
-            },
-        ],
-        name: 'PrpGrantBurnt',
-        type: 'event',
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: false,
-                internalType: 'address',
-                name: 'curator',
-                type: 'address',
-            },
-            {
-                indexed: false,
-                internalType: 'bytes4',
-                name: 'grantType',
-                type: 'bytes4',
-            },
-        ],
-        name: 'PrpGrantDisabled',
-        type: 'event',
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: false,
-                internalType: 'address',
-                name: 'curator',
-                type: 'address',
-            },
-            {
-                indexed: false,
-                internalType: 'bytes4',
-                name: 'grantType',
-                type: 'bytes4',
-            },
-            {
-                indexed: false,
-                internalType: 'uint256',
-                name: 'prpAmount',
-                type: 'uint256',
-            },
-        ],
-        name: 'PrpGrantEnabled',
-        type: 'event',
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: 'bytes4',
-                name: 'grantType',
-                type: 'bytes4',
-            },
-            {
-                indexed: false,
-                internalType: 'address',
-                name: 'grantee',
-                type: 'address',
-            },
-            {
-                indexed: false,
-                internalType: 'uint256',
-                name: 'prpAmount',
-                type: 'uint256',
-            },
-        ],
-        name: 'PrpGrantIssued',
-        type: 'event',
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: false,
-                internalType: 'address',
-                name: 'grantee',
-                type: 'address',
-            },
-            {
-                indexed: false,
-                internalType: 'uint256',
-                name: 'prpAmount',
-                type: 'uint256',
-            },
-        ],
-        name: 'PrpGrantUsed',
-        type: 'event',
-    },
-    {
         inputs: [],
-        name: 'exitTime',
+        name: 'ASSET_REGISTRY',
         outputs: [
             {
-                internalType: 'uint256',
+                internalType: 'address',
                 name: '',
-                type: 'uint256',
+                type: 'address',
             },
         ],
         stateMutability: 'view',
@@ -409,12 +159,12 @@ export const abi = [
     },
     {
         inputs: [],
-        name: 'PRP_ZASSET_ID',
+        name: 'PRP_GRANTOR',
         outputs: [
             {
-                internalType: 'uint160',
+                internalType: 'address',
                 name: '',
-                type: 'uint160',
+                type: 'address',
             },
         ],
         stateMutability: 'view',
@@ -431,77 +181,6 @@ export const abi = [
             },
         ],
         stateMutability: 'view',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                components: [
-                    {
-                        internalType: 'uint72',
-                        name: '_unused',
-                        type: 'uint72',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'status',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'tokenType',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'scale',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'address',
-                        name: 'token',
-                        type: 'address',
-                    },
-                ],
-                internalType: 'struct ZAsset',
-                name: 'asset',
-                type: 'tuple',
-            },
-        ],
-        name: 'addAsset',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'uint256',
-                name: 'prpAmount',
-                type: 'uint256',
-            },
-        ],
-        name: 'burnGrant',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'uint160',
-                name: 'zAssetRootId',
-                type: 'uint160',
-            },
-            {
-                internalType: 'uint8',
-                name: 'newStatus',
-                type: 'uint8',
-            },
-        ],
-        name: 'changeAssetStatus',
-        outputs: [],
-        stateMutability: 'nonpayable',
         type: 'function',
     },
     {
@@ -562,59 +241,18 @@ export const abi = [
         inputs: [
             {
                 internalType: 'address',
-                name: 'curator',
-                type: 'address',
-            },
-            {
-                internalType: 'bytes4',
-                name: 'grantType',
-                type: 'bytes4',
-            },
-        ],
-        name: 'disableGrants',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'address',
-                name: 'curator',
-                type: 'address',
-            },
-            {
-                internalType: 'bytes4',
-                name: 'grantType',
-                type: 'bytes4',
-            },
-            {
-                internalType: 'uint256',
-                name: 'prpAmount',
-                type: 'uint256',
-            },
-        ],
-        name: 'enableGrants',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'address',
                 name: 'token',
                 type: 'address',
             },
             {
                 internalType: 'uint256',
-                name: 'tokenId',
+                name: 'subId',
                 type: 'uint256',
             },
             {
-                internalType: 'uint256',
-                name: 'amount',
-                type: 'uint256',
+                internalType: 'uint96',
+                name: 'scaledAmount',
+                type: 'uint96',
             },
             {
                 internalType: 'uint32',
@@ -653,6 +291,19 @@ export const abi = [
         type: 'function',
     },
     {
+        inputs: [],
+        name: 'exitTime',
+        outputs: [
+            {
+                internalType: 'uint256',
+                name: '',
+                type: 'uint256',
+            },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+    },
+    {
         inputs: [
             {
                 internalType: 'uint256',
@@ -685,7 +336,7 @@ export const abi = [
             },
             {
                 internalType: 'uint256[3]',
-                name: 'extAmounts',
+                name: 'amounts',
                 type: 'uint256[3]',
             },
             {
@@ -730,30 +381,6 @@ export const abi = [
     {
         inputs: [
             {
-                internalType: 'address',
-                name: 'curator',
-                type: 'address',
-            },
-            {
-                internalType: 'bytes4',
-                name: 'grantType',
-                type: 'bytes4',
-            },
-        ],
-        name: 'getGrantAmount',
-        outputs: [
-            {
-                internalType: 'uint256',
-                name: 'prpAmount',
-                type: 'uint256',
-            },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
                 internalType: 'uint256',
                 name: 'leafId',
                 type: 'uint256',
@@ -787,194 +414,6 @@ export const abi = [
             },
         ],
         stateMutability: 'pure',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'address',
-                name: 'grantee',
-                type: 'address',
-            },
-        ],
-        name: 'getUnusedGrant',
-        outputs: [
-            {
-                internalType: 'uint256',
-                name: 'prpAmount',
-                type: 'uint256',
-            },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'uint160',
-                name: 'zAssetRootId',
-                type: 'uint160',
-            },
-        ],
-        name: 'getZAsset',
-        outputs: [
-            {
-                components: [
-                    {
-                        internalType: 'uint72',
-                        name: '_unused',
-                        type: 'uint72',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'status',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'tokenType',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'scale',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'address',
-                        name: 'token',
-                        type: 'address',
-                    },
-                ],
-                internalType: 'struct ZAsset',
-                name: 'asset',
-                type: 'tuple',
-            },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'address',
-                name: 'token',
-                type: 'address',
-            },
-            {
-                internalType: 'uint256',
-                name: 'tokenId',
-                type: 'uint256',
-            },
-        ],
-        name: 'getZAssetAndId',
-        outputs: [
-            {
-                components: [
-                    {
-                        internalType: 'uint72',
-                        name: '_unused',
-                        type: 'uint72',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'status',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'tokenType',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'uint8',
-                        name: 'scale',
-                        type: 'uint8',
-                    },
-                    {
-                        internalType: 'address',
-                        name: 'token',
-                        type: 'address',
-                    },
-                ],
-                internalType: 'struct ZAsset',
-                name: 'asset',
-                type: 'tuple',
-            },
-            {
-                internalType: 'uint160',
-                name: 'zAssetId',
-                type: 'uint160',
-            },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'address',
-                name: 'token',
-                type: 'address',
-            },
-            {
-                internalType: 'uint256',
-                name: 'tokenId',
-                type: 'uint256',
-            },
-        ],
-        name: 'getZAssetId',
-        outputs: [
-            {
-                internalType: 'uint160',
-                name: '',
-                type: 'uint160',
-            },
-        ],
-        stateMutability: 'pure',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'address',
-                name: 'token',
-                type: 'address',
-            },
-        ],
-        name: 'getZAssetRootId',
-        outputs: [
-            {
-                internalType: 'uint160',
-                name: '',
-                type: 'uint160',
-            },
-        ],
-        stateMutability: 'pure',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'address',
-                name: 'grantee',
-                type: 'address',
-            },
-            {
-                internalType: 'bytes4',
-                name: 'grantType',
-                type: 'bytes4',
-            },
-        ],
-        name: 'grant',
-        outputs: [
-            {
-                internalType: 'uint256',
-                name: 'prpAmount',
-                type: 'uint256',
-            },
-        ],
-        stateMutability: 'nonpayable',
         type: 'function',
     },
     {
@@ -1026,25 +465,6 @@ export const abi = [
         type: 'function',
     },
     {
-        inputs: [
-            {
-                internalType: 'uint160',
-                name: 'zAssetRootId',
-                type: 'uint160',
-            },
-        ],
-        name: 'isZAssetWhitelisted',
-        outputs: [
-            {
-                internalType: 'bool',
-                name: '',
-                type: 'bool',
-            },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-    },
-    {
         inputs: [],
         name: 'leavesNum',
         outputs: [
@@ -1061,74 +481,13 @@ export const abi = [
         inputs: [
             {
                 internalType: 'uint256',
-                name: 'amount',
-                type: 'uint256',
-            },
-            {
-                internalType: 'uint8',
-                name: 'scale',
-                type: 'uint8',
-            },
-        ],
-        name: 'scaleAmount',
-        outputs: [
-            {
-                internalType: 'uint96',
-                name: 'scaledAmount',
-                type: 'uint96',
-            },
-        ],
-        stateMutability: 'pure',
-        type: 'function',
-    },
-    {
-        inputs: [],
-        name: 'totalPrpGranted',
-        outputs: [
-            {
-                internalType: 'uint256',
-                name: '',
+                name: 'newExitTime',
                 type: 'uint256',
             },
         ],
-        stateMutability: 'view',
-        type: 'function',
-    },
-    {
-        inputs: [],
-        name: 'totalUsedPrpGrants',
-        outputs: [
-            {
-                internalType: 'uint256',
-                name: '',
-                type: 'uint256',
-            },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'uint96',
-                name: 'scaledAmount',
-                type: 'uint96',
-            },
-            {
-                internalType: 'uint8',
-                name: 'scale',
-                type: 'uint8',
-            },
-        ],
-        name: 'unscaleAmount',
-        outputs: [
-            {
-                internalType: 'uint256',
-                name: 'amount',
-                type: 'uint256',
-            },
-        ],
-        stateMutability: 'pure',
+        name: 'updateExitTime',
+        outputs: [],
+        stateMutability: 'nonpayable',
         type: 'function',
     },
     {
@@ -1163,26 +522,5 @@ export const abi = [
         outputs: [],
         stateMutability: 'pure',
         type: 'function',
-    },
-    {
-        inputs: [
-            {
-                internalType: 'address',
-                name: 'implementationAddress',
-                type: 'address',
-            },
-            {
-                internalType: 'address',
-                name: 'ownerAddress',
-                type: 'address',
-            },
-            {
-                internalType: 'bytes',
-                name: 'data',
-                type: 'bytes',
-            },
-        ],
-        stateMutability: 'payable',
-        type: 'constructor',
     },
 ];

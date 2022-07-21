@@ -40,10 +40,6 @@ export default function StakingInfo() {
         termsSelector(chainId!, stakeType, 'allowedTill'),
     );
 
-    const lockedTill = useAppSelector(
-        termsSelector(chainId!, stakeType, 'lockedTill'),
-    );
-
     const minLockPeriod = useAppSelector(
         termsSelector(chainId!, stakeType, 'minLockPeriod'),
     );
@@ -66,15 +62,19 @@ export default function StakingInfo() {
                 subtitle += isAdvancedStakingOpen ? '!' : ' soon!';
             }
         }
+
         const allowedTillDate =
             allowedTill && formatTime(Number(allowedTill) * 1000);
         const body = (
             <Typography>
                 Advanced Staking will{' '}
                 {allowedTill && `be open until ${allowedTillDate} and will `}
-                lock your tokens{' '}
-                {lockedTill &&
-                    `until ${formatTime(Number(lockedTill) * 1000)} and `}
+                lock your tokens
+                {minLockPeriod && minLockPeriod > 0
+                    ? ` for ${Math.floor(
+                          (minLockPeriod as number) / 3600 / 24,
+                      )} days and `
+                    : ', and '}
                 create zZKP as rewards in the Multi-Asset Shielded Pool (MASP).
                 By staking your ZKP, you become one of the first people to
                 create zAssets and contribute to bootstrapping and testing of
@@ -83,7 +83,7 @@ export default function StakingInfo() {
         );
 
         return {subtitle, body};
-    }, [isAdvancedStakingOpen, allowedSince, allowedTill, lockedTill]);
+    }, [isAdvancedStakingOpen, allowedSince, allowedTill, minLockPeriod]);
 
     const getAdvancedStakingClosedText = useCallback((): {
         subtitle: string;
@@ -102,10 +102,12 @@ export default function StakingInfo() {
                         contracts.
                     </Typography>
                     <p>
-                        Advanced stakes are locked until{' '}
-                        {lockedTill
-                            ? formatTime(Number(lockedTill) * 1000)
-                            : 'the end of the program'}
+                        Advanced stakes are locked
+                        {minLockPeriod && minLockPeriod > 0
+                            ? ` for ${Math.floor(
+                                  (minLockPeriod as number) / 3600 / 24,
+                              )} days`
+                            : ' until the fixed date defined for each stake'}
                         ; however classic stakes can be unstaked{' '}
                         <SafeMuiLink
                             href="https://docs.pantherprotocol.io/dao/support/faq/staking#when-unstake"
@@ -120,7 +122,7 @@ export default function StakingInfo() {
                 </>
             ),
         };
-    }, [allowedTill, lockedTill]);
+    }, [allowedTill, minLockPeriod]);
 
     const getClassicStakingClosedText = useCallback((): {
         subtitle: string;

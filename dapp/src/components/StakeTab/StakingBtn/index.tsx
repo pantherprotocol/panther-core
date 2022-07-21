@@ -3,6 +3,8 @@ import * as React from 'react';
 import {Box, Button} from '@mui/material';
 import {BigNumber, utils} from 'ethers';
 
+import {formatCurrency} from '../../../lib/format';
+
 import './styles.scss';
 
 const getButtonText = (
@@ -41,7 +43,10 @@ const getButtonText = (
         // to make sure we display the same amount which is visible in the
         // staking amount field, and this is not guaranteed to be the same
         // due to rounding discrepancies, e.g. if Max button is clicked.
-        return [`STAKE ${amount} ZKP`, true];
+        return [
+            `STAKE ${amountBN ? formatCurrency(amountBN) : '0.00'} ZKP`,
+            true,
+        ];
     }
     console.debug('Below minimum stake amount:', utils.formatEther(amountBN));
     return ['Stake amount must be at least 100 ZKP', false];

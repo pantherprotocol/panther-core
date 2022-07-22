@@ -24,6 +24,7 @@ describe('AdvancedStakeRewardController', () => {
     const startApy = 70;
     const endApy = 40;
     const rewardedPeriod = 200;
+    const prpRewardPerStake = 10000;
     const advStake = '0xcc995ce8';
     const asrControllerZkpBalance = BigNumber.from(10).pow(24);
     const asrControllerPrpBalance = BigNumber.from(100000);
@@ -40,7 +41,6 @@ describe('AdvancedStakeRewardController', () => {
     let exitTime: number;
     let rewardingStart: number;
     let rewardingEnd: number;
-    let prpRewardPerStake: number;
     let snapshotId: number;
 
     before(async () => {
@@ -69,8 +69,6 @@ describe('AdvancedStakeRewardController', () => {
             'FakePrpGrantor',
         );
         prpGrantor = (await FakePrpGrantor.deploy()) as FakePrpGrantor;
-
-        prpRewardPerStake = 10000;
 
         const MockAdvancedStakeRewardController =
             await ethers.getContractFactory(
@@ -629,33 +627,62 @@ describe('AdvancedStakeRewardController', () => {
             await revertSnapshot(snapshotId);
         });
 
-        it('should update the NFT rewards limit and set the Vault as the operator for the NFT by owner', async () => {
-            await asrController
-                .connect(owner)
-                .setNftRewardLimit(asrControllerNftRewardsLimit);
+        describe('if called by the owner', () => {
+            it('should update the NFT rewards limit and set the Vault as the operator', async () => {
+                await asrController
+                    .connect(owner)
+                    .setNftRewardLimit(asrControllerNftRewardsLimit);
 
-            expect((await asrController.limits()).nftRewards).to.be.eq(
-                asrControllerNftRewardsLimit,
-            );
+                expect((await asrController.limits()).nftRewards).to.be.eq(
+                    asrControllerNftRewardsLimit,
+                );
 
-            expect(
-                await nftToken.isApprovedForAll(
-                    asrController.address,
-                    fakeVaultAddress,
-                ),
-            ).to.be.eq(true);
+                expect(
+                    await nftToken.isApprovedForAll(
+                        asrController.address,
+                        fakeVaultAddress,
+                    ),
+                ).to.be.eq(true);
+            });
+
+            it('should revert if the desired nft limit is zero', async () => {
+                await expect(
+                    asrController.connect(owner).setNftRewardLimit(0),
+                ).revertedWith('ARC: low nft rewards limit');
+            });
+
+            describe('if desired limit is less or equal to the amount of already rewarded NFTs', () => {
+                beforeEach(async () => {
+                    await asrController.connect(owner).setNftRewardLimit(3000);
+
+                    await asrController.fakeTotals({
+                        zkpRewards: 1e15,
+                        prpRewards: 1e5,
+                        nftRewards: 3323,
+                        scZkpStaked: 1000,
+                    });
+                });
+
+                it('should revert', async () => {
+                    await expect(
+                        asrController.connect(owner).setNftRewardLimit(3322),
+                    ).revertedWith('ARC: low nft rewards limit');
+
+                    await expect(
+                        asrController.connect(owner).setNftRewardLimit(3323),
+                    ).revertedWith('ARC: low nft rewards limit');
+                });
+            });
         });
 
-        it('should revert if the desired nft limit is less/equal than the current limit', async () => {
-            await expect(
-                asrController.connect(owner).setNftRewardLimit(0),
-            ).revertedWith('ARC: low nft rewards limit');
-        });
-
-        it('should revert if executed by non-owner', async () => {
-            await expect(
-                asrController.setNftRewardLimit(asrControllerNftRewardsLimit),
-            ).revertedWith('ImmOwn: unauthorized');
+        describe('if called by non-owner', () => {
+            it('should revert', async () => {
+                await expect(
+                    asrController.setNftRewardLimit(
+                        asrControllerNftRewardsLimit,
+                    ),
+                ).revertedWith('ImmOwn: unauthorized');
+            });
         });
     });
 
@@ -764,6 +791,11 @@ describe('AdvancedStakeRewardController', () => {
         });
 
         describe('Generate rewards', () => {
+            // amountToStake * startApy *  rewardedPeriod / 100 / 365 / 86400
+            const expectedZkpReward = 4439370877727042;
+            // 1000e18 / 1e15
+            const expectedScZkpStaked = 1000e3;
+
             beforeEach(async () => {
                 await asrController.updateZkpAndPrpRewardsLimit();
                 await asrController
@@ -776,8 +808,6 @@ describe('AdvancedStakeRewardController', () => {
                     ethers.utils.hexValue(rewardingStart),
                     ethers.utils.hexValue(rewardingEnd),
                 );
-
-                //? note: In the above message, the stake time is reward start time and lock time is at the end of reward period. The staked amount is 1000e18 ZKP, so the ZKP reward will be (1000e18 * 0.7)  * (200 / 365 * 86400) = 4439370877727042. The scaled staked zkp for each reward is also 1000e18 / 1e15 = 1000e3
             });
 
             describe('when called for the 1st time', () => {
@@ -787,13 +817,18 @@ describe('AdvancedStakeRewardController', () => {
                         .withArgs(
                             owner.address,
                             0,
-                            '4439370877727042',
+                            expectedZkpReward,
                             prpRewardPerStake,
                             1,
                         );
                 });
 
-                checkTotals('1000000', '4439370877727042', 10000, 1);
+                checkTotals(
+                    expectedScZkpStaked,
+                    expectedZkpReward,
+                    prpRewardPerStake,
+                    1,
+                );
             });
 
             describe('when called for the 2nd time', () => {
@@ -803,13 +838,18 @@ describe('AdvancedStakeRewardController', () => {
                         .withArgs(
                             owner.address,
                             4,
-                            '4439370877727042',
+                            expectedZkpReward,
                             prpRewardPerStake,
                             1,
                         );
                 });
 
-                checkTotals('2000000', '8878741755454084', 20000, 2);
+                checkTotals(
+                    expectedScZkpStaked * 2,
+                    expectedZkpReward * 2,
+                    prpRewardPerStake * 2,
+                    2,
+                );
             });
 
             describe('when called for the 3rd time', () => {
@@ -819,13 +859,18 @@ describe('AdvancedStakeRewardController', () => {
                         .withArgs(
                             owner.address,
                             8,
-                            '4439370877727042',
+                            expectedZkpReward,
                             prpRewardPerStake,
                             1,
                         );
                 });
 
-                checkTotals('3000000', '13318112633181126', 30000, 3);
+                checkTotals(
+                    expectedScZkpStaked * 3,
+                    BigNumber.from(expectedZkpReward).mul(3).toString(),
+                    prpRewardPerStake * 3,
+                    3,
+                );
             });
         });
     });

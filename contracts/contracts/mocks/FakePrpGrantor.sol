@@ -2,9 +2,9 @@
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.4;
 
-/// @dev It simulates (but not precisely!!!) `IPrpGrantor`. See an example bellow.
+/// @dev It simulates (but not precisely!!!) `IPrpGrantor`.
 contract FakePrpGrantor {
-    /// @dev mapping from "grantee" to the PRP amount that may be "used"
+    // mapping from "grantee" to the PRP amount that may be "used"
     mapping(address => uint256) private _unusedPrpGrants;
 
     function getUnusedGrantAmount(address grantee)

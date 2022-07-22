@@ -240,21 +240,24 @@ contract AdvancedStakeRewardController is
 
     /// @notice Allocate NFT rewards and approve the Vault to transfer them
     /// @dev Only owner may call it.
-    function setNftRewardLimit(uint256 _desiredNftRewards) external onlyOwner {
+    function setNftRewardLimit(uint256 _desiredNftRewardsLimit)
+        external
+        onlyOwner
+    {
         if (NFT_TOKEN == address(0)) return;
 
         Totals memory _totals = totals;
         Limits memory _limits = limits;
 
         require(
-            _desiredNftRewards > _totals.nftRewards,
+            _desiredNftRewardsLimit > _totals.nftRewards,
             "ARC: low nft rewards limit"
         );
 
         address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
 
         bool isUpdated = _updateNftRewardsLimitAndAllowance(
-            _desiredNftRewards,
+            _desiredNftRewardsLimit,
             _limits,
             _totals,
             vault
@@ -266,7 +269,8 @@ contract AdvancedStakeRewardController is
         }
     }
 
-    /// @notice Allocate rewards: $ZKP and PRP and approve the Vault to transfer them
+    /// @notice Allocate for rewards the entire $ZKP balance and the PRP grant amount
+    /// this contract has and approve the Vault to transfer $ZKP from this contract.
     /// @dev Anyone may call it.
     function updateZkpAndPrpRewardsLimit() external {
         Limits memory _limits = limits;
@@ -377,8 +381,8 @@ contract AdvancedStakeRewardController is
                 _totals.prpRewards += uint96(prpAmount);
             }
 
-            // if _limits.nftRewards is greater than 0, so the NFT address has definitely been defined
             if (_totals.nftRewards < _limits.nftRewards) {
+                // `_limits.nftRewards > 0` therefore `NFT_TOKEN != address(0)`
                 // trusted contract called - no reentrancy guard needed
                 nftTokenId = INftGrantor(NFT_TOKEN).grantOneToken(
                     address(this)
@@ -405,7 +409,7 @@ contract AdvancedStakeRewardController is
             nftAmount == 0 ? address(0) : NFT_TOKEN
         ];
 
-        uint256[OUT_UTXOs] memory tokenIds = [0, 0, nftTokenId];
+        uint256[OUT_UTXOs] memory subIds = [0, 0, nftTokenId];
         uint256[OUT_UTXOs] memory extAmounts = [
             zkpAmount,
             prpAmount,
@@ -415,7 +419,7 @@ contract AdvancedStakeRewardController is
         uint32 createdAt = safe32TimeNow();
         uint256 leftLeafId = IPantherPoolV0(PANTHER_POOL).generateDeposits(
             tokens,
-            tokenIds,
+            subIds,
             extAmounts,
             pubSpendingKeys,
             secrets,
@@ -506,14 +510,14 @@ contract AdvancedStakeRewardController is
     // Allocate for rewards the entire NFT amount this contract can mint,
     // and update allowance for the VAULT to spend that NFT
     function _updateNftRewardsLimitAndAllowance(
-        uint256 _desiredNftRewards,
+        uint256 _desiredNftRewardsLimit,
         Limits memory _limits,
         Totals memory _totals,
         address vault
     ) private returns (bool isUpdated) {
         uint96 newLimit;
         (isUpdated, newLimit) = _getUpdatedLimit(
-            _desiredNftRewards,
+            _desiredNftRewardsLimit,
             _limits.nftRewards,
             _totals.nftRewards
         );

@@ -51,4 +51,8 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
     ) external pure returns (bool isUpdated, uint96 limit) {
         return _getUpdatedLimit(available, currentLimit, usedLimit);
     }
+
+    function fakeTotals(Totals memory _totals) external {
+        totals = _totals;
+    }
 }

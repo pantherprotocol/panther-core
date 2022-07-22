@@ -8,6 +8,12 @@ import {
     StakingRewardTokenID,
 } from '../types/staking';
 
+import {
+    ContractName,
+    getContractAddress,
+    getPrpGrantorContract,
+    getSignableContract,
+} from './contracts';
 import {CLASSIC_TYPE_HEX, ADVANCED_TYPE_HEX} from './staking';
 
 /* Constants are described in Advanced Staking Rewards document:
@@ -161,4 +167,33 @@ export function isClassic(
     rewards: StakeRewardBN,
 ): rewards is ClassicStakeRewardBN {
     return rewards instanceof BigNumber;
+}
+
+export async function poolContractGetUnusedGrantAmount(
+    library: any,
+    account: string,
+    chainId: number,
+): Promise<BigNumber | null> {
+    const {contract: PrpGrantor} = getSignableContract(
+        library,
+        chainId,
+        account,
+        getPrpGrantorContract,
+    );
+    const advancedStakeRewardControllerAddress = getContractAddress(
+        ContractName.ADVANCED_STAKE_REWARD_CONTROLLER,
+
+        chainId,
+    );
+    try {
+        return await PrpGrantor.getUnusedGrantAmount(
+            advancedStakeRewardControllerAddress,
+        );
+    } catch (err) {
+        console.error(
+            `Failed to get unused grant amount from PrpGrantor. ${err}`,
+        );
+
+        return null;
+    }
 }

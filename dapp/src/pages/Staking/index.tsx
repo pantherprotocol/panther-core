@@ -15,6 +15,7 @@ import background from '../../images/background-adv.png';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
 import {firstVisitSelector} from '../../redux/slices/isFirstVisit';
+import {getRemainingPrpRewards} from '../../redux/slices/remainingPrpRewards';
 import {getStakeTerms} from '../../redux/slices/stakeTerms';
 import {getTotalStaked} from '../../redux/slices/totalStaked';
 import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
@@ -38,6 +39,7 @@ const Staking = (): React.ReactElement => {
         dispatch(getTotalUnclaimedClassicRewards, context);
         dispatch(getAdvancedStakesRewards, context);
         dispatch(getStakeTerms, context);
+        dispatch(getRemainingPrpRewards, context);
     }, [context, dispatch]);
 
     const firstVisit = useAppSelector(firstVisitSelector);

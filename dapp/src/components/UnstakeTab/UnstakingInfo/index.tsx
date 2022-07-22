@@ -4,7 +4,6 @@ import {Box, Card, CardContent, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {Link} from 'react-router-dom';
 
-import {formatTime} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {termsSelector} from '../../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
@@ -17,9 +16,6 @@ export default function UnstakingInfo() {
 
     const minLockPeriod = useAppSelector(
         termsSelector(chainId!, StakeType.Classic, 'minLockPeriod'),
-    );
-    const lockedTill = useAppSelector(
-        termsSelector(chainId!, StakeType.Advanced, 'lockedTill'),
     );
 
     if (chainId === 1 && !chainHasAdvancedStaking(chainId)) {
@@ -77,17 +73,18 @@ export default function UnstakingInfo() {
                     variant="subtitle2"
                     className="unstaking-info-title"
                 >
-                    {subtitle(
-                        lockedTill && typeof lockedTill === 'number'
-                            ? Number(lockedTill)
-                            : null,
-                    )}
+                    Advanced Unstaking
                 </Typography>
                 <Typography className="unstaking-info-text">
                     <span>
-                        Advanced Staking locks $ZKP until this fixed date. The
-                        rewards are created as zZKP and PRP which can be seen on
-                        the{' '}
+                        Advanced Staking locks $ZKP
+                        {minLockPeriod && minLockPeriod > 0
+                            ? ` for ${Math.floor(
+                                  (minLockPeriod as number) / 3600 / 24,
+                              )} days`
+                            : ' until the fixed date defined for each stake'}
+                        . The rewards are created as zZKP and PRP which can be
+                        seen on the{' '}
                     </span>
                     <Link className="unstaking-info-link" to={'/zAssets'}>
                         zAsset page
@@ -97,20 +94,4 @@ export default function UnstakingInfo() {
             </CardContent>
         </Card>
     );
-}
-
-function subtitle(lockedTill: number | null): string {
-    if (lockedTill === null) return 'Advanced Unstaking';
-
-    const lockedTillDate = formatTime(Number(lockedTill) * 1000 - 1);
-
-    if (Date.now() / 1000 < lockedTill) {
-        return `Unstaking will open on ${lockedTillDate}`;
-    }
-
-    if (lockedTill < Date.now() / 1000) {
-        return `Unstaking is open since ${lockedTillDate}`;
-    }
-
-    return 'Advanced Unstaking';
 }

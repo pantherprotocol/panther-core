@@ -13,8 +13,10 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
         address zkpToken,
         address nftToken,
         uint32 prpRewardPerStake,
-        uint32 rewardingStart,
-        uint32 rewardedPeriod
+        uint32 rewardingStartTime,
+        uint32 rewardingEndTime,
+        uint8 rewardingStartApy,
+        uint8 rewardingEndApy
     )
         AdvancedStakeRewardController(
             _owner,
@@ -24,8 +26,10 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
             zkpToken,
             nftToken,
             prpRewardPerStake,
-            rewardingStart,
-            rewardedPeriod
+            rewardingStartTime,
+            rewardingEndTime,
+            rewardingStartApy,
+            rewardingEndApy
         )
     // solhint-disable-next-line no-empty-blocks
     {

@@ -66,6 +66,10 @@ export function chainHasStakesReporter(chainId: number): boolean {
     return hasContract(ContractName.STAKES_REPORTER, chainId);
 }
 
+export function chainHasPoolContract(chainId: number): boolean {
+    return hasContract(ContractName.POOL_V0, chainId);
+}
+
 export function chainHasAdvancedStaking(chainId?: number): boolean {
     return env[`HAS_ADVANCED_STAKING_${chainId}`] === 'true';
 }

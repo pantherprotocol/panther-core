@@ -11,7 +11,7 @@ import {totalUnclaimedClassicRewardsSelector} from '../../redux/slices/totalUncl
 import {marketPriceSelector} from '../../redux/slices/zkpMarketPrice';
 import {zkpStakedBalanceSelector} from '../../redux/slices/zkpStakedBalance';
 import {Network, supportedNetworks} from '../../services/connectors';
-import {chainHasAdvancedStaking} from '../../services/contracts';
+import {chainHasPoolContract} from '../../services/contracts';
 import {StakingRewardTokenID} from '../../types/staking';
 import AccountBalance from '../Header/AccountBalance';
 
@@ -93,7 +93,7 @@ const BalanceCard = () => {
                     amountUSD={zkpRewardsUSDValue}
                 />
 
-                {chainHasAdvancedStaking(chainId) && (
+                {chainId && chainHasPoolContract(chainId) && (
                     <AddressBalances
                         title={'Advanced Staking Reward Balance:'}
                         balance={zZkpRewardBalance}
@@ -102,7 +102,7 @@ const BalanceCard = () => {
                     />
                 )}
 
-                {chainHasAdvancedStaking(chainId) && (
+                {chainId && chainHasPoolContract(chainId) && (
                     <AddressBalances
                         title={'Privacy Reward Points Balance:'}
                         balance={prpRewardBalance}

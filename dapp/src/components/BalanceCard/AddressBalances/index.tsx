@@ -8,6 +8,7 @@ import {BigNumber, utils} from 'ethers';
 import infoIcon from '../../../images/info-icon.svg';
 import {DECIMALS} from '../../../lib/constants';
 import {formatUSD, getFormattedFractions} from '../../../lib/format';
+import ExactValueTooltip from '../../Common/ExactValueTooltip';
 
 import './styles.scss';
 
@@ -43,17 +44,24 @@ export default function AddressBalances(props: {
 
             <Box className="amount-box">
                 <Box className="balance-box">
-                    <Typography className="balance" component="div">
-                        {whole && fractional ? (
-                            <>
-                                <span>{whole}</span>
+                    <ExactValueTooltip
+                        balance={props.scale !== 0 ? balance : null}
+                    >
+                        <Typography className="balance" component="div">
+                            {whole && fractional ? (
+                                <>
+                                    <span>{whole}</span>
 
-                                <span className="substring">.{fractional}</span>
-                            </>
-                        ) : (
-                            '0.00'
-                        )}
-                    </Typography>
+                                    <span className="substring">
+                                        .{fractional}
+                                    </span>
+                                </>
+                            ) : (
+                                '0.00'
+                            )}
+                        </Typography>
+                    </ExactValueTooltip>
+
                     <Typography className="zkp-symbol">
                         {rewardsTokenSymbol}
                     </Typography>

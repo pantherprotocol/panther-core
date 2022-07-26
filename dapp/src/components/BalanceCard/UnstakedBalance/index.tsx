@@ -25,6 +25,7 @@ import {
 } from '../../../redux/slices/zkpTokenBalance';
 import {generateRootKeypairs} from '../../../services/keys';
 import {notifyError} from '../../Common/errors';
+import ExactValueTooltip from '../../Common/ExactValueTooltip';
 
 import './styles.scss';
 
@@ -120,16 +121,20 @@ export default function UnstakedBalance() {
             </Box>
 
             <Box className="amount-box">
-                <Typography component="div" className="token-balance">
-                    {whole && fractional ? (
-                        <>
-                            <span>{whole}</span>
-                            <span className="substring">.{fractional}</span>
-                        </>
-                    ) : (
-                        '0.00'
-                    )}
-                </Typography>
+                <ExactValueTooltip balance={tokenBalance}>
+                    <Typography component="div" className="token-balance">
+                        {whole && fractional ? (
+                            <>
+                                <span>${whole}</span>
+
+                                <span className="substring">.{fractional}</span>
+                            </>
+                        ) : (
+                            '0.00'
+                        )}
+                    </Typography>
+                </ExactValueTooltip>
+
                 <Typography className="zkp-symbol main-symbol">ZKP</Typography>
             </Box>
             <Box className="amount-box">

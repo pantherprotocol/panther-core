@@ -8,7 +8,6 @@ import {
     DialogActions,
     IconButton,
     Typography,
-    Button,
     Box,
     Checkbox,
 } from '@mui/material';
@@ -18,6 +17,7 @@ import FormGroup from '@mui/material/FormGroup';
 import backButtonLeftArrow from '../../../../../../../images/back-button-left-arrow.svg';
 import {useAppDispatch} from '../../../../../../../redux/hooks';
 import {removeBlur, setBlur} from '../../../../../../../redux/slices/blur';
+import PrimaryActionButton from '../../../../../../Common/PrimaryActionButton';
 
 import './styles.scss';
 
@@ -112,21 +112,22 @@ export default function RedeemRewardsWarningDialog(props: {
                     />
                 </FormGroup>
             </Box>
-            <DialogActions
-                className={`redeem-action ${
-                    redemptionConfirmed ? 'active' : ''
-                }`}
-            >
-                <Button
-                    autoFocus
-                    onClick={props.handleRedeemButtonClick}
-                    disabled={!redemptionConfirmed}
-                >
-                    <Typography>
-                        Redeem zZKP and forfeit additional
-                        <strong> accrued </strong> PRP rewards
-                    </Typography>
-                </Button>
+
+            <DialogActions>
+                <Box className={`redeem-action-holder`}>
+                    <PrimaryActionButton
+                        onClick={props.handleRedeemButtonClick}
+                        styles={`custom-style ${
+                            !redemptionConfirmed ? 'notActive' : ''
+                        }`}
+                        disabled={!redemptionConfirmed}
+                    >
+                        <Typography>
+                            Redeem zZKP and forfeit additional{' '}
+                            <strong>accrued</strong> PRP rewards
+                        </Typography>
+                    </PrimaryActionButton>
+                </Box>
             </DialogActions>
         </Dialog>
     );

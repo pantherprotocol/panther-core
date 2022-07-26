@@ -6,7 +6,7 @@ import logoHighResolution from '../../images/logo-high-resolution.svg';
 import {useAppDispatch} from '../../redux/hooks';
 import {registerFirstVisit} from '../../redux/slices/isFirstVisit';
 import {SafeLink} from '../Common/links';
-import {ConnectButton} from '../ConnectButton';
+import ContinueButton from '../ContinueButton';
 
 import Feature, {featuredata} from './Feature';
 
@@ -86,8 +86,7 @@ export default function Welcome() {
                     md={12}
                     className="continue-button-holder"
                 >
-                    <ConnectButton
-                        text={'Continue'}
+                    <ContinueButton
                         onClick={() => dispatch(registerFirstVisit)}
                     />
                 </Grid>

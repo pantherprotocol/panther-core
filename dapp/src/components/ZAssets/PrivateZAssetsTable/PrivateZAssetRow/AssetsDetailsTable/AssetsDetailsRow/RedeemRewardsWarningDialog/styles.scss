@@ -22,33 +22,20 @@
         color: $highlighted-text;
     }
 
-    .redeem-action {
-        display: flex;
-        align-items: center;
-        justify-content: space-around !important;
-        margin: 20px 24px !important;
-        background: $grey-btn;
-        border-radius: 14px;
-
-        &.active {
-            button p {
-                color: $white;
-            }
-            background: $btn-blue;
-        }
-
-        .MuiButton-root.MuiButton-text {
-            text-align: center;
-            font-weight: $semi-bold-font-weight;
-            font-size: $title-font-size;
-            height: 40px;
-            box-shadow: none;
-            text-transform: none;
-            color: $black;
-        }
-    }
-
     strong {
         font-weight: 800;
+    }
+    .redeem-action-holder {
+        width: 100%;
+        margin: 20px 24px;
+
+        //use this cusom style to override the default style for PrimaryActionButton
+        .custom-style {
+            height: 55px;
+        }
+        .notActive {
+            color: $black;
+            background: $grey-btn;
+        }
     }
 }

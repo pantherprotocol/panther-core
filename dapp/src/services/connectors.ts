@@ -36,6 +36,14 @@ export const supportedNetworks: Record<number, Network> = {
         explorerURLs: ['https://rinkeby.etherscan.io/'],
         logo: ethIcon,
     },
+    5: {
+        name: 'Goerli',
+        rpcURL: 'https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+        symbol: 'ETH',
+        decimals: 18,
+        explorerURLs: ['https://goerli.etherscan.io/'],
+        logo: ethIcon,
+    },
     137: {
         name: 'Polygon',
         rpcURL: 'https://polygon-rpc.com/',

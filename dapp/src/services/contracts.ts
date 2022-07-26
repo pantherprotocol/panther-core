@@ -94,7 +94,7 @@ export function getContractABI(
         case ContractName.Z_ASSETS_REGISTRY:
             return Z_ASSETS_REGISTRY_ABI;
         case ContractName.STAKING_TOKEN:
-            if ([1, 4, 31337].includes(chainId)) return ZKPTOKEN_ABI;
+            if ([1, 4, 5, 31337].includes(chainId)) return ZKPTOKEN_ABI;
             if ([137, 80001].includes(chainId)) return PZKPTOKEN_ABI;
     }
     throw `Unsupported contract ${contractName} on chainId ${chainId}`;

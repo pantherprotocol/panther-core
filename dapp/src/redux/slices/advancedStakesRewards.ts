@@ -1,10 +1,10 @@
 import {Web3Provider} from '@ethersproject/providers';
+import {sumBigNumbers} from '@panther-core/crypto/lib/numbers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {poseidon} from 'circomlibjs';
 import {BigNumber, constants} from 'ethers';
 
-import {sumBigNumbers} from '../../lib/numbers';
 import {IKeypair} from '../../lib/types';
 import {getChangedUTXOsStatuses, UTXOStatusByID} from '../../services/pool';
 import {getAdvancedStakingReward} from '../../services/staking';

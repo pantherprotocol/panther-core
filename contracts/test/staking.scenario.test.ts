@@ -9,7 +9,7 @@ import abiZkpToken from './assets/ZKPToken.json';
 import abiVestingPools from './assets/VestingPools.json';
 import {getScenario, Scenario} from './assets/staking.scenario.data';
 import {mineBlock, revertSnapshot, takeSnapshot} from '../lib/hardhat';
-import {sumBigNumbers} from '../../dapp/src/lib/numbers';
+import {sumBigNumbers} from '@panther-core/crypto/lib/numbers';
 
 const expect = chai.expect;
 

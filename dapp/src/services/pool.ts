@@ -219,7 +219,6 @@ export async function getChangedUTXOsStatuses(
     const [rootSpendingKeypair, rootReadingKeypair] = keys;
 
     const statusesNeedUpdate: UTXOStatusByID[] = [];
-
     for await (const reward of advancedRewards) {
         if (reward.zZkpUTXOStatus === UTXOStatus.SPENT) {
             continue;
@@ -307,19 +306,24 @@ async function unpackUTXOAndDeriveKeys(
 function decodeUTXOData(
     utxoData: string,
 ): [string, string, bigint, bigint] | Error {
-    // 648 is the size of the UTXO data containing 2 UTXO commitments
+    // 968 is the size of the UTXO data containing 3 UTXO commitments
     // first byte is reserved for the msg version number.
     // next 92 bytes after the Message type is packed message with UTXO
     // secrets, 32 bytes for the token address, and the last 32 bytes for the
     // token id. See documentation for more details:
     // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k/
-    if (utxoData.length !== 648) {
-        return new Error('Invalid zAssets data length');
+    if (utxoData.length !== 968) {
+        const msg = 'Invalid UTXO data length';
+        console.error(msg);
+        return new Error(msg);
     }
 
     if (utxoData.slice(0, 4) !== '0xab') {
-        return new Error('Invalid zAssets data or message type');
+        const msg = 'Invalid UTXO data or message type';
+        console.error(msg);
+        return new Error(msg);
     }
+
     const decoded = utils.defaultAbiCoder.decode(
         ['uint256[3]', 'uint256', 'uint256'],
         '0x' + utxoData.slice(4, utxoData.length),

@@ -18,7 +18,11 @@ import {getEventFromReceipt} from '../lib/events';
 import {formatTime} from '../lib/format';
 import {IKeypair, PrivateKey} from '../lib/types';
 
-import {getPoolContract, getSignableContract} from './contracts';
+import {
+    getPoolContract,
+    getSignableContract,
+    getZAssetsRegistryContract,
+} from './contracts';
 import {env} from './env';
 import {notifyError} from './errors';
 import {safeFetch} from './http';
@@ -114,7 +118,8 @@ export async function exit(
         return UTXOStatus.SPENT;
     }
 
-    const zAssetId = await contract.getZAssetId(tokenAddress, tokenId);
+    const zAssetsRegistry = getZAssetsRegistryContract(library, chainId);
+    const zAssetId = await zAssetsRegistry.getZAssetId(tokenAddress, tokenId);
     const commitmentHex = bigintToBytes32(
         poseidon([
             bigintToBytes32(childSpendingKeypair.publicKey[0]),
@@ -146,6 +151,7 @@ export async function exit(
     const [pathElements, proofLeafHex, merkleTreeRoot, treeIndex] = path;
 
     if (proofLeafHex !== zZkpCommitment) {
+        // This error also shoots when the tree is outdated
         notifyError(
             'Redemption error',
             "zAsset didn't match shielded pool entry.",

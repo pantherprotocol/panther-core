@@ -1,0 +1,33 @@
+@import '../../../variables';
+
+.unstake-button {
+    color: $white !important;
+    text-transform: capitalize;
+    width: 100% !important;
+    min-width: 173px !important;
+    height: auto !important;
+    min-height: 43px;
+    font-size: $smaller-font-size !important;
+    background: rgba(175, 184, 208, 0.3) !important;
+    mix-blend-mode: normal;
+    border-radius: 22px !important;
+
+    &:hover {
+        background: $second-blue;
+    }
+
+    &.locked {
+        line-height: 16px;
+        text-align: center;
+        color: #9e9e9e !important;
+        padding: 5px !important;
+        border: 1px solid #9e9e9e;
+        background: transparent !important;
+
+        p {
+            font-weight: $light-font-weight !important;
+            font-size: $smaller-font-size !important;
+            line-height: 16px !important;
+        }
+    }
+}

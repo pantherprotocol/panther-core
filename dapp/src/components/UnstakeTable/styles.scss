@@ -1,82 +1,19 @@
 @import '../../variables';
 
-.MuiPaper-root.MuiTableContainer-root {
-    box-shadow: none !important;
-}
+.unstake-table {
+    .MuiPaper-root.MuiTableContainer-root {
+        box-shadow: none !important;
 
-.MuiTable-root {
-    min-width: 400px;
+        .MuiTable-root {
+            min-width: 400px;
 
-    thead {
-        th {
-            font-weight: $normal-font-weight !important;
-            font-size: $small-font-size !important;
-            color: $color-beige !important;
-            opacity: 1 !important;
-        }
-    }
-
-    .MuiTableBody-root .MuiTableRow-root {
-        background: $card-background-darker;
-        mix-blend-mode: normal;
-        border-radius: 13px;
-        margin: 15px 0 !important;
-    }
-
-    .unstake-row-description {
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-
-        .title {
-            align-items: start;
-            font-weight: $light-font-weight;
-            font-size: $small-font-size;
-            color: #9e9e9e;
-            text-align: left;
-        }
-
-        .date {
-            font-weight: $light-font-weight;
-            font-size: $small-font-size;
-            color: $white;
-            text-align: left;
-        }
-    }
-
-    .btn {
-        color: $white !important;
-        text-transform: capitalize;
-        width: 100% !important;
-        min-width: 173px !important;
-        height: auto !important;
-        min-height: 43px;
-        font-size: $smaller-font-size !important;
-        background: linear-gradient(
-                180deg,
-                rgba(255, 255, 255, 0.1) 0%,
-                rgba(255, 255, 255, 0) 100%
-            ),
-            rgba(175, 184, 208, 0.3) !important;
-        mix-blend-mode: normal;
-        border-radius: 22px !important;
-
-        &:hover {
-            background: $second-blue;
-        }
-
-        &.locked {
-            line-height: 16px;
-            text-align: center;
-            color: #9e9e9e !important;
-            padding: 5px !important;
-            border: 1px solid #9e9e9e;
-            background: transparent !important;
-
-            p {
-                font-weight: $light-font-weight !important;
-                font-size: $smaller-font-size !important;
-                line-height: 16px !important;
+            thead {
+                th {
+                    font-weight: $normal-font-weight;
+                    font-size: $small-font-size;
+                    color: $color-beige !important;
+                    opacity: 1;
+                }
             }
         }
     }

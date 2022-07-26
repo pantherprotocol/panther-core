@@ -1,0 +1,22 @@
+@import '../../../variables.scss';
+
+.unstake-row-description {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    .title {
+        align-items: start;
+        font-weight: $light-font-weight;
+        font-size: $small-font-size;
+        color: #9e9e9e;
+        text-align: left;
+    }
+
+    .date {
+        font-weight: $light-font-weight;
+        font-size: $small-font-size;
+        color: $white;
+        text-align: left;
+    }
+}

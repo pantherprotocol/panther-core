@@ -6,13 +6,20 @@ import Typography from '@mui/material/Typography';
 import {useWeb3React} from '@web3-react/core';
 
 import refreshIcon from '../../images/refresh-icon.svg';
-import {useAppDispatch} from '../../redux/hooks';
+import {formatCurrency} from '../../lib/format';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getChainBalance} from '../../redux/slices/chainBalance';
+import {totalStakedSelector} from '../../redux/slices/totalStaked';
 
 import './styles.scss';
 
 const TotalStakedCard = () => {
     const context = useWeb3React();
+    const totalStaked = useAppSelector(totalStakedSelector);
+    const totalZKPStaked = totalStaked
+        ? formatCurrency(totalStaked, {scale: 18, decimals: 0}) + ' ZKP'
+        : '0.00 ZKP';
+
     const dispatch = useAppDispatch();
 
     const refreshChainBalance = () => {
@@ -26,9 +33,7 @@ const TotalStakedCard = () => {
                     <img src={refreshIcon} />
                 </IconButton>
             </Typography>
-            <Typography className="card-text">
-                350k / 500k zZKP Rewards
-            </Typography>
+            <Typography className="card-text">{totalZKPStaked}</Typography>
             <Typography className="card-text">
                 Classic staking has ended
             </Typography>

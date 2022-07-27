@@ -1,45 +1,59 @@
-import React from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 
 import {Box, Typography} from '@mui/material';
-import LinearProgress from '@mui/material/LinearProgress';
 import {useWeb3React} from '@web3-react/core';
+import {BigNumber, utils} from 'ethers';
 
+import ClaimedProgress from '../../components/ClaimedProgress';
 import {formatPercentage} from '../../lib/format';
 import {useAppSelector} from '../../redux/hooks';
 import {termsSelector} from '../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../services/contracts';
-import {getAdvStakingAPY} from '../../services/rewards';
+import {
+    getAdvStakingAPY,
+    rewardsVested,
+    rewardsClaimed,
+} from '../../services/rewards';
 import {StakeType} from '../../types/staking';
 
 import './styles.scss';
 
 function AdvancedStakingRewards() {
+    const [total, setTotal] = useState<number>(0);
+    const [claimed, setClaimed] = useState<number>(0);
     const context = useWeb3React();
     const {chainId} = context;
 
     const advancedStakingAPY = getAdvStakingAPY(new Date().getTime());
 
+    const updateStateViaCallingSmartContract = useCallback(
+        async (
+            smartContractGetter: () => Promise<BigNumber | Error>,
+            stateSetter: (v: number) => void,
+        ) => {
+            const value = await smartContractGetter();
+            if (!value || value instanceof Error) {
+                return null;
+            }
+            stateSetter(Number(utils.formatEther(value)));
+        },
+        [],
+    );
+
+    useEffect(() => {
+        updateStateViaCallingSmartContract(rewardsVested, setTotal);
+        updateStateViaCallingSmartContract(rewardsClaimed, setClaimed);
+    }, [chainId, updateStateViaCallingSmartContract]);
+
     return (
         <Box className="advanced-staking-rewards">
-            {chainHasAdvancedStaking(chainId) && <ClaimedProgress />}
+            {chainHasAdvancedStaking(chainId) && (
+                <ClaimedProgress claimed={claimed} total={total} />
+            )}
             <RemainingDays />
             {advancedStakingAPY && (
                 <StakingAPR advancedStakingAPY={advancedStakingAPY} />
             )}
-        </Box>
-    );
-}
-
-function ClaimedProgress() {
-    return (
-        <Box className="claimed-progress">
-            <Typography className="title">Advanced Staking Rewards</Typography>
-            <Box className="progress-holder">
-                <LinearProgress className="progress" />
-            </Box>
-            <Typography className="claimed-value">
-                950k / 2m zZKP claimed (49%)
-            </Typography>
         </Box>
     );
 }

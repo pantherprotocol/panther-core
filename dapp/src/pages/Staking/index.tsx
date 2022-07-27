@@ -10,6 +10,7 @@ import BalanceCard from '../../components/BalanceCard';
 import CurrentStakeAPY from '../../components/CurrentStakeAPY';
 import {MainPageWrapper} from '../../components/MainPageWrapper';
 import StakingUnstakingCard from '../../components/StakingUnstakingCard';
+import TotalStakedCard from '../../components/TotalStakedCard';
 import Welcome from '../../components/Welcome';
 import background from '../../images/background-adv.png';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
@@ -72,6 +73,7 @@ const Staking = (): React.ReactElement => {
                             <Grid item xs={12} md={5}>
                                 <Box width={'100%'}>
                                     <BalanceCard />
+                                    <TotalStakedCard />
                                 </Box>
                             </Grid>
                             <Grid

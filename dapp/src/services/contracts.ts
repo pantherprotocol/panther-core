@@ -189,15 +189,15 @@ export function getStakeRewardController2Contract(
 }
 
 export function getAdvancedStakeRewardControllerContract(
-    library: any,
-    chainId: number,
-    address?: string,
+    chainId: MaspChainIds,
 ): AdvancedStakeRewardController {
-    return getContract(
-        ContractName.ADVANCED_STAKE_REWARD_CONTROLLER,
-        library,
-        chainId,
-        address,
+    return new Contract(
+        getContractAddress(
+            ContractName.ADVANCED_STAKE_REWARD_CONTROLLER,
+            chainId,
+        ),
+        ADVANCED_STAKE_REWARD_CONTROLLER_ABI,
+        ethers.getDefaultProvider(supportedNetworks[chainId].rpcURL),
     ) as AdvancedStakeRewardController;
 }
 

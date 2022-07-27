@@ -1,7 +1,5 @@
 import {BigNumber} from '@ethersproject/bignumber';
-import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
 import * as stakingService from '../../services/staking';
 import {RootState} from '../store';
@@ -18,16 +16,8 @@ const initialState: totalStakedState = {
 
 export const getTotalStaked = createAsyncThunk(
     'balance/getTotalStaked',
-    async (
-        context: Web3ReactContextInterface<Web3Provider>,
-    ): Promise<string | null> => {
-        const {library, chainId} = context;
-
-        if (!library || !chainId) return null;
-        const totalStaked = await stakingService.getTotalStaked(
-            library,
-            chainId,
-        );
+    async (): Promise<string | null> => {
+        const totalStaked = await stakingService.getSumAllAdvancedStakes();
         if (!totalStaked || totalStaked instanceof Error) {
             return null;
         }

@@ -54,7 +54,7 @@ const CurrentStakeAPY = () => {
     const totalStaked = useAppSelector(totalStakedSelector);
     const currentStakingAPY = getAPY(totalStaked, chainId);
     const totalZKPStaked = totalStaked
-        ? formatCurrency(totalStaked, {decimals: 0}) + ' ZKP'
+        ? formatCurrency(totalStaked, {decimals: 18}) + ' ZKP'
         : '$ZKP';
 
     const getRewardPoolSize = useCallback(() => {

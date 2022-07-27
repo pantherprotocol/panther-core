@@ -150,11 +150,7 @@ async function getControllerTimes(
     console.log(
         `RewardMaster has advisor (AdvancedStakeRewardController) at ${controllerAddress}`,
     );
-    const controller = getAdvancedStakeRewardControllerContract(
-        provider,
-        CHAIN_ID,
-        controllerAddress,
-    );
+    const controller = getAdvancedStakeRewardControllerContract(CHAIN_ID);
 
     const rewardingStart = (await controller.rewardParams()).startTime;
     const rewardingEnd = (await controller.rewardParams()).endTime;

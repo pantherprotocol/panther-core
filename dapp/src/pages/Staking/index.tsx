@@ -39,7 +39,7 @@ const Staking = (): React.ReactElement => {
         dispatch(getTotalUnclaimedClassicRewards, context);
         dispatch(getAdvancedStakesRewards, context);
         dispatch(getStakeTerms, context);
-        dispatch(getRemainingPrpRewards, context);
+        dispatch(getRemainingPrpRewards);
     }, [context, dispatch]);
 
     const firstVisit = useAppSelector(firstVisitSelector);

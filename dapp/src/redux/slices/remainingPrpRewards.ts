@@ -1,8 +1,6 @@
-import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
-import {poolContractGetUnusedGrantAmount} from '../../services/rewards';
+import {unusedPrpGrantAmount} from '../../services/rewards';
 import {RootState} from '../store';
 
 interface remainingPrpRewardsState {
@@ -17,18 +15,8 @@ const initialState: remainingPrpRewardsState = {
 
 export const getRemainingPrpRewards = createAsyncThunk(
     'remainingPrpRewards/get',
-    async (
-        context: Web3ReactContextInterface<Web3Provider>,
-    ): Promise<string | null> => {
-        const {library, account, chainId} = context;
-        if (!account || !library || !chainId) {
-            return null;
-        }
-        const response = await poolContractGetUnusedGrantAmount(
-            library,
-            account,
-            chainId,
-        );
+    async (): Promise<string | null> => {
+        const response = await unusedPrpGrantAmount();
         return response ? response.toString() : null;
     },
 );

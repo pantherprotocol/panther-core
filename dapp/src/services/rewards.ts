@@ -8,12 +8,13 @@ import {
     StakingRewardTokenID,
 } from '../types/staking';
 
+import {MaspChainIds} from './connectors';
 import {
     ContractName,
     getContractAddress,
     getPrpGrantorContract,
-    getSignableContract,
 } from './contracts';
+import {MASP_CHAIN_ID} from './env';
 import {CLASSIC_TYPE_HEX, ADVANCED_TYPE_HEX} from './staking';
 
 /* Constants are described in Advanced Staking Rewards document:
@@ -169,21 +170,12 @@ export function isClassic(
     return rewards instanceof BigNumber;
 }
 
-export async function poolContractGetUnusedGrantAmount(
-    library: any,
-    account: string,
-    chainId: number,
-): Promise<BigNumber | null> {
-    const {contract: PrpGrantor} = getSignableContract(
-        library,
-        chainId,
-        account,
-        getPrpGrantorContract,
-    );
+export async function unusedPrpGrantAmount(): Promise<BigNumber | null> {
+    const maspChainId = MASP_CHAIN_ID as MaspChainIds;
+    const PrpGrantor = getPrpGrantorContract(maspChainId);
     const advancedStakeRewardControllerAddress = getContractAddress(
         ContractName.ADVANCED_STAKE_REWARD_CONTROLLER,
-
-        chainId,
+        maspChainId,
     );
     try {
         return await PrpGrantor.getUnusedGrantAmount(

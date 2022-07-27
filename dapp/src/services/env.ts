@@ -6,6 +6,7 @@
 const REQUIRED_ENV_VARS: string[] = [
     'APP_MODE',
     'CHAIN_IDS',
+    'MASP_CHAIN_ID',
     'REWARD_MASTER_CONTRACT_80001',
     'STAKES_REPORTER_CONTRACT_137',
     'STAKE_REWARD_CONTROLLER_2_CONTRACT_1',
@@ -43,6 +44,7 @@ export const env: EnvVariables = {
     APP_MODE: process.env.APP_MODE,
     FAUCET_BASE_URL: process.env.FAUCET_BASE_URL,
     CHAIN_IDS: process.env.CHAIN_IDS,
+    MASP_CHAIN_ID: process.env.MASP_CHAIN_ID,
     FAUCET_CHAIN_IDS: process.env.FAUCET_CHAIN_IDS,
     TOKEN_SYMBOL: process.env.TOKEN_SYMBOL,
 
@@ -161,6 +163,10 @@ if (!CHAIN_IDS.length) {
     throw `Failed to parse CHAIN_IDS value of '${env.CHAIN_IDS}' as a list of
     supported networks; got: '${CHAIN_IDS}'`;
 }
+
+export const MASP_CHAIN_ID: number | undefined = env.MASP_CHAIN_ID
+    ? Number(env.MASP_CHAIN_ID)
+    : undefined;
 
 export const FAUCET_CHAIN_IDS = env.FAUCET_CHAIN_IDS
     ? env.FAUCET_CHAIN_IDS.split(',').map(item => Number(item))

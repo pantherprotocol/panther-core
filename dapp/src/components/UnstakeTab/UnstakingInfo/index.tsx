@@ -4,6 +4,7 @@ import {Box, Card, CardContent, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {Link} from 'react-router-dom';
 
+import {secondsToFullDays} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {termsSelector} from '../../../redux/slices/stakeTerms';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
@@ -73,15 +74,20 @@ export default function UnstakingInfo() {
                     variant="subtitle2"
                     className="unstaking-info-title"
                 >
-                    Advanced Unstaking
+                    You have staked your tokens
+                    {minLockPeriod && minLockPeriod > 0
+                        ? ` for ${secondsToFullDays(
+                              minLockPeriod as number,
+                          )} days`
+                        : ''}
                 </Typography>
                 <Typography className="unstaking-info-text">
                     <span>
                         Advanced Staking locks $ZKP
                         {minLockPeriod && minLockPeriod > 0
-                            ? ` for ${Math.floor(
-                                  (minLockPeriod as number) / 3600 / 24,
-                              )} days`
+                            ? ` for ${secondsToFullDays(
+                                  minLockPeriod as number,
+                              )} days before you can withdraw`
                             : ' until the fixed date defined for each stake'}
                         . The rewards are created as zZKP and PRP which can be
                         seen on the{' '}

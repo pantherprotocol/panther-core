@@ -3,7 +3,7 @@ import React, {ReactElement, useCallback} from 'react';
 import {Typography, Card, CardContent} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
-import {formatTime} from '../../../lib/format';
+import {formatTime, secondsToFullDays} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {
     isStakingOpenSelector,
@@ -69,19 +69,17 @@ export default function StakingInfo() {
         const body = (
             <Typography>
                 Advanced Staking will{' '}
-                {allowedTill && `be open until ${allowedTillDate} and will `}
+                {allowedTill && `be open until ${allowedTillDate}, will `}
                 lock your tokens
                 {minLockPeriod && minLockPeriod > 0
-                    ? ` for ${Math.floor(
-                          (minLockPeriod as number) / 3600 / 24,
+                    ? ` for ${secondsToFullDays(
+                          minLockPeriod as number,
                       )} days and `
                     : ', and '}
                 create zZKP as rewards in the Multi-Asset Shielded Pool (MASP).
                 {chainId &&
                     isEthereumNetwork(chainId) &&
-                    ' It may take up to 10 minutes to bridge your message' +
-                        ' from the Ethereum network to Polygon to create ' +
-                        'the rewards. '}
+                    ' You may have to wait up to 10 minutes to see this reflected on Polygon. '}
                 By staking your ZKP, you become one of the first people to
                 create zAssets and contribute to bootstrapping and testing of
                 the MASP.
@@ -116,11 +114,11 @@ export default function StakingInfo() {
                     <p>
                         Advanced stakes are locked
                         {minLockPeriod && minLockPeriod > 0
-                            ? ` for ${Math.floor(
-                                  (minLockPeriod as number) / 3600 / 24,
-                              )} days`
+                            ? ` for ${secondsToFullDays(
+                                  minLockPeriod as number,
+                              )} days upon staking`
                             : ' until the fixed date defined for each stake'}
-                        ; however classic stakes can be unstaked{' '}
+                        . However, Classic stakes can be unstaked{' '}
                         <SafeMuiLink
                             href="https://docs.pantherprotocol.io/dao/support/faq/staking#when-unstake"
                             underline="always"

@@ -30,6 +30,10 @@ export function formatTimeSince(date: number | null): string {
     return moment(date).fromNow();
 }
 
+export function secondsToFullDays(sec: number): number {
+    return Math.floor(sec / 60 / 60 / 24);
+}
+
 export function formatPercentage(percentage: number): string {
     const percentFormat = new Intl.NumberFormat(getLocale(), {
         minimumFractionDigits: 2,

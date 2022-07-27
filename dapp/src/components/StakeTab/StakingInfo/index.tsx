@@ -10,6 +10,7 @@ import {
     isStakingPostCloseSelector,
     termsSelector,
 } from '../../../redux/slices/stakeTerms';
+import {isEthereumNetwork} from '../../../services/connectors';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
 import {StakeType} from '../../../types/staking';
 import {SafeMuiLink} from '../../Common/links';
@@ -76,6 +77,11 @@ export default function StakingInfo() {
                       )} days and `
                     : ', and '}
                 create zZKP as rewards in the Multi-Asset Shielded Pool (MASP).
+                {chainId &&
+                    isEthereumNetwork(chainId) &&
+                    ' It may take up to 10 minutes to bridge your message' +
+                        ' from the Ethereum network to Polygon to create ' +
+                        'the rewards. '}
                 By staking your ZKP, you become one of the first people to
                 create zAssets and contribute to bootstrapping and testing of
                 the MASP.
@@ -83,7 +89,13 @@ export default function StakingInfo() {
         );
 
         return {subtitle, body};
-    }, [isAdvancedStakingOpen, allowedSince, allowedTill, minLockPeriod]);
+    }, [
+        isAdvancedStakingOpen,
+        allowedSince,
+        allowedTill,
+        minLockPeriod,
+        chainId,
+    ]);
 
     const getAdvancedStakingClosedText = useCallback((): {
         subtitle: string;

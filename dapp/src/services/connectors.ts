@@ -86,6 +86,10 @@ export const onWrongNetwork = (context: Web3ReactContextInterface): boolean => {
     );
 };
 
+export const isEthereumNetwork = (chainId: number): boolean => {
+    return [1, 4, 5].includes(chainId);
+};
+
 export const onWrongFaucetNetwork = (
     context: Web3ReactContextInterface,
 ): boolean => {

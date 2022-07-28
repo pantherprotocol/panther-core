@@ -19,6 +19,9 @@ export interface Network {
     logo: string;
 }
 
+// MASP chain ID could be only on Polygon or Hardhat networks
+export type MaspChainIds = 137 | 80001 | 31337;
+
 export const supportedNetworks: Record<number, Network> = {
     1: {
         name: 'Ethereum',

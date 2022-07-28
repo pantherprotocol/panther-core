@@ -1,5 +1,5 @@
 import {JsonRpcSigner} from '@ethersproject/providers';
-import {Contract} from 'ethers';
+import {Contract, ethers} from 'ethers';
 
 import {abi as ADVANCED_STAKE_REWARD_CONTROLLER_ABI} from '../abi/AdvancedStakeRewardController';
 import {abi as FAUCET_ABI} from '../abi/Faucet';
@@ -18,6 +18,7 @@ import {StakeRewardController2} from '../types/contracts/StakeRewardController2'
 import {StakesReporter} from '../types/contracts/StakesReporter';
 import {Staking} from '../types/contracts/Staking';
 
+import {MaspChainIds, supportedNetworks} from './connectors';
 import {env} from './env';
 
 export enum ContractName {
@@ -135,8 +136,14 @@ export function getPoolContract(library: any, chainId: number): Contract {
     return getContract(ContractName.POOL_V0, library, chainId);
 }
 
-export function getPrpGrantorContract(library: any, chainId: number): Contract {
-    return getContract(ContractName.PRP_GRANTOR, library, chainId);
+export function getPrpGrantorContract(chainId: MaspChainIds): Contract {
+    const PrpGrantor = new Contract(
+        getContractAddress(ContractName.PRP_GRANTOR, chainId),
+        PRP_GRANTOR_ABI,
+        ethers.getDefaultProvider(supportedNetworks[chainId].rpcURL),
+    );
+
+    return PrpGrantor;
 }
 
 export function getZAssetsRegistryContract(

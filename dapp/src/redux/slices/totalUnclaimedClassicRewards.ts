@@ -1,9 +1,9 @@
 import {BigNumber} from '@ethersproject/bignumber';
 import {Web3Provider} from '@ethersproject/providers';
+import {sumBigNumbers} from '@panther-core/crypto/lib/numbers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
-import {sumBigNumbers} from '../../lib/numbers';
 import {chainHasStakesReporter} from '../../services/contracts';
 import {isClassic} from '../../services/rewards';
 import * as stakingService from '../../services/staking';
@@ -46,7 +46,7 @@ export const getTotalUnclaimedClassicRewards = createAsyncThunk(
             .filter((row: stakingService.StakeRow) => {
                 return isClassic(row.reward);
             })
-            .map(stake => stake.reward);
+            .map((stake: stakingService.StakeRow) => stake.reward as BigNumber);
         return sumBigNumbers(rewards).toString();
     },
 );

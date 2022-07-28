@@ -9,7 +9,7 @@ import {BigNumber, utils} from 'ethers';
 import fs from 'fs';
 import {Stake} from './staking-list';
 import {Contract} from 'ethers';
-import {sumBigNumbers} from '../../dapp/src/lib/numbers';
+import {sumBigNumbers} from '@panther-core/crypto/lib/numbers';
 
 task('unstaked:rewards', 'Output staking events data as JSON')
     .addParam(

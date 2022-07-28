@@ -5,11 +5,10 @@
 */
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task} from 'hardhat/config';
-import {BigNumber, utils} from 'ethers';
+import {BigNumber, constants, utils} from 'ethers';
 import fs from 'fs';
 import {Stake} from './staking-list';
 import {Contract} from 'ethers';
-import {sumBigNumbers} from '@panther-core/crypto/lib/numbers';
 
 task('unstaked:rewards', 'Output staking events data as JSON')
     .addParam(
@@ -32,9 +31,7 @@ task('unstaked:rewards', 'Output staking events data as JSON')
             stakesClaimed,
         );
 
-        const mappedItems = unclaimedStakes.map(stake => stake?.amount ?? 0);
-
-        const totalUnstaked = sumBigNumbers(mappedItems);
+        const totalUnstaked = sumStakes(unclaimedStakes);
 
         console.log(`${unclaimedStakes.length} unstaked stakes`);
         console.log('With total:', utils.formatEther(totalUnstaked));
@@ -77,9 +74,7 @@ async function getContract(
 function calculateTotalRewards(groupedStakes: Stake[][]): BigNumber {
     let totalRewards = BigNumber.from(0);
     groupedStakes.forEach((stakes: Stake[]) => {
-        const mappedItems = stakes.map(stake => stake?.reward ?? 0);
-
-        totalRewards = totalRewards.add(sumBigNumbers(mappedItems));
+        totalRewards = totalRewards.add(sumStakes(stakes, 'reward'));
     });
 
     console.log('totalRewards:', utils.formatEther(totalRewards));
@@ -105,7 +100,7 @@ async function fetchRewardsWithStakesReporter(
     const address = stakes[0].address;
     const [activeStakes, rewards] = await stakesReporter.getStakesInfo(address);
 
-    const formatedStakes = activeStakes.map((stake: any, idx: number) => {
+    const formattedStakes = activeStakes.map((stake: any, idx: number) => {
         return {
             address,
             id: stake.id,
@@ -118,7 +113,7 @@ async function fetchRewardsWithStakesReporter(
         };
     });
 
-    return formatedStakes;
+    return formattedStakes;
 }
 
 async function fetchAndUpdateRewardsWithRewardMaster(
@@ -128,9 +123,7 @@ async function fetchAndUpdateRewardsWithRewardMaster(
     const address = stakes[0].address;
     const reward = await rewardMaster.entitled(address);
 
-    const mappedItems = stakes.map(stake => stake?.amount ?? 0);
-
-    const totalForAddress = sumBigNumbers(mappedItems);
+    const totalForAddress = sumStakes(stakes);
     for await (const stake of stakes) {
         stake.reward = reward.mul(stake.amount).div(totalForAddress).toString();
     }
@@ -167,13 +160,18 @@ function readFileWithStakes(filepath: string): Stake[] {
     const stakes = JSON.parse(fs.readFileSync(filepath, 'utf8'));
     console.log(`\t${stakes.length} stakes in file ${filepath}`);
 
-    const mappedStakes = stakes.map((stake: Stake) => stake?.amount ?? 0);
-
-    const total = sumBigNumbers(mappedStakes);
+    const total = sumStakes(stakes);
 
     if (total.gt(0)) {
         const round = Math.round(Number(utils.formatEther(total)) * 100) / 100;
         console.log(`\t\twith total amount of ${round} ZKP`);
     }
     return stakes;
+}
+
+function sumStakes(stakes: Stake[], key: keyof Stake = 'amount'): BigNumber {
+    const items: BigNumber[] = stakes.map(
+        stake => (stake[key] ?? constants.Zero) as BigNumber,
+    );
+    return items.reduce((acc: BigNumber, v) => acc.add(v), constants.Zero);
 }

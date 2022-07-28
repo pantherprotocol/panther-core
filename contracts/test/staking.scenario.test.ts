@@ -1,4 +1,4 @@
-import {Contract} from 'ethers';
+import {BigNumber, constants, Contract} from 'ethers';
 import chai from 'chai';
 import {ethers} from 'hardhat';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
@@ -9,7 +9,6 @@ import abiZkpToken from './assets/ZKPToken.json';
 import abiVestingPools from './assets/VestingPools.json';
 import {getScenario, Scenario} from './assets/staking.scenario.data';
 import {mineBlock, revertSnapshot, takeSnapshot} from '../lib/hardhat';
-import {sumBigNumbers} from '@panther-core/crypto/lib/numbers';
 
 const expect = chai.expect;
 
@@ -340,4 +339,11 @@ describe('Staking, RewardMaster, StakeRewardAdviser and other contracts', async 
             executeScenarios(isRewarded);
         });
     });
+
+    function sumBigNumbers(bigNumbers: BigNumber[]): BigNumber {
+        return bigNumbers.reduce(
+            (acc: BigNumber, v) => acc.add(v),
+            constants.Zero,
+        );
+    }
 });

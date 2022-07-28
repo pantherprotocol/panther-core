@@ -156,8 +156,8 @@ async function getControllerTimes(
         controllerAddress,
     );
 
-    const rewardingStart = (await controller.REWARDING_START()).toNumber();
-    const rewardingEnd = (await controller.REWARDING_END()).toNumber();
+    const rewardingStart = (await controller.rewardParams()).startTime;
+    const rewardingEnd = (await controller.rewardParams()).endTime;
     info(
         `rewardingStart is ${rewardingStart} (${new Date(
             rewardingStart * 1000,

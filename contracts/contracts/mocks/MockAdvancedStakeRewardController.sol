@@ -11,10 +11,7 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
         address pantherPool,
         address prpGrantor,
         address zkpToken,
-        address nftToken,
-        uint32 prpRewardPerStake,
-        uint32 rewardingStart,
-        uint32 rewardedPeriod
+        address nftToken
     )
         AdvancedStakeRewardController(
             _owner,
@@ -22,10 +19,7 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
             pantherPool,
             prpGrantor,
             zkpToken,
-            nftToken,
-            prpRewardPerStake,
-            rewardingStart,
-            rewardedPeriod
+            nftToken
         )
     // solhint-disable-next-line no-empty-blocks
     {
@@ -35,9 +29,11 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
     function internalComputeZkpReward(
         uint256 stakeAmount,
         uint32 lockedTill,
-        uint32 stakedAt
-    ) external view returns (uint256 zkpAmount) {
-        return _computeZkpReward(stakeAmount, lockedTill, stakedAt);
+        uint32 stakedAt,
+        RewardParams memory _rewardParams
+    ) external pure returns (uint256 zkpAmount) {
+        return
+            _computeZkpReward(stakeAmount, lockedTill, stakedAt, _rewardParams);
     }
 
     function internalGenerateRewards(bytes calldata message) external {

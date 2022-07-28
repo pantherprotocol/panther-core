@@ -91,6 +91,20 @@ contract AdvancedStakeRewardController is
         uint24 nftRewards;
     }
 
+    /// @dev Reward Timestamps and APYs
+    struct RewardParams {
+        /// @param (UNIX) Time when $ZKP rewards start to accrue
+        uint32 startTime;
+        /// @param (UNIX) Time when $ZKP rewards accruals end
+        uint32 endTime;
+        /// @param $ZKP reward APY at startTime (APY declines from this value)
+        uint8 startZkpApy;
+        /// @param $ZKP reward APY at endTime (APY declines to this value)
+        uint8 endZkpApy;
+        /// @param Amount of PRP reward (per a stake)
+        uint32 prpPerStake;
+    }
+
     // solhint-disable var-name-mixedcase
 
     /// @notice RewardMaster contract instance
@@ -105,27 +119,6 @@ contract AdvancedStakeRewardController is
     // Address of the NFT token contract
     address private immutable NFT_TOKEN;
 
-    /// @notice Amount of PRPs allocated per Stake
-    uint256 public immutable PRP_REWARD_PER_STAKE;
-
-    /// @notice (UNIX) Time when staking rewards start to accrue
-    uint256 public immutable REWARDING_START;
-    // Period (seconds since REWARDING_START) when stakes are rewarded
-    // (this period shall not yet be in the past on the contract deployment)
-    uint256 private immutable REWARDED_PERIOD;
-    /// @notice (UNIX) Time when staking rewards accruals end
-    uint256 public immutable REWARDING_END;
-
-    // $ZKP APY at REWARDING_START (the APY declines from this value)
-    uint256 private constant START_ZKP_APY = 70;
-    // $ZKP APY at the end of (and after) the REWARDED_PERIOD
-    // (the APY declines to this value)
-    uint256 private constant FINAL_ZKP_APY = 40;
-    // $ZKP APY drop (scaled by 1e9) per second of REWARDED_PERIOD
-    uint256 private immutable sc_ZKP_APY_PER_SECOND_DROP;
-
-    uint256 private constant ZKP_RESCUE_FORBIDDEN_PERIOD = 90 days;
-
     /// @notice Block when this contract is deployed
     uint256 public immutable START_BLOCK;
 
@@ -139,8 +132,14 @@ contract AdvancedStakeRewardController is
     /// @notice Total amounts of $ZKP, PRP and NFT rewarded so far
     Totals public totals;
 
+    /// @notice Reward parameters (start and end point for time and APY)
+    RewardParams public rewardParams;
+
     /// @dev Emitted when new amounts are allocated to reward stakers
     event RewardLimitUpdated(Limits newLimits);
+
+    /// @dev Emitted when rewarding params updated
+    event RewardParamsUpdated(RewardParams newRewardParams);
 
     /// @dev Emitted when the reward for a stake is generated
     event RewardGenerated(
@@ -151,17 +150,13 @@ contract AdvancedStakeRewardController is
         uint256 nft
     );
 
-    // It does not change contract storage (only `immutable` values changed).
     constructor(
         address _owner,
         address rewardMaster,
         address pantherPool,
         address prpGrantor,
         address zkpToken,
-        address nftToken,
-        uint32 prpRewardPerStake,
-        uint32 rewardingStart,
-        uint32 rewardedPeriod
+        address nftToken
     ) ImmutableOwnable(_owner) {
         require(
             // nftToken may be zero address
@@ -178,20 +173,6 @@ contract AdvancedStakeRewardController is
 
         ZKP_TOKEN = zkpToken;
         NFT_TOKEN = nftToken;
-
-        PRP_REWARD_PER_STAKE = uint256(prpRewardPerStake);
-
-        require(
-            uint256(rewardingStart) + uint256(rewardedPeriod) > timeNow(),
-            "ARC:E4"
-        );
-        REWARDING_START = uint256(rewardingStart);
-        REWARDED_PERIOD = uint256(rewardedPeriod);
-        REWARDING_END = uint256(rewardingStart) + uint256(rewardedPeriod);
-
-        sc_ZKP_APY_PER_SECOND_DROP =
-            ((START_ZKP_APY - FINAL_ZKP_APY) * 1e9) /
-            uint256(rewardedPeriod);
 
         START_BLOCK = block.number;
     }
@@ -225,17 +206,19 @@ contract AdvancedStakeRewardController is
     }
 
     /// @notice Return the APY for the $ZKP reward at a given time
-    function getZkpApyAt(uint256 time) public view returns (uint256) {
-        if (time < REWARDING_START) return 0;
+    function getZkpApyAt(uint256 time) external view returns (uint256) {
+        RewardParams memory _rewardParams = rewardParams;
+        if (time < _rewardParams.startTime || time > _rewardParams.endTime)
+            return 0;
 
-        // overflow/underflow impossible due to uint32 input and `if` above
-        unchecked {
-            uint256 duration = time - REWARDING_START;
-            if (duration >= REWARDED_PERIOD) return FINAL_ZKP_APY;
+        return _getZkpApyWithinRewardedPeriod(_rewardParams, time);
+    }
 
-            return
-                START_ZKP_APY - (sc_ZKP_APY_PER_SECOND_DROP * duration) / 1e9;
-        }
+    function updateRewardParams(RewardParams memory _newParams)
+        external
+        onlyOwner
+    {
+        _setRewardParams(_newParams);
     }
 
     /// @notice Allocate NFT rewards and approve the Vault to transfer them
@@ -298,11 +281,11 @@ contract AdvancedStakeRewardController is
         require(_reentrancyStatus != 1, "ARC: can't be re-entered");
         _reentrancyStatus = 1;
 
+        RewardParams memory _rewardParams = rewardParams;
+
         require(OWNER == msg.sender, "ARC: unauthorized");
         require(
-            (token != ZKP_TOKEN) ||
-                (block.timestamp >=
-                    (REWARDING_START + ZKP_RESCUE_FORBIDDEN_PERIOD)),
+            (token != ZKP_TOKEN) || (block.timestamp > _rewardParams.endTime),
             "ARC: too early withdrawal"
         );
 
@@ -323,7 +306,7 @@ contract AdvancedStakeRewardController is
                 : bytes4(0); // rejected
     }
 
-    // Private and internal functions follow
+    // Private functions follow
     // Some of them declared `internal` rather than `private` to ease testing
 
     function _generateRewards(bytes memory message) internal {
@@ -348,13 +331,15 @@ contract AdvancedStakeRewardController is
         {
             Totals memory _totals = totals;
             Limits memory _limits = limits;
+            RewardParams memory _rewardParams = rewardParams;
 
             // Compute amount of the $ZKP reward  and check the limit
             {
                 zkpAmount = _computeZkpReward(
                     stakeAmount,
                     lockedTill,
-                    stakedAt
+                    stakedAt,
+                    _rewardParams
                 );
 
                 if (zkpAmount > 0) {
@@ -375,10 +360,11 @@ contract AdvancedStakeRewardController is
                 }
             }
 
-            if (_totals.prpRewards < _limits.prpRewards) {
-                prpAmount = PRP_REWARD_PER_STAKE;
-                // `prpAmount` values assumed to be too small to cause overflow
-                _totals.prpRewards += uint96(prpAmount);
+            // `prpPerStake` is too small to cause overflow
+            uint96 newPrpTotal = _totals.prpRewards + _rewardParams.prpPerStake;
+            if (newPrpTotal <= _limits.prpRewards) {
+                prpAmount = _rewardParams.prpPerStake;
+                _totals.prpRewards = newPrpTotal;
             }
 
             if (_totals.nftRewards < _limits.nftRewards) {
@@ -435,30 +421,58 @@ contract AdvancedStakeRewardController is
         );
     }
 
-    // Declared `internal` for testing
     // The calling code is assumed to ensure `lockedTill > stakedAt`
     function _computeZkpReward(
         uint256 stakeAmount,
         uint256 lockedTill,
-        uint256 stakedAt
-    ) internal view returns (uint256 zkpAmount) {
-        // No rewarding after the REWARDING_END
-        if (stakedAt >= REWARDING_END) return 0;
-        // No rewarding before the REWARDING_START
-        if (lockedTill <= REWARDING_START) return 0;
+        uint256 stakedAt,
+        RewardParams memory _rewardParams
+    ) internal pure returns (uint256 zkpAmount) {
+        // No rewarding after `endTime`
+        if (stakedAt >= _rewardParams.endTime) return 0;
+        // No rewarding before `startTime`
+        if (lockedTill <= _rewardParams.startTime) return 0;
 
-        uint256 rewardedSince = REWARDING_START > stakedAt
-            ? REWARDING_START
+        uint256 rewardedSince = _rewardParams.startTime > stakedAt
+            ? _rewardParams.startTime
             : stakedAt;
 
-        uint256 rewardedTill = lockedTill > REWARDING_END
-            ? REWARDING_END
+        uint256 rewardedTill = lockedTill > _rewardParams.endTime
+            ? _rewardParams.endTime
             : lockedTill;
 
         uint256 period = rewardedTill - rewardedSince;
-        uint256 apy = getZkpApyAt(rewardedSince);
+        uint256 apy = _getZkpApyWithinRewardedPeriod(
+            _rewardParams,
+            rewardedSince
+        );
+
         // 3153600000 = 365 * 24 * 3600 seconds * 100 percents
         zkpAmount = (stakeAmount * apy * period) / 3153600000;
+    }
+
+    // The calling code is assumed to ensure that
+    // `startTime < time < endTime` and `startZkpApy >= endZkpApy`
+    function _getZkpApyWithinRewardedPeriod(
+        RewardParams memory _rewardParams,
+        uint256 time
+    ) private pure returns (uint256 apy) {
+        unchecked {
+            uint256 fullDrop = uint256(
+                _rewardParams.startZkpApy - _rewardParams.endZkpApy
+            );
+            apy = uint256(_rewardParams.startZkpApy);
+
+            if (fullDrop > 0) {
+                uint256 dropDuration = time - _rewardParams.startTime;
+                uint256 fullDuration = uint256(
+                    _rewardParams.endTime - _rewardParams.startTime
+                );
+                uint256 apyDrop = (fullDrop * dropDuration) / fullDuration;
+
+                apy -= apyDrop;
+            }
+        }
     }
 
     // Allocate for rewards the entire $ZKP balance this contract holds,
@@ -535,7 +549,6 @@ contract AdvancedStakeRewardController is
         }
     }
 
-    // Declared `internal` for testing
     // Calculates and returns the updated reward limit
     function _getUpdatedLimit(
         uint256 available,
@@ -559,5 +572,22 @@ contract AdvancedStakeRewardController is
                 limit = currentLimit > shortage ? currentLimit - shortage : 0;
             }
         }
+    }
+
+    // Set the rewarding params
+    function _setRewardParams(RewardParams memory newParams) private {
+        require(
+            newParams.startTime != 0 &&
+                newParams.endTime > newParams.startTime &&
+                newParams.endTime > timeNow(),
+            "ARC: invalid time"
+        );
+        require(
+            newParams.startZkpApy >= newParams.endZkpApy,
+            "ARC: invalid APY"
+        );
+
+        rewardParams = newParams;
+        emit RewardParamsUpdated(newParams);
     }
 }

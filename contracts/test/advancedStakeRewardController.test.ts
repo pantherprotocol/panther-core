@@ -21,34 +21,48 @@ import {getBlockTimestamp} from '../lib/provider';
 
 describe('AdvancedStakeRewardController', () => {
     const fakeVaultAddress = '0x4321555555555555555555555555555555551234';
-    const startApy = 70;
-    const endApy = 40;
-    const rewardedPeriod = 200;
+    const rewardingPeriod = 200;
     const prpRewardPerStake = 10000;
+    const rewardingStartApy = 70;
+    const rewardingEndApy = 40;
     const advStake = '0xcc995ce8';
     const asrControllerZkpBalance = BigNumber.from(10).pow(24);
-    const asrControllerPrpBalance = BigNumber.from(100000);
+    const asrControllerPrpBalance = BigNumber.from(10 * prpRewardPerStake);
     const asrControllerNftRewardsLimit = BigNumber.from(10);
 
     let asrController: MockAdvancedStakeRewardController;
     let zkpToken: TokenMock;
     let nftToken: ERC721Mock;
     let owner: SignerWithAddress;
+    let staker: SignerWithAddress;
     let rewardMaster: SignerWithAddress;
     let pantherPool: FakePantherPoolV0;
     let prpGrantor: FakePrpGrantor;
-    let start: number;
-    let exitTime: number;
-    let rewardingStart: number;
-    let rewardingEnd: number;
+    let rewardingStartTime: number;
+    let rewardingEndTime: number;
     let snapshotId: number;
 
-    before(async () => {
-        start = await getBlockTimestamp();
-        rewardingStart = start + 10;
-        rewardingEnd = rewardingStart + rewardedPeriod;
+    type RewardParams = {
+        startTime: number;
+        endZkpApy: number;
+        endTime: number;
+        startZkpApy: number;
+        prpPerStake: number;
+    };
 
-        [, owner, rewardMaster] = await ethers.getSigners();
+    const getDefaultRewardParams = (): RewardParams => ({
+        startTime: rewardingStartTime,
+        endTime: rewardingEndTime,
+        startZkpApy: rewardingStartApy,
+        endZkpApy: rewardingEndApy,
+        prpPerStake: prpRewardPerStake,
+    });
+
+    before(async () => {
+        rewardingStartTime = (await getBlockTimestamp()) + 100;
+        rewardingEndTime = rewardingStartTime + rewardingPeriod;
+
+        [, owner, staker, rewardMaster] = await ethers.getSigners();
 
         const ZkpToken = await ethers.getContractFactory('TokenMock');
         zkpToken = (await ZkpToken.connect(owner).deploy()) as TokenMock;
@@ -59,7 +73,7 @@ describe('AdvancedStakeRewardController', () => {
         const FakePantherPoolV0 = await ethers.getContractFactory(
             'FakePantherPoolV0',
         );
-        exitTime = start + 300;
+        const exitTime = rewardingStartTime + rewardingPeriod + 100;
         pantherPool = (await FakePantherPoolV0.deploy(
             fakeVaultAddress,
             exitTime,
@@ -81,65 +95,92 @@ describe('AdvancedStakeRewardController', () => {
             prpGrantor.address,
             zkpToken.address,
             nftToken.address,
-            prpRewardPerStake,
-            rewardingStart,
-            rewardedPeriod,
         )) as MockAdvancedStakeRewardController;
 
-        // send some zkpTokens to the AdvancedStakeRewardController contract
+        await asrController
+            .connect(owner)
+            .updateRewardParams(getDefaultRewardParams());
+
+        // send some ZKPs for rewards
         await zkpToken
             .connect(owner)
             .transfer(asrController.address, asrControllerZkpBalance);
 
+        // grant PRPs for rewards
         await prpGrantor.issueOwnerGrant(
             asrController.address,
             asrControllerPrpBalance,
         );
     });
 
-    describe('getZkpApyAt (public view)', () => {
-        it('should return 0 if called before `rewardingStart`', async () => {
-            expect(await asrController.getZkpApyAt(rewardingStart - 5)).to.eq(
-                0,
+    beforeEach(async () => {
+        snapshotId = await takeSnapshot();
+    });
+
+    afterEach(async () => {
+        await revertSnapshot(snapshotId);
+    });
+
+    describe('getZkpApyAt (external view)', () => {
+        it('should return 0 if called before rewarding start time', async () => {
+            const {startTime} = getDefaultRewardParams();
+
+            expect(await asrController.getZkpApyAt(startTime - 5)).to.eq(0);
+        });
+
+        it('should return `rewardingStartApy` if called on rewarding start time', async () => {
+            const {startTime} = getDefaultRewardParams();
+
+            expect(await asrController.getZkpApyAt(startTime)).to.eq(
+                rewardingStartApy,
             );
         });
 
-        it('should return `startApy` if called on `rewardingStart`', async () => {
-            expect(await asrController.getZkpApyAt(rewardingStart)).to.eq(
-                startApy,
+        it('should return `rewardingEndApy` if called on rewarding end time', async () => {
+            const {endTime} = getDefaultRewardParams();
+
+            expect(await asrController.getZkpApyAt(endTime)).to.eq(
+                rewardingEndApy,
             );
         });
 
-        it('should return `endApy` if called on `rewardingEnd`', async () => {
-            expect(await asrController.getZkpApyAt(rewardingEnd)).to.eq(endApy);
+        it('should return 0 if called after rewarding end time', async () => {
+            const {endTime} = getDefaultRewardParams();
+
+            expect(await asrController.getZkpApyAt(endTime + 100)).to.eq(0);
         });
 
-        it('should return `endApy` if called after `rewardingEnd`', async () => {
-            expect(await asrController.getZkpApyAt(rewardingEnd + 100)).to.eq(
-                endApy,
-            );
-        });
+        it('should return `startZkpApy-(startZkpApy-endZkpApy)/4` if called in between  at `startTime+rewardPeriod/4`', async () => {
+            const {endTime, startTime} = getDefaultRewardParams();
+            const rewardPeriod = endTime - startTime;
 
-        it('should return `startApy-(startApy-endApy)/4` if called at `rewardingStart+rewardedPeriod/4`', async () => {
-            const scaledApyDrop = BigNumber.from(startApy - endApy)
+            const scaledApyDrop = BigNumber.from(
+                rewardingStartApy - rewardingEndApy,
+            )
                 .mul(1e9)
                 .div(4);
-            const expApy = startApy - scaledApyDrop.div(1e9).toNumber();
+            const expApy =
+                rewardingStartApy - scaledApyDrop.div(1e9).toNumber();
             expect(
                 await asrController.getZkpApyAt(
-                    parseInt(`${rewardingStart + rewardedPeriod / 4}`),
+                    parseInt(`${startTime + rewardPeriod / 4}`),
                 ),
             ).to.eq(expApy);
         });
 
-        it('should return `startApy-(startApy-endApy)*3/4` if called at `rewardingStart+rewardedPeriod*3/4`', async () => {
-            const scaledApyDrop = BigNumber.from(startApy - endApy)
+        it('should return `startZkpApy-(startZkpApy-endZkpApy)*3/4` if called at `startTime+rewardPeriod*3/4`', async () => {
+            const {endTime, startTime} = getDefaultRewardParams();
+            const rewardPeriod = endTime - startTime;
+            const scaledApyDrop = BigNumber.from(
+                rewardingStartApy - rewardingEndApy,
+            )
                 .mul(3e9)
                 .div(4);
-            const expApy = startApy - scaledApyDrop.div(1e9).toNumber();
+            const expApy =
+                rewardingStartApy - scaledApyDrop.div(1e9).toNumber();
             expect(
                 await asrController.getZkpApyAt(
-                    parseInt(`${rewardingStart + (rewardedPeriod * 3) / 4}`),
+                    parseInt(`${startTime + (rewardPeriod * 3) / 4}`),
                 ),
             ).to.eq(expApy);
         });
@@ -149,72 +190,108 @@ describe('AdvancedStakeRewardController', () => {
         describe('for a deposit of 0 (zero $ZKPs staked)', () => {
             const stakedAmount = BigNumber.from(0);
 
-            it('should return 0 if called w/ `lockedTill` before `rewardingStart`', async () => {
-                expect(
-                    await asrController.internalComputeZkpReward(
+            it('should revert if called w/ `lockedTill` before `stakedAt`', async () => {
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.startTime + 2;
+                const lockedTill = rewardParams.startTime + 1;
+
+                await expect(
+                    asrController.internalComputeZkpReward(
                         stakedAmount,
-                        start + 2, // lockedTill
-                        start, // stakedAt
+                        lockedTill,
+                        stakedAt,
+                        rewardParams,
                     ),
-                ).to.eq(0);
+                ).to.be.reverted;
             });
 
-            it('should return 0 if called w/ `stakedAt` at `rewardingStart+rewardedPeriod/2`', async () => {
+            it('should return 0 if called w/ `stakedAt` in between rewarding period', async () => {
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt =
+                    rewardParams.startTime +
+                    (rewardParams.endTime - rewardParams.startTime) / 2;
+                const lockedTill = stakedAt + 10;
+                const expReward = 0;
+
                 expect(
                     await asrController.internalComputeZkpReward(
                         stakedAmount,
-                        rewardingStart + rewardedPeriod / 2 + 10, // lockedTill
-                        rewardingStart + rewardedPeriod / 2, // stakedAt
+                        lockedTill,
+                        stakedAt,
+                        rewardParams,
                     ),
-                ).to.eq(0);
+                ).to.eq(expReward);
             });
 
-            it('should return 0 if called w/ `stakedAt` after `rewardingEnd`', async () => {
+            it('should return 0 if called w/ `stakedAt` after rewarding end time', async () => {
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.endTime + 5;
+                const lockedTill = rewardParams.endTime + 10;
+                const expReward = 0;
+
                 expect(
                     await asrController.internalComputeZkpReward(
                         stakedAmount,
-                        rewardingEnd + 10, // lockedTill
-                        rewardingEnd + 5, // stakedAt
+                        lockedTill,
+                        stakedAt,
+                        rewardParams,
                     ),
-                ).to.eq(0);
+                ).to.eq(expReward);
             });
         });
 
         describe('for a deposit of 1e3 $ZKP', () => {
             const stakedAmount = BigNumber.from(1e9).mul(1e12);
 
-            it('should return 0 if called w/ `lockedTill` before `rewardingStart`', async () => {
+            it('should return 0 if called w/ `lockedTill` before rewarding start time', async () => {
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.startTime - 10;
+                const lockedTill = rewardParams.startTime - 5;
+                const expReward = 0;
+
                 expect(
                     await asrController.internalComputeZkpReward(
                         stakedAmount,
-                        rewardingStart - 5, // lockedTill
-                        rewardingStart - 10, // stakedAt
+                        lockedTill,
+                        stakedAt,
+                        rewardParams,
                     ),
-                ).to.eq(0);
+                ).to.eq(expReward);
             });
 
-            it('should return zero amount if called w/ `stakedAt` after `rewardingEnd`', async () => {
+            it('should return zero amount if called w/ `stakedAt` after rewarding end time', async () => {
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.endTime + 5;
+                const lockedTill = rewardParams.endTime + 10;
+                const expReward = 0;
+
                 expect(
                     await asrController.internalComputeZkpReward(
                         stakedAmount,
-                        rewardingEnd + 10, // lockedTill
-                        rewardingEnd + 5, // stakedAt
+                        lockedTill,
+                        stakedAt,
+                        rewardParams,
                     ),
-                ).to.eq(0);
+                ).to.eq(expReward);
             });
 
-            describe('when `stakedAt` is `rewardingStart` and `lockedTill` equals to `rewardingEnd`', () => {
+            describe('when `stakedAt` is rewarding start time and `lockedTill` equals to rewarding end time', () => {
                 it('should return the expected reward amount', async () => {
+                    const rewardParams = getDefaultRewardParams();
+                    const stakedAt = rewardParams.startTime;
+                    const lockedTill = rewardParams.endTime;
+
                     const expReward = stakedAmount
-                        .mul(startApy)
-                        .mul(rewardedPeriod)
+                        .mul(rewardParams.startZkpApy)
+                        .mul(rewardParams.endTime - rewardParams.startTime)
                         .div(365 * 86400 * 100);
 
                     expect(
                         await asrController.internalComputeZkpReward(
                             stakedAmount,
-                            rewardingEnd, // lockedTill
-                            rewardingStart, // stakedAt
+                            lockedTill,
+                            stakedAt,
+                            rewardParams,
                         ),
                     ).to.eq(expReward);
                 });
@@ -223,32 +300,37 @@ describe('AdvancedStakeRewardController', () => {
 
         describe('for predefined test cases', () => {
             const stakedAmount = BigNumber.from(33277).mul(1e14); // 3.3277 $ZKP
-            const scApyDropPerSecond = BigNumber.from(startApy - endApy)
-                .mul(1e9)
-                .div(rewardedPeriod);
 
             it('should return the expected reward amount for the case 1', async () => {
-                // Staked after the `rewardingStart`, till before the `rewardingEnd`
-                const stakedAt = rewardingStart + 23;
-                const lockedTill = rewardingStart + rewardedPeriod / 2;
-                const expReward = getRewardAmount(lockedTill, stakedAt);
+                // Staked after the rewarding start time, till before the rewarding end time
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.startTime + 23;
+                const lockedTill = rewardParams.endTime - 23;
+                const expReward = getRewardAmount(
+                    stakedAmount,
+                    lockedTill,
+                    stakedAt,
+                    rewardParams,
+                );
 
                 expect(
                     await asrController.internalComputeZkpReward(
                         stakedAmount,
                         lockedTill,
                         stakedAt,
+                        rewardParams,
                     ),
                 ).to.eq(expReward);
             });
 
             it('should return the expected reward amount for the case 2', async () => {
-                // Staked before the `rewardingStart`, till before the `rewardingStart`
-                const stakedAt = rewardingStart - 4;
-                const lockedTill = rewardingStart - 1;
-                const expReward = getRewardAmount(lockedTill, stakedAt);
+                // Staked before the rewarding start time, till before the rewarding start time
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.startTime - 4;
+                const lockedTill = rewardParams.startTime - 1;
+                const expReward = 0;
 
-                // no rewards before the `rewardingStart`
+                // no rewards before the rewarding start time
                 assert(expReward.toString() == '0');
 
                 expect(
@@ -256,17 +338,24 @@ describe('AdvancedStakeRewardController', () => {
                         stakedAmount,
                         lockedTill,
                         stakedAt,
+                        rewardParams,
                     ),
                 ).to.eq(expReward);
             });
 
             it('should return the expected reward amount for the case 3', async () => {
-                // Staked before the `rewardingStart`, till on the `rewardingStart`
-                const stakedAt = rewardingStart - 4;
-                const lockedTill = rewardingStart;
-                const expReward = getRewardAmount(lockedTill, stakedAt);
+                // Staked before the rewarding start time, till the rewarding start time
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.startTime - 4;
+                const lockedTill = rewardParams.startTime;
+                const expReward = getRewardAmount(
+                    stakedAmount,
+                    lockedTill,
+                    stakedAt,
+                    rewardParams,
+                );
 
-                // no rewards before the `rewardingStart`
+                // no rewards before the rewarding start time
                 assert(expReward.toString() == '0');
 
                 expect(
@@ -274,16 +363,25 @@ describe('AdvancedStakeRewardController', () => {
                         stakedAmount,
                         lockedTill,
                         stakedAt,
+                        getDefaultRewardParams(),
                     ),
                 ).to.eq(expReward);
             });
 
             it('should return the expected reward amount for the case 4', async () => {
-                // Staked before the `rewardingStart`, till before the `rewardingEnd`
-                const stakedAt = rewardingStart - 4;
-                const lockedTill = rewardingStart + rewardedPeriod / 2;
-                // reward shall be the same as for a stake done at rewardingStart ...
-                const expReward = getRewardAmount(lockedTill, rewardingStart);
+                // Staked before the rewarding start time, till before the rewarding end time
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.startTime - 4;
+                const lockedTill =
+                    rewardParams.startTime +
+                    (rewardParams.endTime - rewardParams.startTime) / 2;
+                // reward shall be the same as for a stake done exactly at rewarding start time ...
+                const expReward = getRewardAmount(
+                    stakedAmount,
+                    lockedTill,
+                    rewardParams.startTime,
+                    rewardParams,
+                );
                 // ... and it shall not be 0
                 assert(BigNumber.from(expReward).gt(0));
 
@@ -292,62 +390,97 @@ describe('AdvancedStakeRewardController', () => {
                         stakedAmount,
                         lockedTill,
                         stakedAt,
+                        getDefaultRewardParams(),
                     ),
                 ).to.eq(expReward);
             });
 
             it('should return the expected reward amount for the case 5', async () => {
-                // Staked on the `rewardingStart`, till before the `rewardingEnd`
-                const stakedAt = rewardingStart;
-                const lockedTill = rewardingStart + rewardedPeriod / 2;
-                const expReward = getRewardAmount(lockedTill, stakedAt);
+                // Staked on the rewarding start time, till before the rewarding end time
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.startTime;
+                const lockedTill =
+                    rewardParams.startTime +
+                    (rewardParams.endTime - rewardParams.startTime) / 2;
+                const expReward = getRewardAmount(
+                    stakedAmount,
+                    lockedTill,
+                    stakedAt,
+                    rewardParams,
+                );
 
                 expect(
                     await asrController.internalComputeZkpReward(
                         stakedAmount,
                         lockedTill,
                         stakedAt,
+                        getDefaultRewardParams(),
                     ),
                 ).to.eq(expReward);
             });
 
             it('should return the expected reward amount for the case 6', async () => {
-                // Staked after the `rewardingStart`, till before the `rewardingEnd`
-                const stakedAt = rewardingStart + 10;
-                const lockedTill = rewardingStart + rewardedPeriod / 2;
-                const expReward = getRewardAmount(lockedTill, stakedAt);
+                // Staked after the rewarding start time, till before the rewarding end time
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.startTime + 10;
+                const lockedTill =
+                    rewardParams.startTime +
+                    (rewardParams.endTime - rewardParams.startTime) / 2;
+                const expReward = getRewardAmount(
+                    stakedAmount,
+                    lockedTill,
+                    stakedAt,
+                    rewardParams,
+                );
 
                 expect(
                     await asrController.internalComputeZkpReward(
                         stakedAmount,
                         lockedTill,
                         stakedAt,
+                        getDefaultRewardParams(),
                     ),
                 ).to.eq(expReward);
             });
 
             it('should return the expected reward amount for the case 7', async () => {
-                // Staked after the `rewardingStart`, till after the `rewardingEnd`
-                const stakedAt = rewardingStart + 10;
-                const lockedTill = rewardingStart + rewardedPeriod / 2 + 300;
-                const expReward = getRewardAmount(lockedTill, stakedAt);
+                // Staked after the rewarding start time, till after the rewarding end time
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.startTime + 10;
+                const lockedTill =
+                    rewardParams.startTime +
+                    (rewardParams.endTime - rewardParams.startTime) / 2 +
+                    300;
+                const expReward = getRewardAmount(
+                    stakedAmount,
+                    lockedTill,
+                    stakedAt,
+                    rewardParams,
+                );
 
                 expect(
                     await asrController.internalComputeZkpReward(
                         stakedAmount,
                         lockedTill,
                         stakedAt,
+                        getDefaultRewardParams(),
                     ),
                 ).to.eq(expReward);
             });
 
             it('should return the expected reward amount for the case 8', async () => {
-                // Staked on the `rewardingEnd`, till after that
-                const stakedAt = rewardingEnd;
-                const lockedTill = rewardingEnd + 300;
-                const expReward = getRewardAmount(lockedTill, stakedAt);
+                // Staked on the rewarding end time, till after that
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.endTime;
+                const lockedTill = rewardParams.endTime + 300;
+                const expReward = getRewardAmount(
+                    stakedAmount,
+                    lockedTill,
+                    stakedAt,
+                    rewardParams,
+                );
 
-                // no rewards on and after the `rewardingEnd`
+                // no rewards on and after the rewarding end time
                 assert(expReward.toString() == '0');
 
                 expect(
@@ -355,17 +488,24 @@ describe('AdvancedStakeRewardController', () => {
                         stakedAmount,
                         lockedTill,
                         stakedAt,
+                        getDefaultRewardParams(),
                     ),
                 ).to.eq(expReward);
             });
 
             it('should return the expected reward amount for the case 9', async () => {
-                // Staked after the `rewardingEnd`, till even later
-                const stakedAt = rewardingEnd + 10;
-                const lockedTill = rewardingEnd + 300;
-                const expReward = getRewardAmount(lockedTill, stakedAt);
+                // Staked after the rewarding end time, till even later
+                const rewardParams = getDefaultRewardParams();
+                const stakedAt = rewardParams.endTime + 10;
+                const lockedTill = rewardParams.endTime + 300;
+                const expReward = getRewardAmount(
+                    stakedAmount,
+                    lockedTill,
+                    stakedAt,
+                    rewardParams,
+                );
 
-                // no rewards after the `rewardingEnd`
+                // no rewards after the rewarding end time
                 assert(expReward.toString() == '0');
 
                 expect(
@@ -373,34 +513,47 @@ describe('AdvancedStakeRewardController', () => {
                         stakedAmount,
                         lockedTill,
                         stakedAt,
+                        getDefaultRewardParams(),
                     ),
                 ).to.eq(expReward);
             });
 
-            function getRewardAmount(lockedTill: number, stakedAt: number) {
+            function getRewardAmount(
+                stakedAmount: BigNumber,
+                lockedTill: number,
+                stakedAt: number,
+                rewardParams: RewardParams,
+            ) {
                 assert(lockedTill > stakedAt);
 
-                // No rewards for stakes withdrawn on or before the `rewardingStart`
-                if (lockedTill <= rewardingStart) return 0;
+                // No rewards for stakes withdrawn on or before the `rewardParams.startTime`
+                if (lockedTill <= rewardParams.startTime) return 0;
 
-                // No rewards for stakes made on or after the `rewardingEnd`
-                if (stakedAt >= rewardingEnd) return 0;
+                // No rewards for stakes made on or after the rewarding end time
+                if (stakedAt >= rewardParams.endTime) return 0;
 
                 const rewardedSince =
-                    stakedAt >= rewardingStart ? stakedAt : rewardingStart;
+                    stakedAt >= rewardParams.startTime
+                        ? stakedAt
+                        : rewardParams.startTime;
                 const rewardedTill =
-                    lockedTill >= rewardingEnd ? rewardingEnd : lockedTill;
-                const rewardedPeriod = rewardedTill - rewardedSince;
-                if (rewardedPeriod == 0) return 0;
+                    lockedTill >= rewardParams.endTime
+                        ? rewardParams.endTime
+                        : lockedTill;
+                const period = rewardedTill - rewardedSince;
+                if (period == 0) return 0;
 
-                const scaledApyDrop = scApyDropPerSecond.mul(
-                    stakedAt - rewardingStart,
+                const apyDiff = BigNumber.from(
+                    rewardParams.startZkpApy - rewardParams.endZkpApy,
                 );
-                const apy = startApy - scaledApyDrop.div(1e9).toNumber();
+                const apyDrop = apyDiff
+                    .mul(rewardedSince - rewardParams.startTime)
+                    .div(rewardParams.endTime - rewardParams.startTime);
+                const apy = rewardParams.startZkpApy - apyDrop.toNumber();
 
                 return stakedAmount
                     .mul(apy)
-                    .mul(rewardedPeriod)
+                    .mul(period)
                     .div(365 * 24 * 3600 * 100);
             }
         });
@@ -572,8 +725,6 @@ describe('AdvancedStakeRewardController', () => {
 
     describe('updateZkpAndPrpRewardsLimit (external)', () => {
         beforeEach(async () => {
-            snapshotId = await takeSnapshot();
-
             // Make sure the allowance is not yet set
             expect(
                 await zkpToken.allowance(
@@ -581,10 +732,6 @@ describe('AdvancedStakeRewardController', () => {
                     fakeVaultAddress,
                 ),
             ).to.be.eq(BigNumber.from(0));
-        });
-
-        afterEach(async () => {
-            await revertSnapshot(snapshotId);
         });
 
         it('should update the PRP reward limits', async () => {
@@ -595,7 +742,7 @@ describe('AdvancedStakeRewardController', () => {
             );
         });
 
-        it('should update the ZKP reward limits and approve the Vault to spend $ZKP balance', async () => {
+        it('should update ZKP reward limit and approve Vault as spender', async () => {
             await asrController.updateZkpAndPrpRewardsLimit();
 
             expect((await asrController.limits()).zkpRewards).to.be.eq(
@@ -613,8 +760,6 @@ describe('AdvancedStakeRewardController', () => {
 
     describe('setNftRewardLimit (external)', () => {
         beforeEach(async () => {
-            snapshotId = await takeSnapshot();
-
             assert(
                 !(await nftToken.isApprovedForAll(
                     asrController.address,
@@ -623,12 +768,8 @@ describe('AdvancedStakeRewardController', () => {
             );
         });
 
-        afterEach(async () => {
-            await revertSnapshot(snapshotId);
-        });
-
         describe('if called by the owner', () => {
-            it('should update the NFT rewards limit and set the Vault as the operator', async () => {
+            it('should update NFT reward limit and set Vault as operator', async () => {
                 await asrController
                     .connect(owner)
                     .setNftRewardLimit(asrControllerNftRewardsLimit);
@@ -688,74 +829,44 @@ describe('AdvancedStakeRewardController', () => {
 
     describe('_generateRewards (internal)', () => {
         let message: string;
-        const amountToStake = ethers.utils.hexZeroPad(
-            ethers.utils.parseEther('1000').toHexString(),
+        const amountToStake = ethers.utils.parseEther('1000');
+        const amountToStakeStr = ethers.utils.hexZeroPad(
+            amountToStake.toHexString(),
             12,
         );
 
-        function generateMessage(
-            address: string,
-            amount: string,
-            stakedAt: string,
-            lockedTill: string,
-        ) {
-            return (
-                '0x' +
-                address.replace('0x', '') + // staker
-                amount.replace('0x', '') + // amount
-                '0000002e' + // id
-                stakedAt.replace('0x', '') + // stakedAt
-                lockedTill.replace('0x', '') + // lockedTill
-                '01324649' + // claimedAt
-                data.replace('0x', '')
-            ).toLowerCase();
-        }
-
-        function checkTotals(
+        async function checkTotals(
             scZkpStaked: BigNumberish,
             zkpRewards: BigNumberish,
             prpRewards: BigNumberish,
             nftRewards: BigNumberish,
         ) {
-            it('should return expected total (scaled) amount of $ZKPs staked so far', async () => {
-                expect((await asrController.totals()).scZkpStaked).to.be.eq(
-                    BigNumber.from(scZkpStaked),
-                );
-            });
-
-            it('should return expected total amount of $ZKPs rewarded so far', async () => {
-                expect((await asrController.totals()).zkpRewards).to.be.eq(
-                    BigNumber.from(zkpRewards),
-                );
-            });
-            it('should return expected total amount of PRPs rewarded so far', async () => {
-                expect((await asrController.totals()).prpRewards).to.be.eq(
-                    prpRewards,
-                );
-            });
-
-            it('should return expected total number of NFTs rewarded so far', async () => {
-                expect((await asrController.totals()).nftRewards).to.be.eq(
-                    nftRewards,
-                );
-            });
+            expect((await asrController.totals()).scZkpStaked).to.be.eq(
+                BigNumber.from(scZkpStaked),
+                'scZkpStaked',
+            );
+            expect((await asrController.totals()).zkpRewards).to.be.eq(
+                BigNumber.from(zkpRewards),
+                'zkpRewards',
+            );
+            expect((await asrController.totals()).prpRewards).to.be.eq(
+                prpRewards,
+                'prpRewards',
+            );
+            expect((await asrController.totals()).nftRewards).to.be.eq(
+                nftRewards,
+                'nftRewards',
+            );
         }
-
-        before(async () => {
-            snapshotId = await takeSnapshot();
-        });
-
-        after(async () => {
-            await revertSnapshot(snapshotId);
-        });
 
         describe('Failure', () => {
             it('should revert when stake amount is 0', async () => {
+                const {endTime, startTime} = getDefaultRewardParams();
                 const message = generateMessage(
-                    owner.address,
+                    staker.address,
                     '000000000000000000000000',
-                    ethers.utils.hexValue(rewardingStart),
-                    ethers.utils.hexValue(rewardingEnd),
+                    ethers.utils.hexValue(startTime),
+                    ethers.utils.hexValue(endTime),
                 );
 
                 await expect(
@@ -764,11 +875,12 @@ describe('AdvancedStakeRewardController', () => {
             });
 
             it('should revert when stake time is greater than lock time', async () => {
+                const {endTime, startTime} = getDefaultRewardParams();
                 const message = generateMessage(
                     owner.address,
                     '0a0b0c0d0e0f000000ffffff',
-                    ethers.utils.hexValue(rewardingEnd),
-                    ethers.utils.hexValue(rewardingStart),
+                    ethers.utils.hexValue(endTime),
+                    ethers.utils.hexValue(startTime),
                 );
 
                 await expect(
@@ -777,11 +889,12 @@ describe('AdvancedStakeRewardController', () => {
             });
 
             it('should revert when not enough reward is available', async () => {
+                const {endTime, startTime} = getDefaultRewardParams();
                 const message = generateMessage(
-                    owner.address,
+                    staker.address,
                     '0a0b0c0d0e0f000000ffffff',
-                    ethers.utils.hexValue(rewardingStart),
-                    ethers.utils.hexValue(rewardingEnd),
+                    ethers.utils.hexValue(startTime),
+                    ethers.utils.hexValue(endTime),
                 );
 
                 await expect(
@@ -791,103 +904,130 @@ describe('AdvancedStakeRewardController', () => {
         });
 
         describe('Generate rewards', () => {
-            // amountToStake * startApy *  rewardedPeriod / 100 / 365 / 86400
-            const expectedZkpReward = 4439370877727042;
-            // 1000e18 / 1e15
-            const expectedScZkpStaked = 1000e3;
+            let expZkpReward: BigNumber;
+            let expScZkpStaked: BigNumber;
+            let expPrpReward: number;
 
             beforeEach(async () => {
+                const rewardParams = getDefaultRewardParams();
+                expZkpReward = amountToStake
+                    .mul(rewardParams.startZkpApy)
+                    .mul(rewardParams.endTime - rewardParams.startTime)
+                    .div(100 * 365 * 86400);
+                expScZkpStaked = amountToStake.div(1e15);
+                expPrpReward = rewardParams.prpPerStake;
+
                 await asrController.updateZkpAndPrpRewardsLimit();
                 await asrController
                     .connect(owner)
                     .setNftRewardLimit(asrControllerNftRewardsLimit);
 
+                const {endTime, startTime} = getDefaultRewardParams();
                 message = generateMessage(
-                    owner.address,
-                    amountToStake,
-                    ethers.utils.hexValue(rewardingStart),
-                    ethers.utils.hexValue(rewardingEnd),
+                    staker.address,
+                    amountToStakeStr,
+                    ethers.utils.hexValue(startTime),
+                    ethers.utils.hexValue(endTime),
                 );
             });
 
             describe('when called for the 1st time', () => {
-                it('should emit `RewardGenerated` event w/ expected params', async () => {
+                it('should emit `RewardGenerated` and set totals w/ expected params', async () => {
                     await expect(asrController.internalGenerateRewards(message))
                         .to.emit(asrController, 'RewardGenerated')
                         .withArgs(
-                            owner.address,
-                            0,
-                            expectedZkpReward,
-                            prpRewardPerStake,
-                            1,
+                            staker.address,
+                            0, // firstLeafId
+                            expZkpReward,
+                            expPrpReward,
+                            1, // nft
                         );
-                });
 
-                checkTotals(
-                    expectedScZkpStaked,
-                    expectedZkpReward,
-                    prpRewardPerStake,
-                    1,
-                );
+                    await checkTotals(
+                        expScZkpStaked,
+                        expZkpReward,
+                        expPrpReward,
+                        1,
+                    );
+                });
             });
 
             describe('when called for the 2nd time', () => {
-                it('should emit `RewardGenerated` event w/ expected params', async () => {
+                it('should emit `RewardGenerated` and set totals w/ expected params', async () => {
+                    await expect(
+                        asrController.internalGenerateRewards(message),
+                    );
+
                     await expect(asrController.internalGenerateRewards(message))
                         .to.emit(asrController, 'RewardGenerated')
                         .withArgs(
-                            owner.address,
-                            4,
-                            expectedZkpReward,
-                            prpRewardPerStake,
-                            1,
+                            staker.address,
+                            4, // firstLeafId
+                            expZkpReward,
+                            expPrpReward,
+                            1, // nft
                         );
-                });
 
-                checkTotals(
-                    expectedScZkpStaked * 2,
-                    expectedZkpReward * 2,
-                    prpRewardPerStake * 2,
-                    2,
-                );
+                    await checkTotals(
+                        expScZkpStaked.mul(2),
+                        expZkpReward.mul(2),
+                        expPrpReward * 2,
+                        2,
+                    );
+                });
             });
 
             describe('when called for the 3rd time', () => {
-                it('should emit `RewardGenerated` event w/ expected params', async () => {
+                it('should emit `RewardGenerated` and set totals w/ expected params', async () => {
+                    await expect(
+                        asrController.internalGenerateRewards(message),
+                    );
+                    await expect(
+                        asrController.internalGenerateRewards(message),
+                    );
+
                     await expect(asrController.internalGenerateRewards(message))
                         .to.emit(asrController, 'RewardGenerated')
                         .withArgs(
-                            owner.address,
-                            8,
-                            expectedZkpReward,
-                            prpRewardPerStake,
-                            1,
+                            staker.address,
+                            8, // firstLeafId
+                            expZkpReward,
+                            expPrpReward,
+                            1, // nft
                         );
-                });
 
-                checkTotals(
-                    expectedScZkpStaked * 3,
-                    BigNumber.from(expectedZkpReward).mul(3).toString(),
-                    prpRewardPerStake * 3,
-                    3,
-                );
+                    await checkTotals(
+                        expScZkpStaked.mul(3),
+                        expZkpReward.mul(3),
+                        expPrpReward * 3,
+                        3,
+                    );
+                });
             });
         });
     });
 
     describe('getRewardAdvice (external)', () => {
-        beforeEach(async () => {
-            snapshotId = await takeSnapshot();
-        });
+        let message: string;
+        const amountToStakeStr = ethers.utils.hexZeroPad(
+            ethers.utils.parseEther('1').toHexString(),
+            12,
+        );
 
-        afterEach(async () => {
-            await revertSnapshot(snapshotId);
+        beforeEach(async () => {
+            const {endTime, startTime} = getDefaultRewardParams();
+            message = generateMessage(
+                staker.address,
+                amountToStakeStr,
+                ethers.utils.hexValue(startTime),
+                ethers.utils.hexValue(endTime),
+            );
         });
 
         describe('Failure', () => {
             it('should revert when caller is not reward master', async () => {
                 await expect(
-                    asrController.getRewardAdvice(advStake, '0x00'),
+                    asrController.getRewardAdvice(advStake, message),
                 ).to.revertedWith('ARC: unauthorized');
             });
 
@@ -895,20 +1035,13 @@ describe('AdvancedStakeRewardController', () => {
                 await expect(
                     asrController
                         .connect(rewardMaster)
-                        .getRewardAdvice('0x00000000', '0x00'),
+                        .getRewardAdvice('0x00000000', message),
                 ).to.revertedWith('ARC: unsupported action');
             });
         });
     });
 
     describe('rescueErc20 (external)', () => {
-        beforeEach(async () => {
-            snapshotId = await takeSnapshot();
-        });
-
-        afterEach(async () => {
-            await revertSnapshot(snapshotId);
-        });
         describe('Failure', () => {
             it('should revert when called by non owner', async () => {
                 await expect(
@@ -929,8 +1062,9 @@ describe('AdvancedStakeRewardController', () => {
 
         describe('Rescue ZKP', () => {
             it('should rescue ZKP', async () => {
-                // fast forward to forbidden period
-                await increaseTime(90 * 86400 + 100);
+                // fast-forward to forbidden period
+                const {endTime} = getDefaultRewardParams();
+                await increaseTime(endTime + 10);
                 await mineBlock();
 
                 const initialOwnerBalance = await zkpToken.balanceOf(
@@ -947,4 +1081,129 @@ describe('AdvancedStakeRewardController', () => {
             });
         });
     });
+
+    describe('updateRewardParams (external)', () => {
+        describe('if new rewarding parameters are invalid', () => {
+            it('should revert when new end time is less than new start time', async () => {
+                const rewardParams = getDefaultRewardParams();
+                rewardParams.endTime = rewardParams.startTime - 1;
+
+                await expect(
+                    asrController
+                        .connect(owner)
+                        .updateRewardParams(rewardParams),
+                ).revertedWith('ARC: invalid time');
+            });
+
+            it('should revert when new end time is equal to new start time', async () => {
+                const rewardParams = getDefaultRewardParams();
+                rewardParams.endTime = rewardParams.startTime;
+
+                await expect(
+                    asrController
+                        .connect(owner)
+                        .updateRewardParams(rewardParams),
+                ).revertedWith('ARC: invalid time');
+            });
+
+            it('should revert when new start APY is less than new end APY', async () => {
+                const rewardParams = {
+                    ...getDefaultRewardParams(),
+                    startZkpApy: 50,
+                    endZkpApy: 60,
+                };
+
+                await expect(
+                    asrController
+                        .connect(owner)
+                        .updateRewardParams(rewardParams),
+                ).revertedWith('ARC: invalid APY');
+            });
+        });
+
+        describe('if called by owner', () => {
+            it('should update the times, APYs and PRP reward per stake', async () => {
+                const oldParams = getDefaultRewardParams();
+                const rewardParams = {
+                    startTime: oldParams.startTime + 10,
+                    endTime: oldParams.endTime + 5,
+                    startZkpApy: oldParams.startZkpApy + 3,
+                    endZkpApy: oldParams.endZkpApy + 6,
+                    prpPerStake: oldParams.prpPerStake + 777,
+                };
+
+                expect(
+                    await asrController
+                        .connect(owner)
+                        .updateRewardParams(rewardParams),
+                )
+                    .to.emit(asrController, 'RewardParamsUpdated')
+                    .withArgs([
+                        rewardParams.startTime,
+                        rewardParams.endTime,
+                        rewardParams.startZkpApy,
+                        rewardParams.endZkpApy,
+                    ]);
+
+                const actualParams = await asrController.rewardParams();
+
+                expect(actualParams.startTime).to.be.eq(rewardParams.startTime);
+                expect(actualParams.endTime).to.be.eq(rewardParams.endTime);
+                expect(actualParams.startZkpApy).to.be.eq(
+                    rewardParams.startZkpApy,
+                );
+                expect(actualParams.endZkpApy).to.be.eq(rewardParams.endZkpApy);
+                expect(actualParams.prpPerStake).to.be.eq(
+                    rewardParams.prpPerStake,
+                );
+            });
+
+            it('should NOT revert if new start APY is equal to new end APY', async () => {
+                const rewardParams = {
+                    ...getDefaultRewardParams(),
+                    startZkpApy: 50,
+                    endZkpApy: 50,
+                };
+
+                expect(
+                    await asrController
+                        .connect(owner)
+                        .updateRewardParams(rewardParams),
+                )
+                    .to.emit(asrController, 'RewardParamsUpdated')
+                    .withArgs([
+                        rewardParams.startTime,
+                        rewardParams.endTime,
+                        rewardParams.startZkpApy,
+                        rewardParams.startZkpApy,
+                    ]);
+            });
+        });
+
+        describe('if called by non-owner', () => {
+            it('should revert', async () => {
+                await expect(
+                    asrController.updateRewardParams(getDefaultRewardParams()),
+                ).revertedWith('ImmOwn: unauthorized');
+            });
+        });
+    });
+
+    function generateMessage(
+        address: string,
+        amount: string,
+        stakedAt: string,
+        lockedTill: string,
+    ) {
+        return (
+            '0x' +
+            address.replace('0x', '') + // staker
+            amount.replace('0x', '') + // amount
+            '0000002e' + // id
+            stakedAt.replace('0x', '') + // stakedAt
+            lockedTill.replace('0x', '') + // lockedTill
+            '01324649' + // claimedAt
+            data.replace('0x', '')
+        ).toLowerCase();
+    }
 });

@@ -5,7 +5,7 @@ import {Button} from '@mui/material';
 import './styles.scss';
 
 const PrimaryActionButton = (props: {
-    onClick: any;
+    onClick?: any;
     styles?: string;
     disabled?: boolean;
     children: string | ReactElement;
@@ -15,7 +15,7 @@ const PrimaryActionButton = (props: {
             <Button
                 disabled={props.disabled ?? false}
                 className={`primary-action-button ${props.styles ?? ''}`}
-                onClick={props.onClick}
+                onClick={props.onClick ?? null}
             >
                 {props.children}
             </Button>

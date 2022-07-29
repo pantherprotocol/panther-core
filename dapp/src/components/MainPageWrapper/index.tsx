@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import {Box} from '@mui/system';
 
 import {useAppSelector} from '../../redux/hooks';
 import {blurSelector} from '../../redux/slices/blur';
+import {isBlockedCountry} from '../../services/geo-location';
+import BlockedUser from '../BlockedUser';
 import {Footer} from '../Footer';
 import Header from '../Header';
 
@@ -15,6 +17,16 @@ export const MainPageWrapper = (props: {
     children: React.ReactNode;
 }): React.ReactElement => {
     const isBlur = useAppSelector(blurSelector);
+    const [blockedUser, setBlockedUser] = useState<boolean>(false);
+
+    useEffect(() => {
+        async function checkIfBlockedUser() {
+            const blockedUser = await isBlockedCountry();
+            setBlockedUser(!!blockedUser ?? false);
+        }
+        checkIfBlockedUser();
+    }, []);
+
     return (
         <Box
             className={`main-page ${isBlur && 'isBlur'}`}
@@ -23,13 +35,19 @@ export const MainPageWrapper = (props: {
             }}
         >
             <CssBaseline />
-            <Box className="header-container">
-                <Header />
-            </Box>
-            <Box className="body-container">{props.children}</Box>
-            <Box className="footer-container">
-                <Footer />
-            </Box>
+            {blockedUser ? (
+                <BlockedUser />
+            ) : (
+                <>
+                    <Box className="header-container">
+                        <Header />
+                    </Box>
+                    <Box className="body-container">{props.children}</Box>
+                    <Box className="footer-container">
+                        <Footer />
+                    </Box>
+                </>
+            )}
         </Box>
     );
 };

@@ -48,6 +48,7 @@ export const env: EnvVariables = {
     MASP_CHAIN_ID: process.env.MASP_CHAIN_ID,
     FAUCET_CHAIN_IDS: process.env.FAUCET_CHAIN_IDS,
     TOKEN_SYMBOL: process.env.TOKEN_SYMBOL,
+    BLOCKED_COUNTRIES: process.env.BLOCKED_COUNTRIES,
 
     STAKE_REWARD_CONTROLLER_2_CONTRACT_1:
         process.env.STAKE_REWARD_CONTROLLER_2_CONTRACT_1,
@@ -156,6 +157,10 @@ export const env: EnvVariables = {
 
     PRP_GRANTOR_CONTRACT_80001: process.env.PRP_GRANTOR_CONTRACT_80001,
 };
+
+export const BLOCKED_COUNTRIES = env.BLOCKED_COUNTRIES
+    ? env.BLOCKED_COUNTRIES.split(',')
+    : [];
 
 export const CHAIN_IDS = env.CHAIN_IDS
     ? env.CHAIN_IDS.split(',').map(item => Number(item))

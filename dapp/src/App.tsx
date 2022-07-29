@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useCallback, useEffect} from 'react';
 
 import {createTheme} from '@mui/material';
 import {ThemeProvider} from '@mui/material/styles';
 import {ReactNotifications} from 'react-notifications-component';
 import {Route} from 'react-router';
 import {BrowserRouter as Router, Switch} from 'react-router-dom';
+
+import {isBlockedCountry} from '../src/services/geo-location';
 
 import './lib/bigint-serialize';
 import ContractsPage from './pages/Contracts';
@@ -26,6 +28,20 @@ const theme = createTheme({
 
 function App() {
     const missing = getMissingEnvVars();
+
+    const checkIfBlocked = useCallback(async () => {
+        const response = await isBlockedCountry();
+        if (response instanceof Error) {
+            console.error(`Failed to get geo-location data :  ${response}`);
+        }
+        console.log(
+            `this user is ${response ? 'not' : ''} allowed to use the app`,
+        );
+    }, []);
+
+    useEffect(() => {
+        checkIfBlocked();
+    }, [checkIfBlocked]);
 
     if (missing.length > 0) {
         return (

@@ -11,24 +11,27 @@ type Featuretype = {
 
 const T_START = Number(process.env.ADVANCED_STAKING_T_START) * 1000;
 const T_END = Number(process.env.ADVANCED_STAKING_T_END) * 1000;
-const T_UNLOCK = Number(process.env.ADVANCED_STAKING_T_UNLOCK) * 1000;
+const ADVANCED_STAKING_EARLY_REDEMPTION =
+    Number(process.env.ADVANCED_STAKING_EARLY_REDEMPTION) * 1000;
 
-const beginingAtDate = formatLongTime(T_START);
+const beginningAtDate = formatLongTime(T_START);
 const allowedTillDate = formatLongTime(T_END);
-const unstakingAvailableSince = formatLongTime(T_UNLOCK);
+const redeemingAvailableSince = formatLongTime(
+    ADVANCED_STAKING_EARLY_REDEMPTION,
+);
 
 export const featuredata: Featuretype[] = [
     {
         title: 'Advanced Staking is available from:',
-        message: beginingAtDate ?? '-',
+        message: beginningAtDate ?? '-',
     },
     {
         title: 'Advanced Staking is available till:',
         message: allowedTillDate ?? '-',
     },
     {
-        title: 'Unstaking of principal and rewards redeeming are available from: ',
-        message: unstakingAvailableSince ?? '-',
+        title: 'Rewards redeeming is available from: ',
+        message: redeemingAvailableSince ?? '-',
     },
 ];
 

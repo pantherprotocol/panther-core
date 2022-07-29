@@ -16,7 +16,7 @@ export default function UnstakingInfo() {
     const {chainId} = useWeb3React();
 
     const minLockPeriod = useAppSelector(
-        termsSelector(chainId!, StakeType.Classic, 'minLockPeriod'),
+        termsSelector(chainId!, StakeType.Advanced, 'minLockPeriod'),
     );
 
     if (chainId === 1 && !chainHasAdvancedStaking(chainId)) {

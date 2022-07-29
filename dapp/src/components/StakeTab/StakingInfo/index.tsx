@@ -76,10 +76,10 @@ export default function StakingInfo() {
                           minLockPeriod as number,
                       )} days and `
                     : ', and '}
-                create zZKP as rewards in the Multi-Asset Shielded Pool (MASP).
+                create zZKP as rewards in the Multi-Asset Shielded Pool (MASP).{' '}
                 {chainId &&
                     isEthereumNetwork(chainId) &&
-                    ' You may have to wait up to 10 minutes to see this reflected on Polygon. '}
+                    'You may have to wait up to 10 minutes to see this reflected on Polygon. '}
                 By staking your ZKP, you become one of the first people to
                 create zAssets and contribute to bootstrapping and testing of
                 the MASP.

@@ -4,7 +4,7 @@ import mockConsole from 'jest-mock-console';
 
 describe('Advanced stakes', () => {
     process.env.ADVANCED_STAKING_T_START = '1652356800'; // 2022/05/12 12:00 UTC
-    process.env.ADVANCED_STAKING_T_UNLOCK = '1656590400'; // 2022/06/30 12:00 UTC
+    process.env.ADVANCED_STAKING_T_END = '1656590400'; // 2022/06/30 12:00 UTC
 
     // Next line produces the following lint error, therefore disabled:
     // "Require statement not part of import statement
@@ -14,7 +14,7 @@ describe('Advanced stakes', () => {
         zZkpReward,
         prpReward,
         T_START,
-        T_UNLOCK,
+        T_END,
     } = require('../../src/services/rewards'); // eslint-disable-line
 
     const currentTime = new Date('2022-05-17T12:00:00Z'); // 5 days after start
@@ -22,9 +22,9 @@ describe('Advanced stakes', () => {
     const beforeStart = T_START - tenDays;
     const start = T_START;
     const afterStart = T_START + tenDays;
-    const beforeEnd = T_UNLOCK - tenDays;
-    const end = T_UNLOCK;
-    const afterEnd = T_UNLOCK + tenDays;
+    const beforeEnd = T_END - tenDays;
+    const end = T_END;
+    const afterEnd = T_END + tenDays;
 
     describe('Linear APY', () => {
         const currentApy = getAdvStakingAPY(Math.floor(currentTime.getTime()));
@@ -38,9 +38,9 @@ describe('Advanced stakes', () => {
                 T_START - tenDays,
                 T_START,
                 T_START + tenDays,
-                T_UNLOCK - tenDays,
-                T_UNLOCK,
-                T_UNLOCK + tenDays,
+                T_END - tenDays,
+                T_END,
+                T_END + tenDays,
             ];
             dates.forEach((date: number) => {
                 const apy = getAdvStakingAPY(date);
@@ -71,34 +71,29 @@ describe('Advanced stakes', () => {
         });
 
         it('should always be less than staked amount', () => {
-            const dates = [
-                T_START,
-                T_START + tenDays,
-                T_UNLOCK - tenDays,
-                T_UNLOCK,
-            ];
+            const dates = [T_START, T_START + tenDays, T_END - tenDays, T_END];
             dates.forEach((date: number) => {
                 const stake = utils.parseEther('1000');
-                const reward = zZkpReward(stake, date);
+                const reward = zZkpReward(stake, date, T_END);
                 expect(stake.gte(reward)).toBe(true);
             });
         });
 
         it('should have exact value at beginning of staking', () => {
             const stake = utils.parseEther('1000');
-            const reward = zZkpReward(stake, start);
+            const reward = zZkpReward(stake, start, T_END);
             expect(utils.formatEther(reward).toString()).toEqual('93.972');
         });
 
         it('should have exact value 10 days before end of staking', () => {
             const stake = utils.parseEther('1000');
-            const reward = zZkpReward(stake, beforeEnd);
+            const reward = zZkpReward(stake, beforeEnd, T_END);
             expect(utils.formatEther(reward).toString()).toEqual('13.726');
         });
 
         it('should return max rewards if time is before start', () => {
             const stake = utils.parseEther('1000');
-            const reward = zZkpReward(stake, beforeStart);
+            const reward = zZkpReward(stake, beforeStart, T_END);
             expect(utils.formatEther(reward).toString()).toEqual('93.972');
             expect(console.warn).toHaveBeenCalledWith(
                 '1000.0 ZKP was staked at 1651492800000 ' +
@@ -111,7 +106,7 @@ describe('Advanced stakes', () => {
 
         it('should return 0 if time is after end', () => {
             const stake = utils.parseEther('1000');
-            const reward = zZkpReward(stake, afterEnd);
+            const reward = zZkpReward(stake, afterEnd, T_END);
             expect(reward).toEqual(constants.Zero);
             expect(console.warn).toHaveBeenCalledWith(
                 '1000.0 ZKP was staked at 1657454400000 ' +

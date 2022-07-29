@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {Box, Container, Grid, Typography} from '@mui/material';
+import {Link} from 'react-router-dom';
 
 import logoHighResolution from '../../images/logo-high-resolution.svg';
 import {useAppDispatch} from '../../redux/hooks';
@@ -52,8 +53,7 @@ export default function Welcome() {
 
                             <Typography className="welcome-message">
                                 <strong>To get test $ZKP</strong>, use the
-                                faucet:{' '}
-                                <SafeLink href="https://faucet.pantherprotocol.io"></SafeLink>
+                                <Link to={'/faucet'}>faucet</Link>
                             </Typography>
                             <Typography className="welcome-message">
                                 <strong>

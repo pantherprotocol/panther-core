@@ -18,6 +18,11 @@ export const abi = [
             },
             {
                 internalType: 'address',
+                name: 'prpGrantor',
+                type: 'address',
+            },
+            {
+                internalType: 'address',
                 name: 'zkpToken',
                 type: 'address',
             },
@@ -28,13 +33,28 @@ export const abi = [
             },
             {
                 internalType: 'uint32',
-                name: 'rewardingStart',
+                name: 'prpRewardPerStake',
                 type: 'uint32',
             },
             {
                 internalType: 'uint32',
-                name: 'rewardedPeriod',
+                name: 'rewardingStartTime',
                 type: 'uint32',
+            },
+            {
+                internalType: 'uint32',
+                name: 'rewardingEndTime',
+                type: 'uint32',
+            },
+            {
+                internalType: 'uint8',
+                name: 'rewardingStartApy',
+                type: 'uint8',
+            },
+            {
+                internalType: 'uint8',
+                name: 'rewardingEndApy',
+                type: 'uint8',
             },
         ],
         stateMutability: 'nonpayable',
@@ -81,13 +101,66 @@ export const abi = [
         anonymous: false,
         inputs: [
             {
+                components: [
+                    {
+                        internalType: 'uint96',
+                        name: 'zkpRewards',
+                        type: 'uint96',
+                    },
+                    {
+                        internalType: 'uint96',
+                        name: 'prpRewards',
+                        type: 'uint96',
+                    },
+                    {
+                        internalType: 'uint24',
+                        name: 'nftRewards',
+                        type: 'uint24',
+                    },
+                ],
                 indexed: false,
-                internalType: 'uint256',
-                name: 'newLimit',
-                type: 'uint256',
+                internalType: 'struct AdvancedStakeRewardController.Limits',
+                name: 'newLimits',
+                type: 'tuple',
             },
         ],
-        name: 'ZkpRewardLimitUpdate',
+        name: 'RewardLimitUpdated',
+        type: 'event',
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                components: [
+                    {
+                        internalType: 'uint64',
+                        name: 'startTime',
+                        type: 'uint64',
+                    },
+                    {
+                        internalType: 'uint64',
+                        name: 'endTime',
+                        type: 'uint64',
+                    },
+                    {
+                        internalType: 'uint64',
+                        name: 'startApy',
+                        type: 'uint64',
+                    },
+                    {
+                        internalType: 'uint64',
+                        name: 'endApy',
+                        type: 'uint64',
+                    },
+                ],
+                indexed: false,
+                internalType:
+                    'struct AdvancedStakeRewardController.RewardParams',
+                name: 'newRewardParams',
+                type: 'tuple',
+            },
+        ],
+        name: 'RewardParamsUpdated',
         type: 'event',
     },
     {
@@ -118,20 +191,7 @@ export const abi = [
     },
     {
         inputs: [],
-        name: 'REWARDING_END',
-        outputs: [
-            {
-                internalType: 'uint256',
-                name: '',
-                type: 'uint256',
-            },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-    },
-    {
-        inputs: [],
-        name: 'REWARDING_START',
+        name: 'PRP_REWARD_PER_STAKE',
         outputs: [
             {
                 internalType: 'uint256',
@@ -222,9 +282,37 @@ export const abi = [
     {
         inputs: [
             {
-                internalType: 'uint256',
-                name: 'time',
-                type: 'uint256',
+                components: [
+                    {
+                        internalType: 'uint64',
+                        name: 'startTime',
+                        type: 'uint64',
+                    },
+                    {
+                        internalType: 'uint64',
+                        name: 'endTime',
+                        type: 'uint64',
+                    },
+                    {
+                        internalType: 'uint64',
+                        name: 'startApy',
+                        type: 'uint64',
+                    },
+                    {
+                        internalType: 'uint64',
+                        name: 'endApy',
+                        type: 'uint64',
+                    },
+                ],
+                internalType:
+                    'struct AdvancedStakeRewardController.RewardParams',
+                name: '_rewardParams',
+                type: 'tuple',
+            },
+            {
+                internalType: 'uint64',
+                name: 'rewardedSince',
+                type: 'uint64',
             },
         ],
         name: 'getZkpApyAt',
@@ -233,6 +321,29 @@ export const abi = [
                 internalType: 'uint256',
                 name: '',
                 type: 'uint256',
+            },
+        ],
+        stateMutability: 'pure',
+        type: 'function',
+    },
+    {
+        inputs: [],
+        name: 'limits',
+        outputs: [
+            {
+                internalType: 'uint96',
+                name: 'zkpRewards',
+                type: 'uint96',
+            },
+            {
+                internalType: 'uint96',
+                name: 'prpRewards',
+                type: 'uint96',
+            },
+            {
+                internalType: 'uint24',
+                name: 'nftRewards',
+                type: 'uint24',
             },
         ],
         stateMutability: 'view',
@@ -297,7 +408,41 @@ export const abi = [
     },
     {
         inputs: [],
-        name: 'setZkpRewardsLimit',
+        name: 'rewardParams',
+        outputs: [
+            {
+                internalType: 'uint64',
+                name: 'startTime',
+                type: 'uint64',
+            },
+            {
+                internalType: 'uint64',
+                name: 'endTime',
+                type: 'uint64',
+            },
+            {
+                internalType: 'uint64',
+                name: 'startApy',
+                type: 'uint64',
+            },
+            {
+                internalType: 'uint64',
+                name: 'endApy',
+                type: 'uint64',
+            },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+    },
+    {
+        inputs: [
+            {
+                internalType: 'uint256',
+                name: '_desiredNftRewardsLimit',
+                type: 'uint256',
+            },
+        ],
+        name: 'setNftRewardLimit',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -331,16 +476,38 @@ export const abi = [
         type: 'function',
     },
     {
-        inputs: [],
-        name: 'zkpRewardsLimit',
-        outputs: [
+        inputs: [
             {
-                internalType: 'uint256',
-                name: '',
-                type: 'uint256',
+                internalType: 'uint32',
+                name: 'startTime',
+                type: 'uint32',
+            },
+            {
+                internalType: 'uint32',
+                name: 'endTime',
+                type: 'uint32',
+            },
+            {
+                internalType: 'uint8',
+                name: 'startApy',
+                type: 'uint8',
+            },
+            {
+                internalType: 'uint8',
+                name: 'endApy',
+                type: 'uint8',
             },
         ],
-        stateMutability: 'view',
+        name: 'updateRewardParams',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+    },
+    {
+        inputs: [],
+        name: 'updateZkpAndPrpRewardsLimit',
+        outputs: [],
+        stateMutability: 'nonpayable',
         type: 'function',
     },
 ];

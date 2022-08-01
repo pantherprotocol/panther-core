@@ -7,11 +7,10 @@ import "../PantherPoolV0.sol";
 contract MockPantherPoolV0 is PantherPoolV0 {
     constructor(
         address _owner,
-        uint256 exitTime,
         address assetRegistry,
         address vault,
         address prpGrantor
-    ) PantherPoolV0(_owner, exitTime, assetRegistry, vault, prpGrantor) {}
+    ) PantherPoolV0(_owner, assetRegistry, vault, prpGrantor) {}
 
     event RESULT_processDepositedAsset(uint160 zAssetId, uint96 scaledAmount);
 

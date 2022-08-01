@@ -3,7 +3,11 @@ import { expect } from 'chai';
 
 // @ts-ignore
 import { toBytes32, PathElementsType, Triad, Pair } from '../lib/utilities';
-import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
+import {
+    takeSnapshot,
+    revertSnapshot,
+    getBlockTimestamp,
+} from './helpers/hardhat';
 import { PantherPoolV0Tester, ZAssetsRegistry } from '../types';
 import { poseidon, babyjub } from 'circomlibjs';
 import { TriadMerkleTree } from '../lib/tree';
@@ -816,6 +820,34 @@ describe('PantherPoolV0', () => {
                     toBytes32(BigInt(merkleProof[0].root).toString()),
                     cacheIndexHint,
                 );
+            });
+        });
+    });
+
+    describe('Update exit time', () => {
+        describe('success', () => {
+            it('should update the exit time by owner', async () => {
+                const newExitTime = (await getBlockTimestamp()) + 100;
+
+                expect(await poolV0.updateExitTime(newExitTime))
+                    .to.emit(poolV0, 'ExitTimeUpdated')
+                    .withArgs(newExitTime);
+
+                expect(await poolV0.exitTime()).to.be.eq(newExitTime);
+            });
+        });
+
+        describe('failure', () => {
+            it('should revert if new exit time is less than time now', async () => {
+                await expect(poolV0.updateExitTime(1)).to.revertedWith('E1');
+            });
+
+            it('should revert if called by non-owner', async () => {
+                const [, nonOwner] = await ethers.getSigners();
+
+                await expect(
+                    poolV0.connect(nonOwner).updateExitTime(1),
+                ).to.revertedWith('ImmOwn: unauthorized');
             });
         });
     });

@@ -23,18 +23,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const exitTime =
         process.env.POOL_EXIT_TIME || Math.ceil(Date.now() / 1000) + 60;
 
-    let contract = 'TestnetPantherPoolV0';
-
-    if (hre.network.name == 'mainnet' || hre.network.name == 'polygon') {
-        contract = 'PantherPoolV0';
-    }
-
     await deploy('PantherPoolV0', {
-        contract,
         from: deployer,
         args: [
             multisig,
-            exitTime,
             registry.address,
             vaultProxy.address,
             grantorProxy.address,
@@ -47,6 +39,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         proxy: {
             proxyContract: 'EIP173Proxy',
             owner: multisig,
+            execute: {
+                methodName: 'updateExitTime',
+                args: [exitTime],
+            },
         },
         log: true,
         autoMine: true,

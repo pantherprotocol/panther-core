@@ -6,6 +6,7 @@ import {
     getPoseidonT6Contract,
 } from '../../lib/poseidonBuilder';
 import { PantherPoolV0Tester } from '../../types';
+import { getBlockTimestamp } from './hardhat';
 
 export { deployMockPantherPoolV0 };
 
@@ -35,7 +36,12 @@ async function deployMockPantherPoolV0(): Promise<PantherPoolV0Tester> {
         },
     );
 
-    return (
+    const pantherPoolV0 = (await (
         await PantherPoolV0.deploy()
-    ).deployed() as Promise<PantherPoolV0Tester>;
+    ).deployed()) as PantherPoolV0Tester;
+
+    const timeNow = await getBlockTimestamp();
+    await pantherPoolV0.updateExitTime(timeNow + 1);
+
+    return pantherPoolV0;
 }

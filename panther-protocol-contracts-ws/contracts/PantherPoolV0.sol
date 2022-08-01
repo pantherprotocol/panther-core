@@ -58,9 +58,6 @@ contract PantherPoolV0 is
 
     // solhint-disable var-name-mixedcase
 
-    /// @notice (UNIX) Time since when the `exit` calls get enabled
-    uint256 private immutable EXIT_TIME;
-
     /// @notice Address of the ZAssetRegistry contract
     address public immutable ASSET_REGISTRY;
 
@@ -70,11 +67,17 @@ contract PantherPoolV0 is
     /// @notice Address of the PrpGrantor contract
     address public immutable PRP_GRANTOR;
 
+    /// @notice (UNIX) Time since when the `exit` calls get enabled
+    uint256 public exitTime;
+
     // solhint-enable var-name-mixedcase
 
     // @notice Seen (i.e. spent) commitment nullifiers
     // nullifier hash => spent
     mapping(bytes32 => bool) public isSpent;
+
+    /// @dev Emitted when exit time is updated
+    event ExitTimeUpdated(uint256 newExitTime);
 
     /// @dev New nullifier has been seen
     event Nullifier(bytes32 nullifier);
@@ -84,36 +87,37 @@ contract PantherPoolV0 is
     event Change(address indexed token, uint256 change);
 
     /// @param _owner Address of the `OWNER` who may call `onlyOwner` methods
-    /// @param _exitTime (UNIX) Time since when the `exit` calls get enabled
     /// @param assetRegistry Address of the ZAssetRegistry contract
     /// @param vault Address of the Vault contract
     /// @param prpGrantor Address of the PrpGrantor contract
     constructor(
         address _owner,
-        uint256 _exitTime,
         address assetRegistry,
         address vault,
         address prpGrantor
     ) ImmutableOwnable(_owner) {
         require(TRIAD_SIZE == OUT_UTXOs, "E0");
-        require(_exitTime > timeNow() && _exitTime < MAX_TIMESTAMP, "E1");
+
         revertZeroAddress(assetRegistry);
         revertZeroAddress(vault);
         revertZeroAddress(prpGrantor);
 
         // As it runs behind the DELEGATECALL'ing proxy, initialization of
         // immutable "vars" only is allowed in the constructor
-        EXIT_TIME = _exitTime;
+
         ASSET_REGISTRY = assetRegistry;
         VAULT = vault;
         PRP_GRANTOR = prpGrantor;
     }
 
-    /// @notice Reads and returns the exit time.
-    /// @dev This function helps to ease testing. It can be overridden in the
-    /// test contract
-    function exitTime() public view virtual returns (uint256) {
-        return EXIT_TIME;
+    /// @notice Updated the exit time
+    /// @dev Owner only may calls
+    function updateExitTime(uint256 newExitTime) public onlyOwner {
+        require(newExitTime >= timeNow() && newExitTime < MAX_TIMESTAMP, "E1");
+
+        exitTime = newExitTime;
+
+        emit ExitTimeUpdated(newExitTime);
     }
 
     /// @notice Transfer assets from the msg.sender to the VAULT and generate UTXOs in the MASP
@@ -134,6 +138,8 @@ contract PantherPoolV0 is
         uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
         uint32 createdAt
     ) external nonReentrant returns (uint256 leftLeafId) {
+        require(exitTime > 0, ERR_ZERO_EXIT_TIME);
+
         uint32 timestamp = safe32TimeNow();
         if (createdAt != 0) {
             require(createdAt <= timestamp, ERR_TOO_EARLY_CREATED_AT);
@@ -203,7 +209,7 @@ contract PantherPoolV0 is
         bytes32 merkleRoot,
         uint256 cacheIndexHint
     ) external nonReentrant {
-        require(timeNow() >= exitTime(), ERR_TOO_EARLY_EXIT);
+        require(timeNow() >= exitTime, ERR_TOO_EARLY_EXIT);
         {
             bytes32 nullifier = generateNullifier(privSpendingKey, leafId);
             require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);

@@ -49,8 +49,7 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
 
     constructor()
         PantherPoolV0(
-            address(this),
-            timeNow() + 1,
+            msg.sender,
             // This mock is the owner of ZAssetsRegistry and Vault
             registry = address(new ZAssetsRegistry(address(this))),
             address(new Vault(address(this))),

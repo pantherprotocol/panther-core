@@ -45,3 +45,4 @@ string constant ERR_ZERO_DEPOSIT = "PP:E21";
 string constant ERR_ZERO_FEE_PAYER = "PP:E22";
 string constant ERR_ZERO_TOKEN_EXPECTED = "PP:E23";
 string constant ERR_ZERO_TOKEN_UNEXPECTED = "PP:E24";
+string constant ERR_ZERO_EXIT_TIME = "PP:E31";

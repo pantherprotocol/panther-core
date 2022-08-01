@@ -16,6 +16,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             throw 'Undefined DAO_MULTISIG_ADDRESS';
         if (!process.env.POOL_EXIT_TIME) throw 'Undefined POOL_EXIT_TIME';
     }
+
+    if (
+        process.env.POOL_EXIT_TIME &&
+        +process.env.POOL_EXIT_TIME < Math.ceil(Date.now() / 1000)
+    ) {
+        throw 'POOL_EXIT_TIME env variable is less than current time';
+    }
 };
 
 export default func;

@@ -23,3 +23,7 @@ export const takeSnapshot = async (): Promise<number> => {
 export const revertSnapshot = async (id: number) => {
     await provider.send('evm_revert', [id]);
 };
+
+export async function getBlockTimestamp(block?: number | 'latest') {
+    return (await provider.getBlock(block || 'latest')).timestamp;
+}

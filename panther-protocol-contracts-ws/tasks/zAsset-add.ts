@@ -17,7 +17,7 @@ task(TASK_ZASSET_ADD, 'Add a ZAsset to the panther pool')
         '0',
         types.string,
     )
-    .addParam('scale', 'Scale amount', '0', types.string)
+    .addParam('scale', 'Scale amount', undefined, types.string)
     .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
         const zAsset = {
             _unused: 0,

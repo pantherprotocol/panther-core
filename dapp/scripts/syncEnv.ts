@@ -324,7 +324,7 @@ function checkEnvVarsForSync(
     update: boolean,
 ): Change[] {
     const data = [
-        ['ADVANCED_STAKING_EARLY_REDEMPTION', String(exitTime)],
+        ['ADVANCED_STAKING_T_REDEMPTION', String(exitTime)],
         ['ADVANCED_STAKING_T_START', String(terms.allowedSince)],
         ['ADVANCED_STAKING_T_END', String(terms.allowedTill)],
         ['ADVANCED_STAKING_T_UNLOCK', String(terms.lockedTill)],

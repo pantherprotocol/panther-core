@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import {supportedNetworks} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
 import {switchNetwork} from '../../services/wallet';
+import {networkLogo} from '../Common/NetworkLogo';
 
 import './styles.scss';
 
@@ -27,7 +28,10 @@ export const NetworkButton = (props: {
                             CHAIN_IDS.length === 1 ? 'single' : ''
                         }`}
                     >
-                        <img src={props.networkLogo} alt="Network logo" />
+                        <img
+                            src={networkLogo(props.networkLogo)}
+                            alt="Network logo"
+                        />
                         <Typography className="network-name">
                             {props.networkName}
                         </Typography>
@@ -46,7 +50,9 @@ export const NetworkButton = (props: {
                                 <MenuItem className="menu-item" key={chainId}>
                                     <Box className="network-holder">
                                         <img
-                                            src={requiredNetwork.logo}
+                                            src={networkLogo(
+                                                requiredNetwork.logo,
+                                            )}
                                             alt="Network logo"
                                         />
                                         <Typography

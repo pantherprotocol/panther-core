@@ -12,4 +12,5 @@ export {
     leafIdToTreeIdAndTriadId,
     triadTreeMerkleProofToPathIndices,
     triadTreeMerkleProofToPathElements,
+    readCommitmentsFromCommitmentLog,
 } from './utils';

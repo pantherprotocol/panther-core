@@ -34,6 +34,7 @@ stages: # List of stages for jobs, and their order of execution
 
 .base_scripts: &base_scripts
   - yarn lint
+  - yarn build:crypto
   - yarn build:types
   - yarn graph:setup mumbai staging
   - yarn build:graph

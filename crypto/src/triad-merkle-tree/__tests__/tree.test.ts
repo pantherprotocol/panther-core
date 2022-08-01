@@ -2,15 +2,18 @@ import {
     MerkleProof,
     TriadMerkleTree,
     poseidon2or3,
+    createTriadMerkleTree,
+    readCommitmentsFromCommitmentLog,
 } from '../../triad-merkle-tree';
 // @ts-ignore
 import {firstTree, secondTree, thirdTree} from './data/trees.js';
 
-import CONSTANTS from '../constants';
 import _ from 'lodash';
 import assert from 'assert';
 
 const ZERO_VALUE = BigInt(0);
+const TREE_DEPTH = 10;
+const LEAF_NODE_SIZE = 3;
 
 // Hash represented as a sum of 2 or 3 elements (for debugging purposes)
 const sum23 = (inputs: bigint[]): bigint => {
@@ -39,7 +42,7 @@ describe('Testing Triad Tree with provided examples', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
             tree = new TriadMerkleTree(5, ZERO_VALUE, poseidon2or3);
-            _.chunk(firstTree[0], CONSTANTS.LEAF_NODE_SIZE).forEach(
+            _.chunk(firstTree[0], LEAF_NODE_SIZE).forEach(
                 (leaves: bigint[]) => {
                     tree.insertBatch(leaves);
                 },
@@ -78,7 +81,7 @@ describe('Testing Triad Tree with provided examples', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
             tree = new TriadMerkleTree(5, ZERO_VALUE, poseidon2or3);
-            _.chunk(secondTree[0], CONSTANTS.LEAF_NODE_SIZE).forEach(
+            _.chunk(secondTree[0], LEAF_NODE_SIZE).forEach(
                 (leaves: bigint[]) => {
                     tree.insertBatch(leaves);
                 },
@@ -117,13 +120,13 @@ describe('Testing Triad Tree with provided examples', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
             tree = new TriadMerkleTree(
-                CONSTANTS.TREE_DEPTH,
+                TREE_DEPTH,
                 BigInt(thirdTree.zeroValue),
                 poseidon2or3,
             );
         });
 
-        it('should have correct root with flled values', () => {
+        it('should have correct root with filled values', () => {
             for (let index = 0; index < 512; index++) {
                 tree.insertBatch([
                     BigInt(thirdTree.zeroValue),
@@ -143,11 +146,34 @@ describe('Testing Triad Tree with provided examples', () => {
         });
     });
 
+    describe('tree from NewCommitmentsLog[] events', () => {
+        let tree: TriadMerkleTree;
+
+        beforeAll(() => {
+            const commitments = readCommitmentsFromCommitmentLog(
+                'src/triad-merkle-tree/__tests__/data/commitmentsLog-test-data.json',
+            );
+            tree = createTriadMerkleTree(
+                15,
+                commitments,
+                BigInt(
+                    '0x667764c376602b72ef22218e1673c2cc8546201f9a77807570b3e5de137680d',
+                ),
+            );
+        });
+
+        it('should have correct root', () => {
+            expect(tree.root.toString(16)).toEqual(
+                '12654ff73b2a5f24e1f63f8d8656be6930da4339277743d6dc8539cce495b192',
+            );
+        });
+    });
+
     describe('Merkle proofs benchmarks', () => {
         let tree: TriadMerkleTree;
         beforeAll(() => {
             tree = new TriadMerkleTree(
-                CONSTANTS.TREE_DEPTH,
+                TREE_DEPTH,
                 BigInt(thirdTree.zeroValue),
                 poseidon2or3,
             );

@@ -11,7 +11,7 @@ export async function filterPaginator(
     hre: HardhatRuntimeEnvironment,
     postChunkHook?: (events: any, startBlock: number, endBlock: number) => void,
 ): Promise<any> {
-    console.log('Querying events from the contract...');
+    console.log(`Querying events from the contract ${contract.address}`);
     console.log('\tStart block:', startBlock);
     console.log('\tEnd block:', endBlock);
     console.log('\tChunk size:', blockSize, 'blocks');

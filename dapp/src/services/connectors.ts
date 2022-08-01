@@ -4,9 +4,6 @@ import {
     NoEthereumProviderError,
 } from '@web3-react/injected-connector';
 
-import ethIcon from '../images/eth-logo.svg';
-import polygonIcon from '../images/polygon-logo.svg';
-
 import {CHAIN_IDS, FAUCET_CHAIN_IDS} from './env';
 import {Web3ReactContextInterface} from './types';
 
@@ -29,7 +26,7 @@ export const supportedNetworks: Record<number, Network> = {
         symbol: 'ETH',
         decimals: 18,
         explorerURLs: ['https://etherscan.io/'],
-        logo: ethIcon,
+        logo: 'ETH',
     },
     4: {
         name: 'Rinkeby',
@@ -37,7 +34,7 @@ export const supportedNetworks: Record<number, Network> = {
         symbol: 'ETH',
         decimals: 18,
         explorerURLs: ['https://rinkeby.etherscan.io/'],
-        logo: ethIcon,
+        logo: 'ETH',
     },
     5: {
         name: 'Goerli',
@@ -45,7 +42,7 @@ export const supportedNetworks: Record<number, Network> = {
         symbol: 'ETH',
         decimals: 18,
         explorerURLs: ['https://goerli.etherscan.io/'],
-        logo: ethIcon,
+        logo: 'ETH',
     },
     137: {
         name: 'Polygon',
@@ -53,7 +50,7 @@ export const supportedNetworks: Record<number, Network> = {
         symbol: 'MATIC',
         decimals: 18,
         explorerURLs: ['https://polygonscan.com/'],
-        logo: polygonIcon,
+        logo: 'MATIC',
     },
     80001: {
         name: 'Mumbai',
@@ -63,7 +60,7 @@ export const supportedNetworks: Record<number, Network> = {
         symbol: 'MATIC',
         decimals: 18,
         explorerURLs: ['https://mumbai.polygonscan.com/'],
-        logo: polygonIcon,
+        logo: 'MATIC',
     },
     31337: {
         name: 'Hardhat',
@@ -71,7 +68,7 @@ export const supportedNetworks: Record<number, Network> = {
         symbol: 'ETH',
         decimals: 18,
         explorerURLs: ['https://tryethernal.com/'],
-        logo: ethIcon,
+        logo: 'ETH',
     },
 };
 

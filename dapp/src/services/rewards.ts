@@ -21,13 +21,19 @@ import {CLASSIC_TYPE_HEX, ADVANCED_TYPE_HEX} from './staking';
 https://docs.google.com/document/d/1lsZlE3RsUlk-Dx_dXAqKxXKWZD18ZuuNA-DKoEsArm4/edit
 */
 export const T_START = Number(process.env.ADVANCED_STAKING_T_START) * 1000;
-export const T_UNLOCK = Number(process.env.ADVANCED_STAKING_T_UNLOCK) * 1000;
+export const T_END = Number(process.env.ADVANCED_STAKING_T_END) * 1000;
 const APY_START = 70;
 const APY_END = 45;
-const DAPY_DT = (APY_END - APY_START) / (T_UNLOCK - T_START);
+const DAPY_DT = (APY_END - APY_START) / (T_END - T_START);
 const PRP_REWARD_PER_STAKE = '10000';
 
-export function zZkpReward(amount: BigNumber, timeStaked: number): BigNumber {
+export function zZkpReward(
+    amount: BigNumber,
+    timeStaked: number,
+    lockedTill: number,
+): BigNumber {
+    console.log('lockedTill', new Date(lockedTill));
+
     if (timeStaked < T_START) {
         console.warn(
             `${utils.formatEther(
@@ -41,14 +47,14 @@ export function zZkpReward(amount: BigNumber, timeStaked: number): BigNumber {
         timeStaked = T_START;
     }
 
-    if (timeStaked > T_UNLOCK) {
+    if (timeStaked > T_END) {
         console.warn(
             `${utils.formatEther(
                 amount,
             )} ZKP was staked at ${timeStaked} (${new Date(
                 timeStaked,
-            )}), after the end of the rewards ${T_UNLOCK} (${new Date(
-                T_UNLOCK,
+            )}), after the end of the rewards ${T_END} (${new Date(
+                T_END,
             )}); treating as zero reward.`,
         );
         return constants.Zero;
@@ -57,7 +63,7 @@ export function zZkpReward(amount: BigNumber, timeStaked: number): BigNumber {
     const oneYear = 3600 * 24 * 365 * 1000;
 
     // Fraction of a year that the stake has accumulated rewards
-    const timeFracStaked = (T_UNLOCK - timeStaked) / oneYear;
+    const timeFracStaked = (lockedTill - timeStaked) / oneYear;
 
     // Reward amount as fraction of principal staked (calculated from annual APY
     // scaled to time staked).
@@ -81,11 +87,11 @@ export function getAdvStakingAPY(currentTime: number): number {
     if (currentTime < T_START) {
         return APY_START;
     }
-    if (currentTime > T_UNLOCK) {
+    if (currentTime > T_END) {
         return APY_END;
     }
 
-    const currentAPY = APY_END + (currentTime - T_UNLOCK) * DAPY_DT;
+    const currentAPY = APY_END + (currentTime - T_END) * DAPY_DT;
 
     if (
         currentAPY < Math.min(APY_START, APY_END) ||
@@ -159,6 +165,7 @@ export function calculateRewardsForAdvancedStake(
         [StakingRewardTokenID.zZKP]: zZkpReward(
             stake.amount,
             stake.stakedAt * 1000,
+            stake.lockedTill * 1000,
         ),
         [StakingRewardTokenID.PRP]: prpReward(),
     };

@@ -19,16 +19,19 @@ export const calculatedRewardSlice = createSlice({
         resetRewards: (state): void => {
             state.value = {};
         },
-        calculateRewards: (state, action: PayloadAction<string>) => {
-            const amountToStake = action.payload;
-            if (!amountToStake) {
+        calculateRewards: (state, action: PayloadAction<[string, string]>) => {
+            const [amountToStake, minLockPeriod] = action.payload;
+            if (!amountToStake || !minLockPeriod) {
                 state.value = {} as StakeReward;
             } else {
                 const timeStaked = Math.floor(new Date().getTime());
+                const lockedTill = timeStaked + 1000 * Number(minLockPeriod);
+
                 const rewards = {
                     [StakingRewardTokenID.zZKP]: zZkpReward(
                         BigNumber.from(amountToStake),
                         timeStaked,
+                        lockedTill,
                     ).toString(),
                     [StakingRewardTokenID.PRP]: prpReward().toString(),
                 };

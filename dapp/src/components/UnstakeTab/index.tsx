@@ -5,7 +5,6 @@ import {useWeb3React} from '@web3-react/core';
 
 import UnstakeTable from '../UnstakeTable';
 
-import TotalUnclaimedRewards from './TotalUnclaimedRewards';
 import UnstakingInfo from './UnstakingInfo';
 
 import './styles.scss';
@@ -28,7 +27,6 @@ export default function UnstakingTab() {
         <Box className="unstaking-tab-holder">
             <UnstakingInfo />
             <UnstakeTable />
-            <TotalUnclaimedRewards />
         </Box>
     );
 }

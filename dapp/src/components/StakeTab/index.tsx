@@ -45,6 +45,10 @@ export default function StakeTab() {
     const minStake = useAppSelector(
         termsSelector(chainId, StakeType.Advanced, 'minAmountScaled'),
     );
+    const minLockPeriod = useAppSelector(
+        termsSelector(chainId, StakeType.Advanced, 'minLockPeriod'),
+    );
+
     const isAdvancedStakingOpen = useAppSelector(
         isStakingOpenSelector(chainId, StakeType.Advanced),
     );
@@ -64,12 +68,12 @@ export default function StakeTab() {
             const bn = safeParseUnits(amount);
             if (bn) {
                 setAmountToStakeBN(bn);
-                dispatch(calculateRewards, bn.toString());
+                dispatch(calculateRewards, [bn.toString(), minLockPeriod]);
             } else {
                 dispatch(resetRewards);
             }
         },
-        [dispatch],
+        [dispatch, minLockPeriod],
     );
 
     // For use when user clicks Max button
@@ -78,9 +82,9 @@ export default function StakeTab() {
             const amount = utils.formatEther(amountBN);
             setAmountToStake(amount);
             setAmountToStakeBN(amountBN);
-            dispatch(calculateRewards, amountBN.toString());
+            dispatch(calculateRewards, [amountBN.toString(), minLockPeriod]);
         },
-        [dispatch],
+        [dispatch, minLockPeriod],
     );
 
     const stake = useCallback(

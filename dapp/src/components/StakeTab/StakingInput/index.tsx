@@ -11,6 +11,7 @@ import {isStakingOpenSelector} from '../../../redux/slices/stakeTerms';
 import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
 import {currentNetwork} from '../../../services/connectors';
 import {StakeType} from '../../../types/staking';
+import {networkLogo} from '../../Common/NetworkLogo';
 
 import './styles.scss';
 
@@ -103,7 +104,7 @@ export default function StakingInput(props: {
                                 <span className="staking-symbol-holder">
                                     {network?.logo && (
                                         <img
-                                            src={network.logo}
+                                            src={networkLogo(network.logo)}
                                             alt="Network logo"
                                         />
                                     )}

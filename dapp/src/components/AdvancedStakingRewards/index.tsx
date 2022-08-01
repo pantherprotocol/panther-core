@@ -44,9 +44,17 @@ function ClaimedProgress() {
     );
 }
 
-function getDaysRemaining(allowedTill: number): string {
+function calcRemainingDays(allowedSince: number, allowedTill: number): string {
     const now = new Date().getTime() / 1000;
-    let secsRemaining = Number(allowedTill) - now;
+
+    let secsRemaining = 0;
+    if (now < allowedSince) {
+        secsRemaining = Number(allowedSince) - now;
+    }
+    if (allowedSince <= now && now < allowedTill) {
+        secsRemaining = Number(allowedTill) - now;
+    }
+
     if (secsRemaining < 0) {
         secsRemaining = 0;
     }
@@ -57,11 +65,18 @@ function RemainingDays() {
     const context = useWeb3React();
     const {chainId} = context;
 
+    const allowedSince = useAppSelector(
+        termsSelector(chainId!, StakeType.Advanced, 'allowedSince'),
+    );
+
     const allowedTill = useAppSelector(
         termsSelector(chainId!, StakeType.Advanced, 'allowedTill'),
     );
+
     const daysRemaining =
-        typeof allowedTill === 'number' ? getDaysRemaining(allowedTill) : '?';
+        typeof allowedTill === 'number' && typeof allowedSince === 'number'
+            ? calcRemainingDays(allowedSince, allowedTill)
+            : '?';
 
     return (
         <Box className="remaining-days">

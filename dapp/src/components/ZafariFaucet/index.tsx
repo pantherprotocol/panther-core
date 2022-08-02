@@ -61,7 +61,7 @@ function ZafariFaucet() {
         fetchZkpTokenBalance();
     }, [library, account, chainId, fetchZkpTokenBalance]);
 
-    function networkName(): React.ReactElement {
+    function networkName(chainId: number): React.ReactElement {
         if (!active) {
             return <Typography id="value">Not connected</Typography>;
         }
@@ -78,7 +78,7 @@ function ZafariFaucet() {
         return (
             <Typography id="value">
                 <img src={polygonIcon} id="polygon-icon" />
-                Mumbai
+                {supportedNetworks[chainId].name}
             </Typography>
         );
     }
@@ -112,7 +112,7 @@ function ZafariFaucet() {
             <Card className="details">
                 <Box className="details-row">
                     <Typography id="caption">Network:</Typography>
-                    {networkName()}
+                    {chainId && networkName(chainId)}
                 </Box>
                 <Box className="details-row">
                     <Typography id="caption">Token:</Typography>

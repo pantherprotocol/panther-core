@@ -374,7 +374,7 @@ async function permitAndStake(
         stakeType,
         data,
         {
-            gasLimit: 1_600_000,
+            gasLimit: 2_200_000,
         },
     );
 }

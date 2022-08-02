@@ -59,11 +59,11 @@ export const getAdvancedStakesRewards = createAsyncThunk(
         if (!account) return;
         if (!chainId) return;
 
-        let rewards;
-        try {
-            rewards = await getAdvancedStakingReward(chainId, account);
-        } catch (error) {
-            console.error(error);
+        const rewards = await getAdvancedStakingReward(chainId, account);
+        if (rewards instanceof Error) {
+            console.error(
+                `Cannot fetch the rewards from the subgraph. ${rewards}`,
+            );
             return;
         }
 

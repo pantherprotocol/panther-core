@@ -16,6 +16,7 @@ import {
 } from './contracts';
 import {MASP_CHAIN_ID} from './env';
 import {CLASSIC_TYPE_HEX, ADVANCED_TYPE_HEX} from './staking';
+import {AdvancedStakeRewardsResponse} from './subgraph';
 
 /* Constants are described in Advanced Staking Rewards document:
 https://docs.google.com/document/d/1lsZlE3RsUlk-Dx_dXAqKxXKWZD18ZuuNA-DKoEsArm4/edit
@@ -112,6 +113,7 @@ export function calculateRewardsForStake(
     rewardsBalance: BigNumber | null,
     totalStaked: BigNumber | null,
     classicReward: BigNumber | null,
+    rewardsFromSubgraph?: AdvancedStakeRewardsResponse[],
 ): StakeRewardBN {
     switch (stake.stakeType) {
         case CLASSIC_TYPE_HEX:
@@ -122,7 +124,7 @@ export function calculateRewardsForStake(
                 classicReward,
             );
         case ADVANCED_TYPE_HEX:
-            return calculateRewardsForAdvancedStake(stake);
+            return calculateRewardsForAdvancedStake(stake, rewardsFromSubgraph);
         default:
             throw new Error('Cannot estimate rewards: unknown stake type');
     }
@@ -159,7 +161,22 @@ export function calculateRewardsForClassicStake(
 
 export function calculateRewardsForAdvancedStake(
     stake: IStakingTypes.StakeStructOutput,
+    rewardsFromSubgraph?: AdvancedStakeRewardsResponse[],
 ): AdvancedStakeRewardsBN {
+    if (rewardsFromSubgraph) {
+        const rewards = rewardsFromSubgraph.find(
+            (r: AdvancedStakeRewardsResponse) =>
+                r.creationTime === stake.stakedAt,
+        );
+        if (rewards) {
+            return {
+                [StakingRewardTokenID.zZKP]: BigNumber.from(rewards.zZkpAmount),
+                [StakingRewardTokenID.PRP]: BigNumber.from(rewards.prpAmount),
+            };
+        }
+    }
+
+    // If no rewards from subgraph, fallback to zZkp and PRP rewards calculation.
     return {
         // x1000 is conversion to ms as in Date.getTime() method.
         [StakingRewardTokenID.zZKP]: zZkpReward(

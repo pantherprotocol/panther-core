@@ -40,6 +40,7 @@ import {encryptRandomSecret} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
 import {calculateRewardsForStake} from './rewards';
 import {
+    AdvancedStakeRewardsResponse,
     getAdvancedStakingRewardQuery,
     getSubgraphUrl,
     GraphResponse,
@@ -524,36 +525,68 @@ export async function getStakesAndRewards(
     const rewardsBalance = await getRewardsBalance(library, chainId, account);
 
     if (chainHasStakesReporter(chainId)) {
-        const stakes = await getStakesInfoFromReporter(
+        return await calculateRewardsWithReporter(
             library,
             chainId,
             account,
+            rewardsBalance,
         );
-        const totalStaked = sumActiveAccountStakes(stakes[0]);
-        const rewards = stakes[1];
-        return [
-            totalStaked,
-            stakes[0].map(
-                (stake: IStakingTypes.StakeStructOutput, i: number) => {
-                    return {
-                        ...stake,
-                        reward: calculateRewardsForStake(
-                            stake,
-                            rewardsBalance,
-                            totalStaked,
-                            rewards[i],
-                        ),
-                    };
-                },
-            ),
-        ];
     }
 
-    // If we don't have StakesReporter, we have to calculate rewards per stake
-    // proportionally based on total reward balance.
+    return await calculateRewardsWithoutReporter(
+        library,
+        chainId,
+        account,
+        rewardsBalance,
+    );
+}
+
+async function calculateRewardsWithReporter(
+    library: any,
+    chainId: number,
+    account: string,
+    rewardsBalance: BigNumber | null,
+): Promise<[totalStaked: BigNumber, rows: StakeRow[]]> {
+    const stakes = await getStakesInfoFromReporter(library, chainId, account);
+    const totalStaked = sumActiveAccountStakes(stakes[0]);
+    const rewards = stakes[1];
+    return [
+        totalStaked,
+        stakes[0].map((stake: IStakingTypes.StakeStructOutput, i: number) => {
+            return {
+                ...stake,
+                reward: calculateRewardsForStake(
+                    stake,
+                    rewardsBalance,
+                    totalStaked,
+                    rewards[i],
+                ),
+            };
+        }),
+    ];
+}
+
+async function calculateRewardsWithoutReporter(
+    library: any,
+    chainId: number,
+    account: string,
+    rewardsBalance: BigNumber | null,
+): Promise<[totalStaked: BigNumber, rows: StakeRow[]]> {
     const stakes = await getAccountStakes(library, chainId, account);
     const totalStaked = sumActiveAccountStakes(stakes);
     if (!rewardsBalance) return [totalStaked, []];
+
+    const subgraphResponse = await getAdvancedStakingReward(chainId, account);
+    let rewardsFromSubgraph: AdvancedStakeRewardsResponse[] = [];
+    if (subgraphResponse instanceof Error) {
+        // Fallback to the approximate math calculation of the rewards
+        console.error(
+            `Cannot fetch the rewards from the subgraph. ${subgraphResponse}`,
+        );
+    } else {
+        rewardsFromSubgraph = subgraphResponse?.staker?.advancedStakingRewards;
+    }
+
     return [
         totalStaked,
         stakes.map(stake => {
@@ -564,6 +597,7 @@ export async function getStakesAndRewards(
                     rewardsBalance,
                     totalStaked,
                     null,
+                    rewardsFromSubgraph,
                 ),
             };
         }),
@@ -642,10 +676,10 @@ export async function getZKPMarketPrice(): Promise<BigNumber | null> {
 export async function getAdvancedStakingReward(
     chainId: number,
     address: string,
-): Promise<GraphResponse | undefined> {
+): Promise<GraphResponse | Error> {
     const subgraphEndpoint = getSubgraphUrl(chainId);
     if (!subgraphEndpoint) {
-        return;
+        return new Error('No subgraph endpoint configured');
     }
 
     const query = getAdvancedStakingRewardQuery(address);
@@ -656,14 +690,16 @@ export async function getAdvancedStakingReward(
         });
 
         if (data.data.errors?.[0]?.message) {
-            throw new Error(data.data.errors[0].message);
+            return new Error(data.data.errors[0].message);
         }
 
         if (data.status === 200) {
             return data.data.data;
         }
+
+        return new Error(`Unexpected response status ${data.status}`);
     } catch (error) {
-        throw new Error(`Error on sending query to subgraph: ${error}`);
+        return new Error(`Error on sending query to subgraph: ${error}`);
     }
 }
 

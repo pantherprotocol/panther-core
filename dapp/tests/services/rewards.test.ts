@@ -82,19 +82,25 @@ describe('Advanced stakes', () => {
         it('should have exact value at beginning of staking', () => {
             const stake = utils.parseEther('1000');
             const reward = zZkpReward(stake, start, T_END);
-            expect(utils.formatEther(reward).toString()).toEqual('93.972');
+            expect(utils.formatEther(reward).toString()).toEqual(
+                '93.97260273972602',
+            );
         });
 
         it('should have exact value 10 days before end of staking', () => {
             const stake = utils.parseEther('1000');
             const reward = zZkpReward(stake, beforeEnd, T_END);
-            expect(utils.formatEther(reward).toString()).toEqual('13.726');
+            expect(utils.formatEther(reward).toString()).toEqual(
+                '13.726586525020966',
+            );
         });
 
         it('should return max rewards if time is before start', () => {
             const stake = utils.parseEther('1000');
             const reward = zZkpReward(stake, beforeStart, T_END);
-            expect(utils.formatEther(reward).toString()).toEqual('93.972');
+            expect(utils.formatEther(reward).toString()).toEqual(
+                '93.97260273972602',
+            );
             expect(console.warn).toHaveBeenCalledWith(
                 '1000.0 ZKP was staked at 1651492800000 ' +
                     '(Mon May 02 2022 12:00:00 GMT+0000 (Coordinated Universal Time)), ' +

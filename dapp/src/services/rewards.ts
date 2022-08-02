@@ -45,7 +45,6 @@ export function zZkpReward(
                 T_START,
             )}); treating as if staked at the starting time.`,
         );
-        timeStaked = T_START;
     }
 
     if (timeStaked > T_END) {
@@ -60,24 +59,25 @@ export function zZkpReward(
         );
         return constants.Zero;
     }
-
-    const oneYear = 3600 * 24 * 365 * 1000;
+    const rewardEnd = lockedTill < T_END ? lockedTill : T_END;
+    const rewardStart = T_START < timeStaked ? timeStaked : T_START;
 
     // Fraction of a year that the stake has accumulated rewards
-    const timeFracStaked = (lockedTill - timeStaked) / oneYear;
+    const oneYear = 3600 * 24 * 365 * 1000;
+    const timeFracStaked = (rewardEnd - rewardStart) / oneYear;
 
     // Reward amount as fraction of principal staked (calculated from annual APY
     // scaled to time staked).
-    const rewardCoef = (getAdvStakingAPY(timeStaked) / 100) * timeFracStaked;
+    const rewardCoef = (getAdvStakingAPY(rewardStart) / 100) * timeFracStaked;
 
     // Calculate reward, truncating reward fraction to 6 decimals of precision.
-    const rewardCoefE6 = Math.floor(rewardCoef * 1e6);
-    if (rewardCoefE6 < 1) {
+    const rewardCoefE18 = Math.floor(rewardCoef * 1e18);
+    if (rewardCoefE18 < 1) {
         return constants.Zero;
     }
 
-    const e6 = BigNumber.from(10).pow(6);
-    return amount.mul(rewardCoefE6).div(e6);
+    const e18 = BigNumber.from(10).pow(18);
+    return amount.mul(rewardCoefE18.toString()).div(e18);
 }
 
 export function prpReward(): BigNumber {

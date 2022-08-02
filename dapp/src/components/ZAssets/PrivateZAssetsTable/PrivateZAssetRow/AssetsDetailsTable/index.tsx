@@ -24,6 +24,17 @@ const AssetsDetailsTable = () => {
     const advancedStakesRewards = useAppSelector(
         advancedStakesRewardsSelector(chainId, account),
     );
+    const rewardsFilteredAndSorted = Object.values(advancedStakesRewards)
+        .filter((rewards: AdvancedStakeRewards) =>
+            [UTXOStatus.UNDEFINED, UTXOStatus.UNSPENT].includes(
+                rewards.zZkpUTXOStatus,
+            ),
+        )
+        .sort(
+            (a: AdvancedStakeRewards, b: AdvancedStakeRewards) =>
+                Number(b.creationTime) - Number(a.creationTime),
+        );
+
     const dispatch = useAppDispatch();
     const [gotExitTime, registerExitTimeCall] = useState<boolean>(false);
 
@@ -47,15 +58,11 @@ const AssetsDetailsTable = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {Object.values(advancedStakesRewards)
-                        .filter((rewards: AdvancedStakeRewards) =>
-                            [UTXOStatus.UNDEFINED, UTXOStatus.UNSPENT].includes(
-                                rewards.zZkpUTXOStatus,
-                            ),
-                        )
-                        .map((rewards: AdvancedStakeRewards, key: number) => (
+                    {rewardsFilteredAndSorted.map(
+                        (rewards: AdvancedStakeRewards, key: number) => (
                             <AssetsDetailsRow rewards={rewards} key={key} />
-                        ))}
+                        ),
+                    )}
                 </TableBody>
             </Table>
         </Box>

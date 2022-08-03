@@ -1,0 +1,15 @@
+@import '../../variables';
+
+.terms-of-service {
+    font-size: 130%;
+    ol {
+        list-style-type: decimal;
+
+        li ol {
+            list-style-type: lower-alpha;
+            li ol {
+                list-style-type: decimal;
+            }
+        }
+    }
+}

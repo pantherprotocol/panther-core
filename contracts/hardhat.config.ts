@@ -23,6 +23,7 @@ import './tasks/terms-add-advanced-local';
 import './tasks/time-increase';
 import './tasks/unstaked-rewards';
 import './tasks/rewards-limit-add';
+import './tasks/reward-params-update';
 import './tasks/vesting-list';
 
 import {HardhatUserConfig} from 'hardhat/config';

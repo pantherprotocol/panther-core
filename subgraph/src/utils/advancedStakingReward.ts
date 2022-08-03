@@ -5,6 +5,7 @@ import {AdvancedStakingRewardParameters} from '../types/stakerReward';
 
 function createOrLoadAdvancedStakingReward(
     advancedStakingRewardId: string,
+    stakerId: string,
     creationTime: i32,
 ): AdvancedStakingReward {
     let advancedStakingReward = AdvancedStakingReward.load(
@@ -18,14 +19,14 @@ function createOrLoadAdvancedStakingReward(
         advancedStakingReward.creationTime = creationTime;
 
         log.info('New advanced staking reward was created {} {}', [
-            advancedStakingReward.id,
-            advancedStakingReward.staker,
+            advancedStakingRewardId,
+            stakerId,
         ]);
     }
 
     log.info('Advanced staking reward was found {} {}', [
-        advancedStakingReward.id,
-        advancedStakingReward.staker,
+        advancedStakingRewardId,
+        stakerId,
     ]);
 
     return advancedStakingReward;
@@ -36,6 +37,7 @@ export function createOrUpdateAdvancedStakingReward(
 ): AdvancedStakingReward {
     const advancedStakingReward = createOrLoadAdvancedStakingReward(
         params.advancedStakingRewardId,
+        params.staker,
         params.creationTime,
     );
 
@@ -52,8 +54,8 @@ export function createOrUpdateAdvancedStakingReward(
     advancedStakingReward.save();
 
     log.info('Advanced staking reward was updated {} {}', [
-        advancedStakingReward.id,
-        advancedStakingReward.staker,
+        params.advancedStakingRewardId,
+        params.staker,
     ]);
 
     return advancedStakingReward;

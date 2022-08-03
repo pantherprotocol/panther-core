@@ -11,6 +11,7 @@ import {
 import {MaspChainIds} from './connectors';
 import {
     ContractName,
+    getAdvancedStakeRewardControllerContract,
     getContractAddress,
     getPrpGrantorContract,
 } from './contracts';
@@ -33,8 +34,6 @@ export function zZkpReward(
     timeStaked: number,
     lockedTill: number,
 ): BigNumber {
-    console.log('lockedTill', new Date(lockedTill));
-
     if (timeStaked < T_START) {
         console.warn(
             `${utils.formatEther(
@@ -211,5 +210,31 @@ export async function unusedPrpGrantAmount(): Promise<BigNumber | null> {
         );
 
         return null;
+    }
+}
+
+export async function rewardsVested(): Promise<BigNumber | Error> {
+    try {
+        const maspChainId = MASP_CHAIN_ID as MaspChainIds;
+        const contract = getAdvancedStakeRewardControllerContract(maspChainId);
+        const limits = await contract.limits();
+        return limits.zkpRewards;
+    } catch (error) {
+        const msg = new Error(`Failed to get total rewards. ${error}`);
+        console.error(msg);
+        return msg;
+    }
+}
+
+export async function rewardsClaimed(): Promise<BigNumber | Error> {
+    try {
+        const maspChainId = MASP_CHAIN_ID as MaspChainIds;
+        const contract = getAdvancedStakeRewardControllerContract(maspChainId);
+        const totals = await contract.totals();
+        return totals.zkpRewards;
+    } catch (error) {
+        const msg = new Error(`Failed to get rewards claimed. ${error}`);
+        console.error(msg);
+        return msg;
     }
 }

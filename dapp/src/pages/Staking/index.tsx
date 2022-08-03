@@ -10,6 +10,7 @@ import BalanceCard from '../../components/BalanceCard';
 import CurrentStakeAPY from '../../components/CurrentStakeAPY';
 import {MainPageWrapper} from '../../components/MainPageWrapper';
 import StakingUnstakingCard from '../../components/StakingUnstakingCard';
+import TotalStakedCard from '../../components/TotalStakedCard';
 import Welcome from '../../components/Welcome';
 import background from '../../images/background-adv.png';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
@@ -17,7 +18,7 @@ import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards
 import {firstVisitSelector} from '../../redux/slices/isFirstVisit';
 import {getRemainingPrpRewards} from '../../redux/slices/remainingPrpRewards';
 import {getStakeTerms} from '../../redux/slices/stakeTerms';
-import {getTotalStaked} from '../../redux/slices/totalStaked';
+import {getTotalsOfAdvancedStakes} from '../../redux/slices/totalsOfAdvancedStakes';
 import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
 import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
@@ -33,7 +34,7 @@ const Staking = (): React.ReactElement => {
 
     useEffect(() => {
         dispatch(getZKPTokenMarketPrice);
-        dispatch(getTotalStaked, context);
+        dispatch(getTotalsOfAdvancedStakes, context);
         dispatch(getZkpTokenBalance, context);
         dispatch(getZkpStakedBalance, context);
         dispatch(getTotalUnclaimedClassicRewards, context);
@@ -72,6 +73,7 @@ const Staking = (): React.ReactElement => {
                             <Grid item xs={12} md={5}>
                                 <Box width={'100%'}>
                                     <BalanceCard />
+                                    <TotalStakedCard />
                                 </Box>
                             </Grid>
                             <Grid

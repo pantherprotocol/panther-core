@@ -11,7 +11,7 @@ import infoIcon from '../../images/info-icon.svg';
 import {E18} from '../../lib/constants';
 import {formatCurrency, formatPercentage} from '../../lib/format';
 import {useAppSelector} from '../../redux/hooks';
-import {totalStakedSelector} from '../../redux/slices/totalStaked';
+import {totalStakedSelector} from '../../redux/slices/totalsOfAdvancedStakes';
 import {chainVar} from '../../services/env';
 import {SafeMuiLink} from '../Common/links';
 
@@ -54,7 +54,7 @@ const CurrentStakeAPY = () => {
     const totalStaked = useAppSelector(totalStakedSelector);
     const currentStakingAPY = getAPY(totalStaked, chainId);
     const totalZKPStaked = totalStaked
-        ? formatCurrency(totalStaked, {decimals: 0}) + ' ZKP'
+        ? formatCurrency(totalStaked, {decimals: 18}) + ' ZKP'
         : '$ZKP';
 
     const getRewardPoolSize = useCallback(() => {

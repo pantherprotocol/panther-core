@@ -19,6 +19,7 @@ import {
 import type {IStakingTypes, Staking} from '../types/contracts/Staking';
 import {StakeRewardBN, StakeTypes} from '../types/staking';
 
+import {MaspChainIds} from './connectors';
 import {
     ContractName,
     chainHasAdvancedStaking,
@@ -31,8 +32,9 @@ import {
     getStakingContract,
     getTokenContract,
     hasContract,
+    getAdvancedStakeRewardControllerContract,
 } from './contracts';
-import {env} from './env';
+import {env, MASP_CHAIN_ID} from './env';
 import {notifyError} from './errors';
 import axios from './http';
 import {deriveRootKeypairs} from './keychain';
@@ -50,6 +52,10 @@ const CoinGeckoClient = new CoinGecko();
 
 export const CLASSIC_TYPE_HEX = utils.id('classic').slice(0, 10);
 export const ADVANCED_TYPE_HEX = utils.id('advanced').slice(0, 10);
+
+// scaling factor of staked total. See struct Totals in
+// AdvancedStakeRewardController.sol
+const STAKED_SCALING_FACTOR = BigNumber.from(10).pow(15);
 
 const EIP712_TYPES = {
     Permit: [
@@ -580,8 +586,9 @@ async function calculateRewardsWithoutReporter(
     let rewardsFromSubgraph: AdvancedStakeRewardsResponse[] = [];
     if (subgraphResponse instanceof Error) {
         // Fallback to the approximate math calculation of the rewards
-        console.error(
-            `Cannot fetch the rewards from the subgraph. ${subgraphResponse}`,
+        console.warn(
+            'Cannot fetch the rewards from the subgraph. ' +
+                `Falling back to math formula. ${subgraphResponse}`,
         );
     } else {
         rewardsFromSubgraph = subgraphResponse?.staker?.advancedStakingRewards;
@@ -711,4 +718,20 @@ export async function getStakingTermsFromContract(
     const stakingContract = getStakingContract(library, chainId);
     const stakingTypeHex = utils.id(stakeType).slice(0, 10);
     return await stakingContract.terms(stakingTypeHex);
+}
+
+export async function getSumAllAdvancedStakes(): Promise<BigNumber | Error> {
+    try {
+        const contract = getAdvancedStakeRewardControllerContract(
+            MASP_CHAIN_ID as MaspChainIds,
+        );
+        const staked = (await contract.totals()).scZkpStaked;
+        return BigNumber.from(staked.toString()).mul(STAKED_SCALING_FACTOR);
+    } catch (error) {
+        const msg = new Error(
+            `Failed to get sum of all advanced staked. ${error}`,
+        );
+        console.error(msg);
+        return msg;
+    }
 }

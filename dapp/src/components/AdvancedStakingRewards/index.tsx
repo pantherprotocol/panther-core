@@ -1,12 +1,17 @@
 import React from 'react';
 
 import {Box, Typography} from '@mui/material';
-import LinearProgress from '@mui/material/LinearProgress';
 import {useWeb3React} from '@web3-react/core';
+import {utils} from 'ethers';
 
+import ClaimedProgress from '../../components/ClaimedProgress';
 import {formatPercentage} from '../../lib/format';
 import {useAppSelector} from '../../redux/hooks';
 import {termsSelector} from '../../redux/slices/stakeTerms';
+import {
+    totalClaimedRewardsSelector,
+    totalVestedRewardsSelector,
+} from '../../redux/slices/totalsOfAdvancedStakes';
 import {chainHasAdvancedStaking} from '../../services/contracts';
 import {getAdvStakingAPY} from '../../services/rewards';
 import {StakeType} from '../../types/staking';
@@ -17,29 +22,22 @@ function AdvancedStakingRewards() {
     const context = useWeb3React();
     const {chainId} = context;
 
+    const claimed = useAppSelector(totalClaimedRewardsSelector);
+    const total = useAppSelector(totalVestedRewardsSelector);
     const advancedStakingAPY = getAdvStakingAPY(new Date().getTime());
 
     return (
         <Box className="advanced-staking-rewards">
-            {chainHasAdvancedStaking(chainId) && <ClaimedProgress />}
+            {chainHasAdvancedStaking(chainId) && (
+                <ClaimedProgress
+                    claimed={claimed ? Number(utils.formatEther(claimed)) : 0}
+                    total={total ? Number(utils.formatEther(total)) : 0}
+                />
+            )}
             <RemainingDays />
             {advancedStakingAPY && (
                 <StakingAPR advancedStakingAPY={advancedStakingAPY} />
             )}
-        </Box>
-    );
-}
-
-function ClaimedProgress() {
-    return (
-        <Box className="claimed-progress">
-            <Typography className="title">Advanced Staking Rewards</Typography>
-            <Box className="progress-holder">
-                <LinearProgress className="progress" />
-            </Box>
-            <Typography className="claimed-value">
-                950k / 2m zZKP claimed (49%)
-            </Typography>
         </Box>
     );
 }

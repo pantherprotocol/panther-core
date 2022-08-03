@@ -1,54 +1,38 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React from 'react';
 
 import {Box, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber, utils} from 'ethers';
+import {utils} from 'ethers';
 
 import ClaimedProgress from '../../components/ClaimedProgress';
 import {formatPercentage} from '../../lib/format';
 import {useAppSelector} from '../../redux/hooks';
 import {termsSelector} from '../../redux/slices/stakeTerms';
-import {chainHasAdvancedStaking} from '../../services/contracts';
 import {
-    getAdvStakingAPY,
-    rewardsVested,
-    rewardsClaimed,
-} from '../../services/rewards';
+    totalClaimedRewardsSelector,
+    totalVestedRewardsSelector,
+} from '../../redux/slices/totalsOfAdvancedStakes';
+import {chainHasAdvancedStaking} from '../../services/contracts';
+import {getAdvStakingAPY} from '../../services/rewards';
 import {StakeType} from '../../types/staking';
 
 import './styles.scss';
 
 function AdvancedStakingRewards() {
-    const [total, setTotal] = useState<number>(0);
-    const [claimed, setClaimed] = useState<number>(0);
     const context = useWeb3React();
     const {chainId} = context;
 
+    const claimed = useAppSelector(totalClaimedRewardsSelector);
+    const total = useAppSelector(totalVestedRewardsSelector);
     const advancedStakingAPY = getAdvStakingAPY(new Date().getTime());
-
-    const updateStateViaCallingSmartContract = useCallback(
-        async (
-            smartContractGetter: () => Promise<BigNumber | Error>,
-            stateSetter: (v: number) => void,
-        ) => {
-            const value = await smartContractGetter();
-            if (!value || value instanceof Error) {
-                return null;
-            }
-            stateSetter(Number(utils.formatEther(value)));
-        },
-        [],
-    );
-
-    useEffect(() => {
-        updateStateViaCallingSmartContract(rewardsVested, setTotal);
-        updateStateViaCallingSmartContract(rewardsClaimed, setClaimed);
-    }, [chainId, updateStateViaCallingSmartContract]);
 
     return (
         <Box className="advanced-staking-rewards">
             {chainHasAdvancedStaking(chainId) && (
-                <ClaimedProgress claimed={claimed} total={total} />
+                <ClaimedProgress
+                    claimed={claimed ? Number(utils.formatEther(claimed)) : 0}
+                    total={total ? Number(utils.formatEther(total)) : 0}
+                />
             )}
             <RemainingDays />
             {advancedStakingAPY && (

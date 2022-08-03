@@ -9,7 +9,7 @@ import refreshIcon from '../../images/refresh-icon.svg';
 import {formatCurrency} from '../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getChainBalance} from '../../redux/slices/chainBalance';
-import {totalStakedSelector} from '../../redux/slices/totalStaked';
+import {totalStakedSelector} from '../../redux/slices/totalsOfAdvancedStakes';
 
 import './styles.scss';
 

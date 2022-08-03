@@ -18,7 +18,7 @@ import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards
 import {firstVisitSelector} from '../../redux/slices/isFirstVisit';
 import {getRemainingPrpRewards} from '../../redux/slices/remainingPrpRewards';
 import {getStakeTerms} from '../../redux/slices/stakeTerms';
-import {getTotalStaked} from '../../redux/slices/totalStaked';
+import {getTotalsOfAdvancedStakes} from '../../redux/slices/totalsOfAdvancedStakes';
 import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
 import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
@@ -34,7 +34,7 @@ const Staking = (): React.ReactElement => {
 
     useEffect(() => {
         dispatch(getZKPTokenMarketPrice);
-        dispatch(getTotalStaked, context);
+        dispatch(getTotalsOfAdvancedStakes, context);
         dispatch(getZkpTokenBalance, context);
         dispatch(getZkpStakedBalance, context);
         dispatch(getTotalUnclaimedClassicRewards, context);

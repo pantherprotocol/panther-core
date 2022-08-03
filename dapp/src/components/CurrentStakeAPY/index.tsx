@@ -11,7 +11,7 @@ import infoIcon from '../../images/info-icon.svg';
 import {E18} from '../../lib/constants';
 import {formatCurrency, formatPercentage} from '../../lib/format';
 import {useAppSelector} from '../../redux/hooks';
-import {totalStakedSelector} from '../../redux/slices/totalStaked';
+import {totalStakedSelector} from '../../redux/slices/totalsOfAdvancedStakes';
 import {chainVar} from '../../services/env';
 import {SafeMuiLink} from '../Common/links';
 

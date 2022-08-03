@@ -19,7 +19,7 @@ import {
     isStakingOpenSelector,
     termsSelector,
 } from '../../redux/slices/stakeTerms';
-import {getTotalStaked} from '../../redux/slices/totalStaked';
+import {getTotalsOfAdvancedStakes} from '../../redux/slices/totalsOfAdvancedStakes';
 import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {
@@ -105,7 +105,7 @@ export default function StakeTab() {
             }
             setStakedId(Number(stakingResponse));
             setStakingAmount('');
-            dispatch(getTotalStaked, context);
+            dispatch(getTotalsOfAdvancedStakes, context);
             dispatch(getZkpStakedBalance, context);
             dispatch(getZkpTokenBalance, context);
             dispatch(getTotalUnclaimedClassicRewards, context);

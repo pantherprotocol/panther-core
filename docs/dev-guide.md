@@ -151,7 +151,7 @@ Next we need to register the `StakeRewardAdviser` contract as the reward
 adviser for the `stake` and `unstake` actions of `classic` staking. Again
 there is a Hardhat task for this:
 
-    yarn hardhat adviser:add --network localhost
+    yarn hardhat adviser:add --mainnet --classic --network localhost
 
 If this is not done, when attempting to stake you will get an `ACM:E4`
 error. If it is done incorrectly, when attempting to stake the

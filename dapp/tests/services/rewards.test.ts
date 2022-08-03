@@ -33,7 +33,7 @@ describe('Advanced stakes', () => {
             expect(typeof currentApy).toEqual('number');
         });
 
-        it(`should be between 45 and 70`, () => {
+        it(`should be between 40 and 70`, () => {
             const dates = [
                 T_START - tenDays,
                 T_START,
@@ -44,7 +44,7 @@ describe('Advanced stakes', () => {
             ];
             dates.forEach((date: number) => {
                 const apy = getAdvStakingAPY(date);
-                expect(apy).toBeGreaterThanOrEqual(45);
+                expect(apy).toBeGreaterThanOrEqual(40);
                 expect(apy).toBeLessThanOrEqual(70);
             });
         });
@@ -52,10 +52,10 @@ describe('Advanced stakes', () => {
         it(`should be exact APY values for specified moments in time`, () => {
             expect(getAdvStakingAPY(beforeStart)).toEqual(70);
             expect(getAdvStakingAPY(start)).toEqual(70);
-            expect(getAdvStakingAPY(afterStart)).toEqual(64.89795918367346);
-            expect(getAdvStakingAPY(beforeEnd)).toEqual(50.10204081632653);
-            expect(getAdvStakingAPY(end)).toEqual(45);
-            expect(getAdvStakingAPY(afterEnd)).toEqual(45);
+            expect(getAdvStakingAPY(afterStart)).toEqual(63.87755102040816);
+            expect(getAdvStakingAPY(beforeEnd)).toEqual(46.12244897959184);
+            expect(getAdvStakingAPY(end)).toEqual(40);
+            expect(getAdvStakingAPY(afterEnd)).toEqual(40);
         });
     });
 
@@ -91,7 +91,7 @@ describe('Advanced stakes', () => {
             const stake = utils.parseEther('1000');
             const reward = zZkpReward(stake, beforeEnd, T_END);
             expect(utils.formatEther(reward).toString()).toEqual(
-                '13.726586525020966',
+                '12.636287391668996',
             );
         });
 

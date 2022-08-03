@@ -30,7 +30,7 @@ export async function showStake(
 
 export async function addRewardAdviser(
     rewardMaster: RewardMaster,
-    stakingAddress: string,
+    oracleAddress: string,
     newAdviserAddress: string,
     config = {isClassic: true, replace: false},
 ) {
@@ -43,7 +43,7 @@ export async function addRewardAdviser(
 
         if (config.replace) {
             const txToRemove = await rewardMaster.removeRewardAdviser(
-                stakingAddress,
+                oracleAddress,
                 actionHash,
             );
             transactions.push(txToRemove);
@@ -51,7 +51,7 @@ export async function addRewardAdviser(
         }
 
         const txToAdd = await rewardMaster.addRewardAdviser(
-            stakingAddress,
+            oracleAddress,
             actionHash,
             newAdviserAddress,
         );

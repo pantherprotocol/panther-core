@@ -8,11 +8,10 @@ import {
     formatCurrency,
     formatPercentage,
     formatTime,
-} from '../../../../../../lib/format';
-import {getAdvStakingAPY} from '../../../../../../services/rewards';
-import {AdvancedStakeRewards} from '../../../../../../types/staking';
-
-import RedeemRewards from './RedeemRewards';
+} from '../../../../lib/format';
+import {getAdvStakingAPY} from '../../../../services/rewards';
+import {AdvancedStakeRewards} from '../../../../types/staking';
+import RedeemRewards from '../RedeemRewards';
 
 import './styles.scss';
 

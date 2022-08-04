@@ -18,8 +18,7 @@ import {marketPriceSelector} from '../../../../redux/slices/zkpMarketPrice';
 import {StakingRewardTokenID} from '../../../../types/staking';
 import Balance from '../../Balance';
 import Network from '../../Network';
-
-import AssetsDetails from './AssetsDetailsTable';
+import AssetsDetails from '../AssetsDetailsTable';
 
 import './styles.scss';
 

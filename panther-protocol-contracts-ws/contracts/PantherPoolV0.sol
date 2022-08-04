@@ -68,7 +68,10 @@ contract PantherPoolV0 is
     address public immutable PRP_GRANTOR;
 
     /// @notice (UNIX) Time since when the `exit` calls get enabled
-    uint256 public exitTime;
+    uint32 public exitTime;
+
+    // (rest of the storage slot) reserved for upgrades
+    uint224 private _reserved;
 
     // solhint-enable var-name-mixedcase
 
@@ -112,12 +115,12 @@ contract PantherPoolV0 is
 
     /// @notice Updated the exit time
     /// @dev Owner only may calls
-    function updateExitTime(uint256 newExitTime) public onlyOwner {
+    function updateExitTime(uint32 newExitTime) public onlyOwner {
         require(newExitTime >= timeNow() && newExitTime < MAX_TIMESTAMP, "E1");
 
         exitTime = newExitTime;
 
-        emit ExitTimeUpdated(newExitTime);
+        emit ExitTimeUpdated(uint256(newExitTime));
     }
 
     /// @notice Transfer assets from the msg.sender to the VAULT and generate UTXOs in the MASP
@@ -138,7 +141,7 @@ contract PantherPoolV0 is
         uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
         uint32 createdAt
     ) external nonReentrant returns (uint256 leftLeafId) {
-        require(exitTime > 0, ERR_ZERO_EXIT_TIME);
+        require(exitTime > 0, ERR_UNCONFIGURED_EXIT_TIME);
 
         uint32 timestamp = safe32TimeNow();
         if (createdAt != 0) {
@@ -209,7 +212,7 @@ contract PantherPoolV0 is
         bytes32 merkleRoot,
         uint256 cacheIndexHint
     ) external nonReentrant {
-        require(timeNow() >= exitTime, ERR_TOO_EARLY_EXIT);
+        require(safe32TimeNow() >= exitTime, ERR_TOO_EARLY_EXIT);
         {
             bytes32 nullifier = generateNullifier(privSpendingKey, leafId);
             require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);

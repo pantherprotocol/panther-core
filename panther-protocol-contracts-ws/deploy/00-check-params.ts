@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
+import { isLocal } from '../lib/hardhat';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { getNamedAccounts, network } = hre;
@@ -9,19 +10,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployer } = await getNamedAccounts();
     if (!deployer) throw 'Err: deployer undefined';
 
-    // network.live seems to not work
-    const isLocal: boolean = !!network.name.match(/^hardhat|pchain$/);
-    if (!isLocal) {
+    if (!isLocal(hre)) {
         if (!process.env.DAO_MULTISIG_ADDRESS)
             throw 'Undefined DAO_MULTISIG_ADDRESS';
         if (!process.env.POOL_EXIT_TIME) throw 'Undefined POOL_EXIT_TIME';
-    }
-
-    if (
-        process.env.POOL_EXIT_TIME &&
-        +process.env.POOL_EXIT_TIME < Math.ceil(Date.now() / 1000)
-    ) {
-        throw 'POOL_EXIT_TIME env variable is less than current time';
+    } else {
+        if (
+            process.env.POOL_EXIT_TIME &&
+            +process.env.POOL_EXIT_TIME > Math.ceil(Date.now() / 1000)
+        ) {
+            throw 'POOL_EXIT_TIME is less than current time';
+        }
     }
 };
 

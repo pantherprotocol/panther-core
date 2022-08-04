@@ -20,9 +20,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const poseidonT4 = await get('PoseidonT4');
     const poseidonT6 = await get('PoseidonT6');
 
-    const exitTime =
-        process.env.POOL_EXIT_TIME || Math.ceil(Date.now() / 1000) + 60;
-
     await deploy('PantherPoolV0', {
         from: deployer,
         args: [
@@ -39,10 +36,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         proxy: {
             proxyContract: 'EIP173Proxy',
             owner: multisig,
-            execute: {
-                methodName: 'updateExitTime',
-                args: [exitTime],
-            },
         },
         log: true,
         autoMine: true,

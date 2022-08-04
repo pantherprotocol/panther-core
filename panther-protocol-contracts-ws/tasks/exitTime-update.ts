@@ -1,19 +1,24 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { task } from 'hardhat/config';
+import { isLocal } from '../lib/hardhat';
 
 const TASK_EXIT_TIME_UPDATE = 'exittime:update';
 
 task(TASK_EXIT_TIME_UPDATE, 'Update the panther pool exit time')
-    .addParam('time', 'The new exit time')
+    .addOptionalParam('time', 'The new exit time')
     .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
-        if (+taskArgs.time === 0) throw new Error('Undefined exit time');
+        let exitTime = taskArgs.time || process.env.POOL_EXIT_TIME;
+        if (isLocal(hre) && +exitTime === 0) {
+            exitTime = Math.ceil(Date.now() / 1000) + 60;
+        }
+        if (+exitTime === 0) throw new Error('Undefined exit time');
 
         const [deployer] = await hre.ethers.getSigners();
         const pantherPool = await hre.ethers.getContract('PantherPoolV0');
 
         const data = pantherPool.interface.encodeFunctionData(
             'updateExitTime',
-            [taskArgs.time],
+            [exitTime],
         );
 
         const tx = await deployer.sendTransaction({

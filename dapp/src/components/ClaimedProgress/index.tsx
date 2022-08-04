@@ -21,15 +21,11 @@ function formatNumber(v: number): string {
 }
 
 export default function ClaimedProgress(props: ClaimedProgressTypes) {
-    const claimed = props?.claimed;
-    const total = props?.total;
-    const percentage = (claimed / total) * 100;
-
-    const formattedClaimed = formatNumber(claimed);
-    const formattedTotal = formatNumber(total);
-    const formattedPercentage = !Number.isNaN(percentage)
-        ? formatNumber(percentage)
-        : '0';
+    const {claimed, total} = props;
+    const percentage = total !== 0 ? (claimed / total) * 100 : 0;
+    const claimedValue = `${formatNumber(claimed)} / ${formatNumber(
+        total,
+    )} claimed (~${Math.ceil(percentage)}%)`;
 
     return (
         <Box className="claimed-progress-container">
@@ -45,7 +41,7 @@ export default function ClaimedProgress(props: ClaimedProgressTypes) {
                     />
                 </Box>
                 <Typography className="claimed-value">
-                    {`${formattedClaimed} / ${formattedTotal} claimed (${formattedPercentage}%)`}
+                    {claimedValue}
                 </Typography>
             </Box>
         </Box>

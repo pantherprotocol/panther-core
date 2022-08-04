@@ -1,0 +1,232 @@
+{
+  "address": "0x106DDc97Ebe4E58A2221CF703E382B2E343306Dd",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_rewardMaster",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_actionMsgReceiver",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_fxRoot",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_nonce",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "StakeMsgBridged",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ACTION_MSG_RECEIVER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "FX_ROOT",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "REWARD_MASTER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "action",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "bytes",
+          "name": "message",
+          "type": "bytes"
+        }
+      ],
+      "name": "getRewardAdvice",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "createSharesFor",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "sharesToCreate",
+              "type": "uint96"
+            },
+            {
+              "internalType": "address",
+              "name": "redeemSharesFrom",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "sharesToRedeem",
+              "type": "uint96"
+            },
+            {
+              "internalType": "address",
+              "name": "sendRewardTo",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IRewardAdviser.Advice",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "nonce",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x41954c97e6094918b3df90bb6c950e37ef834eac98ccf0de194e8a9efb8a5223",
+  "receipt": {
+    "to": null,
+    "from": "0x5FFfdD1dE35fFC2f66bFD78E064C280FeD9E68de",
+    "contractAddress": "0x106DDc97Ebe4E58A2221CF703E382B2E343306Dd",
+    "transactionIndex": 2,
+    "gasUsed": "415394",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x4c467a0a8d11256c9bf943babe07ee639d0854ae08e639eac0f40f7a06fdef6e",
+    "transactionHash": "0x41954c97e6094918b3df90bb6c950e37ef834eac98ccf0de194e8a9efb8a5223",
+    "logs": [],
+    "blockNumber": 7298386,
+    "cumulativeGasUsed": "2966853",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x5BD43a584c44A1EF163d0E010F262DfE26C85ED2",
+    "0xfc4Ee073419aA1198DA9531057EdD6ed4e96c7Cf",
+    "0x3d1d3E34f7fB6D26245E6640E1c50710eFFf15bA"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "b8646c57e41aaeee81758989c8b63d63",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_rewardMaster\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_actionMsgReceiver\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_fxRoot\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_nonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"StakeMsgBridged\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ACTION_MSG_RECEIVER\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"FX_ROOT\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"REWARD_MASTER\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"action\",\"type\":\"bytes4\"},{\"internalType\":\"bytes\",\"name\":\"message\",\"type\":\"bytes\"}],\"name\":\"getRewardAdvice\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"createSharesFor\",\"type\":\"address\"},{\"internalType\":\"uint96\",\"name\":\"sharesToCreate\",\"type\":\"uint96\"},{\"internalType\":\"address\",\"name\":\"redeemSharesFrom\",\"type\":\"address\"},{\"internalType\":\"uint96\",\"name\":\"sharesToRedeem\",\"type\":\"uint96\"},{\"internalType\":\"address\",\"name\":\"sendRewardTo\",\"type\":\"address\"}],\"internalType\":\"struct IRewardAdviser.Advice\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"nonce\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"constructor\":{\"params\":{\"_actionMsgReceiver\":\"Address of the AdvancedStakeActionMsgRelayer on Polygon/Mumbai\",\"_fxRoot\":\"Address of the `FxRoot` (PoS Bridge) contract on mainnet/Goerli\",\"_rewardMaster\":\"Address of the RewardMaster contract on the mainnet/Goerli\"}},\"getRewardAdvice(bytes4,bytes)\":{\"details\":\"It is assumed to be called by the RewardMaster contract. It returns the \\\"zero\\\" reward advises, no matter who calls it.\"}},\"stateVariables\":{\"FX_ROOT\":{\"details\":\"`FxRoot` is the contract of the \\\"Fx-Portal\\\" on the mainnet/Goerli.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"ACTION_MSG_RECEIVER()\":{\"notice\":\"Address on the AdvancedStakeActionMsgRelayer on the Polygon/Mumbai\"},\"FX_ROOT()\":{\"notice\":\"Address of the `FxRoot` contract on the mainnet/Goerli network\"},\"REWARD_MASTER()\":{\"notice\":\"Address of the RewardMaster contract on the mainnet/Goerli\"},\"nonce()\":{\"notice\":\"Message nonce (i.e. sequential number of the next message)\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/AdvancedStakeRewardAdviserAndMsgSender.sol\":\"AdvancedStakeRewardAdviserAndMsgSender\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":800},\"remappings\":[]},\"sources\":{\"contracts/AdvancedStakeRewardAdviserAndMsgSender.sol\":{\"content\":\"// SPDX-License-Identifier: LGPL-3.0-only\\npragma solidity >=0.8.0;\\n\\nimport \\\"./actions/AdvancedStakingBridgedDataCoder.sol\\\";\\nimport \\\"./actions/Constants.sol\\\";\\nimport \\\"./interfaces/IActionMsgReceiver.sol\\\";\\nimport \\\"./interfaces/IFxStateSender.sol\\\";\\nimport \\\"./StakeZeroRewardAdviser.sol\\\";\\n\\n/***\\n * @title AdvancedStakeRewardAdviserAndMsgSender\\n * @notice The \\\"zero reward adviser\\\" for the `RewardMaster` that sends `STAKE` action messages over\\n * the PoS bridge to the STAKE_MSG_RECEIVER.\\n * @dev It is assumed to run on the mainnet/Goerli and be authorized with the `RewardMaster` on the\\n * same network as the \\\"Reward Adviser\\\" for \\\"advanced\\\" stakes.\\n * As the \\\"Reward Adviser\\\" it gets called `getRewardAdvice` by the `RewardMaster` every time a user\\n * creates or withdraws an \\\"advanced\\\" stake. It returns the \\\"zero\\\" advices, i.e. the `Advice` data\\n * structure with zero `sharesToCreate` and `sharesToRedeem`.\\n * On \\\"zero\\\" advices, the RewardMaster skips creating/redeeming \\\"treasure shares\\\" for/to stakers.\\n * If the `getRewardAdvice` is called w/ the action STAKE (i.e. a new stake is being created), this\\n * contract sends the STAKE message over the \\\"Fx-Portal\\\" (the PoS bridge run by the Polygon team)\\n * to the STAKE_MSG_RECEIVER on the Polygon/Mumbai. The STAKE_MSG_RECEIVER is supposed to be the\\n * `AdvancedStakeActionMsgRelayer` contract that processes the bridged messages, rewarding stakers\\n * on the Polygon/Mumbai.\\n */\\ncontract AdvancedStakeRewardAdviserAndMsgSender is\\n    StakeZeroRewardAdviser,\\n    AdvancedStakingBridgedDataCoder\\n{\\n    event StakeMsgBridged(uint256 _nonce, bytes data);\\n\\n    // solhint-disable var-name-mixedcase\\n\\n    /// @notice Address of the `FxRoot` contract on the mainnet/Goerli network\\n    /// @dev `FxRoot` is the contract of the \\\"Fx-Portal\\\" on the mainnet/Goerli.\\n    address public immutable FX_ROOT;\\n\\n    /// @notice Address of the RewardMaster contract on the mainnet/Goerli\\n    address public immutable REWARD_MASTER;\\n\\n    /// @notice Address on the AdvancedStakeActionMsgRelayer on the Polygon/Mumbai\\n    address public immutable ACTION_MSG_RECEIVER;\\n\\n    // solhint-enable var-name-mixedcase\\n\\n    /// @notice Message nonce (i.e. sequential number of the next message)\\n    uint256 public nonce;\\n\\n    /// @param _rewardMaster Address of the RewardMaster contract on the mainnet/Goerli\\n    /// @param _actionMsgReceiver Address of the AdvancedStakeActionMsgRelayer on Polygon/Mumbai\\n    /// @param _fxRoot Address of the `FxRoot` (PoS Bridge) contract on mainnet/Goerli\\n    constructor(\\n        address _rewardMaster,\\n        address _actionMsgReceiver,\\n        address _fxRoot\\n    ) StakeZeroRewardAdviser(ADVANCED_STAKE, ADVANCED_UNSTAKE) {\\n        require(\\n            _fxRoot != address(0) &&\\n                _actionMsgReceiver != address(0) &&\\n                _rewardMaster != address(0),\\n            \\\"AMS:E01\\\"\\n        );\\n\\n        FX_ROOT = _fxRoot;\\n        REWARD_MASTER = _rewardMaster;\\n        ACTION_MSG_RECEIVER = _actionMsgReceiver;\\n    }\\n\\n    // It is called withing the `function getRewardAdvice`\\n    function _onRequest(bytes4 action, bytes memory message) internal override {\\n        // Ignore other messages except the STAKE\\n        if (action != STAKE) return;\\n\\n        uint24 _nonce = uint24(nonce);\\n        bytes memory content = _encodeBridgedData(_nonce, action, message);\\n\\n        IFxStateSender(FX_ROOT).sendMessageToChild(\\n            ACTION_MSG_RECEIVER,\\n            content\\n        );\\n\\n        emit StakeMsgBridged(_nonce, content);\\n        // It may overflow and start from 0 again, which is OK\\n        nonce = uint256(++_nonce);\\n    }\\n}\\n\",\"keccak256\":\"0x386bf7903cb3d46cb78b8a1838029fc76ce697c7a2c2af7d126342aced4d25c4\",\"license\":\"LGPL-3.0-only\"},\"contracts/StakeZeroRewardAdviser.sol\":{\"content\":\"// SPDX-License-Identifier: UNLICENSED\\n// solhint-disable-next-line compiler-fixed, compiler-gt-0_8\\npragma solidity ^0.8.0;\\n\\nimport \\\"./actions/StakingMsgProcessor.sol\\\";\\nimport \\\"./interfaces/IRewardAdviser.sol\\\";\\n\\n/**\\n * @title StakeZeroRewardAdviser\\n * @notice The \\\"reward adviser\\\" for the `RewardMaster` that returns the \\\"zero reward advice\\\" only.\\n * @dev The \\\"zero\\\" reward advice is the `Advice` with zero `sharesToCreate` and `sharesToRedeem`.\\n * On \\\"zero\\\" advices, the RewardMaster skips creating/redeeming \\\"treasure shares\\\" for/to stakers.\\n */\\ncontract StakeZeroRewardAdviser is StakingMsgProcessor, IRewardAdviser {\\n    // solhint-disable var-name-mixedcase\\n\\n    // `stakeAction` for the STAKE\\n    bytes4 internal immutable STAKE;\\n\\n    // `stakeAction` for the UNSTAKE\\n    bytes4 internal immutable UNSTAKE;\\n\\n    // solhint-enable var-name-mixedcase\\n\\n    /// @param stakeAction The STAKE action type (see StakingMsgProcessor::_encodeStakeActionType)\\n    /// @param unstakeAction The UNSTAKE action type (see StakingMsgProcessor::_encodeUNstakeActionType)\\n    constructor(bytes4 stakeAction, bytes4 unstakeAction) {\\n        require(\\n            stakeAction != bytes4(0) && unstakeAction != bytes4(0),\\n            \\\"ZRA:E1\\\"\\n        );\\n        STAKE = stakeAction;\\n        UNSTAKE = unstakeAction;\\n    }\\n\\n    /// @dev It is assumed to be called by the RewardMaster contract.\\n    /// It returns the \\\"zero\\\" reward advises, no matter who calls it.\\n    function getRewardAdvice(bytes4 action, bytes memory message)\\n        external\\n        override\\n        returns (Advice memory)\\n    {\\n        require(\\n            action == STAKE || action == UNSTAKE,\\n            \\\"ZRA: unsupported action\\\"\\n        );\\n\\n        _onRequest(action, message);\\n\\n        // Return the \\\"zero\\\" advice\\n        return\\n            Advice(\\n                address(0), // createSharesFor\\n                0, // sharesToCreate\\n                address(0), // redeemSharesFrom\\n                0, // sharesToRedeem\\n                address(0) // sendRewardTo\\n            );\\n    }\\n\\n    // solhint-disable-next-line no-empty-blocks\\n    function _onRequest(bytes4 action, bytes memory message) internal virtual {\\n        // Child contracts may re-define it\\n    }\\n}\\n\",\"keccak256\":\"0x87cdb74c9793759a2bdbe72bb1cb957888566769305b19fa3df4e10aaef9b4c2\",\"license\":\"UNLICENSED\"},\"contracts/actions/AdvancedStakingBridgedDataCoder.sol\":{\"content\":\"// SPDX-License-Identifier: LGPL-3.0-only\\npragma solidity >=0.8.0;\\n\\n/***\\n * @title AdvancedStakingBridgedDataDecoder\\n * @dev It encode (pack) and decodes (unpack) messages for bridging them between networks\\n */\\nabstract contract AdvancedStakingBridgedDataCoder {\\n    function _encodeBridgedData(\\n        uint24 _nonce,\\n        bytes4 action,\\n        bytes memory message\\n    ) internal pure returns (bytes memory content) {\\n        content = abi.encodePacked(_nonce, action, message);\\n    }\\n\\n    // For efficiency we use \\\"packed\\\" (rather than \\\"ABI\\\") encoding.\\n    // It results in shorter data, but requires custom unpack function.\\n    function _decodeBridgedData(bytes memory content)\\n        internal\\n        pure\\n        returns (\\n            uint256 _nonce,\\n            bytes4 action,\\n            bytes memory message\\n        )\\n    {\\n        require(content.length >= 7, \\\"ABD:WRONG_LENGTH\\\");\\n\\n        _nonce =\\n            (uint256(uint8(content[0])) << 16) |\\n            (uint256(uint8(content[1])) << 8) |\\n            uint256(uint8(content[2]));\\n\\n        action = bytes4(\\n            uint32(\\n                (uint256(uint8(content[3])) << 24) |\\n                    (uint256(uint8(content[4])) << 16) |\\n                    (uint256(uint8(content[5])) << 8) |\\n                    uint256(uint8(content[6]))\\n            )\\n        );\\n\\n        uint256 curPos = 7;\\n        uint256 msgLength = content.length - curPos;\\n        message = new bytes(msgLength);\\n        if (msgLength > 0) {\\n            uint256 i = 0;\\n            while (i < msgLength) {\\n                message[i++] = content[curPos++];\\n            }\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x877efea8e1d5c562d5e42eef2d60745c4f62bafd0837ba563d061af39349fc04\",\"license\":\"LGPL-3.0-only\"},\"contracts/actions/Constants.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.4;\\n\\n// solhint-disable var-name-mixedcase\\n\\n// The \\\"stake type\\\" for the \\\"classic staking\\\"\\n// bytes4(keccak256(\\\"classic\\\"))\\nbytes4 constant CLASSIC_STAKE_TYPE = 0x4ab0941a;\\n\\n// STAKE \\\"action type\\\" for the \\\"classic staking\\\"\\n// bytes4(keccak256(abi.encodePacked(bytes4(keccak256(\\\"stake\\\"), CLASSIC_STAKE_TYPE)))\\nbytes4 constant CLASSIC_STAKE = 0x1e4d02b5;\\n\\n// UNSTAKE \\\"action type\\\" for the \\\"classic staking\\\"\\n// bytes4(keccak256(abi.encodePacked(bytes4(keccak256(\\\"unstake\\\"), CLASSIC_STAKE_TYPE)))\\nbytes4 constant CLASSIC_UNSTAKE = 0x493bdf45;\\n\\n// The \\\"stake type\\\" for the \\\"advance staking\\\"\\n// bytes4(keccak256(\\\"advanced\\\"))\\nbytes4 constant ADVANCED_STAKE_TYPE = 0x7ec13a06;\\n\\n// STAKE \\\"action type\\\" for the \\\"advanced staking\\\"\\n// bytes4(keccak256(abi.encodePacked(bytes4(keccak256(\\\"stake\\\"), ADVANCED_STAKE_TYPE)))\\nbytes4 constant ADVANCED_STAKE = 0xcc995ce8;\\n\\n// UNSTAKE \\\"action type\\\" for the \\\"advanced staking\\\"\\n// bytes4(keccak256(abi.encodePacked(bytes4(keccak256(\\\"unstake\\\"), ADVANCED_STAKE_TYPE)))\\nbytes4 constant ADVANCED_UNSTAKE = 0xb8372e55;\\n\\n// PRP grant type for the \\\"advanced\\\" stake\\n// bytes4(keccak256(\\\"forAdvancedStakeGrant\\\"))\\nbytes4 constant FOR_ADVANCED_STAKE_GRANT = 0x31a180d4;\\n\\n// solhint-enable var-name-mixedcase\\n\",\"keccak256\":\"0x7f32586a16909cafe991fa12fa56ca3339962b62b94b3f2ff3ef7076be72fc67\",\"license\":\"MIT\"},\"contracts/actions/StakingMsgProcessor.sol\":{\"content\":\"// SPDX-License-Identifier: UNLICENSED\\n// solhint-disable-next-line compiler-fixed, compiler-gt-0_8\\npragma solidity ^0.8.0;\\n\\nimport \\\"../interfaces/IStakingTypes.sol\\\";\\n\\nabstract contract StakingMsgProcessor {\\n    bytes4 internal constant STAKE_ACTION = bytes4(keccak256(\\\"stake\\\"));\\n    bytes4 internal constant UNSTAKE_ACTION = bytes4(keccak256(\\\"unstake\\\"));\\n\\n    function _encodeStakeActionType(bytes4 stakeType)\\n        internal\\n        pure\\n        returns (bytes4)\\n    {\\n        return bytes4(keccak256(abi.encodePacked(STAKE_ACTION, stakeType)));\\n    }\\n\\n    function _encodeUnstakeActionType(bytes4 stakeType)\\n        internal\\n        pure\\n        returns (bytes4)\\n    {\\n        return bytes4(keccak256(abi.encodePacked(UNSTAKE_ACTION, stakeType)));\\n    }\\n\\n    function _packStakingActionMsg(\\n        address staker,\\n        IStakingTypes.Stake memory stake,\\n        bytes calldata data\\n    ) internal pure returns (bytes memory) {\\n        return\\n            abi.encodePacked(\\n                staker, // address\\n                stake.amount, // uint96\\n                stake.id, // uint32\\n                stake.stakedAt, // uint32\\n                stake.lockedTill, // uint32\\n                stake.claimedAt, // uint32\\n                data // bytes\\n            );\\n    }\\n\\n    // For efficiency we use \\\"packed\\\" (rather than \\\"ABI\\\") encoding.\\n    // It results in shorter data, but requires custom unpack function.\\n    function _unpackStakingActionMsg(bytes memory message)\\n        internal\\n        pure\\n        returns (\\n            address staker,\\n            uint96 amount,\\n            uint32 id,\\n            uint32 stakedAt,\\n            uint32 lockedTill,\\n            uint32 claimedAt,\\n            bytes memory data\\n        )\\n    {\\n        // staker, amount, id and 3 timestamps occupy exactly 48 bytes\\n        // (`data` may be of zero length)\\n        require(message.length >= 48, \\\"SMP: unexpected msg length\\\");\\n\\n        uint256 stakerAndAmount;\\n        uint256 idAndStamps;\\n        // solhint-disable-next-line no-inline-assembly\\n        assembly {\\n            // the 1st word (32 bytes) contains the `message.length`\\n            // we need the (entire) 2nd word ..\\n            stakerAndAmount := mload(add(message, 0x20))\\n            // .. and (16 bytes of) the 3rd word\\n            idAndStamps := mload(add(message, 0x40))\\n        }\\n\\n        staker = address(uint160(stakerAndAmount >> 96));\\n        amount = uint96(stakerAndAmount & 0xFFFFFFFFFFFFFFFFFFFFFFFF);\\n\\n        id = uint32((idAndStamps >> 224) & 0xFFFFFFFF);\\n        stakedAt = uint32((idAndStamps >> 192) & 0xFFFFFFFF);\\n        lockedTill = uint32((idAndStamps >> 160) & 0xFFFFFFFF);\\n        claimedAt = uint32((idAndStamps >> 128) & 0xFFFFFFFF);\\n\\n        uint256 dataLength = message.length - 48;\\n        data = new bytes(dataLength);\\n        for (uint256 i = 0; i < dataLength; i++) {\\n            data[i] = message[i + 48];\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x7262083031b3f49a56ede1d53de2b3a6f113eb868dd8b65845f1d019180c317c\",\"license\":\"UNLICENSED\"},\"contracts/interfaces/IActionMsgReceiver.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\ninterface IActionMsgReceiver {\\n    function onAction(bytes4 action, bytes memory message) external;\\n}\\n\",\"keccak256\":\"0x63eef574820bb79cbcd97be37575491617054bc11836be452c2eda73c4861f58\",\"license\":\"MIT\"},\"contracts/interfaces/IFxStateSender.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\n/***\\n * @dev An interface of the `FxRoot` contract\\n * `FxRoot` is the contract of the \\\"Fx-Portal\\\" (a PoS bridge run by the Polygon team) on the\\n * mainnet/Goerli network. It passes data to s user-defined contract on the Polygon/Mumbai.\\n * See https://docs.polygon.technology/docs/develop/l1-l2-communication/fx-portal\\n */\\ninterface IFxStateSender {\\n    function sendMessageToChild(address _receiver, bytes calldata _data)\\n        external;\\n}\\n\",\"keccak256\":\"0xe73d5f1eb267872d295e9fb4ad5d4f81d518b54b2d03d6bd90c2ec2df4c923c0\",\"license\":\"MIT\"},\"contracts/interfaces/IRewardAdviser.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\ninterface IRewardAdviser {\\n    struct Advice {\\n        // advice on new \\\"shares\\\" (in the reward pool) to create\\n        address createSharesFor;\\n        uint96 sharesToCreate;\\n        // advice on \\\"shares\\\" to redeem\\n        address redeemSharesFrom;\\n        uint96 sharesToRedeem;\\n        // advice on address the reward against redeemed shares to send to\\n        address sendRewardTo;\\n    }\\n\\n    function getRewardAdvice(bytes4 action, bytes memory message)\\n        external\\n        returns (Advice memory);\\n}\\n\",\"keccak256\":\"0x9ecf725af20a11f29d94406fc335d3b20afd60dfb9e398a409966e0568ac1bbb\",\"license\":\"MIT\"},\"contracts/interfaces/IStakingTypes.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// solhint-disable-next-line compiler-fixed, compiler-gt-0_8\\npragma solidity ^0.8.0;\\n\\ninterface IStakingTypes {\\n    // Stake type terms\\n    struct Terms {\\n        // if stakes of this kind allowed\\n        bool isEnabled;\\n        // if messages on stakes to be sent to the {RewardMaster}\\n        bool isRewarded;\\n        // limit on the minimum amount staked, no limit if zero\\n        uint32 minAmountScaled;\\n        // limit on the maximum amount staked, no limit if zero\\n        uint32 maxAmountScaled;\\n        // Stakes not accepted before this time, has no effect if zero\\n        uint32 allowedSince;\\n        // Stakes not accepted after this time, has no effect if zero\\n        uint32 allowedTill;\\n        // One (at least) of the following three params must be non-zero\\n        // if non-zero, overrides both `exactLockPeriod` and `minLockPeriod`\\n        uint32 lockedTill;\\n        // ignored if non-zero `lockedTill` defined, overrides `minLockPeriod`\\n        uint32 exactLockPeriod;\\n        // has effect only if both `lockedTill` and `exactLockPeriod` are zero\\n        uint32 minLockPeriod;\\n    }\\n\\n    struct Stake {\\n        // index in the `Stake[]` array of `stakes`\\n        uint32 id;\\n        // defines Terms\\n        bytes4 stakeType;\\n        // time this stake was created at\\n        uint32 stakedAt;\\n        // time this stake can be claimed at\\n        uint32 lockedTill;\\n        // time this stake was claimed at (unclaimed if 0)\\n        uint32 claimedAt;\\n        // amount of tokens on this stake (assumed to be less 1e27)\\n        uint96 amount;\\n        // address stake voting power is delegated to\\n        address delegatee;\\n    }\\n}\\n\",\"keccak256\":\"0xdb6f4a5e54fedb85152a6c80104f98a87713b194e3fd157565c4bd20058864be\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x61012060405234801561001157600080fd5b506040516108333803806108338339810160408190526100309161010d565b6319932b9d60e31b63b8372e5560e01b61004e565b60405180910390fd5b6001600160e01b03199182166080521660a0526001600160a01b0381161580159061008157506001600160a01b03821615155b801561009557506001600160a01b03831615155b6100cb5760405162461bcd60e51b8152602060048201526007602482015266414d533a45303160c81b6044820152606401610045565b6001600160601b0319606091821b811660c05292811b831660e0521b166101005261014f565b80516001600160a01b038116811461010857600080fd5b919050565b600080600060608486031215610121578283fd5b61012a846100f1565b9250610138602085016100f1565b9150610146604085016100f1565b90509250925092565b60805160e01c60e01b60a05160e01c60e01b60c05160601c60e05160601c6101005160601c6106796101ba6000396000818160b5015261034f0152600060dc01526000818160710152610322015260006101f70152600081816101ba01526102bb01526106796000f3fe608060405234801561001057600080fd5b50600436106100675760003560e01c8063576eadd211610050578063576eadd2146100d7578063affed0e0146100fe578063e9cb03241461011557600080fd5b806329c9e0581461006c578063479169c4146100b0575b600080fd5b6100937f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b6100937f000000000000000000000000000000000000000000000000000000000000000081565b6100937f000000000000000000000000000000000000000000000000000000000000000081565b61010760005481565b6040519081526020016100a7565b61012861012336600461042a565b61018d565b6040516100a79190600060a0820190506001600160a01b0380845116835260208401516bffffffffffffffffffffffff808216602086015282604087015116604086015280606087015116606086015250508060808501511660808401525092915050565b6040805160a0810182526000808252602082018190529181018290526060810182905260808101919091527f00000000000000000000000000000000000000000000000000000000000000006001600160e01b031916836001600160e01b031916148061022d57507f00000000000000000000000000000000000000000000000000000000000000006001600160e01b031916836001600160e01b031916145b61027d5760405162461bcd60e51b815260206004820152601760248201527f5a52413a20756e737570706f7274656420616374696f6e000000000000000000604482015260640160405180910390fd5b61028783836102b9565b506040805160a08101825260008082526020820181905291810182905260608101829052608081019190915292915050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160e01b031916826001600160e01b031916146102f8575050565b60008054906103088285856103fb565b60405163b472047760e01b81529091506001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000169063b472047790610379907f00000000000000000000000000000000000000000000000000000000000000009085906004016105af565b600060405180830381600087803b15801561039357600080fd5b505af11580156103a7573d6000803e3d6000fd5b505050507f572041cd38e1e969e2595e37f964dff9c8ff6352e81996136313b838c3873d3a82826040516103dc9291906105d9565b60405180910390a16103ed82610627565b62ffffff1660005550505050565b606083838360405160200161041293929190610539565b60405160208183030381529060405290509392505050565b6000806040838503121561043c578182fd5b82357fffffffff000000000000000000000000000000000000000000000000000000008116811461046b578283fd5b9150602083013567ffffffffffffffff80821115610487578283fd5b818501915085601f83011261049a578283fd5b8135818111156104ac576104ac610656565b604051601f8201601f19908116603f011681019083821181831017156104d4576104d4610656565b816040528281528860208487010111156104ec578586fd5b82602086016020830137856020848301015280955050505050509250929050565b600081518084526105258160208601602086016105f7565b601f01601f19169290920160200192915050565b60e884901b7fffffff00000000000000000000000000000000000000000000000000000000001681527fffffffff000000000000000000000000000000000000000000000000000000008316600382015281516000906105a08160078501602087016105f7565b91909101600701949350505050565b6001600160a01b03831681526040602082015260006105d1604083018461050d565b949350505050565b62ffffff831681526040602082015260006105d1604083018461050d565b60005b838110156106125781810151838201526020016105fa565b83811115610621576000848401525b50505050565b600062ffffff8083168181141561064c57634e487b7160e01b83526011600452602483fd5b6001019392505050565b634e487b7160e01b600052604160045260246000fdfea164736f6c6343000804000a",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100675760003560e01c8063576eadd211610050578063576eadd2146100d7578063affed0e0146100fe578063e9cb03241461011557600080fd5b806329c9e0581461006c578063479169c4146100b0575b600080fd5b6100937f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b6100937f000000000000000000000000000000000000000000000000000000000000000081565b6100937f000000000000000000000000000000000000000000000000000000000000000081565b61010760005481565b6040519081526020016100a7565b61012861012336600461042a565b61018d565b6040516100a79190600060a0820190506001600160a01b0380845116835260208401516bffffffffffffffffffffffff808216602086015282604087015116604086015280606087015116606086015250508060808501511660808401525092915050565b6040805160a0810182526000808252602082018190529181018290526060810182905260808101919091527f00000000000000000000000000000000000000000000000000000000000000006001600160e01b031916836001600160e01b031916148061022d57507f00000000000000000000000000000000000000000000000000000000000000006001600160e01b031916836001600160e01b031916145b61027d5760405162461bcd60e51b815260206004820152601760248201527f5a52413a20756e737570706f7274656420616374696f6e000000000000000000604482015260640160405180910390fd5b61028783836102b9565b506040805160a08101825260008082526020820181905291810182905260608101829052608081019190915292915050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160e01b031916826001600160e01b031916146102f8575050565b60008054906103088285856103fb565b60405163b472047760e01b81529091506001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000169063b472047790610379907f00000000000000000000000000000000000000000000000000000000000000009085906004016105af565b600060405180830381600087803b15801561039357600080fd5b505af11580156103a7573d6000803e3d6000fd5b505050507f572041cd38e1e969e2595e37f964dff9c8ff6352e81996136313b838c3873d3a82826040516103dc9291906105d9565b60405180910390a16103ed82610627565b62ffffff1660005550505050565b606083838360405160200161041293929190610539565b60405160208183030381529060405290509392505050565b6000806040838503121561043c578182fd5b82357fffffffff000000000000000000000000000000000000000000000000000000008116811461046b578283fd5b9150602083013567ffffffffffffffff80821115610487578283fd5b818501915085601f83011261049a578283fd5b8135818111156104ac576104ac610656565b604051601f8201601f19908116603f011681019083821181831017156104d4576104d4610656565b816040528281528860208487010111156104ec578586fd5b82602086016020830137856020848301015280955050505050509250929050565b600081518084526105258160208601602086016105f7565b601f01601f19169290920160200192915050565b60e884901b7fffffff00000000000000000000000000000000000000000000000000000000001681527fffffffff000000000000000000000000000000000000000000000000000000008316600382015281516000906105a08160078501602087016105f7565b91909101600701949350505050565b6001600160a01b03831681526040602082015260006105d1604083018461050d565b949350505050565b62ffffff831681526040602082015260006105d1604083018461050d565b60005b838110156106125781810151838201526020016105fa565b83811115610621576000848401525b50505050565b600062ffffff8083168181141561064c57634e487b7160e01b83526011600452602483fd5b6001019392505050565b634e487b7160e01b600052604160045260246000fdfea164736f6c6343000804000a",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "constructor": {
+        "params": {
+          "_actionMsgReceiver": "Address of the AdvancedStakeActionMsgRelayer on Polygon/Mumbai",
+          "_fxRoot": "Address of the `FxRoot` (PoS Bridge) contract on mainnet/Goerli",
+          "_rewardMaster": "Address of the RewardMaster contract on the mainnet/Goerli"
+        }
+      },
+      "getRewardAdvice(bytes4,bytes)": {
+        "details": "It is assumed to be called by the RewardMaster contract. It returns the \"zero\" reward advises, no matter who calls it."
+      }
+    },
+    "stateVariables": {
+      "FX_ROOT": {
+        "details": "`FxRoot` is the contract of the \"Fx-Portal\" on the mainnet/Goerli."
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "ACTION_MSG_RECEIVER()": {
+        "notice": "Address on the AdvancedStakeActionMsgRelayer on the Polygon/Mumbai"
+      },
+      "FX_ROOT()": {
+        "notice": "Address of the `FxRoot` contract on the mainnet/Goerli network"
+      },
+      "REWARD_MASTER()": {
+        "notice": "Address of the RewardMaster contract on the mainnet/Goerli"
+      },
+      "nonce()": {
+        "notice": "Message nonce (i.e. sequential number of the next message)"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 161,
+        "contract": "contracts/AdvancedStakeRewardAdviserAndMsgSender.sol:AdvancedStakeRewardAdviserAndMsgSender",
+        "label": "nonce",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint256"
+      }
+    ],
+    "types": {
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

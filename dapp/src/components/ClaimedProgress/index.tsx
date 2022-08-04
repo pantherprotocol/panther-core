@@ -9,21 +9,21 @@ interface ClaimedProgressTypes {
     total: number;
 }
 
+function formatNumber(v: number): string {
+    if (v >= 1e6) {
+        return (v / 1e6).toFixed(0) + 'm';
+    }
+    if (v >= 1e3) {
+        return (v / 1e3).toFixed(0) + 'k';
+    }
+
+    return v.toFixed(0);
+}
+
 export default function ClaimedProgress(props: ClaimedProgressTypes) {
     const claimed = props?.claimed;
     const total = props?.total;
     const percentage = (claimed / total) * 100;
-
-    function formatNumber(v: number): string {
-        if (v >= 1e6) {
-            return (v / 1e6).toFixed(0) + 'm';
-        }
-        if (v >= 1e3) {
-            return (v / 1e3).toFixed(0) + 'k';
-        }
-
-        return v.toFixed(0);
-    }
 
     const formattedClaimed = formatNumber(claimed);
     const formattedTotal = formatNumber(total);

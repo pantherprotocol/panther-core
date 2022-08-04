@@ -4,6 +4,7 @@ import {RewardMaster} from '../types/contracts/RewardMaster';
 import {TestnetStaking} from './../types/contracts/TestnetStaking';
 import {Staking, IStakingTypes} from '../types/contracts/Staking';
 import {StakeRewardController} from '../types/contracts/StakeRewardController';
+import {AdvancedStakeRewardController} from './../types/contracts/AdvancedStakeRewardController';
 import {
     classicActionHash,
     advancedActionHash,
@@ -69,6 +70,21 @@ export async function addTerms(
     console.log(`Adding terms for ${stakeType} staking:`, terms);
 
     const tx = await staking.addTerms(hash4bytes(stakeType), terms);
+    console.log(
+        `Transaction submitted: ${tx.hash}. Waiting for confirmation...`,
+    );
+
+    await tx.wait();
+    console.log('Transaction confirmed');
+}
+
+export async function updateRewardParams(
+    advancedStakeRewardController: AdvancedStakeRewardController,
+    params: AdvancedStakeRewardController.RewardParamsStruct,
+) {
+    console.log(`Adding reward params`, params);
+
+    const tx = await advancedStakeRewardController.updateRewardParams(params);
     console.log(
         `Transaction submitted: ${tx.hash}. Waiting for confirmation...`,
     );

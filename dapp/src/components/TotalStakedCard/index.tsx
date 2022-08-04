@@ -8,8 +8,10 @@ import {useWeb3React} from '@web3-react/core';
 import refreshIcon from '../../images/refresh-icon.svg';
 import {formatCurrency} from '../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {getChainBalance} from '../../redux/slices/chainBalance';
-import {totalStakedSelector} from '../../redux/slices/totalsOfAdvancedStakes';
+import {
+    getTotalsOfAdvancedStakes,
+    totalStakedSelector,
+} from '../../redux/slices/totalsOfAdvancedStakes';
 
 import './styles.scss';
 
@@ -23,12 +25,12 @@ const TotalStakedCard = () => {
     const dispatch = useAppDispatch();
 
     const refreshChainBalance = () => {
-        dispatch(getChainBalance, context);
+        dispatch(getTotalsOfAdvancedStakes, context);
     };
     return (
         <Card className="total-staked-card" variant="outlined">
             <Typography className="card-title">
-                Total Staked
+                Advanced Staking Total Staked
                 <IconButton onClick={refreshChainBalance}>
                     <img src={refreshIcon} />
                 </IconButton>

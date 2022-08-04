@@ -7,29 +7,20 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployer} = await getNamedAccounts();
 
     console.log(
-        `Deploying AdvancedStakingDataDecoder on ${hre.network.name}...`,
+        `Deploying AdvancedStakeRewardController on ${hre.network.name}...`,
     );
 
     const rewardMaster = await hre.ethers.getContract('RewardMaster');
-    const rewardingStart =
-        process.env.ADVANCED_REWARDING_START ||
-        Math.ceil(Date.now() / 1000) + 120;
 
-    const rewardedPeriod = process.env.ADVANCED_REWARDED_PERIOD;
-
-    console.log(`Rewarding start: ${rewardingStart}`);
-    console.log(`Rewarded period: ${rewardedPeriod}`);
-
-    await deploy('AdvancedStakingDataDecoder', {
+    await deploy('AdvancedStakeRewardController', {
         from: deployer,
         args: [
             deployer,
             rewardMaster.address,
             process.env.PANTHER_POOL,
-            process.env.TOKEN_ADDRESS,
-            hre.ethers.constants.AddressZero,
-            rewardingStart,
-            rewardedPeriod,
+            process.env.PRP_GRANTOR,
+            process.env.ZKP_TOKEN_ADDRESS,
+            process.env.PNFT_TOKEN_ADDRESS,
         ],
         log: true,
         autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
@@ -37,4 +28,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ['RewardPool'];
+func.tags = ['AdvancedStakeRewardController'];

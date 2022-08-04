@@ -32,11 +32,6 @@ export default function StakingInput(props: {
     const network = currentNetwork(chainId);
 
     const changeHandler = (e: any) => {
-        const inputTextLength = e.target.value.length;
-        if (inputTextLength > 12) {
-            return;
-        }
-
         const regex = /^\d*\.?\d*$/; // matches floating points numbers
         if (!regex.test(e.target.value)) {
             return false;
@@ -87,7 +82,11 @@ export default function StakingInput(props: {
             <Box className="staking-input-container">
                 <Box className="staking-input-box">
                     <Input
-                        inputProps={{pattern: '[0-9.]*', inputMode: 'decimal'}}
+                        inputProps={{
+                            pattern: '[0-9.]*',
+                            inputMode: 'decimal',
+                            maxLength: 28,
+                        }}
                         className="staking-input"
                         value={props.amountToStake}
                         onChange={changeHandler}

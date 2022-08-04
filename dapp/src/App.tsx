@@ -14,6 +14,8 @@ import Faucet from './pages/Faucet';
 import NotFoundPage from './pages/NotFound';
 import Staking from './pages/Staking';
 import ZAssets from './pages/ZAssets';
+import {useAppDispatch} from './redux/hooks';
+import {getZKPTokenMarketPrice} from './redux/slices/zkpMarketPrice';
 import {getMissingEnvVars, env} from './services/env';
 
 import './styles.scss';
@@ -28,6 +30,7 @@ const theme = createTheme({
 
 function App() {
     const missing = getMissingEnvVars();
+    const dispatch = useAppDispatch();
 
     const checkIfBlocked = useCallback(async () => {
         const response = await isBlockedCountry();
@@ -40,8 +43,9 @@ function App() {
     }, []);
 
     useEffect(() => {
+        dispatch(getZKPTokenMarketPrice);
         checkIfBlocked();
-    }, [checkIfBlocked]);
+    }, [checkIfBlocked, dispatch]);
 
     if (missing.length > 0) {
         return (

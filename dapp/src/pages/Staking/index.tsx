@@ -20,7 +20,6 @@ import {getRemainingPrpRewards} from '../../redux/slices/remainingPrpRewards';
 import {getStakeTerms} from '../../redux/slices/stakeTerms';
 import {getTotalsOfAdvancedStakes} from '../../redux/slices/totalsOfAdvancedStakes';
 import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
-import {getZKPTokenMarketPrice} from '../../redux/slices/zkpMarketPrice';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 import {chainHasAdvancedStaking} from '../../services/contracts';
@@ -33,7 +32,6 @@ const Staking = (): React.ReactElement => {
     const {chainId} = context;
 
     useEffect(() => {
-        dispatch(getZKPTokenMarketPrice);
         dispatch(getTotalsOfAdvancedStakes, context);
         dispatch(getZkpTokenBalance, context);
         dispatch(getZkpStakedBalance, context);

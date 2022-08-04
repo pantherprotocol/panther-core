@@ -312,13 +312,17 @@ async function unpackUTXOAndDeriveKeys(
 function decodeUTXOData(
     utxoData: string,
 ): [string, string, bigint, bigint] | Error {
-    // 648 and 968 are the size of the UTXO data containing 2 UTXO and 3 UTXO
-    // commitments, respectivaly. First byte is reserved for the msg version
-    // number. Next 92 bytes after the Message type is packed message with UTXO
-    // secrets, 32 bytes for the token address, and the last 32 bytes for the
-    // token id. See documentation for more details:
+    // 328, 648 and 968 are the size of the UTXO data containing 1 UTXO, 2 UTXOs
+    // and 3 UTXOs commitments, respectively. First byte is reserved for the msg
+    // version number. Next 92 bytes after the Message type is packed message
+    // with UTXO secrets, 32 bytes for the token address, and the last 32 bytes
+    // for the token id. See documentation for more details:
     // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k/
-    if (utxoData.length !== 968 && utxoData.length !== 648) {
+    if (
+        utxoData.length !== 968 &&
+        utxoData.length !== 648 &&
+        utxoData.length !== 328
+    ) {
         const msg = 'Invalid UTXO data length';
         console.error(msg);
         return new Error(msg);

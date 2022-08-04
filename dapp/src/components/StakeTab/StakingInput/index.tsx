@@ -1,8 +1,9 @@
 import * as React from 'react';
+import {useState} from 'react';
 
 import {Box, Input, InputAdornment, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 
 import logo from '../../../images/panther-logo.svg';
 import {formatCurrency} from '../../../lib/format';
@@ -23,6 +24,7 @@ export default function StakingInput(props: {
     const context = useWeb3React();
     const {account, chainId} = context;
 
+    const [inputTextLength, setInputTextLength] = useState<number>(0);
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const isStakingOpen = useAppSelector(
         isStakingOpenSelector(chainId, StakeType.Advanced),
@@ -32,6 +34,8 @@ export default function StakingInput(props: {
     const network = currentNetwork(chainId);
 
     const changeHandler = (e: any) => {
+        setInputTextLength(e.target.value.length);
+
         const regex = /^\d*\.?\d*$/; // matches floating points numbers
         if (!regex.test(e.target.value)) {
             return false;
@@ -87,7 +91,9 @@ export default function StakingInput(props: {
                             inputMode: 'decimal',
                             maxLength: 28,
                         }}
-                        className="staking-input"
+                        className={`staking-input ${
+                            Math.floor(inputTextLength / 15) ? 'long-input' : ''
+                        }`}
                         value={props.amountToStake}
                         onChange={changeHandler}
                         autoComplete="off"
@@ -121,6 +127,9 @@ export default function StakingInput(props: {
                     onClick={() => {
                         if (tokenBalance) {
                             props.setStakingAmountBN(tokenBalance);
+                            setInputTextLength(
+                                utils.formatEther(tokenBalance).length,
+                            );
                         }
                     }}
                 >

@@ -1,0 +1,563 @@
+{
+  "address": "0x720BEF9e9cceebd80e77460dEa5CaeD06D01Aa9D",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenPrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxAmountToPay",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_cupSize",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxDrinkCount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "OWNER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_whitelistedAddresses",
+          "type": "address[]"
+        },
+        {
+          "internalType": "bool[]",
+          "name": "_whitelisted",
+          "type": "bool[]"
+        }
+      ],
+      "name": "addWhitelistedMultiple",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_claimedToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "claimErc20",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "claimNative",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "cupSize",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "drink",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "drinkCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amountToPay",
+          "type": "uint256"
+        }
+      ],
+      "name": "getCupSize",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "isAllowedToDrink",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "isWhitelisted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "maxAmountToPay",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "maxDrinkCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "restrictToMaxDrinkCount",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "restrictToWhitelisted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "toggleRestrictToMaxDrinkCount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "toggleRestrictToWhitelisted",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "tokenPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_cupSize",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateCupSize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_maxDrinkCount",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateMaxDrinkCount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_tokenPrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateTokenPrice",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "whitelistedAddresses",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x045719500453b0bea1ae45eebf2a0fbeca3517a38dabf81a9218aa67e5c1de5a",
+  "receipt": {
+    "to": null,
+    "from": "0x5FFfdD1dE35fFC2f66bFD78E064C280FeD9E68de",
+    "contractAddress": "0x720BEF9e9cceebd80e77460dEa5CaeD06D01Aa9D",
+    "transactionIndex": 0,
+    "gasUsed": "1149773",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x6930238bdfdad22ec83c58e8ac092a33637896b77da368be4d19af51e4330d0e",
+    "transactionHash": "0x045719500453b0bea1ae45eebf2a0fbeca3517a38dabf81a9218aa67e5c1de5a",
+    "logs": [],
+    "blockNumber": 7306397,
+    "cumulativeGasUsed": "1149773",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x5FFfdD1dE35fFC2f66bFD78E064C280FeD9E68de",
+    "0x9a27804316F7b31110E3823b68578A821D144bA0",
+    "50000000000000",
+    "50000000000000000",
+    "1000000000000000000000",
+    "5"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "f01e7460d1f01816bb8e0d802a8bca94",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_tokenPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_maxAmountToPay\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_cupSize\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_maxDrinkCount\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"OWNER\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_whitelistedAddresses\",\"type\":\"address[]\"},{\"internalType\":\"bool[]\",\"name\":\"_whitelisted\",\"type\":\"bool[]\"}],\"name\":\"addWhitelistedMultiple\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_claimedToken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"claimErc20\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"}],\"name\":\"claimNative\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"cupSize\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"}],\"name\":\"drink\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"drinkCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_amountToPay\",\"type\":\"uint256\"}],\"name\":\"getCupSize\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"isAllowedToDrink\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"isWhitelisted\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maxAmountToPay\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maxDrinkCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"restrictToMaxDrinkCount\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"restrictToWhitelisted\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"toggleRestrictToMaxDrinkCount\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"toggleRestrictToWhitelisted\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_cupSize\",\"type\":\"uint256\"}],\"name\":\"updateCupSize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_maxDrinkCount\",\"type\":\"uint256\"}],\"name\":\"updateMaxDrinkCount\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_tokenPrice\",\"type\":\"uint256\"}],\"name\":\"updateTokenPrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"whitelistedAddresses\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"addWhitelistedMultiple(address[],bool[])\":{\"params\":{\"_whitelisted\":\"array of boolen values to be mapped to the addresses\",\"_whitelistedAddresses\":\"array of addresses to be added\"}},\"drink(address)\":{\"details\":\"if restrictToWhitelisted is true, then check if the sender is whitelisted. if the restrictToMaxReq is true, then check if the sender is already received token.\",\"params\":{\"_to\":\"the receiver addresss\"}},\"isAllowedToDrink(address)\":{\"details\":\"it helps when contract is restricted to requests count.\"},\"isWhitelisted(address)\":{\"details\":\"it helps when contract is restricted to whitelisted addresses\"},\"updateCupSize(uint256)\":{\"params\":{\"_cupSize\":\"the amount that can be received by users\"}},\"updateMaxDrinkCount(uint256)\":{\"params\":{\"_maxDrinkCount\":\"the maximum number of times the drink function can be called\"}},\"updateTokenPrice(uint256)\":{\"params\":{\"_tokenPrice\":\"the price of each token\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"OWNER()\":{\"notice\":\"The owner who has privileged rights\"},\"addWhitelistedMultiple(address[],bool[])\":{\"notice\":\"Add multiple addresses to the whitelisted list\"},\"drink(address)\":{\"notice\":\"send tokens to `_to`\"},\"isAllowedToDrink(address)\":{\"notice\":\"return true if the user request counts are less than or equal to maxDrinkCount, otherwise retuens false\"},\"isWhitelisted(address)\":{\"notice\":\"return true if the address is whitelisted, otherwise false\"},\"toggleRestrictToMaxDrinkCount()\":{\"notice\":\"toggle restrictToMaxReq\"},\"toggleRestrictToWhitelisted()\":{\"notice\":\"toggle restrictToWhitelisted\"},\"updateCupSize(uint256)\":{\"notice\":\"update the amount that can be received by users\"},\"updateMaxDrinkCount(uint256)\":{\"notice\":\"update the token price.\"},\"updateTokenPrice(uint256)\":{\"notice\":\"update the token price.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/ZkpFaucet.sol\":\"ZkpFaucet\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":800},\"remappings\":[]},\"sources\":{\"contracts/ZkpFaucet.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\nimport \\\"./utils/Claimable.sol\\\";\\nimport \\\"./utils/ImmutableOwnable.sol\\\";\\n\\n// When called `drink`, it sends tokens to the `_to`\\n// As a prerequisite, it shall get enough tokens on the balance\\ncontract ZkpFaucet is Claimable, ImmutableOwnable {\\n    address public immutable token;\\n    uint256 public cupSize;\\n    uint256 public tokenPrice;\\n    uint256 public maxAmountToPay;\\n    uint256 public maxDrinkCount;\\n\\n    // @notice  store the whitelisted addresses who can drink\\n    mapping(address => bool) public whitelistedAddresses;\\n    // @notice store the number of times each user has drank\\n    mapping(address => uint256) public drinkCount;\\n\\n    // @notice enabling/disabling check for whitelisted addresses\\n    bool public restrictToWhitelisted;\\n    // @notice enabling/disabling check for requests count\\n    bool public restrictToMaxDrinkCount;\\n\\n    constructor(\\n        address _owner,\\n        address _token,\\n        uint256 _tokenPrice,\\n        uint256 _maxAmountToPay,\\n        uint256 _cupSize,\\n        uint256 _maxDrinkCount\\n    ) ImmutableOwnable(_owner) {\\n        require(_cupSize > 0, \\\"invalid cup size\\\");\\n        require(_token != address(0), \\\"invalid token address\\\");\\n\\n        token = _token;\\n        tokenPrice = _tokenPrice;\\n        cupSize = _cupSize;\\n        maxAmountToPay = _maxAmountToPay;\\n        maxDrinkCount = _maxDrinkCount;\\n    }\\n\\n    /**\\n     * @notice if restrictToWhitelisted is true, then\\n     * check if the sender is whitelisted\\n     */\\n    modifier onlyWhitelisted(address _address) {\\n        require(\\n            !restrictToWhitelisted || isWhitelisted(_address),\\n            \\\"Not whitelisted\\\"\\n        );\\n        _;\\n    }\\n\\n    /**\\n     * @notice if restrictToMaxDrinkCount is true, then\\n     * check if the sender is already received token\\n     */\\n    modifier checkDrinkCount(address _address) {\\n        require(\\n            !restrictToMaxDrinkCount || isAllowedToDrink(_address),\\n            \\\"Too much drink count\\\"\\n        );\\n        _;\\n    }\\n\\n    /**\\n     * @notice if token price is more than 0, then\\n     * check the value\\n     */\\n    modifier validatePrice() {\\n        require(msg.value <= maxAmountToPay, \\\"High value\\\");\\n        require(msg.value >= tokenPrice, \\\"Low value\\\");\\n        _;\\n    }\\n\\n    /**\\n     * @notice return true if the address is whitelisted, otherwise false\\n     * @dev it helps when contract is restricted to whitelisted addresses\\n     */\\n    function isWhitelisted(address _account) public view returns (bool) {\\n        return whitelistedAddresses[_account];\\n    }\\n\\n    /**\\n     * @notice return true if the user request counts are\\n     * less than or equal to maxDrinkCount, otherwise retuens false\\n     * @dev it helps when contract is restricted to requests count.\\n     */\\n    function isAllowedToDrink(address _account) public view returns (bool) {\\n        return drinkCount[_account] < maxDrinkCount;\\n    }\\n\\n    /**\\n     * @notice send tokens to `_to`\\n     * @param _to the receiver addresss\\n     * @dev if restrictToWhitelisted is true, then check if the\\n     * sender is whitelisted.\\n     * if the restrictToMaxReq is true, then check if the\\n     * sender is already received token.\\n     */\\n    function drink(address _to)\\n        external\\n        payable\\n        validatePrice\\n        onlyWhitelisted(msg.sender)\\n        checkDrinkCount(_to)\\n    {\\n        drinkCount[_to]++;\\n\\n        safeTransfer(token, _to, getCupSize(msg.value));\\n    }\\n\\n    function getCupSize(uint256 _amountToPay) public view returns (uint256) {\\n        return tokenPrice > 0 ? (_amountToPay / tokenPrice) * 1e18 : cupSize;\\n    }\\n\\n    function safeTransfer(\\n        address _token,\\n        address _to,\\n        uint256 _value\\n    ) internal {\\n        // bytes4(keccak256(bytes('transfer(address,uint256)')));\\n\\n        // solhint-disable-next-line avoid-low-level-calls\\n        (bool success, bytes memory data) = _token.call(\\n            abi.encodeWithSelector(0xa9059cbb, _to, _value)\\n        );\\n        require(\\n            success && (data.length == 0 || abi.decode(data, (bool))),\\n            \\\"TransferHelper::safeTransfer: transfer failed\\\"\\n        );\\n    }\\n\\n    // Owner functions\\n    /**\\n     * @notice toggle restrictToWhitelisted\\n     */\\n    function toggleRestrictToWhitelisted() external onlyOwner {\\n        restrictToWhitelisted = !restrictToWhitelisted;\\n    }\\n\\n    /**\\n     * @notice toggle restrictToMaxReq\\n     */\\n    function toggleRestrictToMaxDrinkCount() external onlyOwner {\\n        restrictToMaxDrinkCount = !restrictToMaxDrinkCount;\\n    }\\n\\n    /**\\n     * @notice Add multiple addresses to the whitelisted list\\n     * @param _whitelistedAddresses array of addresses to be added\\n     * @param _whitelisted array of boolen values to be mapped to the addresses\\n     */\\n    function addWhitelistedMultiple(\\n        address[] calldata _whitelistedAddresses,\\n        bool[] calldata _whitelisted\\n    ) external onlyOwner {\\n        for (uint256 i = 0; i < _whitelistedAddresses.length; ) {\\n            whitelistedAddresses[_whitelistedAddresses[i]] = _whitelisted[i];\\n\\n            unchecked {\\n                ++i;\\n            }\\n        }\\n    }\\n\\n    /**\\n     * @notice update the amount that can be received by users\\n     * @param _cupSize the amount that can be received by users\\n     */\\n    function updateCupSize(uint256 _cupSize) external onlyOwner {\\n        require(_cupSize > 0, \\\"invalid size\\\");\\n        cupSize = _cupSize;\\n    }\\n\\n    /**\\n     * @notice update the token price.\\n     * @param _tokenPrice the price of each token\\n     */\\n    function updateTokenPrice(uint256 _tokenPrice) external onlyOwner {\\n        tokenPrice = _tokenPrice;\\n    }\\n\\n    /**\\n     * @notice update the token price.\\n     * @param _maxDrinkCount the maximum number of times the\\n     * drink function can be called\\n     */\\n    function updateMaxDrinkCount(uint256 _maxDrinkCount) external onlyOwner {\\n        require(_maxDrinkCount > 0, \\\"invalid max request count\\\");\\n        maxDrinkCount = _maxDrinkCount;\\n    }\\n\\n    function claimErc20(\\n        address _claimedToken,\\n        address _to,\\n        uint256 _amount\\n    ) external onlyOwner {\\n        require(_to != address(0), \\\"recipient cannot be 0\\\");\\n\\n        _claimErc20(_claimedToken, _to, _amount);\\n    }\\n\\n    function claimNative(address _to) external onlyOwner {\\n        require(_to != address(0), \\\"recipient cannot be 0\\\");\\n\\n        (bool sent, ) = _to.call{ value: address(this).balance }(\\\"\\\"); // solhint-disable-line avoid-low-level-calls\\n        require(sent, \\\"Failed to send native\\\");\\n    }\\n}\\n\",\"keccak256\":\"0x9d55d5c74ac2fe486c41ec7fdf6ddc6dfbd7215bffef686d370846e6c238914c\",\"license\":\"MIT\"},\"contracts/utils/Claimable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// solhint-disable-next-line compiler-fixed, compiler-gt-0_8\\npragma solidity ^0.8.0;\\n\\n/**\\n * @title Claimable\\n * @notice It withdraws accidentally sent tokens from this contract.\\n */\\ncontract Claimable {\\n    bytes4 private constant SELECTOR_TRANSFER =\\n        bytes4(keccak256(bytes(\\\"transfer(address,uint256)\\\")));\\n\\n    /// @dev Withdraws ERC20 tokens from this contract\\n    /// (take care of reentrancy attack risk mitigation)\\n    function _claimErc20(\\n        address token,\\n        address to,\\n        uint256 amount\\n    ) internal {\\n        // solhint-disable avoid-low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            abi.encodeWithSelector(SELECTOR_TRANSFER, to, amount)\\n        );\\n        require(\\n            success && (data.length == 0 || abi.decode(data, (bool))),\\n            \\\"claimErc20: TRANSFER_FAILED\\\"\\n        );\\n    }\\n}\\n\",\"keccak256\":\"0x702e63e7eef33ed5490abd4a58db7074a1bcf1b055057cbbbdbeaa4112f5c437\",\"license\":\"MIT\"},\"contracts/utils/ImmutableOwnable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// solhint-disable-next-line compiler-fixed, compiler-gt-0_8\\npragma solidity ^0.8.0;\\n\\n/// @title Staking\\nabstract contract ImmutableOwnable {\\n    /// @notice The owner who has privileged rights\\n    // solhint-disable-next-line var-name-mixedcase\\n    address public immutable OWNER;\\n\\n    /// @dev Throws if called by any account other than the {OWNER}.\\n    modifier onlyOwner() {\\n        require(OWNER == msg.sender, \\\"ImmOwn: unauthorized\\\");\\n        _;\\n    }\\n\\n    constructor(address _owner) {\\n        require(_owner != address(0), \\\"ImmOwn: zero owner address\\\");\\n        OWNER = _owner;\\n    }\\n}\\n\",\"keccak256\":\"0xa7fcff1c9e37b9c757c39cf83b9149b440de47f72a1fb77426a75520fedead5c\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60c06040523480156200001157600080fd5b506040516200147238038062001472833981016040819052620000349162000184565b856001600160a01b038116620000915760405162461bcd60e51b815260206004820152601a60248201527f496d6d4f776e3a207a65726f206f776e6572206164647265737300000000000060448201526064015b60405180910390fd5b60601b6001600160601b03191660805281620000e35760405162461bcd60e51b815260206004820152601060248201526f696e76616c6964206375702073697a6560801b604482015260640162000088565b6001600160a01b0385166200013b5760405162461bcd60e51b815260206004820152601560248201527f696e76616c696420746f6b656e20616464726573730000000000000000000000604482015260640162000088565b60609490941b6001600160601b03191660a05260019290925560009190915560025560035550620001e0565b80516001600160a01b03811681146200017f57600080fd5b919050565b60008060008060008060c087890312156200019d578182fd5b620001a88762000167565b9550620001b86020880162000167565b945060408701519350606087015192506080870151915060a087015190509295509295509295565b60805160601c60a05160601c6112276200024b6000396000818161047d0152610a840152600081816101d1015281816104a10152818161056a015281816105ed015281816106b101528181610725015281816107fa01528181610ab40152610c2001526112276000f3fe6080604052600436106101755760003560e01c8063870ae95e116100cb578063e733c4161161007f578063f331330011610059578063f331330014610435578063f40cee7c14610455578063fc0c546a1461046b57600080fd5b8063e733c416146103ec578063ecdc6327146103ff578063ed0fe4e01461041557600080fd5b80639303422c116100b05780639303422c1461038a578063a50334ce1461039f578063c9a5ac3a146103bf57600080fd5b8063870ae95e1461035457806392a70fb01461036a57600080fd5b806337278e8f1161012d57806366c256351161010757806366c25635146102d4578063676c0d77146103105780637ff9b5961461033057600080fd5b806337278e8f146102665780633af32abf1461027b5780633b7139ed146102b457600080fd5b80631c85a2bf1161015e5780631c85a2bf1461020b5780632329895d1461022d57806334aeabe41461024c57600080fd5b806306c933d81461017a578063117803e3146101bf575b600080fd5b34801561018657600080fd5b506101aa61019536600461104b565b60046020526000908152604090205460ff1681565b60405190151581526020015b60405180910390f35b3480156101cb57600080fd5b506101f37f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020016101b6565b34801561021757600080fd5b5061022b610226366004611148565b61049f565b005b34801561023957600080fd5b506006546101aa90610100900460ff1681565b34801561025857600080fd5b506006546101aa9060ff1681565b34801561027257600080fd5b5061022b610568565b34801561028757600080fd5b506101aa61029636600461104b565b6001600160a01b031660009081526004602052604090205460ff1690565b3480156102c057600080fd5b5061022b6102cf366004611148565b6105eb565b3480156102e057600080fd5b506101aa6102ef36600461104b565b6003546001600160a01b039091166000908152600560205260409020541090565b34801561031c57600080fd5b5061022b61032b366004611148565b6106af565b34801561033c57600080fd5b5061034660015481565b6040519081526020016101b6565b34801561036057600080fd5b5061034660005481565b34801561037657600080fd5b5061022b61038536600461106c565b610723565b34801561039657600080fd5b5061022b6107f8565b3480156103ab57600080fd5b506103466103ba366004611148565b610884565b3480156103cb57600080fd5b506103466103da36600461104b565b60056020526000908152604090205481565b61022b6103fa36600461104b565b6108bc565b34801561040b57600080fd5b5061034660025481565b34801561042157600080fd5b5061022b61043036600461104b565b610ab2565b34801561044157600080fd5b5061022b6104503660046110a7565b610c1e565b34801561046157600080fd5b5061034660035481565b34801561047757600080fd5b506101f37f000000000000000000000000000000000000000000000000000000000000000081565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146105135760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b60448201526064015b60405180910390fd5b600081116105635760405162461bcd60e51b815260206004820152600c60248201527f696e76616c69642073697a650000000000000000000000000000000000000000604482015260640161050a565b600055565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146105d75760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b6006805460ff19811660ff90911615179055565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461065a5760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b600081116106aa5760405162461bcd60e51b815260206004820152601960248201527f696e76616c6964206d6178207265717565737420636f756e7400000000000000604482015260640161050a565b600355565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461071e5760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b600155565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146107925760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b6001600160a01b0382166107e85760405162461bcd60e51b815260206004820152601560248201527f726563697069656e742063616e6e6f7420626520300000000000000000000000604482015260640161050a565b6107f3838383610d3d565b505050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146108675760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b6006805461ff001981166101009182900460ff1615909102179055565b60008060015411610897576000546108b6565b6001546108a49083611199565b6108b690670de0b6b3a76400006111b9565b92915050565b60025434111561090e5760405162461bcd60e51b815260206004820152600a60248201527f486967682076616c756500000000000000000000000000000000000000000000604482015260640161050a565b6001543410156109605760405162461bcd60e51b815260206004820152600960248201527f4c6f772076616c75650000000000000000000000000000000000000000000000604482015260640161050a565b600654339060ff16158061098c57506001600160a01b03811660009081526004602052604090205460ff165b6109d85760405162461bcd60e51b815260206004820152600f60248201527f4e6f742077686974656c69737465640000000000000000000000000000000000604482015260640161050a565b6006548290610100900460ff161580610a0a57506003546001600160a01b038216600090815260056020526040902054105b610a565760405162461bcd60e51b815260206004820152601460248201527f546f6f206d756368206472696e6b20636f756e74000000000000000000000000604482015260640161050a565b6001600160a01b0383166000908152600560205260408120805491610a7a836111d8565b91905055506107f37f000000000000000000000000000000000000000000000000000000000000000084610aad34610884565b610e96565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03163314610b215760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b6001600160a01b038116610b775760405162461bcd60e51b815260206004820152601560248201527f726563697069656e742063616e6e6f7420626520300000000000000000000000604482015260640161050a565b6000816001600160a01b03164760405160006040518083038185875af1925050503d8060008114610bc4576040519150601f19603f3d011682016040523d82523d6000602084013e610bc9565b606091505b5050905080610c1a5760405162461bcd60e51b815260206004820152601560248201527f4661696c656420746f2073656e64206e61746976650000000000000000000000604482015260640161050a565b5050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03163314610c8d5760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b60005b83811015610d3657828282818110610cb857634e487b7160e01b600052603260045260246000fd5b9050602002016020810190610ccd9190611110565b60046000878785818110610cf157634e487b7160e01b600052603260045260246000fd5b9050602002016020810190610d06919061104b565b6001600160a01b031681526020810191909152604001600020805460ff1916911515919091179055600101610c90565b5050505050565b604080518082018252601981527f7472616e7366657228616464726573732c75696e74323536290000000000000060209182015281516001600160a01b0385811660248301526044808301869052845180840390910181526064909201845291810180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1663a9059cbb60e01b17905291516000928392871691610dde9190611160565b6000604051808303816000865af19150503d8060008114610e1b576040519150601f19603f3d011682016040523d82523d6000602084013e610e20565b606091505b5091509150818015610e4a575080511580610e4a575080806020019051810190610e4a919061112c565b610d365760405162461bcd60e51b815260206004820152601b60248201527f636c61696d45726332303a205452414e534645525f4641494c45440000000000604482015260640161050a565b604080516001600160a01b038481166024830152604480830185905283518084039091018152606490920183526020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1663a9059cbb60e01b1790529151600092839290871691610f079190611160565b6000604051808303816000865af19150503d8060008114610f44576040519150601f19603f3d011682016040523d82523d6000602084013e610f49565b606091505b5091509150818015610f73575080511580610f73575080806020019051810190610f73919061112c565b610d365760405162461bcd60e51b815260206004820152602d60248201527f5472616e7366657248656c7065723a3a736166655472616e736665723a20747260448201527f616e73666572206661696c656400000000000000000000000000000000000000606482015260840161050a565b80356001600160a01b0381168114610ffc57600080fd5b919050565b60008083601f840112611012578182fd5b50813567ffffffffffffffff811115611029578182fd5b6020830191508360208260051b850101111561104457600080fd5b9250929050565b60006020828403121561105c578081fd5b61106582610fe5565b9392505050565b600080600060608486031215611080578182fd5b61108984610fe5565b925061109760208501610fe5565b9150604084013590509250925092565b600080600080604085870312156110bc578081fd5b843567ffffffffffffffff808211156110d3578283fd5b6110df88838901611001565b909650945060208701359150808211156110f7578283fd5b5061110487828801611001565b95989497509550505050565b600060208284031215611121578081fd5b813561106581611209565b60006020828403121561113d578081fd5b815161106581611209565b600060208284031215611159578081fd5b5035919050565b60008251815b818110156111805760208186018101518583015201611166565b8181111561118e5782828501525b509190910192915050565b6000826111b457634e487b7160e01b81526012600452602481fd5b500490565b60008160001904831182151516156111d3576111d36111f3565b500290565b60006000198214156111ec576111ec6111f3565b5060010190565b634e487b7160e01b600052601160045260246000fd5b801515811461121757600080fd5b5056fea164736f6c6343000804000a",
+  "deployedBytecode": "0x6080604052600436106101755760003560e01c8063870ae95e116100cb578063e733c4161161007f578063f331330011610059578063f331330014610435578063f40cee7c14610455578063fc0c546a1461046b57600080fd5b8063e733c416146103ec578063ecdc6327146103ff578063ed0fe4e01461041557600080fd5b80639303422c116100b05780639303422c1461038a578063a50334ce1461039f578063c9a5ac3a146103bf57600080fd5b8063870ae95e1461035457806392a70fb01461036a57600080fd5b806337278e8f1161012d57806366c256351161010757806366c25635146102d4578063676c0d77146103105780637ff9b5961461033057600080fd5b806337278e8f146102665780633af32abf1461027b5780633b7139ed146102b457600080fd5b80631c85a2bf1161015e5780631c85a2bf1461020b5780632329895d1461022d57806334aeabe41461024c57600080fd5b806306c933d81461017a578063117803e3146101bf575b600080fd5b34801561018657600080fd5b506101aa61019536600461104b565b60046020526000908152604090205460ff1681565b60405190151581526020015b60405180910390f35b3480156101cb57600080fd5b506101f37f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020016101b6565b34801561021757600080fd5b5061022b610226366004611148565b61049f565b005b34801561023957600080fd5b506006546101aa90610100900460ff1681565b34801561025857600080fd5b506006546101aa9060ff1681565b34801561027257600080fd5b5061022b610568565b34801561028757600080fd5b506101aa61029636600461104b565b6001600160a01b031660009081526004602052604090205460ff1690565b3480156102c057600080fd5b5061022b6102cf366004611148565b6105eb565b3480156102e057600080fd5b506101aa6102ef36600461104b565b6003546001600160a01b039091166000908152600560205260409020541090565b34801561031c57600080fd5b5061022b61032b366004611148565b6106af565b34801561033c57600080fd5b5061034660015481565b6040519081526020016101b6565b34801561036057600080fd5b5061034660005481565b34801561037657600080fd5b5061022b61038536600461106c565b610723565b34801561039657600080fd5b5061022b6107f8565b3480156103ab57600080fd5b506103466103ba366004611148565b610884565b3480156103cb57600080fd5b506103466103da36600461104b565b60056020526000908152604090205481565b61022b6103fa36600461104b565b6108bc565b34801561040b57600080fd5b5061034660025481565b34801561042157600080fd5b5061022b61043036600461104b565b610ab2565b34801561044157600080fd5b5061022b6104503660046110a7565b610c1e565b34801561046157600080fd5b5061034660035481565b34801561047757600080fd5b506101f37f000000000000000000000000000000000000000000000000000000000000000081565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146105135760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b60448201526064015b60405180910390fd5b600081116105635760405162461bcd60e51b815260206004820152600c60248201527f696e76616c69642073697a650000000000000000000000000000000000000000604482015260640161050a565b600055565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146105d75760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b6006805460ff19811660ff90911615179055565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461065a5760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b600081116106aa5760405162461bcd60e51b815260206004820152601960248201527f696e76616c6964206d6178207265717565737420636f756e7400000000000000604482015260640161050a565b600355565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461071e5760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b600155565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146107925760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b6001600160a01b0382166107e85760405162461bcd60e51b815260206004820152601560248201527f726563697069656e742063616e6e6f7420626520300000000000000000000000604482015260640161050a565b6107f3838383610d3d565b505050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146108675760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b6006805461ff001981166101009182900460ff1615909102179055565b60008060015411610897576000546108b6565b6001546108a49083611199565b6108b690670de0b6b3a76400006111b9565b92915050565b60025434111561090e5760405162461bcd60e51b815260206004820152600a60248201527f486967682076616c756500000000000000000000000000000000000000000000604482015260640161050a565b6001543410156109605760405162461bcd60e51b815260206004820152600960248201527f4c6f772076616c75650000000000000000000000000000000000000000000000604482015260640161050a565b600654339060ff16158061098c57506001600160a01b03811660009081526004602052604090205460ff165b6109d85760405162461bcd60e51b815260206004820152600f60248201527f4e6f742077686974656c69737465640000000000000000000000000000000000604482015260640161050a565b6006548290610100900460ff161580610a0a57506003546001600160a01b038216600090815260056020526040902054105b610a565760405162461bcd60e51b815260206004820152601460248201527f546f6f206d756368206472696e6b20636f756e74000000000000000000000000604482015260640161050a565b6001600160a01b0383166000908152600560205260408120805491610a7a836111d8565b91905055506107f37f000000000000000000000000000000000000000000000000000000000000000084610aad34610884565b610e96565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03163314610b215760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b6001600160a01b038116610b775760405162461bcd60e51b815260206004820152601560248201527f726563697069656e742063616e6e6f7420626520300000000000000000000000604482015260640161050a565b6000816001600160a01b03164760405160006040518083038185875af1925050503d8060008114610bc4576040519150601f19603f3d011682016040523d82523d6000602084013e610bc9565b606091505b5050905080610c1a5760405162461bcd60e51b815260206004820152601560248201527f4661696c656420746f2073656e64206e61746976650000000000000000000000604482015260640161050a565b5050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03163314610c8d5760405162461bcd60e51b8152602060048201526014602482015273125b5b53dddb8e881d5b985d5d1a1bdc9a5e995960621b604482015260640161050a565b60005b83811015610d3657828282818110610cb857634e487b7160e01b600052603260045260246000fd5b9050602002016020810190610ccd9190611110565b60046000878785818110610cf157634e487b7160e01b600052603260045260246000fd5b9050602002016020810190610d06919061104b565b6001600160a01b031681526020810191909152604001600020805460ff1916911515919091179055600101610c90565b5050505050565b604080518082018252601981527f7472616e7366657228616464726573732c75696e74323536290000000000000060209182015281516001600160a01b0385811660248301526044808301869052845180840390910181526064909201845291810180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1663a9059cbb60e01b17905291516000928392871691610dde9190611160565b6000604051808303816000865af19150503d8060008114610e1b576040519150601f19603f3d011682016040523d82523d6000602084013e610e20565b606091505b5091509150818015610e4a575080511580610e4a575080806020019051810190610e4a919061112c565b610d365760405162461bcd60e51b815260206004820152601b60248201527f636c61696d45726332303a205452414e534645525f4641494c45440000000000604482015260640161050a565b604080516001600160a01b038481166024830152604480830185905283518084039091018152606490920183526020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1663a9059cbb60e01b1790529151600092839290871691610f079190611160565b6000604051808303816000865af19150503d8060008114610f44576040519150601f19603f3d011682016040523d82523d6000602084013e610f49565b606091505b5091509150818015610f73575080511580610f73575080806020019051810190610f73919061112c565b610d365760405162461bcd60e51b815260206004820152602d60248201527f5472616e7366657248656c7065723a3a736166655472616e736665723a20747260448201527f616e73666572206661696c656400000000000000000000000000000000000000606482015260840161050a565b80356001600160a01b0381168114610ffc57600080fd5b919050565b60008083601f840112611012578182fd5b50813567ffffffffffffffff811115611029578182fd5b6020830191508360208260051b850101111561104457600080fd5b9250929050565b60006020828403121561105c578081fd5b61106582610fe5565b9392505050565b600080600060608486031215611080578182fd5b61108984610fe5565b925061109760208501610fe5565b9150604084013590509250925092565b600080600080604085870312156110bc578081fd5b843567ffffffffffffffff808211156110d3578283fd5b6110df88838901611001565b909650945060208701359150808211156110f7578283fd5b5061110487828801611001565b95989497509550505050565b600060208284031215611121578081fd5b813561106581611209565b60006020828403121561113d578081fd5b815161106581611209565b600060208284031215611159578081fd5b5035919050565b60008251815b818110156111805760208186018101518583015201611166565b8181111561118e5782828501525b509190910192915050565b6000826111b457634e487b7160e01b81526012600452602481fd5b500490565b60008160001904831182151516156111d3576111d36111f3565b500290565b60006000198214156111ec576111ec6111f3565b5060010190565b634e487b7160e01b600052601160045260246000fd5b801515811461121757600080fd5b5056fea164736f6c6343000804000a",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "addWhitelistedMultiple(address[],bool[])": {
+        "params": {
+          "_whitelisted": "array of boolen values to be mapped to the addresses",
+          "_whitelistedAddresses": "array of addresses to be added"
+        }
+      },
+      "drink(address)": {
+        "details": "if restrictToWhitelisted is true, then check if the sender is whitelisted. if the restrictToMaxReq is true, then check if the sender is already received token.",
+        "params": {
+          "_to": "the receiver addresss"
+        }
+      },
+      "isAllowedToDrink(address)": {
+        "details": "it helps when contract is restricted to requests count."
+      },
+      "isWhitelisted(address)": {
+        "details": "it helps when contract is restricted to whitelisted addresses"
+      },
+      "updateCupSize(uint256)": {
+        "params": {
+          "_cupSize": "the amount that can be received by users"
+        }
+      },
+      "updateMaxDrinkCount(uint256)": {
+        "params": {
+          "_maxDrinkCount": "the maximum number of times the drink function can be called"
+        }
+      },
+      "updateTokenPrice(uint256)": {
+        "params": {
+          "_tokenPrice": "the price of each token"
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "OWNER()": {
+        "notice": "The owner who has privileged rights"
+      },
+      "addWhitelistedMultiple(address[],bool[])": {
+        "notice": "Add multiple addresses to the whitelisted list"
+      },
+      "drink(address)": {
+        "notice": "send tokens to `_to`"
+      },
+      "isAllowedToDrink(address)": {
+        "notice": "return true if the user request counts are less than or equal to maxDrinkCount, otherwise retuens false"
+      },
+      "isWhitelisted(address)": {
+        "notice": "return true if the address is whitelisted, otherwise false"
+      },
+      "toggleRestrictToMaxDrinkCount()": {
+        "notice": "toggle restrictToMaxReq"
+      },
+      "toggleRestrictToWhitelisted()": {
+        "notice": "toggle restrictToWhitelisted"
+      },
+      "updateCupSize(uint256)": {
+        "notice": "update the amount that can be received by users"
+      },
+      "updateMaxDrinkCount(uint256)": {
+        "notice": "update the token price."
+      },
+      "updateTokenPrice(uint256)": {
+        "notice": "update the token price."
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 6405,
+        "contract": "contracts/ZkpFaucet.sol:ZkpFaucet",
+        "label": "cupSize",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 6407,
+        "contract": "contracts/ZkpFaucet.sol:ZkpFaucet",
+        "label": "tokenPrice",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 6409,
+        "contract": "contracts/ZkpFaucet.sol:ZkpFaucet",
+        "label": "maxAmountToPay",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 6411,
+        "contract": "contracts/ZkpFaucet.sol:ZkpFaucet",
+        "label": "maxDrinkCount",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 6415,
+        "contract": "contracts/ZkpFaucet.sol:ZkpFaucet",
+        "label": "whitelistedAddresses",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_address,t_bool)"
+      },
+      {
+        "astId": 6419,
+        "contract": "contracts/ZkpFaucet.sol:ZkpFaucet",
+        "label": "drinkCount",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_address,t_uint256)"
+      },
+      {
+        "astId": 6421,
+        "contract": "contracts/ZkpFaucet.sol:ZkpFaucet",
+        "label": "restrictToWhitelisted",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_bool"
+      },
+      {
+        "astId": 6423,
+        "contract": "contracts/ZkpFaucet.sol:ZkpFaucet",
+        "label": "restrictToMaxDrinkCount",
+        "offset": 1,
+        "slot": "6",
+        "type": "t_bool"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

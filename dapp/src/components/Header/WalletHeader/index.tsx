@@ -17,7 +17,6 @@ import {CHAIN_IDS} from '../../../services/env';
 import Address from '../../Address';
 import ConnectButton from '../../ConnectButton';
 import {NetworkButton} from '../../NetworkButton';
-import {SettingsButton} from '../../SettingsButton';
 import SwitchNetworkButton from '../../SwitchNetworkButton';
 import AccountBalance from '../AccountBalance';
 
@@ -96,13 +95,6 @@ export default function WalletHeader() {
                         </Box>
                     </Box>
                 </>
-            )}
-
-            {/* disconnection button */}
-            {active && !wrongNetwork && (
-                <Box>
-                    <SettingsButton />
-                </Box>
             )}
         </Grid>
     );

@@ -6,14 +6,18 @@ import {useWeb3React} from '@web3-react/core';
 import {MainPageWrapper} from '../../components/MainPageWrapper';
 import PrivateBalance from '../../components/ZAssets/PrivateBalance';
 import PrivateZAssetsTable from '../../components/ZAssets/PrivateZAssetsTable';
+import WrongZAssetsNetwork from '../../components/ZAssets/WrongZassetsNetwork';
 import background from '../../images/background.png';
 import {useAppDispatch} from '../../redux/hooks';
 import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
+import {chainHasPoolContract} from '../../services/contracts';
 
 import './styles.scss';
 
 export default function ZAssets(): React.ReactElement {
     const context = useWeb3React();
+    const {active, chainId} = context;
+
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAdvancedStakesRewards, context);
@@ -23,6 +27,10 @@ export default function ZAssets(): React.ReactElement {
         <MainPageWrapper background={background}>
             <Box className="assets-holder">
                 <Container className="assets-container">
+                    {active && chainId && !chainHasPoolContract(chainId) && (
+                        <WrongZAssetsNetwork />
+                    )}
+
                     <PrivateBalance />
                     <PrivateZAssetsTable />
                 </Container>

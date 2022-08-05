@@ -22,7 +22,8 @@
     "test/**/*",
     "testing/**/*",
     "typechain/**/*",
-    "types/**/*"
+    "types/**/*",
+    "./hardhat.config.ts"
   ],
   "files": ["./hardhat.config.ts"]
 }

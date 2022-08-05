@@ -1,0 +1,85 @@
+import { BytesLike } from '@ethersproject/bytes/src.ts';
+import { ethers } from 'hardhat';
+import { BigNumberish } from 'ethers';
+
+import { toBytes32 } from '../../lib/utilities';
+
+import { randomTokenId } from './zAssetsSample';
+import { getTriadAt } from './triadTreeSample';
+
+const randomNumber = '999';
+const randomAddress = ethers.Wallet.createRandom().address;
+const randomG1Point = {
+    x: toBytes32(randomNumber),
+    y: toBytes32(randomNumber),
+};
+
+type G1Point = {
+    x: string;
+    y: string;
+};
+
+type DepositSample = {
+    tokens: [string, string, string];
+    tokenIds: [BigNumberish, BigNumberish, BigNumberish];
+    amounts: [BigNumberish, BigNumberish, BigNumberish];
+    pubSpendingKeys: [G1Point, G1Point, G1Point];
+    secrets: [
+        [BytesLike, BytesLike, BytesLike],
+        [BytesLike, BytesLike, BytesLike],
+        [BytesLike, BytesLike, BytesLike],
+    ];
+    createdAtNum: BigNumberish;
+};
+
+export const depositSample: DepositSample = {
+    tokens: [randomAddress, randomAddress, randomAddress],
+    tokenIds: [randomTokenId, randomTokenId, randomTokenId],
+    amounts: [randomNumber, randomNumber, randomNumber],
+    pubSpendingKeys: [randomG1Point, randomG1Point, randomG1Point],
+    secrets: [getTriadAt(0), getTriadAt(1), getTriadAt(2)],
+    createdAtNum: randomNumber,
+};
+
+type Exit = {
+    token: string;
+    subId: BigNumberish;
+    scaledAmount: BigNumberish;
+    creationTime: BigNumberish;
+    privSpendingKey: BigNumberish;
+    leafId: BigNumberish;
+    pathElements: [
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+        BytesLike,
+    ];
+    merkleRoot: BytesLike;
+    cacheIndexHint: BigNumberish;
+};
+
+export const exitSample = {
+    token: randomAddress,
+    subId: '0',
+    scaledAmount: randomNumber,
+    creationTime: randomNumber,
+    privSpendingKey: toBytes32(randomNumber),
+    leafId: '0',
+    pathElements: Array.from(Array(16).keys()).map(() =>
+        toBytes32(randomNumber),
+    ),
+    merkleRoot: toBytes32(randomNumber),
+    cacheIndexHint: '0',
+} as Exit;

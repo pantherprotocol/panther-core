@@ -5,12 +5,11 @@ import {
     getPoseidonT4Contract,
     getPoseidonT6Contract,
 } from '../../lib/poseidonBuilder';
-import { PantherPoolV0Tester } from '../../types';
-import { getBlockTimestamp } from './hardhat';
+import { PantherPoolV0AndZAssetRegistryTester } from '../../types';
 
-export { deployMockPantherPoolV0 };
+export { deployPantherPoolV0AndZAssetRegistryTester };
 
-async function deployMockPantherPoolV0(): Promise<PantherPoolV0Tester> {
+async function deployPantherPoolV0AndZAssetRegistryTester(): Promise<PantherPoolV0AndZAssetRegistryTester> {
     const PoseidonT3 = await getPoseidonT3Contract();
     const poseidonT3 = await PoseidonT3.deploy();
     await poseidonT3.deployed();
@@ -26,7 +25,7 @@ async function deployMockPantherPoolV0(): Promise<PantherPoolV0Tester> {
     // Link external contracts
     // @ts-ignore
     const PantherPoolV0 = await ethers.getContractFactory(
-        'PantherPoolV0Tester',
+        'PantherPoolV0AndZAssetRegistryTester',
         {
             libraries: {
                 PoseidonT3: poseidonT3.address,
@@ -36,12 +35,7 @@ async function deployMockPantherPoolV0(): Promise<PantherPoolV0Tester> {
         },
     );
 
-    const pantherPoolV0 = (await (
+    return (await (
         await PantherPoolV0.deploy()
-    ).deployed()) as PantherPoolV0Tester;
-
-    const timeNow = await getBlockTimestamp();
-    await pantherPoolV0.updateExitTime(timeNow + 1);
-
-    return pantherPoolV0;
+    ).deployed()) as PantherPoolV0AndZAssetRegistryTester;
 }

@@ -38,7 +38,7 @@ const tokensAddresses = [
     '0x94eDb578d9554ff5f37BCB474F176B28239A29d4',
 ];
 
-const randomTokenId = '183937687536747896802517049574113297679861733038';
+export const randomTokenId = '183937687536747896802517049574113297679861733038';
 
 export const getZAssets = (): ZAsset[] => {
     return [

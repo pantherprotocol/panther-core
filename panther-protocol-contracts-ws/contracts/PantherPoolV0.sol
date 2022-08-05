@@ -68,7 +68,7 @@ contract PantherPoolV0 is
     address public immutable PRP_GRANTOR;
 
     /// @notice (UNIX) Time since when the `exit` calls get enabled
-    uint32 public exitTime;
+    uint32 private _exitTime;
 
     // (rest of the storage slot) reserved for upgrades
     uint224 private _reserved;
@@ -113,12 +113,19 @@ contract PantherPoolV0 is
         PRP_GRANTOR = prpGrantor;
     }
 
+    /// @notice Reads and returns the exit time.
+    /// @dev This function helps to ease testing. It can be overridden in the
+    /// test contract
+    function exitTime() public view virtual returns (uint32) {
+        return _exitTime;
+    }
+
     /// @notice Updated the exit time
     /// @dev Owner only may calls
     function updateExitTime(uint32 newExitTime) public onlyOwner {
-        require(newExitTime >= timeNow() && newExitTime < MAX_TIMESTAMP, "E1");
+        require(newExitTime >= exitTime() && newExitTime < MAX_TIMESTAMP, "E1");
 
-        exitTime = newExitTime;
+        _exitTime = newExitTime;
 
         emit ExitTimeUpdated(uint256(newExitTime));
     }
@@ -141,7 +148,7 @@ contract PantherPoolV0 is
         uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
         uint32 createdAt
     ) external nonReentrant returns (uint256 leftLeafId) {
-        require(exitTime > 0, ERR_UNCONFIGURED_EXIT_TIME);
+        require(exitTime() > 0, ERR_UNCONFIGURED_EXIT_TIME);
 
         uint32 timestamp = safe32TimeNow();
         if (createdAt != 0) {
@@ -212,7 +219,7 @@ contract PantherPoolV0 is
         bytes32 merkleRoot,
         uint256 cacheIndexHint
     ) external nonReentrant {
-        require(safe32TimeNow() >= exitTime, ERR_TOO_EARLY_EXIT);
+        require(safe32TimeNow() >= exitTime(), ERR_TOO_EARLY_EXIT);
         {
             bytes32 nullifier = generateNullifier(privSpendingKey, leafId);
             require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);

@@ -43,13 +43,13 @@ contract MyERC20 is ERC20 {
     */
 }
 
-contract PantherPoolV0AndVaultTester is PantherPoolV0 {
+contract PantherPoolV0AndZAssetRegistryAndVaultTester is PantherPoolV0 {
     address private registry;
     MyERC20[OUT_UTXOs] Tokens;
 
     constructor()
         PantherPoolV0(
-            msg.sender,
+            address(this),
             // This mock is the owner of ZAssetsRegistry and Vault
             registry = address(new ZAssetsRegistry(address(this))),
             address(new Vault(address(this))),
@@ -66,6 +66,10 @@ contract PantherPoolV0AndVaultTester is PantherPoolV0 {
             z.status = zASSET_ENABLED;
             ZAssetsRegistry(registry).addZAsset(z);
         }
+    }
+
+    function exitTime() public view override returns (uint32) {
+        return safe32TimeNow();
     }
 
     function getTokenAddress(uint256 index) external view returns (address) {

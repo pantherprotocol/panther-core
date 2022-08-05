@@ -6,13 +6,12 @@ import Grid from '@mui/material/Grid';
 import {MainPageWrapper} from '../../components/MainPageWrapper';
 import ZafariFaucet from '../../components/ZafariFaucet';
 import ZafariLogo from '../../components/ZafariLogo';
-import background from '../../images/faucet-background.png';
 
 import './styles.scss';
 
 const Faucet = () => {
     return (
-        <MainPageWrapper background={background}>
+        <MainPageWrapper>
             <Container className="faucet-container">
                 <Grid container>
                     <Grid item xs={12} md={4}></Grid>

@@ -12,7 +12,6 @@ import {MainPageWrapper} from '../../components/MainPageWrapper';
 import StakingUnstakingCard from '../../components/StakingUnstakingCard';
 import TotalStakedCard from '../../components/TotalStakedCard';
 import Welcome from '../../components/Welcome';
-import background from '../../images/background-adv.png';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
 import {firstVisitSelector} from '../../redux/slices/isFirstVisit';
@@ -44,7 +43,7 @@ const Staking = (): React.ReactElement => {
     const firstVisit = useAppSelector(firstVisitSelector);
 
     return (
-        <MainPageWrapper background={background}>
+        <MainPageWrapper>
             <Container className="staking-container">
                 {firstVisit ? (
                     <Grid container>

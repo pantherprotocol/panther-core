@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import {Box} from '@mui/system';
 
+import background from '../../images/background-v1.png';
 import {useAppSelector} from '../../redux/hooks';
 import {blurSelector} from '../../redux/slices/blur';
 import {isBlockedCountry} from '../../services/geo-location';
@@ -13,7 +14,6 @@ import Header from '../Header';
 import './styles.scss';
 
 export const MainPageWrapper = (props: {
-    background: string;
     children: React.ReactNode;
 }): React.ReactElement => {
     const isBlur = useAppSelector(blurSelector);
@@ -35,7 +35,7 @@ export const MainPageWrapper = (props: {
         <Box
             className={`main-page ${isBlur && 'isBlur'}`}
             sx={{
-                backgroundImage: `url(${props.background})`,
+                backgroundImage: `url(${background})`,
             }}
         >
             <CssBaseline />

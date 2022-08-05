@@ -15,7 +15,6 @@ import {useWeb3React} from '@web3-react/core';
 
 import {addressLink, SafeLink} from '../../components/Common/links';
 import {MainPageWrapper} from '../../components/MainPageWrapper';
-import background from '../../images/background.png';
 import {supportedNetworks} from '../../services/connectors';
 import {
     ContractName,
@@ -68,7 +67,7 @@ const ContractsPage = () => {
 
     return (
         <Box className="contracts-page-container">
-            <MainPageWrapper background={background}>
+            <MainPageWrapper>
                 <Typography className="table-title">
                     {chainId
                         ? `Contracts on ${supportedNetworks[chainId!]?.name}`

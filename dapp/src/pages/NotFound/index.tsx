@@ -4,11 +4,10 @@ import {Container, Typography} from '@mui/material';
 import {Link} from 'react-router-dom';
 
 import {MainPageWrapper} from '../../components/MainPageWrapper';
-import background from '../../images/background.png';
 
 const NotFoundPage = () => {
     return (
-        <MainPageWrapper background={background}>
+        <MainPageWrapper>
             <Container>
                 <Typography color="white" fontSize={34}>
                     Page Not Found

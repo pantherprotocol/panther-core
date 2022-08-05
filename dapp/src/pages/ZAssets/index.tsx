@@ -7,7 +7,6 @@ import {MainPageWrapper} from '../../components/MainPageWrapper';
 import PrivateBalance from '../../components/ZAssets/PrivateBalance';
 import PrivateZAssetsTable from '../../components/ZAssets/PrivateZAssetsTable';
 import WrongZAssetsNetwork from '../../components/ZAssets/WrongZassetsNetwork';
-import background from '../../images/background.png';
 import {useAppDispatch} from '../../redux/hooks';
 import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
 import {getPoolV0ExitTime} from '../../redux/slices/poolV0';
@@ -30,7 +29,7 @@ export default function ZAssets(): React.ReactElement {
     }, [context, dispatch, chainId]);
 
     return (
-        <MainPageWrapper background={background}>
+        <MainPageWrapper>
             <Box className="assets-holder">
                 <Container className="assets-container">
                     {active && chainId && !chainHasPoolContract(chainId) && (

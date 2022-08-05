@@ -23,22 +23,28 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        margin: 0 5px;
+        margin: 0px 10px;
 
         @media (max-width: $medium-screen-size) {
             padding: 0 !important;
         }
 
         &.selected {
+            background: rgba(99, 114, 136, 0.2);
+            border-radius: 25px;
+
             a {
                 color: $white;
             }
         }
     }
 
-    .nav-item.active-item a {
-        color: $white;
+
+    .nav-item a {
         font-size: $title-font-size;
-        font-weight: $bold-font-weight;
+        font-weight: $light-font-weight;
+        color: $grey-text;
+        cursor: pointer;
+        padding: 5px 15px;
     }
 }

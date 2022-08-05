@@ -3,4 +3,4 @@ export interface ICiphertext {
     data: Uint8Array;
 }
 
-export type Plaintext = BigInt[];
+export type Plaintext = bigint[];

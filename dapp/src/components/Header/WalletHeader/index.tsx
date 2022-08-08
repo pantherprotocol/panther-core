@@ -18,7 +18,6 @@ import Address from '../../Address';
 import ConnectButton from '../../ConnectButton';
 import {NetworkButton} from '../../NetworkButton';
 import SwitchNetworkButton from '../../SwitchNetworkButton';
-import AccountBalance from '../AccountBalance';
 
 import './styles.scss';
 
@@ -90,9 +89,6 @@ export default function WalletHeader() {
                                 <Address />
                             </Box>
                         )}
-                        <Box>
-                            <AccountBalance networkSymbol={network?.symbol} />
-                        </Box>
                     </Box>
                 </>
             )}

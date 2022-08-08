@@ -32,6 +32,11 @@ const run = (command, files) => {
     return cmd;
 };
 
+const fullPathToContractsWorkspaceRelativePath = path => {
+    const contractsWorkspacePath = process.cwd() + '/contracts/';
+    return path.replace(contractsWorkspacePath, '');
+};
+
 export default {
     '*': files => {
         return run('prettier --write', files);
@@ -39,7 +44,7 @@ export default {
     'contracts/**/*.sol': files => {
         return run(
             'yarn workspace @panther-core/contracts lint:solhint',
-            files,
+            files.map(fullPathToContractsWorkspaceRelativePath),
         );
     },
     'contracts/**/*.{js,ts}': async files => {

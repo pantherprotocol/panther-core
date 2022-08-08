@@ -21694,10 +21694,9 @@ solhint-plugin-prettier@^0.0.5:
   dependencies:
     prettier-linter-helpers "^1.0.0"
 
-solhint@^3.3.5:
+solhint@pycckuu/solhint#fix-reports-0-undefined:
   version "3.3.6"
-  resolved "https://registry.yarnpkg.com/solhint/-/solhint-3.3.6.tgz#abe9af185a9a7defefba480047b3e42cbe9a1210"
-  integrity sha512-HWUxTAv2h7hx3s3hAab3ifnlwb02ZWhwFU/wSudUHqteMS3ll9c+m1FlGn9V8ztE2rf3Z82fQZA005Wv7KpcFA==
+  resolved "https://codeload.github.com/pycckuu/solhint/tar.gz/61be87c63b8257adda1fa03530caa11540c5cc77"
   dependencies:
     "@solidity-parser/parser" "^0.13.2"
     ajv "^6.6.1"

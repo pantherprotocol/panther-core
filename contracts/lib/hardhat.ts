@@ -1,4 +1,5 @@
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {ethers, network} from 'hardhat';
 import {BigNumber, utils} from 'ethers';
 
@@ -67,3 +68,8 @@ export const ensureMinBalance = async (
         );
     }
 };
+
+export function isLocal(hre: HardhatRuntimeEnvironment): boolean {
+    // network.live does not work for pchain
+    return !!hre.network.name.match(/^hardhat|pchain$/);
+}

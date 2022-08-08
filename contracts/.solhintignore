@@ -1,4 +1,6 @@
 # folders
+
+contracts/common/proxy/
 artifacts/
 build/
 cache/

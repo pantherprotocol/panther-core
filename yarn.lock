@@ -21698,7 +21698,7 @@ solhint@pycckuu/solhint#fix-reports-0-undefined:
   version "3.3.6"
   resolved "https://codeload.github.com/pycckuu/solhint/tar.gz/61be87c63b8257adda1fa03530caa11540c5cc77"
   dependencies:
-    "@solidity-parser/parser" "^0.13.2"
+    "@solidity-parser/parser" "^0.14.1"
     ajv "^6.6.1"
     antlr4 "4.7.1"
     ast-parents "0.0.1"

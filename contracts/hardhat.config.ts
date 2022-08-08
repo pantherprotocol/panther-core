@@ -148,6 +148,18 @@ const config: HardhatUserConfig = {
                 },
             },
         ],
+        overrides: {
+            'contracts/contracts/common/proxy/EIP173Proxy.sol': {
+                // Same as the `hardhat-deploy` plugin (v.0.11.4) applies
+                version: '0.8.10',
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 999999,
+                    },
+                },
+            },
+        },
     },
     typechain: {
         outDir: 'types/contracts',

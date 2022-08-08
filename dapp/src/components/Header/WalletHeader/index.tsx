@@ -83,12 +83,8 @@ export default function WalletHeader() {
                             networkLogo={network.logo}
                         />
                     )}
-                    <Box className="address-and-balance-holder">
-                        {accountAddress && (
-                            <Box>
-                                <Address />
-                            </Box>
-                        )}
+                    <Box className="address-holder">
+                        {accountAddress && <Address />}
                     </Box>
                 </>
             )}

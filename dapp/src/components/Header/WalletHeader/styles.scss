@@ -65,13 +65,12 @@
     align-items: center;
 }
 
-.address-and-balance-holder {
+.address-holder {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 0 20px;
     padding: 0 8px;
-    background: $card-background-darker;
     border-radius: 8px;
     min-height: 50px;
 }

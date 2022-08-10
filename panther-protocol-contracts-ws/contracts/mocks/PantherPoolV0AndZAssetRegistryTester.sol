@@ -26,10 +26,8 @@ contract PantherPoolV0AndZAssetRegistryTester is PantherPoolV0 {
         z1.token = address(uint160(111));
         z1.status = zASSET_ENABLED;
         ZAssetsRegistry(registry).addZAsset(z1);
-    }
 
-    function exitTime() public view override returns (uint32) {
-        return safe32TimeNow();
+        exitTime = safe32TimeNow() + 1;
     }
 
     function testGenerateCommitments(

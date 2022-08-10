@@ -4,8 +4,8 @@ import { BigNumberish } from 'ethers';
 
 import { toBytes32 } from '../../lib/utilities';
 
-import { randomTokenId } from './zAssetsSample';
 import { getTriadAt } from './triadTreeSample';
+import { randomInt } from 'crypto';
 
 const randomNumber = '999';
 const randomAddress = ethers.Wallet.createRandom().address;
@@ -34,7 +34,7 @@ type DepositSample = {
 
 export const depositSample: DepositSample = {
     tokens: [randomAddress, randomAddress, randomAddress],
-    tokenIds: [randomTokenId, randomTokenId, randomTokenId],
+    tokenIds: [randomInt(0, 1e10), randomInt(0, 1e10), randomInt(0, 1e10)],
     amounts: [randomNumber, randomNumber, randomNumber],
     pubSpendingKeys: [randomG1Point, randomG1Point, randomG1Point],
     secrets: [getTriadAt(0), getTriadAt(1), getTriadAt(2)],

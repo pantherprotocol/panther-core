@@ -9,7 +9,7 @@ import { smock, FakeContract } from '@defi-wonderland/smock';
 import { deployPantherPoolV0 } from './helpers/PantherPoolV0';
 import { ethers } from 'hardhat';
 import { getIds, getZAssets } from './data/zAssetsSample';
-import { depositSample, exitSample } from './data/depositAndExitSample';
+import { depositSample, exitSample } from './data/depositAndFakeExitSample';
 
 describe('PantherPoolV0', () => {
     let poolV0: MockPantherPoolV0;

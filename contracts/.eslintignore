@@ -1,5 +1,7 @@
+contracts/common/proxy/
 artifacts/
 build/
+dist/
 cache/
 compiled/
 coverage/

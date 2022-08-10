@@ -41,7 +41,7 @@ contract StakeZeroRewardAdviser is StakingMsgProcessor, IRewardAdviser {
         returns (Advice memory)
     {
         require(
-            action == UNSTAKE || action == UNSTAKE,
+            action == STAKE || action == UNSTAKE,
             "ZRA: unsupported action"
         );
 

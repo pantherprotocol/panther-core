@@ -1,4 +1,5 @@
 build/
+contracts/contracts/common/proxy/
 contracts/artifacts/
 contracts/cache/
 contracts/coverage/

@@ -1,9 +1,28 @@
+import {useCallback} from 'react';
 import * as React from 'react';
 
 import {Box, Button} from '@mui/material';
+import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 
 import {formatCurrency} from '../../../lib/format';
+import {useAppDispatch} from '../../../redux/hooks';
+import {getChainBalance} from '../../../redux/slices/chainBalance';
+import {getTotalsOfAdvancedStakes} from '../../../redux/slices/totalsOfAdvancedStakes';
+import {getTotalUnclaimedClassicRewards} from '../../../redux/slices/totalUnclaimedClassicRewards';
+import {
+    startWalletAction,
+    StartWalletActionPayload,
+    registerWalletActionFailure,
+    progressToNewWalletAction,
+    registerWalletActionSuccess,
+    WalletActionTrigger,
+} from '../../../redux/slices/web3WalletLastAction';
+import {getZkpStakedBalance} from '../../../redux/slices/zkpStakedBalance';
+import {getZkpTokenBalance} from '../../../redux/slices/zkpTokenBalance';
+import {notifyError} from '../../../services/errors';
+import {deriveRootKeypairs} from '../../../services/keychain';
+import {advancedStake} from '../../../services/staking';
 
 import './styles.scss';
 
@@ -57,23 +76,97 @@ const StakingBtn = (props: {
     amountToStakeBN: BigNumber | null;
     minStake: number | null;
     tokenBalance: BigNumber | null;
-    stake: (amount: BigNumber) => Promise<void>;
+    setStakingAmount: (amount: string) => void;
 }) => {
+    const context = useWeb3React();
+    const {account, library, chainId} = context;
+    const dispatch = useAppDispatch();
+
+    const {
+        amountToStake,
+        amountToStakeBN,
+        minStake,
+        tokenBalance,
+        setStakingAmount,
+    } = props;
+
     const [buttonText, ready] = getButtonText(
-        props.amountToStake,
-        props.amountToStakeBN,
-        props.minStake,
-        props.tokenBalance,
+        amountToStake,
+        amountToStakeBN,
+        minStake,
+        tokenBalance,
     );
     const activeClass = ready ? 'active' : '';
+
+    const stake = useCallback(
+        async (amount: BigNumber, trigger: WalletActionTrigger) => {
+            if (!chainId || !account || !tokenBalance) {
+                return;
+            }
+            dispatch(startWalletAction, {
+                name: 'signMessage',
+                cause: {caller: 'StakeTab', trigger},
+                data: {account},
+            } as StartWalletActionPayload);
+            const signer = library.getSigner(account);
+            const keys = await deriveRootKeypairs(signer);
+            if (keys instanceof Error) {
+                dispatch(registerWalletActionFailure, 'signMessage');
+                notifyError('Failed to create stake', keys.message, keys);
+                return;
+            }
+
+            dispatch(progressToNewWalletAction, {
+                oldAction: 'signMessage',
+                newAction: {
+                    name: 'stake',
+                    cause: {caller: 'StakeTab', trigger},
+                    data: {account},
+                },
+            });
+            const stakingResponse = await advancedStake(
+                library,
+                chainId,
+                keys,
+                account,
+                amount,
+            );
+
+            if (stakingResponse instanceof Error) {
+                dispatch(registerWalletActionFailure, 'stake');
+                notifyError(
+                    'Failed to create stake',
+                    stakingResponse.message,
+                    stakingResponse,
+                );
+                return;
+            }
+            dispatch(registerWalletActionSuccess, 'stake');
+            setStakingAmount('');
+            dispatch(getTotalsOfAdvancedStakes, context);
+            dispatch(getZkpStakedBalance, context);
+            dispatch(getZkpTokenBalance, context);
+            dispatch(getTotalUnclaimedClassicRewards, context);
+            dispatch(getChainBalance, context);
+        },
+        [
+            library,
+            account,
+            chainId,
+            setStakingAmount,
+            context,
+            dispatch,
+            tokenBalance,
+        ],
+    );
 
     return (
         <Box className={`buttons-holder ${activeClass}`}>
             <Button
                 className="staking-button"
                 onClick={() => {
-                    if (ready && props.amountToStakeBN) {
-                        props.stake(props.amountToStakeBN);
+                    if (ready && amountToStakeBN) {
+                        stake(amountToStakeBN, 'stake');
                     }
                 }}
             >

@@ -14,20 +14,12 @@ import {
     calculateRewards,
     resetRewards,
 } from '../../redux/slices/advancedStakePredictedRewards';
-import {getChainBalance} from '../../redux/slices/chainBalance';
 import {
     isStakingOpenSelector,
     termsSelector,
 } from '../../redux/slices/stakeTerms';
-import {getTotalsOfAdvancedStakes} from '../../redux/slices/totalsOfAdvancedStakes';
-import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
-import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
-import {
-    zkpTokenBalanceSelector,
-    getZkpTokenBalance,
-} from '../../redux/slices/zkpTokenBalance';
+import {zkpTokenBalanceSelector} from '../../redux/slices/zkpTokenBalance';
 import {onWrongNetwork} from '../../services/connectors';
-import {advancedStake} from '../../services/staking';
 import {StakeType} from '../../types/staking';
 import ConnectButton from '../ConnectButton';
 import SwitchNetworkButton from '../SwitchNetworkButton';
@@ -59,7 +51,6 @@ export default function StakeTab() {
     const [amountToStakeBN, setAmountToStakeBN] = useState<BigNumber | null>(
         null,
     );
-    const [, setStakedId] = useState<number | null>(null);
 
     // For use when user types input
     const setStakingAmount = useCallback(
@@ -85,41 +76,6 @@ export default function StakeTab() {
             dispatch(calculateRewards, [amountBN.toString(), minLockPeriod]);
         },
         [dispatch, minLockPeriod],
-    );
-
-    const stake = useCallback(
-        async (amount: BigNumber) => {
-            if (!chainId || !account || !tokenBalance) {
-                return;
-            }
-
-            const stakingResponse = await advancedStake(
-                library,
-                chainId,
-                account,
-                amount,
-            );
-
-            if (stakingResponse instanceof Error) {
-                return;
-            }
-            setStakedId(Number(stakingResponse));
-            setStakingAmount('');
-            dispatch(getTotalsOfAdvancedStakes, context);
-            dispatch(getZkpStakedBalance, context);
-            dispatch(getZkpTokenBalance, context);
-            dispatch(getTotalUnclaimedClassicRewards, context);
-            dispatch(getChainBalance, context);
-        },
-        [
-            library,
-            account,
-            chainId,
-            setStakingAmount,
-            context,
-            dispatch,
-            tokenBalance,
-        ],
     );
 
     useEffect((): any => {
@@ -190,9 +146,9 @@ export default function StakeTab() {
                 <StakingBtn
                     amountToStake={amountToStake}
                     amountToStakeBN={amountToStakeBN}
-                    stake={stake}
                     tokenBalance={tokenBalance}
                     minStake={minStake as number}
+                    setStakingAmount={setStakingAmount}
                 />
             )}
         </Box>

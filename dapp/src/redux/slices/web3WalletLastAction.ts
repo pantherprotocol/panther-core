@@ -13,7 +13,8 @@ export type WalletActionStatus =
 export type WalletSignatureTrigger =
     | 'undefined UTXOs'
     | 'manual refresh'
-    | 'zZKP redemption';
+    | 'zZKP redemption'
+    | 'stake';
 
 // In the future, there may be other types of trigger
 export type WalletActionTrigger = WalletSignatureTrigger;

@@ -10,7 +10,9 @@ import WrongZAssetsNetwork from '../../components/ZAssets/WrongZassetsNetwork';
 import background from '../../images/background.png';
 import {useAppDispatch} from '../../redux/hooks';
 import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
+import {getPoolV0ExitTime} from '../../redux/slices/poolV0';
 import {chainHasPoolContract} from '../../services/contracts';
+import {MASP_CHAIN_ID} from '../../services/env';
 
 import './styles.scss';
 
@@ -19,9 +21,13 @@ export default function ZAssets(): React.ReactElement {
     const {active, chainId} = context;
 
     const dispatch = useAppDispatch();
+
     useEffect(() => {
         dispatch(getAdvancedStakesRewards, context);
-    }, [context, dispatch]);
+        if (chainId === MASP_CHAIN_ID) {
+            dispatch(getPoolV0ExitTime, context);
+        }
+    }, [context, dispatch, chainId]);
 
     return (
         <MainPageWrapper background={background}>

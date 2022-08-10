@@ -1,6 +1,5 @@
 build/
 contracts/contracts/common/proxy/
-contracts/.solhintignore
 contracts/artifacts/
 contracts/cache/
 contracts/coverage/

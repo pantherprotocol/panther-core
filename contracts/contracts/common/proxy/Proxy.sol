@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable no-inline-assembly, avoid-low-level-calls
 pragma solidity ^0.8.0;
 
 // EIP-1967
@@ -23,7 +24,6 @@ abstract contract Proxy {
     // ///////////////////////// INTERNAL //////////////////////////////////////////////////////////////////////
 
     function _fallback() internal {
-        // solhint-disable-next-line security/no-inline-assembly
         assembly {
             let implementationAddress := sload(
                 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc
@@ -53,14 +53,12 @@ abstract contract Proxy {
         internal
     {
         address previousImplementation;
-        // solhint-disable-next-line security/no-inline-assembly
         assembly {
             previousImplementation := sload(
                 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc
             )
         }
 
-        // solhint-disable-next-line security/no-inline-assembly
         assembly {
             sstore(
                 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc,

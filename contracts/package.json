@@ -19,7 +19,7 @@
     "verify": "hardhat etherscan-verify",
     "deploy:chain": "HARDHAT_NO_MNEMONIC=yes hardhat deploy --network localhost",
     "flatten": "HARDHAT_NO_MNEMONIC=yes hardhat flatten",
-    "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:list-different",
+    "lint": "yarn lint:solhint && yarn lint:ts && yarn prettier:list-different",
     "lint:eslint": "eslint --max-warnings 0",
     "lint:solhint": "solhint --max-warnings 0 **/*.sol",
     "lint:ts": "yarn lint:eslint .",

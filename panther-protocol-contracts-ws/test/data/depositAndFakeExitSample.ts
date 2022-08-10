@@ -1,7 +1,6 @@
 import { BytesLike } from '@ethersproject/bytes/src.ts';
 import { ethers } from 'hardhat';
-import { BigNumberish } from 'ethers';
-
+import { BigNumberish } from '@ethersproject/bignumber/src.ts';
 import { toBytes32 } from '../../lib/utilities';
 
 import { getTriadAt } from './triadTreeSample';

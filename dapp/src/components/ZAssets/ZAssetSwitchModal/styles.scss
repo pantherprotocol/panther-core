@@ -1,0 +1,123 @@
+@import '../../../variables.scss';
+
+.zassets-modal {
+    .MuiPaper-root.MuiDialog-paper {
+        width: 495.18px;
+        height: 447.43px;
+        background: linear-gradient(
+                180deg,
+                rgba(152, 195, 245, 0.05) 0%,
+                rgba(152, 195, 245, 0) 72%
+            ),
+            rgba(164, 183, 219, 0.1) !important;
+
+        @media (max-width: 500px) {
+            height: 360px;
+        }
+    }
+
+    .x-icon {
+        display: flex;
+        justify-content: end;
+        mix-blend-mode: normal;
+        opacity: 0.2;
+        margin-right: 10px;
+
+        img {
+            width: 14.08px;
+            height: 14.08px;
+        }
+    }
+
+    .modal-text-wrapper {
+        .modal-dialog-title {
+            font-weight: $semi-bold-font-weight;
+            line-height: 39px;
+            @media (max-width: 500px) {
+                font-size: 19px;
+            }
+        }
+
+        .modal-dialog-subtitle {
+            line-height: 25px;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #eeeeee;
+            padding: 0 48px;
+
+            @media (max-width: 500px) {
+                padding: 10px 0;
+                font-size: $small-font-size;
+            }
+        }
+
+        @media (max-width: 500px) {
+            text-align: center;
+            padding: 30px 0px;
+        }
+    }
+
+    .modal-dialog-content-holder {
+        margin-top: 26px;
+        padding: 0;
+        overflow: initial;
+        @media (max-width: 500px) {
+            margin-top: 0;
+        }
+        .modal-dialog-content {
+            .primary-action-button-holder {
+                background-color: unset;
+                margin-bottom: 22px;
+                @media (max-width: 500px) {
+                    margin-bottom: 10px;
+                }
+
+                .primary-action-button {
+                    width: 400.2px;
+                    height: 71.94px;
+                    background: linear-gradient(
+                            180deg,
+                            rgba(255, 255, 255, 0.06) 0%,
+                            rgba(255, 255, 255, 0) 100%
+                        ),
+                        #363c4b;
+                    border: 1.03944px solid #a8b3ca;
+                    border-radius: 8.74192px;
+                    @media (max-width: 500px) {
+                        height: 60px;
+                    }
+                    .network-name {
+                        position: relative;
+                        right: 55px;
+                        font-size: 19px;
+                        @media (max-width: 500px) {
+                            right: 0;
+                            font-size: $normal-font-size;
+                        }
+                    }
+                    .network-logo-wrapper {
+                        width: 83.69px;
+                        height: inherit;
+                        position: absolute;
+                        left: 0;
+                        background: linear-gradient(0deg, #9054f5, #9054f5),
+                            #363c4b;
+                        border-radius: 16px 0px 0px 16px;
+
+                        @media (max-width: 500px) {
+                            width: 60px;
+                        }
+                        .network-logo {
+                            position: relative;
+                            top: 18px;
+                            @media (max-width: 500px) {
+                                width: 35px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -6,8 +6,8 @@ import {
     StakesReporter,
     StakeRewardController,
     Staking,
-} from '../types/contracts';
-import {parseDate} from '../lib/units-shortcuts';
+} from '../../types/contracts';
+import {parseDate} from '../../lib/units-shortcuts';
 
 describe('Stakes Reporter', () => {
     let stakesReporter: StakesReporter;

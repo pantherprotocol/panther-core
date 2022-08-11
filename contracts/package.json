@@ -21,7 +21,7 @@
     "flatten": "HARDHAT_NO_MNEMONIC=yes hardhat flatten",
     "lint": "yarn lint:solhint && yarn lint:ts && yarn prettier:list-different",
     "lint:eslint": "eslint --max-warnings 0",
-    "lint:solhint": "solhint --max-warnings 0 **/*.sol",
+    "lint:solhint": "solhint --max-warnings 0 contracts/**/*.sol",
     "lint:ts": "yarn lint:eslint .",
     "prettier:check": "cd .. && yarn prettier --check contracts",
     "prettier:fix": "cd .. && yarn prettier --write contracts",

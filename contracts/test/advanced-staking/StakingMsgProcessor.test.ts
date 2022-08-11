@@ -1,13 +1,13 @@
 import {ethers} from 'hardhat';
 import {expect} from 'chai';
-import {MockStakingMsgProcessor} from '../types/contracts';
+import {MockStakingMsgProcessor} from '../../types/contracts';
 import {
     hash4bytes,
     classicActionHash,
     CLASSIC,
     STAKE,
     UNSTAKE,
-} from '../lib/hash';
+} from '../../lib/hash';
 
 const sampleStaker = '0xc0fec0fec0fec0fec0fec0fec0fec0fec0fec0fe';
 const sampleStake = {

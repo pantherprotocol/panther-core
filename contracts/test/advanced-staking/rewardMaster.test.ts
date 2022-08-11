@@ -5,13 +5,13 @@ import {expect} from 'chai';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {FakeContract} from '@defi-wonderland/smock';
 import {RewardMasterFixture} from './shared';
-import {mineBlock, revertSnapshot, takeSnapshot} from '../lib/hardhat';
+import {mineBlock, revertSnapshot, takeSnapshot} from '../../lib/hardhat';
 import {
     RewardPool,
     IErc20Min,
     RewardMaster,
     IRewardAdviser,
-} from '../types/contracts';
+} from '../../types/contracts';
 
 describe('Reward Master', () => {
     let fixture: RewardMasterFixture;

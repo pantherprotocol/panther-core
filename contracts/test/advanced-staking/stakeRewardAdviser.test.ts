@@ -1,14 +1,14 @@
 import {ethers} from 'hardhat';
 import {BigNumber} from 'ethers';
 import {expect} from 'chai';
-import {StakeRewardAdviser} from '../types/contracts';
+import {StakeRewardAdviser} from '../../types/contracts';
 import {
     hash4bytes,
     classicActionHash,
     CLASSIC,
     STAKE,
     UNSTAKE,
-} from '../lib/hash';
+} from '../../lib/hash';
 
 describe('StakeRewardAdviser', () => {
     let stakeRewardAdviser: StakeRewardAdviser;

@@ -4,10 +4,10 @@ import {smock, FakeContract} from '@defi-wonderland/smock';
 import {BaseContract, BigNumber, utils} from 'ethers';
 import chai from 'chai';
 import {ethers} from 'hardhat';
-import {Staking, TokenMock, RewardMaster} from '../types/contracts';
-import {increaseTime} from '../lib/hardhat';
-import {hash4bytes, classicActionHash, CLASSIC, STAKE} from '../lib/hash';
-import {getBlockTimestamp} from '../lib/provider';
+import {Staking, TokenMock, RewardMaster} from '../../types/contracts';
+import {increaseTime} from '../../lib/hardhat';
+import {hash4bytes, classicActionHash, CLASSIC, STAKE} from '../../lib/hash';
+import {getBlockTimestamp} from '../../lib/provider';
 import {fromRpcSig} from 'ethereumjs-util';
 import {TypedDataDomain} from '@ethersproject/abstract-signer';
 

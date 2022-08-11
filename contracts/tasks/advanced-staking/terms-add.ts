@@ -1,9 +1,9 @@
 import fs from 'fs';
-import {Staking, IStakingTypes} from './../types/contracts/Staking';
+import {Staking, IStakingTypes} from './../../types/contracts/Staking';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task, types} from 'hardhat/config';
-import {parseDate} from '../lib/units-shortcuts';
-import {addTerms, StakeType} from '../lib/staking';
+import {parseDate} from '../../lib/units-shortcuts';
+import {addTerms, StakeType} from '../../lib/staking';
 
 const TASK_TERMS_ADD = 'terms:add';
 

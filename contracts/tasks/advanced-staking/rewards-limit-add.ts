@@ -1,7 +1,10 @@
-import {AdvancedStakeRewardController} from './../types/contracts/AdvancedStakeRewardController';
+import {AdvancedStakeRewardController} from './../../types/contracts/AdvancedStakeRewardController';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task, types} from 'hardhat/config';
-import {updateZkpAndPrpRewardsLimit, setNftRewardLimit} from '../lib/staking';
+import {
+    updateZkpAndPrpRewardsLimit,
+    setNftRewardLimit,
+} from '../../lib/staking';
 
 const TASK_REWARDS_LIMIT_ADD = 'rewards:limit:add';
 

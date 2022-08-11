@@ -1,12 +1,12 @@
 import {ethers} from 'hardhat';
 import {expect} from 'chai';
 import {BigNumber} from 'ethers';
-import {ZkpFaucet, TokenMock} from '../types/contracts';
-import {toBN} from '../lib/units-shortcuts';
-import {revertSnapshot, takeSnapshot} from '../lib/hardhat';
+import {ZkpFaucet, TokenMock} from '../../types/contracts';
+import {toBN} from '../../lib/units-shortcuts';
+import {revertSnapshot, takeSnapshot} from '../../lib/hardhat';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
-describe.only('Zkp Faucet', () => {
+describe('Zkp Faucet', () => {
     let faucet: ZkpFaucet;
     let token: TokenMock;
     let user: SignerWithAddress;

@@ -1,6 +1,5 @@
 import React from 'react';
 
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {useWeb3React} from '@web3-react/core';
@@ -26,7 +25,6 @@ const Address = () => {
                 <Typography className="account-address">
                     {formatAccountAddress(account)}
                 </Typography>
-                <KeyboardArrowDownIcon className="content-copy-icon" />
             </Box>
         )) ||
         null

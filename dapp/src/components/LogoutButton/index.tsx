@@ -24,5 +24,5 @@ export const LogoutButton = () => {
         }
     }, [active, chainId, deactivate, dispatch]);
 
-    return <WalletHeaderActionButton text="Logout" onClick={disconnect} />;
+    return <WalletHeaderActionButton text="Disconnect" onClick={disconnect} />;
 };

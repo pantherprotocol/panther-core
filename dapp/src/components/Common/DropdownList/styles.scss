@@ -13,6 +13,8 @@
     backdrop-filter: blur(71.7913px);
     border-radius: 10px;
     .menu-item {
+        justify-content: space-around !important;
+
         display: flex;
         justify-content: space-between;
         justify-items: flex-start;

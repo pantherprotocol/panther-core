@@ -1,31 +1,5 @@
 @import '../../../variables';
 
-.wallet-header-action-button-holder {
-    height: 100%;
-
-    .wallet-header-action-button {
-        font-weight: $light-font-weight;
-        color: $white;
-        height: 50px;
-        padding-left: 15px;
-        padding-right: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-        vertical-align: middle;
-        background: $grey-btn;
-        border-radius: 8px;
-        cursor: pointer;
-        text-transform: capitalize;
-        min-width: 200px;
-
-        &:hover {
-            background: $second-blue;
-        }
-
-        img {
-            width: 24px;
-            height: 22px;
-        }
-    }
+.wallet-header-action-button {
+    color: $white !important;
 }

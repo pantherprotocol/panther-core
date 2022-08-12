@@ -10,17 +10,8 @@ export const WalletHeaderActionButton = (props: {
     logo?: {src: string; alt: string};
 }) => {
     return (
-        <div className="wallet-header-action-button-holder">
-            <Button
-                className="wallet-header-action-button"
-                onClick={props.onClick}
-            >
-                {props.logo && (
-                    <img src={props.logo.src} alt={props.logo.alt} />
-                )}
-
-                <span>{props.text}</span>
-            </Button>
-        </div>
+        <Button className="wallet-header-action-button" onClick={props.onClick}>
+            <span>{props.text}</span>
+        </Button>
     );
 };

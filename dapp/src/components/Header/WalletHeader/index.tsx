@@ -7,17 +7,16 @@ import {useWeb3React} from '@web3-react/core';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {getChainBalance} from '../../../redux/slices/chainBalance';
 import {isWalletConnectedSelector} from '../../../redux/slices/isWalletConnected';
-import {formatAccountAddress} from '../../../services/account';
 import {
     currentNetwork,
     isWrongNetwork,
     injected,
 } from '../../../services/connectors';
 import {CHAIN_IDS} from '../../../services/env';
-import Address from '../../Address';
 import ConnectButton from '../../ConnectButton';
 import {NetworkButton} from '../../NetworkButton';
 import SwitchNetworkButton from '../../SwitchNetworkButton';
+import {WalletButton} from '../../WalletButton';
 
 import './styles.scss';
 
@@ -57,8 +56,6 @@ export default function WalletHeader() {
         }
     }, [context, active, account, error, fetchChainBalance]);
 
-    const accountAddress = formatAccountAddress(account) || null;
-
     return (
         <Grid item lg={6} md={12} xs={12} className="header-right-container">
             {/* connection button */}
@@ -74,7 +71,6 @@ export default function WalletHeader() {
                 </Box>
             )}
 
-            {/* account details */}
             {active && !wrongNetwork && (
                 <>
                     {network && (
@@ -83,9 +79,7 @@ export default function WalletHeader() {
                             networkLogo={network.logo}
                         />
                     )}
-                    <Box className="address-holder">
-                        {accountAddress && <Address />}
-                    </Box>
+                    <WalletButton />
                 </>
             )}
         </Grid>

@@ -1,0 +1,35 @@
+@import '../../../variables.scss';
+
+.dropdown-list {
+    margin-top: 20px;
+
+    svg {
+        display: none;
+    }
+}
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiMenu-paper {
+    background: rgba(198, 209, 231, 0.1);
+    border: 1px solid rgba(102, 141, 198, 0.4);
+    backdrop-filter: blur(71.7913px);
+    border-radius: 10px;
+    .menu-item {
+        display: flex;
+        justify-content: space-between;
+        justify-items: flex-start;
+        margin: 8px 12px;
+        border-radius: 10px;
+        color: $white;
+        cursor: pointer;
+
+        img {
+            width: 28px;
+            height: 25px;
+        }
+
+        &:hover {
+            background: rgba(99, 114, 136, 0.2);
+            mix-blend-mode: normal;
+            backdrop-filter: blur(40.3826px);
+        }
+    }
+}

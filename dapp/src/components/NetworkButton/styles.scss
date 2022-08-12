@@ -1,47 +1,22 @@
 @import '../../variables';
 
-.more-item {
-    height: 50px;
-    margin: 0 5px;
-    background: $buttons-holder-background-color;
-    mix-blend-mode: normal;
-    backdrop-filter: blur(40px);
-    border-radius: 8px;
-}
-
 .network-button-container {
     display: flex;
     height: 50px;
     padding: 8px;
     border-radius: 8px;
-    min-width: 200px;
-
+    width: 200px;
+    background: rgba(99, 114, 136, 0.2);
+    border-radius: 10px;
     > div {
         width: 100%;
     }
 
-    .network-holder {
+    .network-button-holder {
         display: flex;
         justify-content: space-between;
-        align-items: center;
         width: 100%;
-        padding-left: 15px;
-        padding-right: 0;
-
-        &.single {
-            padding-left: 20px;
-            padding-right: 20px;
-        }
-
-        img {
-            width: 28px;
-            height: 25px;
-        }
-
-        .network-name {
-            padding-left: 5px;
-            color: $white;
-        }
+        color: $white;
     }
 
     label {
@@ -57,91 +32,20 @@
             left: 10px;
         }
     }
-}
 
-.network-dropdown {
-    transition: none !important;
-    width: 100%;
-
-    svg {
+    .MuiFilledInput-root:before,
+    .MuiFilledInput-root:after {
         display: none;
     }
-}
 
-.network-button-container .MuiTypography-subtitle2 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: $dark-gray;
-    width: 75px;
-    border-radius: 8px;
-}
-
-.network-button-container .MuiInput-root {
-    margin-top: 0;
-}
-
-.network-button-container .MuiInputLabel-root {
-    top: -12px;
-    color: $white;
-}
-
-.network-button-container .MuiFilledInput-root {
-    background-color: transparent !important;
-}
-
-.network-button-container .MuiFilledInput-root:before,
-.network-button-container .MuiFilledInput-root:after {
-    display: none;
-}
-
-.MuiSelect-select {
-    padding: 4px !important;
-    color: $white !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-
-    &:focus {
+    .MuiSelect-select {
+        margin-top: -26px !important;
+        width: 200px !important;
+        height: 50px !important;
+        color: $white !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
         background: transparent !important;
-    }
-}
-
-.MuiSvgIcon-root {
-    color: $white !important;
-}
-
-.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiMenu-paper {
-    background: $switch-back;
-    border: 1px solid $dropdown-border-color;
-    min-width: 200px !important;
-}
-
-.menu-item {
-    background: transparent !important;
-    justify-content: center !important;
-
-    &:hover {
-        background: transparent !important;
-    }
-}
-
-.network-holder {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
-    max-width: 170px;
-    cursor: pointer;
-    padding: 1px 20px;
-
-    img {
-        width: 28px;
-        height: 25px;
-    }
-
-    .network-name {
-        padding-left: 20px;
-        color: $white;
     }
 }

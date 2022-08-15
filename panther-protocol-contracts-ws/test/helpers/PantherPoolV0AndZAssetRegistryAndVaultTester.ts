@@ -1,38 +1,12 @@
 // @ts-ignore
-import { ethers } from 'hardhat';
-import {
-    getPoseidonT3Contract,
-    getPoseidonT4Contract,
-    getPoseidonT6Contract,
-} from '../../lib/poseidonBuilder';
 import { PantherPoolV0AndZAssetRegistryAndVaultTester } from '../../types';
+import { getPantherPoolMocFactoryByName } from './hardhat';
 
 export { deployPantherPoolV0AndZAssetRegistryAndVaultTester };
 
 async function deployPantherPoolV0AndZAssetRegistryAndVaultTester(): Promise<PantherPoolV0AndZAssetRegistryAndVaultTester> {
-    const PoseidonT3 = await getPoseidonT3Contract();
-    const poseidonT3 = await PoseidonT3.deploy();
-    await poseidonT3.deployed();
-
-    const PoseidonT4 = await getPoseidonT4Contract();
-    const poseidonT4 = await PoseidonT4.deploy();
-    await poseidonT4.deployed();
-
-    const PoseidonT6 = await getPoseidonT6Contract();
-    const poseidonT6 = await PoseidonT6.deploy();
-    await poseidonT6.deployed();
-
-    // Link Poseidon contracts
-    // @ts-ignore
-    const PantherPoolV0 = await ethers.getContractFactory(
+    const PantherPoolV0 = await getPantherPoolMocFactoryByName(
         'PantherPoolV0AndZAssetRegistryAndVaultTester',
-        {
-            libraries: {
-                PoseidonT3: poseidonT3.address,
-                PoseidonT4: poseidonT4.address,
-                PoseidonT6: poseidonT6.address,
-            },
-        },
     );
 
     return (await (

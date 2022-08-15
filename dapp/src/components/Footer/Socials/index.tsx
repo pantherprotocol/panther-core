@@ -1,9 +1,9 @@
 import React from 'react';
 
-import discord from '../../../images/discord-blue-icon.svg';
-import medium from '../../../images/medium-blue-icon.svg';
-import telegram from '../../../images/telegram-blue-icon.svg';
-import twitter from '../../../images/twitter-blue-icon.svg';
+import discord from '../../../images/discord-icon.png';
+import medium from '../../../images/medium-icon.png';
+import telegram from '../../../images/telegram-icon.png';
+import twitter from '../../../images/twitter-icon.png';
 import {SafeLink} from '../../Common/links';
 
 import './styles.scss';

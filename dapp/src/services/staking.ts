@@ -4,7 +4,7 @@ import {JsonRpcSigner} from '@ethersproject/providers';
 import {bigintToBytes32} from '@panther-core/crypto/lib/bigint-conversions';
 import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
-import type {ContractTransaction, Signer} from 'ethers';
+import type {ContractTransaction} from 'ethers';
 import {BigNumber, constants, utils} from 'ethers';
 
 import {MessageWithTx} from '../components/Common/MessageWithTx';
@@ -16,6 +16,7 @@ import {
     generateRandomBabyJubValue,
     isChildPubKeyValid,
 } from '../lib/keychain';
+import {IKeypair} from '../lib/types';
 import type {IStakingTypes, Staking} from '../types/contracts/Staking';
 import {StakeRewardBN, StakeTypes} from '../types/staking';
 
@@ -37,7 +38,6 @@ import {
 import {env, MASP_CHAIN_ID} from './env';
 import {notifyError} from './errors';
 import axios from './http';
-import {deriveRootKeypairs} from './keychain';
 import {encryptRandomSecret} from './message-encryption';
 import {openNotification, removeNotification} from './notification';
 import {calculateRewardsForStake} from './rewards';
@@ -116,7 +116,9 @@ export async function generatePermitSignature(
 
 // craftAdvancedStakeData is a helper function to create the bytes data argument for
 // stake() function in Staking.sol smart contract with 'advanced' stake type.
-async function craftAdvancedStakeData(signer: Signer): Promise<string | Error> {
+async function craftAdvancedStakeData(
+    keys: IKeypair[],
+): Promise<string | Error> {
     /*
     returned value is hex string in the following format:
     const advStakeData: string =
@@ -135,10 +137,6 @@ async function craftAdvancedStakeData(signer: Signer): Promise<string | Error> {
         encrypted(prolog, r[2])),
     ).join('')
     */
-    const keys = await deriveRootKeypairs(signer);
-    if (keys instanceof Error) {
-        return keys as Error;
-    }
 
     const [rootSpendingKeypair, rootReadingKeypair] = keys;
     const publicSpendingKeys: string[] = [];
@@ -195,6 +193,7 @@ async function craftAdvancedStakeData(signer: Signer): Promise<string | Error> {
 export async function advancedStake(
     library: any,
     chainId: number,
+    keys: IKeypair[],
     account: string,
     amount: BigNumber, // assumes already validated as <= tokenBalance
 ): Promise<BigNumber | Error> {
@@ -208,14 +207,9 @@ export async function advancedStake(
         );
     }
 
-    const signer = library.getSigner(account);
-    const data = await craftAdvancedStakeData(signer);
+    const data = await craftAdvancedStakeData(keys);
     if (data instanceof Error) {
-        return notifyError('Error during stake', data.toString(), {
-            error: data,
-            account,
-            amount,
-        });
+        return data;
     }
     console.debug(`advanced stake data: ${data}`);
 
@@ -254,7 +248,7 @@ export async function stake(
             data,
         );
     } catch (err) {
-        return notifyError('Transaction error', parseTxErrorMessage(err), err);
+        return new Error(parseTxErrorMessage(err));
     }
 
     const inProgress = openNotification(
@@ -268,11 +262,7 @@ export async function stake(
 
     const event = await getEventFromReceipt(receipt, 'StakeCreated');
     if (event instanceof Error) {
-        return notifyError(
-            'Transaction error',
-            `Cannot find event in receipt. ${parseTxErrorMessage(event)}`,
-            event,
-        );
+        return event;
     }
 
     openNotification(

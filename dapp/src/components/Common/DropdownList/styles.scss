@@ -12,17 +12,19 @@
     border: 1px solid rgba(102, 141, 198, 0.4);
     backdrop-filter: blur(71.7913px);
     border-radius: 10px;
+    width: 201px;
+
     .menu-item {
         justify-content: space-around !important;
 
         display: flex;
         justify-content: space-between;
         justify-items: flex-start;
-        margin: 8px 12px;
+        margin: 13px 11px;
         border-radius: 10px;
         color: $white;
         cursor: pointer;
-
+        border-radius: 14px;
         img {
             width: 28px;
             height: 25px;

@@ -1,51 +1,6 @@
 @import '../../variables';
+@import '../../styles/dropdown-button.scss';
 
 .network-button-container {
-    display: flex;
-    height: 50px;
-    padding: 8px;
-    border-radius: 8px;
-    width: 200px;
-    background: rgba(99, 114, 136, 0.2);
-    border-radius: 10px;
-    > div {
-        width: 100%;
-    }
-
-    .network-button-holder {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        color: $white;
-    }
-
-    label {
-        top: 3px !important;
-        transition: none !important;
-        transform: none !important;
-        overflow: initial;
-        display: flex;
-        width: 100%;
-
-        &:focus {
-            top: 10px !important;
-            left: 10px;
-        }
-    }
-
-    .MuiFilledInput-root:before,
-    .MuiFilledInput-root:after {
-        display: none;
-    }
-
-    .MuiSelect-select {
-        margin-top: -26px !important;
-        width: 200px !important;
-        height: 50px !important;
-        color: $white !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        background: transparent !important;
-    }
+    margin-right: 20px;
 }

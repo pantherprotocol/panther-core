@@ -23,10 +23,16 @@ export const NetworkButton = (props: {
     const [open, setOpen] = useState<boolean>(false);
 
     return (
-        <Box className={`network-button-container ${open ? 'open' : ''}`}>
+        <Box
+            className={`dropdown-button-container network-button-container ${
+                open ? 'open' : ''
+            }`}
+        >
             <FormControl variant="standard">
                 <InputLabel id="dropdown-list-button-label">
-                    <Box className={`network-button-holder`}>
+                    <Box
+                        className={`dropdown-button-holder network-button-holder`}
+                    >
                         <img
                             src={networkLogo(props.networkLogo)}
                             alt="Network logo"

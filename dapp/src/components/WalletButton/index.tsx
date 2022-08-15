@@ -21,10 +21,14 @@ export const WalletButton = () => {
     const [open, setOpen] = useState<boolean>(false);
 
     return (
-        <Box className={`wallet-button-container ${open ? 'open' : ''}`}>
+        <Box
+            className={`dropdown-button-container wallet-button-container ${
+                open ? 'open' : ''
+            }`}
+        >
             <FormControl variant="standard">
                 <InputLabel id="dropdown-list-button-label">
-                    <Box className="wallet-button-holder">
+                    <Box className="dropdown-button-holder wallet-button-holder">
                         <Address />
                         <KeyboardArrowDownIcon />
                     </Box>

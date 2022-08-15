@@ -4,11 +4,11 @@ import {ReactElement, useCallback, useState} from 'react';
 import {Typography, Button, Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
-import rightSideArrow from '../../../../../../../images/right-arrow-icon.svg';
-import {formatTime} from '../../../../../../../lib/format';
-import {useAppDispatch, useAppSelector} from '../../../../../../../redux/hooks';
-import {updateUTXOStatus} from '../../../../../../../redux/slices/advancedStakesRewards';
-import {poolV0ExitTimeSelector} from '../../../../../../../redux/slices/poolV0';
+import rightSideArrow from '../../../../images/right-arrow-icon.svg';
+import {formatTime} from '../../../../lib/format';
+import {useAppDispatch, useAppSelector} from '../../../../redux/hooks';
+import {updateUTXOStatus} from '../../../../redux/slices/advancedStakesRewards';
+import {poolV0ExitTimeSelector} from '../../../../redux/slices/poolV0';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -16,15 +16,12 @@ import {
     showWalletActionInProgressSelector,
     startWalletAction,
     StartWalletActionPayload,
-} from '../../../../../../../redux/slices/web3WalletLastAction';
-import {env} from '../../../../../../../services/env';
-import {notifyError} from '../../../../../../../services/errors';
-import {deriveRootKeypairs} from '../../../../../../../services/keychain';
-import {exit} from '../../../../../../../services/pool';
-import {
-    UTXOStatus,
-    AdvancedStakeRewards,
-} from '../../../../../../../types/staking';
+} from '../../../../redux/slices/web3WalletLastAction';
+import {env} from '../../../../services/env';
+import {notifyError} from '../../../../services/errors';
+import {deriveRootKeypairs} from '../../../../services/keychain';
+import {exit} from '../../../../services/pool';
+import {UTXOStatus, AdvancedStakeRewards} from '../../../../types/staking';
 import RedeemRewardsWarningDialog from '../RedeemRewardsWarningDialog';
 
 import './styles.scss';

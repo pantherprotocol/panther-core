@@ -14,10 +14,10 @@ import {
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 
-import backButtonLeftArrow from '../../../../../../../images/back-button-left-arrow.svg';
-import {useAppDispatch} from '../../../../../../../redux/hooks';
-import {removeBlur, setBlur} from '../../../../../../../redux/slices/blur';
-import PrimaryActionButton from '../../../../../../Common/PrimaryActionButton';
+import backButtonLeftArrow from '../../../../images/back-button-left-arrow.svg';
+import {useAppDispatch} from '../../../../redux/hooks';
+import {removeBlur, setBlur} from '../../../../redux/slices/blur';
+import PrimaryActionButton from '../../../Common/PrimaryActionButton';
 
 import './styles.scss';
 

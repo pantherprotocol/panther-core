@@ -9,12 +9,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
 
-import {useAppSelector, useAppDispatch} from '../../../../../redux/hooks';
-import {advancedStakesRewardsSelector} from '../../../../../redux/slices/advancedStakesRewards';
-import {getPoolV0ExitTime} from '../../../../../redux/slices/poolV0';
-import {AdvancedStakeRewards, UTXOStatus} from '../../../../../types/staking';
-
-import AssetsDetailsRow from './AssetsDetailsRow';
+import {useAppSelector, useAppDispatch} from '../../../../redux/hooks';
+import {advancedStakesRewardsSelector} from '../../../../redux/slices/advancedStakesRewards';
+import {getPoolV0ExitTime} from '../../../../redux/slices/poolV0';
+import {AdvancedStakeRewards, UTXOStatus} from '../../../../types/staking';
+import AssetsDetailsRow from '../AssetsDetailsRow';
 
 import './styles.scss';
 

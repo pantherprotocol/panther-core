@@ -1,4 +1,4 @@
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task} from 'hardhat/config';
 import {utils} from 'ethers';

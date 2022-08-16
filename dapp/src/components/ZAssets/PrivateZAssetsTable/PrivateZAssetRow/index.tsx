@@ -73,7 +73,7 @@ export default function PrivateZAssetRow() {
                 <TableCell align="left">
                     <Network networkName={'Polygon zAsset'} />
                 </TableCell>
-                <TableCell align="left" className="bold-beige ">
+                <TableCell align="left" className="prp">
                     {unclaimedPRP
                         ? formatCurrency(unclaimedPRP, {scale: 0})
                         : '-'}{' '}

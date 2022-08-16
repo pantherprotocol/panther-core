@@ -1,26 +1,44 @@
 @import '../../../variables';
 
 .private-zAsset-container {
-    margin-top: 15px;
+    width: 97% !important;
+    margin: 0 auto;
+    border: 1px solid rgba(102, 141, 198, 0.4);
+    border-radius: 0 0 15px 15px !important;
+
+    @media (max-width: 768px) {
+        width: 95% !important;
+        margin: -2px auto;
+    }
 
     .MuiTableCell-root.MuiTableCell-head {
         vertical-align: middle;
-        font-size: 16px !important;
+        font-size: $normal-font-size !important;
+        font-weight: $light-font-weight !important;
+        color: rgb(215, 176, 171);
     }
 
     .MuiTableCell-root.MuiTableCell-body {
-        font-size: 19px !important;
-        font-weight: bold;
-        color: $color-beige;
+        font-weight: $semi-bold-font-weight;
         vertical-align: middle;
+        border-radius: 0 !important;
+        background-color: rgba(18, 20, 47, 1) !important;
     }
 
     table {
         min-width: 400px;
+        background-color: rgba(18, 20, 47, 1) !important;
+        padding: 0 20px;
+
+        .main-header-row {
+            th {
+                border-bottom: 1px solid rgba(189, 243, 255, 0.25) !important;
+            }
+        }
     }
 
     .tooltip-icon {
-        padding-left: 20px;
+        padding-left: 10px;
         position: relative;
         top: 3px;
 

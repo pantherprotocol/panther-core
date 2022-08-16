@@ -16,5 +16,9 @@
         display: flex;
         flex-direction: column;
         position: relative;
+
+        @media (max-width: 768px) {
+            padding: 0 16px !important;
+        }
     }
 }

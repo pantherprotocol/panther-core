@@ -30,7 +30,7 @@ export default function PrivateZAssetsTable() {
         <TableContainer className="private-zAsset-container" component={Paper}>
             <Table aria-label="collapsible table">
                 <TableHead>
-                    <TableRow>
+                    <TableRow className="main-header-row">
                         <TableCell align="left" colSpan={3}>
                             Private zAssets:
                             <Tooltip

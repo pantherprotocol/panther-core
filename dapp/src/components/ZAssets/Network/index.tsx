@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import {Box, Typography} from '@mui/material';
 
-import polygonIcon from '../../../images/polygon-logo.svg';
+import polygonIcon from '../../../images/polygon-beige-logo.svg';
 
 import './styles.scss';
 

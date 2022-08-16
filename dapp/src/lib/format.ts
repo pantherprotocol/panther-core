@@ -75,3 +75,14 @@ export function formatUSD(
 ): string {
     return `$${formatCurrency(value, options)} USD`;
 }
+
+export function splitFloatNumber(value: string): [string, string] | [] {
+    const regex = /^\d*\.?\d*$/; // matches floating points numbers
+    if (!regex.test(value)) {
+        return [];
+    }
+
+    const [whole, fractional] = value.split('.');
+
+    return [whole || '0', fractional || '0'];
+}

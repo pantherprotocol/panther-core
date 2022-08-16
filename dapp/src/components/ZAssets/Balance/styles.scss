@@ -6,17 +6,17 @@
     align-items: start;
     justify-content: center;
 
-    p {
-        display: flex;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 16px;
+    .balance {
+        color: $highlighted-text;
+        font-weight: $bold-font-weight;
         line-height: 22px;
-        color: $white;
+    }
 
+    .balance-value {
         span {
             color: #aeaeae;
             padding-left: 5px;
+            font-weight: $light-font-weight;
         }
     }
 }

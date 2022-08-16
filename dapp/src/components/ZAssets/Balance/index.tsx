@@ -11,11 +11,11 @@ export default function Balance(props: {
 }) {
     return (
         <Box className="asset-balance">
-            <Typography>
+            <Typography className="balance">
                 {props.balance}
                 <span> {props.name} </span>
             </Typography>
-            <Typography>
+            <Typography className="balance-value">
                 <span> {props.balanceValue} </span>
             </Typography>
         </Box>

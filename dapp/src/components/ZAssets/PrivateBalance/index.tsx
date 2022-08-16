@@ -9,7 +9,11 @@ import attentionIcon from '../../../images/attention-triangle-icon.svg';
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
 import {parseTxErrorMessage} from '../../../lib/errors';
-import {formatCurrency, formatTimeSince, formatUSD} from '../../../lib/format';
+import {
+    formatCurrency,
+    formatTimeSince,
+    splitFloatNumber,
+} from '../../../lib/format';
 import {fiatPrice} from '../../../lib/tokenPrice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {
@@ -161,24 +165,43 @@ export default function PrivateBalance() {
         showWalletActionInProgressSelector('signMessage'),
     );
 
+    const amount = totalPrice && formatCurrency(totalPrice, {decimals: 3});
+    const [whole, fractional] = amount ? splitFloatNumber(amount) : [];
+
     return (
         <>
             {showWalletSignatureInProgress && <SignatureRequestModal />}
             <Box className="private-zAssets-balance-container">
                 <Box className="private-zAssets-balance">
                     <Typography className="title">
-                        Private zAsset Balance
+                        Total Private zAsset Balance
                     </Typography>
                     <Typography className="amount">
-                        {totalPrice
-                            ? formatUSD(totalPrice, {decimals: 2})
-                            : '-'}
+                        {whole && fractional ? (
+                            <>
+                                <span>
+                                    $
+                                    {formatCurrency(BigNumber.from(whole), {
+                                        decimals: 0,
+                                        scale: 0,
+                                    })}
+                                </span>
+
+                                <span className="substring">
+                                    .{fractional.padEnd(2, '0')} USD
+                                </span>
+                            </>
+                        ) : (
+                            '-'
+                        )}
                     </Typography>
                     <Typography className="zkp-rewards">
                         {unclaimedPRP
                             ? formatCurrency(unclaimedPRP, {scale: 0})
                             : '-'}{' '}
-                        Total Privacy Reward Points (PRP)
+                        <span className="info">
+                            Total Privacy Reward Points (PRP)
+                        </span>
                     </Typography>
                 </Box>
 

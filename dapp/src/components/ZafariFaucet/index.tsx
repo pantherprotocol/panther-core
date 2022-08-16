@@ -7,7 +7,6 @@ import {ContractTransaction} from 'ethers/lib/ethers';
 import polygonIcon from '../../images/polygon-logo.svg';
 import {CONFIRMATIONS_NUM} from '../../lib/constants';
 import {parseTxErrorMessage} from '../../lib/errors';
-import {formatCurrency} from '../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getChainBalance} from '../../redux/slices/chainBalance';
 import {
@@ -57,12 +56,14 @@ function ZafariFaucet() {
 
     function networkName(chainId: number): React.ReactElement {
         if (!active) {
-            return <Typography id="value">Not connected</Typography>;
+            return (
+                <Typography className="network-name">Not connected</Typography>
+            );
         }
 
         if (wrongNetwork) {
             return (
-                <Typography id="value">
+                <Typography className="network-name">
                     Please, switch to{' '}
                     {supportedNetworks[FAUCET_CHAIN_IDS[0]].name}
                 </Typography>
@@ -70,8 +71,8 @@ function ZafariFaucet() {
         }
 
         return (
-            <Typography id="value">
-                <img src={polygonIcon} id="polygon-icon" />
+            <Typography className="network-name">
+                <img src={polygonIcon} className="polygon-icon" />
                 {supportedNetworks[chainId].name}
             </Typography>
         );
@@ -149,33 +150,33 @@ function ZafariFaucet() {
 
     return (
         <Card className="zafari-faucet-container">
-            <Typography id="title">Get Test Tokens</Typography>
-            <Typography id="welcome-message">
+            <Typography className="title">Get Test Tokens</Typography>
+            <Typography className="welcome-message">
                 Welcome to Panther Protocol’s incentivized testnet! You can
                 claim your test tokens here!
             </Typography>
             <Card className="details">
                 <Box className="details-row">
-                    <Typography id="caption">Network:</Typography>
-                    {chainId && networkName(chainId)}
-                </Box>
-                <Box className="details-row">
-                    <Typography id="caption">Token:</Typography>
-                    <Typography id="token-symbol">$ZKP</Typography>
-                </Box>
-                <Box className="details-row">
-                    <Typography id="caption">Balance:</Typography>
-                    <Typography id="token-balance">
-                        {formatCurrency(tokenBalance)}
+                    <Typography className="caption">Network:</Typography>
+                    <Typography className="network-name">
+                        {chainId && networkName(chainId)}
                     </Typography>
                 </Box>
                 <Box className="details-row">
-                    <Typography id="caption">Wallet Address:</Typography>
+                    <Typography className="caption">Token:</Typography>
+                    <Typography className="token-symbol">$TESTZKP</Typography>
+                </Box>
+                <Box className="details-row">
+                    <Typography className="caption" id="wallet-caption">
+                        Wallet Address:
+                    </Typography>
                     {!active && (
-                        <Typography id="value">Wallet not connected</Typography>
+                        <Typography className="wallet-not-connected">
+                            Wallet not connected
+                        </Typography>
                     )}
                     {active && !wrongNetwork && (
-                        <Typography id="value">
+                        <Typography className="wallet-address">
                             {formatAccountAddress(account)}
                         </Typography>
                     )}

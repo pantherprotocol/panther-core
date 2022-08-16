@@ -1,34 +1,53 @@
 @import '../../variables.scss';
 
 .zafari-faucet-container {
+    margin: 0 auto;
+    width: 595.39px;
+    height: max-content;
     box-sizing: border-box;
     background: rgba(43, 51, 65, 0.5) !important;
     mix-blend-mode: normal;
-    border: 1.5px solid #485267;
-    backdrop-filter: blur(50px);
-    border-radius: 16px !important;
-    display: inline-block;
+    border: 1px solid rgba(102, 141, 198, 0.4);
+    box-shadow: 0px 3.58957px 13.4609px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(71.7913px);
+    border-radius: 22.4348px !important;
+    padding: 20px 20px 0 20px !important;
 
-    #title {
-        font-weight: 700;
-        font-size: 32px;
+    @media (max-width: 768px) {
+        width: 90%;
+        padding: 25px 15px 0 15px !important;
+    }
+
+    .title {
+        font-weight: $semi-bold-font-weight;
+        font-size: $large-font-size;
         display: flex;
         justify-content: center;
         align-items: center;
-        text-align: center;
         color: $white;
+        line-height: 38px;
+        @media (max-width: 768px) {
+            font-size: 24px;
+        }
     }
 
-    #welcome-message {
-        font-weight: 400;
-        font-size: 18px;
+    .welcome-message {
+        font-weight: $light-font-weight;
+        font-size: $title-font-size;
         line-height: 26px;
         display: flex;
         align-items: center;
         text-align: center;
         color: #d2d2d2;
         margin-top: 30px;
-        margin-bottom: 50px;
+        margin-bottom: 48px;
+        @media (max-width: 768px) {
+            font-size: $normal-font-size;
+            text-align: center;
+            padding: 0 25px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
 
         a {
             color: $white;
@@ -38,10 +57,15 @@
 
     .details {
         box-sizing: border-box;
-        background: rgba(99, 114, 136, 0.2);
+        background: rgba(99, 114, 136, 0.1);
         mix-blend-mode: normal;
-        backdrop-filter: blur(40px);
-        border-radius: 14px;
+        backdrop-filter: blur(40.3826px);
+        border-radius: 13.4609px;
+        box-shadow: none;
+        padding: 20px 25px;
+        @media (max-width: 768px) {
+            margin-top: 25px;
+        }
 
         .details-row {
             display: flex;
@@ -50,26 +74,98 @@
             font-weight: 500;
             font-size: 18px;
             line-height: 38px;
+            @media (max-width: 768px) {
+                align-items: baseline;
+            }
 
-            #caption {
-                font-weight: 800;
+            .caption {
                 align-items: center;
+                font-weight: $bold-font-weight;
+                font-size: $title-font-size;
+                line-height: 33px;
                 color: $white;
+                text-align: left;
+                @media (max-width: 768px) {
+                    font-size: $normal-font-size;
+                }
             }
 
             #token-symbol {
                 color: #ffdfbd;
             }
+            #wallet-caption {
+                @media (max-width: 422px) {
+                    line-height: 1.5;
+                }
+            }
 
-            #polygon-icon {
-                padding-right: 8px;
+            .network-name {
+                font-weight: $normal-font-weight;
+                font-size: $title-font-size;
+                @media (max-width: 768px) {
+                    font-size: $normal-font-size;
+                }
+            }
+
+            .token-symbol {
+                color: #ffdfbd;
+                font-weight: $normal-font-weight;
+                font-size: $title-font-size;
+            }
+
+            .wallet-not-connected {
+                font-weight: $normal-font-weight;
+                font-size: $title-font-size;
+                align-self: center;
+                @media (max-width: 768px) {
+                    font-size: $normal-font-size;
+                    line-height: 0.1;
+                    color: transparent;
+                    &::after {
+                        content: 'Not Connected';
+                        display: block;
+                        line-height: initial;
+                        color: $white;
+                        text-align: right;
+                    }
+                }
+            }
+
+            .wallet-address {
+                font-weight: $normal-font-weight;
+                font-size: $title-font-size;
+                align-self: center;
+                @media (max-width: 768px) {
+                    font-size: $normal-font-size;
+                }
+            }
+
+            .polygon-icon {
+                margin-right: 10px;
                 width: 30px;
+                height: 20px;
+                position: relative;
+                top: 2px;
             }
         }
     }
 
     .connect-button {
-        margin-top: 20px;
-        margin-bottom: 5px;
+        margin-top: 42px;
+        margin-bottom: 23px;
+        width: 100%;
+        height: 71.53px;
+        background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.12) 0%,
+                rgba(255, 255, 255, 0) 100%
+            ),
+            #205bea;
+        border-radius: 14.3583px;
+        @media (max-width: 768px) {
+            height: 57px;
+            margin-top: 37px;
+            margin-bottom: 30px;
+        }
     }
 }

@@ -3,7 +3,7 @@ import { ethers } from 'hardhat';
 import { MockPantherPoolV0 } from '../../types';
 
 import { smock } from '@defi-wonderland/smock';
-import { getPantherPoolMocFactoryByName } from './hardhat';
+import { getPantherPoolMocFactoryByName } from './pantherPoolMockFactory';
 
 export { deployPantherPoolV0 };
 

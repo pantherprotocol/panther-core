@@ -1,6 +1,6 @@
 // @ts-ignore
 import { PantherPoolV0AndZAssetRegistryTester } from '../../types';
-import { getPantherPoolMocFactoryByName } from './hardhat';
+import { getPantherPoolMocFactoryByName } from './pantherPoolMockFactory';
 
 export { deployPantherPoolV0AndZAssetRegistryTester };
 

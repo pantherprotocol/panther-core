@@ -28,7 +28,7 @@ import {
     multiplyScalars,
 } from '../lib/keychain';
 
-import { deployPantherPoolV0AndZAssetRegistryTester } from './helpers/PantherPoolV0AndZAssetRegistryTester';
+import { deployPantherPoolV0AndZAssetRegistryTester } from './helpers/pantherPoolV0AndZAssetRegistryTester';
 import { ethers } from 'hardhat';
 
 describe('PantherPoolV0', () => {

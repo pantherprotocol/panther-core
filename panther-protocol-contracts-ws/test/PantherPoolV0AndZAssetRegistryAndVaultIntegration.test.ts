@@ -16,7 +16,7 @@ import {
 import { deriveKeypairFromSeed } from '../lib/keychain';
 
 import { PantherPoolV0AndZAssetRegistryAndVaultTester } from '../types';
-import { deployPantherPoolV0AndZAssetRegistryAndVaultTester } from './helpers/PantherPoolV0AndZAssetRegistryAndVaultTester';
+import { deployPantherPoolV0AndZAssetRegistryAndVaultTester } from './helpers/pantherPoolV0AndZAssetRegistryAndVaultTester';
 import { PathElementsType, toBytes32, Triad } from '../lib/utilities';
 import { BigNumber } from 'ethers';
 import type { BytesLike } from '@ethersproject/bytes';

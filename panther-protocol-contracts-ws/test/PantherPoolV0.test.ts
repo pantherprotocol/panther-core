@@ -6,7 +6,7 @@ import { MockPantherPoolV0, ZAssetsRegistry } from '../types';
 
 import { smock, FakeContract } from '@defi-wonderland/smock';
 
-import { deployPantherPoolV0 } from './helpers/PantherPoolV0';
+import { deployPantherPoolV0 } from './helpers/pantherPoolV0';
 import { ethers } from 'hardhat';
 import { getIds, getZAssets } from './data/zAssetsSample';
 import { depositSample, exitSample } from './data/depositAndFakeExitSample';

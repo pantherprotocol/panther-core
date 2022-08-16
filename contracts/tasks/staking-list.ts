@@ -73,6 +73,8 @@ task('staking:list', 'Output staking events data as JSON')
             hre.network.config,
         );
 
+        // @ts-ignore - this is a bug that does not allow accessing the filter
+        // as function
         const filter = stakingContract.filters[taskArgs.filter]();
         const endBlock = taskArgs.end
             ? Number(taskArgs.end)

@@ -81,7 +81,7 @@
     "hardhat": "^2.9.1",
     "hardhat-contract-sizer": "^2.1.0",
     "hardhat-deploy": "^0.11.0",
-    "hardhat-deploy-ethers": "^0.3.0-beta.12",
+    "hardhat-deploy-ethers": "^0.3.0-beta.13",
     "hardhat-gas-reporter": "^1.0.4",
     "hardhat-storage-layout": "^0.1.6",
     "husky": "^4.3.0",

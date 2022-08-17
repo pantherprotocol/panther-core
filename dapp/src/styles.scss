@@ -102,7 +102,7 @@ code {
     box-sizing: border-box;
 }
 
-@media (min-width: 768px) {
+@media (min-width: $medium-screen-size) {
     .container {
         max-width: 1300px;
         margin: 0 auto;

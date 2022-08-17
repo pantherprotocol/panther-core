@@ -24,7 +24,7 @@
         position: relative;
         top: 3px;
 
-        @media (max-width: 768px) {
+        @media (max-width: $medium-screen-size) {
             padding-left: 10px;
         }
     }

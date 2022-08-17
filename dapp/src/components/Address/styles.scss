@@ -12,7 +12,7 @@
         margin-left: 18px;
         margin-top: 3px;
 
-        @media (max-width: 768px) {
+        @media (max-width: $medium-screen-size) {
             width: 20px;
             height: 20px;
             margin-left: 5px;
@@ -29,7 +29,7 @@
         line-height: 48px;
         margin: 0 18px;
 
-        @media (max-width: 768px) {
+        @media (max-width: $medium-screen-size) {
             font-size: 14px;
             margin: 0 10px;
         }

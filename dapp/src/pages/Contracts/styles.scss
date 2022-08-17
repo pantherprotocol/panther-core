@@ -23,7 +23,7 @@ $link-color: #ffdfbd;
         max-width: 650px;
         margin: 0 auto;
         margin-bottom: 100px !important;
-        @media (max-width: 768px) {
+        @media (max-width: $medium-screen-size) {
             width: 90% !important;
         }
 

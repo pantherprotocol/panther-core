@@ -23,7 +23,7 @@ $refresh-button-background: linear-gradient(
     padding: 20px 40px;
     border-radius: 16px;
 
-    @media (max-width: 768px) {
+    @media (max-width: $medium-screen-size) {
         flex-direction: column;
     }
 
@@ -33,7 +33,7 @@ $refresh-button-background: linear-gradient(
         align-items: start;
         flex-direction: column;
 
-        @media (max-width: 768px) {
+        @media (max-width: $medium-screen-size) {
             align-items: center;
         }
 

@@ -5,7 +5,7 @@
     width: 100%;
     margin: 0 auto;
 
-    @media (max-width: 1080px) {
+    @media (max-width: $large-screen-size) {
         width: auto;
         padding: 0 20px;
     }

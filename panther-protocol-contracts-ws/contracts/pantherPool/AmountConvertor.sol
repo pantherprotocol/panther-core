@@ -19,7 +19,7 @@ abstract contract AmountConvertor {
     // tokens, the "scaling factor" MAY be 1:1, i.e. scaled and unscaled
     // amounts are equal.
 
-    // Conversion from the unscaled amount to the unscaled one.
+    // Conversion from the unscaled amount (aka amount) to the scaled one.
     // Returns the scaled amount and the reminder.
     function _scaleAmount(uint256 amount, uint8 scale)
         internal
@@ -76,6 +76,9 @@ abstract contract AmountConvertor {
 
     /// Private functions follow
 
+    // Note: implementation accepts 0..255 values for nonZeroScale
+    // It is responsibility of the caller check it is indeed less than 255 since 10^255 overflows uint256
+    // This overflow check not implemented here since caller will implement it in upper level
     function _getScalingFactor(uint8 nonZeroScale)
         private
         pure

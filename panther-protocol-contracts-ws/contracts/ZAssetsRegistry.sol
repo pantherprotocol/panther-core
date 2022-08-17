@@ -120,11 +120,11 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
             ZAsset memory asset
         )
     {
+        require(token != address(0), ERR_ZERO_TOKEN_ADDRESS);
+
         // Gas optimized based on assumptions:
         // - most often, this code is called for the default zAsset of ERC-20
         // - if `ver` is in [1..31], highly likely, it is an alternative zAsset
-        require(token != address(0), ERR_ZERO_TOKEN_ADDRESS);
-
         _tokenId = subId;
         if (subId != 0) {
             // for an "alternative" zAsset, `subId` must be none-zero, ...

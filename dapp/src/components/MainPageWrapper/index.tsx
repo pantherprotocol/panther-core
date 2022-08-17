@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import {Box} from '@mui/system';
 
-import background from '../../images/background-v1.png';
+import background from '../../images/background-v0.5.png';
 import {useAppSelector} from '../../redux/hooks';
 import {blurSelector} from '../../redux/slices/blur';
 import {isBlockedCountry} from '../../services/geo-location';

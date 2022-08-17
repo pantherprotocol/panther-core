@@ -3,7 +3,7 @@ import {useCallback, useEffect, useState} from 'react';
 
 import {Box, Button, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 
 import attentionIcon from '../../../images/attention-triangle-icon.svg';
 import infoIcon from '../../../images/info-icon.svg';
@@ -12,7 +12,7 @@ import {parseTxErrorMessage} from '../../../lib/errors';
 import {
     formatCurrency,
     formatTimeSince,
-    splitFloatNumber,
+    getFormatedFractions,
 } from '../../../lib/format';
 import {fiatPrice} from '../../../lib/tokenPrice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
@@ -165,8 +165,9 @@ export default function PrivateBalance() {
         showWalletActionInProgressSelector('signMessage'),
     );
 
-    const amount = totalPrice && formatCurrency(totalPrice, {decimals: 2});
-    const [whole, fractional] = amount ? splitFloatNumber(amount) : [];
+    const [whole, fractional] = totalPrice
+        ? getFormatedFractions(utils.formatEther(totalPrice))
+        : [];
 
     return (
         <>
@@ -179,17 +180,9 @@ export default function PrivateBalance() {
                     <Typography className="amount">
                         {whole && fractional ? (
                             <>
-                                <span>
-                                    $
-                                    {formatCurrency(BigNumber.from(whole), {
-                                        decimals: 0,
-                                        scale: 0,
-                                    })}
-                                </span>
+                                <span>${whole}</span>
 
-                                <span className="substring">
-                                    .{fractional.padEnd(2, '0')} USD
-                                </span>
+                                <span className="substring">.{fractional}</span>
                             </>
                         ) : (
                             '-'

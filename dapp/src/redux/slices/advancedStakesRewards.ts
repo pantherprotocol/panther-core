@@ -5,6 +5,7 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {poseidon} from 'circomlibjs';
 import {BigNumber, constants} from 'ethers';
 
+import {sleep} from '../../lib/time';
 import {IKeypair} from '../../lib/types';
 import {getChangedUTXOsStatuses, UTXOStatusByID} from '../../services/pool';
 import {getAdvancedStakingReward} from '../../services/staking';
@@ -15,6 +16,10 @@ import {
     UTXOStatus,
 } from '../../types/staking';
 import {RootState} from '../store';
+
+const MAX_RETRIES = 5;
+const INITIAL_RETRY_DELAY = 1000;
+const EXP_BACKOFF_FACTOR = 2;
 
 interface AdvancedStakeRewardsById {
     [leafId: string]: AdvancedStakeRewards;
@@ -52,52 +57,48 @@ function shortAddressHash(address: string): string {
 export const getAdvancedStakesRewards = createAsyncThunk(
     'advancedStakesRewards',
     async (
-        context: Web3ReactContextInterface<Web3Provider>,
+        payload: {
+            context: Web3ReactContextInterface<Web3Provider>;
+            withRetry: boolean | undefined;
+        },
         {getState},
     ): Promise<[number, string, AdvancedStakeRewardsById] | undefined> => {
-        const {account, chainId} = context;
-        if (!account) return;
-        if (!chainId) return;
-
-        const rewards = await getAdvancedStakingReward(chainId, account);
-        if (rewards instanceof Error) {
-            console.error(
-                `Cannot fetch the rewards from the subgraph. ${rewards}`,
-            );
-            return;
-        }
-
-        if (!rewards) return;
-        if (!rewards.staker) return;
-
+        const {account, chainId} = payload.context;
+        if (!account || !chainId) return;
         const state = getState() as RootState;
+
         const currentAdvancedRewards = advancedStakesRewardsSelector(
             chainId,
             account,
         )(state);
-        const rewardsFetchedFromSubgraph: AdvancedStakeRewardsById = {};
 
-        rewards.staker.advancedStakingRewards.forEach(
-            (r: AdvancedStakeRewardsResponse) => {
-                rewardsFetchedFromSubgraph[r.id] = {
-                    id: r.id,
-                    creationTime: r.creationTime.toString(),
-                    commitments: r.commitments,
-                    utxoData: r.utxoData,
-                    zZkpUTXOStatus: UTXOStatus.UNDEFINED,
-                    zZKP: r.zZkpAmount,
-                    PRP: r.prpAmount,
-                };
-            },
-        );
-        // merging the state in a such way that if previous rewards existed,
-        // they will not be overwritten by the new rewards fetched from the
-        // subgraph.
+        let rewardsFetchedFromSubgraph;
+        if (payload.withRetry) {
+            rewardsFetchedFromSubgraph = await getRewardsFromGraphWithRetry(
+                chainId,
+                account,
+                Object.keys(currentAdvancedRewards).length,
+            );
+        } else {
+            rewardsFetchedFromSubgraph = await getRewardsFromGraph(
+                chainId,
+                account,
+            );
+        }
+
+        if (rewardsFetchedFromSubgraph instanceof Error) {
+            console.error(rewardsFetchedFromSubgraph);
+            return;
+        }
+
         return [
             chainId,
             // hash of the account address to increase privacy as we store
             // advanced rewards in the local storage
             shortAddressHash(account),
+            // merging the state in a such way that if previous rewards existed,
+            // they will not be overwritten by the new rewards fetched from the
+            // subgraph.
             {
                 ...(rewardsFetchedFromSubgraph as AdvancedStakeRewardsById),
                 ...(currentAdvancedRewards as AdvancedStakeRewardsById),
@@ -105,6 +106,72 @@ export const getAdvancedStakesRewards = createAsyncThunk(
         ];
     },
 );
+
+export const getAdvancedStakesRewardsAndUpdateStatus = createAsyncThunk(
+    'getAdvancedStakesRewardsAndUpdateStatus',
+    async (
+        payload: {
+            context: Web3ReactContextInterface<Web3Provider>;
+            keys: IKeypair[] | undefined;
+        },
+        {dispatch},
+    ) => {
+        await dispatch(getAdvancedStakesRewards({...payload, withRetry: true}));
+
+        if (!payload.keys) {
+            console.error(
+                'Cannot refresh the advanced staking rewards. No keys provided',
+            );
+            return;
+        }
+
+        await dispatch(
+            refreshUTXOsStatuses({
+                context: payload.context,
+                keys: payload.keys,
+            }),
+        );
+    },
+);
+
+async function getRewardsFromGraph(
+    chainId: number,
+    account: string,
+): Promise<AdvancedStakeRewardsById | Error> {
+    const rewards = await getAdvancedStakingReward(chainId, account);
+    if (rewards instanceof Error) {
+        return new Error(
+            `Cannot fetch the rewards from the subgraph. ${rewards}`,
+        );
+    }
+
+    if (!rewards)
+        return new Error(
+            'Cannot fetch the rewards from the subgraph. No rewards found',
+        );
+    if (!rewards.staker)
+        return new Error(
+            'Cannot fetch the rewards from the subgraph. No staker found',
+        );
+
+    const rewardsFetchedFromSubgraph: AdvancedStakeRewardsById = {};
+
+    rewards.staker.advancedStakingRewards.forEach(
+        (r: AdvancedStakeRewardsResponse) => {
+            rewardsFetchedFromSubgraph[r.id] = {
+                id: r.id,
+                creationTime: r.creationTime.toString(),
+                commitments: r.commitments,
+                utxoData: r.utxoData,
+                zZkpUTXOStatus: UTXOStatus.UNDEFINED,
+                zZKP: r.zZkpAmount,
+                PRP: r.prpAmount,
+            };
+        },
+    );
+
+    return rewardsFetchedFromSubgraph;
+}
 
 export const refreshUTXOsStatuses = createAsyncThunk(
     'refreshUTXOsStatuses',
@@ -137,6 +204,48 @@ export const refreshUTXOsStatuses = createAsyncThunk(
         return [chainId, account, statusesNeedUpdate];
     },
 );
+
+// getRewardsFromGraphWithRetry is used to fetch new rewards from the subgraph
+// when you are expecting them to be there. This function makes several retires
+// to fetch the rewards until fetched rewards array size is longer than the
+// current ones. MAX_RETRIES is the maximum number of retries and
+// INITIAL_RETRY_DELAY is the initial delay between retries which increases
+// exponentially with each retry.
+async function getRewardsFromGraphWithRetry(
+    chainId: number,
+    address: string,
+    currentRewardsLength: number,
+    retry = 0,
+    delay = INITIAL_RETRY_DELAY,
+): Promise<AdvancedStakeRewardsById | Error> {
+    if (retry > MAX_RETRIES) {
+        return new Error(
+            'Cannot fetch the rewards from the subgraph. Max retries reached',
+        );
+    }
+
+    await sleep(delay);
+
+    const rewardsFetchedFromSubgraph = await getRewardsFromGraph(
+        chainId,
+        address,
+    );
+
+    if (
+        rewardsFetchedFromSubgraph instanceof Error ||
+        Object.keys(rewardsFetchedFromSubgraph).length === currentRewardsLength
+    ) {
+        return await getRewardsFromGraphWithRetry(
+            chainId,
+            address,
+            currentRewardsLength,
+            retry + 1,
+            delay * EXP_BACKOFF_FACTOR,
+        );
+    }
+
+    return rewardsFetchedFromSubgraph as AdvancedStakeRewardsById;
+}
 
 export const advancedStakesRewardsSlice = createSlice({
     name: 'advancedStakesRewards',

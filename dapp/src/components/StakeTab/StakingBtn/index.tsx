@@ -7,6 +7,7 @@ import {BigNumber, utils} from 'ethers';
 
 import {formatCurrency} from '../../../lib/format';
 import {useAppDispatch} from '../../../redux/hooks';
+import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/advancedStakesRewards';
 import {getChainBalance} from '../../../redux/slices/chainBalance';
 import {getTotalsOfAdvancedStakes} from '../../../redux/slices/totalsOfAdvancedStakes';
 import {getTotalUnclaimedClassicRewards} from '../../../redux/slices/totalUnclaimedClassicRewards';
@@ -143,6 +144,24 @@ const StakingBtn = (props: {
             }
             dispatch(registerWalletActionSuccess, 'stake');
             setStakingAmount('');
+            dispatch(progressToNewWalletAction, {
+                oldAction: 'stake',
+                newAction: {
+                    name: 'getAdvancedStakesRewardsAndUpdateStatus',
+                    cause: {caller: 'StakeTab', trigger},
+                    data: {account, caller: 'components/StakeTab'},
+                },
+            });
+
+            dispatch(getAdvancedStakesRewardsAndUpdateStatus, {
+                context,
+                keys,
+            });
+
+            dispatch(
+                registerWalletActionSuccess,
+                'getAdvancedStakesRewardsAndUpdateStatus',
+            );
             dispatch(getTotalsOfAdvancedStakes, context);
             dispatch(getZkpStakedBalance, context);
             dispatch(getZkpTokenBalance, context);

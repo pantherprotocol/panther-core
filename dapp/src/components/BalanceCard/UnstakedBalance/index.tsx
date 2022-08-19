@@ -5,25 +5,85 @@ import {useWeb3React} from '@web3-react/core';
 
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
+import {parseTxErrorMessage} from '../../../lib/errors';
 import {formatCurrency, formatUSD} from '../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
+import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/advancedStakesRewards';
+import {
+    progressToNewWalletAction,
+    registerWalletActionFailure,
+    registerWalletActionSuccess,
+    startWalletAction,
+    StartWalletActionPayload,
+    WalletSignatureTrigger,
+} from '../../../redux/slices/web3WalletLastAction';
 import {
     getZkpTokenBalance,
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
 } from '../../../redux/slices/zkpTokenBalance';
+import {notifyError} from '../../../services/errors';
+import {deriveRootKeypairs} from '../../../services/keychain';
 
 import './styles.scss';
 
 export default function UnstakedBalance() {
+    const [loading, setLoading] = React.useState<boolean>(false);
     const context = useWeb3React();
     const dispatch = useAppDispatch();
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const tokenMarketPrice = useAppSelector(zkpUnstakedUSDMarketPriceSelector);
 
-    const refreshTokenBalance = () => {
-        dispatch(getZkpTokenBalance, context);
-    };
+    const RefreshTokenBalanceAndRewards = React.useCallback(
+        async (trigger: WalletSignatureTrigger) => {
+            dispatch(getZkpTokenBalance, context);
+            const {account, library} = context;
+
+            dispatch(startWalletAction, {
+                name: 'signMessage',
+                cause: {caller: 'UnstakedBalance', trigger},
+                data: {account},
+            } as StartWalletActionPayload);
+            const signer = library!.getSigner(account!);
+            const keys = await deriveRootKeypairs(signer);
+            if (keys instanceof Error) {
+                dispatch(registerWalletActionFailure, 'signMessage');
+                notifyError(
+                    'Failed to refresh rewards',
+                    `Cannot sign a message: ${parseTxErrorMessage(keys)}`,
+                    keys,
+                );
+            }
+
+            dispatch(progressToNewWalletAction, {
+                oldAction: 'signMessage',
+                newAction: {
+                    name: 'getAdvancedStakesRewardsAndUpdateStatus',
+                    cause: {caller: 'UnstakedBalance', trigger},
+                    data: {
+                        account,
+                        caller: 'components/BalanceCard/UnstakedBalance',
+                    },
+                },
+            });
+
+            setLoading(true);
+
+            await dispatch(getAdvancedStakesRewardsAndUpdateStatus, {
+                context,
+                keys,
+                withRetry: false,
+            });
+
+            setLoading(false);
+
+            dispatch(
+                registerWalletActionSuccess,
+                'getAdvancedStakesRewardsAndUpdateStatus',
+            );
+        },
+        [context, dispatch],
+    );
 
     return (
         <Box className="total-balance">
@@ -39,8 +99,16 @@ export default function UnstakedBalance() {
                         </IconButton>
                     </Tooltip>
                 )}
-                <IconButton onClick={refreshTokenBalance}>
-                    <img src={refreshIcon} />
+                <IconButton
+                    onClick={() =>
+                        RefreshTokenBalanceAndRewards('manual refresh')
+                    }
+                >
+                    {loading ? (
+                        <i className="fa fa-refresh fa-spin spin-icon" />
+                    ) : (
+                        <img src={refreshIcon} />
+                    )}
                 </IconButton>
             </Box>
 

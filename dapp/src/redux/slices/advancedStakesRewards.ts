@@ -112,10 +112,11 @@ export const getAdvancedStakesRewardsAndUpdateStatus = createAsyncThunk(
         payload: {
             context: Web3ReactContextInterface<Web3Provider>;
             keys: IKeypair[] | undefined;
+            withRetry: boolean;
         },
         {dispatch},
     ) => {
-        await dispatch(getAdvancedStakesRewards({...payload, withRetry: true}));
+        await dispatch(getAdvancedStakesRewards(payload));
 
         if (!payload.keys) {
             console.error(

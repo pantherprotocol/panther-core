@@ -169,6 +169,7 @@ const StakingBtn = (props: {
             dispatch(getAdvancedStakesRewardsAndUpdateStatus, {
                 context,
                 keys,
+                withRetry: true,
             });
 
             dispatch(

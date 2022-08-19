@@ -4,7 +4,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
+import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 
 import StakingInfo from '../../components/StakeTab/StakingInfo';
@@ -19,7 +19,8 @@ import {
     termsSelector,
 } from '../../redux/slices/stakeTerms';
 import {zkpTokenBalanceSelector} from '../../redux/slices/zkpTokenBalance';
-import {onWrongNetwork} from '../../services/connectors';
+import {isWrongNetwork} from '../../services/connectors';
+import {CHAIN_IDS} from '../../services/env';
 import {StakeType} from '../../types/staking';
 import ConnectButton from '../ConnectButton';
 import SwitchNetworkButton from '../SwitchNetworkButton';
@@ -79,17 +80,9 @@ export default function StakeTab() {
     );
 
     useEffect((): any => {
-        const wrongNetwork =
-            onWrongNetwork(context) || error instanceof UnsupportedChainIdError;
+        const wrongNetwork = isWrongNetwork(context, CHAIN_IDS);
         setWrongNetwork(wrongNetwork);
-        console.debug(
-            'header: wrongNetwork',
-            wrongNetwork,
-            '/ active',
-            active,
-            '/ error',
-            error,
-        );
+
         if (wrongNetwork) {
             return;
         }
@@ -99,7 +92,7 @@ export default function StakeTab() {
 
             library.getBalance(account).then(() => {
                 if (!stale) {
-                    setWrongNetwork(onWrongNetwork(context));
+                    setWrongNetwork(isWrongNetwork(context, CHAIN_IDS));
                 }
             });
 

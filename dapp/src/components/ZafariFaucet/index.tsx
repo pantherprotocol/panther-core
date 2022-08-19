@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 
 import {Box, Card, Typography} from '@mui/material';
-import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
+import {useWeb3React} from '@web3-react/core';
 
 import polygonIcon from '../../images/polygon-logo.svg';
 import {formatCurrency} from '../../lib/format';
@@ -12,10 +12,7 @@ import {
     zkpTokenBalanceSelector,
 } from '../../redux/slices/zkpTokenBalance';
 import {formatAccountAddress} from '../../services/account';
-import {
-    onWrongFaucetNetwork,
-    supportedNetworks,
-} from '../../services/connectors';
+import {isWrongNetwork, supportedNetworks} from '../../services/connectors';
 import {FAUCET_CHAIN_IDS} from '../../services/env';
 import {sendFaucetTransaction} from '../../services/faucet';
 import PrimaryActionButton from '../Common/PrimaryActionButton';
@@ -26,7 +23,7 @@ import './styles.scss';
 
 function ZafariFaucet() {
     const context = useWeb3React();
-    const {library, account, active, error, chainId} = context;
+    const {library, account, active, chainId} = context;
     const [wrongNetwork, setWrongNetwork] = useState(false);
 
     const dispatch = useAppDispatch();
@@ -40,19 +37,9 @@ function ZafariFaucet() {
     }, [dispatch, context, tokenBalance]);
 
     useEffect((): void => {
-        const wrongNetwork =
-            onWrongFaucetNetwork(context) ||
-            error instanceof UnsupportedChainIdError;
+        const wrongNetwork = isWrongNetwork(context, FAUCET_CHAIN_IDS);
         setWrongNetwork(wrongNetwork);
-        console.debug(
-            'header: wrongNetwork',
-            wrongNetwork,
-            '/ active',
-            active,
-            '/ error',
-            error,
-        );
-    }, [context, active, account, error]);
+    }, [context]);
 
     useEffect(() => {
         if (!library || !account || !chainId) {

@@ -1,7 +1,5 @@
 @import '../../variables';
 
-$link-color: #ffdfbd;
-
 .contracts-page-container {
     .table-title {
         color: $white;
@@ -15,7 +13,7 @@ $link-color: #ffdfbd;
 
     .contract-address {
         a {
-            color: $link-color;
+            color: #ffdfbd;
         }
     }
 

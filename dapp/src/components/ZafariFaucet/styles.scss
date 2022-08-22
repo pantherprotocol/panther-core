@@ -1,16 +1,10 @@
 @import '../../variables.scss';
 
-$zafari-faucet-container-background: rgba(43, 51, 65, 0.5);
-$zafari-faucet-container-border-color: #485267;
-$welcome-message-color: #d2d2d2;
-$details-card-background: rgba(99, 114, 136, 0.2);
-$token-symbol-color: #ffdfbd;
-
 .zafari-faucet-container {
     box-sizing: border-box;
-    background: $zafari-faucet-container-background !important;
+    background: rgba(43, 51, 65, 0.5) !important;
     mix-blend-mode: normal;
-    border: 1.5px solid $zafari-faucet-container-border-color;
+    border: 1.5px solid #485267;
     backdrop-filter: blur(50px);
     border-radius: 16px !important;
     display: inline-block;
@@ -32,7 +26,7 @@ $token-symbol-color: #ffdfbd;
         display: flex;
         align-items: center;
         text-align: center;
-        color: $welcome-message-color;
+        color: #d2d2d2;
         margin-top: 30px;
         margin-bottom: 50px;
 
@@ -44,7 +38,7 @@ $token-symbol-color: #ffdfbd;
 
     .details {
         box-sizing: border-box;
-        background: $details-card-background;
+        background: rgba(99, 114, 136, 0.2);
         mix-blend-mode: normal;
         backdrop-filter: blur(40px);
         border-radius: 14px;
@@ -64,7 +58,7 @@ $token-symbol-color: #ffdfbd;
             }
 
             #token-symbol {
-                color: $token-symbol-color;
+                color: #ffdfbd;
             }
 
             #polygon-icon {

@@ -1,7 +1,5 @@
 @import '../../../variables';
 
-$account-balance-background: rgba(120, 154, 205, 0.2);
-
 .address-and-balance-holder {
     .account-balance {
         display: flex;
@@ -15,7 +13,7 @@ $account-balance-background: rgba(120, 154, 205, 0.2);
         margin: 0 20px;
         height: 35px;
         min-width: 115px;
-        background: $account-balance-background;
+        background: rgba(120, 154, 205, 0.2);
         border-radius: 8px;
 
         .currency-symbol {

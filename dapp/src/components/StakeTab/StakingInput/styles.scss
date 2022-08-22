@@ -1,6 +1,4 @@
 @import '../../../variables';
-$staking-input-container-color: #3f4a5f;
-$staking-input-max-button-background: #1e2539;
 
 .staking-input-header {
     display: flex;
@@ -44,7 +42,7 @@ $staking-input-max-button-background: #1e2539;
     align-items: center;
     justify-content: space-between;
     padding: 16px;
-    border: 1px solid $staking-input-container-color;
+    border: 1px solid #3f4a5f;
     border-radius: 15px;
 
     .staking-input-max {
@@ -54,7 +52,7 @@ $staking-input-max-button-background: #1e2539;
         cursor: pointer;
         line-height: initial;
         margin: 0 10px;
-        background: $staking-input-max-button-background;
+        background: #1e2539;
         border-radius: 18px;
         padding: 7px 10px;
     }

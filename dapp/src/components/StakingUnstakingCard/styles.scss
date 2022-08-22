@@ -1,20 +1,13 @@
 @import '../../variables';
 
-$advanced-balance-card-holder-background: linear-gradient(
-        180deg,
-        rgba(152, 195, 245, 0.05) 0%,
-        rgba(152, 195, 245, 0) 72%
-    ),
-    rgba(164, 183, 219, 0.1);
-$advanced-balance-card-holder-border-color: 1px solid rgba(102, 141, 198, 0.4);
-$toggle-buttons-background: rgba(99, 114, 136, 0.2);
-$selected-toggle-button-background: rgba(99, 114, 136, 0.4);
-$selected-toggle-button-color: #1e2539;
-$selected-toggle-button-hover-color: #1e2539;
-
 .advanced-balance-card-holder {
-    background: $advanced-balance-card-holder-background;
-    border: 1px solid $advanced-balance-card-holder-border-color;
+    background: linear-gradient(
+            180deg,
+            rgba(152, 195, 245, 0.05) 0%,
+            rgba(152, 195, 245, 0) 72%
+        ),
+        rgba(164, 183, 219, 0.1);
+    border: 1px solid 1px solid rgba(102, 141, 198, 0.4);
     mix-blend-mode: normal;
     box-sizing: border-box;
     box-shadow: 0px 3.58957px 13.4609px rgba(0, 0, 0, 0.25);
@@ -35,20 +28,20 @@ $selected-toggle-button-hover-color: #1e2539;
     .MuiToggleButtonGroup-root {
         display: inline-flex;
         justify-content: center;
-        background: $toggle-buttons-background;
+        background: rgba(99, 114, 136, 0.2);
         mix-blend-mode: normal;
         backdrop-filter: blur(50px);
         border-radius: 13px;
 
         .Mui-selected {
             border-radius: 13px !important;
-            background-color: $selected-toggle-button-color;
+            background-color: #1e2539;
             border-left: 2px solid $color-beige !important;
             border: 2px solid $color-beige !important;
             opacity: 1;
 
             &:hover {
-                background: $selected-toggle-button-hover-color;
+                background: #1e2539;
             }
         }
 

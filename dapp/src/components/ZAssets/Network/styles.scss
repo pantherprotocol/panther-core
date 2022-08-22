@@ -1,7 +1,5 @@
 @import '../../../variables.scss';
 
-$network-logo-background-color: #232d46;
-
 .asset-network {
     display: flex;
     justify-content: space-between;
@@ -14,7 +12,7 @@ $network-logo-background-color: #232d46;
 
     .network-logo {
         padding: 7px 7px 1px 7px;
-        background-color: $network-logo-background-color;
+        background-color: #232d46;
         border-radius: 8px;
         margin-right: 5px;
     }

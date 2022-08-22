@@ -1,11 +1,5 @@
 @import '../../variables.scss';
 
-$progress-foreground-color: linear-gradient(
-    92.53deg,
-    $color-beige 0%,
-    #d0a7a8 95.77%
-);
-
 .claimed-progress-container {
     .claimed-progress {
         display: flex;
@@ -35,7 +29,11 @@ $progress-foreground-color: linear-gradient(
                     height: 3px;
                     top: 2px;
                     left: 2px;
-                    background: $progress-foreground-color;
+                    background: linear-gradient(
+                        92.53deg,
+                        $color-beige 0%,
+                        #d0a7a8 95.77%
+                    );
                     border-radius: 13px;
                     animation: none;
                 }

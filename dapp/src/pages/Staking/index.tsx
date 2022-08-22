@@ -36,7 +36,7 @@ const Staking = (): React.ReactElement => {
         dispatch(getZkpTokenBalance, context);
         dispatch(getZkpStakedBalance, context);
         dispatch(getTotalUnclaimedClassicRewards, context);
-        dispatch(getAdvancedStakesRewards, context);
+        dispatch(getAdvancedStakesRewards, {context});
         dispatch(getStakeTerms, context);
         dispatch(getRemainingPrpRewards);
     }, [context, dispatch]);

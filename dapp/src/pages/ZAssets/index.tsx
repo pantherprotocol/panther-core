@@ -23,7 +23,7 @@ export default function ZAssets(): React.ReactElement {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        dispatch(getAdvancedStakesRewards, context);
+        dispatch(getAdvancedStakesRewards, {context});
         if (chainId === MASP_CHAIN_ID) {
             dispatch(getPoolV0ExitTime, context);
         }

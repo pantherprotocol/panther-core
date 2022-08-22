@@ -1,8 +1,9 @@
 import * as React from 'react';
+import {useState} from 'react';
 
 import {Box, Input, InputAdornment, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 
 import logo from '../../../images/panther-logo.svg';
 import {formatCurrency} from '../../../lib/format';
@@ -23,6 +24,7 @@ export default function StakingInput(props: {
     const context = useWeb3React();
     const {account, chainId} = context;
 
+    const [inputTextLength, setInputTextLength] = useState<number>(0);
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const isStakingOpen = useAppSelector(
         isStakingOpenSelector(chainId, StakeType.Advanced),
@@ -32,10 +34,7 @@ export default function StakingInput(props: {
     const network = currentNetwork(chainId);
 
     const changeHandler = (e: any) => {
-        const inputTextLength = e.target.value.length;
-        if (inputTextLength > 12) {
-            return;
-        }
+        setInputTextLength(e.target.value.length);
 
         const regex = /^\d*\.?\d*$/; // matches floating points numbers
         if (!regex.test(e.target.value)) {
@@ -87,8 +86,14 @@ export default function StakingInput(props: {
             <Box className="staking-input-container">
                 <Box className="staking-input-box">
                     <Input
-                        inputProps={{pattern: '[0-9.]*', inputMode: 'decimal'}}
-                        className="staking-input"
+                        inputProps={{
+                            pattern: '[0-9.]*',
+                            inputMode: 'decimal',
+                            maxLength: 28,
+                        }}
+                        className={`staking-input ${
+                            Math.floor(inputTextLength / 15) ? 'long-input' : ''
+                        }`}
                         value={props.amountToStake}
                         onChange={changeHandler}
                         autoComplete="off"
@@ -122,6 +127,9 @@ export default function StakingInput(props: {
                     onClick={() => {
                         if (tokenBalance) {
                             props.setStakingAmountBN(tokenBalance);
+                            setInputTextLength(
+                                utils.formatEther(tokenBalance).length,
+                            );
                         }
                     }}
                 >

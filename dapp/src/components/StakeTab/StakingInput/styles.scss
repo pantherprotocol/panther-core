@@ -67,6 +67,10 @@ $staking-input-max-button-background: #1e2539;
         color: white;
         padding: 0px 15px;
         width: 100%;
+
+        &.long-input {
+            font-size: $header-font-size;
+        }
     }
 
     input {

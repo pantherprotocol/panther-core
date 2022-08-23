@@ -16,6 +16,7 @@ import advancedStakesRewardsReducer from './slices/advancedStakesRewards';
 import blurReducer from './slices/blur';
 import chainBalanceReducer from './slices/chainBalance';
 import firstVisitReducer from './slices/isFirstVisit';
+import isWalletConnectedReducer from './slices/isWalletConnected';
 import poolV0Reducer from './slices/poolV0';
 import remainingPrpRewardsReducer from './slices/remainingPrpRewards';
 import stakeTermsReducer from './slices/stakeTerms';
@@ -29,7 +30,7 @@ import zkpTokenBalanceReducer from './slices/zkpTokenBalance';
 const rootPersistConfig = {
     key: 'root',
     storage: storage,
-    whitelist: ['advancedStakesRewards', 'firstVisit'],
+    whitelist: ['advancedStakesRewards', 'firstVisit', 'isWalletConnected'],
 };
 const rootReducer = combineReducers({
     advancedStakesRewards: advancedStakesRewardsReducer,
@@ -45,6 +46,7 @@ const rootReducer = combineReducers({
     totalUnclaimedClassicRewards: totalUnclaimedClassicRewardsReducer,
     firstVisit: firstVisitReducer,
     Web3WalletLastAction: Web3WalletLastActionReducer,
+    isWalletConnected: isWalletConnectedReducer,
     remainingPrpRewards: remainingPrpRewardsReducer,
 });
 

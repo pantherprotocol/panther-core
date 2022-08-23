@@ -3,6 +3,7 @@ import React, {useCallback} from 'react';
 import {useWeb3React} from '@web3-react/core';
 
 import {useAppDispatch} from '../../redux/hooks';
+import {disconnectWallet} from '../../redux/slices/isWalletConnected';
 import {resetUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
 import {resetZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {resetZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
@@ -19,6 +20,7 @@ export const LogoutButton = () => {
             dispatch(resetZkpTokenBalance);
             dispatch(resetZkpStakedBalance);
             dispatch(resetUnclaimedClassicRewards);
+            dispatch(disconnectWallet);
         }
     }, [active, chainId, deactivate, dispatch]);
 

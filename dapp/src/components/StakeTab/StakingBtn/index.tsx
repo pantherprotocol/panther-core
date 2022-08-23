@@ -6,7 +6,7 @@ import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 
 import {formatCurrency} from '../../../lib/format';
-import {useAppDispatch} from '../../../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/advancedStakesRewards';
 import {getChainBalance} from '../../../redux/slices/chainBalance';
 import {getTotalsOfAdvancedStakes} from '../../../redux/slices/totalsOfAdvancedStakes';
@@ -18,6 +18,8 @@ import {
     progressToNewWalletAction,
     registerWalletActionSuccess,
     WalletActionTrigger,
+    walletActionCauseSelector,
+    walletActionStatusSelector,
 } from '../../../redux/slices/web3WalletLastAction';
 import {getZkpStakedBalance} from '../../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../../redux/slices/zkpTokenBalance';
@@ -97,18 +99,29 @@ const StakingBtn = (props: {
         minStake,
         tokenBalance,
     );
-    const activeClass = ready ? 'active' : '';
+
+    const walletActionCause = useAppSelector(walletActionCauseSelector);
+    const walletActionStatus = useAppSelector(walletActionStatusSelector);
+
+    const anotherStakingInProgress =
+        walletActionCause?.trigger === 'stake' &&
+        walletActionStatus === 'in progress';
+
+    const canStake = ready && !anotherStakingInProgress;
+    const activeClass = canStake ? 'active' : '';
 
     const stake = useCallback(
         async (amount: BigNumber, trigger: WalletActionTrigger) => {
             if (!chainId || !account || !tokenBalance) {
                 return;
             }
+
             dispatch(startWalletAction, {
                 name: 'signMessage',
                 cause: {caller: 'StakeTab', trigger},
                 data: {account},
             } as StartWalletActionPayload);
+
             const signer = library.getSigner(account);
             const keys = await deriveRootKeypairs(signer);
             if (keys instanceof Error) {
@@ -188,6 +201,7 @@ const StakingBtn = (props: {
                         stake(amountToStakeBN, 'stake');
                     }
                 }}
+                disabled={!canStake}
             >
                 {buttonText}
             </Button>

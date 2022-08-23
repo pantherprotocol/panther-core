@@ -80,9 +80,7 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
         return
             uint160(
                 uint256(
-                    keccak256(
-                        abi.encode(uint256(uint160(token)), uint256(subId))
-                    )
+                    keccak256(abi.encode(uint256(uint160(token)), subId))
                 ) >> 96
             );
     }

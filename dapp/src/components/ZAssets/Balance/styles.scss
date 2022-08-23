@@ -1,7 +1,5 @@
 @import '../../../variables';
 
-$asset-balance-price-color: #aeaeae;
-
 .asset-balance {
     display: flex;
     flex-direction: column;
@@ -17,7 +15,7 @@ $asset-balance-price-color: #aeaeae;
         color: $white;
 
         span {
-            color: $asset-balance-price-color;
+            color: #aeaeae;
             padding-left: 5px;
         }
     }

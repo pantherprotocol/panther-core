@@ -1,10 +1,4 @@
 @import '../../variables.scss';
-$welcome-title-background-color: linear-gradient(
-    92.53deg,
-    #ffdfbd 0%,
-    #d0a7a8 95.77%
-);
-$link-color: #ffdfbd;
 
 .welcome-container {
     .welcome-holder {
@@ -25,7 +19,7 @@ $link-color: #ffdfbd;
             font-weight: 700;
             font-size: 29px;
             line-height: 42px;
-            background: $welcome-title-background-color;
+            background: linear-gradient(92.53deg, #ffdfbd 0%, #d0a7a8 95.77%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -42,7 +36,7 @@ $link-color: #ffdfbd;
             a {
                 padding: 0 5px;
 
-                color: $link-color;
+                color: #ffdfbd;
             }
         }
 

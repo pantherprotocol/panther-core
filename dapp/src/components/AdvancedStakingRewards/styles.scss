@@ -1,14 +1,10 @@
 @import '../../variables.scss';
 
-$advanced-staking-rewards-background: rgba(202, 223, 255, 0.1);
-
-$remaining-days-card-background: rgba(99, 114, 136, 0.2);
-$remaining-days-text-color: $color-beige;
 .advanced-staking-rewards {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    background: $advanced-staking-rewards-background;
+    background: rgba(202, 223, 255, 0.1);
     border-radius: 15px;
     margin-bottom: 15px;
 
@@ -18,7 +14,7 @@ $remaining-days-text-color: $color-beige;
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        background: $remaining-days-card-background;
+        background: rgba(99, 114, 136, 0.2);
         border-radius: 15px;
         width: 180px;
         height: 76px;
@@ -42,7 +38,7 @@ $remaining-days-text-color: $color-beige;
         .text {
             font-weight: $normal-font-weight;
             font-size: $small-font-size;
-            color: $remaining-days-text-color;
+            color: $color-beige;
         }
     }
 }

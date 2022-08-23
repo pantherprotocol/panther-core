@@ -1,8 +1,7 @@
 @import '../../../variables';
-$main-balance-card-background: linear-gradient(0deg, #3f4a5f, #3f4a5f);
 
 .total-balance {
-    background: $main-balance-card-background;
+    background: linear-gradient(0deg, #3f4a5f, #3f4a5f);
     border-radius: 8px;
     padding: 10px 10px 10px 25px;
 

@@ -1,11 +1,5 @@
 @import '../../../variables';
 
-$total-rewards-earned-amount-background: linear-gradient(
-    92.53deg,
-    $color-beige 0%,
-    #d0a7a8 95.77%
-);
-
 .total-unclaimed-container {
     display: flex;
     justify-content: center;
@@ -40,7 +34,11 @@ $total-rewards-earned-amount-background: linear-gradient(
             margin-left: 10px;
             font-weight: $bold-font-weight;
             font-size: $small-font-size;
-            background: $total-rewards-earned-amount-background;
+            background: linear-gradient(
+                92.53deg,
+                $color-beige 0%,
+                #d0a7a8 95.77%
+            );
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;

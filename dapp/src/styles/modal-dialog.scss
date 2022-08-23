@@ -1,14 +1,10 @@
-$dialog-border-box-shadow: rgba(0, 0, 0, 0.25);
-$dialog-border-color: rgba(102, 141, 198, 0.4);
-$modal-back: #151c2a;
-
 .modal-dialog {
     .MuiPaper-root.MuiDialog-paper {
         backdrop-filter: blur(1000px);
-        background: $modal-back;
-        border: 1px solid $dialog-border-color;
+        background: #151c2a;
+        border: 1px solid rgba(102, 141, 198, 0.4);
         border-radius: 15px;
-        box-shadow: 0px 4px 14px $dialog-border-box-shadow;
+        box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.25);
         mix-blend-mode: normal;
         padding: 15px 10px;
     }

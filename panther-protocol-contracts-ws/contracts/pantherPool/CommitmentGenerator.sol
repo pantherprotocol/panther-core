@@ -11,13 +11,13 @@ abstract contract CommitmentGenerator {
     /// Generate UTXOs, these UTXOs will be used later
     /// @param pubSpendingKeyX Public Spending Key for every UTXO - 256 bit - used in circom
     /// @param pubSpendingKeyY Public Spending Key for every UTXO - 256 bit - used in circom
-    /// @param scaledAmount 120 bit size - used in circom
+    /// @param scaledAmount 96 bit size - used in circom
     /// @param zAssetId 160 bit size - used in circom
     /// @param creationTime 32 bit size - used in circom
     function generateCommitment(
         uint256 pubSpendingKeyX,
         uint256 pubSpendingKeyY,
-        uint120 scaledAmount,
+        uint96 scaledAmount,
         uint160 zAssetId,
         uint32 creationTime
     ) internal pure returns (bytes32 commitment) {

@@ -138,3 +138,26 @@ export async function saveHistoricalData(
         throw `Controller was not initialized after saving historical data`;
     }
 }
+
+export async function updateZkpAndPrpRewardsLimit(
+    advController: AdvancedStakeRewardController,
+) {
+    console.log('Updating ZKP and PRP rewards limit...');
+
+    const tx = await advController.updateZkpAndPrpRewardsLimit();
+    const receipt = await tx.wait();
+
+    console.log('Transaction confirmed:', receipt);
+}
+
+export async function setNftRewardLimit(
+    advController: AdvancedStakeRewardController,
+    desiredNftRewardsLimit: string | number,
+) {
+    console.log('Updating NFT rewards limit...');
+
+    const tx = await advController.setNftRewardLimit(desiredNftRewardsLimit);
+    const receipt = await tx.wait();
+
+    console.log('Transaction confirmed:', receipt);
+}

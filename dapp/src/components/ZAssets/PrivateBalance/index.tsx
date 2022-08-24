@@ -165,7 +165,7 @@ export default function PrivateBalance() {
         showWalletActionInProgressSelector('signMessage'),
     );
 
-    const amount = totalPrice && formatCurrency(totalPrice, {decimals: 3});
+    const amount = totalPrice && formatCurrency(totalPrice, {decimals: 2});
     const [whole, fractional] = amount ? splitFloatNumber(amount) : [];
 
     return (

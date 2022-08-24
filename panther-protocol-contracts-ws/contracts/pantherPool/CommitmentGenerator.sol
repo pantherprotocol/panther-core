@@ -17,7 +17,7 @@ abstract contract CommitmentGenerator {
     function generateCommitment(
         uint256 pubSpendingKeyX,
         uint256 pubSpendingKeyY,
-        uint96 scaledAmount,
+        uint120 scaledAmount,
         uint160 zAssetId,
         uint32 creationTime
     ) internal pure returns (bytes32 commitment) {

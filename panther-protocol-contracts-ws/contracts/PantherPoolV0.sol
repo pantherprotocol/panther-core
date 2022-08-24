@@ -171,7 +171,7 @@ contract PantherPoolV0 is
                 commitments[utxoIndex] = generateCommitment(
                     pubSpendingKeys[utxoIndex].x,
                     pubSpendingKeys[utxoIndex].y,
-                    uint96(scaledAmount),
+                    scaledAmount,
                     zAssetId,
                     timestamp
                 );

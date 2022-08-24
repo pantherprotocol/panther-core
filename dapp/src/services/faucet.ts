@@ -1,11 +1,14 @@
 import {BigNumber, utils} from 'ethers';
 
+import {notifyError} from '../components/Common/errors';
+import {
+    openNotification,
+    removeNotification,
+} from '../components/Common/notification';
 import {CONFIRMATIONS_NUM} from '../lib/constants';
 import {parseTxErrorMessage} from '../lib/errors';
 
 import {getFaucetContract, getSignableContract} from './contracts';
-import {notifyError} from './errors';
-import {openNotification, removeNotification} from './notification';
 
 export async function sendFaucetTransaction(
     library: any,

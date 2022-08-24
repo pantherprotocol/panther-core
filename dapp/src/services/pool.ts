@@ -12,6 +12,11 @@ import poseidon from 'circomlibjs/src/poseidon';
 import {utils, Contract, BigNumber} from 'ethers';
 import {AdvancedStakeRewards, UTXOStatus} from 'staking';
 
+import {notifyError} from '../components/Common/errors';
+import {
+    openNotification,
+    removeNotification,
+} from '../components/Common/notification';
 import {CONFIRMATIONS_NUM} from '../lib/constants';
 import {parseTxErrorMessage} from '../lib/errors';
 import {getEventFromReceipt} from '../lib/events';
@@ -24,11 +29,9 @@ import {
     getZAssetsRegistryContract,
 } from './contracts';
 import {env} from './env';
-import {notifyError} from './errors';
 import {safeFetch} from './http';
 import {deriveSpendingChildKeypair} from './keychain';
 import {decryptRandomSecret as decryptRandomSecret} from './message-encryption';
-import {openNotification, removeNotification} from './notification';
 
 export async function getExitTime(
     library: any,

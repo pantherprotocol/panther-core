@@ -7,7 +7,12 @@ import {fromRpcSig} from 'ethereumjs-util';
 import type {ContractTransaction} from 'ethers';
 import {BigNumber, constants, utils} from 'ethers';
 
+import {notifyError} from '../components/Common/errors';
 import {MessageWithTx} from '../components/Common/MessageWithTx';
+import {
+    openNotification,
+    removeNotification,
+} from '../components/Common/notification';
 import {CONFIRMATIONS_NUM} from '../lib/constants';
 import {parseTxErrorMessage} from '../lib/errors';
 import {getEventFromReceipt} from '../lib/events';
@@ -36,10 +41,8 @@ import {
     getAdvancedStakeRewardControllerContract,
 } from './contracts';
 import {env, MASP_CHAIN_ID} from './env';
-import {notifyError} from './errors';
 import axios from './http';
 import {encryptRandomSecret} from './message-encryption';
-import {openNotification, removeNotification} from './notification';
 import {calculateRewardsForStake} from './rewards';
 import {
     AdvancedStakeRewardsResponse,

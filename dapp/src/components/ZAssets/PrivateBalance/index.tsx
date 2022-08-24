@@ -30,9 +30,9 @@ import {
     walletActionStatusSelector,
 } from '../../../redux/slices/web3WalletLastAction';
 import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
-import {notifyError} from '../../../services/errors';
 import {deriveRootKeypairs} from '../../../services/keychain';
 import {StakingRewardTokenID} from '../../../types/staking';
+import {notifyError} from '../../Common/errors';
 import SignatureRequestModal from '../../SignatureRequestModal';
 
 import './styles.scss';

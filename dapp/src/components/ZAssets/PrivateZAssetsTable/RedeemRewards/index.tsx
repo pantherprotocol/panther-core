@@ -18,10 +18,10 @@ import {
     StartWalletActionPayload,
 } from '../../../../redux/slices/web3WalletLastAction';
 import {env} from '../../../../services/env';
-import {notifyError} from '../../../../services/errors';
 import {deriveRootKeypairs} from '../../../../services/keychain';
 import {exit} from '../../../../services/pool';
 import {UTXOStatus, AdvancedStakeRewards} from '../../../../types/staking';
+import {notifyError} from '../../../Common/errors';
 import RedeemRewardsWarningDialog from '../RedeemRewardsWarningDialog';
 
 import './styles.scss';

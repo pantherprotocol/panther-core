@@ -6,7 +6,7 @@ import metamaskIcon from '../../images/meta-mask-icon.svg';
 import logo from '../../images/panther-logo.svg';
 import {DECIMALS} from '../../lib/constants';
 import {getTokenContract} from '../../services/contracts';
-import {openNotification} from '../../services/notification';
+import {openNotification} from '../Common/notification';
 import {WalletHeaderActionButton} from '../Common/WalletHeaderActionButton';
 
 export const AddTokenButton = () => {

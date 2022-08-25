@@ -1,24 +1,26 @@
 import React from 'react';
 
-import {Box} from '@mui/material';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import {Box, Tooltip} from '@mui/material';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 import Address from '../../Address';
 
 import './styles.scss';
 
-export default function AddressWithSetting() {
+export default function AddressWithSetting(props: {account: string}) {
     return (
         <Box className="address-with-setting">
             <Box className="address">
                 <Address />
             </Box>
-            {/*<Box className="setting-icon">
-                <Tooltip title="Settings" placement="top">
-                    <IconButton>
-                        <img src={settingIcon} />
-                    </IconButton>
-                </Tooltip>
-            </Box>*/}
+            <Tooltip title="Copy Wallet Address" placement="top">
+                <span>
+                    <CopyToClipboard text={props.account}>
+                        <ContentCopyIcon className="content-copy-icon" />
+                    </CopyToClipboard>
+                </span>
+            </Tooltip>
         </Box>
     );
 }

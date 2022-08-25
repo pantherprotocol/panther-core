@@ -13,28 +13,23 @@ import {
     totalClaimedRewardsSelector,
     totalVestedRewardsSelector,
 } from '../../redux/slices/totalsOfAdvancedStakes';
-import {chainHasAdvancedStaking} from '../../services/contracts';
 import {getAdvStakingAPY} from '../../services/rewards';
 import {StakeType} from '../../types/staking';
 
 import './styles.scss';
 
 function AdvancedStakingRewards() {
-    const context = useWeb3React();
-    const {chainId} = context;
-
     const claimed = useAppSelector(totalClaimedRewardsSelector);
     const total = useAppSelector(totalVestedRewardsSelector);
     const advancedStakingAPY = getAdvStakingAPY(new Date().getTime());
 
     return (
         <Box className="advanced-staking-rewards">
-            {chainHasAdvancedStaking(chainId) && (
-                <ClaimedProgress
-                    claimed={claimed ? Number(utils.formatEther(claimed)) : 0}
-                    total={total ? Number(utils.formatEther(total)) : 0}
-                />
-            )}
+            <ClaimedProgress
+                claimed={claimed ? Number(utils.formatEther(claimed)) : 0}
+                total={total ? Number(utils.formatEther(total)) : 0}
+            />
+
             <RemainingDays />
             {advancedStakingAPY && (
                 <StakingAPR advancedStakingAPY={advancedStakingAPY} />

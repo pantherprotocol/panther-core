@@ -7,10 +7,8 @@ import {useWeb3React} from '@web3-react/core';
 
 import AdvancedStakingRewards from '../../components/AdvancedStakingRewards';
 import BalanceCard from '../../components/BalanceCard';
-import CurrentStakeAPY from '../../components/CurrentStakeAPY';
 import {MainPageWrapper} from '../../components/MainPageWrapper';
 import StakingUnstakingCard from '../../components/StakingUnstakingCard';
-import TotalStakedCard from '../../components/TotalStakedCard';
 import Welcome from '../../components/Welcome';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
@@ -21,14 +19,12 @@ import {getTotalsOfAdvancedStakes} from '../../redux/slices/totalsOfAdvancedStak
 import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
-import {chainHasAdvancedStaking} from '../../services/contracts';
 
 import './styles.scss';
 
 const Staking = (): React.ReactElement => {
     const context = useWeb3React();
     const dispatch = useAppDispatch();
-    const {chainId} = context;
 
     useEffect(() => {
         dispatch(getTotalsOfAdvancedStakes, context);
@@ -70,7 +66,6 @@ const Staking = (): React.ReactElement => {
                             <Grid item xs={12} md={5}>
                                 <Box width={'100%'}>
                                     <BalanceCard />
-                                    <TotalStakedCard />
                                 </Box>
                             </Grid>
                             <Grid
@@ -80,11 +75,7 @@ const Staking = (): React.ReactElement => {
                                 className="apy-staking-right-panel"
                             >
                                 <Box width={'100%'}>
-                                    {chainHasAdvancedStaking(chainId) ? (
-                                        <AdvancedStakingRewards />
-                                    ) : (
-                                        <CurrentStakeAPY />
-                                    )}
+                                    <AdvancedStakingRewards />
                                     <StakingUnstakingCard />
                                 </Box>
 

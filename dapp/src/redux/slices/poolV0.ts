@@ -3,6 +3,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
 import * as pool from '../../services/pool';
+import {createExtraReducers, LoadingStatus} from '../slices/shared';
 import {RootState} from '../store';
 
 // TODO: index exitTime by chainId, so that we can add to the Redux persist
@@ -13,7 +14,7 @@ import {RootState} from '../store';
 // the exit time.
 interface PoolV0ExitTimeState {
     value: number | null;
-    status: 'idle' | 'loading' | 'failed';
+    status: LoadingStatus;
 }
 
 const initialState: PoolV0ExitTimeState = {
@@ -40,18 +41,7 @@ const poolV0Slice = createSlice({
     initialState,
     reducers: {},
     extraReducers: builder => {
-        builder
-            .addCase(getExitTime.pending, state => {
-                state.status = 'loading';
-            })
-            .addCase(getExitTime.fulfilled, (state, action) => {
-                state.status = 'idle';
-                state.value = action.payload;
-            })
-            .addCase(getExitTime.rejected, state => {
-                state.status = 'failed';
-                state.value = null;
-            });
+        createExtraReducers({builder, asyncThunk: getExitTime});
     },
 });
 

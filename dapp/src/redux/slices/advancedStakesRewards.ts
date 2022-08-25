@@ -14,6 +14,7 @@ import {
     AdvancedStakeTokenIDs,
     UTXOStatus,
 } from '../../types/staking';
+import {LoadingStatus} from '../slices/shared';
 import {RootState} from '../store';
 
 interface AdvancedStakeRewardsById {
@@ -27,8 +28,6 @@ interface AdvancedStakeRewardsByChainId {
 interface AdvancedStakeRewardsByShortAddress {
     [addressHex: string]: AdvancedStakeRewardsById;
 }
-
-type LoadingStatus = 'idle' | 'loading' | 'failed';
 
 interface AdvancedStakesRewardsState {
     value: AdvancedStakeRewardsByChainId;

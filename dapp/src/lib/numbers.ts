@@ -29,3 +29,7 @@ export function safeParseUnits(s: string | null): BigNumber | null {
 export function bnStrToNumber(bnStr: string) {
     return BigNumber.from(bnStr).toNumber();
 }
+
+export function safeParseStringToBN(value: string | null): BigNumber | null {
+    return value ? BigNumber.from(value) : null;
+}

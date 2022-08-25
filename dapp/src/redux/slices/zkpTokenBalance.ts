@@ -2,22 +2,17 @@ import {BigNumber} from '@ethersproject/bignumber';
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
-import {constants} from 'ethers';
 
 import {formatCurrency} from '../../lib/format';
-import {formatEther} from '../../lib/numbers';
+import {formatEther, safeParseStringToBN} from '../../lib/numbers';
 import {fiatPrice} from '../../lib/tokenPrice';
 import * as accountService from '../../services/account';
 import {RootState} from '../store';
 
-interface ZkpTokenBalanceState {
-    value: string | null;
-    status: 'idle' | 'loading' | 'failed';
-}
-const initialState: ZkpTokenBalanceState = {
-    value: null,
-    status: 'idle',
-};
+import {BalanceState, createExtraReducers, initialBalanceState} from './shared';
+import {marketPriceSelector} from './zkpMarketPrice';
+
+const initialState: BalanceState = initialBalanceState;
 
 export const getZkpTokenBalance = createAsyncThunk(
     'balance/getTokenBalance',
@@ -47,45 +42,40 @@ export const tokenBalanceSlice = createSlice({
         },
     },
     extraReducers: builder => {
-        builder
-            .addCase(getZkpTokenBalance.pending, state => {
-                state.status = 'loading';
-            })
-            .addCase(getZkpTokenBalance.fulfilled, (state, action) => {
-                state.status = 'idle';
-                state.value = action.payload;
-            })
-            .addCase(getZkpTokenBalance.rejected, state => {
-                state.status = 'failed';
-                state.value = null;
-            });
+        createExtraReducers({
+            builder,
+            asyncThunk: getZkpTokenBalance,
+        });
     },
 });
 
 export const zkpTokenBalanceSelector = (state: RootState) =>
-    state.zkpTokenBalance.value
-        ? BigNumber.from(state.zkpTokenBalance.value)
-        : null;
+    safeParseStringToBN(state.zkpTokenBalance.value);
 
 export const zkpUnstakedUSDMarketPriceSelector = (
     state: RootState,
 ): BigNumber | null => {
-    const price = state.zkpMarketPrice.value
-        ? BigNumber.from(state.zkpMarketPrice.value)
-        : null;
-    const balance = state.zkpTokenBalance.value
-        ? BigNumber.from(state.zkpTokenBalance.value)
-        : null;
-    let tokenUSDMarketPrice: BigNumber | null = null;
-    if (price && balance && balance.gte(constants.Zero)) {
-        tokenUSDMarketPrice = fiatPrice(balance, price);
-        console.debug(
-            'tokenBalance:',
-            formatEther(balance),
-            `(USD \$${formatCurrency(tokenUSDMarketPrice)})`,
-        );
+    const price = marketPriceSelector(state);
+    const balance = zkpTokenBalanceSelector(state);
+
+    if (!price) {
+        console.warn('unalbe to get zkp market price from oracles');
+        return null;
     }
+
+    if (!balance) {
+        console.warn('unalbe to get ZKP token balance');
+        return null;
+    }
+
+    const tokenUSDMarketPrice: BigNumber | null = fiatPrice(balance, price);
+    console.debug(
+        'tokenBalance:',
+        formatEther(balance),
+        `(USD \$${formatCurrency(tokenUSDMarketPrice)})`,
+    );
     return tokenUSDMarketPrice;
 };
+
 export const {resetZkpTokenBalance} = tokenBalanceSlice.actions;
 export default tokenBalanceSlice.reducer;

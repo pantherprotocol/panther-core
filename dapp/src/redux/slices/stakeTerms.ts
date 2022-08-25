@@ -5,6 +5,7 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {getStakingTermsFromContract} from '../../services/staking';
 import type {IStakingTypes} from '../../types/contracts/Staking';
 import {StakeType, StakeTypes} from '../../types/staking';
+import {createExtraReducers, LoadingStatus} from '../slices/shared';
 import {RootState} from '../store';
 
 type StakeTermsByType = {
@@ -15,7 +16,7 @@ type StakeTermsByChainIdAndType = {
     [key in number]: StakeTermsByType;
 };
 
-type StakeTypeStatus = 'idle' | 'loading' | 'failed';
+type StakeTypeStatus = LoadingStatus;
 
 interface StakeTermsState {
     value: StakeTermsByChainIdAndType | null;
@@ -56,18 +57,7 @@ export const stakeTermsSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: builder => {
-        builder
-            .addCase(getStakeTerms.pending, state => {
-                state.status = 'loading';
-            })
-            .addCase(getStakeTerms.fulfilled, (state, action) => {
-                state.status = 'idle';
-                state.value = action.payload;
-            })
-            .addCase(getStakeTerms.rejected, state => {
-                state.status = 'failed';
-                state.value = null;
-            });
+        createExtraReducers({builder, asyncThunk: getStakeTerms});
     },
 });
 

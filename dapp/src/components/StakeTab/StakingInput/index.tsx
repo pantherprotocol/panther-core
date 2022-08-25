@@ -72,14 +72,12 @@ export default function StakingInput(props: {amountToStake: string | null}) {
     return (
         <>
             <Box className="staking-input-header">
-                <Typography
-                    className="amount-to-stake-caption"
-                    variant="subtitle2"
-                    component="span"
-                >
-                    Amount to stake
-                </Typography>
-                <span>
+                <Box className="amount-to-stake">
+                    <Typography className="amount-to-stake-caption">
+                        Amount to stake:
+                    </Typography>
+                </Box>
+                <Box className="available-to-stake">
                     <Typography
                         className="available-to-stake-caption"
                         variant="subtitle2"
@@ -88,20 +86,15 @@ export default function StakingInput(props: {amountToStake: string | null}) {
                         Available to stake:
                     </Typography>
                     <Typography
-                        className="token-balance"
+                        className="available-to-stake-token-balance"
                         variant="subtitle2"
                         component="span"
                     >
-                        {tokenBalance ? formatCurrency(tokenBalance) : '-'}
+                        {tokenBalance
+                            ? formatCurrency(tokenBalance) + ' ZKP'
+                            : '-'}
                     </Typography>
-                    <Typography
-                        className="token-balance"
-                        variant="subtitle2"
-                        component="span"
-                    >
-                        ZKP
-                    </Typography>
-                </span>
+                </Box>
             </Box>
             <Box className="staking-input-container">
                 <Box className="staking-input-box">

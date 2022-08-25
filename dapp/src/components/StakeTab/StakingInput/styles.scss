@@ -2,36 +2,37 @@
 
 .staking-input-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     margin: 10px 0;
 
-    .amount-to-stake-caption {
-        color: white;
-        font-weight: $normal-font-weight;
-        font-size: $normal-font-size;
-        line-height: 42px;
-        display: flex;
-        align-items: center;
+    .amount-to-stake {
+        display: inherit;
+        width: 60%;
+
+        &-caption {
+            font-size: $normal-font-size;
+            font-weight: $normal-font-weight;
+            color: $white;
+        }
     }
 
-    .available-to-stake-caption {
-        font-weight: $normal-font-weight;
+    .available-to-stake {
+        display: inherit;
+        width: 40%;
         font-size: $normal-font-size;
-        line-height: 42px;
-        align-items: center;
-        text-align: right;
-        color: white;
-        opacity: 0.5;
-    }
 
-    .token-balance {
-        font-weight: $bold-font-weight;
-        font-size: $normal-font-size;
-        line-height: 42px;
-        align-items: center;
-        color: $color-beige;
-        margin-left: 10px;
+        &-caption {
+            font-weight: $normal-font-weight;
+            color: $white;
+            opacity: 0.5;
+        }
+
+        &-token-balance {
+            font-weight: $bold-font-weight;
+            color: $color-beige;
+            margin-left: 10px;
+            opacity: 1;
+        }
     }
 }
 

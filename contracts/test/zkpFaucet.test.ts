@@ -1,12 +1,12 @@
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {ethers} from 'hardhat';
 import {expect} from 'chai';
 import {BigNumber} from 'ethers';
 import {ZkpFaucet, TokenMock} from '../types/contracts';
 import {toBN} from '../lib/units-shortcuts';
 import {revertSnapshot, takeSnapshot} from '../lib/hardhat';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
-describe('Zkp Faucet', () => {
+describe.only('Zkp Faucet', () => {
     let faucet: ZkpFaucet;
     let token: TokenMock;
     let user: SignerWithAddress;
@@ -51,30 +51,16 @@ describe('Zkp Faucet', () => {
     });
 
     describe('ownable functions', () => {
-        describe('#toggleRestrictToWhitelisted', () => {
+        describe('#updateRestrictToWhitelisted', () => {
             it('should toggle the restrictToWhitelisted by owner', async () => {
-                await faucet.connect(owner).toggleRestrictToWhitelisted();
+                await faucet.connect(owner).updateRestrictToWhitelisted(true);
                 expect(await faucet.restrictToWhitelisted()).to.be.true;
             });
 
             it('should revert when executed by non owner', async () => {
                 // non owner
                 await expect(
-                    faucet.connect(user).toggleRestrictToWhitelisted(),
-                ).to.be.revertedWith('ImmOwn: unauthorized');
-            });
-        });
-
-        describe('#toggleRestrictToMaxDrinkCount', () => {
-            it('should toggle the restrictToMaxDrinkCount by owner', async () => {
-                await faucet.connect(owner).toggleRestrictToMaxDrinkCount();
-                expect(await faucet.restrictToMaxDrinkCount()).to.be.true;
-            });
-
-            it('should revert when executed by non owner', async () => {
-                // non owner
-                await expect(
-                    faucet.connect(user).toggleRestrictToMaxDrinkCount(),
+                    faucet.connect(user).updateRestrictToWhitelisted(false),
                 ).to.be.revertedWith('ImmOwn: unauthorized');
             });
         });
@@ -93,20 +79,18 @@ describe('Zkp Faucet', () => {
             });
         });
 
-        describe('#addWhitelistedMultiple', () => {
+        describe('#whitelistBatch', () => {
             it('should add whitelisted address by owner', async () => {
                 await faucet
                     .connect(owner)
-                    .addWhitelistedMultiple([user.address], [true]);
+                    .whitelistBatch([user.address], [true]);
                 expect(await faucet.isWhitelisted(user.address)).to.be.true;
             });
 
             it('should revert when executed by non owner', async () => {
                 // non owner
                 await expect(
-                    faucet
-                        .connect(user)
-                        .addWhitelistedMultiple([user.address], [true]),
+                    faucet.connect(user).whitelistBatch([user.address], [true]),
                 ).to.be.revertedWith('ImmOwn: unauthorized');
             });
         });
@@ -140,15 +124,37 @@ describe('Zkp Faucet', () => {
         });
 
         describe('#claimErc20', () => {
-            it('should claim the tokens', async () => {
+            it('should claim the ERC20 token', async () => {
                 const userBalance = await token.balanceOf(user.address);
 
                 await faucet
                     .connect(owner)
-                    .claimErc20(token.address, user.address, 100);
+                    .withdraw(token.address, user.address, 100);
 
                 expect(await token.balanceOf(user.address)).to.eq(
                     userBalance.add(100),
+                );
+            });
+
+            it('should claim the native token', async () => {
+                const userBalance = await ethers.provider.getBalance(
+                    user.address,
+                );
+
+                await faucet
+                    .connect(owner)
+                    .drink(owner.address, {value: maxAmountToPay});
+
+                await faucet
+                    .connect(owner)
+                    .withdraw(
+                        ethers.constants.AddressZero,
+                        user.address,
+                        maxAmountToPay,
+                    );
+
+                expect(await ethers.provider.getBalance(user.address)).to.eq(
+                    userBalance.add(maxAmountToPay),
                 );
             });
 
@@ -157,7 +163,7 @@ describe('Zkp Faucet', () => {
                 await expect(
                     faucet
                         .connect(user)
-                        .claimErc20(token.address, user.address, 100),
+                        .withdraw(token.address, user.address, 100),
                 ).to.be.revertedWith('ImmOwn: unauthorized');
             });
         });
@@ -207,8 +213,8 @@ describe('Zkp Faucet', () => {
 
         describe('when max request count is enabled', () => {
             beforeEach(async () => {
-                await faucet.toggleRestrictToMaxDrinkCount();
-                expect(await faucet.restrictToMaxDrinkCount()).to.be.true;
+                await faucet.updateMaxDrinkCount(2);
+                expect(await faucet.maxDrinkCount()).to.be.eq(2);
             });
 
             it('should not donate user if user requests are too much', async () => {
@@ -223,18 +229,18 @@ describe('Zkp Faucet', () => {
                 // third time
                 await expect(
                     faucet.connect(user).drink(user.address),
-                ).to.revertedWith('Too much drink count');
+                ).to.revertedWith('Reached maximum drink count');
             });
         });
 
         describe('when only whitelisted users can request for token', () => {
             beforeEach(async () => {
-                await faucet.toggleRestrictToWhitelisted();
+                await faucet.updateRestrictToWhitelisted(true);
                 expect(await faucet.restrictToWhitelisted()).to.be.true;
 
                 await faucet
                     .connect(owner)
-                    .addWhitelistedMultiple([user.address], [true]);
+                    .whitelistBatch([user.address], [true]);
                 expect(await faucet.isWhitelisted(user.address)).to.be.true;
             });
 

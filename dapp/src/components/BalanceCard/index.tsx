@@ -52,27 +52,23 @@ const BalanceCard = () => {
             <Card className="balance-card">
                 {account && (
                     <Box className="balance-card-address-holder">
-                        <AddressWithSetting />
-                        <Box className="address-and-balance-holder">
-                            <Box>
-                                <AccountBalance
-                                    networkSymbol={currentNetwork?.symbol}
-                                />
-                            </Box>
-                        </Box>
+                        <AddressWithSetting account={account} />
+                        <AccountBalance
+                            networkSymbol={currentNetwork?.symbol}
+                        />
                     </Box>
                 )}
 
                 <UnstakedBalance />
                 <AddressBalances
-                    title={'Total Staked Balance:'}
+                    title={'Staked Balance:'}
                     balance={zkpStakedBalance}
                     rewardsTokenSymbol={'ZKP'}
                     amountUSD={zkpStakedUSDValue}
                 />
 
                 <AddressBalances
-                    title={'Classic Reward Balance:'}
+                    title={'Reward Balance:'}
                     balance={zkpRewardBalance}
                     rewardsTokenSymbol={'ZKP'}
                     amountUSD={zkpRewardsUSDValue}
@@ -80,7 +76,7 @@ const BalanceCard = () => {
 
                 {chainId && chainHasPoolContract(chainId) && (
                     <AddressBalances
-                        title={'Advanced Staking Reward Balance:'}
+                        title={'Advanced Staking Reward:'}
                         balance={zZkpRewardBalance}
                         rewardsTokenSymbol={'zZKP'}
                         amountUSD={zZkpRewardsUSDValue}
@@ -89,10 +85,14 @@ const BalanceCard = () => {
 
                 {chainId && chainHasPoolContract(chainId) && (
                     <AddressBalances
-                        title={'Privacy Reward Points Balance:'}
+                        title={'Privacy Reward Points:'}
                         balance={prpRewardBalance}
                         scale={0}
                         rewardsTokenSymbol={'PRP'}
+                        // TODO:add definetion for redeem function
+                        redeem={() => {
+                            console.error('Not implemented');
+                        }}
                     />
                 )}
             </Card>

@@ -2,35 +2,21 @@
 
 .balance-card-holder {
     .balance-card {
-        background-color: $card-background-darker !important;
+        background-color: $card-background-darker  !important;
         border: 1px solid transparent;
-        border-radius: 8px !important;
+        border-radius: 22px !important;
         box-sizing: border-box;
         margin-bottom: 25px !important;
         mix-blend-mode: normal;
         backdrop-filter: blur(50px);
         padding: 16px 16px 24px;
 
-        @media (min-width: $smaller-screen-size) and (max-width: $medium-screen-size) {
-            position: relative;
-            top: 100px;
-        }
+        &-address-holder {
 
-        @media (max-width: $smaller-screen-size) {
-            position: relative;
-            top: 150px;
-        }
-
-        .balance-card-address-holder {
             display: flex;
             align-content: center;
             justify-content: space-between;
-
-            .address-and-balance-holder {
-                background: transparent;
-                margin: 0;
-                padding: 0 0 20px;
-            }
+            padding: 0 0 20px;
         }
 
         &-account-holder {
@@ -53,6 +39,16 @@
                     height: 23px;
                 }
             }
+        }
+
+        @media (min-width: $smaller-screen-size) and (max-width: $medium-screen-size) {
+            position: relative;
+            top: 100px;
+        }
+
+        @media (max-width: $smaller-screen-size) {
+            position: relative;
+            top: 150px;
         }
 
         .zkp-symbol {
@@ -80,7 +76,7 @@
 
     .title {
         height: 35px;
-        font-size: $title-font-size !important;
+        font-size: $title-font-size  !important;
         display: flex;
         align-items: center;
         opacity: 0.6;

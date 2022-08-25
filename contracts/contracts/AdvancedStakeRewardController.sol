@@ -218,7 +218,19 @@ contract AdvancedStakeRewardController is
         external
         onlyOwner
     {
-        _setRewardParams(_newParams);
+        require(
+            _newParams.startTime != 0 &&
+                _newParams.endTime > _newParams.startTime &&
+                _newParams.endTime > timeNow(),
+            "ARC: invalid time"
+        );
+        require(
+            _newParams.startZkpApy >= _newParams.endZkpApy,
+            "ARC: invalid APY"
+        );
+
+        rewardParams = _newParams;
+        emit RewardParamsUpdated(_newParams);
     }
 
     /// @notice Allocate NFT rewards and approve the Vault to transfer them
@@ -572,22 +584,5 @@ contract AdvancedStakeRewardController is
                 limit = currentLimit > shortage ? currentLimit - shortage : 0;
             }
         }
-    }
-
-    // Set the rewarding params
-    function _setRewardParams(RewardParams memory newParams) private {
-        require(
-            newParams.startTime != 0 &&
-                newParams.endTime > newParams.startTime &&
-                newParams.endTime > timeNow(),
-            "ARC: invalid time"
-        );
-        require(
-            newParams.startZkpApy >= newParams.endZkpApy,
-            "ARC: invalid APY"
-        );
-
-        rewardParams = newParams;
-        emit RewardParamsUpdated(newParams);
     }
 }

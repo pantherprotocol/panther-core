@@ -1,11 +1,12 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import {unusedPrpGrantAmount} from '../../services/rewards';
+import {createExtraReducers, LoadingStatus} from '../slices/shared';
 import {RootState} from '../store';
 
 interface remainingPrpRewardsState {
     value: string | null;
-    status: 'idle' | 'loading' | 'failed';
+    status: LoadingStatus;
 }
 
 const initialState: remainingPrpRewardsState = {
@@ -26,18 +27,7 @@ const remainingPrpRewardsSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: builder => {
-        builder
-            .addCase(getRemainingPrpRewards.pending, state => {
-                state.status = 'loading';
-            })
-            .addCase(getRemainingPrpRewards.fulfilled, (state, action) => {
-                state.status = 'idle';
-                state.value = action.payload;
-            })
-            .addCase(getRemainingPrpRewards.rejected, state => {
-                state.status = 'failed';
-                state.value = null;
-            });
+        createExtraReducers({builder, asyncThunk: getRemainingPrpRewards});
     },
 });
 

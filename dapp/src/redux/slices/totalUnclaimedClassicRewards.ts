@@ -7,11 +7,12 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {chainHasStakesReporter} from '../../services/contracts';
 import {isClassic} from '../../services/rewards';
 import * as stakingService from '../../services/staking';
+import {createExtraReducers, LoadingStatus} from '../slices/shared';
 import {RootState} from '../store';
 
 interface TotalClassicRewardsState {
     value: string | null;
-    status: 'idle' | 'loading' | 'failed';
+    status: LoadingStatus;
 }
 
 const initialState: TotalClassicRewardsState = {
@@ -61,21 +62,10 @@ export const totalUnclaimedClassicRewardsSlice = createSlice({
         },
     },
     extraReducers: builder => {
-        builder
-            .addCase(getTotalUnclaimedClassicRewards.pending, state => {
-                state.status = 'loading';
-            })
-            .addCase(
-                getTotalUnclaimedClassicRewards.fulfilled,
-                (state, action) => {
-                    state.status = 'idle';
-                    state.value = action.payload;
-                },
-            )
-            .addCase(getTotalUnclaimedClassicRewards.rejected, state => {
-                state.status = 'failed';
-                state.value = null;
-            });
+        createExtraReducers({
+            builder,
+            asyncThunk: getTotalUnclaimedClassicRewards,
+        });
     },
 });
 
@@ -89,7 +79,7 @@ export const totalUnclaimedClassicRewardsSelector = (
 
 export const statusUnclaimedRewardsSelector = (
     state: RootState,
-): 'idle' | 'loading' | 'failed' => {
+): LoadingStatus => {
     return state.totalUnclaimedClassicRewards.status;
 };
 

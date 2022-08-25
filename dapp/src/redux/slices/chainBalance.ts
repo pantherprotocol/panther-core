@@ -1,19 +1,13 @@
-import {BigNumber} from '@ethersproject/bignumber';
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
+import {safeParseStringToBN} from '../../lib/numbers';
 import {RootState} from '../store';
 
-interface ChainBalanceState {
-    value: string | null;
-    status: 'idle' | 'loading' | 'failed';
-}
+import {BalanceState, createExtraReducers, initialBalanceState} from './shared';
 
-const initialState: ChainBalanceState = {
-    value: null,
-    status: 'idle',
-};
+const initialState: BalanceState = initialBalanceState;
 
 export const getChainBalance = createAsyncThunk(
     'balance/getChainBalance',
@@ -39,23 +33,12 @@ const chainBalanceSlice = createSlice({
         },
     },
     extraReducers: builder => {
-        builder
-            .addCase(getChainBalance.pending, state => {
-                state.status = 'loading';
-            })
-            .addCase(getChainBalance.fulfilled, (state, action) => {
-                state.status = 'idle';
-                state.value = action.payload;
-            })
-            .addCase(getChainBalance.rejected, state => {
-                state.status = 'failed';
-                state.value = null;
-            });
+        createExtraReducers({builder, asyncThunk: getChainBalance});
     },
 });
 
 export const chainBalanceSelector = (state: RootState) =>
-    BigNumber.from(state.chainBalance.value ?? '0');
+    safeParseStringToBN(state.chainBalance.value);
 
 export const {resetChainBalance} = chainBalanceSlice.actions;
 export default chainBalanceSlice.reducer;

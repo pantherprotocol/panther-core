@@ -1,19 +1,14 @@
-import {BigNumber} from '@ethersproject/bignumber';
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
+import {safeParseStringToBN} from '../../lib/numbers';
 import * as stakingService from '../../services/staking';
 import {RootState} from '../store';
 
-interface ZkpStakedBalanceState {
-    value: string | null;
-    status: 'idle' | 'loading' | 'failed';
-}
-const initialState: ZkpStakedBalanceState = {
-    value: null,
-    status: 'idle',
-};
+import {BalanceState, createExtraReducers, initialBalanceState} from './shared';
+
+const initialState: BalanceState = initialBalanceState;
 
 export const getZkpStakedBalance = createAsyncThunk(
     'balance/getZkpStaked',
@@ -42,25 +37,15 @@ export const stakedBalanceSlice = createSlice({
         },
     },
     extraReducers: builder => {
-        builder
-            .addCase(getZkpStakedBalance.pending, state => {
-                state.status = 'loading';
-            })
-            .addCase(getZkpStakedBalance.fulfilled, (state, action) => {
-                state.status = 'idle';
-                state.value = action.payload;
-            })
-            .addCase(getZkpStakedBalance.rejected, state => {
-                state.status = 'failed';
-                state.value = null;
-            });
+        createExtraReducers({
+            builder,
+            asyncThunk: getZkpStakedBalance,
+        });
     },
 });
 
 export const zkpStakedBalanceSelector = (state: RootState) =>
-    state.zkpStakedBalance.value
-        ? BigNumber.from(state.zkpStakedBalance.value)
-        : null;
+    safeParseStringToBN(state.zkpStakedBalance.value);
 
 export const {resetZkpStakedBalance} = stakedBalanceSlice.actions;
 export default stakedBalanceSlice.reducer;

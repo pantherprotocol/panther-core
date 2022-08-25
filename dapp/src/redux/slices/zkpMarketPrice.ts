@@ -3,11 +3,12 @@ import {formatEther} from '@ethersproject/units';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import * as stakingService from '../../services/staking';
+import {createExtraReducers, LoadingStatus} from '../slices/shared';
 import {RootState} from '../store';
 
 interface ZkpTokenMarketPriceState {
     value: string | null;
-    status: 'idle' | 'loading' | 'failed';
+    status: LoadingStatus;
 }
 const initialState: ZkpTokenMarketPriceState = {
     value: null,
@@ -30,18 +31,10 @@ export const marketPriceSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: builder => {
-        builder
-            .addCase(getZKPTokenMarketPrice.pending, state => {
-                state.status = 'loading';
-            })
-            .addCase(getZKPTokenMarketPrice.fulfilled, (state, action) => {
-                state.status = 'idle';
-                state.value = action.payload;
-            })
-            .addCase(getZKPTokenMarketPrice.rejected, state => {
-                state.status = 'failed';
-                state.value = null;
-            });
+        createExtraReducers({
+            builder,
+            asyncThunk: getZKPTokenMarketPrice,
+        });
     },
 });
 

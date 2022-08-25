@@ -3,6 +3,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import {rewardsVested, rewardsClaimed} from '../../services/rewards';
 import {getSumAllAdvancedStakes} from '../../services/staking';
+import {createExtraReducers, LoadingStatus} from '../slices/shared';
 import {RootState} from '../store';
 
 type AdvancedStakingState = {
@@ -13,7 +14,7 @@ type AdvancedStakingState = {
 
 interface totalsOfAdvancedStakesState {
     value: AdvancedStakingState | null;
-    status: 'idle' | 'loading' | 'failed';
+    status: LoadingStatus;
 }
 
 const initialState: totalsOfAdvancedStakesState = {
@@ -53,18 +54,7 @@ export const stakedBalanceSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: builder => {
-        builder
-            .addCase(getTotalsOfAdvancedStakes.pending, state => {
-                state.status = 'loading';
-            })
-            .addCase(getTotalsOfAdvancedStakes.fulfilled, (state, action) => {
-                state.status = 'idle';
-                state.value = action.payload;
-            })
-            .addCase(getTotalsOfAdvancedStakes.rejected, state => {
-                state.status = 'failed';
-                state.value = null;
-            });
+        createExtraReducers({builder, asyncThunk: getTotalsOfAdvancedStakes});
     },
 });
 

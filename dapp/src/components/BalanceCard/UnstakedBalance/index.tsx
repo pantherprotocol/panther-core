@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import {BigNumber} from 'ethers';
 
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
@@ -115,19 +116,19 @@ export default function UnstakedBalance() {
 
             <Box className="amount-box">
                 <Typography component="div" className="token-balance">
-                    {tokenBalance ? formatCurrency(tokenBalance) : '-'}
+                    {tokenBalance ? formatCurrency(tokenBalance) : '0'}
                 </Typography>
                 <Typography className="zkp-symbol main-symbol">ZKP</Typography>
             </Box>
-            {tokenMarketPrice && (
-                <Box className="amount-box">
-                    <Typography className="token-market-price">
-                        {tokenMarketPrice
-                            ? `~${formatUSD(tokenMarketPrice)}`
-                            : '-'}
-                    </Typography>
-                </Box>
-            )}
+            <Box className="amount-box">
+                <Typography className="token-market-price">
+                    {`~${
+                        tokenMarketPrice
+                            ? formatUSD(tokenMarketPrice)
+                            : formatUSD(BigNumber.from('0'), {decimals: 0})
+                    }`}
+                </Typography>
+            </Box>
         </Box>
     );
 }

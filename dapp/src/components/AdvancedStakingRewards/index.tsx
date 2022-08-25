@@ -3,6 +3,7 @@ import React from 'react';
 import {Box, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {utils} from 'ethers';
+import moment from 'moment';
 
 import ClaimedProgress from '../../components/ClaimedProgress';
 import {formatPercentage} from '../../lib/format';
@@ -42,21 +43,27 @@ function AdvancedStakingRewards() {
     );
 }
 
-function calcRemainingDays(allowedSince: number, allowedTill: number): string {
-    const now = new Date().getTime() / 1000;
+function calcRemainingDays(
+    _allowedSince: number,
+    _allowedTill: number,
+): [string, string] {
+    const now = moment();
+    const allowedSince = moment(_allowedSince * 1000);
+    const allowedTill = moment(_allowedTill * 1000);
 
-    let secsRemaining = 0;
-    if (now < allowedSince) {
-        secsRemaining = Number(allowedSince) - now;
+    if (moment(allowedSince).isSameOrAfter(allowedTill)) {
+        return ['', '?'];
     }
-    if (allowedSince <= now && now < allowedTill) {
-        secsRemaining = Number(allowedTill) - now;
+    if (moment(now).isSameOrBefore(allowedSince)) {
+        return ['Opening', now.to(allowedSince)];
     }
-
-    if (secsRemaining < 0) {
-        secsRemaining = 0;
+    if (moment(now).isBetween(allowedSince, allowedTill)) {
+        return ['Closing', now.to(allowedTill)];
     }
-    return (secsRemaining / 3600 / 24).toFixed(1);
+    if (moment(now).isAfter(allowedTill)) {
+        return ['Staking is closed', ''];
+    }
+    return ['', '?'];
 }
 
 function RemainingDays() {
@@ -71,17 +78,15 @@ function RemainingDays() {
         termsSelector(chainId!, StakeType.Advanced, 'allowedTill'),
     );
 
-    const daysRemaining =
+    const [title, daysRemaining]: [string, string] =
         typeof allowedTill === 'number' && typeof allowedSince === 'number'
             ? calcRemainingDays(allowedSince, allowedTill)
-            : '?';
+            : ['', '?'];
 
     return (
         <Box className="remaining-days">
-            <Typography className="value">
-                {daysRemaining} <span>days</span>
-            </Typography>
-            <Typography className="text">Remaining</Typography>
+            <Typography className="text">{title}</Typography>
+            <Typography className="value">{daysRemaining}</Typography>
         </Box>
     );
 }
@@ -89,10 +94,10 @@ function RemainingDays() {
 function StakingAPR(props: {advancedStakingAPY: number}) {
     return (
         <Box className="staking-apr">
+            <Typography className="text">Staking APR</Typography>
             <Typography className="value">
                 {formatPercentage(props.advancedStakingAPY / 100)}
             </Typography>
-            <Typography className="text">Staking APR</Typography>
         </Box>
     );
 }

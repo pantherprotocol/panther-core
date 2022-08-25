@@ -91,13 +91,8 @@
             align-items: center;
             text-align: center;
             font-weight: $semi-bold-font-weight;
-            font-size: $large-font-size;
+            font-size: $big-font-size;
             color: $white;
-
-            span {
-                font-size: $big-font-size;
-                padding-left: 5px;
-            }
         }
 
         .text {

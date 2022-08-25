@@ -1,29 +1,25 @@
 @import '../../../variables';
 
-.address-and-balance-holder {
-    .account-balance {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        font-weight: $semi-normal-font-weight;
-        font-size: $small-font-size;
-        line-height: 42px;
-        padding: 8px 8px;
-        margin: 0 20px;
-        height: 35px;
-        min-width: 115px;
-        background: rgba(120, 154, 205, 0.2);
-        border-radius: 8px;
+.account-balance {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: $semi-normal-font-weight;
+    font-size: $small-font-size;
+    line-height: 42px;
+    padding: 15px;
+    height: 45px;
+    min-width: 115px;
+    background: rgba(120, 154, 205, 0.2);
+    border-radius: 8px;
 
-        .currency-symbol {
-            padding: 0px 10px 0px 0px;
-            color: $muted-text;
-        }
+    .currency-symbol {
+        color: $muted-text;
+    }
 
-        @media (max-width: 600px) {
-            margin: 0 5px !important;
-            font-size: 12px !important;
-        }
+    @media (max-width: 600px) {
+        margin: 0 5px !important;
+        font-size: 12px !important;
     }
 }

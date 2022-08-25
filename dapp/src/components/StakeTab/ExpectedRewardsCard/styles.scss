@@ -60,12 +60,12 @@
             .amount {
                 font-weight: $bold-font-weight;
                 font-size: $normal-font-size;
-                text-align: right;
                 background: linear-gradient(
                     92.53deg,
                     $color-beige 0%,
                     #d0a7a8 95.77%
                 );
+                padding-right: 10px;
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;

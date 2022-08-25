@@ -1,9 +1,11 @@
 import * as React from 'react';
 
+import {IconButton} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {BigNumber} from 'ethers';
 
+import questionmarkIcon from '../../../images/questionmark-icon.svg';
 import {formatCurrency} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {calculatedRewardsSelector} from '../../../redux/slices/advancedStakePredictedRewards';
@@ -45,21 +47,30 @@ export function ExpectedRewardsCard() {
                 <Box className="expected-rewards-card-content">
                     <Typography className="title">
                         ZKP Staking Reward:
+                        <IconButton>
+                            <img src={questionmarkIcon} />
+                        </IconButton>
                     </Typography>
                     <Typography className="amount">
-                        {zZkpBN ? formatCurrency(zZkpBN) : '0.00'} zZKP
+                        {zZkpBN ? `${formatCurrency(zZkpBN)} zZKP` : '-'}
                     </Typography>
                 </Box>
                 <Box className="expected-rewards-card-content">
                     <Typography className="title">
                         Privacy Reward Points:
+                        <IconButton>
+                            <img src={questionmarkIcon} />
+                        </IconButton>
                     </Typography>
+
                     <Typography className="amount">
-                        {formatCurrency(prpBN, {
-                            decimals: 0,
-                            scale: 0,
-                        })}{' '}
-                        PRP
+                        {predictedRewards
+                            ? `${formatCurrency(prpBN, {
+                                  decimals: 0,
+                                  scale: 0,
+                              })}
+                            PRP`
+                            : '-'}
                     </Typography>
                 </Box>
             </Box>

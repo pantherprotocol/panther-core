@@ -53,12 +53,13 @@
 
         .zkp-symbol {
             font-weight: $semi-bold-font-weight;
-            font-size: $normal-font-size;
+            font-size: $title-font-size;
             line-height: 42px;
-            margin-left: 8px;
+            margin-left: 2px;
 
+            padding-top: 2px;
             &.main-symbol {
-                padding-top: 14px;
+                font-size: $big-font-size;
             }
         }
 

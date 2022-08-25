@@ -2,12 +2,12 @@ import * as React from 'react';
 
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
 import {parseTxErrorMessage} from '../../../lib/errors';
-import {formatCurrency, formatUSD} from '../../../lib/format';
+import {formatUSD, getFormatedFractions} from '../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/advancedStakesRewards';
 import {
@@ -87,6 +87,10 @@ export default function UnstakedBalance() {
         [context, dispatch],
     );
 
+    const [whole, fractional] = tokenBalance
+        ? getFormatedFractions(utils.formatEther(tokenBalance))
+        : [];
+
     return (
         <Box className="total-balance">
             <Box className="title-box">
@@ -116,7 +120,15 @@ export default function UnstakedBalance() {
 
             <Box className="amount-box">
                 <Typography component="div" className="token-balance">
-                    {tokenBalance ? formatCurrency(tokenBalance) : '0'}
+                    {whole && fractional ? (
+                        <>
+                            <span>${whole}</span>
+
+                            <span className="substring">.{fractional}</span>
+                        </>
+                    ) : (
+                        '0.00'
+                    )}
                 </Typography>
                 <Typography className="zkp-symbol main-symbol">ZKP</Typography>
             </Box>

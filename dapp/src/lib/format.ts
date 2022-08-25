@@ -86,3 +86,15 @@ export function splitFloatNumber(value: string): [string, string] | [] {
 
     return [whole || '0', fractional || '0'];
 }
+
+export function getFormatedFractions(amount: string): (string | undefined)[] {
+    let [whole, fractional] = splitFloatNumber(amount);
+    fractional = fractional?.padEnd(2, '0').substring(0, 2);
+    whole = whole
+        ? formatCurrency(BigNumber.from(whole), {
+              decimals: 0,
+              scale: 0,
+          })
+        : undefined;
+    return [whole, fractional];
+}

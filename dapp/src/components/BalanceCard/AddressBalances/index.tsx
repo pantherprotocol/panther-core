@@ -44,19 +44,23 @@ export default function AddressBalances(props: {
                             ? formatCurrency(balance, {
                                   scale: props.scale,
                               })
-                            : '-'}
+                            : '0.00'}
                     </Typography>
                     <Typography className="zkp-symbol">
                         {rewardsTokenSymbol}
                     </Typography>
                 </Box>
-                {amountUSD && (
-                    <Typography className="amount-usd">
-                        {`~${formatUSD(amountUSD)}`}
-                    </Typography>
-                )}
-                {props.redeem && (
+
+                {props.redeem ? (
                     <SmallButton onClick={props.redeem} text={'Redeem'} />
+                ) : (
+                    <Typography className="amount-usd">
+                        {`~${
+                            amountUSD
+                                ? formatUSD(amountUSD)
+                                : formatUSD(BigNumber.from('0'), {decimals: 2})
+                        }`}
+                    </Typography>
                 )}
             </Box>
         </Box>

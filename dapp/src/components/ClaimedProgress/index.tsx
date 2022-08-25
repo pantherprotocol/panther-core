@@ -23,9 +23,9 @@ function formatNumber(v: number): string {
 export default function ClaimedProgress(props: ClaimedProgressTypes) {
     const {claimed, total} = props;
     const percentage = total !== 0 ? (claimed / total) * 100 : 0;
-    const claimedValue = `${formatNumber(claimed)} / ${formatNumber(
+    const claimedValue = `${formatNumber(claimed)} out of ${formatNumber(
         total,
-    )} claimed (~${Math.ceil(percentage)}%)`;
+    )} zZKP claimed (~${Math.ceil(percentage)}%)`;
 
     return (
         <Box className="claimed-progress-container">

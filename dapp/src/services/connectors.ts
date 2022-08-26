@@ -77,8 +77,11 @@ export const hasWallet = (error: Error | undefined): boolean => {
 };
 
 // chainId and error are passed from web3-react context.
-export const onWrongNetwork = (context: Web3ReactContextInterface): boolean => {
-    if (context.chainId && !CHAIN_IDS.includes(context.chainId)) {
+export const onWrongNetwork = (
+    context: Web3ReactContextInterface,
+    chainIds: number[],
+): boolean => {
+    if (context.chainId && !chainIds.includes(context.chainId)) {
         return true;
     }
     return !!(
@@ -88,17 +91,6 @@ export const onWrongNetwork = (context: Web3ReactContextInterface): boolean => {
 
 export const isEthereumNetwork = (chainId: number): boolean => {
     return [1, 4, 5].includes(chainId);
-};
-
-export const onWrongFaucetNetwork = (
-    context: Web3ReactContextInterface,
-): boolean => {
-    if (context.chainId && !FAUCET_CHAIN_IDS.includes(context.chainId)) {
-        return true;
-    }
-    return !!(
-        context.error && context.error instanceof UnsupportedChainIdError
-    );
 };
 
 export const isConnected = ({
@@ -120,3 +112,24 @@ export const injectedFaucet = new InjectedConnector({
 export function currentNetwork(chainId: number | undefined): Network | null {
     return chainId ? supportedNetworks[chainId] : null;
 }
+
+export const isWrongNetwork = (
+    context: Web3ReactContextInterface,
+    chainIds: number[],
+): boolean => {
+    const {active, error} = context;
+
+    const wrongNetwork =
+        onWrongNetwork(context, chainIds) ||
+        error instanceof UnsupportedChainIdError;
+
+    console.debug(
+        'header: wrongNetwork',
+        wrongNetwork,
+        '/ active',
+        active,
+        '/ error',
+        error,
+    );
+    return wrongNetwork;
+};

@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import {UnsupportedChainIdError, useWeb3React} from '@web3-react/core';
+import {useWeb3React} from '@web3-react/core';
 
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {getChainBalance} from '../../../redux/slices/chainBalance';
@@ -10,9 +10,10 @@ import {isWalletConnectedSelector} from '../../../redux/slices/isWalletConnected
 import {formatAccountAddress} from '../../../services/account';
 import {
     currentNetwork,
-    onWrongNetwork,
+    isWrongNetwork,
     injected,
 } from '../../../services/connectors';
+import {CHAIN_IDS} from '../../../services/env';
 import Address from '../../Address';
 import ConnectButton from '../../ConnectButton';
 import {NetworkButton} from '../../NetworkButton';
@@ -50,17 +51,9 @@ export default function WalletHeader() {
     }, [activate, isWalletConnected]);
 
     useEffect((): void => {
-        const wrongNetwork =
-            onWrongNetwork(context) || error instanceof UnsupportedChainIdError;
+        const wrongNetwork = isWrongNetwork(context, CHAIN_IDS);
         setWrongNetwork(wrongNetwork);
-        console.debug(
-            'header: wrongNetwork',
-            wrongNetwork,
-            '/ active',
-            active,
-            '/ error',
-            error,
-        );
+
         if (!wrongNetwork && account) {
             fetchChainBalance();
         }

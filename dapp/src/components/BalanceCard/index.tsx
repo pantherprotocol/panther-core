@@ -1,9 +1,8 @@
 import * as React from 'react';
 
-import {IconButton, Box, Card, Typography} from '@mui/material';
+import {Box, Card} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
-import ethLogo from '../../images/eth-logo.svg';
 import {fiatPrice} from '../../lib/tokenPrice';
 import {useAppSelector} from '../../redux/hooks';
 import {totalSelector} from '../../redux/slices/advancedStakesRewards';
@@ -63,19 +62,7 @@ const BalanceCard = () => {
                         </Box>
                     </Box>
                 )}
-                {!account && (
-                    <div className="not-connected-balance-container">
-                        <IconButton>
-                            <img src={ethLogo} />
-                        </IconButton>
-                        <Typography
-                            component="div"
-                            className="token-balance balance-not-connected"
-                        >
-                            Connect wallet
-                        </Typography>
-                    </div>
-                )}
+
                 <UnstakedBalance />
                 <AddressBalances
                     title={'Total Staked Balance:'}

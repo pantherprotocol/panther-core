@@ -23,7 +23,6 @@ import './styles.scss';
 
 const BalanceCard = () => {
     const context = useWeb3React();
-
     const {account, chainId} = context;
     const currentNetwork: Network | null =
         context && chainId ? supportedNetworks[chainId] : null;
@@ -78,7 +77,6 @@ const BalanceCard = () => {
                     </div>
                 )}
                 <UnstakedBalance />
-
                 <AddressBalances
                     title={'Total Staked Balance:'}
                     balance={zkpStakedBalance}

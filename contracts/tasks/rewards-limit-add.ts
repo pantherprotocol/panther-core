@@ -26,7 +26,7 @@ task(
             'AdvancedStakeRewardController',
         )) as AdvancedStakeRewardController;
 
-        if (_taskArgs.zkpPrpLimit)
+        if (_taskArgs.zkpPrpLimits)
             await updateZkpAndPrpRewardsLimit(controller);
 
         if (_taskArgs.nftLimit)

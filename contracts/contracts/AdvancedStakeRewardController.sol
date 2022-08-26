@@ -229,11 +229,10 @@ contract AdvancedStakeRewardController is
     {
         if (NFT_TOKEN == address(0)) return;
 
-        Totals memory _totals = totals;
         Limits memory _limits = limits;
 
         require(
-            _desiredNftRewardsLimit > _totals.nftRewards,
+            _desiredNftRewardsLimit > totals.nftRewards,
             "ARC: low nft rewards limit"
         );
 
@@ -242,7 +241,7 @@ contract AdvancedStakeRewardController is
         bool isUpdated = _updateNftRewardsLimitAndAllowance(
             _desiredNftRewardsLimit,
             _limits,
-            _totals,
+            totals,
             vault
         );
 
@@ -257,13 +256,12 @@ contract AdvancedStakeRewardController is
     /// @dev Anyone may call it.
     function updateZkpAndPrpRewardsLimit() external {
         Limits memory _limits = limits;
-        Totals memory _totals = totals;
         address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
 
         // Updating the rewards limits
         bool isUpdated;
-        isUpdated = _updateZkpRewardsLimitAndAllowance(_limits, _totals, vault);
-        isUpdated = _updatePrpRewardsLimit(_limits, _totals) || isUpdated;
+        isUpdated = _updateZkpRewardsLimitAndAllowance(_limits, totals, vault);
+        isUpdated = _updatePrpRewardsLimit(_limits, totals) || isUpdated;
 
         if (isUpdated) {
             limits = _limits;

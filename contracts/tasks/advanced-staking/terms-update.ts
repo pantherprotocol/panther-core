@@ -2,12 +2,12 @@ import fs from 'fs';
 import {
     TestnetStaking,
     IStakingTypes,
-} from './../types/contracts/TestnetStaking';
+} from './../../types/contracts/TestnetStaking';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task, types} from 'hardhat/config';
-import {parseDate} from '../lib/units-shortcuts';
-import {updateTerms} from '../lib/staking';
-import {hash4bytes} from '../lib/hash';
+import {parseDate} from '../../lib/units-shortcuts';
+import {updateTerms} from '../../lib/staking';
+import {hash4bytes} from '../../lib/hash';
 import daysJs from 'dayjs';
 import _ from 'lodash';
 

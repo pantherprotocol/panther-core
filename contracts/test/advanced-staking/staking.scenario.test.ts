@@ -3,12 +3,12 @@ import chai from 'chai';
 import {ethers} from 'hardhat';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
-import {RewardMaster, RewardPool, Staking} from '../types/contracts';
+import {RewardMaster, RewardPool, Staking} from '../../types/contracts';
 
 import abiZkpToken from './assets/ZKPToken.json';
 import abiVestingPools from './assets/VestingPools.json';
 import {getScenario, Scenario} from './assets/staking.scenario.data';
-import {mineBlock, revertSnapshot, takeSnapshot} from '../lib/hardhat';
+import {mineBlock, revertSnapshot, takeSnapshot} from '../../lib/hardhat';
 
 const expect = chai.expect;
 

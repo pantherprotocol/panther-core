@@ -3,7 +3,7 @@ import {
     mineBlock,
     revertSnapshot,
     takeSnapshot,
-} from '../lib/hardhat';
+} from '../../lib/hardhat';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
 import {ethers} from 'hardhat';
 import {assert, expect} from 'chai';
@@ -16,8 +16,8 @@ import {
     MockAdvancedStakeRewardController,
     TokenMock,
     ERC721Mock,
-} from '../types/contracts';
-import {getBlockTimestamp} from '../lib/provider';
+} from '../../types/contracts';
+import {getBlockTimestamp} from '../../lib/provider';
 
 describe('AdvancedStakeRewardController', () => {
     const fakeVaultAddress = '0x4321555555555555555555555555555555551234';

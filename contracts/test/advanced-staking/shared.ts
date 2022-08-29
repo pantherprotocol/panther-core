@@ -7,7 +7,7 @@ import {
     IErc20Min,
     IRewardAdviser,
     RewardMaster as RewardMasterContract,
-} from '../types/contracts';
+} from '../../types/contracts';
 
 export class RewardMasterFixture {
     public contracts: RewardMasterFixtureContracts =

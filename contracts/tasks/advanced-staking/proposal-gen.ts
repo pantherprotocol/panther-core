@@ -7,7 +7,7 @@ import {
     classicActionHash,
     STAKE,
     UNSTAKE,
-} from '../lib/hash';
+} from '../../lib/hash';
 
 const TASK_PROPOSAL_GEN = 'proposal:gen';
 

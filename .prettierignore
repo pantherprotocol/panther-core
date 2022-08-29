@@ -12,6 +12,7 @@ contracts/testing/**/data
 contracts/typechain/
 contracts/types/
 contracts/typing/
+contracts/test/advanced-staking/assets/*.ods
 crypto/coverage/
 crypto/lib/
 dapp/public/preparation/

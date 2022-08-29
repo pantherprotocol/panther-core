@@ -1,9 +1,9 @@
 import fs from 'fs';
-import {AdvancedStakeRewardController} from './../types/contracts/AdvancedStakeRewardController';
+import {AdvancedStakeRewardController} from './../../types/contracts/AdvancedStakeRewardController';
 import {HardhatRuntimeEnvironment, TaskArguments} from 'hardhat/types';
 import {task, types} from 'hardhat/config';
-import {parseDate} from '../lib/units-shortcuts';
-import {updateRewardParams} from '../lib/staking';
+import {parseDate} from '../../lib/units-shortcuts';
+import {updateRewardParams} from '../../lib/staking';
 import daysJs from 'dayjs';
 import _ from 'lodash';
 

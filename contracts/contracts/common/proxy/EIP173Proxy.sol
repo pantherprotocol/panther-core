@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable no-inline-assembly, avoid-low-level-calls
 pragma solidity ^0.8.0;
 
 import "./Proxy.sol";

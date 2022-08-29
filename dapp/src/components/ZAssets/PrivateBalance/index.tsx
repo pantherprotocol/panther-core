@@ -83,11 +83,13 @@ export default function PrivateBalance() {
             const keys = await deriveRootKeypairs(signer);
             if (keys instanceof Error) {
                 dispatch(registerWalletActionFailure, 'signMessage');
-                notifyError(
-                    'Failed to refresh zAssets',
-                    `Cannot sign a message: ${parseTxErrorMessage(keys)}`,
-                    keys,
-                );
+                notifyError({
+                    message: 'Failed to refresh zAssets',
+                    details: `Cannot sign a message: ${parseTxErrorMessage(
+                        keys,
+                    )}`,
+                    triggerError: keys,
+                });
                 setFirstUTXOScan('failed');
                 return;
             }

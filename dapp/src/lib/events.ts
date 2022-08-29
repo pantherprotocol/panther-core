@@ -1,5 +1,7 @@
 // FIXME: duplicated with contracts/lib/events.ts
-import type {ContractReceipt} from 'ethers';
+import type {ContractReceipt, ContractTransaction} from 'ethers';
+
+import {CONFIRMATIONS_NUM} from './constants';
 
 // Finds first event with a given name from the transaction receipt
 export async function getEventFromReceipt(
@@ -22,4 +24,12 @@ export async function getEventFromReceipt(
     console.debug(`${eventName} event: ${JSON.stringify(event)}`);
 
     return event;
+}
+
+export async function awaitConfirmationAndRetrieveEvent(
+    transaction: ContractTransaction,
+    eventName: string,
+): Promise<any | Error> {
+    const receipt = await transaction.wait(CONFIRMATIONS_NUM);
+    return await getEventFromReceipt(receipt, eventName);
 }

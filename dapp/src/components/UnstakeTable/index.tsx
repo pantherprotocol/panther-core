@@ -12,6 +12,8 @@ import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, constants} from 'ethers';
 
+import {parseTxErrorMessage} from '../../lib/errors';
+import {awaitConfirmationAndRetrieveEvent} from '../../lib/events';
 import {formatTime} from '../../lib/format';
 import {useAppDispatch} from '../../redux/hooks';
 import {getChainBalance} from '../../redux/slices/chainBalance';
@@ -20,10 +22,69 @@ import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimed
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 import {unstake, getStakesAndRewards} from '../../services/staking';
+import {MessageWithTx} from '../Common/MessageWithTx';
+import {removeNotification, openNotification} from '../Common/notification';
 
 import UnstakeRow from './UnstakeRow';
 
 import './styles.scss';
+
+async function unstakeWithNotification(
+    library: any,
+    chainId: number,
+    account: string,
+    stakeID: BigNumber,
+    data: string | undefined,
+) {
+    const [tx, err] = await unstake(
+        library,
+        chainId,
+        account,
+        stakeID,
+        data,
+        false,
+    );
+
+    if (err) {
+        openNotification(
+            'Transaction error',
+            <MessageWithTx
+                message={parseTxErrorMessage(err)}
+                txHash={tx?.hash}
+            />,
+            'danger',
+        );
+        return err;
+    }
+
+    const inProgress = openNotification(
+        'Transaction in progress',
+        'Your unstaking transaction is currently in progress. Please wait for confirmation!',
+        'info',
+    );
+
+    const event = await awaitConfirmationAndRetrieveEvent(tx, 'StakeClaimed');
+    removeNotification(inProgress);
+
+    if (event instanceof Error) {
+        openNotification(
+            'Transaction error',
+            <MessageWithTx
+                message={parseTxErrorMessage(event)}
+                txHash={tx?.hash}
+            />,
+            'danger',
+        );
+        return err;
+    }
+
+    openNotification(
+        'Unstaking completed successfully',
+        'Congratulations! Your unstaking transaction was processed!',
+        'info',
+        10000,
+    );
+}
 
 export default function UnstakeTable() {
     const context = useWeb3React();
@@ -73,7 +134,18 @@ export default function UnstakeTable() {
 
             const stakeID = BigNumber.from(id);
             const data = '0x00';
-            await unstake(library, chainId, account, stakeID, data, false);
+
+            const response = await unstakeWithNotification(
+                library,
+                chainId,
+                account,
+                stakeID,
+                data,
+            );
+            if (response instanceof Error) {
+                return;
+            }
+
             dispatch(getTotalsOfAdvancedStakes, context);
             dispatch(getZkpStakedBalance, context);
             dispatch(getTotalUnclaimedClassicRewards, context);

@@ -9,19 +9,15 @@ import {
     triadTreeMerkleProofToPathElements,
 } from '@panther-core/crypto/lib/triad-merkle-tree';
 import poseidon from 'circomlibjs/src/poseidon';
+import {isDetailedError} from 'error';
 import {utils, Contract, BigNumber} from 'ethers';
+import {ContractTransaction} from 'ethers/lib/ethers';
 import {AdvancedStakeRewards, UTXOStatus} from 'staking';
 
-import {notifyError} from '../components/Common/errors';
-import {
-    openNotification,
-    removeNotification,
-} from '../components/Common/notification';
-import {CONFIRMATIONS_NUM} from '../lib/constants';
 import {parseTxErrorMessage} from '../lib/errors';
-import {getEventFromReceipt} from '../lib/events';
 import {formatTime} from '../lib/format';
 import {IKeypair, PrivateKey} from '../lib/types';
+import {DetailedError} from '../types/error';
 
 import {
     getPoolContract,
@@ -63,7 +59,7 @@ export async function exit(
     creationTime: number,
     commitments: string[],
     keys: IKeypair[],
-): Promise<UTXOStatus> {
+): Promise<[UTXOStatus | null, DetailedError | ContractTransaction]> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -91,34 +87,46 @@ export async function exit(
         utxoData,
     );
     if (cannotDecode && error) {
-        notifyError(
-            'Redemption error',
-            `Cannot decode zAsset secret message: ${error.message}`,
-            error,
-        );
-        return UTXOStatus.UNDEFINED;
+        return [
+            UTXOStatus.UNDEFINED,
+            {
+                message: 'Redemption error',
+                details: `Cannot decode zAsset secret message: ${error.message}`,
+                triggerError: error,
+            },
+        ];
     }
 
     if (isChildKeyInvalid || !childSpendingKeypair) {
         const msg = error?.message;
-        notifyError(
-            'Redemption error',
-            `Cannot derive the key to spend zAsset${msg ? `: ${msg}` : ''}`,
+
+        return [
+            UTXOStatus.UNDEFINED,
             {
-                childSpendingPubKey: childSpendingKeypair
-                    ? childSpendingKeypair.publicKey
-                    : 'undefined',
-                rootSpendingPubKey: rootSpendingKeypair.publicKey,
-            },
-        );
-        return UTXOStatus.UNDEFINED;
+                message: `Cannot derive the key to spend zAsset. ${
+                    msg ? `: ${msg}` : ''
+                }`,
+
+                details: {
+                    childSpendingPubKey: childSpendingKeypair
+                        ? childSpendingKeypair.publicKey
+                        : 'undefined',
+                    rootSpendingPubKey: rootSpendingKeypair.publicKey,
+                },
+            } as DetailedError,
+        ];
     }
 
     if (status === UTXOStatus.SPENT) {
-        notifyError('Redemption error', 'zAsset is already spent.', {
-            nullifier,
-        });
-        return UTXOStatus.SPENT;
+        return [
+            UTXOStatus.SPENT,
+            {
+                message: 'zAsset is already spent.',
+                details: {
+                    nullifier,
+                },
+            } as DetailedError,
+        ];
     }
 
     const zAssetsRegistry = getZAssetsRegistryContract(library, chainId);
@@ -135,35 +143,44 @@ export async function exit(
 
     const zZkpCommitment = commitments[0];
     if (commitmentHex !== zZkpCommitment) {
-        notifyError('Redemption error', 'Invalid zAsset commitment.', {
-            commitmentInProof: commitmentHex,
-            commitmentInEvent: zZkpCommitment,
-        });
-        return UTXOStatus.UNSPENT;
+        return [
+            UTXOStatus.UNSPENT,
+            {
+                message: 'Invalid zAsset commitment.',
+                details: {
+                    commitmentInProof: commitmentHex,
+                    commitmentInEvent: zZkpCommitment,
+                },
+            } as DetailedError,
+        ];
     }
 
     const path = await generateMerklePath(leafId, chainId);
     if (path instanceof Error) {
-        notifyError(
-            'Redemption error',
-            `Cannot generate Merkle proof of valid zAsset: ${path.message}`,
-            path,
-        );
-        return UTXOStatus.UNSPENT;
+        return [
+            UTXOStatus.UNSPENT,
+            {
+                message: `Cannot generate Merkle proof of valid zAsset: ${path.message}`,
+                details: path,
+                triggerError: path,
+            } as DetailedError,
+        ];
     }
     const [pathElements, proofLeafHex, merkleTreeRoot, treeIndex] = path;
 
     if (proofLeafHex !== zZkpCommitment) {
         // This error also shoots when the tree is outdated
-        notifyError(
-            'Redemption error',
-            "zAsset didn't match shielded pool entry.",
+
+        return [
+            UTXOStatus.UNSPENT,
             {
-                leafInProof: proofLeafHex,
-                leafInEvent: zZkpCommitment,
-            },
-        );
-        return UTXOStatus.UNSPENT;
+                message: "zAsset didn't match shielded pool entry.",
+                details: {
+                    leafInProof: proofLeafHex,
+                    leafInEvent: zZkpCommitment,
+                },
+            } as DetailedError,
+        ];
     }
 
     const isProofValid = await poolContractVerifyMerkleProof(
@@ -175,20 +192,23 @@ export async function exit(
         pathElements,
     );
     if (isProofValid instanceof Error) {
-        notifyError(
-            'Redemption error',
-            'Merkle proof of zAsset in shielded pool is not correct.',
+        return [
+            UTXOStatus.UNSPENT,
             {
-                proofLeaf: proofLeafHex,
-                leafId: bigintToBytes32(leafId),
-                merkleTreeRoot,
-                pathElements,
-            },
-        );
-        return UTXOStatus.UNSPENT;
+                message:
+                    'Merkle proof of zAsset in shielded pool is not correct.',
+                details: {
+                    proofLeaf: proofLeafHex,
+                    leafId: bigintToBytes32(leafId),
+                    merkleTreeRoot,
+                    pathElements,
+                },
+                triggerError: isProofValid as Error,
+            } as DetailedError,
+        ];
     }
 
-    const result = await poolContractExit(
+    const result = await craftPoolContractExit(
         contract,
         tokenAddress!,
         tokenId as bigint,
@@ -200,11 +220,11 @@ export async function exit(
         merkleTreeRoot,
         BigInt(0), // cacheIndexHint
     );
-    if (result instanceof Error) {
-        return UTXOStatus.UNSPENT;
+    if (isDetailedError(result)) {
+        return [UTXOStatus.UNSPENT, result];
     }
 
-    return UTXOStatus.SPENT;
+    return [null, result as ContractTransaction];
 }
 
 export type UTXOStatusByID = [string, UTXOStatus];
@@ -408,7 +428,7 @@ async function generateMerklePath(
     }
 }
 
-async function poolContractExit(
+async function craftPoolContractExit(
     poolContract: Contract,
     tokenAddress: string,
     tokenId: bigint,
@@ -419,7 +439,7 @@ async function poolContractExit(
     pathElements: string[], // bytes32[16]
     merkleRoot: string,
     cacheIndexHint: bigint,
-): Promise<undefined | Error> {
+): Promise<ContractTransaction | DetailedError> {
     let tx: any;
 
     try {
@@ -434,37 +454,14 @@ async function poolContractExit(
             merkleRoot,
             cacheIndexHint,
         );
+        return tx;
     } catch (err) {
-        return notifyError('Transaction error', parseTxErrorMessage(err), {
-            err,
-            tx,
-        });
+        return {
+            message: 'Transaction error',
+            details: parseTxErrorMessage(err),
+            triggerError: err as Error,
+        } as DetailedError;
     }
-
-    const inProgress = openNotification(
-        'Transaction in progress',
-        'Your withdrawal transaction is currently in progress. Please wait for confirmation!',
-        'info',
-    );
-
-    const receipt = await tx.wait(CONFIRMATIONS_NUM);
-    removeNotification(inProgress);
-
-    const event = await getEventFromReceipt(receipt, 'Nullifier');
-    if (event instanceof Error) {
-        return notifyError(
-            'Transaction error',
-            `Cannot find event in receipt: ${parseTxErrorMessage(event)}`,
-            event,
-        );
-    }
-
-    openNotification(
-        'Withdrawal completed successfully',
-        'Congratulations! Your withdrawal transaction was processed!',
-        'info',
-        10000,
-    );
 }
 
 async function poolContractVerifyMerkleProof(

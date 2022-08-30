@@ -6,7 +6,6 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    IconButton,
     Typography,
     Box,
     Checkbox,
@@ -14,9 +13,9 @@ import {
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 
-import backButtonLeftArrow from '../../../../images/back-button-left-arrow.svg';
 import {useAppDispatch} from '../../../../redux/hooks';
 import {removeBlur, setBlur} from '../../../../redux/slices/blur';
+import BackButton from '../../../BackButton';
 import PrimaryActionButton from '../../../Common/PrimaryActionButton';
 
 import './styles.scss';
@@ -46,12 +45,7 @@ export default function RedeemRewardsWarningDialog(props: {
             onClose={props.handleClose}
             open={true}
         >
-            <Box className="modal-dialog-back-button-holder">
-                <IconButton className="back-button" onClick={props.handleClose}>
-                    <img src={backButtonLeftArrow} />
-                    <Typography id="caption">Back</Typography>
-                </IconButton>
-            </Box>
+            <BackButton onClick={props.handleClose} />
             <DialogTitle>
                 <Typography className="modal-dialog-title">
                     Early ZKP Redemption

@@ -19,6 +19,7 @@ import firstVisitReducer from './slices/isFirstVisit';
 import isWalletConnectedReducer from './slices/isWalletConnected';
 import poolV0Reducer from './slices/poolV0';
 import remainingPrpRewardsReducer from './slices/remainingPrpRewards';
+import stakeAmountReducer from './slices/stakeAmount';
 import stakeTermsReducer from './slices/stakeTerms';
 import totalStakedReducer from './slices/totalsOfAdvancedStakes';
 import totalUnclaimedClassicRewardsReducer from './slices/totalUnclaimedClassicRewards';
@@ -46,6 +47,7 @@ const rootReducer = combineReducers({
     totalUnclaimedClassicRewards: totalUnclaimedClassicRewardsReducer,
     firstVisit: firstVisitReducer,
     Web3WalletLastAction: Web3WalletLastActionReducer,
+    stakeAmount: stakeAmountReducer,
     isWalletConnected: isWalletConnectedReducer,
     remainingPrpRewards: remainingPrpRewardsReducer,
 });

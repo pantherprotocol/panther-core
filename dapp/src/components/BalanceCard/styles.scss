@@ -11,6 +11,16 @@
         backdrop-filter: blur(50px);
         padding: 16px 16px 24px;
 
+        @media (min-width: $smaller-screen-size) and (max-width: $medium-screen-size) {
+            position: relative;
+            top: 100px;
+        }
+
+        @media (max-width: $smaller-screen-size) {
+            position: relative;
+            top: 150px;
+        }
+
         .balance-card-address-holder {
             display: flex;
             align-content: center;

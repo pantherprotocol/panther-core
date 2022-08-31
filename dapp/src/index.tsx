@@ -1,6 +1,9 @@
 import React from 'react';
 
 import {Web3Provider} from '@ethersproject/providers';
+import {CaptureConsole} from '@sentry/integrations';
+import * as Sentry from '@sentry/react';
+import {BrowserTracing} from '@sentry/tracing';
 import {Web3ReactProvider} from '@web3-react/core';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
@@ -17,6 +20,18 @@ function getLibrary(provider: any): Web3Provider {
     library.pollingInterval = 12000;
     return library;
 }
+
+Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    integrations: [
+        new BrowserTracing(),
+        new CaptureConsole({
+            levels: ['error'],
+        }),
+    ],
+    tracesSampleRate: 1.0,
+    enabled: process.env.NODE_ENV !== 'development',
+});
 
 ReactDOM.render(
     <React.StrictMode>

@@ -1,5 +1,6 @@
 import path from 'path';
 
+import SentryCliPlugin from '@sentry/webpack-plugin';
 import Dotenv from 'dotenv-webpack';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -170,6 +171,23 @@ const webpackConfig = (): Configuration | any => ({
             theme_color: '#000000',
             background_color: '#ffffff',
         }),
+        // only production or staging env
+        ...(process.env.NODE_ENV === 'production' ||
+        // TODO: we need to enable this plugin only for the production when we make v0.5 release
+        // @ts-ignore
+        process.env.NODE_ENV === 'staging'
+            ? [
+                  new SentryCliPlugin({
+                      include: '.',
+                      ignoreFile: '.sentrycliignore',
+                      ignore: ['node_modules', 'webpack.config.js'],
+                      configFile: 'sentry.properties',
+                      authToken: process.env.SENTRY_AUTH_TOKEN,
+                      org: 'panther-protocol',
+                      project: 'dapp',
+                  }),
+              ]
+            : []),
     ],
 });
 export default webpackConfig;

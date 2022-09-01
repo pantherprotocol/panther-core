@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {useState} from 'react';
 
 import {Box, Divider, Typography} from '@mui/material';
 
@@ -11,7 +11,7 @@ import './styles.scss';
 export default function WrongZAssetsNetwork() {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     return (
-        <Fragment>
+        <Box className="wrong-network-container">
             <Box className="wrong-network-box"></Box>
             <Box className="content">
                 <ZAssetSwitchModal
@@ -38,6 +38,6 @@ export default function WrongZAssetsNetwork() {
                     </PrimaryActionButton>
                 </Box>
             </Box>
-        </Fragment>
+        </Box>
     );
 }

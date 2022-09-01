@@ -56,14 +56,16 @@ export default function UnstakingInfo() {
 
     if (!chainHasAdvancedStaking(chainId) && minLockPeriod) {
         return (
-            <Box className="unstaking-info-message">
-                <Typography variant="caption">
-                    Classic stakes are locked for{' '}
-                    {Number(minLockPeriod) / 60 / 60 / 24} days before becoming
-                    eligible for unstaking. Rewards are claimed once a
-                    transaction is unstaked.
-                </Typography>
-            </Box>
+            <Card variant="outlined" className="unstaking-info-container">
+                <Box className="unstaking-info-message">
+                    <Typography variant="caption">
+                        Classic stakes are locked for{' '}
+                        {Number(minLockPeriod) / 60 / 60 / 24} days before
+                        becoming eligible for unstaking. Rewards are claimed
+                        once a transaction is unstaked.
+                    </Typography>
+                </Box>
+            </Card>
         );
     }
 

@@ -82,7 +82,7 @@ export default function StakingInput(props: {amountToStake: string | null}) {
     }, [props.amountToStake]);
 
     return (
-        <>
+        <Box className="staking-input-holder">
             <Box className="staking-input-header">
                 <Box className="amount-to-stake">
                     <Typography className="amount-to-stake-caption">
@@ -162,6 +162,6 @@ export default function StakingInput(props: {amountToStake: string | null}) {
                     <img src={logo} />
                 </Box>
             </Box>
-        </>
+        </Box>
     );
 }

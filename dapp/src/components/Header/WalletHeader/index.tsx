@@ -57,7 +57,7 @@ export default function WalletHeader() {
     }, [context, active, account, error, fetchChainBalance]);
 
     return (
-        <Grid item lg={6} md={12} xs={12} className="header-right-container">
+        <Grid item lg={6} md={12} xs={12} className="wallet-header-container">
             {/* connection button */}
             {!active && !wrongNetwork && (
                 <Box className="address-btn">

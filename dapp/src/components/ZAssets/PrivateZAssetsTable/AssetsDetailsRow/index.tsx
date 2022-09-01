@@ -23,7 +23,7 @@ const AssetsDetailsRow = (props: {rewards: AdvancedStakeRewards}) => {
     );
 
     return (
-        <TableRow key={props.rewards.id}>
+        <TableRow key={props.rewards.id} className="zAsset-staking-holder">
             <TableCell component="th" scope="row" className="staking-date">
                 {formatTime(Number(props.rewards.creationTime) * 1000, {
                     style: 'short',

@@ -77,35 +77,35 @@
             display: none;
         }
     }
-}
 
-.menu-item {
-    background: transparent !important;
-    justify-content: center !important;
-    cursor: default !important;
-
-    &:hover {
+    .menu-item {
         background: transparent !important;
+        justify-content: center !important;
+        cursor: default !important;
+        &:hover {
+            background: transparent !important;
+        }
     }
-}
 
-.MuiSelect-select {
-    padding: 4px !important;
-    color: $white !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-}
+    .MuiSelect-select {
+        padding: 4px !important;
+        color: $white !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
 
-.MuiSvgIcon-root {
-    color: $white !important;
-}
+    .MuiSvgIcon-root {
+        color: $white !important;
+    }
 
-.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiMenu-paper {
-    border: 1px solid $dropdown-border-color;
-    border-radius: 8px;
+    .MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiMenu-paper {
+        top: 82px !important;
+        border: 1px solid $dropdown-border-color;
+        border-radius: 8px;
 
-    ul[aria-labelledby='settings-button-label'] {
-        background: $dropdown-background !important;
+        ul[aria-labelledby='settings-button-label'] {
+            background: $dropdown-background !important;
+        }
     }
 }

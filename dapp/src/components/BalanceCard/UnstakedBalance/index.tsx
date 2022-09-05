@@ -7,7 +7,7 @@ import {BigNumber, utils} from 'ethers';
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
 import {parseTxErrorMessage} from '../../../lib/errors';
-import {formatUSD, getFormatedFractions} from '../../../lib/format';
+import {formatUSD, getFormattedFractions} from '../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/advancedStakesRewards';
 import {
@@ -88,7 +88,7 @@ export default function UnstakedBalance() {
     );
 
     const [whole, fractional] = tokenBalance
-        ? getFormatedFractions(utils.formatEther(tokenBalance))
+        ? getFormattedFractions(utils.formatEther(tokenBalance))
         : [];
 
     return (

@@ -12,7 +12,7 @@ import {parseTxErrorMessage} from '../../../lib/errors';
 import {
     formatCurrency,
     formatTimeSince,
-    getFormatedFractions,
+    getFormattedFractions,
 } from '../../../lib/format';
 import {fiatPrice} from '../../../lib/tokenPrice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
@@ -166,7 +166,7 @@ export default function PrivateBalance() {
     );
 
     const [whole, fractional] = totalPrice
-        ? getFormatedFractions(utils.formatEther(totalPrice))
+        ? getFormattedFractions(utils.formatEther(totalPrice))
         : [];
 
     return (

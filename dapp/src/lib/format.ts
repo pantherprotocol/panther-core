@@ -87,7 +87,7 @@ export function splitFloatNumber(value: string): [string, string] | [] {
     return [whole || '0', fractional || '0'];
 }
 
-export function getFormatedFractions(amount: string): (string | undefined)[] {
+export function getFormattedFractions(amount: string): (string | undefined)[] {
     let [whole, fractional] = splitFloatNumber(amount);
     fractional = fractional?.padEnd(2, '0').substring(0, 2);
     whole = whole

@@ -22,7 +22,7 @@ export default function AddressBalances(props: {
 }) {
     const {title, tooltip, amountUSD, balance, rewardsTokenSymbol} = props;
     const [whole, fractional] = balance
-        ? getFormatedFractions(utils.formatEther(balance))
+        ? getFormatedFractions(utils.formatUnits(balance, props.scale ?? 18))
         : [];
     return (
         <Box className="address-balance">

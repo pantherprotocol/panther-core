@@ -36,18 +36,6 @@
         }
     }
 
-    .nav-item a {
-        font-size: $title-font-size;
-        font-weight: $light-font-weight;
-        color: $grey-text;
-        cursor: pointer;
-        padding-left: 10px;
-
-        &:hover {
-            color: $white;
-        }
-    }
-
     .nav-item.active-item a {
         color: $white;
         font-size: $title-font-size;

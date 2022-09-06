@@ -135,6 +135,16 @@ code {
 
 a {
     text-decoration: none;
+
+    font-size: $title-font-size;
+    font-weight: $light-font-weight;
+    color: $grey-text;
+    cursor: pointer;
+    padding-left: 10px;
+
+    &:hover {
+        color: $white;
+    }
 }
 
 .App-link {

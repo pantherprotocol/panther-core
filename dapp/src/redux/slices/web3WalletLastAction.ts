@@ -16,6 +16,14 @@ export type WalletSignatureTrigger =
     | 'zZKP redemption'
     | 'stake';
 
+export type WalletActionName =
+    | 'refreshUTXOsStatuses'
+    | 'signMessage'
+    | 'getAdvancedStakesRewards'
+    | 'stake'
+    | 'exit'
+    | '';
+
 // In the future, there may be other types of trigger
 export type WalletActionTrigger = WalletSignatureTrigger;
 
@@ -25,7 +33,7 @@ export type Web3WalletActionCause = {
 };
 
 export interface Web3WalletLastActionState {
-    action: string; // e.g. 'signMessage'
+    action: WalletActionName; // e.g. 'signMessage'
     cause: Web3WalletActionCause | null;
     acknowledgedByUser: boolean; // true if user has acknowledged a notification or modal dialog for this action
     data: any; // e.g. data provided to signMessage(), only useful for debugging
@@ -41,14 +49,14 @@ const initialState: Web3WalletLastActionState = {
 };
 
 export type StartWalletActionPayload = {
-    name: string;
+    name: WalletActionName;
     cause: Web3WalletActionCause;
     data: any;
 };
 
 function startAction(
     state: Web3WalletLastActionState,
-    name: string,
+    name: WalletActionName,
     cause: Web3WalletActionCause,
     data: any,
 ) {
@@ -79,14 +87,17 @@ export const Web3WalletLastActionSlice = createSlice({
                 action.payload.data,
             );
         },
-        registerWalletActionSuccess: (state, action: PayloadAction<string>) => {
+        registerWalletActionSuccess: (
+            state,
+            action: PayloadAction<WalletActionName>,
+        ) => {
             checkActionInProgress(state.action, action.payload, 'success');
             state.status = 'succeeded';
         },
         progressToNewWalletAction: (
             state,
             action: PayloadAction<{
-                oldAction: string;
+                oldAction: WalletActionName;
                 newAction: StartWalletActionPayload;
             }>,
         ) => {
@@ -102,12 +113,15 @@ export const Web3WalletLastActionSlice = createSlice({
                 action.payload.newAction.data,
             );
         },
-        registerWalletActionFailure: (state, action: PayloadAction<string>) => {
+        registerWalletActionFailure: (
+            state,
+            action: PayloadAction<WalletActionName>,
+        ) => {
             checkActionInProgress(state.action, action.payload, 'failure');
             state.status = 'failed';
         },
 
-        acknowledgeByUser: (state, action: PayloadAction<string>) => {
+        acknowledgeByUser: (state, action: PayloadAction<WalletActionName>) => {
             checkActionInProgress(
                 state.action,
                 action.payload,
@@ -122,7 +136,7 @@ export const walletActionStatusSelector = (state: RootState) =>
     state.Web3WalletLastAction.status;
 
 export function showWalletActionInProgressSelector(
-    action: string,
+    action: WalletActionName,
 ): (state: RootState) => boolean {
     return (state: RootState) =>
         state.Web3WalletLastAction.status == 'in progress' &&
@@ -143,8 +157,8 @@ export const {
 export default Web3WalletLastActionSlice.reducer;
 
 function checkActionInProgress(
-    actionInProgress: string,
-    action: string,
+    actionInProgress: WalletActionName,
+    action: WalletActionName,
     registration: string,
 ): void {
     if (actionInProgress !== action) {

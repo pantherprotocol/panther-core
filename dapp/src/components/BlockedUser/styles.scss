@@ -1,0 +1,13 @@
+@import '../../variables';
+@import '../../styles/modal-dialog.scss';
+
+.blocked-user {
+    text-align: center !important;
+    font-size: $title-font-size;
+    line-height: 28px;
+    color: $white;
+
+    a {
+        color: $link-color;
+    }
+}

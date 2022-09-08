@@ -2,8 +2,11 @@ import React, {useCallback, useEffect, useState} from 'react';
 
 import {Box, Card, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import {ContractTransaction} from 'ethers/lib/ethers';
 
 import polygonIcon from '../../images/polygon-logo.svg';
+import {CONFIRMATIONS_NUM} from '../../lib/constants';
+import {parseTxErrorMessage} from '../../lib/errors';
 import {formatCurrency} from '../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getChainBalance} from '../../redux/slices/chainBalance';
@@ -14,7 +17,10 @@ import {
 import {formatAccountAddress} from '../../services/account';
 import {isWrongNetwork, supportedNetworks} from '../../services/connectors';
 import {FAUCET_CHAIN_IDS} from '../../services/env';
-import {sendFaucetTransaction} from '../../services/faucet';
+import {craftSendFaucetTransaction, faucetDrink} from '../../services/faucet';
+import {isDetailedError, DetailedError} from '../../types/error';
+import {notifyError} from '../Common/errors';
+import {openNotification, removeNotification} from '../Common/notification';
 import PrimaryActionButton from '../Common/PrimaryActionButton';
 import ConnectButton from '../ConnectButton';
 import SwitchNetworkButton from '../SwitchNetworkButton';
@@ -75,18 +81,59 @@ function ZafariFaucet() {
             return;
         }
 
-        const faucetResponse = await sendFaucetTransaction(
+        const [response, contract] = await craftSendFaucetTransaction(
             library,
             chainId,
             account,
         );
 
+        if (isDetailedError(response)) {
+            return notifyError(response);
+        }
+
+        const tx: ContractTransaction | DetailedError = await faucetDrink(
+            contract,
+            account,
+            response,
+        );
+        if (isDetailedError(tx)) {
+            return notifyError(tx);
+        }
+
+        const inProgress = openNotification(
+            'Transaction in progress',
+            'Your faucet transaction is currently in progress. Please wait for confirmation!',
+            'info',
+        );
+
+        try {
+            const receipt = await tx.wait(CONFIRMATIONS_NUM);
+            if (receipt.status === 0) {
+                console.error('receipt: ', receipt);
+                throw new Error(
+                    'Transaction failed on-chain without giving error details.',
+                );
+            }
+        } catch (err) {
+            removeNotification(inProgress);
+            return notifyError({
+                message: 'Transaction failed',
+                details: parseTxErrorMessage(err),
+                triggerError: err as Error,
+            });
+        }
+
+        removeNotification(inProgress);
+
+        openNotification(
+            'Faucet sending completed successfully',
+            'Congratulations! Your faucet transaction was processed!',
+            'info',
+            10000,
+        );
+
         dispatch(getChainBalance, context);
         dispatch(getZkpTokenBalance, context);
-
-        if (faucetResponse instanceof Error) {
-            return;
-        }
     }, [context, dispatch, library, chainId, account]);
 
     return (

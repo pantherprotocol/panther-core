@@ -5,6 +5,8 @@ import {Box, Button} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 
+import {parseTxErrorMessage} from '../../../lib/errors';
+import {awaitConfirmationAndRetrieveEvent} from '../../../lib/events';
 import {formatCurrency} from '../../../lib/format';
 import {safeParseUnits} from '../../../lib/numbers';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
@@ -24,9 +26,12 @@ import {
 } from '../../../redux/slices/web3WalletLastAction';
 import {getZkpStakedBalance} from '../../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../../redux/slices/zkpTokenBalance';
-import {notifyError} from '../../../services/errors';
+import {chainHasAdvancedStaking} from '../../../services/contracts';
 import {deriveRootKeypairs} from '../../../services/keychain';
 import {advancedStake} from '../../../services/staking';
+import {notifyError} from '../../Common/errors';
+import {MessageWithTx} from '../../Common/MessageWithTx';
+import {openNotification, removeNotification} from '../../Common/notification';
 
 import './styles.scss';
 
@@ -125,7 +130,11 @@ const StakingBtn = (props: {
             const keys = await deriveRootKeypairs(signer);
             if (keys instanceof Error) {
                 dispatch(registerWalletActionFailure, 'signMessage');
-                notifyError('Failed to create stake', keys.message, keys);
+                notifyError({
+                    message: 'Failed to create stake',
+                    details: keys.message,
+                    triggerError: keys,
+                });
                 return;
             }
 
@@ -137,7 +146,17 @@ const StakingBtn = (props: {
                     data: {account},
                 },
             });
-            const stakingResponse = await advancedStake(
+            if (!chainHasAdvancedStaking(chainId)) {
+                notifyError({
+                    message: 'Error during stake',
+                    details: 'Advanced staking is not supported on this chain',
+                });
+                dispatch(registerWalletActionFailure, 'stake');
+
+                return;
+            }
+
+            const response = await advancedStake(
                 library,
                 chainId,
                 keys,
@@ -145,15 +164,49 @@ const StakingBtn = (props: {
                 amount,
             );
 
-            if (stakingResponse instanceof Error) {
+            if (response instanceof Error) {
                 dispatch(registerWalletActionFailure, 'stake');
-                notifyError(
-                    'Failed to create stake',
-                    stakingResponse.message,
-                    stakingResponse,
+                openNotification(
+                    'Transaction error',
+                    <MessageWithTx
+                        message={parseTxErrorMessage(response.message)}
+                        txHash={null}
+                    />,
+                    'danger',
                 );
                 return;
             }
+
+            const inProgress = openNotification(
+                'Transaction in progress',
+                'Your staking transaction is currently in progress. Please wait for confirmation!',
+                'info',
+            );
+            const event = await awaitConfirmationAndRetrieveEvent(
+                response,
+                'StakeCreated',
+            );
+            removeNotification(inProgress);
+
+            if (event instanceof Error) {
+                openNotification(
+                    'Transaction error',
+                    <MessageWithTx
+                        message={parseTxErrorMessage(event)}
+                        txHash={response?.hash}
+                    />,
+                    'danger',
+                );
+                return;
+            }
+
+            openNotification(
+                'Stake completed successfully',
+                'Congratulations! Your staking transaction was processed!',
+                'info',
+                10000,
+            );
+
             dispatch(registerWalletActionSuccess, 'stake');
             dispatch(progressToNewWalletAction, {
                 oldAction: 'stake',

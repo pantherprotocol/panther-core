@@ -7,10 +7,6 @@ import {fromRpcSig} from 'ethereumjs-util';
 import type {ContractTransaction} from 'ethers';
 import {BigNumber, constants, utils} from 'ethers';
 
-import {MessageWithTx} from '../components/Common/MessageWithTx';
-import {CONFIRMATIONS_NUM} from '../lib/constants';
-import {parseTxErrorMessage} from '../lib/errors';
-import {getEventFromReceipt} from '../lib/events';
 import {
     generateChildPublicKey,
     generateRandomBabyJubValue,
@@ -23,7 +19,6 @@ import {StakeRewardBN, StakeTypes} from '../types/staking';
 import {MaspChainIds} from './connectors';
 import {
     ContractName,
-    chainHasAdvancedStaking,
     chainHasStakesReporter,
     getContractAddress,
     getRewardMasterContract,
@@ -36,10 +31,8 @@ import {
     getAdvancedStakeRewardControllerContract,
 } from './contracts';
 import {env, MASP_CHAIN_ID} from './env';
-import {notifyError} from './errors';
 import axios from './http';
 import {encryptRandomSecret} from './message-encryption';
-import {openNotification, removeNotification} from './notification';
 import {calculateRewardsForStake} from './rewards';
 import {
     AdvancedStakeRewardsResponse,
@@ -196,34 +189,31 @@ export async function advancedStake(
     keys: IKeypair[],
     account: string,
     amount: BigNumber, // assumes already validated as <= tokenBalance
-): Promise<BigNumber | Error> {
-    if (!chainHasAdvancedStaking(chainId)) {
-        return notifyError(
-            'Error during stake',
-            'Advanced staking is not supported on this chain',
-            {
-                chainId,
-            },
-        );
-    }
-
+): Promise<Error | ContractTransaction> {
     const data = await craftAdvancedStakeData(keys);
     if (data instanceof Error) {
         return data;
     }
     console.debug(`advanced stake data: ${data}`);
 
-    return stake(library, chainId, account, amount, 'advanced', data);
+    return craftStakingTransaction(
+        library,
+        chainId,
+        account,
+        amount,
+        'advanced',
+        data,
+    );
 }
 
-export async function stake(
+export async function craftStakingTransaction(
     library: any,
     chainId: number,
     account: string,
     amount: BigNumber, // assumes already validated as <= tokenBalance
     stakeType: string,
     data: string,
-): Promise<BigNumber | Error> {
+): Promise<Error | ContractTransaction> {
     const {signer, contract} = getSignableContract(
         library,
         chainId,
@@ -235,9 +225,8 @@ export async function stake(
         .keccak256(utils.toUtf8Bytes(stakeType))
         .slice(0, 10);
 
-    let tx: any;
     try {
-        tx = await initiateStakingTransaction(
+        return await initiateStakingTransaction(
             library,
             account,
             chainId,
@@ -248,31 +237,8 @@ export async function stake(
             data,
         );
     } catch (err) {
-        return new Error(parseTxErrorMessage(err));
+        return err as Error;
     }
-
-    const inProgress = openNotification(
-        'Transaction in progress',
-        'Your staking transaction is currently in progress. Please wait for confirmation!',
-        'info',
-    );
-
-    const receipt = await tx.wait(CONFIRMATIONS_NUM);
-    removeNotification(inProgress);
-
-    const event = await getEventFromReceipt(receipt, 'StakeCreated');
-    if (event instanceof Error) {
-        return event;
-    }
-
-    openNotification(
-        'Stake completed successfully',
-        'Congratulations! Your staking transaction was processed!',
-        'info',
-        10000,
-    );
-
-    return event?.args?.stakeID;
 }
 
 async function initiateStakingTransaction(
@@ -383,7 +349,7 @@ export async function unstake(
     stakeID: BigNumber,
     data?: string,
     isForced = false,
-): Promise<Error | undefined> {
+): Promise<[ContractTransaction, Error | null]> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -397,41 +363,9 @@ export async function unstake(
             gasLimit: 350_000,
         });
     } catch (e: any) {
-        openNotification(
-            'Transaction error',
-            MessageWithTx({
-                message: parseTxErrorMessage(e),
-                txHash: tx?.hash,
-            }),
-            'danger',
-        );
-        return e as Error;
+        return [tx, e as Error];
     }
-
-    const inProgress = openNotification(
-        'Transaction in progress',
-        'Your unstaking transaction is currently in progress. Please wait for confirmation!',
-        'info',
-    );
-
-    const receipt = await tx.wait(CONFIRMATIONS_NUM);
-    removeNotification(inProgress);
-
-    const event = await getEventFromReceipt(receipt, 'StakeClaimed');
-    if (event instanceof Error) {
-        return notifyError(
-            'Transaction error',
-            `Cannot find event in receipt. ${parseTxErrorMessage(event)}`,
-            event,
-        );
-    }
-
-    openNotification(
-        'Unstaking completed successfully',
-        'Congratulations! Your unstaking transaction was processed!',
-        'info',
-        10000,
-    );
+    return [tx, null];
 }
 
 export async function getAccountStakes(

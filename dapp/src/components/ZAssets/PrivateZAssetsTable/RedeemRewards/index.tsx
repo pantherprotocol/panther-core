@@ -5,6 +5,8 @@ import {Typography, Button, Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 
 import rightSideArrow from '../../../../images/right-arrow-icon.svg';
+import {parseTxErrorMessage} from '../../../../lib/errors';
+import {awaitConfirmationAndRetrieveEvent} from '../../../../lib/events';
 import {formatTime} from '../../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../../redux/hooks';
 import {updateUTXOStatus} from '../../../../redux/slices/advancedStakesRewards';
@@ -18,10 +20,15 @@ import {
     StartWalletActionPayload,
 } from '../../../../redux/slices/web3WalletLastAction';
 import {env} from '../../../../services/env';
-import {notifyError} from '../../../../services/errors';
 import {deriveRootKeypairs} from '../../../../services/keychain';
 import {exit} from '../../../../services/pool';
+import {isDetailedError} from '../../../../types/error';
 import {UTXOStatus, AdvancedStakeRewards} from '../../../../types/staking';
+import {notifyError} from '../../../Common/errors';
+import {
+    openNotification,
+    removeNotification,
+} from '../../../Common/notification';
 import RedeemRewardsWarningDialog from '../RedeemRewardsWarningDialog';
 
 import './styles.scss';
@@ -87,11 +94,11 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
         const signer = library.getSigner(account);
         const keys = await deriveRootKeypairs(signer);
         if (keys instanceof Error) {
-            notifyError(
-                'Panther wallet error',
-                `Failed to generate Panther wallet secrets from signature: ${keys.message}`,
-                keys,
-            );
+            notifyError({
+                message: 'Panther wallet error',
+                details: `Failed to generate Panther wallet secrets from signature: ${keys.message}`,
+                triggerError: keys,
+            });
             dispatch(registerWalletActionFailure, 'signMessage');
             return;
         }
@@ -104,7 +111,7 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
             },
         });
 
-        const utxoStatus = await exit(
+        const [res1, res2] = await exit(
             library,
             account as string,
             chainId as number,
@@ -114,13 +121,69 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
             rewards.commitments,
             keys,
         );
-        dispatch(
-            utxoStatus == UTXOStatus.UNDEFINED
-                ? registerWalletActionFailure
-                : registerWalletActionSuccess,
-            'exit',
-        );
-        dispatch(updateUTXOStatus, [chainId, account, rewards.id, utxoStatus]);
+        if (isDetailedError(res2)) {
+            const [utxoStatue, err] = [res1, res2];
+            dispatch(
+                utxoStatue == UTXOStatus.UNDEFINED
+                    ? registerWalletActionFailure
+                    : registerWalletActionSuccess,
+                'exit',
+            );
+            dispatch(updateUTXOStatus, [
+                chainId,
+                account,
+                rewards.id,
+                utxoStatue,
+            ]);
+            return notifyError(err);
+        } else {
+            //in this case the exit function returned [null,transaction]
+            const [, tx] = [, res2];
+
+            const inProgress = openNotification(
+                'Transaction in progress',
+                'Your withdrawal transaction is currently in progress. Please wait for confirmation!',
+                'info',
+            );
+
+            const event = await awaitConfirmationAndRetrieveEvent(
+                tx,
+                'Nullifier',
+            );
+            removeNotification(inProgress);
+
+            if (event instanceof Error) {
+                dispatch(registerWalletActionSuccess, 'exit');
+                dispatch(updateUTXOStatus, [
+                    chainId,
+                    account,
+                    rewards.id,
+                    UTXOStatus.UNDEFINED,
+                ]);
+
+                return notifyError({
+                    message: 'Transaction error',
+                    details: `Cannot find event in receipt: ${parseTxErrorMessage(
+                        event,
+                    )}`,
+                    triggerError: event,
+                });
+            }
+            dispatch(registerWalletActionSuccess, 'exit');
+            dispatch(updateUTXOStatus, [
+                chainId,
+                account,
+                rewards.id,
+                UTXOStatus.SPENT,
+            ]);
+
+            openNotification(
+                'Withdrawal completed successfully',
+                'Congratulations! Your withdrawal transaction was processed!',
+                'info',
+                10000,
+            );
+        }
     }, [dispatch, library, account, chainId, rewards]);
 
     const afterExitTime = exitTime ? exitTime * 1000 < Date.now() : false;

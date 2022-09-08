@@ -1,7 +1,8 @@
 import {utils} from 'ethers';
 
+import {openNotification} from '../components/Common/notification';
+
 import {supportedNetworks} from './connectors';
-import {openNotification} from './notification';
 
 export const switchNetwork = async (
     chainId: number,

@@ -1,17 +1,16 @@
-import {BigNumber, utils} from 'ethers';
+import {BigNumber, Contract, utils} from 'ethers';
+import {ContractTransaction} from 'ethers/lib/ethers';
 
-import {CONFIRMATIONS_NUM} from '../lib/constants';
 import {parseTxErrorMessage} from '../lib/errors';
+import {DetailedError} from '../types/error';
 
 import {getFaucetContract, getSignableContract} from './contracts';
-import {notifyError} from './errors';
-import {openNotification, removeNotification} from './notification';
 
-export async function sendFaucetTransaction(
+export async function craftSendFaucetTransaction(
     library: any,
     chainId: number,
     account: string,
-): Promise<Error | boolean> {
+): Promise<[BigNumber | DetailedError, Contract]> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -22,57 +21,36 @@ export async function sendFaucetTransaction(
     let maxAmountToPay: BigNumber;
     try {
         maxAmountToPay = await contract.maxAmountToPay();
-    } catch (err) {
-        return notifyError(
-            'Failed to prepare transaction',
-            `Couldn't obtain maxAmountToPay from faucet at ${contract.address}`,
-            err,
+        console.debug(
+            `Faucet had maxAmountToPay: ${utils.formatEther(maxAmountToPay)}`,
         );
+        return [maxAmountToPay, contract];
+    } catch (err) {
+        return [
+            {
+                message: 'Failed to prepare transaction',
+                details: `Couldn't obtain maxAmountToPay from faucet at ${contract.address}`,
+                triggerError: err as Error,
+            } as DetailedError,
+            contract,
+        ];
     }
-    console.debug(
-        `Faucet had maxAmountToPay: ${utils.formatEther(maxAmountToPay)}`,
-    );
+}
 
-    let tx: any;
+export async function faucetDrink(
+    contract: Contract,
+    account: string,
+    maxAmountToPay: BigNumber,
+): Promise<ContractTransaction | DetailedError> {
     try {
-        tx = await contract.drink(account, {
+        return await contract.drink(account, {
             value: maxAmountToPay,
         });
     } catch (err) {
-        return notifyError(
-            'Failed to submit transaction',
-            parseTxErrorMessage(err),
-            err,
-        );
+        return {
+            message: 'Failed to submit transaction',
+            details: parseTxErrorMessage(err),
+            triggerError: err,
+        } as DetailedError;
     }
-
-    const inProgress = openNotification(
-        'Transaction in progress',
-        'Your faucet transaction is currently in progress. Please wait for confirmation!',
-        'info',
-    );
-
-    try {
-        const receipt = await tx.wait(CONFIRMATIONS_NUM);
-        if (receipt.status === 0) {
-            console.error('receipt: ', receipt);
-            throw new Error(
-                'Transaction failed on-chain without giving error details.',
-            );
-        }
-    } catch (err) {
-        removeNotification(inProgress);
-        return notifyError('Transaction failed', parseTxErrorMessage(err), err);
-    }
-
-    removeNotification(inProgress);
-
-    openNotification(
-        'Faucet sending completed successfully',
-        'Congratulations! Your faucet transaction was processed!',
-        'info',
-        10000,
-    );
-
-    return true;
 }

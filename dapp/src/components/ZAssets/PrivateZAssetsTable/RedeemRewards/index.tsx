@@ -39,7 +39,7 @@ function getButtonContents(
     afterExitTime: boolean,
     treeUri: string | undefined,
 ): string | ReactElement {
-    if (inProgress) return 'Redeeming zZKP';
+    if (inProgress) return 'Redeeming';
     if (afterExitTime) {
         return treeUri ? 'Redeem zZKP' : 'Redemption opens soon!';
     }
@@ -66,9 +66,11 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
     const exitTime = useAppSelector(poolV0ExitTimeSelector);
 
     const [warningDialogShown, setWarningDialogShown] = useState(false);
+    const [selectedRewardId, setSelectedRewardId] = useState('');
 
-    const openWarningDialog = () => {
+    const openWarningDialog = (id: string) => {
         setWarningDialogShown(true);
+        setSelectedRewardId(id);
     };
 
     const handleRedeemButtonClick = () => {
@@ -202,19 +204,30 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                     ) : null
                 }
                 disabled={!isRedemptionPossible || showExitInProgress}
-                onClick={() => openWarningDialog()}
+                onClick={() => openWarningDialog(rewards.id)}
             >
-                {showExitInProgress && (
-                    <i
-                        className="fa fa-refresh fa-spin"
-                        style={{marginRight: '5px'}}
-                    />
-                )}
-                {getButtonContents(
-                    showExitInProgress,
-                    exitTime,
-                    afterExitTime,
-                    treeUri,
+                {showExitInProgress && rewards.id === selectedRewardId ? (
+                    <>
+                        <i
+                            className="fa fa-refresh fa-spin"
+                            style={{marginRight: '5px'}}
+                        />
+                        {getButtonContents(
+                            showExitInProgress,
+                            exitTime,
+                            afterExitTime,
+                            treeUri,
+                        )}
+                    </>
+                ) : (
+                    <>
+                        {getButtonContents(
+                            false,
+                            exitTime,
+                            afterExitTime,
+                            treeUri,
+                        )}
+                    </>
                 )}
             </Button>
             {warningDialogShown && (

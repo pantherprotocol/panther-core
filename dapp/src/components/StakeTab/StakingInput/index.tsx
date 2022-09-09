@@ -17,7 +17,10 @@ import {
     resetStakeAmount,
     setStakeAmount,
 } from '../../../redux/slices/stakeAmount';
-import {isStakingOpenSelector} from '../../../redux/slices/stakeTerms';
+import {
+    termsSelector,
+    isStakingOpenSelector,
+} from '../../../redux/slices/stakeTerms';
 import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
 import {currentNetwork} from '../../../services/connectors';
 import {StakeType} from '../../../types/staking';
@@ -35,6 +38,9 @@ export default function StakingInput(props: {amountToStake: string | null}) {
     const isStakingOpen = useAppSelector(
         isStakingOpenSelector(chainId, StakeType.Advanced),
     );
+    const minLockPeriod = useAppSelector(
+        termsSelector(chainId!, StakeType.Advanced, 'minLockPeriod'),
+    );
     const disabled = !account || !isStakingOpen;
 
     const network = currentNetwork(chainId);
@@ -51,7 +57,7 @@ export default function StakingInput(props: {amountToStake: string | null}) {
             const bn = safeParseUnits(amount);
             if (bn) {
                 dispatch(setStakeAmount, amount as string);
-                dispatch(calculateRewards, bn.toString());
+                dispatch(calculateRewards, [bn.toString(), minLockPeriod]);
             } else {
                 dispatch(resetStakeAmount);
                 dispatch(resetRewards);
@@ -144,7 +150,10 @@ export default function StakingInput(props: {amountToStake: string | null}) {
                                 setStakeAmount,
                                 utils.formatEther(tokenBalance),
                             );
-                            dispatch(calculateRewards, tokenBalance.toString());
+                            dispatch(calculateRewards, [
+                                tokenBalance.toString(),
+                                minLockPeriod,
+                            ]);
                         }
                     }}
                 >

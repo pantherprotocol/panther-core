@@ -6,6 +6,16 @@
     box-sizing: border-box !important;
     border: 1px solid $grey-btn-border !important;
 
+    @media (min-width: $smaller-screen-size) and (max-width: $medium-screen-size) {
+        position: relative;
+        top: 107px;
+    }
+
+    @media (max-width: $smaller-screen-size) {
+        position: relative;
+        top: 150px;
+    }
+
     p {
         padding: 0 15px;
         text-align: left;

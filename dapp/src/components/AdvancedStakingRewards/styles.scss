@@ -8,6 +8,71 @@
     border-radius: 15px;
     margin-bottom: 15px;
 
+    @media (min-width: $smaller-screen-size) and (max-width: $medium-screen-size) {
+        position: relative;
+        bottom: 900px;
+    }
+
+    @media (min-width: $tiny-screen-size) and (max-width: $smaller-screen-size) {
+        position: relative;
+        bottom: 910px;
+    }
+
+    @media (max-width: $tiny-screen-size) {
+        position: relative;
+        bottom: 960px;
+    }
+
+    .claimed-progress {
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        flex-direction: column;
+
+        .title {
+            font-weight: $normal-font-weight;
+            font-size: $small-font-size;
+            display: flex;
+            align-items: center;
+            color: $color-beige;
+        }
+
+        .progress-holder {
+            width: 100%;
+
+            .progress {
+                margin: 13px 0;
+                background: $card-background-darker;
+                height: 7px;
+                border-radius: 13px;
+
+                span {
+                    width: 50%;
+                    height: 3px;
+                    top: 2px;
+                    left: 2px;
+                    background: linear-gradient(
+                        92.53deg,
+                        $color-beige 0%,
+                        #d0a7a8 95.77%
+                    );
+                    border-radius: 13px;
+                    animation: none;
+                }
+            }
+        }
+
+        .claimed-value {
+            font-weight: $normal-font-weight;
+            font-size: $small-font-size;
+            line-height: 17px;
+            display: flex;
+            align-items: center;
+            color: $white;
+            opacity: 0.7;
+        }
+    }
+
     .remaining-days,
     .staking-apr {
         display: flex;

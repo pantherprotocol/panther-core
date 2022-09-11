@@ -3,7 +3,12 @@ import { expect } from 'chai';
 
 // @ts-ignore
 import { toBytes32, PathElementsType, Triad, Pair } from '../lib/utilities';
-import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
+import {
+    takeSnapshot,
+    revertSnapshot,
+    getBlockTimestamp,
+    increaseTime,
+} from './helpers/hardhat';
 import {
     PantherPoolV0AndZAssetRegistryTester,
     ZAssetsRegistry,
@@ -27,6 +32,8 @@ import {
     generateRandomBabyJubValue,
     multiplyScalars,
 } from '../lib/keychain';
+
+import { getExitCommitment } from './data/depositAndFakeExitSample';
 
 import { deployPantherPoolV0AndZAssetRegistryTester } from './helpers/pantherPoolV0AndZAssetRegistryTester';
 import { ethers } from 'hardhat';
@@ -808,6 +815,16 @@ describe('PantherPoolV0', () => {
                 //console.log("MT:",toBytes32(BigInt(merkleProof[0].root).toString()) );
                 //console.log("CM:", toBytes32(commitments[0].toString()), pathElements[0], pathElements[1])
                 expect(checkRoot, 'isKnownRoot must be true').equal(true);
+
+                const exitTime = (await getBlockTimestamp()) + 100;
+                await poolV0.testUpdateExitTimes(exitTime, 100);
+
+                await poolV0.commitToExit(
+                    getExitCommitment(sr.toString(), poolV0.address),
+                );
+
+                await increaseTime(101);
+
                 await poolV0.testExit(
                     Token,
                     tokenId,

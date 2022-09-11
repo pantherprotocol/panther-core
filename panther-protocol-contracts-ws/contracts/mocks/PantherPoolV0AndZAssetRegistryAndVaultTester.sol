@@ -115,6 +115,12 @@ contract PantherPoolV0AndZAssetRegistryAndVaultTester is PantherPoolV0 {
         xy[1] = p.y;
     }
 
+    function testUpdateExitTimes(uint32 newExitTime, uint24 newExitDelay)
+        external
+    {
+        this.updateExitTimes(newExitTime, newExitDelay);
+    }
+
     function testExit(
         uint256 token,
         uint256 subId,

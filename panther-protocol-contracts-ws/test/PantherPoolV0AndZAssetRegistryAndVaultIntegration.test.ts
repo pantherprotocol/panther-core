@@ -2,7 +2,12 @@
 import { expect } from 'chai';
 
 // @ts-ignore
-import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
+import {
+    takeSnapshot,
+    revertSnapshot,
+    increaseTime,
+    getBlockTimestamp,
+} from './helpers/hardhat';
 import { poseidon } from 'circomlibjs';
 import { MerkleProof, TriadMerkleTree } from '../lib/tree';
 import assert from 'assert';
@@ -20,6 +25,8 @@ import { deployPantherPoolV0AndZAssetRegistryAndVaultTester } from './helpers/pa
 import { PathElementsType, toBytes32, Triad } from '../lib/utilities';
 import { BigNumber } from 'ethers';
 import type { BytesLike } from '@ethersproject/bytes';
+
+import { getExitCommitment } from './data/depositAndFakeExitSample';
 
 describe('PantherPoolV0 and Vault Integration', () => {
     // eslint-disable-next-line no-unused-vars
@@ -193,7 +200,20 @@ describe('PantherPoolV0 and Vault Integration', () => {
                     merkleProof[i] = tree.genMerklePath(i);
                 }
 
+                const exitTime = (await getBlockTimestamp()) + 1;
+                await pantherPoolV0AndZAssetRegistryAndVaultTester.testUpdateExitTimes(
+                    exitTime,
+                    100,
+                );
+
                 for (let i = 0; i < UTXOs; ++i) {
+                    await pantherPoolV0AndZAssetRegistryAndVaultTester.commitToExit(
+                        getExitCommitment(
+                            recipientTransaction.spenderKeys.privateKey.toString(),
+                            pantherPoolV0AndZAssetRegistryAndVaultTester.address,
+                        ),
+                    );
+                    await increaseTime(101);
                     const leftLeafId = i;
                     await pantherPoolV0AndZAssetRegistryAndVaultTester.testExit(
                         await pantherPoolV0AndZAssetRegistryAndVaultTester.getTokenAddress(

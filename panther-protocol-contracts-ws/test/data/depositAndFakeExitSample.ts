@@ -69,6 +69,19 @@ type Exit = {
     cacheIndexHint: BigNumberish;
 };
 
+export const fakeExitCommitment =
+    '0x000102030405060708090A0B0C0D0E0F000102030405060708090A0B0C0D0E0F';
+export const anotherFakeExitCommitment =
+    '0x101112131415161718191A1B1C1D1E1F110112131415161718191A1B1C1D1E1F';
+
+export const getExitCommitment = (pk: BigNumberish, recipient: string) =>
+    ethers.utils.keccak256(
+        ethers.utils.defaultAbiCoder.encode(
+            ['uint256', 'address'],
+            [pk, recipient],
+        ),
+    );
+
 export const exitSample = {
     token: randomAddress,
     subId: '0',

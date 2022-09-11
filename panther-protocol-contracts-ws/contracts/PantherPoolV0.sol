@@ -70,8 +70,12 @@ contract PantherPoolV0 is
     /// @notice (UNIX) Time since when the `exit` calls get enabled
     uint32 public exitTime;
 
+    /// @notice Period (seconds) since `commitToExit` when `exit` opens
+    // Needed to mitigate front-run attacks on `exit`
+    uint24 public exitDelay;
+
     // (rest of the storage slot) reserved for upgrades
-    uint224 private _reserved;
+    uint200 private _reserved;
 
     // solhint-enable var-name-mixedcase
 
@@ -79,8 +83,12 @@ contract PantherPoolV0 is
     // nullifier hash => spent
     mapping(bytes32 => bool) public isSpent;
 
-    /// @dev Emitted when exit time is updated
-    event ExitTimeUpdated(uint256 newExitTime);
+    /// @notice Unused registered commitments to exit
+    // hash(privSpendKey, recipient) => commitment timestamp
+    mapping(bytes32 => uint32) public exitCommitments;
+
+    /// @dev Emitted when exit time and/or exit delay updated
+    event ExitTimesUpdated(uint256 newExitTime, uint256 newExitDelay);
 
     /// @dev New nullifier has been seen
     event Nullifier(bytes32 nullifier);
@@ -88,6 +96,9 @@ contract PantherPoolV0 is
     /// @dev A tiny disowned token amount gets locked in the Vault
     /// (as a result of imprecise scaling of deposited amounts)
     event Change(address indexed token, uint256 change);
+
+    /// @dev New exit commitment registered
+    event ExitCommitment(uint256 timestamp);
 
     /// @param _owner Address of the `OWNER` who may call `onlyOwner` methods
     /// @param assetRegistry Address of the ZAssetRegistry contract
@@ -113,14 +124,23 @@ contract PantherPoolV0 is
         PRP_GRANTOR = prpGrantor;
     }
 
-    /// @notice Updated the exit time
+    /// @notice Update the exit time and the exit delay
     /// @dev Owner only may calls
-    function updateExitTime(uint32 newExitTime) public onlyOwner {
-        require(newExitTime >= exitTime && newExitTime < MAX_TIMESTAMP, "E1");
+    function updateExitTimes(uint32 newExitTime, uint24 newExitDelay)
+        public
+        onlyOwner
+    {
+        require(
+            newExitTime >= exitTime &&
+                newExitTime < MAX_TIMESTAMP &&
+                newExitDelay != 0,
+            "E1"
+        );
 
         exitTime = newExitTime;
+        exitDelay = newExitDelay;
 
-        emit ExitTimeUpdated(uint256(newExitTime));
+        emit ExitTimesUpdated(uint256(newExitTime), uint256(newExitDelay));
     }
 
     /// @notice Transfer assets from the msg.sender to the VAULT and generate UTXOs in the MASP
@@ -190,7 +210,22 @@ contract PantherPoolV0 is
         leftLeafId = addAndEmitCommitments(commitments, perUtxoData, timestamp);
     }
 
-    /// @notice Spend an UTXO in the MASP and withdraw the asset from the Vault to the msg.sender
+    /// @notice Register future `exit` to protect against front-run and DoS.
+    /// The `exit` is possible only after `exitDelay` since this function call.
+    /// @param exitCommitment Commitment to the UTXO spending key and the recipient address.
+    /// MUST be equal to keccak256(abi.encode(uint256(privSpendingKey), address(recipient)).
+    function commitToExit(bytes32 exitCommitment) external {
+        require(
+            exitCommitments[exitCommitment] == uint32(0),
+            ERR_EXITCOMMIT_EXISTS
+        );
+        uint32 timestamp = safe32TimeNow();
+        exitCommitments[exitCommitment] = timestamp;
+        emit ExitCommitment(timestamp);
+    }
+
+    /// @notice Spend an UTXO in the MASP and withdraw the asset from the Vault to the msg.sender.
+    /// This function call must be registered in advance with `commitToExit`.
     /// @param token Address of the token contract
     /// @param subId '_tokenId'/'_id' for ERC-721/1155, 0 for the "default" zAsset of an ERC-20 token,
     // or `subId` for an "alternative" zAsset of an ERC-20 (see ZAssetRegistry.sol for details)
@@ -213,6 +248,8 @@ contract PantherPoolV0 is
         uint256 cacheIndexHint
     ) external nonReentrant {
         require(safe32TimeNow() >= exitTime, ERR_TOO_EARLY_EXIT);
+        _verifyExitCommitment(privSpendingKey, msg.sender);
+
         {
             bytes32 nullifier = generateNullifier(privSpendingKey, leafId);
             require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);
@@ -324,5 +361,21 @@ contract PantherPoolV0 is
         );
 
         return (zAssetId, scaledAmount);
+    }
+
+    function _verifyExitCommitment(uint256 privSpendingKey, address recipient)
+        internal
+    {
+        bytes32 commitment = keccak256(abi.encode(privSpendingKey, recipient));
+
+        uint32 commitmentTime = exitCommitments[commitment];
+        require(commitmentTime != uint32(0), ERR_EXITCOMMIT_MISSING);
+
+        uint256 allowedTime = uint256(commitmentTime) + uint256(exitDelay);
+        require(timeNow() > allowedTime, ERR_EXITCOMMIT_LOCKED);
+
+        // Let's gain some gas back
+        exitCommitments[commitment] = uint32(0);
+        // No extra event emitted as spent UTXO and withdrawal events will fire
     }
 }

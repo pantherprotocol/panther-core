@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: MIT
 import { expect } from 'chai';
 
-import { getBlockTimestamp } from './helpers/hardhat';
+import {
+    getBlockTimestamp,
+    mineBlock,
+    revertSnapshot,
+    takeSnapshot,
+} from './helpers/hardhat';
 import { MockPantherPoolV0, ZAssetsRegistry } from '../types';
 
 import { smock, FakeContract } from '@defi-wonderland/smock';
@@ -9,18 +14,35 @@ import { smock, FakeContract } from '@defi-wonderland/smock';
 import { deployPantherPoolV0 } from './helpers/pantherPoolV0';
 import { ethers } from 'hardhat';
 import { getIds, getZAssets } from './data/zAssetsSample';
-import { depositSample, exitSample } from './data/depositAndFakeExitSample';
+import {
+    anotherFakeExitCommitment,
+    depositSample,
+    fakeExitCommitment,
+    exitSample,
+    getExitCommitment,
+} from './data/depositAndFakeExitSample';
 
 describe('PantherPoolV0', () => {
     let poolV0: MockPantherPoolV0;
     let zAssetsRegistry: FakeContract<ZAssetsRegistry>;
+    let msgSenderAddress;
+    let snapshot;
 
     before(async () => {
+        msgSenderAddress = (await ethers.getSigners())[0].address;
         poolV0 = await deployPantherPoolV0();
 
         zAssetsRegistry = await smock.fake('ZAssetsRegistry', {
             address: await poolV0.ASSET_REGISTRY(),
         });
+    });
+
+    beforeEach(async () => {
+        snapshot = await takeSnapshot();
+    });
+
+    afterEach(async () => {
+        await revertSnapshot(snapshot);
     });
 
     describe('generateDeposits', () => {
@@ -50,7 +72,7 @@ describe('PantherPoolV0', () => {
 
         describe('when exit is configured', () => {
             before(async () => {
-                await poolV0.updateExitTime(await getBlockTimestamp());
+                await poolV0.updateExitTimes(await getBlockTimestamp(), 1);
                 mockGetZAssetAndIds();
             });
 
@@ -67,50 +89,195 @@ describe('PantherPoolV0', () => {
         });
     });
 
-    describe('exit', () => {
-        describe('when time now is less than exit time', () => {
-            const {
-                token,
-                subId,
-                scaledAmount,
-                creationTime,
-                privSpendingKey,
-                leafId,
-                pathElements,
-                merkleRoot,
-                cacheIndexHint,
-            } = exitSample;
-
-            before(async () => {
-                const newExitTime = (await getBlockTimestamp()) + 100;
-                await poolV0.updateExitTime(newExitTime);
+    describe('commitToExit', () => {
+        describe('when exit commitment has not yet been registered', () => {
+            it('allows registration of an exit commitment', async () => {
+                expect(await poolV0.commitToExit(fakeExitCommitment))
+                    .to.emit(poolV0, 'ExitCommitment')
+                    .withArgs(await getBlockTimestamp());
             });
-            it('should revert', async () => {
-                await expect(
-                    poolV0.exit(
-                        token,
-                        subId,
-                        scaledAmount,
-                        creationTime,
-                        privSpendingKey,
-                        leafId,
-                        pathElements,
-                        merkleRoot,
-                        cacheIndexHint,
-                    ),
-                ).to.revertedWith('PP:E30');
+
+            it('allows registration of another exit commitment', () => {
+                it('allows registration of an exit commitment', async () => {
+                    expect(await poolV0.commitToExit(fakeExitCommitment))
+                        .to.emit(poolV0, 'ExitCommitment')
+                        .withArgs(await getBlockTimestamp());
+
+                    expect(await poolV0.commitToExit(anotherFakeExitCommitment))
+                        .to.emit(poolV0, 'ExitCommitment')
+                        .withArgs(await getBlockTimestamp());
+                });
+            });
+        });
+
+        describe('when exit commitment has been registered', () => {
+            beforeEach(async () => {
+                await poolV0.commitToExit(fakeExitCommitment);
+            });
+
+            it('reverts registration of the same commitment', () => {
+                it('allows registration of an exit commitment', async () => {
+                    await expect(
+                        poolV0.commitToExit(fakeExitCommitment),
+                    ).to.revertedWith('PP:E32');
+                });
+            });
+
+            it('allows registration of another exit commitment', () => {
+                it('allows registration of an exit commitment', async () => {
+                    expect(await poolV0.commitToExit(anotherFakeExitCommitment))
+                        .to.emit(poolV0, 'ExitCommitment')
+                        .withArgs(await getBlockTimestamp());
+                });
             });
         });
     });
 
-    describe('updateExitTime', () => {
+    describe('exit', () => {
+        const {
+            token,
+            subId,
+            scaledAmount,
+            creationTime,
+            privSpendingKey,
+            leafId,
+            pathElements,
+            merkleRoot,
+            cacheIndexHint,
+        } = exitSample;
+
+        let exitTime;
+
+        before(async () => {
+            exitTime = (await getBlockTimestamp()) + 100;
+            await poolV0.updateExitTimes(exitTime, 100);
+        });
+
+        describe('if exit commitment has been registered', () => {
+            beforeEach(async () => {
+                await poolV0.commitToExit(
+                    getExitCommitment(privSpendingKey, msgSenderAddress),
+                );
+            });
+
+            describe('when time now is less than exit time', () => {
+                it('should revert', async () => {
+                    await expect(
+                        poolV0.exit(
+                            token,
+                            subId,
+                            scaledAmount,
+                            creationTime,
+                            privSpendingKey,
+                            leafId,
+                            pathElements,
+                            merkleRoot,
+                            cacheIndexHint,
+                        ),
+                    ).to.revertedWith('PP:E30');
+                });
+            });
+
+            describe('when time now is more than exit time', () => {
+                beforeEach(async () => {
+                    await mineBlock(exitTime + 1);
+                });
+
+                describe('but exit delay has not yet passed', () => {
+                    it('should revert due to delay not passed', async () => {
+                        await expect(
+                            poolV0.exit(
+                                token,
+                                subId,
+                                scaledAmount,
+                                creationTime,
+                                privSpendingKey,
+                                leafId,
+                                pathElements,
+                                merkleRoot,
+                                cacheIndexHint,
+                            ),
+                        ).to.revertedWith('PP:E33');
+                    });
+                });
+
+                describe('and exit delay has already passed', () => {
+                    beforeEach(async () => {
+                        await mineBlock(exitTime + 200);
+                    });
+
+                    it('should revert due to wrong proof', async () => {
+                        await expect(
+                            poolV0.exit(
+                                token,
+                                subId,
+                                scaledAmount,
+                                creationTime,
+                                privSpendingKey,
+                                leafId,
+                                pathElements,
+                                merkleRoot,
+                                cacheIndexHint,
+                            ),
+                        ).to.revertedWith('PP:E16');
+                    });
+                });
+            });
+        });
+
+        describe('if exit commitment has not been registered', () => {
+            describe('when time now is less than exit time', () => {
+                it('should revert', async () => {
+                    await expect(
+                        poolV0.exit(
+                            token,
+                            subId,
+                            scaledAmount,
+                            creationTime,
+                            privSpendingKey,
+                            leafId,
+                            pathElements,
+                            merkleRoot,
+                            cacheIndexHint,
+                        ),
+                    ).to.revertedWith('PP:E30');
+                });
+            });
+
+            describe('when time now is more than exit time', () => {
+                beforeEach(async () => {
+                    await mineBlock(exitTime + 1);
+                });
+
+                it('should revert', async () => {
+                    await expect(
+                        poolV0.exit(
+                            token,
+                            subId,
+                            scaledAmount,
+                            creationTime,
+                            privSpendingKey,
+                            leafId,
+                            pathElements,
+                            merkleRoot,
+                            cacheIndexHint,
+                        ),
+                    ).to.revertedWith('PP:E34');
+                });
+            });
+        });
+    });
+
+    describe('updateExitTimes', () => {
+        const newExitDelay = 333;
+
         describe('success', () => {
-            it('should update the exit time by owner', async () => {
+            it('should update the exit time and delay by owner', async () => {
                 const newExitTime = (await getBlockTimestamp()) + 1000;
 
-                expect(await poolV0.updateExitTime(newExitTime))
-                    .to.emit(poolV0, 'ExitTimeUpdated')
-                    .withArgs(newExitTime);
+                expect(await poolV0.updateExitTimes(newExitTime, newExitDelay))
+                    .to.emit(poolV0, 'ExitTimesUpdated')
+                    .withArgs(newExitTime, newExitDelay);
 
                 expect(await poolV0.exitTime()).to.be.eq(newExitTime);
             });
@@ -118,14 +285,32 @@ describe('PantherPoolV0', () => {
 
         describe('failure', () => {
             it('should revert if new exit time is less than time now', async () => {
-                await expect(poolV0.updateExitTime(1)).to.revertedWith('E1');
+                const newExitTime = (await getBlockTimestamp()) + 1000;
+                expect(await poolV0.updateExitTimes(newExitTime, newExitDelay))
+                    .to.emit(poolV0, 'ExitTimesUpdated')
+                    .withArgs(newExitTime, newExitDelay);
+
+                const pastExitTime = (await getBlockTimestamp()) - 1;
+                await expect(
+                    poolV0.updateExitTimes(pastExitTime, newExitDelay),
+                ).to.revertedWith('E1');
+            });
+
+            it('should revert if new exit delay is 0', async () => {
+                const newExitTime = (await getBlockTimestamp()) + 1000;
+                await expect(
+                    poolV0.updateExitTimes(newExitTime, 0),
+                ).to.revertedWith('E1');
             });
 
             it('should revert if called by non-owner', async () => {
                 const [, nonOwner] = await ethers.getSigners();
+                const newExitTime = (await getBlockTimestamp()) + 1000;
 
                 await expect(
-                    poolV0.connect(nonOwner).updateExitTime(1),
+                    poolV0
+                        .connect(nonOwner)
+                        .updateExitTimes(newExitTime, newExitDelay),
                 ).to.revertedWith('ImmOwn: unauthorized');
             });
         });

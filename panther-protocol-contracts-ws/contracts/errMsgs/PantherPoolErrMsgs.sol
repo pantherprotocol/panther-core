@@ -19,6 +19,9 @@ string constant ERR_ZERO_ROOT = "TT:E1"; // merkle tree root can not be zero
 // PantherPool contract
 string constant ERR_DEPOSIT_OVER_LIMIT = "PP:E1";
 string constant ERR_DEPOSIT_FROM_ZERO_ADDRESS = "PP:E2";
+string constant ERR_EXITCOMMIT_EXISTS = "PP:E32";
+string constant ERR_EXITCOMMIT_LOCKED = "PP:E33";
+string constant ERR_EXITCOMMIT_MISSING = "PP:E34";
 string constant ERR_EXPIRED_TX_TIME = "PP:E3";
 string constant ERR_INVALID_JOIN_INPUT = "PP:E4";
 string constant ERR_INVALID_PROOF = "PP:E5";

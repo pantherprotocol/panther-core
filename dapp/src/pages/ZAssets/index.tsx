@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 
 import {Box, Container} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
@@ -17,7 +17,6 @@ import {MASP_CHAIN_ID} from '../../services/env';
 import './styles.scss';
 
 export default function ZAssets(): React.ReactElement {
-    const [open, setOpen] = useState<boolean>(true);
     const context = useWeb3React();
     const {active, chainId} = context;
 
@@ -37,12 +36,12 @@ export default function ZAssets(): React.ReactElement {
                     {active && chainId && !chainHasPoolContract(chainId) && (
                         <WrongZAssetsNetwork />
                     )}
-                    {open && chainId && chainHasPoolContract(chainId) && (
+                    {chainId && chainHasPoolContract(chainId) && (
                         <MessageAlert
-                            handleClose={() => setOpen(false)}
                             title="Enhance Panther's privacy and earn rewards"
                             body="Deposit assets to improve Panther's anonymity set and
                         earn rewards for securing the protocol."
+                            notificationOwner="zAssetsPage"
                         />
                     )}
                     <PrivateBalance />

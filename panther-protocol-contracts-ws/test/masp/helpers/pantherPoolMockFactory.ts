@@ -5,7 +5,7 @@ import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
     getPoseidonT6Contract,
-} from '../../lib/poseidonBuilder';
+} from '../../../lib/poseidonBuilder';
 
 export async function getPantherPoolMocFactoryByName(name: string) {
     // Deploy Poseidon hash contracts

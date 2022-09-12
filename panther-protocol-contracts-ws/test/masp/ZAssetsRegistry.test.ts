@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { ZAssetsRegistry } from '../types';
+import { ZAssetsRegistry } from '../../types';
 import {
     getIds,
     getMissingIds,

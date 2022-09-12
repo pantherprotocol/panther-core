@@ -1,7 +1,7 @@
 // @ts-ignore
 import { ethers } from 'hardhat';
-import { getPoseidonT6Contract } from '../../lib/poseidonBuilder';
-import { MockCommitmentGenerator } from '../../types';
+import { getPoseidonT6Contract } from '../../../lib/poseidonBuilder';
+import { MockCommitmentGenerator } from '../../../types';
 
 export { deployMockCommitmentGenerator };
 

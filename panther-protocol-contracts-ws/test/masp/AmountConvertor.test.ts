@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { MockAmountConvertor } from '../types';
+import { MockAmountConvertor } from '../../types';
 
 const toBN = ethers.BigNumber.from;
 

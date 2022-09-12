@@ -1,4 +1,4 @@
-import { toBigNum } from '../../lib/utilities';
+import { toBigNum } from '../../../lib/utilities';
 import { ethers } from 'hardhat';
 // eslint-disable-next-line import/named
 import { BigNumberish } from 'ethers';

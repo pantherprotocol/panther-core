@@ -13,4 +13,4 @@ treeDepth="15"
 node_modules/.bin/ts-node lib/triadMerkleZerosContractGenerator.ts \
   ${zeroSeed} \
   ${treeDepth} \
-  > contracts/triadTree/TriadMerkleZeros.sol
+  > contracts/masp/triadTree/TriadMerkleZeros.sol

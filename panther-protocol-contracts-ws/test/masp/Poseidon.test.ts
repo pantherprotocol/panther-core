@@ -3,8 +3,8 @@ import { expect } from 'chai';
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
-} from '../lib/poseidonBuilder';
-import { toBigNum, toBytes32, zeroLeaf } from '../lib/utilities';
+} from '../../lib/poseidonBuilder';
+import { toBigNum, toBytes32, zeroLeaf } from '../../lib/utilities';
 
 describe('PoseidonT3 contract', function () {
     let contract;

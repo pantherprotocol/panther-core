@@ -3,8 +3,8 @@ import { ethers } from 'hardhat';
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
-} from '../../lib/poseidonBuilder';
-import { MerkleProofVerifierTester } from '../../types';
+} from '../../../lib/poseidonBuilder';
+import { MerkleProofVerifierTester } from '../../../types';
 
 export { deployMerkleProofVerifierTester };
 

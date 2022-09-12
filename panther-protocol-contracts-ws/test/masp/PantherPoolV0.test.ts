@@ -7,7 +7,7 @@ import {
     revertSnapshot,
     takeSnapshot,
 } from './helpers/hardhat';
-import { MockPantherPoolV0, ZAssetsRegistry } from '../types';
+import { MockPantherPoolV0, ZAssetsRegistry } from '../../types';
 
 import { smock, FakeContract } from '@defi-wonderland/smock';
 

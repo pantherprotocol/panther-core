@@ -2,10 +2,10 @@
 import chai, { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { BigNumber } from 'ethers';
-import { Vault, IMockErc20, IMockErc721, IMockErc1155 } from '../types';
+import { Vault, IMockErc20, IMockErc721, IMockErc1155 } from '../../types';
 import { FakeContract, smock } from '@defi-wonderland/smock';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { toBigNum } from '../lib/utilities';
+import { toBigNum } from '../../lib/utilities';
 chai.use(smock.matchers);
 
 describe('Vault contract', function () {

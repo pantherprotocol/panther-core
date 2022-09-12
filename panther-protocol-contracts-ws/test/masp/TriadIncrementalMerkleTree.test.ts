@@ -7,9 +7,9 @@ import {
     zeroLeaf,
     zeroTriadTreeRoot,
     zeroLeavesTriad,
-} from '../lib/utilities';
+} from '../../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MockTriadIncrementalMerkleTrees } from '../types';
+import { MockTriadIncrementalMerkleTrees } from '../../types';
 import { deployMockTrees } from './helpers/mockTriadTrees';
 import { triads, rootsSeen } from './data/triadTreeSample';
 

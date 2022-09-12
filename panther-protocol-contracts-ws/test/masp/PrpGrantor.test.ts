@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { revertSnapshot, takeSnapshot } from './helpers/hardhat';
-import { PrpGrantor } from '../types';
+import { PrpGrantor } from '../../types';
 import { BigNumber } from 'ethers';
 
 describe('PrpGrantor contract', function () {

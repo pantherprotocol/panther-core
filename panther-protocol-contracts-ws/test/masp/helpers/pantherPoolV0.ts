@@ -1,6 +1,6 @@
 // @ts-ignore
 import { ethers } from 'hardhat';
-import { MockPantherPoolV0 } from '../../types';
+import { MockPantherPoolV0 } from '../../../types';
 
 import { smock } from '@defi-wonderland/smock';
 import { getPantherPoolMocFactoryByName } from './pantherPoolMockFactory';

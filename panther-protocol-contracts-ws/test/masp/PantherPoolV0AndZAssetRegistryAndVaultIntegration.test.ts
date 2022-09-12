@@ -9,20 +9,20 @@ import {
     getBlockTimestamp,
 } from './helpers/hardhat';
 import { poseidon } from 'circomlibjs';
-import { MerkleProof, TriadMerkleTree } from '../lib/tree';
+import { MerkleProof, TriadMerkleTree } from '../../lib/tree';
 import assert from 'assert';
 import {
     bigIntToBuffer32,
     buffer32ToBigInt,
     RecipientTransaction,
     SenderTransaction,
-} from '../lib/message-encryption';
+} from '../../lib/message-encryption';
 
-import { deriveKeypairFromSeed } from '../lib/keychain';
+import { deriveKeypairFromSeed } from '../../lib/keychain';
 
-import { PantherPoolV0AndZAssetRegistryAndVaultTester } from '../types';
+import { PantherPoolV0AndZAssetRegistryAndVaultTester } from '../../types';
 import { deployPantherPoolV0AndZAssetRegistryAndVaultTester } from './helpers/pantherPoolV0AndZAssetRegistryAndVaultTester';
-import { PathElementsType, toBytes32, Triad } from '../lib/utilities';
+import { PathElementsType, toBytes32, Triad } from '../../lib/utilities';
 import { BigNumber } from 'ethers';
 import type { BytesLike } from '@ethersproject/bytes';
 

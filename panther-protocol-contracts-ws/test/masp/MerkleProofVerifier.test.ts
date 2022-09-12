@@ -2,17 +2,20 @@
 import { expect } from 'chai';
 
 // @ts-ignore
-import { toBytes32, PathElementsType, Triad } from '../lib/utilities';
+import { toBytes32, PathElementsType, Triad } from '../../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MerkleProofVerifierTester } from '../types';
+import { MerkleProofVerifierTester } from '../../types';
 import { poseidon, babyjub } from 'circomlibjs';
-import { TriadMerkleTree } from '../lib/tree';
+import { TriadMerkleTree } from '../../lib/tree';
 import assert from 'assert';
 import { BytesLike } from 'ethers/lib/ethers';
-import { generateRandomBabyJubValue, multiplyScalars } from '../lib/keychain';
+import {
+    generateRandomBabyJubValue,
+    multiplyScalars,
+} from '../../lib/keychain';
 import crypto from 'crypto';
 import { utils } from 'ethers';
-import { bigintToBytes32 } from '../lib/conversions';
+import { bigintToBytes32 } from '../../lib/conversions';
 import { deployMerkleProofVerifierTester } from './helpers/merkleProofVerifierTester';
 
 function bnToBuf(bn) {

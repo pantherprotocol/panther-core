@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 
 // @ts-ignore
-import { toBytes32, PathElementsType, Triad, Pair } from '../lib/utilities';
+import { toBytes32, PathElementsType, Triad, Pair } from '../../lib/utilities';
 import {
     takeSnapshot,
     revertSnapshot,
@@ -12,9 +12,9 @@ import {
 import {
     PantherPoolV0AndZAssetRegistryTester,
     ZAssetsRegistry,
-} from '../types';
+} from '../../types';
 import { poseidon, babyjub } from 'circomlibjs';
-import { TriadMerkleTree } from '../lib/tree';
+import { TriadMerkleTree } from '../../lib/tree';
 import assert from 'assert';
 import { BytesLike } from 'ethers/lib/ethers';
 import {
@@ -22,16 +22,16 @@ import {
     bigIntToBuffer32,
     RecipientTransaction,
     SenderTransaction,
-} from '../lib/message-encryption';
+} from '../../lib/message-encryption';
 
 import crypto from 'crypto';
 import { BigNumber, utils } from 'ethers';
-import { bigintToBytes32 } from '../lib/conversions';
+import { bigintToBytes32 } from '../../lib/conversions';
 import {
     deriveKeypairFromSeed,
     generateRandomBabyJubValue,
     multiplyScalars,
-} from '../lib/keychain';
+} from '../../lib/keychain';
 
 import { getExitCommitment } from './data/depositAndFakeExitSample';
 

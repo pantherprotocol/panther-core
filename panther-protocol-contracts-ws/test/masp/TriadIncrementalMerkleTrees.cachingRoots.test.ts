@@ -2,9 +2,9 @@
 import { expect } from 'chai';
 
 // @ts-ignore
-import { toBigNum } from '../lib/utilities';
+import { toBigNum } from '../../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MockTriadIncrementalMerkleTrees } from '../types';
+import { MockTriadIncrementalMerkleTrees } from '../../types';
 import { deployMockTrees } from './helpers/mockTriadTrees';
 import { dataForCacheTest } from './data/triadTreeSample';
 

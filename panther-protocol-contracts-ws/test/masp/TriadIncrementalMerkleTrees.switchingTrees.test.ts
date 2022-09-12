@@ -3,9 +3,9 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { toBigNum, zeroTriadTreeRoot } from '../lib/utilities';
+import { toBigNum, zeroTriadTreeRoot } from '../../lib/utilities';
 import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MockTriadIncrementalMerkleTrees } from '../types';
+import { MockTriadIncrementalMerkleTrees } from '../../types';
 import { deployMockTrees } from './helpers/mockTriadTrees';
 import { dataForTreeChangeTest } from './data/triadTreeSample';
 

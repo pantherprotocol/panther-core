@@ -8,12 +8,10 @@ import {MerkleProofVerifierTester} from '../../types/contracts';
 // @ts-ignore
 import {poseidon, babyjub} from 'circomlibjs';
 import {TriadMerkleTree} from '../../lib/tree';
-// @ts-ignore
-import {assert} from 'assert';
+import assert = require('assert');
 import {BytesLike} from 'ethers/lib/ethers';
 import {generateRandomBabyJubValue, multiplyScalars} from '../../lib/keychain';
-// @ts-ignore
-import {crypto} from 'crypto';
+import crypto from 'crypto';
 import {utils} from 'ethers';
 import {bigintToBytes32} from '../../lib/conversions';
 import {deployMerkleProofVerifierTester} from './helpers/merkleProofVerifierTester';

@@ -24,6 +24,7 @@ const REQUIRED_ENV_VARS: string[] = [
     'Z_ASSETS_REGISTRY_CONTRACT_80001',
     'REWARD_MASTER_CONTRACT_5',
     'COMMITMENT_TREE_URL_80001',
+    'EXIT_DELAY',
 ];
 
 const REQUIRED_CHAIN_ENV_VAR_PREFIXES: string[] = [
@@ -50,6 +51,7 @@ export const env: EnvVariables = {
     FAUCET_CHAIN_IDS: process.env.FAUCET_CHAIN_IDS,
     TOKEN_SYMBOL: process.env.TOKEN_SYMBOL,
     BLOCKED_COUNTRIES: process.env.BLOCKED_COUNTRIES,
+    EXIT_DELAY: process.env.EXIT_DELAY,
 
     STAKE_REWARD_CONTROLLER_2_CONTRACT_1:
         process.env.STAKE_REWARD_CONTROLLER_2_CONTRACT_1,
@@ -208,4 +210,8 @@ export function getMissingEnvVars(): string[] {
 
 export function getCommitmentTreeUrl(chainId: number): string | undefined {
     return env[`COMMITMENT_TREE_URL_${chainId}`];
+}
+
+export function getExitDelay(): string | undefined {
+    return env[`EXIT_DELAY`];
 }

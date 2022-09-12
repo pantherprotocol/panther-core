@@ -182,7 +182,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 commitmentsForTree.fill(BigInt(0), UTXOs);
                 for (let i = 0; i < UTXOs; ++i) {
                     commitments[i] =
-                        await pantherPoolV0AndZAssetRegistryAndVaultTester.generateCommitments(
+                        await pantherPoolV0AndZAssetRegistryAndVaultTester.testGenerateCommitments(
                             BigNumber.from(senderTransaction.spenderPubKey[0]),
                             BigNumber.from(senderTransaction.spenderPubKey[1]),
                             amounts[i],

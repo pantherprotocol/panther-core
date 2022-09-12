@@ -6,6 +6,7 @@ import "../PantherPoolV0.sol";
 import "../Vault.sol";
 import "../common/Types.sol";
 import "./FakePrpGrantor.sol";
+import "./MockPantherPoolV0.sol";
 import "../ZAssetsRegistry.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -43,12 +44,12 @@ contract MyERC20 is ERC20 {
     */
 }
 
-contract PantherPoolV0AndZAssetRegistryAndVaultTester is PantherPoolV0 {
+contract PantherPoolV0AndZAssetRegistryAndVaultTester is MockPantherPoolV0 {
     address private registry;
     MyERC20[OUT_UTXOs] Tokens;
 
     constructor()
-        PantherPoolV0(
+        MockPantherPoolV0(
             address(this),
             // This mock is the owner of ZAssetsRegistry and Vault
             registry = address(new ZAssetsRegistry(address(this))),
@@ -69,10 +70,6 @@ contract PantherPoolV0AndZAssetRegistryAndVaultTester is PantherPoolV0 {
         exitTime = safe32TimeNow() + 1;
     }
 
-    function getTokenAddress(uint256 index) external view returns (address) {
-        return address(Tokens[index]);
-    }
-
     function testGetZAssetId(uint256 token, uint256 tokenId)
         external
         view
@@ -85,64 +82,8 @@ contract PantherPoolV0AndZAssetRegistryAndVaultTester is PantherPoolV0 {
             );
     }
 
-    function generateCommitments(
-        uint256 pubSpendingKeyX,
-        uint256 pubSpendingKeyY,
-        uint96 scaledAmount,
-        uint160 zAssetId,
-        uint32 creationTime
-    ) external pure returns (uint256) {
-        return
-            uint256(
-                generateCommitment(
-                    pubSpendingKeyX,
-                    pubSpendingKeyY,
-                    scaledAmount,
-                    zAssetId,
-                    creationTime
-                )
-            );
-    }
-
-    function generatePublicSpendingKey(uint256 privKey)
-        external
-        view
-        returns (uint256[2] memory xy)
-    {
-        G1Point memory p;
-        p = generatePubSpendingKey(privKey);
-        xy[0] = p.x;
-        xy[1] = p.y;
-    }
-
-    function testUpdateExitTimes(uint32 newExitTime, uint24 newExitDelay)
-        external
-    {
-        this.updateExitTimes(newExitTime, newExitDelay);
-    }
-
-    function testExit(
-        uint256 token,
-        uint256 subId,
-        uint96 scaledAmount,
-        uint32 creationTime,
-        uint256 privSpendingKey,
-        uint256 leafId,
-        bytes32[TREE_DEPTH + 1] calldata pathElements,
-        bytes32 merkleRoot,
-        uint256 cacheIndexHint
-    ) external {
-        this.exit(
-            address(uint160(token)),
-            subId,
-            scaledAmount,
-            creationTime,
-            privSpendingKey,
-            leafId,
-            pathElements,
-            merkleRoot,
-            cacheIndexHint
-        );
+    function getTokenAddress(uint256 index) external view returns (address) {
+        return address(Tokens[index]);
     }
 
     function approveVault(uint256 amount, uint256 index) external {

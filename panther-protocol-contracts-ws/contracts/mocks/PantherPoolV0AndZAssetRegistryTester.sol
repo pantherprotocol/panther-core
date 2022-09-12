@@ -5,13 +5,14 @@ pragma solidity ^0.8.4;
 import "../PantherPoolV0.sol";
 import "./FakeVault.sol";
 import "./FakePrpGrantor.sol";
+import "./MockPantherPoolV0.sol";
 import "../ZAssetsRegistry.sol";
 
-contract PantherPoolV0AndZAssetRegistryTester is PantherPoolV0 {
+contract PantherPoolV0AndZAssetRegistryTester is MockPantherPoolV0 {
     address private registry;
 
     constructor()
-        PantherPoolV0(
+        MockPantherPoolV0(
             address(this),
             // This mock is the owner of ZAssetsRegistry
             registry = address(new ZAssetsRegistry(address(this))),
@@ -30,68 +31,8 @@ contract PantherPoolV0AndZAssetRegistryTester is PantherPoolV0 {
         exitTime = safe32TimeNow() + 1;
     }
 
-    function testGenerateCommitments(
-        uint256 pubSpendingKeyX,
-        uint256 pubSpendingKeyY,
-        uint96 scaledAmount,
-        uint160 zAssetId,
-        uint32 creationTime
-    ) external pure returns (uint256) {
-        return
-            uint256(
-                generateCommitment(
-                    pubSpendingKeyX,
-                    pubSpendingKeyY,
-                    scaledAmount,
-                    zAssetId,
-                    creationTime
-                )
-            );
-    }
-
     function testConvert(uint256 n) external pure returns (bytes32) {
         return bytes32(n);
-    }
-
-    function testGeneratePublicSpendingKey(uint256 privKey)
-        external
-        view
-        returns (uint256[2] memory xy)
-    {
-        G1Point memory p;
-        p = generatePubSpendingKey(privKey);
-        xy[0] = p.x;
-        xy[1] = p.y;
-    }
-
-    function testUpdateExitTimes(uint32 newExitTime, uint24 newExitDelay)
-        external
-    {
-        this.updateExitTimes(newExitTime, newExitDelay);
-    }
-
-    function testExit(
-        address token,
-        uint256 subId,
-        uint96 scaledAmount,
-        uint32 creationTime,
-        uint256 privSpendingKey,
-        uint256 leafId,
-        bytes32[TREE_DEPTH + 1] calldata pathElements,
-        bytes32 merkleRoot,
-        uint256 cacheIndexHint
-    ) external {
-        this.exit(
-            token,
-            subId,
-            scaledAmount,
-            creationTime,
-            privSpendingKey,
-            leafId,
-            pathElements,
-            merkleRoot,
-            cacheIndexHint
-        );
     }
 
     function testGenerateDepositsExtended(

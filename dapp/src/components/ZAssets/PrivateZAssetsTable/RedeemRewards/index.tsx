@@ -19,7 +19,7 @@ import {
     startWalletAction,
     StartWalletActionPayload,
 } from '../../../../redux/slices/web3WalletLastAction';
-import {env} from '../../../../services/env';
+import {getCommitmentTreeUrl} from '../../../../services/env';
 import {deriveRootKeypairs} from '../../../../services/keychain';
 import {exit} from '../../../../services/pool';
 import {isDetailedError} from '../../../../types/error';
@@ -189,7 +189,7 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
     }, [dispatch, library, account, chainId, rewards]);
 
     const afterExitTime = exitTime ? exitTime * 1000 < Date.now() : false;
-    const treeUri = env[`COMMITMENT_TREE_URL_${chainId}`];
+    const treeUri = getCommitmentTreeUrl(chainId!);
     const isRedemptionPossible = treeUri && afterExitTime;
 
     return (

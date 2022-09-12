@@ -23,6 +23,7 @@ const REQUIRED_ENV_VARS: string[] = [
     'PRP_GRANTOR_CONTRACT_80001',
     'Z_ASSETS_REGISTRY_CONTRACT_80001',
     'REWARD_MASTER_CONTRACT_5',
+    'COMMITMENT_TREE_URL_80001',
 ];
 
 const REQUIRED_CHAIN_ENV_VAR_PREFIXES: string[] = [
@@ -203,4 +204,8 @@ export function getMissingEnvVars(): string[] {
     return getRequiredEnvVars()
         .filter(varName => !env[varName])
         .sort();
+}
+
+export function getCommitmentTreeUrl(chainId: number): string | undefined {
+    return env[`COMMITMENT_TREE_URL_${chainId}`];
 }

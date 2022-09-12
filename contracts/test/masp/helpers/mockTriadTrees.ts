@@ -1,12 +1,12 @@
 // @ts-ignore
-import { ethers } from 'hardhat';
+import {ethers} from 'hardhat';
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
 } from '../../../lib/poseidonBuilder';
-import { MockTriadIncrementalMerkleTrees } from '../../../types';
+import {MockTriadIncrementalMerkleTrees} from '../../../types/contracts';
 
-export { deployMockTrees };
+export {deployMockTrees};
 
 async function deployMockTrees(): Promise<MockTriadIncrementalMerkleTrees> {
     const PoseidonT3 = await getPoseidonT3Contract();

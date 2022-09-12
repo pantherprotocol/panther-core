@@ -1,5 +1,5 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { task, types } from 'hardhat/config';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {task, types} from 'hardhat/config';
 
 const TASK_ZASSET_ADD = 'zasset:add';
 

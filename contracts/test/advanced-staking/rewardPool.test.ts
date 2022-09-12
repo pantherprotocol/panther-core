@@ -4,7 +4,7 @@ import hre from 'hardhat';
 const {getSigners} = hre.ethers;
 import {BigNumber, BaseContract} from 'ethers';
 import {smock, MockContract, FakeContract} from '@defi-wonderland/smock';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 
 chai.should(); // if you like should syntax
 chai.use(smock.matchers);

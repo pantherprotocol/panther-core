@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-import { expect } from 'chai';
+import {expect} from 'chai';
 // @ts-ignore
-import { ethers } from 'hardhat';
+import {ethers} from 'hardhat';
 
 describe('PubKeyGenerator contract', function () {
     let pkGenerator;

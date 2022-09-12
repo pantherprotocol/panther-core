@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-import { expect } from 'chai';
-import { deployMockCommitmentGenerator } from './helpers/mockCommitmentGenerator';
+import {expect} from 'chai';
+import {deployMockCommitmentGenerator} from './helpers/mockCommitmentGenerator';
 
 describe('CommitmentGenerator contract', function () {
-    let cGenerator;
+    let cGenerator: any;
 
     before(async function () {
         cGenerator = await deployMockCommitmentGenerator();

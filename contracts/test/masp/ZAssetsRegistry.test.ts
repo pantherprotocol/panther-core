@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-import { ethers } from 'hardhat';
-import { expect } from 'chai';
-import { ZAssetsRegistry } from '../../types';
+import {ethers} from 'hardhat';
+import {expect} from 'chai';
+import {ZAssetsRegistry} from '../../types/contracts';
 import {
     getIds,
     getMissingIds,
@@ -11,9 +11,9 @@ import {
     ZAssetStatus,
     getERC20AlternateAssetId,
 } from './data/zAssetsSample';
-import { revertSnapshot, takeSnapshot } from './helpers/hardhat';
-import { BigNumber } from 'ethers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import {revertSnapshot, takeSnapshot} from './helpers/hardhat';
+import {BigNumber} from 'ethers';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers';
 
 describe('ZAssetsRegistry contract', function () {
     let zAssetsRegistry: ZAssetsRegistry;
@@ -41,7 +41,7 @@ describe('ZAssetsRegistry contract', function () {
     describe('function addZAsset', () => {
         it('only owner should be able to register a new asset(ERC-20/ERC-721/ERC-1155) with the panther pool', async () => {
             const zAsset = getZAssets()[0];
-            let nonOwner = await zAssetsRegistry.connect(notOwner);
+            const nonOwner = await zAssetsRegistry.connect(notOwner);
             await expect(nonOwner.addZAsset(zAsset)).to.be.revertedWith(
                 'ImmOwn: unauthorized',
             );
@@ -176,7 +176,7 @@ describe('ZAssetsRegistry contract', function () {
 
         describe('when an asset has not been added', () => {
             it('should revert if zAsset is not added yet', async () => {
-                const { zAssetRootId } = getMissingIds()[1];
+                const {zAssetRootId} = getMissingIds()[1];
                 await expect(
                     zAssetsRegistry.changeZAssetStatus(
                         zAssetRootId,
@@ -203,7 +203,7 @@ describe('ZAssetsRegistry contract', function () {
 
         describe('if an asset has not been added', () => {
             it('should return zero values', async () => {
-                for (const { zAssetRootId } of getMissingIds()) {
+                for (const {zAssetRootId} of getMissingIds()) {
                     const actual = await zAssetsRegistry.getZAsset(
                         zAssetRootId,
                     );
@@ -248,7 +248,7 @@ describe('ZAssetsRegistry contract', function () {
             it('should get ERC-20 alternate asset along with its ID', async () => {
                 const alternateAsset = getERC20AlternateAssetId()[0];
                 const expectAsset = getZAssets()[3];
-                const { asset: actualAsset, zAssetRecId: actualzAssetRecId } =
+                const {asset: actualAsset, zAssetRecId: actualzAssetRecId} =
                     await zAssetsRegistry.getZAssetAndIds(
                         alternateAsset.token,
                         alternateAsset.zAssetRootId,
@@ -261,7 +261,7 @@ describe('ZAssetsRegistry contract', function () {
         describe('if an asset has not been added', () => {
             it('should return zero values in `zAsset`', async () => {
                 for (const missing of getMissingIds()) {
-                    const { asset: actual } =
+                    const {asset: actual} =
                         await zAssetsRegistry.getZAssetAndIds(
                             missing.token,
                             missing.tokenId,
@@ -271,8 +271,8 @@ describe('ZAssetsRegistry contract', function () {
             });
 
             it('should return zero `zAssetId`', async () => {
-                for (const { token, tokenId } of getMissingIds()) {
-                    const { zAssetId } = await zAssetsRegistry.getZAssetAndIds(
+                for (const {token, tokenId} of getMissingIds()) {
+                    const {zAssetId} = await zAssetsRegistry.getZAssetAndIds(
                         token,
                         tokenId,
                     );
@@ -281,8 +281,8 @@ describe('ZAssetsRegistry contract', function () {
             });
 
             it('should return zero `_tokenId`', async () => {
-                for (const { token, tokenId } of getMissingIds()) {
-                    const { _tokenId } = await zAssetsRegistry.getZAssetAndIds(
+                for (const {token, tokenId} of getMissingIds()) {
+                    const {_tokenId} = await zAssetsRegistry.getZAssetAndIds(
                         token,
                         tokenId,
                     );
@@ -291,9 +291,11 @@ describe('ZAssetsRegistry contract', function () {
             });
 
             it('should return zero `zAssetRecId`', async () => {
-                for (const { token, tokenId } of getMissingIds()) {
-                    const { zAssetRecId } =
-                        await zAssetsRegistry.getZAssetAndIds(token, tokenId);
+                for (const {token, tokenId} of getMissingIds()) {
+                    const {zAssetRecId} = await zAssetsRegistry.getZAssetAndIds(
+                        token,
+                        tokenId,
+                    );
                     expect(zAssetRecId).to.equal(0);
                 }
             });
@@ -335,7 +337,7 @@ describe('ZAssetsRegistry contract', function () {
 
     function checkZAssetProperties(
         expected: ZAsset,
-        actual: { [key: string]: any },
+        actual: {[key: string]: any},
     ): void {
         expect(actual.status, 'status').to.equal(expected.status);
         expect(actual.tokenType, 'tokenType').to.equal(expected.tokenType);

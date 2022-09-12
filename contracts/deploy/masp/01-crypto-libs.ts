@@ -1,5 +1,5 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { DeployFunction } from 'hardhat-deploy/types';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {DeployFunction} from 'hardhat-deploy/types';
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
@@ -8,10 +8,10 @@ import {
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {
-        deployments: { deploy },
+        deployments: {deploy},
         getNamedAccounts,
     } = hre;
-    const { deployer } = await getNamedAccounts();
+    const {deployer} = await getNamedAccounts();
 
     const PoseidonT3 = await getPoseidonT3Contract();
     await deploy('PoseidonT3', {

@@ -9,6 +9,7 @@ node_modules/
 staging/
 tmp/
 testing/**/*.cli.js
-typing/
+typing
+typings
 types/
 .yarn/

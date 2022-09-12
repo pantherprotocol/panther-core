@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // @ts-ignore
-import { ethers } from 'hardhat';
-import { BytesLike } from '@ethersproject/bytes/src.ts';
+import {ethers} from 'hardhat';
+import {BytesLike} from '@ethersproject/bytes/src.ts';
 
 type Tuple<T, N extends number, A extends any[] = []> = A extends {
     length: N;
@@ -50,4 +50,4 @@ function toBytes32(n: number | string) {
     );
 }
 
-export { toBigNum, toBytes32 };
+export {toBigNum, toBytes32};

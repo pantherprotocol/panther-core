@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-import { expect } from 'chai';
+import {expect} from 'chai';
 
 // @ts-ignore
-import { toBigNum } from '../../lib/utilities';
-import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MockTriadIncrementalMerkleTrees } from '../../types';
-import { deployMockTrees } from './helpers/mockTriadTrees';
-import { dataForCacheTest } from './data/triadTreeSample';
+import {toBigNum} from '../../lib/utilities';
+import {takeSnapshot, revertSnapshot} from './helpers/hardhat';
+import {MockTriadIncrementalMerkleTrees} from '../../types/contracts';
+import {deployMockTrees} from './helpers/mockTriadTrees';
+import {dataForCacheTest} from './data/triadTreeSample';
 
 const {
     after1stCallRoot,

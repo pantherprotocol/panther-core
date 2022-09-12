@@ -1,9 +1,9 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { DeployFunction } from 'hardhat-deploy/types';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {DeployFunction} from 'hardhat-deploy/types';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    const { getNamedAccounts, ethers } = hre;
-    const { deployer } = await getNamedAccounts();
+    const {getNamedAccounts, ethers} = hre;
+    const {deployer} = await getNamedAccounts();
     const multisig =
         process.env.DAO_MULTISIG_ADDRESS ||
         (await getNamedAccounts()).multisig ||

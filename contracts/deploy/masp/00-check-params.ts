@@ -1,13 +1,13 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { DeployFunction } from 'hardhat-deploy/types';
-import { isLocal } from '../lib/hardhat';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {DeployFunction} from 'hardhat-deploy/types';
+import {isLocal} from '../lib/hardhat';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    const { getNamedAccounts, network } = hre;
+    const {getNamedAccounts, network} = hre;
 
     console.log(`Deploying on ${network.name}...`);
 
-    const { deployer } = await getNamedAccounts();
+    const {deployer} = await getNamedAccounts();
     if (!deployer) throw 'Err: deployer undefined';
 
     if (!isLocal(hre)) {

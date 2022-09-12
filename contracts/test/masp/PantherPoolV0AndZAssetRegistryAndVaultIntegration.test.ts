@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { expect } from 'chai';
+import {expect} from 'chai';
 
 // @ts-ignore
 import {
@@ -8,8 +8,8 @@ import {
     increaseTime,
     getBlockTimestamp,
 } from './helpers/hardhat';
-import { poseidon } from 'circomlibjs';
-import { MerkleProof, TriadMerkleTree } from '../../lib/tree';
+import {poseidon} from 'circomlibjs';
+import {MerkleProof, TriadMerkleTree} from '../../lib/tree';
 import assert from 'assert';
 import {
     bigIntToBuffer32,
@@ -18,35 +18,35 @@ import {
     SenderTransaction,
 } from '../../lib/message-encryption';
 
-import { deriveKeypairFromSeed } from '../../lib/keychain';
+import {deriveKeypairFromSeed} from '../../lib/keychain';
 
-import { PantherPoolV0AndZAssetRegistryAndVaultTester } from '../../types';
-import { deployPantherPoolV0AndZAssetRegistryAndVaultTester } from './helpers/pantherPoolV0AndZAssetRegistryAndVaultTester';
-import { PathElementsType, toBytes32, Triad } from '../../lib/utilities';
-import { BigNumber } from 'ethers';
-import type { BytesLike } from '@ethersproject/bytes';
+import {PantherPoolV0AndZAssetRegistryAndVaultTester} from '../../types/contracts';
+import {deployPantherPoolV0AndZAssetRegistryAndVaultTester} from './helpers/pantherPoolV0AndZAssetRegistryAndVaultTester';
+import {PathElementsType, toBytes32, Triad} from '../../lib/utilities';
+import {BigNumber} from 'ethers';
+import type {BytesLike} from '@ethersproject/bytes';
 
-import { getExitCommitment } from './data/depositAndFakeExitSample';
+import {getExitCommitment} from './data/depositAndFakeExitSample';
 
 describe('PantherPoolV0 and Vault Integration', () => {
     // eslint-disable-next-line no-unused-vars
     let pantherPoolV0AndZAssetRegistryAndVaultTester: PantherPoolV0AndZAssetRegistryAndVaultTester;
     let snapshot: number;
     const UTXOs = 3;
-    let tokensAddresses: BigInt[] = [BigInt(0), BigInt(0), BigInt(0)];
-    let zAssetIds: BigInt[] = [BigInt(0), BigInt(0), BigInt(0)];
+    const tokensAddresses: BigInt[] = [BigInt(0), BigInt(0), BigInt(0)];
+    const zAssetIds: BigInt[] = [BigInt(0), BigInt(0), BigInt(0)];
     const amounts = [BigInt(1000), BigInt(1000), BigInt(1000)];
 
     before(async () => {
         pantherPoolV0AndZAssetRegistryAndVaultTester =
             await deployPantherPoolV0AndZAssetRegistryAndVaultTester();
         for (let i = 0; i < UTXOs; ++i) {
-            let tokenAddress =
+            const tokenAddress =
                 await pantherPoolV0AndZAssetRegistryAndVaultTester.getTokenAddress(
                     i,
                 );
             tokensAddresses[i] = BigInt(tokenAddress);
-            let zAssetId =
+            const zAssetId =
                 await pantherPoolV0AndZAssetRegistryAndVaultTester.testGetZAssetId(
                     BigNumber.from(tokensAddresses[i]),
                     0,
@@ -75,7 +75,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
         const PANTHER_CORE_TREE_DEPTH_SIZE = 15;
 
         // eslint-disable-next-line no-unused-vars
-        let tree = new TriadMerkleTree(
+        const tree = new TriadMerkleTree(
             PANTHER_CORE_TREE_DEPTH_SIZE,
             PANTHER_CORE_ZERO_VALUE,
             poseidon2or3,
@@ -176,9 +176,9 @@ describe('PantherPoolV0 and Vault Integration', () => {
 
                 // const createdAtNum = BigInt('1652375774');
                 // const createdAtBytes32 = toBytes32(createdAtNum.toString());
-                let commitments: BigNumber[] = [];
+                const commitments: BigNumber[] = [];
                 commitments.fill(BigNumber.from(0), UTXOs);
-                let commitmentsForTree: BigInt[] = [];
+                const commitmentsForTree: BigInt[] = [];
                 commitmentsForTree.fill(BigInt(0), UTXOs);
                 for (let i = 0; i < UTXOs; ++i) {
                     commitments[i] =
@@ -195,7 +195,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 }
 
                 tree.insertBatch(commitmentsForTree as bigint[]);
-                let merkleProof: MerkleProof[] = [];
+                const merkleProof: MerkleProof[] = [];
                 for (let i = 0; i < UTXOs; ++i) {
                     merkleProof[i] = tree.genMerklePath(i);
                 }
@@ -225,7 +225,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                         recipientTransaction.spenderKeys.privateKey as bigint,
                         leftLeafId,
                         ((): PathElementsType => {
-                            let pathElements: BytesLike[] = [];
+                            const pathElements: BytesLike[] = [];
                             merkleProof[i].pathElements.forEach(
                                 (value, index) => {
                                     pathElements.push(

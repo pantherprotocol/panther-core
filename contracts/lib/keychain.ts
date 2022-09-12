@@ -6,8 +6,9 @@ https://github.com/appliedzkp/maci/blob/master/crypto/ts/index.ts
 import assert from 'assert';
 import crypto from 'crypto';
 
-import { babyjub, poseidon } from 'circomlibjs';
-import { IKeypair, PrivateKey, PublicKey } from './types/keypair';
+// @ts-ignore
+import {babyjub, poseidon} from 'circomlibjs';
+import {IKeypair, PrivateKey, PublicKey} from './types/keypair';
 
 export const SNARK_FIELD_SIZE = BigInt(
     '21888242871839275222246405745257275088548364400416034343698204186575808495617',
@@ -74,7 +75,7 @@ const generateRandomness = (): bigint => {
     return randomness;
 };
 
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line
 const bigIntToBuffer = (i: BigInt): Buffer => {
     let hexStr = i.toString(16);
     while (hexStr.length < 64) {

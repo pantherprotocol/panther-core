@@ -1,12 +1,12 @@
 // @ts-ignore
-import { ethers } from 'hardhat';
+import {ethers} from 'hardhat';
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
 } from '../../../lib/poseidonBuilder';
-import { MerkleProofVerifierTester } from '../../../types';
+import {MerkleProofVerifierTester} from '../../../types/contracts';
 
-export { deployMerkleProofVerifierTester };
+export {deployMerkleProofVerifierTester};
 
 async function deployMerkleProofVerifierTester(): Promise<MerkleProofVerifierTester> {
     const PoseidonT3 = await getPoseidonT3Contract();

@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 
 import "../PantherPoolV0.sol";
 import "./FakeVault.sol";
-import "./FakePrpGrantor.sol";
+import "../../common/mocks/FakePrpGrantor.sol";
 import "./MockPantherPoolV0.sol";
 import "../ZAssetsRegistry.sol";
 

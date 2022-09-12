@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: MIT
 // @ts-ignore
-import { ethers } from 'hardhat';
+import {ethers} from 'hardhat';
+// @ts-ignore
 import {
     createCode,
     generateABI,
+    // @ts-ignore
 } from 'circomlibjs/src/poseidon_gencontract.js';
 
 const getPoseidonT3Contract = getPoseidonContract(2);
 const getPoseidonT4Contract = getPoseidonContract(3);
 const getPoseidonT6Contract = getPoseidonContract(5);
-export { getPoseidonT3Contract, getPoseidonT4Contract, getPoseidonT6Contract };
+export {getPoseidonT3Contract, getPoseidonT4Contract, getPoseidonT6Contract};
 
 function getPoseidonContract(n: number) {
     // @ts-ignore
@@ -38,10 +40,10 @@ function checkInterface(expectedIface: string, abi: any[]) {
             .replace(/ /g, '');
         const actual =
             `${e.type}${e.name}(${e.inputs.map(
-                (i: { type: string }): string => i.type,
+                (i: {type: string}): string => i.type,
             )})` +
             `${e.stateMutability}returns(${e.outputs.map(
-                (o: { type: string }): string => o.type,
+                (o: {type: string}): string => o.type,
             )})`;
 
         return expected == actual;

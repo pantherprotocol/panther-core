@@ -11,6 +11,6 @@ zeroSeed="Pantherprotocol"
 treeDepth="15"
 
 node_modules/.bin/ts-node lib/triadMerkleZerosContractGenerator.ts \
-  ${zeroSeed} \
-  ${treeDepth} \
-  > contracts/masp/triadTree/TriadMerkleZeros.sol
+    ${zeroSeed} \
+    ${treeDepth} \
+    > contracts/masp/triadTree/TriadMerkleZeros.sol

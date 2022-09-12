@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { expect } from 'chai';
+import {expect} from 'chai';
 
 import {
     getBlockTimestamp,
@@ -7,13 +7,13 @@ import {
     revertSnapshot,
     takeSnapshot,
 } from './helpers/hardhat';
-import { MockPantherPoolV0, ZAssetsRegistry } from '../../types';
+import {MockPantherPoolV0, ZAssetsRegistry} from '../../types/contracts';
 
-import { smock, FakeContract } from '@defi-wonderland/smock';
+import {smock, FakeContract} from '@defi-wonderland/smock';
 
-import { deployPantherPoolV0 } from './helpers/pantherPoolV0';
-import { ethers } from 'hardhat';
-import { getIds, getZAssets } from './data/zAssetsSample';
+import {deployPantherPoolV0} from './helpers/pantherPoolV0';
+import {ethers} from 'hardhat';
+import {getIds, getZAssets} from './data/zAssetsSample';
 import {
     anotherFakeExitCommitment,
     depositSample,

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { revertSnapshot, takeSnapshot } from './helpers/hardhat';
-import { PrpGrantor } from '../../types';
-import { BigNumber } from 'ethers';
+import {expect} from 'chai';
+import {ethers} from 'hardhat';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers';
+import {revertSnapshot, takeSnapshot} from './helpers/hardhat';
+import {PrpGrantor} from '../../types/contracts';
+import {BigNumber} from 'ethers';
 
 describe('PrpGrantor contract', function () {
     // bytes4(keccak256("forAdvancedStakeGrant"))
@@ -348,7 +348,7 @@ describe('PrpGrantor contract', function () {
     describe('function enableGrantType', () => {
         describe('enabling a grant type for a curator', () => {
             it('only owner should be able to enable a grant types for curators', async () => {
-                let nonOwner = await prpGrantor.connect(curatorOne);
+                const nonOwner = await prpGrantor.connect(curatorOne);
                 await expect(
                     nonOwner.enableGrantType(
                         curatorOne.address,

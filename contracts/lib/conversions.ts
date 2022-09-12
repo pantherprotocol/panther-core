@@ -1,5 +1,5 @@
-import type { BytesLike } from '@ethersproject/bytes';
-import { utils } from 'ethers';
+import type {BytesLike} from '@ethersproject/bytes';
+import {utils} from 'ethers';
 
 export function toBytes32(data: BytesLike): string {
     return utils.hexZeroPad(data, 32);

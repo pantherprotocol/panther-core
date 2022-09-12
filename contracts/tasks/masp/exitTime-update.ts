@@ -1,6 +1,6 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { task } from 'hardhat/config';
-import { isLocal } from '../../lib/hardhat';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {task} from 'hardhat/config';
+import {isLocal} from '../../lib/hardhat';
 
 const TASK_EXIT_TIME_UPDATE = 'exittime:update';
 

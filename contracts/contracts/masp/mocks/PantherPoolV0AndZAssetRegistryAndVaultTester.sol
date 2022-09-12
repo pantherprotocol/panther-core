@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import "../PantherPoolV0.sol";
 import "../Vault.sol";
 import "../common/Types.sol";
-import "./FakePrpGrantor.sol";
+import "../../common/mocks/FakePrpGrantor.sol";
 import "./MockPantherPoolV0.sol";
 import "../ZAssetsRegistry.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -44,9 +44,10 @@ contract MyERC20 is ERC20 {
     */
 }
 
+// solhint-disable var-name-mixedcase
 contract PantherPoolV0AndZAssetRegistryAndVaultTester is MockPantherPoolV0 {
     address private registry;
-    MyERC20[OUT_UTXOs] Tokens;
+    MyERC20[OUT_UTXOs] private Tokens;
 
     constructor()
         MockPantherPoolV0(

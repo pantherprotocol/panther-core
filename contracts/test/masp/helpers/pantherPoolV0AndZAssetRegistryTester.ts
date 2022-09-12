@@ -1,8 +1,8 @@
 // @ts-ignore
-import { PantherPoolV0AndZAssetRegistryTester } from '../../types';
-import { getPantherPoolMocFactoryByName } from './pantherPoolMockFactory';
+import {PantherPoolV0AndZAssetRegistryTester} from '../../types/contracts';
+import {getPantherPoolMocFactoryByName} from './pantherPoolMockFactory';
 
-export { deployPantherPoolV0AndZAssetRegistryTester };
+export {deployPantherPoolV0AndZAssetRegistryTester};
 
 async function deployPantherPoolV0AndZAssetRegistryTester(): Promise<PantherPoolV0AndZAssetRegistryTester> {
     const PantherPoolV0 = await getPantherPoolMocFactoryByName(

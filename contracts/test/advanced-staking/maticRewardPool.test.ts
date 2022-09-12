@@ -1,7 +1,7 @@
 import {ethers} from 'hardhat';
 import {BigNumber} from 'ethers';
 import {expect} from 'chai';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 import {FakeContract, smock} from '@defi-wonderland/smock';
 import {IErc20Min, MaticRewardPool} from '../../types/contracts';
 import {mineBlock, revertSnapshot, takeSnapshot} from '../../lib/hardhat';

@@ -12,7 +12,7 @@ https://github.com/appliedzkp/incrementalquintree
 
 import assert from 'assert';
 // @ts-ignore
-import { poseidon } from 'circomlibjs';
+import {poseidon} from 'circomlibjs';
 
 type PathElements = bigint[][];
 type Indices = number[];
@@ -34,7 +34,7 @@ const calcInitialVals = (
 ) => {
     const zeros: bigint[] = [zeroValue];
     const filledSubtrees: bigint[][] = [[zeroValue, zeroValue, zeroValue]];
-    const filledPaths: any = { 0: [] };
+    const filledPaths: any = {0: []};
 
     let currentLevelHash = hashFunc(filledSubtrees[0]);
     for (let i = 1; i < depth; i++) {
@@ -54,7 +54,7 @@ const calcInitialVals = (
 
     const root = hashFunc(filledSubtrees[depth - 1]);
 
-    return { zeros, filledSubtrees, filledPaths, root };
+    return {zeros, filledSubtrees, filledPaths, root};
 };
 
 const poseidon2or3 = (inputs: bigint[]): bigint => {
@@ -499,4 +499,4 @@ class TriadMerkleTree {
     */
 }
 
-export { poseidon2or3, TriadMerkleTree, MerkleProof };
+export {poseidon2or3, TriadMerkleTree, MerkleProof};

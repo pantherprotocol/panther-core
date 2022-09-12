@@ -2,10 +2,10 @@
 
 The **"triad binary tree"** is a modified Merkle binary tree, such that:
 
--   every node, from the root up to the level preceding leaves, and excluding
-    that level, has 2 child nodes (i.e. this subtree is a full binary tree);
--   every node of the level preceding leaves has 3 child nodes (in other words,
-    there are 3 leaves on the last level).
+- every node, from the root up to the level preceding leaves, and excluding
+  that level, has 2 child nodes (i.e. this subtree is a full binary tree);
+- every node of the level preceding leaves has 3 child nodes (in other words,
+  there are 3 leaves on the last level).
 
 > We use tries with the number of levels, excluding the root level, being
 > `TREE_DEPTH = 15`
@@ -123,8 +123,8 @@ P = Array(path elements for `l` from 1 to TREE_DEPTH-1, both inclusive);
 
 For every input UTXO, we pass the Merkle proof being:
 
--   triad leaf index, `i'`, and ...
--   ... triad path elements, `P'`
+- triad leaf index, `i'`, and ...
+- ... triad path elements, `P'`
 
 > `i'` is an integer of 0..65534\
 > `P'` consists of 16 elements

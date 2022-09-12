@@ -1,9 +1,9 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { DeployFunction } from 'hardhat-deploy/types';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {DeployFunction} from 'hardhat-deploy/types';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    const { getNamedAccounts, ethers } = hre;
-    const { deployer } = await getNamedAccounts();
+    const {getNamedAccounts, ethers} = hre;
+    const {deployer} = await getNamedAccounts();
 
     const grantorProxy = await ethers.getContract('PrpGrantor_Proxy');
     const grantorImpl = await ethers.getContract('PrpGrantor_Implementation');

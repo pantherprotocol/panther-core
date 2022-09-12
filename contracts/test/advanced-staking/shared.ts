@@ -1,7 +1,7 @@
 import {ethers} from 'hardhat';
 import {BigNumber, ContractTransaction} from 'ethers';
 import {FakeContract, smock} from '@defi-wonderland/smock';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 import {
     RewardPool,
     IErc20Min,

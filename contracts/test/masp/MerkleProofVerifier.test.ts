@@ -1,23 +1,24 @@
 // SPDX-License-Identifier: MIT
-import { expect } from 'chai';
+import {expect} from 'chai';
 
 // @ts-ignore
-import { toBytes32, PathElementsType, Triad } from '../../lib/utilities';
-import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MerkleProofVerifierTester } from '../../types';
-import { poseidon, babyjub } from 'circomlibjs';
-import { TriadMerkleTree } from '../../lib/tree';
-import assert from 'assert';
-import { BytesLike } from 'ethers/lib/ethers';
-import {
-    generateRandomBabyJubValue,
-    multiplyScalars,
-} from '../../lib/keychain';
-import crypto from 'crypto';
-import { utils } from 'ethers';
-import { bigintToBytes32 } from '../../lib/conversions';
-import { deployMerkleProofVerifierTester } from './helpers/merkleProofVerifierTester';
+import {toBytes32, PathElementsType, Triad} from '../../lib/utilities';
+import {takeSnapshot, revertSnapshot} from './helpers/hardhat';
+import {MerkleProofVerifierTester} from '../../types/contracts';
+// @ts-ignore
+import {poseidon, babyjub} from 'circomlibjs';
+import {TriadMerkleTree} from '../../lib/tree';
+// @ts-ignore
+import {assert} from 'assert';
+import {BytesLike} from 'ethers/lib/ethers';
+import {generateRandomBabyJubValue, multiplyScalars} from '../../lib/keychain';
+// @ts-ignore
+import {crypto} from 'crypto';
+import {utils} from 'ethers';
+import {bigintToBytes32} from '../../lib/conversions';
+import {deployMerkleProofVerifierTester} from './helpers/merkleProofVerifierTester';
 
+// @ts-ignore
 function bnToBuf(bn) {
     // The handy-dandy `toString(base)` works!!
     let hex = BigInt(bn).toString(16);
@@ -35,8 +36,8 @@ function bnToBuf(bn) {
 
     // And then we can iterate each element by one
     // and each hex segment by two
-    var i = 0;
-    var j = 0;
+    let i = 0;
+    let j = 0;
     while (i < len) {
         u8[i] = parseInt(hex.slice(j, j + 2), 16);
         i += 1;
@@ -47,12 +48,15 @@ function bnToBuf(bn) {
     return u8;
 }
 
+// @ts-ignore
 function bufToBn(buf) {
-    var hex: string[] = [];
-    var u8 = Uint8Array.from(buf);
+    // @ts-ignore
+    const hex: string[] = [];
+    // @ts-ignore
+    const u8 = Uint8Array.from(buf);
 
     u8.forEach(function (i) {
-        var h = i.toString(16);
+        let h = i.toString(16);
         if (h.length % 2) {
             h = '0' + h;
         }
@@ -279,7 +283,7 @@ describe('MerkleProofVerifier', () => {
                     commitment_0,
                     pathElements0,
                 );
-                let check = await merkleProofVerifierTester.isProofVerified();
+                const check = await merkleProofVerifierTester.isProofVerified();
                 expect(check == true, 'NOT PROVED');
             });
 
@@ -292,7 +296,7 @@ describe('MerkleProofVerifier', () => {
                     commitment_1,
                     pathElements1,
                 );
-                let check = await merkleProofVerifierTester.isProofVerified();
+                const check = await merkleProofVerifierTester.isProofVerified();
                 expect(check == true, 'NOT PROVED');
             });
             const leafId_2 = BigInt('2');
@@ -304,7 +308,7 @@ describe('MerkleProofVerifier', () => {
                     commitment_2,
                     pathElements2,
                 );
-                let check = await merkleProofVerifierTester.isProofVerified();
+                const check = await merkleProofVerifierTester.isProofVerified();
                 expect(check == true, 'NOT PROVED');
             });
         });
@@ -325,12 +329,11 @@ describe('MerkleProofVerifier', () => {
         };
 
         describe('should be equality between ts & solidity path elements & proof will success', function () {
-            let tree: TriadMerkleTree;
             const PANTHER_CORE_ZERO_VALUE = BigInt(
                 '2896678800030780677881716886212119387589061708732637213728415628433288554509',
             );
             const PANTHER_CORE_TREE_DEPTH_SIZE = 15;
-            tree = new TriadMerkleTree(
+            const tree = new TriadMerkleTree(
                 PANTHER_CORE_TREE_DEPTH_SIZE,
                 PANTHER_CORE_ZERO_VALUE,
                 poseidon2or3,
@@ -377,7 +380,7 @@ describe('MerkleProofVerifier', () => {
                 BigInt(commitments[2]),
             ]);
 
-            let merkleProof = [
+            const merkleProof = [
                 tree.genMerklePath(0),
                 tree.genMerklePath(1),
                 tree.genMerklePath(2),
@@ -433,7 +436,7 @@ describe('MerkleProofVerifier', () => {
             ];
 
             for (let i = 2; i < PANTHER_CORE_TREE_DEPTH_SIZE; i++) {
-                let computed = merkleProof[0].pathElements[i][0];
+                const computed = merkleProof[0].pathElements[i][0];
                 expect(BigInt(computed)).equal(
                     ShouldBeMerklePathElementsAfterFirstInsert[i - 1],
                     'Must Be Equal',
@@ -447,13 +450,13 @@ describe('MerkleProofVerifier', () => {
                 BigInt(commitments[2]),
             ]);
 
-            let merkleProofSecondInsert = [
+            const merkleProofSecondInsert = [
                 tree.genMerklePath(3),
                 tree.genMerklePath(4),
                 tree.genMerklePath(5),
             ];
 
-            let ShouldBeMerklePathElementsAfterSecondInsert = [
+            const ShouldBeMerklePathElementsAfterSecondInsert = [
                 BigInt(
                     '2036430464785539673097545458320380514076050513668437280501170446145938050826',
                 ),
@@ -502,7 +505,7 @@ describe('MerkleProofVerifier', () => {
             ];
 
             for (let i = 2; i < PANTHER_CORE_TREE_DEPTH_SIZE; i++) {
-                let computed = merkleProofSecondInsert[0].pathElements[i][0];
+                const computed = merkleProofSecondInsert[0].pathElements[i][0];
                 expect(BigInt(computed)).equal(
                     ShouldBeMerklePathElementsAfterSecondInsert[i - 1],
                     'Must Be Equal',
@@ -516,13 +519,13 @@ describe('MerkleProofVerifier', () => {
                 BigInt(commitments[2]),
             ]);
 
-            let merkleProofThirdInsert = [
+            const merkleProofThirdInsert = [
                 tree.genMerklePath(6),
                 tree.genMerklePath(7),
                 tree.genMerklePath(8),
             ];
 
-            let ShouldBeMerklePathElementsAfterThirdInsert = [
+            const ShouldBeMerklePathElementsAfterThirdInsert = [
                 BigInt(
                     '12610959546703067021829481548786041058957588484398889881477381005496514537462',
                 ),
@@ -571,7 +574,7 @@ describe('MerkleProofVerifier', () => {
             ];
 
             for (let i = 2; i < PANTHER_CORE_TREE_DEPTH_SIZE; i++) {
-                let computed = merkleProofThirdInsert[0].pathElements[i][0];
+                const computed = merkleProofThirdInsert[0].pathElements[i][0];
                 expect(BigInt(computed)).equal(
                     ShouldBeMerklePathElementsAfterThirdInsert[i - 1],
                     'Must Be Equal',
@@ -612,7 +615,7 @@ describe('MerkleProofVerifier', () => {
                     );
                     // When insertBatchZkp is used ( un-comment )
                     // let elements = await trees.PathElements();
-                    let leafID = await merkleProofVerifierTester.LeafId();
+                    const leafID = await merkleProofVerifierTester.LeafId();
                     // let merkleRoot = elements[14];
                     it('should be proved', async () => {
                         const pathElements = [
@@ -726,7 +729,7 @@ describe('MerkleProofVerifier', () => {
                             commitment0,
                             pathElements,
                         );
-                        let check =
+                        const check =
                             await merkleProofVerifierTester.isProofVerified();
                         expect(check, 'NOT PROVED').equal(true);
                     });

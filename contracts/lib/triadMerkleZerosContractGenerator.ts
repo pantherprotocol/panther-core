@@ -2,9 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import Web3 from 'web3';
-import { poseidon } from 'circomlibjs';
+import {poseidon} from 'circomlibjs';
 
-const { keccak256, toBN } = Web3.utils;
+const {keccak256, toBN} = Web3.utils;
 
 const genZerosContract = (zeroSeed: string, treeDepth: number): string => {
     // Defined in "../contracts/crypto/SnarkContracts.sol" as well
@@ -56,4 +56,4 @@ if (require.main === module) {
     process.stdout.write(generated);
 }
 
-export { genZerosContract };
+export {genZerosContract};

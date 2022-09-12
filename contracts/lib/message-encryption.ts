@@ -1,8 +1,8 @@
 import crypto from 'crypto';
-import { babyjub } from 'circomlibjs';
-import { utils } from 'ethers';
+import {babyjub} from 'circomlibjs';
+import {utils} from 'ethers';
 
-import { bigintToBytes32 } from './conversions';
+import {bigintToBytes32} from './conversions';
 import {
     deriveKeypairFromSeed,
     formatPrivateKeyForBabyJub,
@@ -10,7 +10,7 @@ import {
     generateRandomBabyJubValue,
     multiplyScalars,
 } from './keychain';
-import { ICiphertext } from './types/message';
+import {ICiphertext} from './types/message';
 import {
     PrivateKey,
     PublicKey,
@@ -18,8 +18,8 @@ import {
     EcdhSharedKeyPoint,
     IKeypair,
 } from './types/keypair';
-import { Buffer } from 'buffer';
-import { bigintToBuf, bufToBigint } from 'bigint-conversion';
+import {Buffer} from 'buffer';
+import {bigintToBuf, bufToBigint} from 'bigint-conversion';
 
 export const generateEcdhSharedKey = (
     privateKey: PrivateKey,
@@ -81,7 +81,7 @@ export function decryptMessage(
 export function bigIntToBuffer32(bn) {
     let result = new Uint8Array(bigintToBuf(bn));
     if (result.length < 32) {
-        let padding = new Uint8Array(32 - result.length);
+        const padding = new Uint8Array(32 - result.length);
         padding.fill(
             parseInt(BigInt(0).toString(16).slice(0, 2), 16),
             padding.length,
@@ -342,5 +342,7 @@ export class SenderRecipientSimulator {
         }
     }
     // After this step commitments & secrets can be plugged-in to generateDeposits
-    public executeCommitmentCreationAndPacking() {}
+    public executeCommitmentCreationAndPacking() {
+        // TODO: impl
+    }
 }

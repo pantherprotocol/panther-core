@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-import { ethers } from 'hardhat';
-import { expect } from 'chai';
-import { MockAmountConvertor } from '../../types';
+import {ethers} from 'hardhat';
+import {expect} from 'chai';
+import {MockAmountConvertor} from '../../types/contracts';
 
 const toBN = ethers.BigNumber.from;
 
@@ -20,91 +20,91 @@ describe('AmountConvertor', function () {
         const amount = toBN('1234567890123456789012');
 
         it('should not scale the amount when scale is 0', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(amount, 0);
             expect(scaledAmount).to.be.eq(amount);
             expect(change).to.be.eq(0);
         });
 
         it('should divide the amount by 1e1 when scale is 1 ', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(amount, 1);
             expect(scaledAmount).to.be.eq(amount.div(1e1));
             expect(change).to.be.eq(amount.mod(1e1));
         });
 
         it('should divide the amount by 1e2 when amount scale is 2 ', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(amount, 2);
             expect(scaledAmount).to.be.eq(amount.div(1e2));
             expect(change).to.be.eq(amount.mod(1e2));
         });
 
         it('should divide the amount by 1e3 when amount scale is 3', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(amount, 3);
             expect(scaledAmount).to.be.eq(amount.div(1e3));
             expect(change).to.be.eq(amount.mod(1e3));
         });
 
         it('should divide the amount by 1e6 when amount scale is 6', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(amount, 6);
             expect(scaledAmount).to.be.eq(amount.div(1e6));
             expect(change).to.be.eq(amount.mod(1e6));
         });
 
         it('should divide the amount by 1e9 when amount scale is 9', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(amount, 9);
             expect(scaledAmount).to.be.eq(amount.div(1e9));
             expect(change).to.be.eq(amount.mod(1e9));
         });
 
         it('should divide the amount by 1e12 when amount scale is 12', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(amount, 12);
             expect(scaledAmount).to.be.eq(amount.div(1e12));
             expect(change).to.be.eq(amount.mod(1e12));
         });
 
         it('should divide the amount by 1e15 when amount scale is 15', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(amount, 15);
             expect(scaledAmount).to.be.eq(amount.div(1e15));
             expect(change).to.be.eq(amount.mod(1e15));
         });
 
         it('should divide the amount by 1e21 when amount scale is 21', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(amount, 21);
             expect(scaledAmount).to.be.eq(amount.div(toBN(10).pow(21)));
             expect(change).to.be.eq(amount.mod(toBN(10).pow(21)));
         });
 
         it('should return (0, 0) when amount is 0 and scale is 0 ', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(0, 0);
             expect(scaledAmount).to.be.eq(0);
             expect(change).to.be.eq(0);
         });
 
         it('should return (0, 0) when amount is 0 and scale is 1 ', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(0, 1);
             expect(scaledAmount).to.be.eq(0);
             expect(change).to.be.eq(0);
         });
 
         it('should return (0, 0) when amount is 0 and scale is 3 ', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(0, 3);
             expect(scaledAmount).to.be.eq(0);
             expect(change).to.be.eq(0);
         });
 
         it('should return (0, 0) when amount is 0 and scale is 15 ', async () => {
-            const { scaledAmount, change } =
+            const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(0, 15);
             expect(scaledAmount).to.be.eq(0);
             expect(change).to.be.eq(0);

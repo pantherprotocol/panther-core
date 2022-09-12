@@ -1,11 +1,11 @@
 // @ts-ignore
-import { ethers } from 'hardhat';
-import { MockPantherPoolV0 } from '../../../types';
+import {ethers} from 'hardhat';
+import {MockPantherPoolV0} from '../../../types/contracts';
 
-import { smock } from '@defi-wonderland/smock';
-import { getPantherPoolMocFactoryByName } from './pantherPoolMockFactory';
+import {smock} from '@defi-wonderland/smock';
+import {getPantherPoolMocFactoryByName} from './pantherPoolMockFactory';
 
-export { deployPantherPoolV0 };
+export {deployPantherPoolV0};
 
 async function deployPantherPoolV0(): Promise<MockPantherPoolV0> {
     const [owner] = await ethers.getSigners();

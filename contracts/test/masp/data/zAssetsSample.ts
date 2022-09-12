@@ -1,7 +1,7 @@
-import { toBigNum } from '../../../lib/utilities';
-import { ethers } from 'hardhat';
+import {toBigNum} from '../../../lib/utilities';
+import {ethers} from 'hardhat';
 // eslint-disable-next-line import/named
-import { BigNumberish } from 'ethers';
+import {BigNumberish} from 'ethers';
 
 /* eslint-disable  no-unused-vars */
 export enum ZAssetStatus {

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-import { expect } from 'chai';
+import {expect} from 'chai';
 
 // @ts-ignore
-import { toBytes32, PathElementsType, Triad, Pair } from '../../lib/utilities';
+import {toBytes32, PathElementsType, Triad, Pair} from '../../lib/utilities';
 import {
     takeSnapshot,
     revertSnapshot,
@@ -12,11 +12,11 @@ import {
 import {
     PantherPoolV0AndZAssetRegistryTester,
     ZAssetsRegistry,
-} from '../../types';
-import { poseidon, babyjub } from 'circomlibjs';
-import { TriadMerkleTree } from '../../lib/tree';
+} from '../../types/contracts';
+import {poseidon, babyjub} from 'circomlibjs';
+import {TriadMerkleTree} from '../../lib/tree';
 import assert from 'assert';
-import { BytesLike } from 'ethers/lib/ethers';
+import {BytesLike} from 'ethers/lib/ethers';
 import {
     buffer32ToBigInt,
     bigIntToBuffer32,
@@ -25,18 +25,18 @@ import {
 } from '../../lib/message-encryption';
 
 import crypto from 'crypto';
-import { BigNumber, utils } from 'ethers';
-import { bigintToBytes32 } from '../../lib/conversions';
+import {BigNumber, utils} from 'ethers';
+import {bigintToBytes32} from '../../lib/conversions';
 import {
     deriveKeypairFromSeed,
     generateRandomBabyJubValue,
     multiplyScalars,
 } from '../../lib/keychain';
 
-import { getExitCommitment } from './data/depositAndFakeExitSample';
+import {getExitCommitment} from './data/depositAndFakeExitSample';
 
-import { deployPantherPoolV0AndZAssetRegistryTester } from './helpers/pantherPoolV0AndZAssetRegistryTester';
-import { ethers } from 'hardhat';
+import {deployPantherPoolV0AndZAssetRegistryTester} from './helpers/pantherPoolV0AndZAssetRegistryTester';
+import {ethers} from 'hardhat';
 
 describe('PantherPoolV0', () => {
     let poolV0: PantherPoolV0AndZAssetRegistryTester;
@@ -352,12 +352,12 @@ describe('PantherPoolV0', () => {
                 // expect(zAssetIdSol, "zAssetId in solidity equals to one in typescript").equal( z1 );
                 // TODO: uze zAssetIdTs to generate commitment inside TS
 
-                let CommitmentsFromSolidity = [
+                const CommitmentsFromSolidity = [
                     BigNumber.from(0),
                     BigNumber.from(0),
                     BigNumber.from(0),
                 ];
-                let CommitmentsInternal = [
+                const CommitmentsInternal = [
                     BigNumber.from(0),
                     BigNumber.from(0),
                     BigNumber.from(0),
@@ -437,7 +437,7 @@ describe('PantherPoolV0', () => {
                     ...zAssetIdBuf1.slice(0, 20),
                     ...amountBuf1.slice(0, 12).reverse(),
                 ]);
-                // eslint-disable-next-line no-unused-vars
+                // eslint-disable-next-line
                 const secrets_from_chain1 = [
                     {
                         _hex: toBytes32(
@@ -468,7 +468,7 @@ describe('PantherPoolV0', () => {
                         _isBigNumber: true,
                     },
                 ];
-                // eslint-disable-next-line no-unused-vars
+                // eslint-disable-next-line
                 const secrets_from_chain11: BigNumber[] = [
                     BigNumber.from(
                         buffer32ToBigInt(
@@ -496,7 +496,7 @@ describe('PantherPoolV0', () => {
                     ...zAssetIdBuf2.slice(0, 20),
                     ...amountBuf2.slice(0, 12).reverse(),
                 ]);
-                // eslint-disable-next-line no-unused-vars
+                // eslint-disable-next-line
                 const secrets_from_chain2 = [
                     {
                         _hex: toBytes32(
@@ -527,7 +527,7 @@ describe('PantherPoolV0', () => {
                         _isBigNumber: true,
                     },
                 ];
-                // eslint-disable-next-line no-unused-vars
+                // eslint-disable-next-line
                 const secrets_from_chain22: BigNumber[] = [
                     BigNumber.from(
                         buffer32ToBigInt(
@@ -555,7 +555,7 @@ describe('PantherPoolV0', () => {
                     ...zAssetIdBuf3.slice(0, 20),
                     ...amountBuf3.slice(0, 12).reverse(),
                 ]);
-                // eslint-disable-next-line no-unused-vars
+                // eslint-disable-next-line
                 const secrets_from_chain3 = [
                     {
                         _hex: toBytes32(
@@ -586,7 +586,7 @@ describe('PantherPoolV0', () => {
                         _isBigNumber: true,
                     },
                 ];
-                // eslint-disable-next-line no-unused-vars
+                // eslint-disable-next-line
                 const secrets_from_chain33: BigNumber[] = [
                     BigNumber.from(
                         buffer32ToBigInt(
@@ -614,6 +614,7 @@ describe('PantherPoolV0', () => {
                     secrets,
                     createdAtNum,
                 );
+                // eslint-disable-next-line
                 const rcp = await tx.wait(); // eslint-disable-line no-unused-vars
                 //console.log("rcp.logs[0]:" , rcp.events[0]);
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -679,12 +680,11 @@ describe('PantherPoolV0', () => {
                 // Since we checked equality when we got emitted event we will just use what we already have
                 // [10]- Execute `exit` function to see if you can use locked funds
                 // Prepare tree to get merkle proof
-                let tree: TriadMerkleTree;
                 const PANTHER_CORE_ZERO_VALUE = BigInt(
                     '2896678800030780677881716886212119387589061708732637213728415628433288554509',
                 );
                 const PANTHER_CORE_TREE_DEPTH_SIZE = 15;
-                tree = new TriadMerkleTree(
+                const tree = new TriadMerkleTree(
                     PANTHER_CORE_TREE_DEPTH_SIZE,
                     PANTHER_CORE_ZERO_VALUE,
                     poseidon2or3,
@@ -728,7 +728,7 @@ describe('PantherPoolV0', () => {
                     BigInt(commitments[2]),
                 ]);
 
-                let merkleProof = [
+                const merkleProof = [
                     tree.genMerklePath(0),
                     tree.genMerklePath(1),
                     tree.genMerklePath(2),

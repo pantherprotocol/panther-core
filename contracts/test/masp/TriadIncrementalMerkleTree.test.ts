@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { expect } from 'chai';
+import {expect} from 'chai';
 
 // @ts-ignore
 import {
@@ -8,10 +8,10 @@ import {
     zeroTriadTreeRoot,
     zeroLeavesTriad,
 } from '../../lib/utilities';
-import { takeSnapshot, revertSnapshot } from './helpers/hardhat';
-import { MockTriadIncrementalMerkleTrees } from '../../types';
-import { deployMockTrees } from './helpers/mockTriadTrees';
-import { triads, rootsSeen } from './data/triadTreeSample';
+import {takeSnapshot, revertSnapshot} from './helpers/hardhat';
+import {MockTriadIncrementalMerkleTrees} from '../../types/contracts';
+import {deployMockTrees} from './helpers/mockTriadTrees';
+import {triads, rootsSeen} from './data/triadTreeSample';
 
 describe('IncrementalMerkleTree', () => {
     let trees: MockTriadIncrementalMerkleTrees;

@@ -13,10 +13,10 @@ const PrimaryActionButton = (props: PrimaryActionButtonProps) => {
             data-testid="common_primary-action-button_container"
         >
             <Button
-                data-testid="common_primary-action-button_button"
                 disabled={props.disabled ?? false}
                 className={`primary-action-button ${props.styles ?? ''}`}
                 onClick={props.onClick ?? null}
+                data-testid={props.dataTestid}
             >
                 {props.children}
             </Button>

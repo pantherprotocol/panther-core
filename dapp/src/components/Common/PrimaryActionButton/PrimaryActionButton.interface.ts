@@ -5,4 +5,5 @@ export interface PrimaryActionButtonProps {
     styles?: string;
     disabled?: boolean;
     children: string | ReactElement;
+    dataTestid?: string;
 }

@@ -16,6 +16,7 @@ import {
 import {zkpTokenBalanceSelector} from '../../redux/slices/zkpTokenBalance';
 import {isWrongNetwork} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
+import {switchNetwork} from '../../services/wallet';
 import {StakeType} from '../../types/staking';
 import ConnectButton from '../ConnectButton';
 import SwitchNetworkButton from '../SwitchNetworkButton';
@@ -82,7 +83,7 @@ export default function StakeTab() {
 
             {wrongNetwork && (
                 <div className="buttons-holder">
-                    <SwitchNetworkButton />
+                    <SwitchNetworkButton onChange={switchNetwork} />
                 </div>
             )}
 

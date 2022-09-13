@@ -106,6 +106,7 @@ export default function StakingInput(props: {amountToStake: string | null}) {
             <Box className="staking-input-container">
                 <Box className="staking-input-box">
                     <Input
+                        data-testid="input-item"
                         inputProps={{
                             pattern: '[0-9.]*',
                             inputMode: 'decimal',

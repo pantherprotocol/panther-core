@@ -9,15 +9,14 @@ import {
     triadTreeMerkleProofToPathElements,
 } from '@panther-core/crypto/lib/triad-merkle-tree';
 import poseidon from 'circomlibjs/src/poseidon';
-import {isDetailedError} from 'error';
 import {utils, Contract, BigNumber} from 'ethers';
 import {ContractTransaction} from 'ethers/lib/ethers';
-import {AdvancedStakeRewards, UTXOStatus} from 'staking';
 
 import {parseTxErrorMessage} from '../lib/errors';
 import {formatTime} from '../lib/format';
 import {IKeypair, PrivateKey} from '../lib/types';
-import {DetailedError} from '../types/error';
+import {isDetailedError, DetailedError} from '../types/error';
+import {AdvancedStakeRewards, UTXOStatus} from '../types/staking';
 
 import {
     getPoolContract,

@@ -33,7 +33,7 @@ const rootPersistConfig = {
     storage: storage,
     whitelist: ['advancedStakesRewards', 'firstVisit', 'isWalletConnected'],
 };
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
     advancedStakesRewards: advancedStakesRewardsReducer,
     blur: blurReducer,
     chainBalance: chainBalanceReducer,
@@ -52,7 +52,7 @@ const rootReducer = combineReducers({
     remainingPrpRewards: remainingPrpRewardsReducer,
 });
 
-const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
+export const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
 
 export const store = configureStore({
     reducer: persistedReducer,

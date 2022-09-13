@@ -4,6 +4,9 @@ pragma solidity ^0.8.4;
 
 import "../triadTree/TriadIncrementalMerkleTrees.sol";
 
+// solhint-disable var-name-mixedcase
+// solhint-disable no-empty-blocks
+// solhint-disable func-name-mixedcase
 contract MockTriadIncrementalMerkleTrees is TriadIncrementalMerkleTrees {
     event InternalInsertBatch(uint256 leftLeafId);
 

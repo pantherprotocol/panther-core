@@ -4,6 +4,10 @@ pragma solidity ^0.8.4;
 
 import "../PantherPoolV0.sol";
 
+// solhint-disable var-name-mixedcase
+// solhint-disable no-empty-blocks
+// solhint-disable func-name-mixedcase
+// solhint-disable event-name-camelcase
 contract MockPantherPoolV0 is PantherPoolV0 {
     constructor(
         address _owner,

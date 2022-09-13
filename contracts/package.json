@@ -7,6 +7,7 @@
   "scripts": {
     "build": "waffle",
     "build:types": "cp -a types ../dapp/src",
+    "build:contracts:triad-tree": "./scripts/generateTriadMerkleZeroesContracts.sh",
     "chain": "HARDHAT_NO_MNEMONIC=yes hardhat node",
     "clean": "rm artifacts/ -rf && rm cache/solidity-files-cache.json -f && rm types/contracts/ -rf",
     "compile": "TS_NODE_TRANSPILE_ONLY=1 HARDHAT_NO_MNEMONIC=yes hardhat compile",
@@ -23,6 +24,11 @@
     "lint:eslint": "eslint --max-warnings 0",
     "lint:solhint": "solhint --max-warnings 0 contracts/**/*.sol",
     "lint:ts": "yarn lint:eslint .",
+    "pchain:generate-snapshot": "yarn pchain:setup --take-snapshot && tar -zcf pchain/deployments.tar.gz deployments/pchain",
+    "pchain:load-snapshot": "tar -xzf pchain/deployments.tar.gz && yarn pchain:start --from-snapshot",
+    "pchain:setup": "rm deployments/pchain/ -rf && ./scripts/setup-pchain.sh",
+    "pchain:start": "./scripts/setup-pchain.sh --no-deploy",
+    "pchain:start:verbose": "yarn pchain:start --log-file=$(tty) --ganache-args=--verbose",
     "prettier:check": "cd .. && yarn prettier --check contracts",
     "prettier:fix": "cd .. && yarn prettier --write contracts",
     "prettier:list-different": "cd .. && yarn prettier --list-different contracts",
@@ -30,6 +36,7 @@
     "storage": "HARDHAT_NO_MNEMONIC=yes yarn hardhat storage | grep -v '/node_modules/\\.bin/hardhat storage' > docs/docgen/storage.layout.txt",
     "test": "HARDHAT_NO_MNEMONIC=yes hardhat test",
     "test:gas": "REPORT_GAS=yes yarn test",
+    "test:ts": "echo '[i] not implemented: yarn pchain:load-snapshot --eval-and-exit \"jest --runInBand --detectOpenHandles --forceExit --verbose --colors\"'",
     "typechain": "HARDHAT_NO_MNEMONIC=yes hardhat typechain",
     "verify:network": "HARDHAT_NO_MNEMONIC=yes hardhat verify --network"
   },
@@ -44,7 +51,8 @@
     "zk-proof"
   ],
   "dependencies": {
-    "chai": "^4.3.4"
+    "chai": "^4.3.4",
+    "circomlibjs": "^0.0.8"
   },
   "devDependencies": {
     "@defi-wonderland/smock": "^2.0.7",
@@ -67,8 +75,10 @@
     "@types/node": "^14.11.8",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
+    "bigint-conversion": "^2.2.1",
     "chai": "^4.3.4",
     "chalk": "^5.0.1",
+    "circomlibjs": "^0.0.8",
     "dayjs": "^1.11.3",
     "dotenv": "^8.6.0",
     "eslint": "^7.27.0",

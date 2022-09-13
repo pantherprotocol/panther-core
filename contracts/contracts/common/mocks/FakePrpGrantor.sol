@@ -23,4 +23,10 @@ contract FakePrpGrantor {
             }
         }
     }
+
+    event DebugRedeem(address grantee, uint256 prpAmount);
+
+    function redeemGrant(address grantee, uint256 prpAmount) external {
+        emit DebugRedeem(grantee, prpAmount);
+    }
 }

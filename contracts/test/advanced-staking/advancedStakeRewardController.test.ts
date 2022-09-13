@@ -4,7 +4,7 @@ import {
     revertSnapshot,
     takeSnapshot,
 } from '../../lib/hardhat';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 import {ethers} from 'hardhat';
 import {assert, expect} from 'chai';
 import {BigNumber, BigNumberish} from 'ethers';

@@ -1,7 +1,7 @@
 import {BigNumber, constants, Contract} from 'ethers';
 import chai from 'chai';
 import {ethers} from 'hardhat';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 
 import {RewardMaster, RewardPool, Staking} from '../../types/contracts';
 

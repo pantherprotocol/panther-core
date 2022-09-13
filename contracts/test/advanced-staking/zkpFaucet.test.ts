@@ -4,7 +4,7 @@ import {BigNumber} from 'ethers';
 import {ZkpFaucet, TokenMock} from '../../types/contracts';
 import {toBN} from '../../lib/units-shortcuts';
 import {revertSnapshot, takeSnapshot} from '../../lib/hardhat';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signers';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 
 describe('Zkp Faucet', () => {
     let faucet: ZkpFaucet;

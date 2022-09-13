@@ -21,8 +21,12 @@ export const MainPageWrapper = (props: {
 
     useEffect(() => {
         async function checkIfBlockedUser() {
-            const blockedUser = await isBlockedCountry();
-            setBlockedUser(!!blockedUser ?? false);
+            const response = await isBlockedCountry();
+            if (response instanceof Error) {
+                console.error(`Failed to fetch geoLocataion data: ${response}`);
+            } else {
+                setBlockedUser(response);
+            }
         }
         checkIfBlockedUser();
     }, []);

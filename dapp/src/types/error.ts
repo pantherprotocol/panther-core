@@ -5,7 +5,9 @@ export type DetailedError = {
 };
 
 export function isDetailedError(
-    possiblyDetailedErrror: any,
-): possiblyDetailedErrror is DetailedError {
-    return 'details' in possiblyDetailedErrror;
+    possiblyDetailedError: any,
+): possiblyDetailedError is DetailedError {
+    return (
+        'message' in possiblyDetailedError && 'details' in possiblyDetailedError
+    );
 }

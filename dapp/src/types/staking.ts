@@ -23,6 +23,7 @@ export type AdvancedStakeRewards = {
     zZkpUTXOStatus: UTXOStatus;
     zZKP: string;
     PRP: string;
+    exitCommitmentTime?: number;
 };
 
 export enum UTXOStatus {

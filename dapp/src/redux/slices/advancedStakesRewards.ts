@@ -263,6 +263,14 @@ export const advancedStakesRewardsSlice = createSlice({
                 reward.zZkpUTXOStatus = status;
             }
         },
+        updateExitCommitmentTime: (state, action) => {
+            const [chainId, address, id, currentTimeStamp] = action.payload;
+            const addrHash = shortAddressHash(address);
+            const reward = state.value?.[chainId]?.[addrHash]?.[id];
+            if (reward) {
+                reward.exitCommitmentTime = currentTimeStamp;
+            }
+        },
         updateLastRefreshTime: state => {
             // updating the lastRefreshTime to the current time only in
             // case if the previous value of lastRefreshTime is
@@ -398,7 +406,10 @@ export function statusSelector(state: RootState): LoadingStatus {
     return state.advancedStakesRewards.status;
 }
 
-export const {resetAdvancedStakesRewards, updateUTXOStatus} =
-    advancedStakesRewardsSlice.actions;
+export const {
+    resetAdvancedStakesRewards,
+    updateUTXOStatus,
+    updateExitCommitmentTime,
+} = advancedStakesRewardsSlice.actions;
 
 export default advancedStakesRewardsSlice.reducer;

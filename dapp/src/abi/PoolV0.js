@@ -7,11 +7,6 @@ export const abi = [
                 type: 'address',
             },
             {
-                internalType: 'uint256',
-                name: '_exitTime',
-                type: 'uint256',
-            },
-            {
                 internalType: 'address',
                 name: 'assetRegistry',
                 type: 'address',
@@ -85,6 +80,38 @@ export const abi = [
             },
         ],
         name: 'Change',
+        type: 'event',
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: 'uint256',
+                name: 'timestamp',
+                type: 'uint256',
+            },
+        ],
+        name: 'ExitCommitment',
+        type: 'event',
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: 'uint256',
+                name: 'newExitTime',
+                type: 'uint256',
+            },
+            {
+                indexed: false,
+                internalType: 'uint256',
+                name: 'newExitDelay',
+                type: 'uint256',
+            },
+        ],
+        name: 'ExitTimesUpdated',
         type: 'event',
     },
     {
@@ -207,6 +234,19 @@ export const abi = [
         type: 'function',
     },
     {
+        inputs: [
+            {
+                internalType: 'bytes32',
+                name: 'exitCommitment',
+                type: 'bytes32',
+            },
+        ],
+        name: 'commitToExit',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+    },
+    {
         inputs: [],
         name: 'curRoot',
         outputs: [
@@ -291,13 +331,45 @@ export const abi = [
         type: 'function',
     },
     {
+        inputs: [
+            {
+                internalType: 'bytes32',
+                name: '',
+                type: 'bytes32',
+            },
+        ],
+        name: 'exitCommitments',
+        outputs: [
+            {
+                internalType: 'uint32',
+                name: '',
+                type: 'uint32',
+            },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+    },
+    {
+        inputs: [],
+        name: 'exitDelay',
+        outputs: [
+            {
+                internalType: 'uint24',
+                name: '',
+                type: 'uint24',
+            },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+    },
+    {
         inputs: [],
         name: 'exitTime',
         outputs: [
             {
-                internalType: 'uint256',
+                internalType: 'uint32',
                 name: '',
-                type: 'uint256',
+                type: 'uint32',
             },
         ],
         stateMutability: 'view',
@@ -480,12 +552,17 @@ export const abi = [
     {
         inputs: [
             {
-                internalType: 'uint256',
+                internalType: 'uint32',
                 name: 'newExitTime',
-                type: 'uint256',
+                type: 'uint32',
+            },
+            {
+                internalType: 'uint24',
+                name: 'newExitDelay',
+                type: 'uint24',
             },
         ],
-        name: 'updateExitTime',
+        name: 'updateExitTimes',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',

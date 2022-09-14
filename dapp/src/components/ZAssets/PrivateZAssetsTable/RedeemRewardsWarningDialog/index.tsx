@@ -17,12 +17,13 @@ import moment from 'moment';
 
 import {parseTxErrorMessage} from '../../../../lib/errors';
 import {awaitConfirmationAndRetrieveEvent} from '../../../../lib/events';
-import {useAppDispatch} from '../../../../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../../../../redux/hooks';
 import {
     updateExitCommitmentTime,
     updateUTXOStatus,
 } from '../../../../redux/slices/advancedStakesRewards';
 import {removeBlur, setBlur} from '../../../../redux/slices/blur';
+import {poolV0ExitDelaySelector} from '../../../../redux/slices/poolV0';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -30,7 +31,6 @@ import {
     startWalletAction,
     StartWalletActionPayload,
 } from '../../../../redux/slices/web3WalletLastAction';
-import {getExitDelay} from '../../../../services/env';
 import {deriveRootKeypairs} from '../../../../services/keychain';
 import {exit} from '../../../../services/pool';
 import {isDetailedError} from '../../../../types/error';
@@ -56,16 +56,20 @@ export default function RedeemRewardsWarningDialog(props: {
     const dispatch = useAppDispatch();
     const context = useWeb3React();
     const {account, chainId, library} = context;
-    const exitDelay = getExitDelay()!;
+
+    const exitDelay = useAppSelector(poolV0ExitDelaySelector);
 
     const [redemptionConfirmed, setRedeemConfirmed] = useState(false);
 
     const isLockPeriodPassed =
         exitCommitmentTime &&
-        exitCommitmentTime + parseInt(exitDelay) < moment().unix();
+        exitDelay &&
+        exitCommitmentTime + exitDelay < moment().unix();
 
     const exitCommitmentTimeMs =
-        exitCommitmentTime && (exitCommitmentTime + parseInt(exitDelay)) * 1000;
+        exitCommitmentTime &&
+        exitDelay &&
+        (exitCommitmentTime + exitDelay) * 1000;
 
     const closeModalAndRedeem = () => {
         handleClose();

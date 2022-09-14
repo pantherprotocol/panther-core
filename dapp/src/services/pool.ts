@@ -42,6 +42,16 @@ export async function getExitTime(
     return exitTime;
 }
 
+export async function getExitDelay(
+    library: any,
+    chainId: number,
+): Promise<number> {
+    const contract = getPoolContract(library, chainId);
+    const exitDelayBN = await contract.exitDelay();
+    const exitDelay = Number(exitDelayBN.toString());
+    console.debug(`Exit delay: ${exitDelay}`);
+    return exitDelay;
+}
 /*
 exit decodes UTXO data received from the subgraph, deciphers the random secret,
 generates child spending keys, checks if the  nullifier is not spent, verifies

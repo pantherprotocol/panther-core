@@ -17,8 +17,7 @@ frontend:
               ADVANCED_STAKING_T_{START,END,UNLOCK,REDEMPTION} \
               {ADVANCED_STAKE_REWARD_CONTROLLER,PRP_GRANTOR,Z_ASSETS_REGISTRY,POOL_V0}_CONTRACT_80001 \
               {COMMITMENT_TREE,SUBGRAPH}_URL_80001 \
-              SENTRY_{DSN,AUTH_TOKEN} \
-              EXIT_DELAY
+              SENTRY_{DSN,AUTH_TOKEN}
           do
               if [ -n "${!var}" ]; then
                   echo "${var}=${!var}" >> dapp/.env

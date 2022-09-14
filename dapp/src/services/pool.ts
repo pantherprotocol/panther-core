@@ -52,6 +52,99 @@ export async function getExitDelay(
     console.debug(`Exit delay: ${exitDelay}`);
     return exitDelay;
 }
+
+export const getExitCommitment = (
+    privSpendingKey: PrivateKey,
+    recipient: string,
+): string => {
+    return utils.keccak256(
+        utils.defaultAbiCoder.encode(
+            ['uint256', 'address'],
+            [privSpendingKey, recipient],
+        ),
+    );
+};
+
+export async function registerCommitToExit(
+    library: any,
+    account: string,
+    chainId: number,
+    utxoData: string,
+    leafId: bigint,
+    keys: IKeypair[],
+): Promise<ContractTransaction | DetailedError> {
+    const {contract} = getSignableContract(
+        library,
+        chainId,
+        account,
+        getPoolContract,
+    );
+
+    const [rootSpendingKeypair, rootReadingKeypair] = keys;
+    const {
+        status,
+        error,
+        cannotDecode,
+        isChildKeyInvalid,
+        childSpendingKeypair,
+        nullifier,
+    } = await unpackUTXOAndDeriveKeys(
+        contract,
+        rootSpendingKeypair,
+        rootReadingKeypair.privateKey,
+        leafId,
+        utxoData,
+    );
+    const possibleError = checkUnpackingErrors(
+        rootSpendingKeypair,
+        error,
+        isChildKeyInvalid,
+        cannotDecode,
+        childSpendingKeypair,
+    );
+    if (isDetailedError(possibleError)) {
+        return possibleError;
+    }
+
+    if (status === UTXOStatus.SPENT) {
+        return {
+            message: 'zAsset is already spent.',
+            details: 'Spent nullifier: ' + nullifier,
+        } as DetailedError;
+    }
+
+    const commitmentHash = getExitCommitment(
+        childSpendingKeypair!.privateKey,
+        account,
+    );
+
+    return await poolContractCommitToExit(contract, commitmentHash);
+}
+
+export async function poolContractCommitToExit(
+    poolContract: Contract,
+    commitmentHash: string,
+): Promise<ContractTransaction | DetailedError> {
+    let tx: any;
+
+    try {
+        tx = await poolContract.commitToExit(commitmentHash);
+        return tx;
+    } catch (err) {
+        const parsedError = parseTxErrorMessage(err);
+        if (parsedError === 'execution reverted: PP:E32') {
+            // special case for "already registered commitment".
+            // This could happen when the cache of the browser is cleared
+            return tx;
+        }
+        return {
+            message: 'Transaction error',
+            details: parsedError,
+            triggerError: err as Error,
+        } as DetailedError;
+    }
+}
+
 /*
 exit decodes UTXO data received from the subgraph, deciphers the random secret,
 generates child spending keys, checks if the  nullifier is not spent, verifies
@@ -68,7 +161,7 @@ export async function exit(
     creationTime: number,
     commitments: string[],
     keys: IKeypair[],
-): Promise<[UTXOStatus | null, DetailedError | ContractTransaction]> {
+): Promise<[UTXOStatus, DetailedError | ContractTransaction]> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -95,35 +188,15 @@ export async function exit(
         leafId,
         utxoData,
     );
-    if (cannotDecode && error) {
-        return [
-            UTXOStatus.UNDEFINED,
-            {
-                message: 'Redemption error',
-                details: `Cannot decode zAsset secret message: ${error.message}`,
-                triggerError: error,
-            },
-        ];
-    }
-
-    if (isChildKeyInvalid || !childSpendingKeypair) {
-        const msg = error?.message;
-
-        return [
-            UTXOStatus.UNDEFINED,
-            {
-                message: `Cannot derive the key to spend zAsset. ${
-                    msg ? `: ${msg}` : ''
-                }`,
-
-                details: {
-                    childSpendingPubKey: childSpendingKeypair
-                        ? childSpendingKeypair.publicKey
-                        : 'undefined',
-                    rootSpendingPubKey: rootSpendingKeypair.publicKey,
-                },
-            } as DetailedError,
-        ];
+    const possibleError = checkUnpackingErrors(
+        rootSpendingKeypair,
+        error,
+        isChildKeyInvalid,
+        cannotDecode,
+        childSpendingKeypair,
+    );
+    if (isDetailedError(possibleError)) {
+        return [UTXOStatus.UNDEFINED, possibleError];
     }
 
     if (status === UTXOStatus.SPENT) {
@@ -131,9 +204,7 @@ export async function exit(
             UTXOStatus.SPENT,
             {
                 message: 'zAsset is already spent.',
-                details: {
-                    nullifier,
-                },
+                details: 'Spent nullifier: ' + nullifier,
             } as DetailedError,
         ];
     }
@@ -142,8 +213,8 @@ export async function exit(
     const zAssetId = await zAssetsRegistry.getZAssetId(tokenAddress, tokenId);
     const commitmentHex = bigintToBytes32(
         poseidon([
-            bigintToBytes32(childSpendingKeypair.publicKey[0]),
-            bigintToBytes32(childSpendingKeypair.publicKey[1]),
+            bigintToBytes32(childSpendingKeypair!.publicKey[0]),
+            bigintToBytes32(childSpendingKeypair!.publicKey[1]),
             bigintToBytes32(amounts as bigint),
             zAssetId,
             bigintToBytes32(BigInt(creationTime)),
@@ -156,10 +227,8 @@ export async function exit(
             UTXOStatus.UNSPENT,
             {
                 message: 'Invalid zAsset commitment.',
-                details: {
-                    commitmentInProof: commitmentHex,
-                    commitmentInEvent: zZkpCommitment,
-                },
+                details:
+                    'Expected: ' + zZkpCommitment + ', got: ' + commitmentHex,
             } as DetailedError,
         ];
     }
@@ -169,8 +238,8 @@ export async function exit(
         return [
             UTXOStatus.UNSPENT,
             {
-                message: `Cannot generate Merkle proof of valid zAsset: ${path.message}`,
-                details: path,
+                message: 'Cannot generate Merkle proof of valid zAsset',
+                details: path.message,
                 triggerError: path,
             } as DetailedError,
         ];
@@ -184,10 +253,8 @@ export async function exit(
             UTXOStatus.UNSPENT,
             {
                 message: "zAsset didn't match shielded pool entry.",
-                details: {
-                    leafInProof: proofLeafHex,
-                    leafInEvent: zZkpCommitment,
-                },
+                details:
+                    'Expected: ' + proofLeafHex + ', got: ' + zZkpCommitment,
             } as DetailedError,
         ];
     }
@@ -204,26 +271,20 @@ export async function exit(
         return [
             UTXOStatus.UNSPENT,
             {
-                message:
-                    'Merkle proof of zAsset in shielded pool is not correct.',
-                details: {
-                    proofLeaf: proofLeafHex,
-                    leafId: bigintToBytes32(leafId),
-                    merkleTreeRoot,
-                    pathElements,
-                },
+                message: 'Cannot verify Merkle proof',
+                details: 'Error: ' + isProofValid.message,
                 triggerError: isProofValid as Error,
             } as DetailedError,
         ];
     }
 
-    const result = await craftPoolContractExit(
+    const result = await poolContractExit(
         contract,
         tokenAddress!,
         tokenId as bigint,
         amounts as bigint,
         Number(creationTime),
-        childSpendingKeypair.privateKey,
+        childSpendingKeypair!.privateKey,
         leafId as bigint,
         pathElements,
         merkleTreeRoot,
@@ -233,7 +294,7 @@ export async function exit(
         return [UTXOStatus.UNSPENT, result];
     }
 
-    return [null, result as ContractTransaction];
+    return [UTXOStatus.SPENT, result as ContractTransaction];
 }
 
 export type UTXOStatusByID = [string, UTXOStatus];
@@ -330,6 +391,7 @@ async function unpackUTXOAndDeriveKeys(
     );
 
     const status = isSpent ? UTXOStatus.SPENT : UTXOStatus.UNSPENT;
+
     return {
         status,
         childSpendingKeypair,
@@ -389,6 +451,36 @@ function decodeUTXOData(
     return [ciphertextMsg, tokenAddress, amount, tokenId];
 }
 
+function checkUnpackingErrors(
+    rootSpendingKeypair: IKeypair,
+    error?: Error,
+    isChildKeyInvalid?: boolean,
+    cannotDecode?: boolean,
+    childSpendingKeypair?: IKeypair,
+): DetailedError | null {
+    if (cannotDecode && error) {
+        return {
+            message: 'Redemption error',
+            details: `Cannot decode zAsset secret message: ${error.message}`,
+            triggerError: error,
+        } as DetailedError;
+    }
+
+    if (isChildKeyInvalid || !childSpendingKeypair) {
+        const msg = error?.message;
+
+        return {
+            message: `Cannot derive the key to spend zAsset. ${
+                msg ? `: ${msg}` : ''
+            }`,
+
+            details: msg ? `: ${msg}` : '',
+        } as DetailedError;
+    }
+
+    return null;
+}
+
 export async function isNullifierSpent(
     poolContract: Contract,
     privateSpendingKey: PrivateKey,
@@ -437,7 +529,7 @@ async function generateMerklePath(
     }
 }
 
-async function craftPoolContractExit(
+async function poolContractExit(
     poolContract: Contract,
     tokenAddress: string,
     tokenId: bigint,

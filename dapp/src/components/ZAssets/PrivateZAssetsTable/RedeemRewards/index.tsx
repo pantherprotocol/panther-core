@@ -88,7 +88,7 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                         />
                         {getButtonContents(
                             showExitInProgress,
-                            exitTime,
+                            exitTime!,
                             afterExitTime,
                             treeUri,
                         )}
@@ -97,7 +97,7 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
                     <>
                         {getButtonContents(
                             false,
-                            exitTime,
+                            exitTime!,
                             afterExitTime,
                             treeUri,
                         )}

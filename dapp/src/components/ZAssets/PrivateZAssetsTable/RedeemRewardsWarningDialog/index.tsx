@@ -32,7 +32,7 @@ import {
     StartWalletActionPayload,
 } from '../../../../redux/slices/web3WalletLastAction';
 import {deriveRootKeypairs} from '../../../../services/keychain';
-import {exit} from '../../../../services/pool';
+import {exit, registerCommitToExit} from '../../../../services/pool';
 import {isDetailedError} from '../../../../types/error';
 import {AdvancedStakeRewards, UTXOStatus} from '../../../../types/staking';
 import BackButton from '../../../BackButton';
@@ -188,7 +188,45 @@ export default function RedeemRewardsWarningDialog(props: {
         setRedeemConfirmed(event.target.checked);
     };
 
-    const registerExitCommitment = () => {
+    const registerExitCommitment = async () => {
+        const trigger = 'register exit commitment';
+        dispatch(startWalletAction, {
+            name: 'signMessage',
+            cause: {caller: 'RedeemRewards', trigger},
+            data: {account},
+        } as StartWalletActionPayload);
+        const signer = library.getSigner(account);
+        const keys = await deriveRootKeypairs(signer);
+        if (keys instanceof Error) {
+            dispatch(registerWalletActionFailure, 'signMessage');
+            return notifyError({
+                message: 'Panther wallet error',
+                details: `Failed to generate Panther wallet secrets from signature: ${keys.message}`,
+                triggerError: keys,
+            });
+        }
+        dispatch(progressToNewWalletAction, {
+            oldAction: 'signMessage',
+            newAction: {
+                name: 'registerCommitToExit',
+                cause: {caller: 'PrivateBalance', trigger},
+                data: {account, caller: 'redeem button'},
+            },
+        });
+        const tx = await registerCommitToExit(
+            library,
+            account as string,
+            chainId as number,
+            rewards.utxoData,
+            BigInt(rewards.id),
+            keys,
+        );
+        if (isDetailedError(tx)) {
+            dispatch(registerWalletActionFailure, 'registerCommitToExit');
+            return notifyError(tx);
+        }
+
+        dispatch(registerWalletActionSuccess, 'registerCommitToExit');
         dispatch(updateExitCommitmentTime, [
             chainId,
             account,

@@ -14,6 +14,7 @@ export type WalletSignatureTrigger =
     | 'undefined UTXOs'
     | 'manual refresh'
     | 'zZKP redemption'
+    | 'register exit commitment'
     | 'stake';
 
 export type WalletActionName =

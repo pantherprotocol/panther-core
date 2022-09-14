@@ -1,6 +1,6 @@
 export type DetailedError = {
     message: string;
-    details: any;
+    details: string;
     triggerError?: Error;
 };
 
@@ -8,6 +8,8 @@ export function isDetailedError(
     possiblyDetailedError: any,
 ): possiblyDetailedError is DetailedError {
     return (
-        'message' in possiblyDetailedError && 'details' in possiblyDetailedError
+        possiblyDetailedError &&
+        'message' in possiblyDetailedError &&
+        'details' in possiblyDetailedError
     );
 }

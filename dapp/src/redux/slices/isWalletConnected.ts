@@ -11,19 +11,19 @@ const initialState: isWalletConnectedState = {
 };
 
 export const isWalletConnectedSlice = createSlice({
-    name: 'isWalletConnected',
+    name: 'walletConnection',
     initialState,
     reducers: {
-        connectWallet: state => {
+        setConnected: state => {
             state.value = true;
         },
-        disconnectWallet: state => {
+        setDisconnected: state => {
             state.value = false;
         },
     },
 });
 
-export const {connectWallet, disconnectWallet} = isWalletConnectedSlice.actions;
+export const {setConnected, setDisconnected} = isWalletConnectedSlice.actions;
 
 export const isWalletConnectedSelector = (state: RootState): boolean => {
     return state.isWalletConnected?.value;

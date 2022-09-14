@@ -5,7 +5,7 @@ import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
 import {useOnConnect} from '../../hooks/web3';
 import {useAppDispatch} from '../../redux/hooks';
-import {connectWallet} from '../../redux/slices/isWalletConnected';
+import {setConnected} from '../../redux/slices/isWalletConnected';
 import {safeOpenMetamask} from '../Common/links';
 import PrimaryActionButton from '../Common/PrimaryActionButton';
 
@@ -19,7 +19,7 @@ const ConnectButton = () => {
 
     const onWalletConnect = useCallback(() => {
         onConnect();
-        dispatch(connectWallet);
+        dispatch(setConnected);
     }, [onConnect, dispatch]);
 
     return (

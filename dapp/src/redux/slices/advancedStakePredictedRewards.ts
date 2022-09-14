@@ -16,10 +16,10 @@ export const calculatedRewardSlice = createSlice({
     name: 'advancedStakeInputRewards',
     initialState,
     reducers: {
-        resetRewards: (state): void => {
+        reset: (state): void => {
             state.value = {};
         },
-        calculateRewards: (state, action: PayloadAction<[string, string]>) => {
+        calculate: (state, action: PayloadAction<[string, string]>) => {
             const [amountToStake, minLockPeriod] = action.payload;
             if (!amountToStake || !minLockPeriod) {
                 state.value = {} as StakeReward;
@@ -48,6 +48,7 @@ export const calculatedRewardsSelector = (
     return state.advancedStakeInputRewards.value ?? null;
 };
 
-export const {resetRewards, calculateRewards} = calculatedRewardSlice.actions;
+export const {reset: resetRewards, calculate: calculateRewards} =
+    calculatedRewardSlice.actions;
 
 export default calculatedRewardSlice.reducer;

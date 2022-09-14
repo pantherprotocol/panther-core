@@ -31,7 +31,7 @@ export const stakedBalanceSlice = createSlice({
     name: 'zkpStakedBalance',
     initialState,
     reducers: {
-        resetZkpStakedBalance: state => {
+        reset: state => {
             state.value = initialState.value;
             state.status = initialState.status;
         },
@@ -47,5 +47,5 @@ export const stakedBalanceSlice = createSlice({
 export const zkpStakedBalanceSelector = (state: RootState) =>
     safeParseStringToBN(state.zkpStakedBalance.value);
 
-export const {resetZkpStakedBalance} = stakedBalanceSlice.actions;
+export const {reset: resetZkpStakedBalance} = stakedBalanceSlice.actions;
 export default stakedBalanceSlice.reducer;

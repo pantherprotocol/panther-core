@@ -72,7 +72,7 @@ export const Web3WalletLastActionSlice = createSlice({
     name: 'Web3WalletLastAction',
     initialState,
     reducers: {
-        startWalletAction: (
+        startAction: (
             state,
             action: PayloadAction<StartWalletActionPayload>,
         ) => {
@@ -87,14 +87,14 @@ export const Web3WalletLastActionSlice = createSlice({
                 action.payload.data,
             );
         },
-        registerWalletActionSuccess: (
+        registerActionSuccess: (
             state,
             action: PayloadAction<WalletActionName>,
         ) => {
             checkActionInProgress(state.action, action.payload, 'success');
             state.status = 'succeeded';
         },
-        progressToNewWalletAction: (
+        progressToNewAction: (
             state,
             action: PayloadAction<{
                 oldAction: WalletActionName;
@@ -113,7 +113,7 @@ export const Web3WalletLastActionSlice = createSlice({
                 action.payload.newAction.data,
             );
         },
-        registerWalletActionFailure: (
+        registerActionFailure: (
             state,
             action: PayloadAction<WalletActionName>,
         ) => {
@@ -148,10 +148,10 @@ export const walletActionCauseSelector = (state: RootState) =>
     state.Web3WalletLastAction.cause;
 
 export const {
-    startWalletAction,
-    registerWalletActionSuccess,
-    progressToNewWalletAction,
-    registerWalletActionFailure,
+    startAction: startWalletAction,
+    registerActionSuccess: registerWalletActionSuccess,
+    progressToNewAction: progressToNewWalletAction,
+    registerActionFailure: registerWalletActionFailure,
     acknowledgeByUser,
 } = Web3WalletLastActionSlice.actions;
 export default Web3WalletLastActionSlice.reducer;

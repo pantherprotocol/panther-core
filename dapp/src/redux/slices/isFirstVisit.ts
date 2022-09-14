@@ -14,13 +14,13 @@ export const firstVisitSlice = createSlice({
     name: 'firstVisit',
     initialState,
     reducers: {
-        registerFirstVisit: state => {
+        register: state => {
             state.value = false;
         },
     },
 });
 
-export const {registerFirstVisit} = firstVisitSlice.actions;
+export const {register: registerFirstVisit} = firstVisitSlice.actions;
 
 export const firstVisitSelector = (state: RootState) => {
     return state.firstVisit?.value;

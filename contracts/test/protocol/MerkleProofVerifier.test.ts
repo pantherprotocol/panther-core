@@ -15,54 +15,7 @@ import crypto from 'crypto';
 import {utils} from 'ethers';
 import {bigintToBytes32} from '../../lib/conversions';
 import {deployMerkleProofVerifierTester} from './helpers/merkleProofVerifierTester';
-
-// @ts-ignore
-function bnToBuf(bn) {
-    // The handy-dandy `toString(base)` works!!
-    let hex = BigInt(bn).toString(16);
-
-    // But it still follows the old behavior of giving
-    // invalid hex strings (due to missing padding),
-    // but we can easily add that back
-    if (hex.length % 2) {
-        hex = '0' + hex;
-    }
-
-    // The byteLength will be half of the hex string length
-    const len = hex.length / 2;
-    const u8 = new Uint8Array(len);
-
-    // And then we can iterate each element by one
-    // and each hex segment by two
-    let i = 0;
-    let j = 0;
-    while (i < len) {
-        u8[i] = parseInt(hex.slice(j, j + 2), 16);
-        i += 1;
-        j += 2;
-    }
-
-    // Tada!!
-    return u8;
-}
-
-// @ts-ignore
-function bufToBn(buf) {
-    // @ts-ignore
-    const hex: string[] = [];
-    // @ts-ignore
-    const u8 = Uint8Array.from(buf);
-
-    u8.forEach(function (i) {
-        let h = i.toString(16);
-        if (h.length % 2) {
-            h = '0' + h;
-        }
-        hex.push(h);
-    });
-
-    return BigInt('0x' + hex.join(''));
-}
+import {bigIntToBuffer32, buffer32ToBigInt} from '../../lib/message-encryption';
 
 describe('MerkleProofVerifier', () => {
     let merkleProofVerifierTester: MerkleProofVerifierTester;
@@ -748,8 +701,8 @@ describe('MerkleProofVerifier', () => {
                 const R = babyjub.mulPointEscalar(babyjub.Base8, r); // This key is shared in open form = rB
                 // [2] - Encrypt text - Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
                 const textToBeCiphered = new Uint8Array([
-                    ...bnToBuf(prolog),
-                    ...bnToBuf(r),
+                    ...bigIntToBuffer32(prolog).slice(32 - 4, 32),
+                    ...bigIntToBuffer32(r),
                 ]);
                 expect(
                     textToBeCiphered.length,
@@ -858,16 +811,16 @@ describe('MerkleProofVerifier', () => {
                 expect(
                     prolog_from_chain,
                     'extracted from chain prolog must be equal',
-                ).to.deep.equal(bnToBuf(prolog));
+                ).to.deep.equal(bigIntToBuffer32(prolog).slice(32 - 4, 32));
                 const r_from_chain = decrypted_from_chain.slice(4, 4 + 32);
                 expect(
-                    bufToBn(r_from_chain),
+                    buffer32ToBigInt(r_from_chain),
                     'extracted from chain random must be equal',
                 ).equal(r);
 
                 it('random ciphered -> packed -> unpacked -> deciphered', function () {
                     expect(
-                        bufToBn(r_from_chain),
+                        buffer32ToBigInt(r_from_chain),
                         'extracted from chain random must be equal',
                     ).equal(r);
                 });

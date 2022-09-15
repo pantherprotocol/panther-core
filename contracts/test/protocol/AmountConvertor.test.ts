@@ -17,11 +17,12 @@ describe('AmountConvertor', function () {
     });
 
     describe('internal internalScaleAmount', () => {
-        const amount = toBN('1234567890123456789012');
+        const amount = toBN('18446744073709551615'); // MAX UINT64 2^64-1
 
         it('should not scale the amount when scale is 0', async () => {
             const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(amount, 0);
+            //console.log('sa:', scaledAmount.toString(), ", a:", amount.toString());
             expect(scaledAmount).to.be.eq(amount);
             expect(change).to.be.eq(0);
         });
@@ -113,56 +114,74 @@ describe('AmountConvertor', function () {
 
     describe('internal unscaleAmount', () => {
         it('should not unscale the amount when scale is 0', async () => {
-            const amount = toBN('79228162514264337593543950335');
+            const amount = toBN('18446744073709551615').sub(
+                toBN('79228162514264337593543950335').mod(
+                    '18446744073709551615',
+                ),
+            );
             expect(
                 await amountConvertor.internalUnscaleAmount(amount, 0),
             ).to.be.eq(amount);
         });
 
         it('should multiple the amount by 1e1 when amount scale is 1 ', async () => {
-            const amount = toBN('7922816251426433759354395033');
+            const amount = toBN('18446744073709551615').sub(
+                toBN('7922816251426433759354395033').mod(
+                    '18446744073709551615',
+                ),
+            );
             expect(
                 await amountConvertor.internalUnscaleAmount(amount, 1),
             ).to.be.eq(amount.mul(1e1));
         });
 
         it('should multiple the amount by 1e2 when amount scale is 2', async () => {
-            const amount = toBN('792281625142643375935439503');
+            const amount = toBN('18446744073709551615').sub(
+                toBN('792281625142643375935439503').mod('18446744073709551615'),
+            );
             expect(
                 await amountConvertor.internalUnscaleAmount(amount, 2),
             ).to.be.eq(amount.mul(1e2));
         });
 
         it('should multiple the amount by 1e3 when amount scale is 3', async () => {
-            const amount = toBN('79228162514264337593543950');
+            const amount = toBN('18446744073709551615').sub(
+                toBN('79228162514264337593543950').mod('18446744073709551615'),
+            );
             expect(
                 await amountConvertor.internalUnscaleAmount(amount, 3),
             ).to.be.eq(amount.mul(1e3));
         });
 
         it('should multiple the amount by 1e6 when amount scale is 6', async () => {
-            const amount = toBN('79228162514264337593543');
+            const amount = toBN('18446744073709551615').sub(
+                toBN('79228162514264337593543').mod('18446744073709551615'),
+            );
             expect(
                 await amountConvertor.internalUnscaleAmount(amount, 6),
             ).to.be.eq(amount.mul(1e6));
         });
 
         it('should multiple the amount by 1e9 when amount scale is 9', async () => {
-            const amount = toBN('79228162514264337593');
+            const amount = toBN('18446744073709551615').sub(
+                toBN('79228162514264337593').mod('18446744073709551615'),
+            );
             expect(
                 await amountConvertor.internalUnscaleAmount(amount, 9),
             ).to.be.eq(amount.mul(1e9));
         });
 
         it('should multiple the amount by 1e12 when amount scale is 12', async () => {
-            const amount = toBN('79228162514264337');
+            const amount = toBN('79228162514264337').mod(
+                '18446744073709551615',
+            );
             expect(
                 await amountConvertor.internalUnscaleAmount(amount, 12),
             ).to.be.eq(amount.mul(1e12));
         });
 
         it('should multiple the amount by 1e15 when amount scale is 15', async () => {
-            const amount = toBN('79228162514264');
+            const amount = toBN('79228162514264').mod('18446744073709551615');
             expect(
                 await amountConvertor.internalUnscaleAmount(amount, 15),
             ).to.be.eq(amount.mul(1e15));

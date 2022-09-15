@@ -361,13 +361,13 @@ contract AdvancedStakeRewardController is
                     );
                     // Can't exceed uint96 here due to the `require` above
                     _totals.zkpRewards = uint96(newTotalZkpReward);
-
-                    uint256 newScZkpStaked = uint256(_totals.scZkpStaked) +
-                        uint256(stakeAmount) /
-                        1e15;
-                    // Overflow risk ignored as $ZKP max total supply is 1e9 tokens
-                    _totals.scZkpStaked = uint40(newScZkpStaked);
                 }
+                // update scSkpStaked in any case when stakeAmount > 0 which already been required
+                uint256 newScZkpStaked = uint256(_totals.scZkpStaked) +
+                    uint256(stakeAmount) /
+                    1e15;
+                // Overflow risk ignored as $ZKP max total supply is 1e9 tokens
+                _totals.scZkpStaked = uint40(newScZkpStaked);
             }
 
             // `prpPerStake` is too small to cause overflow
@@ -459,6 +459,10 @@ contract AdvancedStakeRewardController is
 
         // 3153600000 = 365 * 24 * 3600 seconds * 100 percents
         zkpAmount = (stakeAmount * apy * period) / 3153600000;
+        // round to 2nd digits after decimal point: X.YZ{0..0} x 1e18
+        unchecked {
+            zkpAmount = (zkpAmount / 1e16) * (1e16);
+        }
     }
 
     // The calling code is assumed to ensure that

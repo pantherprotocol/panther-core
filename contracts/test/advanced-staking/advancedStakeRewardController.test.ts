@@ -25,6 +25,7 @@ describe('AdvancedStakeRewardController', () => {
     const prpRewardPerStake = 10000;
     const rewardingStartApy = 70;
     const rewardingEndApy = 40;
+    const rewardingRoundingNumber = BigNumber.from('10000000000000000');
     const advStake = '0xcc995ce8';
     const asrControllerZkpBalance = BigNumber.from(10).pow(24);
     const asrControllerPrpBalance = BigNumber.from(10 * prpRewardPerStake);
@@ -48,6 +49,7 @@ describe('AdvancedStakeRewardController', () => {
         endTime: number;
         startZkpApy: number;
         prpPerStake: number;
+        rewardsRounding: BigNumber;
     };
 
     const getDefaultRewardParams = (): RewardParams => ({
@@ -56,6 +58,7 @@ describe('AdvancedStakeRewardController', () => {
         startZkpApy: rewardingStartApy,
         endZkpApy: rewardingEndApy,
         prpPerStake: prpRewardPerStake,
+        rewardsRounding: rewardingRoundingNumber,
     });
 
     before(async () => {
@@ -240,8 +243,8 @@ describe('AdvancedStakeRewardController', () => {
             });
         });
 
-        describe('for a deposit of 1e3 $ZKP', () => {
-            const stakedAmount = BigNumber.from(1e9).mul(1e12);
+        describe('for a deposit of 1e5 $ZKP', () => {
+            const stakedAmount = BigNumber.from(1e9).mul(1e14);
 
             it('should return 0 if called w/ `lockedTill` before rewarding start time', async () => {
                 const rewardParams = getDefaultRewardParams();
@@ -284,7 +287,9 @@ describe('AdvancedStakeRewardController', () => {
                     const expReward = stakedAmount
                         .mul(rewardParams.startZkpApy)
                         .mul(rewardParams.endTime - rewardParams.startTime)
-                        .div(365 * 86400 * 100);
+                        .div(365 * 86400 * 100)
+                        .div(rewardParams.rewardsRounding)
+                        .mul(rewardParams.rewardsRounding);
 
                     expect(
                         await asrController.internalComputeZkpReward(
@@ -299,7 +304,9 @@ describe('AdvancedStakeRewardController', () => {
         });
 
         describe('for predefined test cases', () => {
-            const stakedAmount = BigNumber.from(33277).mul(1e14); // 3.3277 $ZKP
+            const stakedAmount = BigNumber.from(54321).mul(
+                '1000000000000000000',
+            ); // 54321 $ZKP
 
             it('should return the expected reward amount for the case 1', async () => {
                 // Staked after the rewarding start time, till before the rewarding end time
@@ -312,7 +319,6 @@ describe('AdvancedStakeRewardController', () => {
                     stakedAt,
                     rewardParams,
                 );
-
                 expect(
                     await asrController.internalComputeZkpReward(
                         stakedAmount,
@@ -550,11 +556,12 @@ describe('AdvancedStakeRewardController', () => {
                     .mul(rewardedSince - rewardParams.startTime)
                     .div(rewardParams.endTime - rewardParams.startTime);
                 const apy = rewardParams.startZkpApy - apyDrop.toNumber();
-
                 return stakedAmount
                     .mul(apy)
                     .mul(period)
-                    .div(365 * 24 * 3600 * 100);
+                    .div(365 * 24 * 3600 * 100)
+                    .div(rewardParams.rewardsRounding)
+                    .mul(rewardParams.rewardsRounding);
             }
         });
     });
@@ -913,7 +920,9 @@ describe('AdvancedStakeRewardController', () => {
                 expZkpReward = amountToStake
                     .mul(rewardParams.startZkpApy)
                     .mul(rewardParams.endTime - rewardParams.startTime)
-                    .div(100 * 365 * 86400);
+                    .div(100 * 365 * 86400)
+                    .div(rewardParams.rewardsRounding)
+                    .mul(rewardParams.rewardsRounding);
                 expScZkpStaked = amountToStake.div(1e15);
                 expPrpReward = rewardParams.prpPerStake;
 
@@ -942,7 +951,6 @@ describe('AdvancedStakeRewardController', () => {
                             expPrpReward,
                             1, // nft
                         );
-
                     await checkTotals(
                         expScZkpStaked,
                         expZkpReward,

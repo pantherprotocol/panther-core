@@ -4,7 +4,6 @@ import {sumBigNumbers} from '@panther-core/crypto/lib/numbers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
-import {chainHasStakesReporter} from '../../services/contracts';
 import {isClassic} from '../../services/rewards';
 import * as stakingService from '../../services/staking';
 import {createExtraReducers, LoadingStatus} from '../slices/shared';
@@ -27,15 +26,6 @@ export const getTotalUnclaimedClassicRewards = createAsyncThunk(
     ): Promise<string | null> => {
         const {account, library, chainId} = context;
         if (!library || !chainId || !account) return null;
-        if (chainHasStakesReporter(chainId)) {
-            if (chainId === 137) {
-                console.debug('Using StakesReporter on Polygon');
-            } else {
-                console.debug('Using StakesReporter on chain', chainId);
-            }
-        } else {
-            console.debug('Not using StakesReporter; chainId', chainId);
-        }
 
         const reward = await stakingService.getStakesAndRewards(
             library,

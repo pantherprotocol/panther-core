@@ -455,6 +455,12 @@ export async function getStakesAndRewards(
     const rewardsBalance = await getRewardsBalance(library, chainId, account);
 
     if (chainHasStakesReporter(chainId)) {
+        if (chainId === 137) {
+            console.debug('Using StakesReporter on Polygon');
+        } else {
+            console.debug('Using StakesReporter on chain', chainId);
+        }
+
         return await calculateRewardsWithReporter(
             library,
             chainId,
@@ -462,6 +468,8 @@ export async function getStakesAndRewards(
             rewardsBalance,
         );
     }
+
+    console.debug('Not using StakesReporter; chainId', chainId);
 
     return await calculateRewardsWithoutReporter(
         library,

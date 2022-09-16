@@ -24,7 +24,7 @@ abstract contract AmountConvertor {
     function _scaleAmount(uint256 amount, uint8 scale)
         internal
         pure
-        returns (uint96 scaledAmount, uint256 change)
+        returns (uint64 scaledAmount, uint256 change)
     {
         uint256 _scaledAmount;
         if (scale == 0) {
@@ -46,7 +46,7 @@ abstract contract AmountConvertor {
 
     // Conversion from the scaled amount to unscaled one.
     // Returns the unscaled amount.
-    function _unscaleAmount(uint96 scaledAmount, uint8 scale)
+    function _unscaleAmount(uint64 scaledAmount, uint8 scale)
         internal
         pure
         returns (uint96)
@@ -65,13 +65,13 @@ abstract contract AmountConvertor {
     function _sanitizeScaledAmount(uint256 scaledAmount)
         internal
         pure
-        returns (uint96)
+        returns (uint64)
     {
         require(
             scaledAmount < MAX_IN_CIRCUIT_AMOUNT,
             ERR_TOO_LARGE_SCALED_AMOUNT
         );
-        return uint96(scaledAmount);
+        return uint64(scaledAmount);
     }
 
     /// Private functions follow

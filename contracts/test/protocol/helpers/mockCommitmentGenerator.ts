@@ -1,21 +1,21 @@
 // @ts-ignore
 import {ethers} from 'hardhat';
-import {getPoseidonT6Contract} from '../../../lib/poseidonBuilder';
+import {getPoseidonT4Contract} from '../../../lib/poseidonBuilder';
 import {MockCommitmentGenerator} from '../../../types/contracts';
 
 export {deployMockCommitmentGenerator};
 
 async function deployMockCommitmentGenerator(): Promise<MockCommitmentGenerator> {
-    const PoseidonT6 = await getPoseidonT6Contract();
-    const poseidonT6 = await PoseidonT6.deploy();
-    await poseidonT6.deployed();
+    const PoseidonT4 = await getPoseidonT4Contract();
+    const poseidonT4 = await PoseidonT4.deploy();
+    await poseidonT4.deployed();
 
     // Link Poseidon contracts
     // @ts-ignore
     const MockCommitmentGenerator = await ethers.getContractFactory(
         'MockCommitmentGenerator',
         {
-            libraries: {PoseidonT6: poseidonT6.address},
+            libraries: {PoseidonT4: poseidonT4.address},
         },
     );
 

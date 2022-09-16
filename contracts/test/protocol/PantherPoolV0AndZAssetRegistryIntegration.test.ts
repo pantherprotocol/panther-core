@@ -362,6 +362,30 @@ describe('PantherPoolV0', () => {
                     BigNumber.from(0),
                     BigNumber.from(0),
                 ];
+                const generateCommitmentNum = (
+                    pubKey_X,
+                    pubKey_Y,
+                    amount,
+                    zAssetIdValue,
+                    createTimeValue,
+                ) => {
+                    const commitment = poseidon2or3([
+                        BigInt(pubKey_X), // pubSpendKey.x
+                        BigInt(pubKey_Y), // pubSpendKey.y
+                        BigNumber.from(amount) // amount
+                            .shl(192)
+                            .or(
+                                BigNumber.from(
+                                    zAssetIdValue, // zAssetId
+                                ).shl(32),
+                            )
+                            .or(
+                                BigNumber.from(createTimeValue), // creationTime
+                            )
+                            .toBigInt(),
+                    ]);
+                    return commitment;
+                };
 
                 // Double check commitments vs solidity side
                 // TODO: implement same check by calling web-assembly of circom
@@ -372,13 +396,13 @@ describe('PantherPoolV0', () => {
                     zAsset_from_chain,
                     createdAtNum,
                 );
-                const commitment1_internal = poseidon([
+                const commitment1_internal = generateCommitmentNum(
                     K[0],
                     K[1],
                     amounts[0],
                     zAsset_from_chain,
                     createdAtNum,
-                ]);
+                );
                 expect(
                     commitment1,
                     'Solidity commitment-1 must be equal to TS commitment',
@@ -393,13 +417,13 @@ describe('PantherPoolV0', () => {
                     zAsset_from_chain,
                     createdAtNum,
                 );
-                const commitment2_internal = poseidon([
+                const commitment2_internal = generateCommitmentNum(
                     K[0],
                     K[1],
                     amounts[1],
                     zAsset_from_chain,
                     createdAtNum,
-                ]);
+                );
                 expect(
                     commitment2,
                     'Solidity commitment-2 must be equal to TS commitment',
@@ -414,13 +438,13 @@ describe('PantherPoolV0', () => {
                     zAsset_from_chain,
                     createdAtNum,
                 );
-                const commitment3_internal = poseidon([
+                const commitment3_internal = generateCommitmentNum(
                     K[0],
                     K[1],
                     amounts[2],
                     zAsset_from_chain,
                     createdAtNum,
-                ]);
+                );
                 expect(
                     commitment3,
                     'Solidity commitment-3 must be equal to TS commitment',
@@ -698,27 +722,27 @@ describe('PantherPoolV0', () => {
                 // TODO: re-generate K by using data sended on-chain
                 const pubKey: BigInt[] = [K[0], K[1]];
                 const commitments = [
-                    poseidon([
+                    generateCommitmentNum(
                         pubKey[0],
                         pubKey[1],
                         amountsOut[0],
                         zAssetId,
                         createTime,
-                    ]),
-                    poseidon([
+                    ),
+                    generateCommitmentNum(
                         pubKey[0],
                         pubKey[1],
                         amountsOut[1],
                         zAssetId,
                         createTime,
-                    ]),
-                    poseidon([
+                    ),
+                    generateCommitmentNum(
                         pubKey[0],
                         pubKey[1],
                         amountsOut[2],
                         zAssetId,
                         createTime,
-                    ]),
+                    ),
                 ];
                 // console.log("3 leaves - Commitments:", commitments);
                 // Insert to MT in order to get pathes to be used @ exit

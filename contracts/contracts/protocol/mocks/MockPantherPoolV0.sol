@@ -51,7 +51,7 @@ contract MockPantherPoolV0 is PantherPoolV0 {
     function testExit(
         address token,
         uint256 subId,
-        uint96 scaledAmount,
+        uint64 scaledAmount,
         uint32 creationTime,
         uint256 privSpendingKey,
         uint256 leafId,
@@ -75,7 +75,7 @@ contract MockPantherPoolV0 is PantherPoolV0 {
     function testGenerateCommitments(
         uint256 pubSpendingKeyX,
         uint256 pubSpendingKeyY,
-        uint96 scaledAmount,
+        uint64 scaledAmount,
         uint160 zAssetId,
         uint32 creationTime
     ) external pure returns (uint256) {

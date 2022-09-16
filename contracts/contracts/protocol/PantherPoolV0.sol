@@ -173,7 +173,7 @@ contract PantherPoolV0 is
         bytes[OUT_UTXOs] memory perUtxoData;
 
         for (uint256 utxoIndex = 0; utxoIndex < OUT_UTXOs; utxoIndex++) {
-            (uint160 zAssetId, uint96 scaledAmount) = _processDepositedAsset(
+            (uint160 zAssetId, uint64 scaledAmount) = _processDepositedAsset(
                 tokens[utxoIndex],
                 tokenIds[utxoIndex],
                 amounts[utxoIndex]
@@ -239,7 +239,7 @@ contract PantherPoolV0 is
     function exit(
         address token,
         uint256 subId,
-        uint96 scaledAmount,
+        uint64 scaledAmount,
         uint32 creationTime,
         uint256 privSpendingKey,
         uint256 leafId,
@@ -316,7 +316,7 @@ contract PantherPoolV0 is
         address token,
         uint256 subId,
         uint256 amount
-    ) internal returns (uint160 zAssetId, uint96 scaledAmount) {
+    ) internal returns (uint160 zAssetId, uint64 scaledAmount) {
         // Do nothing if it's the "zero" (or "dummy") deposit
         if (amount == 0) {
             // Both token and subId must be zeros for the "zero" deposit
@@ -329,7 +329,7 @@ contract PantherPoolV0 is
         if (token == PRP_VIRTUAL_CONTRACT) {
             require(subId == 0, ERR_WRONG_PRP_SUBID);
             // Check amount is within the limit (no amount scaling for PRPs)
-            uint96 _sanitizedAmount = _sanitizeScaledAmount(amount);
+            uint64 _sanitizedAmount = _sanitizeScaledAmount(amount);
             // No reentrancy guard needed for the trusted contract call
             IPrpGrantor(PRP_GRANTOR).redeemGrant(msg.sender, amount);
             return (PRP_ZASSET_ID, _sanitizedAmount);

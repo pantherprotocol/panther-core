@@ -13,7 +13,7 @@ contract MockAmountConvertor is AmountConvertor {
         return _scaleAmount(amount, scale);
     }
 
-    function internalUnscaleAmount(uint96 scaledAmount, uint8 scale)
+    function internalUnscaleAmount(uint64 scaledAmount, uint8 scale)
         external
         pure
         returns (uint96)

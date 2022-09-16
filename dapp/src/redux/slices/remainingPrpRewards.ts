@@ -1,5 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
+import {safeParseStringToBN} from '../../lib/numbers';
 import {unusedPrpGrantAmount} from '../../services/rewards';
 import {createExtraReducers, LoadingStatus} from '../slices/shared';
 import {RootState} from '../store';
@@ -31,7 +32,8 @@ const remainingPrpRewardsSlice = createSlice({
     },
 });
 
-export const remainingPrpRewardsSelector = (state: RootState) =>
-    state.remainingPrpRewards.value;
+export const remainingPrpRewardsSelector = (state: RootState) => {
+    return safeParseStringToBN(state.remainingPrpRewards.value);
+};
 
 export default remainingPrpRewardsSlice.reducer;

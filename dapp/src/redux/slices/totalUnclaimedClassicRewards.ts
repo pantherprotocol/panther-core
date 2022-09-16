@@ -4,6 +4,7 @@ import {sumBigNumbers} from '@panther-core/crypto/lib/numbers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
+import {safeParseStringToBN} from '../../lib/numbers';
 import {isClassic} from '../../services/rewards';
 import * as stakingService from '../../services/staking';
 import {createExtraReducers, LoadingStatus} from '../slices/shared';
@@ -62,9 +63,7 @@ export const totalUnclaimedClassicRewardsSlice = createSlice({
 export const totalUnclaimedClassicRewardsSelector = (
     state: RootState,
 ): BigNumber | null => {
-    return state.totalUnclaimedClassicRewards.value
-        ? BigNumber.from(state.totalUnclaimedClassicRewards.value)
-        : null;
+    return safeParseStringToBN(state.totalUnclaimedClassicRewards.value);
 };
 
 export const statusUnclaimedRewardsSelector = (

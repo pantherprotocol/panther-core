@@ -1,7 +1,7 @@
-import {BigNumber} from '@ethersproject/bignumber';
 import {formatEther} from '@ethersproject/units';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
+import {safeParseStringToBN} from '../../lib/numbers';
 import * as stakingService from '../../services/staking';
 import {createExtraReducers, LoadingStatus} from '../slices/shared';
 import {RootState} from '../store';
@@ -39,9 +39,7 @@ export const marketPriceSlice = createSlice({
 });
 
 export const marketPriceSelector = (state: RootState) => {
-    return state.zkpMarketPrice.value
-        ? BigNumber.from(state.zkpMarketPrice.value)
-        : null;
+    return safeParseStringToBN(state.zkpMarketPrice.value);
 };
 
 export const statuszkpMarketPriceSelector = (state: RootState) =>

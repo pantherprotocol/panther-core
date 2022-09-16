@@ -11,6 +11,9 @@ export type StakeReward = {
     // BigNumber string to allow serialization in Redux
     [key in StakingRewardTokenID]?: string | null;
 };
+export type StakeRewardsBN = {
+    [key in StakingRewardTokenID]?: BigNumber | null;
+};
 export type StakeRewardBN = ClassicStakeRewardBN | AdvancedStakeRewardsBN;
 
 export type ClassicStakeRewardBN = BigNumber;

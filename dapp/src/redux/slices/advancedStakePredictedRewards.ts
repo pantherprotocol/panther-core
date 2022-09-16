@@ -2,8 +2,13 @@ import {BigNumber} from 'ethers';
 // eslint-disable-next-line
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
+import {safeParseStringToBN} from '../../lib/numbers';
 import {prpReward, zZkpReward} from '../../services/rewards';
-import {StakeReward, StakingRewardTokenID} from '../../types/staking';
+import {
+    StakeReward,
+    StakeRewardsBN,
+    StakingRewardTokenID,
+} from '../../types/staking';
 import {RootState} from '../store';
 
 interface StakesRewardsState {
@@ -44,8 +49,18 @@ export const calculatedRewardSlice = createSlice({
 
 export const calculatedRewardsSelector = (
     state: RootState,
-): StakeReward | null => {
-    return state.advancedStakeInputRewards.value ?? null;
+): StakeRewardsBN | null => {
+    const data = state.advancedStakeInputRewards.value;
+    if (!data) return null;
+    const dataBN = {} as StakeRewardsBN;
+
+    Object.keys(data).forEach(_key => {
+        const key = _key as keyof StakeReward;
+        dataBN[key] = safeParseStringToBN(data[key]);
+        return dataBN;
+    });
+
+    return dataBN;
 };
 
 export const {resetRewards, calculateRewards} = calculatedRewardSlice.actions;

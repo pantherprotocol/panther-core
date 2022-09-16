@@ -37,6 +37,7 @@ import {isDetailedError} from '../../../../types/error';
 import {AdvancedStakeRewards, UTXOStatus} from '../../../../types/staking';
 import BackButton from '../../../BackButton';
 import {notifyError} from '../../../Common/errors';
+import {MessageWithTx} from '../../../Common/MessageWithTx';
 import {
     openNotification,
     removeNotification,
@@ -127,7 +128,12 @@ export default function RedeemRewardsWarningDialog(props: {
 
         const inProgress = openNotification(
             'Transaction in progress',
-            'Your withdrawal transaction is currently in progress. Please wait for confirmation!',
+            <MessageWithTx
+                message="Your withdrawal transaction is currently in progress. Please wait for confirmation!"
+                chainId={chainId}
+                txHash={tx?.hash}
+            />,
+
             'info',
         );
 
@@ -161,7 +167,12 @@ export default function RedeemRewardsWarningDialog(props: {
 
         openNotification(
             'Withdrawal completed successfully',
-            'Congratulations! Your withdrawal transaction was processed!',
+            <MessageWithTx
+                message="Congratulations! Your withdrawal transaction was processed!"
+                txHash={tx?.hash}
+                chainId={chainId}
+            />,
+
             'info',
             10000,
         );

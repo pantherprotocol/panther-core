@@ -20,6 +20,7 @@ import {FAUCET_CHAIN_IDS} from '../../services/env';
 import {craftSendFaucetTransaction, faucetDrink} from '../../services/faucet';
 import {isDetailedError, DetailedError} from '../../types/error';
 import {notifyError} from '../Common/errors';
+import {MessageWithTx} from '../Common/MessageWithTx';
 import {openNotification, removeNotification} from '../Common/notification';
 import PrimaryActionButton from '../Common/PrimaryActionButton';
 import ConnectButton from '../ConnectButton';
@@ -102,7 +103,12 @@ function ZafariFaucet() {
 
         const inProgress = openNotification(
             'Transaction in progress',
-            'Your faucet transaction is currently in progress. Please wait for confirmation!',
+            <MessageWithTx
+                message="Your faucet transaction is currently in progress. Please wait for confirmation!"
+                chainId={chainId}
+                txHash={tx?.hash}
+            />,
+
             'info',
         );
 
@@ -127,7 +133,12 @@ function ZafariFaucet() {
 
         openNotification(
             'Faucet sending completed successfully',
-            'Congratulations! Your faucet transaction was processed!',
+            <MessageWithTx
+                message="Congratulations! Your faucet transaction was processed!"
+                chainId={chainId}
+                txHash={tx?.hash}
+            />,
+
             'info',
             10000,
         );

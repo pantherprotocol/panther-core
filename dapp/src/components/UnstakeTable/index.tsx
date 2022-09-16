@@ -50,6 +50,7 @@ async function unstakeWithNotification(
             'Transaction error',
             <MessageWithTx
                 message={parseTxErrorMessage(err)}
+                chainId={chainId}
                 txHash={tx?.hash}
             />,
             'danger',
@@ -59,7 +60,12 @@ async function unstakeWithNotification(
 
     const inProgress = openNotification(
         'Transaction in progress',
-        'Your unstaking transaction is currently in progress. Please wait for confirmation!',
+        <MessageWithTx
+            message="Your unstaking transaction is currently in progress. Please wait for confirmation!"
+            chainId={chainId}
+            txHash={tx?.hash}
+        />,
+
         'info',
     );
 
@@ -72,6 +78,7 @@ async function unstakeWithNotification(
             <MessageWithTx
                 message={parseTxErrorMessage(event)}
                 txHash={tx?.hash}
+                chainId={chainId}
             />,
             'danger',
         );
@@ -80,7 +87,12 @@ async function unstakeWithNotification(
 
     openNotification(
         'Unstaking completed successfully',
-        'Congratulations! Your unstaking transaction was processed!',
+        <MessageWithTx
+            message="Congratulations! Your unstaking transaction was processed!"
+            txHash={tx?.hash}
+            chainId={chainId}
+        />,
+
         'info',
         10000,
     );

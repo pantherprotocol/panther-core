@@ -128,6 +128,7 @@ const StakingBtn = (props: {
 
             const signer = library.getSigner(account);
             const keys = await deriveRootKeypairs(signer);
+
             if (keys instanceof Error) {
                 dispatch(registerWalletActionFailure, 'signMessage');
                 notifyError({
@@ -168,10 +169,7 @@ const StakingBtn = (props: {
                 dispatch(registerWalletActionFailure, 'stake');
                 openNotification(
                     'Transaction error',
-                    <MessageWithTx
-                        message={parseTxErrorMessage(response.message)}
-                        txHash={null}
-                    />,
+                    parseTxErrorMessage(response),
                     'danger',
                 );
                 return;
@@ -179,22 +177,33 @@ const StakingBtn = (props: {
 
             const inProgress = openNotification(
                 'Transaction in progress',
-                'Your staking transaction is currently in progress. Please wait for confirmation!',
+                <MessageWithTx
+                    message="Your staking transaction is currently in progress. Please wait for confirmation!"
+                    chainId={chainId}
+                    txHash={response?.hash}
+                />,
+
                 'info',
             );
+
             const event = await awaitConfirmationAndRetrieveEvent(
                 response,
                 'StakeCreated',
             );
+
             removeNotification(inProgress);
 
             if (event instanceof Error) {
+                dispatch(registerWalletActionFailure, 'stake');
+
                 openNotification(
                     'Transaction error',
                     <MessageWithTx
                         message={parseTxErrorMessage(event)}
+                        chainId={chainId}
                         txHash={response?.hash}
                     />,
+
                     'danger',
                 );
                 return;
@@ -202,7 +211,12 @@ const StakingBtn = (props: {
 
             openNotification(
                 'Stake completed successfully',
-                'Congratulations! Your staking transaction was processed!',
+                <MessageWithTx
+                    message="Congratulations! Your staking transaction was processed!"
+                    chainId={chainId}
+                    txHash={response?.hash}
+                />,
+
                 'info',
                 10000,
             );

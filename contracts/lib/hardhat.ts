@@ -1,12 +1,6 @@
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 import {ethers, network} from 'hardhat';
 import {BigNumber, utils} from 'ethers';
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
-
-export function isLocal(hre: HardhatRuntimeEnvironment): boolean {
-    // network.live does not work for pchain
-    return !!hre.network.name.match(/^hardhat|pchain$/);
-}
 
 const provider = ethers.provider;
 

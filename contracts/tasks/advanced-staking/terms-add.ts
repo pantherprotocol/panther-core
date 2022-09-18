@@ -40,17 +40,14 @@ function getDefaultClassicParams() {
 function getDefaultAdvancedParams() {
     const now = Math.floor(new Date().getTime() / 1000);
     const day = 86400;
-    const hour = 3600;
 
     const allowedTill = now + day * 5;
-    const lockedTill = allowedTill + hour * 12; // 12 hours after allowedTill
 
     return {
         ...getDefaultTermParams(),
         minAmountScaled: 100,
         allowedSince: now,
         allowedTill,
-        lockedTill,
     };
 }
 

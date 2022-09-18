@@ -44,7 +44,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 export default func;
 
-func.tags = ['pool'];
+func.tags = ['pool', 'protocol'];
 func.dependencies = [
     'check-params',
     'crypto-libs',

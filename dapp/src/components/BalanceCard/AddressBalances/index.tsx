@@ -7,7 +7,7 @@ import {BigNumber, utils} from 'ethers';
 
 import infoIcon from '../../../images/info-icon.svg';
 import {formatUSD, getFormattedFractions} from '../../../lib/format';
-import {SmallButton} from '../../SmallButton';
+// import {SmallButton} from '../../SmallButton';
 
 import './styles.scss';
 
@@ -58,7 +58,9 @@ export default function AddressBalances(props: {
                 </Box>
 
                 {props.redeem ? (
-                    <SmallButton onClick={props.redeem} text={'Redeem'} />
+                    // TODO:add implementation for PRP redeeming
+                    // <SmallButton onClick={props.redeem} text={'Redeem'} />
+                    <></>
                 ) : (
                     <Typography className="amount-usd">
                         {`~${

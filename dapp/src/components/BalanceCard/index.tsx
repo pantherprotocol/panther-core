@@ -89,7 +89,7 @@ const BalanceCard = () => {
                         balance={prpRewardBalance}
                         scale={0}
                         rewardsTokenSymbol={'PRP'}
-                        // TODO:add definetion for redeem function
+                        // TODO:add definition for redeem function
                         redeem={() => {
                             console.error('Not implemented');
                         }}

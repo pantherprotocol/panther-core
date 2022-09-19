@@ -23,7 +23,14 @@ function getButtonContents(
 ): string | ReactElement {
     if (inProgress) return 'Redeeming';
     if (afterExitTime) {
-        return treeUri ? 'Redeem zZKP' : 'Redemption opens soon!';
+        if (!treeUri) {
+            console.error(
+                'No tree URL is provided. Redemption of rewards is not possible.',
+            );
+
+            return 'Redemption opens soon!';
+        }
+        return 'Redeem zZKP';
     }
     return (
         <Box>

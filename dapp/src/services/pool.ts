@@ -96,7 +96,6 @@ export async function registerCommitToExit(
         utxoData,
     );
     const possibleError = checkUnpackingErrors(
-        rootSpendingKeypair,
         error,
         isChildKeyInvalid,
         cannotDecode,
@@ -189,7 +188,6 @@ export async function exit(
         utxoData,
     );
     const possibleError = checkUnpackingErrors(
-        rootSpendingKeypair,
         error,
         isChildKeyInvalid,
         cannotDecode,
@@ -215,9 +213,13 @@ export async function exit(
         poseidon([
             bigintToBytes32(childSpendingKeypair!.publicKey[0]),
             bigintToBytes32(childSpendingKeypair!.publicKey[1]),
-            bigintToBytes32(amounts as bigint),
-            zAssetId,
-            bigintToBytes32(BigInt(creationTime)),
+            bigintToBytes32(
+                BigNumber.from(amounts)
+                    .shl(192)
+                    .or(BigNumber.from(zAssetId).shl(32))
+                    .or(BigNumber.from(creationTime))
+                    .toBigInt(),
+            ),
         ]),
     );
 
@@ -283,7 +285,7 @@ export async function exit(
         tokenAddress!,
         tokenId as bigint,
         amounts as bigint,
-        Number(creationTime),
+        creationTime,
         childSpendingKeypair!.privateKey,
         leafId as bigint,
         pathElements,
@@ -448,11 +450,11 @@ function decodeUTXOData(
     console.debug(
         `ciphertextMsg=${ciphertextMsg}, tokenAddress=${tokenAddress}, amount=${amount}, tokenId=${tokenId}`,
     );
+
     return [ciphertextMsg, tokenAddress, amount, tokenId];
 }
 
 function checkUnpackingErrors(
-    rootSpendingKeypair: IKeypair,
     error?: Error,
     isChildKeyInvalid?: boolean,
     cannotDecode?: boolean,

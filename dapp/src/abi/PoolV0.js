@@ -290,9 +290,9 @@ export const abi = [
                 type: 'uint256',
             },
             {
-                internalType: 'uint96',
+                internalType: 'uint64',
                 name: 'scaledAmount',
-                type: 'uint96',
+                type: 'uint64',
             },
             {
                 internalType: 'uint32',

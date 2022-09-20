@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 
 import {Box, Input, InputAdornment, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
@@ -45,29 +45,41 @@ export default function StakingInput(props: {amountToStake: string | null}) {
 
     const network = currentNetwork(chainId);
 
-    const changeHandler = (e: any) => {
-        setInputTextLength(e.target.value.length);
+    const onChange = useCallback(
+        (amount: string) => {
+            if (tokenBalance && Number(tokenBalance)) {
+                const bn = safeParseUnits(amount);
+                if (!bn) {
+                    dispatch(resetStakeAmount);
+                    dispatch(resetRewards);
+                    return;
+                }
 
-        const regex = /^\d*\.?\d*$/; // matches floating points numbers
-        if (!regex.test(e.target.value)) {
-            return false;
-        }
-        if (tokenBalance && Number(tokenBalance)) {
-            const amount = e.target.value.toString();
-            const bn = safeParseUnits(amount);
-            if (bn) {
                 dispatch(setStakeAmount, amount as string);
                 dispatch(calculateRewards, [bn.toString(), minLockPeriod]);
-            } else {
-                dispatch(resetStakeAmount);
-                dispatch(resetRewards);
+            }
+        },
+        [tokenBalance, dispatch, minLockPeriod],
+    );
+
+    const inputHandler = useCallback(
+        (e: any) => {
+            setInputTextLength(e.target.value.length);
+
+            const regex = /^\d*\.?\d*$/; // matches floating points numbers
+            if (!regex.test(e.target.value)) {
+                return;
             }
 
-            return true;
-        } else {
-            return false;
-        }
-    };
+            const amount = e.target.value.toString();
+            onChange(amount);
+        },
+        [onChange],
+    );
+
+    useEffect(() => {
+        setInputTextLength(props.amountToStake?.length ?? 0);
+    }, [props.amountToStake]);
 
     return (
         <>
@@ -109,7 +121,7 @@ export default function StakingInput(props: {amountToStake: string | null}) {
                             Math.floor(inputTextLength / 15) ? 'long-input' : ''
                         }`}
                         value={props.amountToStake}
-                        onChange={changeHandler}
+                        onChange={inputHandler}
                         autoComplete="off"
                         autoFocus={true}
                         placeholder="0.0"
@@ -140,14 +152,7 @@ export default function StakingInput(props: {amountToStake: string | null}) {
                     className="staking-input-max"
                     onClick={() => {
                         if (tokenBalance) {
-                            dispatch(
-                                setStakeAmount,
-                                utils.formatEther(tokenBalance),
-                            );
-                            dispatch(calculateRewards, [
-                                tokenBalance.toString(),
-                                minLockPeriod,
-                            ]);
+                            onChange(utils.formatEther(tokenBalance));
                         }
                     }}
                 >

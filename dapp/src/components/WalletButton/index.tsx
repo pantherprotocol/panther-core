@@ -11,7 +11,7 @@ import {CHAIN_IDS} from '../../services/env';
 import Address from '../Address';
 import {AddTokenButton} from '../AddTokenButton';
 import DropdownList from '../Common/DropdownList';
-import {ContractButton} from '../ContractButton';
+import ContractButton from '../ContractButton';
 import {ContractsListButton} from '../ContractsListButton';
 import {LogoutButton} from '../LogoutButton';
 

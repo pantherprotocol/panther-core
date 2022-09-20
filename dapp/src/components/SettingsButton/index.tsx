@@ -8,7 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 
 import {AddTokenButton} from '../AddTokenButton';
-import {ContractButton} from '../ContractButton';
+import ContractButton from '../ContractButton';
 import {ContractsListButton} from '../ContractsListButton';
 import {LogoutButton} from '../LogoutButton';
 

@@ -1,10 +1,10 @@
 @import '../../variables.scss';
 
 .total-staked-card {
-    background: transparent !important;
-    border-radius: 8px !important;
-    box-sizing: border-box !important;
-    border: 1px solid $grey-btn-border !important;
+    background: transparent;
+    border-radius: 8px;
+    box-sizing: border-box;
+    border: 1px solid $grey-btn-border;
 
     @media (min-width: $smaller-screen-size) and (max-width: $medium-screen-size) {
         position: relative;

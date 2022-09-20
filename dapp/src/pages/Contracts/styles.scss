@@ -3,12 +3,12 @@
 .contracts-page-container {
     .table-title {
         color: $white;
-        font-size: 24px !important;
+        font-size: 24px;
     }
 
     .table-head {
         color: $white;
-        font-weight: bold !important;
+        font-weight: bold;
     }
 
     .contract-address {
@@ -18,11 +18,11 @@
     }
 
     .contracts-table-container {
-        max-width: 650px;
+        max-width: max-content;
         margin: 0 auto;
-        margin-bottom: 100px !important;
+        margin-bottom: 100px;
         @media (max-width: $medium-screen-size) {
-            width: 90% !important;
+            width: 90%;
         }
 
         .contracts-table {

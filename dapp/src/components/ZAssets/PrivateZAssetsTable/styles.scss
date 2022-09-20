@@ -13,8 +13,8 @@
 
     .MuiTableCell-root.MuiTableCell-head {
         vertical-align: middle;
-        font-size: $normal-font-size !important;
-        font-weight: $light-font-weight !important;
+        font-size: $normal-font-size;
+        font-weight: $light-font-weight;
         color: rgb(215, 176, 171);
     }
 
@@ -22,7 +22,7 @@
         font-weight: $semi-bold-font-weight;
         vertical-align: middle;
         border-radius: 0 !important;
-        background-color: rgba(18, 20, 47, 1) !important;
+        background-color: rgba(18, 20, 47, 1);
     }
 
     table {

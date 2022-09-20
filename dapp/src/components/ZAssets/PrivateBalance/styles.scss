@@ -12,7 +12,7 @@ $refresh-button-background: linear-gradient(
 .private-zAssets-balance-container {
     display: flex;
     justify-content: space-between;
-    background-color: rgba(47, 53, 83, 1) !important;
+    background-color: rgba(47, 53, 83, 1);
     border: $balance-container-border;
     box-sizing: border-box;
     width: 100%;
@@ -24,7 +24,7 @@ $refresh-button-background: linear-gradient(
     @media (max-width: $medium-screen-size) {
         flex-direction: column;
         padding: 15px 19px 20px 19px;
-        background-color: rgb(32, 33, 60) !important;
+        background-color: rgb(32, 33, 60);
     }
 
     .private-zAssets-balance {
@@ -68,7 +68,7 @@ $refresh-button-background: linear-gradient(
             }
 
             .substring {
-                font-size: 25px !important;
+                font-size: 25px;
             }
         }
 
@@ -89,7 +89,7 @@ $refresh-button-background: linear-gradient(
             }
 
             .info {
-                font-weight: $light-font-weight !important;
+                font-weight: $light-font-weight;
                 margin-left: 5px;
 
                 @media (max-width: 768px) {

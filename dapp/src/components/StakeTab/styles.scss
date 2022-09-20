@@ -2,8 +2,8 @@
 
 .staking-tab-holder {
     .staking-info-card {
-        background: $card-background !important;
-        border-radius: 8px !important;
+        background: $card-background;
+        border-radius: 8px;
         mix-blend-mode: normal;
         backdrop-filter: blur(45px);
         margin: 32px 0;
@@ -14,12 +14,12 @@
     }
 
     .buttons-holder {
-        background: $buttons-holder-background-color !important;
+        background: $buttons-holder-background-color;
         border-radius: 16px;
         height: 80px;
 
         &.active {
-            background-color: $second-blue !important;
+            background-color: $second-blue;
 
             .staking-button {
                 opacity: 1;

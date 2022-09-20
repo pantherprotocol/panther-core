@@ -1,11 +1,11 @@
 .main-page {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    padding-left: 0;
+    padding-right: 0;
     width: 100%;
     flex: 1 1 auto;
     background-position: center;
     background-size: cover;
-    padding-bottom: 5px !important;
+    padding-bottom: 5px;
     min-height: 100vh;
 
     &.isBlur {

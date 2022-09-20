@@ -6,7 +6,7 @@ import {WalletHeaderActionButton} from '../Common/WalletHeaderActionButton';
 
 export const ContractsListButton = () => {
     return (
-        <Link to="/contracts">
+        <Link to="/contracts" data-testid="contract-list-button_wrapper">
             <WalletHeaderActionButton text="Contracts List" />
         </Link>
     );

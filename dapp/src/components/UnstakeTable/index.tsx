@@ -19,6 +19,13 @@ import {useAppDispatch} from '../../redux/hooks';
 import {getChainBalance} from '../../redux/slices/chainBalance';
 import {getTotalsOfAdvancedStakes} from '../../redux/slices/totalsOfAdvancedStakes';
 import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
+import {
+    registerWalletActionFailure,
+    registerWalletActionSuccess,
+    startWalletAction,
+    StartWalletActionPayload,
+    WalletActionTrigger,
+} from '../../redux/slices/web3WalletLastAction';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
 import {unstake, getStakesAndRewards} from '../../services/staking';
@@ -139,10 +146,15 @@ export default function UnstakeTable() {
     }, [library, chainId, account]);
 
     const unstakeById = useCallback(
-        async id => {
+        async (id, trigger: WalletActionTrigger) => {
             if (!library || !chainId || !account) {
                 return;
             }
+            dispatch(startWalletAction, {
+                name: 'signMessage',
+                cause: {caller: 'UnstakeTab', trigger},
+                data: {account},
+            } as StartWalletActionPayload);
 
             const stakeID = BigNumber.from(id);
             const data = '0x00';
@@ -154,9 +166,11 @@ export default function UnstakeTable() {
                 stakeID,
                 data,
             );
-            if (response instanceof Error) {
+            if (response !== undefined) {
+                dispatch(registerWalletActionFailure, 'signMessage');
                 return;
             }
+            dispatch(registerWalletActionSuccess, 'signMessage');
 
             dispatch(getTotalsOfAdvancedStakes, context);
             dispatch(getZkpStakedBalance, context);

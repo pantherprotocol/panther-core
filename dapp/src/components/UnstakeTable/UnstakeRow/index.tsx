@@ -3,6 +3,7 @@ import React from 'react';
 import {TableCell, TableRow, Typography} from '@mui/material';
 
 import {formatCurrency, formatTime} from '../../../lib/format';
+import {WalletActionTrigger} from '../../../redux/slices/web3WalletLastAction';
 import {isClassic} from '../../../services/rewards';
 import {CLASSIC_TYPE_HEX} from '../../../services/staking';
 import {
@@ -17,7 +18,7 @@ import './styles.scss';
 const UnstakeRow = (props: {
     row: any;
     chainId: number | undefined;
-    unstakeById: (id: any) => Promise<void>;
+    unstakeById: (id: any, trigger: WalletActionTrigger) => Promise<void>;
 }) => {
     const {row, chainId, unstakeById} = props;
 

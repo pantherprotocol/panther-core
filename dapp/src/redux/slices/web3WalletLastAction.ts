@@ -15,6 +15,7 @@ export type WalletSignatureTrigger =
     | 'manual refresh'
     | 'zZKP redemption'
     | 'register exit commitment'
+    | 'unstake'
     | 'stake';
 
 export type WalletActionName =

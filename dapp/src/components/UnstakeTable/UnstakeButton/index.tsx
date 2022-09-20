@@ -3,6 +3,12 @@ import React from 'react';
 import {Box, Button, Typography} from '@mui/material';
 
 import {formatTime} from '../../../lib/format';
+import {useAppSelector} from '../../../redux/hooks';
+import {
+    walletActionCauseSelector,
+    walletActionStatusSelector,
+    WalletActionTrigger,
+} from '../../../redux/slices/web3WalletLastAction';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
 
 import './styles.scss';
@@ -10,15 +16,32 @@ import './styles.scss';
 const UnstakeButton = (props: {
     row: any;
     chainId: number | undefined;
-    unstakeById: (id: any) => Promise<void>;
+    unstakeById: (id: any, trigger: WalletActionTrigger) => Promise<void>;
 }) => {
     const {row, chainId, unstakeById} = props;
+    const walletActionCause = useAppSelector(walletActionCauseSelector);
+    const walletActionStatus = useAppSelector(walletActionStatusSelector);
+
+    const anotherUnstakingInProgress =
+        walletActionCause?.trigger === 'unstake' &&
+        walletActionStatus === 'in progress';
+
+    const disabled =
+        anotherUnstakingInProgress ||
+        (chainHasAdvancedStaking(chainId) ? !row.unstakable : true);
+    console.log(
+        'mayas',
+        anotherUnstakingInProgress,
+        disabled,
+        walletActionCause?.trigger,
+        walletActionStatus,
+    );
     return (
         <Button
             className={`unstake-button ${!row.unstakable ? 'locked' : ''}`}
-            disabled={chainHasAdvancedStaking(chainId) ? !row.unstakable : true}
+            disabled={disabled}
             onClick={() => {
-                unstakeById(row.id);
+                unstakeById(row.id, 'unstake');
             }}
         >
             {row.unstakable ? (

@@ -53,6 +53,7 @@ export const AddTokenButton = () => {
 
     return (
         <WalletHeaderActionButton
+            data-testid="add-token-button_add-token-button_wrapper"
             text="Add ZKP token"
             onClick={addZKPToken}
             logo={{src: metamaskIcon, alt: 'Metamask logo'}}

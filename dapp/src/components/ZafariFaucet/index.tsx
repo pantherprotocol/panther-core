@@ -4,9 +4,11 @@ import {Box, Card, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {ContractTransaction} from 'ethers/lib/ethers';
 
+import goerliIcon from '../../images/goerli-logo.svg';
 import polygonIcon from '../../images/polygon-logo.svg';
 import {CONFIRMATIONS_NUM} from '../../lib/constants';
 import {parseTxErrorMessage} from '../../lib/errors';
+import {formatCurrency} from '../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getChainBalance} from '../../redux/slices/chainBalance';
 import {
@@ -36,11 +38,8 @@ function ZafariFaucet() {
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
 
     const fetchZkpTokenBalance = useCallback(async () => {
-        if (tokenBalance) {
-            return;
-        }
         dispatch(getZkpTokenBalance, context);
-    }, [dispatch, context, tokenBalance]);
+    }, [dispatch, context]);
 
     useEffect((): void => {
         const wrongNetwork = isWrongNetwork(context, FAUCET_CHAIN_IDS);
@@ -52,7 +51,8 @@ function ZafariFaucet() {
             return;
         }
         fetchZkpTokenBalance();
-    }, [library, account, chainId, fetchZkpTokenBalance]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [library, account, chainId]);
 
     function networkName(chainId: number): React.ReactElement {
         if (!active) {
@@ -72,7 +72,10 @@ function ZafariFaucet() {
 
         return (
             <Typography className="network-name">
-                <img src={polygonIcon} className="polygon-icon" />
+                <img
+                    src={chainId === 5 ? goerliIcon : polygonIcon}
+                    className="polygon-icon"
+                />
                 {supportedNetworks[chainId].name}
             </Typography>
         );
@@ -159,12 +162,18 @@ function ZafariFaucet() {
                 <Box className="details-row">
                     <Typography className="caption">Network:</Typography>
                     <Typography className="network-name">
-                        {chainId && networkName(chainId)}
+                        {!active ? (
+                            <Typography className="wallet-not-connected">
+                                Wallet not connected
+                            </Typography>
+                        ) : (
+                            chainId && networkName(chainId)
+                        )}
                     </Typography>
                 </Box>
                 <Box className="details-row">
                     <Typography className="caption">Token:</Typography>
-                    <Typography className="token-symbol">$TESTZKP</Typography>
+                    <Typography className="token-symbol">$ZKP</Typography>
                 </Box>
                 <Box className="details-row">
                     <Typography className="caption" id="wallet-caption">
@@ -181,22 +190,37 @@ function ZafariFaucet() {
                         </Typography>
                     )}
                 </Box>
-            </Card>
-            <Box className="connect-button">
-                {wrongNetwork && (
-                    <Box>
-                        <SwitchNetworkButton
-                            defaultNetwork={FAUCET_CHAIN_IDS[0]}
-                        />
+                {active && !wrongNetwork && (
+                    <Box className="details-row">
+                        <Typography className="caption">Balance:</Typography>
+                        <Typography className="zkp-balance">
+                            {tokenBalance ? (
+                                <span>
+                                    {formatCurrency(tokenBalance, {
+                                        decimals: 2,
+                                    })}
+                                </span>
+                            ) : (
+                                'ZKP'
+                            )}
+                        </Typography>
                     </Box>
                 )}
-                {!active && !wrongNetwork && <ConnectButton />}
-                {active && !wrongNetwork && (
-                    <PrimaryActionButton onClick={sendFaucet}>
-                        <span>Request Test Tokens</span>
-                    </PrimaryActionButton>
-                )}
-            </Box>
+            </Card>
+            {wrongNetwork ? (
+                <Box className="connect-button">
+                    <SwitchNetworkButton defaultNetwork={FAUCET_CHAIN_IDS[0]} />
+                </Box>
+            ) : (
+                <Box className="connect-button">
+                    {!active && !wrongNetwork && <ConnectButton />}
+                    {active && !wrongNetwork && (
+                        <PrimaryActionButton onClick={sendFaucet}>
+                            <span>Request Test Tokens</span>
+                        </PrimaryActionButton>
+                    )}
+                </Box>
+            )}
         </Card>
     );
 }

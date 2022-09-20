@@ -146,7 +146,7 @@ describe('IncrementalMerkleTree', () => {
         });
 
         describe('when called 8 times with non-zero leaves', () => {
-            let after6thCallRoot, after7thCallRoot;
+            let after6thCallRoot: string, after7thCallRoot: string;
 
             before(async () => {
                 snapshot = await takeSnapshot();

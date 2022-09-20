@@ -360,11 +360,11 @@ describe('PantherPoolV0', () => {
                     BigNumber.from(0),
                 ];
                 const generateCommitmentNum = (
-                    pubKey_X,
-                    pubKey_Y,
-                    amount,
-                    zAssetIdValue,
-                    createTimeValue,
+                    pubKey_X: bigint,
+                    pubKey_Y: bigint,
+                    amount: BigInt,
+                    zAssetIdValue: BigNumber,
+                    createTimeValue: bigint,
                 ) => {
                     const commitment = poseidon2or3([
                         BigInt(pubKey_X), // pubSpendKey.x

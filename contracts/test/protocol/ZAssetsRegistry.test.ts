@@ -20,7 +20,7 @@ import {revertSnapshot, takeSnapshot} from './helpers/hardhat';
 describe('ZAssetsRegistry contract', function () {
     let zAssetsRegistry: ZAssetsRegistry;
     let owner, notOwner: SignerWithAddress;
-    let snapshot;
+    let snapshot: number;
 
     before(async () => {
         [owner, notOwner] = await ethers.getSigners();
@@ -140,7 +140,7 @@ describe('ZAssetsRegistry contract', function () {
     describe('function changeZAssetStatus', () => {
         describe('for an asset has been added', () => {
             let zAssetRecId: BigNumber;
-            let oldStatus;
+            let oldStatus: number;
 
             beforeEach(async () => {
                 const zAsset = getZAssets()[2];

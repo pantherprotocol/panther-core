@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+// @ts-ignore
 import {poseidon} from 'circomlibjs';
 import Web3 from 'web3';
 

@@ -29,7 +29,8 @@
     "lib": ["esnext", "dom", "dom.iterable"],
     "noEmit": true,
     "sourceMap": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "strictNullChecks": true
   },
   "exclude": ["node_modules", "build"],
   "include": ["src", "scripts", "tests", "__mocks__", "webpack.config.js"]

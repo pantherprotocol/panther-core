@@ -2,15 +2,17 @@
 import {expect} from 'chai';
 // @ts-ignore
 import {ethers} from 'hardhat';
+import {MockPubKeyGenerator} from '../../types/contracts';
 
 describe('PubKeyGenerator contract', function () {
-    let pkGenerator;
+    let pkGenerator: MockPubKeyGenerator;
 
     before(async function () {
         const MockPubKeyGenerator = await ethers.getContractFactory(
             'MockPubKeyGenerator',
         );
-        pkGenerator = await MockPubKeyGenerator.deploy();
+        pkGenerator =
+            (await MockPubKeyGenerator.deploy()) as MockPubKeyGenerator;
     });
 
     describe('internal generatePubSpendingKey function', () => {

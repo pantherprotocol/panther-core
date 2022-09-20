@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import {expect} from 'chai';
-
+import {Contract} from 'ethers';
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
@@ -8,7 +8,7 @@ import {
 import {toBigNum, toBytes32, zeroLeaf} from '../../lib/utilities';
 
 describe('PoseidonT3 contract', function () {
-    let contract;
+    let contract: Contract;
 
     before(async function () {
         const PoseidonT3 = await getPoseidonT3Contract();
@@ -69,7 +69,7 @@ describe('PoseidonT3 contract', function () {
 });
 
 describe('PoseidonT4 contract', function () {
-    let contract;
+    let contract: Contract;
 
     before(async function () {
         const PoseidonT4 = await getPoseidonT4Contract();

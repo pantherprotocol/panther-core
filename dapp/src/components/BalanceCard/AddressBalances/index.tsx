@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography';
 import {BigNumber, utils} from 'ethers';
 
 import infoIcon from '../../../images/info-icon.svg';
+import {DECIMALS} from '../../../lib/constants';
 import {formatUSD, getFormattedFractions} from '../../../lib/format';
-// import {SmallButton} from '../../SmallButton';
 
 import './styles.scss';
 
@@ -22,7 +22,9 @@ export default function AddressBalances(props: {
 }) {
     const {title, tooltip, amountUSD, balance, rewardsTokenSymbol} = props;
     const [whole, fractional] = balance
-        ? getFormattedFractions(utils.formatUnits(balance, props.scale ?? 18))
+        ? getFormattedFractions(
+              utils.formatUnits(balance, props.scale ?? DECIMALS),
+          )
         : [];
     return (
         <Box className="address-balance">

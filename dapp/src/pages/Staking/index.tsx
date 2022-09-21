@@ -40,26 +40,10 @@ const Staking = (): React.ReactElement => {
 
     return (
         <MainPageWrapper>
-            <Container className="staking-container">
-                {firstVisit ? (
-                    <Grid container>
-                        <Grid item xs={12} md={2}></Grid>
-
-                        <Grid
-                            container
-                            justifyContent="center"
-                            alignItems="center"
-                            item
-                            md={8}
-                            xs={12}
-                        >
-                            <Grid item xs={12} sm={12} md={12}>
-                                <Welcome />
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} md={2}></Grid>
-                    </Grid>
-                ) : (
+            {firstVisit ? (
+                <Welcome />
+            ) : (
+                <Container className="staking-container">
                     <Grid container>
                         <Grid item md={1} xs={12} />
                         <Grid item container spacing={2} md={10} xs={12}>
@@ -84,8 +68,8 @@ const Staking = (): React.ReactElement => {
                         </Grid>
                         <Grid item md={1} xs={12} />
                     </Grid>
-                )}
-            </Container>
+                </Container>
+            )}
         </MainPageWrapper>
     );
 };

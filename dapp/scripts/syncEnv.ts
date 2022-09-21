@@ -315,12 +315,10 @@ function checkEnvVarsAgainstAmplify(env: Environment): void {
 
 function checkEnvVarsForSync(
     env: Environment,
-    exitTime: number,
     terms: Terms,
     update: boolean,
 ): Change[] {
     const data = [
-        ['ADVANCED_STAKING_T_REDEMPTION', String(exitTime)],
         ['ADVANCED_STAKING_T_START', String(terms.allowedSince)],
         ['ADVANCED_STAKING_T_END', String(terms.allowedTill)],
         ['ADVANCED_STAKING_T_UNLOCK', String(terms.lockedTill)],
@@ -393,7 +391,7 @@ async function main() {
 
     console.log();
 
-    const changes = checkEnvVarsForSync(env, exitTime, terms, args.write);
+    const changes = checkEnvVarsForSync(env, terms, args.write);
     if (!args.write) {
         if (changes.length > 0) {
             const target = useAmplify ? 'amplify' : 'dotenv';

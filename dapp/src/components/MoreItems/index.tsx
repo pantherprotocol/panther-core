@@ -8,7 +8,7 @@ import './styles.scss';
 
 export const MoreItems = () => {
     return (
-        <Box className="sidebar-more-items">
+        <Box className="sidebar-more-items" data-testid="more-items_wrapper">
             <InputLabel id="more-items-button-label">
                 <MoreHorizIcon />
             </InputLabel>

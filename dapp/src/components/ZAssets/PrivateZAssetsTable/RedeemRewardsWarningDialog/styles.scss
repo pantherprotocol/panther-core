@@ -1,41 +1,126 @@
 @import '../../../../variables.scss';
 @import '../../../../styles/modal-dialog.scss';
+@import '../../../../mixins.scss';
 
 .redeem-dialog {
-    .content-body {
-        font-size: 0.95em;
-
-        li {
-            text-align: start;
-        }
-    }
-
-    .confirm-redemption-checkbox {
-        .MuiFormControlLabel-root .MuiFormControlLabel-label {
-            font-weight: $bold-font-weight;
-            font-size: $header-font-size;
-        }
-
-        margin: 15px 0px;
-        display: flex;
-        align-content: space-around;
-        color: $highlighted-text;
-    }
-
-    strong {
-        font-weight: 800;
-    }
-    .redeem-action-holder {
-        width: 100%;
-        margin: 20px 24px;
-
-        //use this cusom style to override the default style for PrimaryActionButton
-        .custom-style {
-            height: 55px;
-        }
-        .notActive {
-            color: $black;
+    .MuiPaper-root.MuiDialog-paper {
+        background-color: rgba(32, 38, 62, 1);
+        padding: 36px 12px 32px 12px;
+        .back-button-holder {
+            width: 86px;
+            height: 34px;
             background: $grey-btn;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 20px;
+            .back-button {
+                margin: 0;
+                padding: 0;
+            }
+        }
+        .redeem-dialog-title {
+            @media (max-width: $medium-screen-size) {
+                font-size: $header-font-size;
+                line-height: normal;
+            }
+        }
+        .modal-dialog-content-holder {
+            width: 100%;
+            background: $card-background-darker;
+            backdrop-filter: blur(40px);
+            border-radius: 14px;
+            padding: 20px 35px 25px;
+            margin-bottom: 33px;
+
+            .content-body {
+                .text:not(:last-child) {
+                    font-weight: $light-font-weight;
+                    font-size: $title-font-size;
+                    margin-bottom: 30px;
+                    @media (max-width: $medium-screen-size) {
+                        font-size: $small-font-size;
+                    }
+                }
+                .blog-link {
+                    color: rgba(113, 195, 255, 1) !important;
+                    text-decoration: underline !important;
+                }
+
+                .semi-bold-text {
+                    font-weight: $semi-bold-font-weight;
+                    font-size: $title-font-size;
+                    color: rgba(255, 224, 192, 1);
+                }
+            }
+        }
+
+        .no-background {
+            background: unset;
+        }
+
+        .data-info-box {
+            margin-bottom: 10px;
+            .redemption-progress-holder {
+                padding: 0 30px;
+                .label-title {
+                    color: $progress;
+                }
+                .label-value {
+                    color: $white;
+                }
+                .redemption-progress {
+                    height: 13px;
+                    margin: 13px 0;
+                    padding: 0 3px;
+                    background: $card-background-darker;
+                    backdrop-filter: blur(60px);
+                    border-radius: 20px;
+
+                    span {
+                        height: 5px;
+                        top: 4px;
+                        background: $progress;
+                        border-radius: 13px;
+                        animation: none;
+                    }
+                }
+            }
+
+            .confirm-redemption-checkbox {
+                margin: 0px 0px 5px;
+                display: flex;
+                align-content: space-around;
+                color: $highlighted-text;
+                .redemption-label {
+                    font-weight: $semi-bold-font-weight;
+                    font-size: $title-font-size;
+                    @media (max-width: $medium-screen-size) {
+                        font-size: $small-font-size;
+                    }
+                }
+            }
+        }
+
+        .redeem-action-holder {
+            width: 100%;
+            height: 57px;
+            margin: 0 12px;
+            .redeem-modal-button {
+                height: 100%;
+                font-weight: $semi-bold-font-weight;
+                font-size: $title-font-size;
+                @media (max-width: $medium-screen-size) {
+                    font-size: $small-font-size;
+                }
+            }
+            .disabled {
+                background-color: rgba(76, 88, 115, 1);
+                color: rgba(34, 36, 51, 1);
+            }
         }
     }
+
+    @include styled-scroll-bar;
 }

@@ -35,6 +35,16 @@ const getText = (
                     your zAssets.
                 </span>,
             ];
+        case 'register exit commitment':
+            return [
+                'Register Your Commitment',
+                <span key={trigger}>
+                    To register your commitment, please sign the message to
+                    derive your Panther wallet keys, which will then be used to
+                    generate the reading and spending keys allowing this reward
+                    UTXO to be claimed.
+                </span>,
+            ];
         case 'zZKP redemption':
             return [
                 'Redeeming zZKP',

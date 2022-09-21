@@ -64,15 +64,14 @@ export default function StakingInput(props: {amountToStake: string | null}) {
 
     const inputHandler = useCallback(
         (e: any) => {
-            setInputTextLength(e.target.value.length);
+            const value = e.target.value;
+            setInputTextLength(value.length);
 
-            const regex = /^\d*\.?\d*$/; // matches floating points numbers
-            if (!regex.test(e.target.value)) {
+            const regex = /^\d{0,9}(\.\d{0,18})?$/;
+            if (!regex.test(value)) {
                 return;
             }
-
-            const amount = e.target.value.toString();
-            onChange(amount);
+            onChange(value.toString());
         },
         [onChange],
     );

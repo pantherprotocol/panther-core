@@ -1,13 +1,14 @@
-import path from 'path';
+/* eslint-disable */
+const path = require('path');
+const webpack = require('webpack');
 
-import SentryCliPlugin from '@sentry/webpack-plugin';
-import Dotenv from 'dotenv-webpack';
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import webpack, {Configuration} from 'webpack';
-import WebpackPwaManifest from 'webpack-pwa-manifest';
+const SentryCliPlugin = require('@sentry/webpack-plugin');
+const Dotenv = require('dotenv-webpack');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const WebpackPwaManifest = require('webpack-pwa-manifest');
 
 // Set BABEL_UWC to get easy access to use-what-changed React hook debugging.
 // When enabled, this allows monitoring of when React hooks change simply by
@@ -43,7 +44,7 @@ const babelConfig = process.env.BABEL_UWC
       ]
     : [];
 
-const webpackConfig = (): Configuration | any => ({
+module.exports = {
     entry: ['babel-polyfill', './src/index.tsx'],
     ...(process.env.NODE_ENV === 'production'
         ? {}
@@ -52,12 +53,23 @@ const webpackConfig = (): Configuration | any => ({
           }),
 
     resolve: {
-        extensions: ['.ts', '.tsx', '.js', '.jsx'],
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
         // @ts-ignore
         plugins: [new TsconfigPathsPlugin({configFile: './tsconfig.json'})],
-        alias: {fs: false, os: false},
+        // alias: {fs: false},
         // Doesn't work, despite https://webpack.js.org/configuration/resolve/#resolvealiasfields
         // aliasFields: ['browser'],
+        fallback: {
+            stream: require.resolve('stream-browserify'),
+            crypto: require.resolve('crypto-browserify'),
+            os: require.resolve('os-browserify/browser'),
+            path: require.resolve('path-browserify'),
+            https: require.resolve('https-browserify'),
+            http: require.resolve('stream-http'),
+            buffer: require.resolve('buffer/'),
+            process: require.resolve('process'),
+            fs: false,
+        },
     },
     output: {
         path: path.join(__dirname, './build'),
@@ -86,7 +98,7 @@ const webpackConfig = (): Configuration | any => ({
                 ],
             },
             {
-                test: /\.s?css$/,
+                test: /\.s[ac]ss$/i,
                 use: [
                     {
                         loader: 'style-loader',
@@ -96,6 +108,9 @@ const webpackConfig = (): Configuration | any => ({
                     },
                     {
                         loader: 'sass-loader',
+                        options: {
+                            sourceMap: true,
+                        },
                     },
                 ],
             },
@@ -171,6 +186,9 @@ const webpackConfig = (): Configuration | any => ({
             theme_color: '#000000',
             background_color: '#ffffff',
         }),
+        new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+        }),
         // only production or staging env
         ...(process.env.NODE_ENV === 'production' ||
         // TODO: we need to enable this plugin only for the production when we make v0.5 release
@@ -189,5 +207,4 @@ const webpackConfig = (): Configuration | any => ({
               ]
             : []),
     ],
-});
-export default webpackConfig;
+};

@@ -17,7 +17,14 @@
     "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
     "paths": {
-      "*": ["src/*", "types/*"]
+      "*": ["src/*", "types/*"],
+      "crypto": ["./node_modules/crypto-browserify"],
+      "stream": ["./node_modules/stream-browserify"],
+      "assert": ["./node_modules/assert"],
+      "http": ["./node_modules/stream-http"],
+      "https": ["./node_modules/https-browserify"],
+      "os": ["./node_modules/os-browserify"],
+      "process": ["./node_modules/process"]
     },
     "lib": ["esnext", "dom", "dom.iterable"],
     "noEmit": true,
@@ -30,7 +37,7 @@
     "scripts",
     "tests",
     "__mocks__",
-    "webpack.config.ts",
+    "webpack.config.js",
     "../crypto/node_modules/typescript/lib/lib.dom.d.ts"
   ]
 }

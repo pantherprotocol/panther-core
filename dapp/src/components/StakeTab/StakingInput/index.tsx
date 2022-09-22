@@ -26,9 +26,11 @@ import {currentNetwork} from '../../../services/connectors';
 import {StakeType} from '../../../types/staking';
 import {networkLogo} from '../../Common/NetworkLogo';
 
+import {StakingInputProps} from './StakingInput.interface';
+
 import './styles.scss';
 
-export default function StakingInput(props: {amountToStake: string | null}) {
+export default function StakingInput(props: StakingInputProps) {
     const dispatch = useAppDispatch();
     const context = useWeb3React();
     const {account, chainId} = context;

@@ -49,7 +49,6 @@ describe('AdvancedStakeRewardController', () => {
         endTime: number;
         startZkpApy: number;
         prpPerStake: number;
-        rewardsRounding: BigNumber;
     };
 
     const getDefaultRewardParams = (): RewardParams => ({
@@ -58,7 +57,6 @@ describe('AdvancedStakeRewardController', () => {
         startZkpApy: rewardingStartApy,
         endZkpApy: rewardingEndApy,
         prpPerStake: prpRewardPerStake,
-        rewardsRounding: rewardingRoundingNumber,
     });
 
     before(async () => {
@@ -288,8 +286,8 @@ describe('AdvancedStakeRewardController', () => {
                         .mul(rewardParams.startZkpApy)
                         .mul(rewardParams.endTime - rewardParams.startTime)
                         .div(365 * 86400 * 100)
-                        .div(rewardParams.rewardsRounding)
-                        .mul(rewardParams.rewardsRounding);
+                        .div(rewardingRoundingNumber)
+                        .mul(rewardingRoundingNumber);
 
                     expect(
                         await asrController.internalComputeZkpReward(
@@ -560,8 +558,8 @@ describe('AdvancedStakeRewardController', () => {
                     .mul(apy)
                     .mul(period)
                     .div(365 * 24 * 3600 * 100)
-                    .div(rewardParams.rewardsRounding)
-                    .mul(rewardParams.rewardsRounding);
+                    .div(rewardingRoundingNumber)
+                    .mul(rewardingRoundingNumber);
             }
         });
     });
@@ -921,8 +919,8 @@ describe('AdvancedStakeRewardController', () => {
                     .mul(rewardParams.startZkpApy)
                     .mul(rewardParams.endTime - rewardParams.startTime)
                     .div(100 * 365 * 86400)
-                    .div(rewardParams.rewardsRounding)
-                    .mul(rewardParams.rewardsRounding);
+                    .div(rewardingRoundingNumber)
+                    .mul(rewardingRoundingNumber);
                 expScZkpStaked = amountToStake.div(1e15);
                 expPrpReward = rewardParams.prpPerStake;
 

@@ -22,7 +22,6 @@ describe('AmountConvertor', function () {
         it('should not scale the amount when scale is 0', async () => {
             const {scaledAmount, change} =
                 await amountConvertor.internalScaleAmount(amount, 0);
-            //console.log('sa:', scaledAmount.toString(), ", a:", amount.toString());
             expect(scaledAmount).to.be.eq(amount);
             expect(change).to.be.eq(0);
         });
@@ -114,6 +113,12 @@ describe('AmountConvertor', function () {
 
     describe('internal unscaleAmount', () => {
         it('should not unscale the amount when scale is 0', async () => {
+            // NOTE: this explanation holds for all similar computations
+            // 18446744073709551615 = MAX_UINT64, following is equal to:
+            // MAX_UINT64 - SOME_NUMBER = NUMBER_IN_RANGE_OF_UINT64 where:
+            // SOME_NUMBER = 79228162514264337593543950335 % MAX_UINT64 ~ 1e
+            // Number 79228162514264337593543950335 was used for consistent history,
+            // as same number that was used before rewards rounding change
             const amount = toBN('18446744073709551615').sub(
                 toBN('79228162514264337593543950335').mod(
                     '18446744073709551615',

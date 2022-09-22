@@ -35,9 +35,6 @@ abstract contract CommitmentGenerator {
                         (uint256(zAssetId) << 32) |
                         uint256(creationTime)
                 )
-                //bytes32(uint256(scaledAmount)),
-                //bytes32(uint256(zAssetId)),
-                //bytes32(uint256(creationTime))
             ]
         );
     }

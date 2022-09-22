@@ -641,9 +641,10 @@ describe('PantherPoolV0', () => {
                 // eslint-disable-next-line
                 const rcp = await tx.wait(); // eslint-disable-line no-unused-vars
                 //console.log("rcp.logs[0]:" , rcp.events[0]);
+                /*
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Pay attention something inside [secrets] type not working - values are OK, but wrapping-type is not what is expected //
-                // In order to make await expect(await poolV0.GenerateDepositsExtended(...).to.emit(...).withArgs() work                //
+                // In order to make await expect(await poolV0.testGenerateDepositsExtended(...).to.emit(...).withArgs() work                //
                 // One need to patch ethers-waffle lib to support correct equality applied to arrays, otherwise beside the fact
                 // that arrays are equal still it will fail... to match it.
                 // This code must be patched: node_modules/@ethereum-waffle/chai/dist/cjs/matchers/emit.js line 48
@@ -654,29 +655,34 @@ describe('PantherPoolV0', () => {
                 // }
                 // I also don't understand why there is no problem with commitments array but there is problem with
                 // secrets array of arrays
-                /*
                 const Secrets = [
                     [
-                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
-                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
-                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
-                        BigNumber.from(Buffer32ToBigInt(merged1).toString())
+                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
+                        BigNumber.from(buffer32ToBigInt(merged1).toString())
                     ] as const,
                     [
-                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
-                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
-                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
-                        BigNumber.from(Buffer32ToBigInt(merged2).toString())
+                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
+                        BigNumber.from(buffer32ToBigInt(merged2).toString())
                     ] as const,
                     [
-                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
-                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
-                        BigNumber.from(Buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
-                        BigNumber.from(Buffer32ToBigInt(merged3).toString())
+                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
+                        BigNumber.from(buffer32ToBigInt(merged3).toString())
                     ] as const,
                 ] as const;
                 const leftLeafID = 0;
-                await expect(await poolV0.GenerateDepositsExtended(tokens, amounts, spendingPublicKey, secrets, createdAt)).to.emit(poolV0, 'NewCommitments').withArgs(
+                await expect(await poolV0.testGenerateDepositsExtended(
+                    [tokens[0], tokens[1], tokens[2]],
+                    [amounts[0], amounts[1], amounts[2]],
+                    spendingPublicKey,
+                    secrets,
+                    createdAtNum,
+                )).to.emit(poolV0, 'NewCommitments').withArgs(
                     leftLeafID,
                     createdAtNum,
                     CommitmentsFromSolidity,

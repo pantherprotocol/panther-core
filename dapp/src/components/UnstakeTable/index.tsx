@@ -192,7 +192,10 @@ export default function UnstakeTable() {
     }, [account, library, fetchStakedData]);
 
     return (
-        <Box className="unstake-table">
+        <Box
+            className="unstake-table"
+            data-testid="unstake-table_unstake-table_container"
+        >
             <TableContainer component={Paper}>
                 <Table
                     size="small"

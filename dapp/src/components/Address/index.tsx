@@ -15,14 +15,18 @@ const Address = () => {
 
     return (
         (account && (
-            <Box className="address-container">
+            <Box className="address-container" data-testid="address-component">
                 <Box className="user-avatar">
                     <Jazzicon
                         diameter={30}
                         seed={jsNumberForAddress(account)}
+                        data-testid="jazz-icon"
                     />
                 </Box>
-                <Typography className="account-address">
+                <Typography
+                    className="account-address"
+                    data-testid="wallet-address-test-id"
+                >
                     {formatAccountAddress(account)}
                 </Typography>
             </Box>

@@ -20,15 +20,11 @@ export default function NavigationMenu() {
     const defaultModeLinks: MenuLink[] = [
         {name: 'Staking', url: '/'},
         {name: 'zAssets', url: '/zAssets'},
-        {
-            name: 'Docs',
-            url: 'https://docs.pantherprotocol.io/panther-dao-and-zkp/the-zkp-token/staking',
-        },
+        {name: 'Faucet', url: '/faucet'},
         {
             name: 'Governance',
             url: 'https://snapshot.org/#/pantherprotocol.eth',
         },
-        {name: 'Faucet', url: '/faucet'},
     ];
 
     const faucetModeLinks: MenuLink[] = [

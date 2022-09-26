@@ -6,7 +6,6 @@ import {useWeb3React} from '@web3-react/core';
 import {fiatPrice} from '../../lib/tokenPrice';
 import {useAppSelector} from '../../redux/hooks';
 import {totalSelector} from '../../redux/slices/advancedStakesRewards';
-import {totalUnclaimedClassicRewardsSelector} from '../../redux/slices/totalUnclaimedClassicRewards';
 import {marketPriceSelector} from '../../redux/slices/zkpMarketPrice';
 import {zkpStakedBalanceSelector} from '../../redux/slices/zkpStakedBalance';
 import {Network, supportedNetworks} from '../../services/connectors';
@@ -30,12 +29,6 @@ const BalanceCard = () => {
 
     const zkpStakedBalance = useAppSelector(zkpStakedBalanceSelector);
     const zkpStakedUSDValue = fiatPrice(zkpStakedBalance, zkpPrice);
-
-    const zkpRewardBalance = useAppSelector(
-        totalUnclaimedClassicRewardsSelector,
-    );
-
-    const zkpRewardsUSDValue = fiatPrice(zkpRewardBalance, zkpPrice);
 
     const zZkpRewardBalance = useAppSelector(
         totalSelector(chainId, account, StakingRewardTokenID.zZKP),
@@ -61,22 +54,15 @@ const BalanceCard = () => {
 
                 <UnstakedBalance />
                 <AddressBalances
-                    title={'Staked Balance:'}
+                    title={'Staked ZKP Balance:'}
                     balance={zkpStakedBalance}
                     rewardsTokenSymbol={'ZKP'}
                     amountUSD={zkpStakedUSDValue}
                 />
 
-                <AddressBalances
-                    title={'Reward Balance:'}
-                    balance={zkpRewardBalance}
-                    rewardsTokenSymbol={'ZKP'}
-                    amountUSD={zkpRewardsUSDValue}
-                />
-
                 {chainId && chainHasPoolContract(chainId) && (
                     <AddressBalances
-                        title={'Advanced Staking Reward:'}
+                        title={'Reward Balance:'}
                         balance={zZkpRewardBalance}
                         rewardsTokenSymbol={'zZKP'}
                         amountUSD={zZkpRewardsUSDValue}

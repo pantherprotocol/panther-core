@@ -1,6 +1,6 @@
 .address-with-setting {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: flex-start;
 
     .address {
@@ -13,5 +13,7 @@
         opacity: 0.6;
         width: 21px;
         cursor: pointer;
+        position: relative;
+        bottom: 5px;
     }
 }

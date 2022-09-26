@@ -94,7 +94,7 @@ export default function UnstakedBalance() {
     return (
         <Box className="total-balance">
             <Box className="title-box">
-                <Typography className="title">Total Balance</Typography>
+                <Typography className="title">Available ZKP Balance</Typography>
                 {false && (
                     <Tooltip
                         title="This is the amount of ZKP you have available for staking."

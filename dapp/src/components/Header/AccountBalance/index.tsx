@@ -11,11 +11,11 @@ import {
     getChainBalance,
 } from '../../../redux/slices/chainBalance';
 
+import {AccountBalanceProps} from './AccountBalance.interface';
+
 import './styles.scss';
 
-export default function AccountBalance(props: {
-    networkSymbol: string | undefined;
-}) {
+export default function AccountBalance(props: AccountBalanceProps) {
     const context = useWeb3React();
     const chainBalance = useAppSelector(chainBalanceSelector);
     const dispatch = useAppDispatch();

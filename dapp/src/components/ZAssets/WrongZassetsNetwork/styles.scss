@@ -47,10 +47,12 @@
             }
 
             .divider {
+                position: relative;
+                bottom: 20px;
                 background: rgba(255, 255, 255, 0.2);
                 opacity: 0.2;
                 border-width: 1px;
-                margin: -20px 23.5px 0px 16.5px;
+                margin: 0 23px 0 16px;
                 height: 110px;
                 @media (max-width: 620px) {
                     display: none;
@@ -90,7 +92,6 @@
             @media (max-width: 620px) {
                 flex-direction: column;
                 align-items: center;
-                margin-top: -20px;
             }
         }
 

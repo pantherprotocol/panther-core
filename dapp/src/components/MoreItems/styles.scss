@@ -29,8 +29,11 @@
         transform: none !important;
 
         @media (max-width: $medium-screen-size) {
-            top: -4px !important;
-            left: -1px !important;
+            top: 0 !important;
+            left: 0 !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
             > svg {
                 width: 20px;

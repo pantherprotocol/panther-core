@@ -1,32 +1,47 @@
 @import '../../../variables';
 
 .staking-info-container {
-    // background: $card-background  !important;
+    padding: 0;
 
     .staking-info-card-content {
         padding: 0px !important;
-    }
+        .staking-info-title-wrapper {
+            display: flex;
+            align-items: center;
+            .warning-icon {
+                width: 17px;
+                height: 15px;
+                margin-right: 12px;
+            }
+            .staking-info-title {
+                font-weight: $semi-bold-font-weight;
+                font-size: $normal-font-size;
+                display: flex;
+                align-items: center;
+                color: $white;
+                /* FIXME: use common variable */
+            }
+        }
+        .staking-info-text {
+            font-size: $small-font-size;
+            font-weight: $light-font-weight;
+            line-height: 22px;
+            color: $white;
+            opacity: 0.8;
+            padding: 5px 0;
+            text-align: start;
 
-    .staking-info-title {
-        font-weight: $bold-font-weight;
-        font-size: $title-font-size;
-        line-height: 42px;
-        display: flex;
-        align-items: center;
-        color: $color-beige !important;
-        /* FIXME: use common variable */
-    }
+            strong {
+                opacity: 1;
+            }
 
-    .staking-info-text {
-        font-size: $normal-font-size;
-        line-height: 25px;
-        color: white;
-        opacity: 0.8;
-        padding: 5px 0;
-        text-align: start;
+            .learn-more-link {
+                text-decoration: underline;
+            }
 
-        strong {
-            opacity: 1;
+            .staking-info-text-paragraph {
+                margin-bottom: 10px;
+            }
         }
     }
 }

@@ -43,7 +43,7 @@
         align-items: center;
         justify-content: space-between;
         padding: 16px;
-        border: 1px solid #3f4a5f;
+        border: 1px solid $color-beige;
         border-radius: 15px;
 
         .staking-input-max {
@@ -77,45 +77,30 @@
         }
 
         .MuiInputBase-input.MuiInput-input.Mui-disabled {
-            -webkit-text-fill-color: $input-disabled-color;
+            -webkit-text-fill-color: $white;
+            font-size: $large-font-size;
         }
 
         .staking-input-box {
             display: flex;
             align-items: center;
             width: 90%;
+            position: relative;
 
             &-inner {
                 display: flex;
                 align-items: center;
             }
-        }
 
-        .staking-input-symbol {
-            display: flex;
-            align-items: center;
-            color: white;
-            padding-left: 30px;
-
-            .staking-symbol-holder {
-                display: flex;
-                align-items: center;
-                justify-content: space-around;
-                background: $header-box-shadow;
-                border-radius: 8px;
-                width: 100px;
-
-                img {
-                    width: 30px;
-                    height: 26px;
-                }
-
-                span {
-                    color: $white;
-                    font-weight: $normal-font-weight;
-                    font-size: $header-font-size;
-                    line-height: 42px;
-                }
+            .staking-input-token-name {
+                position: absolute;
+                left: 80px;
+                font-weight: $normal-font-weight;
+                font-size: $normal-font-size;
+                color: #999999;
+            }
+            .invisible-token-name {
+                display: none;
             }
         }
     }

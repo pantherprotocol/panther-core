@@ -246,7 +246,7 @@ export async function exit(
             } as DetailedError,
         ];
     }
-    const [pathElements, proofLeafHex, merkleTreeRoot, treeIndex] = path;
+    const [pathElements, proofLeafHex, merkleTreeRoot] = path;
 
     if (proofLeafHex !== zZkpCommitment) {
         // This error also shoots when the tree is outdated
@@ -257,25 +257,6 @@ export async function exit(
                 message: "zAsset didn't match shielded pool entry.",
                 details:
                     'Expected: ' + proofLeafHex + ', got: ' + zZkpCommitment,
-            } as DetailedError,
-        ];
-    }
-
-    const isProofValid = await poolContractVerifyMerkleProof(
-        contract,
-        Number(leafId),
-        merkleTreeRoot,
-        treeIndex,
-        proofLeafHex,
-        pathElements,
-    );
-    if (isProofValid instanceof Error) {
-        return [
-            UTXOStatus.UNSPENT,
-            {
-                message: 'Cannot verify Merkle proof',
-                details: 'Error: ' + isProofValid.message,
-                triggerError: isProofValid as Error,
             } as DetailedError,
         ];
     }
@@ -564,29 +545,5 @@ async function poolContractExit(
             details: parseTxErrorMessage(err),
             triggerError: err as Error,
         } as DetailedError;
-    }
-}
-
-async function poolContractVerifyMerkleProof(
-    contract: Contract,
-    leafId: number,
-    rootHex: string,
-    treeIndex: number,
-    commitment: string,
-    pathElements: string[],
-): Promise<boolean | Error> {
-    try {
-        const quadNodeIndex = Math.floor(leafId / 4);
-        await contract.verifyMerkleProof(
-            rootHex,
-            treeIndex,
-            quadNodeIndex,
-            commitment,
-            pathElements,
-        );
-
-        return true;
-    } catch (error) {
-        return error as Error;
     }
 }

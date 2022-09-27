@@ -567,37 +567,4 @@ export const abi = [
         stateMutability: 'nonpayable',
         type: 'function',
     },
-    {
-        inputs: [
-            {
-                internalType: 'bytes32',
-                name: 'merkleRoot',
-                type: 'bytes32',
-            },
-            {
-                internalType: 'uint256',
-                name: 'triadIndex',
-                type: 'uint256',
-            },
-            {
-                internalType: 'uint256',
-                name: 'triadNodeIndex',
-                type: 'uint256',
-            },
-            {
-                internalType: 'bytes32',
-                name: 'leaf',
-                type: 'bytes32',
-            },
-            {
-                internalType: 'bytes32[16]',
-                name: 'pathElements',
-                type: 'bytes32[16]',
-            },
-        ],
-        name: 'verifyMerkleProof',
-        outputs: [],
-        stateMutability: 'pure',
-        type: 'function',
-    },
 ];

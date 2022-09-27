@@ -138,6 +138,7 @@ module.exports = {
         // open: true,
         hot: true,
         historyApiFallback: true,
+        contentBase: path.resolve(__dirname, './public'),
     },
     plugins: [
         new NodePolyfillPlugin(),

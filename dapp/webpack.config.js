@@ -75,6 +75,7 @@ module.exports = {
         path: path.join(__dirname, './build'),
         filename: 'build-[contenthash].js',
     },
+    target: 'web',
     module: {
         rules: [
             {
@@ -136,6 +137,7 @@ module.exports = {
     devServer: {
         port: 3000,
         // open: true,
+        liveReload: true,
         hot: true,
         historyApiFallback: true,
         contentBase: path.resolve(__dirname, './public'),

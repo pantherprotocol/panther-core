@@ -17,18 +17,28 @@ export const generateEcdhSharedKey = (
     return babyjub.mulPointEscalar(publicKey, privateKey);
 };
 
+function extractCipherKeyAndIV(packedKey: PackedEcdhSharedKey): {
+    cipherKey: Buffer;
+    iv: Buffer;
+} {
+    return {
+        cipherKey: Buffer.from(packedKey).slice(0, 16),
+        iv: Buffer.from(packedKey).slice(16, 32),
+    };
+}
+
 export function encryptMessage(
     plaintext: Uint8Array,
     sharedKey: PackedEcdhSharedKey,
 ): ICiphertext {
-    const iv = crypto.randomBytes(16);
+    const {cipherKey, iv} = extractCipherKeyAndIV(sharedKey);
 
     try {
-        const cipher = crypto.createCipheriv('aes-256-cbc', sharedKey, iv);
+        const cipher = crypto.createCipheriv('aes128', cipherKey, iv);
         const cipheredText1 = cipher.update(plaintext);
         const cipheredText2 = cipher.final();
         return {
-            iv: iv,
+            iv,
             data: new Uint8Array([...cipheredText1, ...cipheredText2]),
         };
     } catch (error) {
@@ -40,11 +50,8 @@ export function decryptMessage(
     ciphertext: ICiphertext,
     sharedKey: PackedEcdhSharedKey,
 ): Uint8Array {
-    const decipher = crypto.createDecipheriv(
-        'aes-256-cbc',
-        sharedKey,
-        ciphertext.iv,
-    );
+    const {cipherKey, iv} = extractCipherKeyAndIV(sharedKey);
+    const decipher = crypto.createDecipheriv('aes128', cipherKey, iv);
 
     return new Uint8Array([
         ...decipher.update(ciphertext.data),

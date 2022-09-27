@@ -127,7 +127,7 @@ describe('Advanced stakes', () => {
     describe('PRP rewards', () => {
         it('should always be 10,000', () => {
             const reward = prpReward().toString();
-            expect(reward).toBe('10000');
+            expect(reward).toBe('2000');
         });
     });
 });

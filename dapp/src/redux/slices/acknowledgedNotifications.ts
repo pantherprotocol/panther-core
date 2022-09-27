@@ -8,10 +8,12 @@ export interface acknowledgedNotificationsState {
 
 const initialState: acknowledgedNotificationsState = {
     zAssetsPage: false,
+    notFirstVisit: false,
 };
 
 export enum PageWithNotification {
     zAssetsPage = 'zAssetsPage',
+    notFirstVisit = 'notFirstVisit',
 }
 
 export const acknowledgedNotificationsSlice = createSlice({
@@ -22,6 +24,7 @@ export const acknowledgedNotificationsSlice = createSlice({
             if (!(action.payload in PageWithNotification)) {
                 throw new Error('The notificationOwner is not valid!');
             }
+
             state[action.payload] = true;
         },
     },

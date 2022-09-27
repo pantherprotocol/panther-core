@@ -3,7 +3,7 @@ import React from 'react';
 import {Box, Grid, Typography} from '@mui/material';
 
 import {useAppDispatch} from '../../redux/hooks';
-import {registerFirstVisit} from '../../redux/slices/isFirstVisit';
+import {acknowledgeNotification} from '../../redux/slices/acknowledgedNotifications';
 import ContinueButton from '../ContinueButton';
 
 import Feature, {featuredata} from './Feature';
@@ -34,7 +34,11 @@ export default function Welcome() {
             </Grid>
 
             <Grid item xs={12} md={12} className="continue-button-holder">
-                <ContinueButton onClick={() => dispatch(registerFirstVisit)} />
+                <ContinueButton
+                    onClick={() =>
+                        dispatch(acknowledgeNotification, 'notFirstVisit')
+                    }
+                />
             </Grid>
         </Box>
     );

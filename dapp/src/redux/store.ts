@@ -16,7 +16,6 @@ import advancedStakeInputRewardsReducer from './slices/advancedStakePredictedRew
 import advancedStakesRewardsReducer from './slices/advancedStakesRewards';
 import blurReducer from './slices/blur';
 import chainBalanceReducer from './slices/chainBalance';
-import firstVisitReducer from './slices/isFirstVisit';
 import isWalletConnectedReducer from './slices/isWalletConnected';
 import poolV0Reducer from './slices/poolV0';
 import remainingPrpRewardsReducer from './slices/remainingPrpRewards';
@@ -34,7 +33,6 @@ const rootPersistConfig = {
     storage: storage,
     whitelist: [
         'advancedStakesRewards',
-        'firstVisit',
         'isWalletConnected',
         'acknowledgedNotifications',
     ],
@@ -51,7 +49,6 @@ export const rootReducer = combineReducers({
     advancedStakeInputRewards: advancedStakeInputRewardsReducer,
     stakeTerms: stakeTermsReducer,
     totalUnclaimedClassicRewards: totalUnclaimedClassicRewardsReducer,
-    firstVisit: firstVisitReducer,
     Web3WalletLastAction: Web3WalletLastActionReducer,
     stakeAmount: stakeAmountReducer,
     isWalletConnected: isWalletConnectedReducer,

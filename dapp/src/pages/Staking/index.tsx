@@ -11,8 +11,8 @@ import {MainPageWrapper} from '../../components/MainPageWrapper';
 import StakingUnstakingCard from '../../components/StakingUnstakingCard';
 import Welcome from '../../components/Welcome';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {acknowledgedNotificationSelector} from '../../redux/slices/acknowledgedNotifications';
 import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
-import {firstVisitSelector} from '../../redux/slices/isFirstVisit';
 import {getRemainingPrpRewards} from '../../redux/slices/remainingPrpRewards';
 import {getStakeTerms} from '../../redux/slices/stakeTerms';
 import {getTotalsOfAdvancedStakes} from '../../redux/slices/totalsOfAdvancedStakes';
@@ -36,11 +36,13 @@ const Staking = (): React.ReactElement => {
         dispatch(getRemainingPrpRewards);
     }, [context, dispatch]);
 
-    const firstVisit = useAppSelector(firstVisitSelector);
+    const firstVisit = useAppSelector(
+        acknowledgedNotificationSelector('notFirstVisit'),
+    );
 
     return (
         <MainPageWrapper>
-            {firstVisit ? (
+            {!firstVisit ? (
                 <Welcome />
             ) : (
                 <Container className="staking-container">

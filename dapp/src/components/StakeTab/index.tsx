@@ -38,7 +38,6 @@ export default function StakeTab() {
         isStakingOpenSelector(chainId, StakeType.Advanced),
     );
     const amountToStake = useAppSelector(stakeAmountSelector);
-
     const [wrongNetwork, setWrongNetwork] = useState(false);
 
     useEffect((): any => {

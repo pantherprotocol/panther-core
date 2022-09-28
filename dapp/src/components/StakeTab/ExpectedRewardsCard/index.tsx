@@ -3,7 +3,7 @@ import * as React from 'react';
 import {IconButton} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {BigNumber} from 'ethers';
+import {BigNumber, constants} from 'ethers';
 
 import questionmarkIcon from '../../../images/questionmark-icon.svg';
 import {formatCurrency} from '../../../lib/format';
@@ -15,12 +15,10 @@ import {StakingRewardTokenID} from '../../../types/staking';
 import './styles.scss';
 
 function expectedPrpRewards(
-    predictedRewards: string | null | undefined,
-    remainingRewards: string | null,
+    predictedRewardsBN: BigNumber | null | undefined,
+    remainingRewardsBN: BigNumber | null,
 ): BigNumber {
-    const remainingRewardsBN = BigNumber.from(remainingRewards ?? '0');
-    const predictedRewardsBN = BigNumber.from(predictedRewards ?? '0');
-
+    if (!remainingRewardsBN || !predictedRewardsBN) return constants.Zero;
     return remainingRewardsBN.lt(predictedRewardsBN)
         ? remainingRewardsBN
         : predictedRewardsBN;
@@ -28,14 +26,13 @@ function expectedPrpRewards(
 
 export function ExpectedRewardsCard() {
     const rewards = useAppSelector(calculatedRewardsSelector);
-    const zZkp = rewards?.[StakingRewardTokenID.zZKP]; // string, 18 decimals
-    const zZkpBN = zZkp && BigNumber.from(zZkp);
-    const predictedRewards = rewards?.[StakingRewardTokenID.PRP]; // string, no decimals
-    const remainingRewards = useAppSelector(remainingPrpRewardsSelector);
+    const zZkpBN = rewards?.[StakingRewardTokenID.zZKP];
+    const predictedRewardsBN = rewards?.[StakingRewardTokenID.PRP];
+    const remainingRewardsBN = useAppSelector(remainingPrpRewardsSelector);
 
     const prpBN: BigNumber = expectedPrpRewards(
-        predictedRewards,
-        remainingRewards,
+        predictedRewardsBN,
+        remainingRewardsBN,
     );
 
     return (
@@ -64,13 +61,11 @@ export function ExpectedRewardsCard() {
                     </Typography>
 
                     <Typography className="amount">
-                        {predictedRewards
-                            ? `${formatCurrency(prpBN, {
-                                  decimals: 0,
-                                  scale: 0,
-                              })}
-                            PRP`
-                            : '-'}
+                        {`${formatCurrency(prpBN, {
+                            decimals: 0,
+                            scale: 0,
+                        })}
+                            PRP`}
                     </Typography>
                 </Box>
             </Box>

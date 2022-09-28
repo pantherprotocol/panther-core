@@ -18,7 +18,7 @@ export const stakeAmountSlice = createSlice({
         set: (state, action: PayloadAction<string>): void => {
             if (!safeParseUnits(action.payload))
                 throw new Error(
-                    `The value ${action.payload} isn't parsiable  as Bignumber`,
+                    `The value ${action.payload} isn't parsiable as Bignumber`,
                 );
 
             state.value = action.payload;

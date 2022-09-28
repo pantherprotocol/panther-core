@@ -1,6 +1,6 @@
-import {BigNumber} from '@ethersproject/bignumber';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
+import {safeParseStringToBN} from '../../lib/numbers';
 import {rewardsVested, rewardsClaimed} from '../../services/rewards';
 import {getSumAllAdvancedStakes} from '../../services/staking';
 import {createExtraReducers, LoadingStatus} from '../slices/shared';
@@ -60,20 +60,20 @@ export const stakedBalanceSlice = createSlice({
 
 export const totalStakedSelector = (state: RootState) => {
     return state.totalsOfAdvancedStakes.value
-        ? BigNumber.from(state.totalsOfAdvancedStakes.value.staked)
+        ? safeParseStringToBN(state.totalsOfAdvancedStakes.value.staked)
         : null;
 };
 
 export const totalClaimedRewardsSelector = (state: RootState) => {
     return state.totalsOfAdvancedStakes.value
-        ? BigNumber.from(state.totalsOfAdvancedStakes.value.claimedRewards)
+        ? safeParseStringToBN(state.totalsOfAdvancedStakes.value.claimedRewards)
         : null;
 };
 
 export const totalVestedRewardsSelector = (state: RootState) => {
-    return state.totalsOfAdvancedStakes.value
-        ? BigNumber.from(state.totalsOfAdvancedStakes.value.vestedRewards)
-        : null;
+    return safeParseStringToBN(
+        state.totalsOfAdvancedStakes.value?.vestedRewards,
+    );
 };
 
 export default stakedBalanceSlice.reducer;

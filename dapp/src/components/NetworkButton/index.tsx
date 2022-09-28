@@ -24,18 +24,23 @@ export const NetworkButton = (props: {
 
     return (
         <Box
+            data-testid="network-button_network-button_container"
             className={`dropdown-button-container network-button-container ${
                 open ? 'open' : ''
             }`}
         >
             <FormControl variant="standard">
-                <InputLabel id="dropdown-list-button-label">
+                <InputLabel
+                    id="dropdown-list-button-label"
+                    data-testid="network-button_network-button_select-label"
+                >
                     <Box
                         className={`dropdown-button-holder network-button-holder`}
                     >
                         <img
                             src={networkLogo(props.networkLogo)}
                             alt="Network logo"
+                            data-testid="network-button_network-button_select-logo"
                         />
                         <Typography className="network-name">
                             {props.networkName}
@@ -44,7 +49,10 @@ export const NetworkButton = (props: {
                     </Box>
                 </InputLabel>
                 {CHAIN_IDS.length > 1 && (
-                    <DropdownList setOpen={setOpen}>
+                    <DropdownList
+                        setOpen={setOpen}
+                        data-testid="network-button_network-button-select"
+                    >
                         {CHAIN_IDS.map(chainId => {
                             const requiredNetwork = supportedNetworks[chainId];
                             return (
@@ -54,6 +62,7 @@ export const NetworkButton = (props: {
                                         alt="Network logo"
                                     />
                                     <Typography
+                                        data-testid="network-button_network-button_select-option"
                                         onClick={() => {
                                             switchNetwork(chainId);
                                         }}

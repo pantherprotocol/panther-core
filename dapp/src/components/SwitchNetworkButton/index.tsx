@@ -11,6 +11,7 @@ const SwitchNetworkButton = (props: {defaultNetwork?: number}) => {
             onClick={() => {
                 switchNetwork(targetNetwork);
             }}
+            data-testid="switch-network-button_container"
         >
             <span>Switch network</span>
         </PrimaryActionButton>

@@ -14,16 +14,16 @@ export const blurSlice = createSlice({
     name: 'blur',
     initialState,
     reducers: {
-        setBlur: state => {
+        set: state => {
             state.value = true;
         },
-        removeBlur: state => {
+        remove: state => {
             state.value = false;
         },
     },
 });
 
-export const {setBlur, removeBlur} = blurSlice.actions;
+export const {set: setBlur, remove: removeBlur} = blurSlice.actions;
 
 export const blurSelector = (state: RootState) => {
     return state.blur?.value;

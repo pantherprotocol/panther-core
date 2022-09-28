@@ -27,7 +27,7 @@ const chainBalanceSlice = createSlice({
     name: 'chainBalance',
     initialState,
     reducers: {
-        resetChainBalance: state => {
+        reset: state => {
             state.value = initialState.value;
             state.status = initialState.status;
         },
@@ -40,5 +40,5 @@ const chainBalanceSlice = createSlice({
 export const chainBalanceSelector = (state: RootState) =>
     safeParseStringToBN(state.chainBalance.value);
 
-export const {resetChainBalance} = chainBalanceSlice.actions;
+export const {reset: resetChainBalance} = chainBalanceSlice.actions;
 export default chainBalanceSlice.reducer;

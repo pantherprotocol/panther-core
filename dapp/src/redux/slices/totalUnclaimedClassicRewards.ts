@@ -47,7 +47,7 @@ export const totalUnclaimedClassicRewardsSlice = createSlice({
     name: 'totalUnclaimedClassicRewards',
     initialState,
     reducers: {
-        resetUnclaimedClassicRewards: state => {
+        reset: state => {
             state.value = initialState.value;
             state.status = initialState.status;
         },
@@ -72,7 +72,7 @@ export const statusUnclaimedRewardsSelector = (
     return state.totalUnclaimedClassicRewards.status;
 };
 
-export const {resetUnclaimedClassicRewards} =
+export const {reset: resetUnclaimedClassicRewards} =
     totalUnclaimedClassicRewardsSlice.actions;
 
 export default totalUnclaimedClassicRewardsSlice.reducer;

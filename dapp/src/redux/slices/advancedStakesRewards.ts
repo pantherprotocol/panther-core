@@ -251,7 +251,7 @@ export const advancedStakesRewardsSlice = createSlice({
     name: 'advancedStakesRewards',
     initialState,
     reducers: {
-        resetAdvancedStakesRewards: state => {
+        reset: state => {
             state.value = initialState.value;
             state.status = initialState.status;
         },
@@ -407,7 +407,7 @@ export function statusSelector(state: RootState): LoadingStatus {
 }
 
 export const {
-    resetAdvancedStakesRewards,
+    reset: resetAdvancedStakesRewards,
     updateUTXOStatus,
     updateExitCommitmentTime,
 } = advancedStakesRewardsSlice.actions;

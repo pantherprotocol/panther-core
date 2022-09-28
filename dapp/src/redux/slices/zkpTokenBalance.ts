@@ -36,7 +36,7 @@ export const tokenBalanceSlice = createSlice({
     name: 'zkpTokenBalance',
     initialState,
     reducers: {
-        resetZkpTokenBalance: state => {
+        reset: state => {
             state.value = initialState.value;
             state.status = initialState.status;
         },
@@ -77,5 +77,5 @@ export const zkpUnstakedUSDMarketPriceSelector = (
     return tokenUSDMarketPrice;
 };
 
-export const {resetZkpTokenBalance} = tokenBalanceSlice.actions;
+export const {reset: resetZkpTokenBalance} = tokenBalanceSlice.actions;
 export default tokenBalanceSlice.reducer;

@@ -56,7 +56,7 @@ export default function NavigationMenu() {
                     <img src={logo} alt="Logo" />
                 </SafeLink>
             </Box>
-            {...links()}
+            {links()}
         </Grid>
     );
 }

@@ -33,6 +33,7 @@ export const MainPageWrapper = (props: {
 
     return (
         <Box
+            data-testid="main-page-wrapper_main-page-wrapper_container"
             className={`main-page ${isBlur && 'isBlur'}`}
             sx={{
                 backgroundImage: `url(${background})`,
@@ -42,7 +43,7 @@ export const MainPageWrapper = (props: {
             {blockedUser ? (
                 <BlockedUser />
             ) : (
-                <>
+                <Box data-testid="main-page-wrapper_main-page-wrapper_child">
                     <Box className="header-container">
                         <Header />
                     </Box>
@@ -50,7 +51,7 @@ export const MainPageWrapper = (props: {
                     <Box className="footer-container">
                         <Footer />
                     </Box>
-                </>
+                </Box>
             )}
         </Box>
     );

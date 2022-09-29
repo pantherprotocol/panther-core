@@ -19,6 +19,7 @@ import {
     totalSelector,
     refreshUTXOsStatuses,
 } from '../../../redux/slices/advancedStakesRewards';
+import {isWalletConnectedSelector} from '../../../redux/slices/isWalletConnected';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -30,6 +31,7 @@ import {
     walletActionStatusSelector,
 } from '../../../redux/slices/web3WalletLastAction';
 import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
+import {chainHasPoolContract} from '../../../services/contracts';
 import {deriveRootKeypairs} from '../../../services/keychain';
 import {StakingRewardTokenID} from '../../../types/staking';
 import {notifyError} from '../../Common/errors';
@@ -39,7 +41,7 @@ import './styles.scss';
 
 export default function PrivateBalance() {
     const context = useWeb3React();
-    const {account, chainId, library} = context;
+    const {account, chainId, library, active} = context;
     const dispatch = useAppDispatch();
 
     // We need a preliminary scan of undefined UTXOs (if any) on initial page
@@ -70,6 +72,7 @@ export default function PrivateBalance() {
         hasUndefinedUTXOsSelector(chainId, account),
     );
     const walletActionStatus = useAppSelector(walletActionStatusSelector);
+    const isWalletConnected = useAppSelector(isWalletConnectedSelector);
 
     const refreshUTXOs = useCallback(
         async (trigger: WalletSignatureTrigger) => {
@@ -204,6 +207,11 @@ export default function PrivateBalance() {
                             )
                         }
                         onClick={() => refreshUTXOs('manual refresh')}
+                        disabled={
+                            !active ||
+                            !isWalletConnected ||
+                            (!!chainId && !chainHasPoolContract(chainId))
+                        }
                     >
                         {loading && (
                             <i

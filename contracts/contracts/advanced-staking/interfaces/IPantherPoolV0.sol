@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import { G1Point } from "../common/Types.sol";
-import { CIPHERTEXT1_WORDS, OUT_UTXOs, PATH_ELEMENTS_NUM } from "../common/Constants.sol";
+import { G1Point } from "../../common/Types.sol";
+import { CIPHERTEXT1_WORDS, OUT_MAX_UTXOs, PATH_ELEMENTS_NUM } from "../../common/Constants.sol";
 
 /**
  * @notice (Truncated) Interface of the PantherPoolV0
@@ -32,11 +32,11 @@ interface IPantherPoolV0 {
      * @return leftLeafId The `leafId` of the first UTXO (leaf) in the batch
      */
     function generateDeposits(
-        address[OUT_UTXOs] calldata tokens,
-        uint256[OUT_UTXOs] calldata tokenIds,
-        uint256[OUT_UTXOs] calldata extAmounts,
-        G1Point[OUT_UTXOs] calldata pubSpendingKeys,
-        uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
+        address[OUT_MAX_UTXOs] calldata tokens,
+        uint256[OUT_MAX_UTXOs] calldata tokenIds,
+        uint256[OUT_MAX_UTXOs] calldata extAmounts,
+        G1Point[OUT_MAX_UTXOs] calldata pubSpendingKeys,
+        uint256[CIPHERTEXT1_WORDS][OUT_MAX_UTXOs] calldata secrets,
         uint32 createdAt
     ) external returns (uint256 leftLeafId);
 
@@ -68,7 +68,7 @@ interface IPantherPoolV0 {
     event NewCommitments(
         uint256 indexed leftLeafId,
         uint256 creationTime,
-        bytes32[OUT_UTXOs] commitments,
+        bytes32[OUT_MAX_UTXOs] commitments,
         bytes utxoData
     );
 

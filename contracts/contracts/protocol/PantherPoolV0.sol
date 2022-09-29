@@ -2,16 +2,16 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import "./common/Constants.sol";
+import "../common/Constants.sol";
 import "./errMsgs/PantherPoolErrMsgs.sol";
-import "./common/ImmutableOwnable.sol";
-import "./common/NonReentrant.sol";
-import "./common/Types.sol";
-import "./common/Utils.sol";
+import "../common/ImmutableOwnable.sol";
+import "../common/NonReentrant.sol";
+import "../common/Types.sol";
+import "../common/Utils.sol";
 import "./interfaces/IPrpGrantor.sol";
 import "./interfaces/IVault.sol";
 import "./interfaces/IZAssetsRegistry.sol";
-import "./common/Claimable.sol";
+import "../common/Claimable.sol";
 import "./pantherPool/AmountConvertor.sol";
 import "./pantherPool/CommitmentGenerator.sol";
 import "./pantherPool/CommitmentsTrees.sol";
@@ -64,9 +64,6 @@ contract PantherPoolV0 is
     /// @notice Address of the Vault contract
     address public immutable VAULT;
 
-    /// @notice Address of the PrpGrantor contract
-    address public immutable PRP_GRANTOR;
-
     /// @notice (UNIX) Time since when the `exit` calls get enabled
     uint32 public exitTime;
 
@@ -103,25 +100,21 @@ contract PantherPoolV0 is
     /// @param _owner Address of the `OWNER` who may call `onlyOwner` methods
     /// @param assetRegistry Address of the ZAssetRegistry contract
     /// @param vault Address of the Vault contract
-    /// @param prpGrantor Address of the PrpGrantor contract
     constructor(
         address _owner,
         address assetRegistry,
-        address vault,
-        address prpGrantor
+        address vault
     ) ImmutableOwnable(_owner) {
         require(TRIAD_SIZE == OUT_UTXOs, "E0");
 
         revertZeroAddress(assetRegistry);
         revertZeroAddress(vault);
-        revertZeroAddress(prpGrantor);
 
         // As it runs behind the DELEGATECALL'ing proxy, initialization of
         // immutable "vars" only is allowed in the constructor
 
         ASSET_REGISTRY = assetRegistry;
         VAULT = vault;
-        PRP_GRANTOR = prpGrantor;
     }
 
     /// @notice Update the exit time and the exit delay
@@ -154,11 +147,11 @@ contract PantherPoolV0 is
     /// @dev createdAt must be less (or equal) the network time
     /// @return leftLeafId The `leafId` of the first UTXO (leaf) in the batch
     function generateDeposits(
-        address[OUT_UTXOs] calldata tokens,
-        uint256[OUT_UTXOs] calldata tokenIds,
-        uint256[OUT_UTXOs] calldata amounts,
-        G1Point[OUT_UTXOs] calldata pubSpendingKeys,
-        uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
+        address[OUT_MAX_UTXOs] calldata tokens,
+        uint256[OUT_MAX_UTXOs] calldata tokenIds,
+        uint256[OUT_MAX_UTXOs] calldata amounts,
+        G1Point[OUT_MAX_UTXOs] calldata pubSpendingKeys,
+        uint256[CIPHERTEXT1_WORDS][OUT_MAX_UTXOs] calldata secrets,
         uint32 createdAt
     ) external nonReentrant returns (uint256 leftLeafId) {
         require(exitTime > 0, ERR_UNCONFIGURED_EXIT_TIME);
@@ -169,23 +162,29 @@ contract PantherPoolV0 is
             timestamp = createdAt;
         }
 
-        bytes32[OUT_UTXOs] memory commitments;
-        bytes[OUT_UTXOs] memory perUtxoData;
+        bytes32[OUT_MAX_UTXOs] memory commitments;
+        bytes[OUT_MAX_UTXOs] memory perUtxoData;
 
-        for (uint256 utxoIndex = 0; utxoIndex < OUT_UTXOs; utxoIndex++) {
+        // Types of UTXO data messages packed into one byte
+        uint8 msgTypes = uint8(0);
+
+        for (uint256 utxoIndex = 0; utxoIndex < OUT_MAX_UTXOs; utxoIndex++) {
             (uint160 zAssetId, uint64 scaledAmount) = _processDepositedAsset(
                 tokens[utxoIndex],
                 tokenIds[utxoIndex],
                 amounts[utxoIndex]
             );
 
+            if (utxoIndex != 0) msgTypes = msgTypes << 2;
+
             if (scaledAmount == 0) {
+                // the zero UTXO
                 // At least the 1st deposited amount shall be non-zero
                 require(utxoIndex != 0, ERR_ZERO_DEPOSIT);
 
-                // the zero UTXO
                 commitments[utxoIndex] = ZERO_VALUE;
-                perUtxoData[utxoIndex] = abi.encodePacked(UTXO_DATA_TYPE_ZERO);
+                perUtxoData[utxoIndex] = "";
+                // no need to update msgTypes as UTXO_DATA_TYPE5 == 0
             } else {
                 // non-zero UTXO
                 commitments[utxoIndex] = generateCommitment(
@@ -196,18 +195,32 @@ contract PantherPoolV0 is
                     timestamp
                 );
 
-                uint256 tokenAndAmount = (uint256(uint160(tokens[utxoIndex])) <<
-                    96) | uint256(scaledAmount);
-                perUtxoData[utxoIndex] = abi.encodePacked(
-                    uint8(UTXO_DATA_TYPE1),
-                    secrets[utxoIndex],
-                    tokenAndAmount,
-                    tokenIds[utxoIndex]
-                );
+                uint256 zAssetIdAndAmount = (uint256(zAssetId) << 96) |
+                    uint256(scaledAmount);
+
+                if (tokenIds[utxoIndex] != 0) {
+                    msgTypes |= UTXO_DATA_TYPE1;
+                    perUtxoData[utxoIndex] = abi.encodePacked(
+                        secrets[utxoIndex],
+                        zAssetIdAndAmount
+                    );
+                } else {
+                    msgTypes |= UTXO_DATA_TYPE3;
+                    perUtxoData[utxoIndex] = abi.encodePacked(
+                        secrets[utxoIndex],
+                        zAssetIdAndAmount,
+                        tokenIds[utxoIndex]
+                    );
+                }
             }
         }
 
-        leftLeafId = addAndEmitCommitments(commitments, perUtxoData, timestamp);
+        leftLeafId = addAndEmitCommitments(
+            commitments,
+            msgTypes,
+            perUtxoData,
+            timestamp
+        );
     }
 
     /// @notice Register future `exit` to protect against front-run and DoS.
@@ -324,16 +337,6 @@ contract PantherPoolV0 is
             return (0, 0);
         }
         // amount can't be zero here and further
-
-        // Use a PRP grant, if it's a "deposit" in PRPs
-        if (token == PRP_VIRTUAL_CONTRACT) {
-            require(subId == 0, ERR_WRONG_PRP_SUBID);
-            // Check amount is within the limit (no amount scaling for PRPs)
-            uint64 _sanitizedAmount = _sanitizeScaledAmount(amount);
-            // No reentrancy guard needed for the trusted contract call
-            IPrpGrantor(PRP_GRANTOR).redeemGrant(msg.sender, amount);
-            return (PRP_ZASSET_ID, _sanitizedAmount);
-        }
 
         // At this point, a non-zero deposit of a real asset (token) expected
         uint256 _tokenId;

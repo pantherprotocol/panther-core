@@ -4,7 +4,6 @@ pragma solidity ^0.8.4;
 
 import "../PantherPoolV0.sol";
 import "./FakeVault.sol";
-import "../../common/mocks/FakePrpGrantor.sol";
 import "./MockPantherPoolV0.sol";
 import "../ZAssetsRegistry.sol";
 
@@ -16,8 +15,7 @@ contract PantherPoolV0AndZAssetRegistryTester is MockPantherPoolV0 {
             address(this),
             // This mock is the owner of ZAssetsRegistry
             registry = address(new ZAssetsRegistry(address(this))),
-            address(new FakeVault()),
-            address(new FakePrpGrantor())
+            address(new FakeVault())
         )
     {
         ZAsset memory z1;
@@ -59,14 +57,8 @@ contract PantherPoolV0AndZAssetRegistryTester is MockPantherPoolV0 {
 
         uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] memory secretss;
         secretss[0][0] = secrets[0];
-        secretss[0][1] = secrets[1];
-        secretss[0][2] = secrets[2];
         secretss[1][0] = secrets[0];
-        secretss[1][1] = secrets[1];
-        secretss[1][2] = secrets[2];
         secretss[2][0] = secrets[0];
-        secretss[2][1] = secrets[1];
-        secretss[2][2] = secrets[2];
 
         this.generateDeposits(
             tokens,

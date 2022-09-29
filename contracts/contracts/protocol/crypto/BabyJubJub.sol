@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
-import "../common/Types.sol";
+import "../../common/Types.sol";
 
 // solhint-disable no-inline-assembly
 

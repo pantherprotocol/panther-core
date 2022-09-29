@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import { LockData } from "../common/Types.sol";
+import { LockData } from "../../common/Types.sol";
 
 interface IVault {
     function lockAsset(LockData calldata data) external;

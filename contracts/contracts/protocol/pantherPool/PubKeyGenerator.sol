@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import { G1Point } from "../common/Types.sol";
+import { G1Point } from "../../common/Types.sol";
 import { ERR_TOO_LARGE_PRIVKEY } from "../errMsgs/PantherPoolErrMsgs.sol";
 import { FIELD_SIZE } from "../crypto/SnarkConstants.sol";
 import "../crypto/BabyJubJub.sol";

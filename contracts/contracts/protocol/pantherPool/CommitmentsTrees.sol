@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 import "../triadTree/TriadIncrementalMerkleTrees.sol";
-import { OUT_UTXOs, UTXO_SECRETS } from "../common/Constants.sol";
+import { OUT_MAX_UTXOs, UTXO_SECRETS } from "../../common/Constants.sol";
 import { ERR_TOO_LARGE_COMMITMENTS } from "../errMsgs/PantherPoolErrMsgs.sol";
 
 /**
@@ -22,23 +22,26 @@ abstract contract CommitmentsTrees is TriadIncrementalMerkleTrees {
     event NewCommitments(
         uint256 indexed leftLeafId,
         uint256 creationTime,
-        bytes32[OUT_UTXOs] commitments,
+        bytes32[OUT_MAX_UTXOs] commitments,
         bytes utxoData
     );
 
     /**
      * @notice Adds commitments to merkle tree(s) and emits events
      * @param commitments Commitments (leaves hashes) to be inserted into merkle tree(s)
+     * @param msgTypes Types (i.e. formats) of the perUtxoData array elements
      * @param perUtxoData opening values (encrypted and public) for every UTXO
      * @return leftLeafId The `leafId` of the first leaf in the batch
      */
     function addAndEmitCommitments(
-        bytes32[OUT_UTXOs] memory commitments,
-        bytes[OUT_UTXOs] memory perUtxoData,
+        bytes32[OUT_MAX_UTXOs] memory commitments,
+        uint8 msgTypes,
+        bytes[OUT_MAX_UTXOs] memory perUtxoData,
         uint256 timestamp
     ) internal returns (uint256 leftLeafId) {
-        bytes memory utxoData = "";
-        for (uint256 i = 0; i < OUT_UTXOs; i++) {
+        bytes memory utxoData = abi.encodePacked(msgTypes);
+
+        for (uint256 i = 0; i < OUT_MAX_UTXOs; i++) {
             require(
                 uint256(commitments[i]) < FIELD_SIZE,
                 ERR_TOO_LARGE_COMMITMENTS

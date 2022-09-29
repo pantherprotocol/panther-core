@@ -5,17 +5,15 @@ pragma solidity ^0.8.0;
 import "./actions/AdvancedStakingDataDecoder.sol";
 import "./actions/Constants.sol";
 import "./actions/StakingMsgProcessor.sol";
-import { PRP_VIRTUAL_CONTRACT } from "./common/Constants.sol";
 import "./interfaces/IERC721Receiver.sol";
 import "./interfaces/INftGrantor.sol";
-import "./interfaces/IPrpGrantor.sol";
 import "./interfaces/IPantherPoolV0.sol";
 import "./interfaces/IRewardAdviser.sol";
 import "./utils/Claimable.sol";
 import "./utils/ImmutableOwnable.sol";
 import "./utils/NonReentrant.sol";
 import "./utils/Utils.sol";
-import "./common/TransferHelper.sol";
+import "../common/TransferHelper.sol";
 
 /**
  * @title AdvancedStakeRewardController
@@ -26,10 +24,10 @@ import "./common/TransferHelper.sol";
  * receives the `getRewardAdvice` call from the `RewardMaster` contract with the `STAKE` action
  * type and the stake data (the `message`) being the call parameters.
  * On the `getRewardAdvice` call received, this contract:
- * - computes the amounts of the $ZKP reward, the PRP reward, and the optional NFT reward
+ * - computes the amounts of the $ZKP reward, and the optional NFT reward
  * - if the `NFT_TOKEN` is non-zero address, it calls `grantOneToken` on the NFT_TOKEN, and gets
  * the `tokenId` of the minted NFT token
- * - calls `generateDeposits` of the PantherPoolV0, providing amounts/parameters of $ZKP, PRP, and
+ * - calls `generateDeposits` of the PantherPoolV0, providing amounts/parameters of $ZKP, and
  *   optional NFT as "deposits", as well as "spending pubKeys" and "secrets" (explained below)
  * - returns the "zero reward advice" (with zero `sharesToCreate`) to the RewardMaster.
  *
@@ -38,7 +36,6 @@ import "./common/TransferHelper.sol";
  *
  * Being called `generateDeposits`, the PantherPoolV0:
  * - requests the `Vault` to take (`transferFrom`) the $ZKP and NFT tokens from this contract
- * - "burns" the PRP grant
  * - generates "UTXOs" with the "spending pubKeys" and "secrets" provided (see bellow).
  *
  * Creating a new stake (i.e. calling the `stake`), the staker generates and provides the "pubKeys"
@@ -59,7 +56,6 @@ import "./common/TransferHelper.sol";
  * -- be authorized as the "RewardAdviser" with the RewardMaster on the Polygon for advanced stakes
  * -- be authorized as "Minter" (aka "grantor") with the NFT_TOKEN contract
  * -- hold enough $ZKP to reward stakers
- * -- be given a PRP grant of the size enough to reward stakers
  * - the Vault contract shall be approved to transfer $ZKPs and the NFT tokens from this contract
  * - the $ZKP and the NFT tokens shall be registered as zAssets on the PantherPoolV0.
  */
@@ -75,19 +71,17 @@ contract AdvancedStakeRewardController is
 {
     using TransferHelper for address;
 
-    /// @dev Total amount of $ZKPs, PRPs and NFTs (ever) rewarded and staked
+    /// @dev Total amount of $ZKP and NFTs (ever) rewarded and staked
     struct Totals {
         uint96 zkpRewards;
-        uint96 prpRewards;
         uint24 nftRewards;
         // Accumulated amount of $ZKP (ever) staked, scaled (divided) by 1e15
         uint40 scZkpStaked;
     }
 
-    /// @dev Maximum amounts of $ZKPs, PRPs and NFTs which may be rewarded
+    /// @dev Maximum amounts of $ZKPs and NFTs which may be rewarded
     struct Limits {
         uint96 zkpRewards;
-        uint96 prpRewards;
         uint24 nftRewards;
     }
 
@@ -101,8 +95,6 @@ contract AdvancedStakeRewardController is
         uint8 startZkpApy;
         /// @param $ZKP reward APY at endTime (APY declines to this value)
         uint8 endZkpApy;
-        /// @param Amount of PRP reward (per a stake)
-        uint32 prpPerStake;
     }
 
     // solhint-disable var-name-mixedcase
@@ -111,8 +103,6 @@ contract AdvancedStakeRewardController is
     address public immutable REWARD_MASTER;
     /// @notice PantherPoolV0 contract instance
     address public immutable PANTHER_POOL;
-    /// @notice PrpGrantor contract instance
-    address private immutable PRP_GRANTOR;
 
     // Address of the $ZKP token contract
     address private immutable ZKP_TOKEN;
@@ -126,10 +116,10 @@ contract AdvancedStakeRewardController is
 
     uint8 private _reentrancyStatus;
 
-    /// @notice Amounts of $ZKP, PRP and NFT allocated for rewards
+    /// @notice Amounts of $ZKP and NFT allocated for rewards
     Limits public limits;
 
-    /// @notice Total amounts of $ZKP, PRP and NFT rewarded so far
+    /// @notice Total amounts of $ZKP and NFT rewarded so far
     Totals public totals;
 
     /// @notice Reward parameters (start and end point for time and APY)
@@ -146,7 +136,6 @@ contract AdvancedStakeRewardController is
         address indexed staker,
         uint256 firstLeafId,
         uint256 zkp,
-        uint256 prp,
         uint256 nft
     );
 
@@ -154,7 +143,6 @@ contract AdvancedStakeRewardController is
         address _owner,
         address rewardMaster,
         address pantherPool,
-        address prpGrantor,
         address zkpToken,
         address nftToken
     ) ImmutableOwnable(_owner) {
@@ -162,14 +150,12 @@ contract AdvancedStakeRewardController is
             // nftToken may be zero address
             rewardMaster != address(0) &&
                 pantherPool != address(0) &&
-                prpGrantor != address(0) &&
                 zkpToken != address(0),
             "ARC:E1"
         );
 
         REWARD_MASTER = rewardMaster;
         PANTHER_POOL = pantherPool;
-        PRP_GRANTOR = prpGrantor;
 
         ZKP_TOKEN = zkpToken;
         NFT_TOKEN = nftToken;
@@ -263,17 +249,16 @@ contract AdvancedStakeRewardController is
         }
     }
 
-    /// @notice Allocate for rewards the entire $ZKP balance and the PRP grant amount
+    /// @notice Allocate for rewards the entire $ZKP balance
     /// this contract has and approve the Vault to transfer $ZKP from this contract.
     /// @dev Anyone may call it.
-    function updateZkpAndPrpRewardsLimit() external {
+    function updateZkpRewardsLimit() external {
         Limits memory _limits = limits;
         address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
 
         // Updating the rewards limits
         bool isUpdated;
         isUpdated = _updateZkpRewardsLimitAndAllowance(_limits, totals, vault);
-        isUpdated = _updatePrpRewardsLimit(_limits, totals) || isUpdated;
 
         if (isUpdated) {
             limits = _limits;
@@ -335,7 +320,6 @@ contract AdvancedStakeRewardController is
         require(lockedTill > stakedAt, "ARC: unexpected lockedTill");
 
         uint256 zkpAmount = 0;
-        uint256 prpAmount = 0;
         uint256 nftAmount = 0;
         uint256 nftTokenId = 0;
         {
@@ -370,13 +354,6 @@ contract AdvancedStakeRewardController is
                 _totals.scZkpStaked = uint40(newScZkpStaked);
             }
 
-            // `prpPerStake` is too small to cause overflow
-            uint96 newPrpTotal = _totals.prpRewards + _rewardParams.prpPerStake;
-            if (newPrpTotal <= _limits.prpRewards) {
-                prpAmount = _rewardParams.prpPerStake;
-                _totals.prpRewards = newPrpTotal;
-            }
-
             if (_totals.nftRewards < _limits.nftRewards) {
                 // `_limits.nftRewards > 0` therefore `NFT_TOKEN != address(0)`
                 // trusted contract called - no reentrancy guard needed
@@ -393,23 +370,23 @@ contract AdvancedStakeRewardController is
 
         // Extract public spending keys and "secrets"
         (
-            G1Point[OUT_UTXOs] memory pubSpendingKeys,
-            uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] memory secrets
+            G1Point[OUT_RWRD_UTXOs] memory pubSpendingKeys,
+            uint256[CIPHERTEXT1_WORDS][OUT_RWRD_UTXOs] memory secrets
         ) = unpackStakingData(data);
 
         // Finally, generate deposits (i.e. UTXOs in the MASP)
-        address[OUT_UTXOs] memory tokens = [
+        address[OUT_MAX_UTXOs] memory tokens = [
             // PantherPool reverts if non-zero address provided for zero amount
             zkpAmount == 0 ? address(0) : ZKP_TOKEN,
-            prpAmount == 0 ? address(0) : PRP_VIRTUAL_CONTRACT,
-            nftAmount == 0 ? address(0) : NFT_TOKEN
+            nftAmount == 0 ? address(0) : NFT_TOKEN,
+            address(0) // ZERO_TOKEN
         ];
 
-        uint256[OUT_UTXOs] memory subIds = [0, 0, nftTokenId];
-        uint256[OUT_UTXOs] memory extAmounts = [
+        uint256[OUT_MAX_UTXOs] memory subIds = [0, 0, nftTokenId];
+        uint256[OUT_MAX_UTXOs] memory extAmounts = [
             zkpAmount,
-            prpAmount,
-            nftAmount
+            nftAmount,
+            0 // ZERO_AMOUNT
         ];
 
         uint32 createdAt = safe32TimeNow();
@@ -417,18 +394,20 @@ contract AdvancedStakeRewardController is
             tokens,
             subIds,
             extAmounts,
-            pubSpendingKeys,
-            secrets,
+            [
+                pubSpendingKeys[0],
+                pubSpendingKeys[1],
+                pubSpendingKeys[1] // dummy public key - reused
+            ],
+            [
+                secrets[0],
+                secrets[1],
+                secrets[1] // dummy secret - reused
+            ],
             createdAt
         );
 
-        emit RewardGenerated(
-            staker,
-            leftLeafId,
-            zkpAmount,
-            prpAmount,
-            nftAmount
-        );
+        emit RewardGenerated(staker, leftLeafId, zkpAmount, nftAmount);
     }
 
     // The calling code is assumed to ensure `lockedTill > stakedAt`
@@ -513,26 +492,6 @@ contract AdvancedStakeRewardController is
             // Reentrancy guard unneeded for the trusted contract call
             ZKP_TOKEN.safeApprove(vault, uint256(newLimit));
         }
-    }
-
-    // Allocate for rewards the PRP amount this contract has been granted with
-    function _updatePrpRewardsLimit(
-        Limits memory _limits,
-        Totals memory _totals
-    ) private view returns (bool isUpdated) {
-        // Reentrancy guard unneeded for the trusted contract call
-        uint256 unusedPrps = IPrpGrantor(PRP_GRANTOR).getUnusedGrantAmount(
-            address(this)
-        );
-
-        uint96 newLimit;
-        (isUpdated, newLimit) = _getUpdatedLimit(
-            unusedPrps,
-            _limits.prpRewards,
-            _totals.prpRewards
-        );
-
-        if (isUpdated) _limits.prpRewards = newLimit;
     }
 
     // Allocate for rewards the entire NFT amount this contract can mint,

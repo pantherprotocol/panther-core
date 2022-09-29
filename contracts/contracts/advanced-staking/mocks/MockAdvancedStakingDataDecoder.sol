@@ -9,8 +9,8 @@ contract MockAdvancedStakingDataDecoder is AdvancedStakingDataDecoder {
         external
         pure
         returns (
-            G1Point[3] memory pubSpendingKeys,
-            uint256[3][3] memory secrets
+            G1Point[2] memory pubSpendingKeys,
+            uint256[1][2] memory secrets
         )
     {
         return unpackStakingData(data);

@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 import "./errMsgs/PrpGrantorErrMsgs.sol";
-import "./common/ImmutableOwnable.sol";
+import "../common/ImmutableOwnable.sol";
 import "./interfaces/IPrpGrantor.sol";
 
 /**

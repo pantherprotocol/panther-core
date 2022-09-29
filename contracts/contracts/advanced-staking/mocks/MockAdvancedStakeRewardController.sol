@@ -9,7 +9,6 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
         address _owner,
         address rewardMaster,
         address pantherPool,
-        address prpGrantor,
         address zkpToken,
         address nftToken
     )
@@ -17,7 +16,6 @@ contract MockAdvancedStakeRewardController is AdvancedStakeRewardController {
             _owner,
             rewardMaster,
             pantherPool,
-            prpGrantor,
             zkpToken,
             nftToken
         )

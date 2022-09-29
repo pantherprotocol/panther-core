@@ -4,8 +4,7 @@ pragma solidity ^0.8.4;
 
 import "../PantherPoolV0.sol";
 import "../Vault.sol";
-import "../common/Types.sol";
-import "../../common/mocks/FakePrpGrantor.sol";
+import "../../common/Types.sol";
 import "./MockPantherPoolV0.sol";
 import "../ZAssetsRegistry.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -54,8 +53,7 @@ contract PantherPoolV0AndZAssetRegistryAndVaultTester is MockPantherPoolV0 {
             address(this),
             // This mock is the owner of ZAssetsRegistry and Vault
             registry = address(new ZAssetsRegistry(address(this))),
-            address(new Vault(address(this))),
-            address(new FakePrpGrantor())
+            address(new Vault(address(this)))
         )
     {
         for (uint256 i = 0; i < OUT_UTXOs; ++i) {
@@ -109,14 +107,8 @@ contract PantherPoolV0AndZAssetRegistryAndVaultTester is MockPantherPoolV0 {
 
         uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] memory secretss;
         secretss[0][0] = secrets[0];
-        secretss[0][1] = secrets[1];
-        secretss[0][2] = secrets[2];
         secretss[1][0] = secrets[0];
-        secretss[1][1] = secrets[1];
-        secretss[1][2] = secrets[2];
         secretss[2][0] = secrets[0];
-        secretss[2][1] = secrets[1];
-        secretss[2][2] = secrets[2];
 
         for (uint256 i = 0; i < OUT_UTXOs; i++) {
             this.approveVault(extAmounts[i], i);

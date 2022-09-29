@@ -2,8 +2,8 @@
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.0;
 
-import { CIPHERTEXT1_WORDS, OUT_UTXOs, PATH_ELEMENTS_NUM } from "../common/Constants.sol";
-import { G1Point } from "../common/Types.sol";
+import { CIPHERTEXT1_WORDS, OUT_MAX_UTXOs, PATH_ELEMENTS_NUM } from "../../common/Constants.sol";
+import { G1Point } from "../../common/Types.sol";
 import "../interfaces/IPantherPoolV0.sol";
 
 /// @dev It simulates (but not precisely!!!) `IPantherPoolV0`. See an example bellow.
@@ -38,21 +38,21 @@ contract FakePantherPoolV0 is IPantherPoolV0 {
 
     // It fakes generation of deposits and emits
     function generateDeposits(
-        address[OUT_UTXOs] calldata tokens,
-        uint256[OUT_UTXOs] calldata tokenIds,
-        uint256[OUT_UTXOs] calldata extAmounts,
-        G1Point[OUT_UTXOs] calldata pubSpendingKeys,
-        uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] calldata secrets,
+        address[OUT_MAX_UTXOs] calldata tokens,
+        uint256[OUT_MAX_UTXOs] calldata tokenIds,
+        uint256[OUT_MAX_UTXOs] calldata extAmounts,
+        G1Point[OUT_MAX_UTXOs] calldata pubSpendingKeys,
+        uint256[CIPHERTEXT1_WORDS][OUT_MAX_UTXOs] calldata secrets,
         uint32 createdAt
     ) external override returns (uint256 leftLeafId) {
         require(
             createdAt <= block.timestamp,
             "FakePantherPoolV0:TOO_LARGE_createdAt"
         );
-        bytes32[OUT_UTXOs] memory commitments;
+        bytes32[OUT_MAX_UTXOs] memory commitments;
         bytes memory utxoData = "";
 
-        for (uint256 utxoIndex = 0; utxoIndex < OUT_UTXOs; utxoIndex++) {
+        for (uint256 utxoIndex = 0; utxoIndex < OUT_MAX_UTXOs; utxoIndex++) {
             require(
                 pubSpendingKeys[utxoIndex].x < FIELD_SIZE,
                 "FakePantherPoolV0:ERR_TOO_LARGE_PUBKEY.x"
@@ -107,7 +107,7 @@ contract FakePantherPoolV0 is IPantherPoolV0 {
 
         uint256 n = fakeLeavesNum;
         leftLeafId = ((n / 3) * 4) + (n % 3);
-        fakeLeavesNum = n + OUT_UTXOs;
+        fakeLeavesNum = n + OUT_MAX_UTXOs;
 
         emit NewCommitments(
             leftLeafId,

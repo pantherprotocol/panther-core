@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import { G1Point } from "../common/Types.sol";
+import { G1Point } from "../../common/Types.sol";
 import "../pantherPool/PubKeyGenerator.sol";
 
 contract MockPubKeyGenerator is PubKeyGenerator {

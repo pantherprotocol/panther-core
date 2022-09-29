@@ -2,11 +2,11 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import { ERC20_TOKEN_TYPE, ERC721_TOKEN_TYPE, ERC1155_TOKEN_TYPE } from "./common/Constants.sol";
+import { ERC20_TOKEN_TYPE, ERC721_TOKEN_TYPE, ERC1155_TOKEN_TYPE } from "../common/Constants.sol";
 import "./errMsgs/VaultErrMsgs.sol";
-import "./common/ImmutableOwnable.sol";
-import "./common/TransferHelper.sol";
-import { LockData } from "./common/Types.sol";
+import "../common/ImmutableOwnable.sol";
+import "../common/TransferHelper.sol";
+import { LockData } from "../common/Types.sol";
 import "./interfaces/IVault.sol";
 import "./vault/OnERC1155Received.sol";
 import "./vault/OnERC721Received.sol";

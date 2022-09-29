@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 pragma solidity ^0.8.4;
 
-import { ZAsset } from "../common/Types.sol";
+import { ZAsset } from "../../common/Types.sol";
 
 interface IZAssetsRegistry {
     /// @dev declared as view rather than pure to allow for protocol changes

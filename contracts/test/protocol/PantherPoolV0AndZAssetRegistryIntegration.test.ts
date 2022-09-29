@@ -2,7 +2,7 @@
 import {expect} from 'chai';
 
 // @ts-ignore
-import {toBytes32, PathElementsType, Triad, Pair} from '../../lib/utilities';
+import {toBytes32, PathElementsType, Pair} from '../../lib/utilities';
 import {
     takeSnapshot,
     revertSnapshot,
@@ -25,8 +25,7 @@ import {
 } from '../../lib/message-encryption';
 
 import crypto from 'crypto';
-import {BigNumber, utils} from 'ethers';
-import {bigintToBytes32} from '../../lib/conversions';
+import {BigNumber} from 'ethers';
 import {
     deriveKeypairFromSeed,
     generateRandomBabyJubValue,
@@ -191,25 +190,20 @@ describe('PantherPoolV0', () => {
             const K = babyjub.mulPointEscalar(S, r); // Sender generates Shared Ephemeral Key = rsB = rS
             const R = babyjub.mulPointEscalar(babyjub.Base8, r); // This key is shared in open form = rB
             // [2] - Encrypt text - Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
-            const prolog = 0xeeffeeff; // THIS prolog must be used as is, according to specs
-            const textToBeCiphered = new Uint8Array([
-                ...bigIntToBuffer32(prolog).slice(0, 4),
-                ...bigIntToBuffer32(r),
-            ]);
+            const textToBeCiphered = new Uint8Array([...bigIntToBuffer32(r)]);
             expect(
                 textToBeCiphered.length,
                 'cipher text before encryption',
-            ).equal(36);
+            ).equal(32);
             // ***********************************************
             // This is encryption function *******************
             // ***********************************************
-            const iv = crypto.randomBytes(16);
             const cipher = crypto.createCipheriv(
-                'aes-256-cbc',
-                utils.arrayify(bigintToBytes32(K[0])), // Are we sure its only X , and no Y is used here
-                iv,
-                //Buffer.from(iv)
+                'aes-128-cbc',
+                bigIntToBuffer32(K[0]).slice(0, 16),
+                bigIntToBuffer32(K[0]).slice(16, 32),
             );
+            cipher.setAutoPadding(false);
 
             const cipheredText1 = cipher.update(textToBeCiphered);
             const cipheredText2 = cipher.final();
@@ -219,7 +213,7 @@ describe('PantherPoolV0', () => {
                 ...cipheredText2,
             ]);
             expect(cipheredText.length, 'ciphered text after encryption').equal(
-                48,
+                32,
             );
             // *************************************************
             // ***********************************************
@@ -230,11 +224,11 @@ describe('PantherPoolV0', () => {
             // ***********************************************
             const Ktag = babyjub.mulPointEscalar(R, s); // Sender generates Shared Ephemeral Key = rsB = rS
             const decipher = crypto.createDecipheriv(
-                'aes-256-cbc',
-                utils.arrayify(bigintToBytes32(Ktag[0])),
-                iv,
-                //Buffer.from(iv),
+                'aes-128-cbc',
+                bigIntToBuffer32(Ktag[0]).slice(0, 16),
+                bigIntToBuffer32(Ktag[0]).slice(16, 32),
             );
+            decipher.setAutoPadding(false);
 
             const decrypted1 = decipher.update(cipheredText);
             const decrypted2 = decipher.final();
@@ -242,15 +236,11 @@ describe('PantherPoolV0', () => {
             const decrypted = new Uint8Array([...decrypted1, ...decrypted2]);
             // console.log("decrypted-text:", decrypted, ", length: ", decrypted.length);
             expect(decrypted.length).equal(textToBeCiphered.length);
-            expect(decrypted.length).equal(36);
+            expect(decrypted.length).equal(32);
             expect(
-                decrypted.slice(0, 0 + 4),
-                'prolog ciphered -> deciphered must be equal',
-            ).to.deep.equal(textToBeCiphered.slice(0, 0 + 4));
-            expect(
-                decrypted.slice(4, 4 + 32),
+                decrypted.slice(0, 0 + 32),
                 'random ciphered -> deciphered must be equal',
-            ).to.deep.equal(textToBeCiphered.slice(4, 4 + 32));
+            ).to.deep.equal(textToBeCiphered.slice(0, 0 + 32));
             // *************************************************
             // ***********************************************
             // ***********************************************
@@ -258,29 +248,27 @@ describe('PantherPoolV0', () => {
             // [3] - Pack ciphertextMsg: IV, Ephemeral, Encrypted-Message-V1
             const R_packed = babyjub.packPoint(R);
             const cipherTextMessageV1 = new Uint8Array([
-                ...iv,
                 ...R_packed,
                 ...cipheredText,
             ]);
-            expect(cipherTextMessageV1.length).equal(96);
+            expect(cipherTextMessageV1.length).equal(64);
             // [3.1] - Lets try to unpack & decrypt --- NOTE: this test must be executed each time sender creates new commitments
             // Unpack
-            const IV_from_chain = cipherTextMessageV1.slice(0, 0 + 16);
-            const R_packed_from_chain = cipherTextMessageV1.slice(16, 16 + 32);
+            const R_packed_from_chain = cipherTextMessageV1.slice(0, 0 + 32);
             const cipheredText_from_chain = cipherTextMessageV1.slice(
-                48,
-                48 + 48,
+                32,
+                32 + 32,
             );
             // Decrypt
             const R_unpacked = babyjub.unpackPoint(R_packed_from_chain);
 
             const K_from_chain = babyjub.mulPointEscalar(R_unpacked, s); // Sender generates Shared Ephemeral Key = rsB = rS
             const decipher_from_chain = crypto.createDecipheriv(
-                'aes-256-cbc',
-                utils.arrayify(bigintToBytes32(K_from_chain[0])),
-                IV_from_chain,
-                //Buffer.from(iv),
+                'aes-128-cbc',
+                bigIntToBuffer32(K_from_chain[0]).slice(0, 16),
+                bigIntToBuffer32(K_from_chain[0]).slice(16, 32),
             );
+            decipher_from_chain.setAutoPadding(false);
 
             const decrypted1_from_chain = decipher_from_chain.update(
                 cipheredText_from_chain,
@@ -291,14 +279,8 @@ describe('PantherPoolV0', () => {
                 ...decrypted1_from_chain,
                 ...decrypted2_from_chain,
             ]);
-            expect(decrypted_from_chain.length).equal(36);
-            const prolog_from_chain = decrypted_from_chain.slice(0, 0 + 4);
-            expect(
-                prolog_from_chain,
-                'extracted from chain prolog must be equal',
-            ).to.deep.equal(bigIntToBuffer32(prolog).slice(0, 4));
-            const r_from_chain = decrypted_from_chain.slice(4, 4 + 32);
-            // TODO: something here sometimes not plays correctly - it must be wrapped inside "if" and if not log everything & re-try recreating all keys.
+            expect(decrypted_from_chain.length).equal(32);
+            const r_from_chain = decrypted_from_chain.slice(0, 0 + 32);
             expect(
                 buffer32ToBigInt(r_from_chain),
                 'extracted from chain random must be equal',
@@ -323,12 +305,7 @@ describe('PantherPoolV0', () => {
                         cipherTextMessageV1.slice(32, 64),
                     ).toString(),
                 ),
-                toBytes32(
-                    buffer32ToBigInt(
-                        cipherTextMessageV1.slice(64, 96),
-                    ).toString(),
-                ),
-            ] as Triad;
+            ] as Pair;
 
             const createdAtNum = BigInt('1652375774');
             let zAsset_from_chain = BigNumber.from(0);
@@ -480,14 +457,6 @@ describe('PantherPoolV0', () => {
                         _isBigNumber: true,
                     },
                     {
-                        _hex: toBytes32(
-                            buffer32ToBigInt(
-                                cipherTextMessageV1.slice(64, 96),
-                            ).toString(),
-                        ),
-                        _isBigNumber: true,
-                    },
-                    {
                         _hex: toBytes32(buffer32ToBigInt(merged1).toString()),
                         _isBigNumber: true,
                     },
@@ -502,11 +471,6 @@ describe('PantherPoolV0', () => {
                     BigNumber.from(
                         buffer32ToBigInt(
                             cipherTextMessageV1.slice(32, 64),
-                        ).toString(),
-                    ),
-                    BigNumber.from(
-                        buffer32ToBigInt(
-                            cipherTextMessageV1.slice(64, 96),
                         ).toString(),
                     ),
                     BigNumber.from(buffer32ToBigInt(merged1).toString()),
@@ -539,14 +503,6 @@ describe('PantherPoolV0', () => {
                         _isBigNumber: true,
                     },
                     {
-                        _hex: toBytes32(
-                            buffer32ToBigInt(
-                                cipherTextMessageV1.slice(64, 96),
-                            ).toString(),
-                        ),
-                        _isBigNumber: true,
-                    },
-                    {
                         _hex: toBytes32(buffer32ToBigInt(merged2).toString()),
                         _isBigNumber: true,
                     },
@@ -561,11 +517,6 @@ describe('PantherPoolV0', () => {
                     BigNumber.from(
                         buffer32ToBigInt(
                             cipherTextMessageV1.slice(32, 64),
-                        ).toString(),
-                    ),
-                    BigNumber.from(
-                        buffer32ToBigInt(
-                            cipherTextMessageV1.slice(64, 96),
                         ).toString(),
                     ),
                     BigNumber.from(buffer32ToBigInt(merged2).toString()),
@@ -598,14 +549,6 @@ describe('PantherPoolV0', () => {
                         _isBigNumber: true,
                     },
                     {
-                        _hex: toBytes32(
-                            buffer32ToBigInt(
-                                cipherTextMessageV1.slice(64, 96),
-                            ).toString(),
-                        ),
-                        _isBigNumber: true,
-                    },
-                    {
                         _hex: toBytes32(buffer32ToBigInt(merged3).toString()),
                         _isBigNumber: true,
                     },
@@ -620,11 +563,6 @@ describe('PantherPoolV0', () => {
                     BigNumber.from(
                         buffer32ToBigInt(
                             cipherTextMessageV1.slice(32, 64),
-                        ).toString(),
-                    ),
-                    BigNumber.from(
-                        buffer32ToBigInt(
-                            cipherTextMessageV1.slice(64, 96),
                         ).toString(),
                     ),
                     BigNumber.from(buffer32ToBigInt(merged3).toString()),
@@ -659,19 +597,16 @@ describe('PantherPoolV0', () => {
                     [
                         BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
                         BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
-                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
                         BigNumber.from(buffer32ToBigInt(merged1).toString())
                     ] as const,
                     [
                         BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
                         BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
-                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
                         BigNumber.from(buffer32ToBigInt(merged2).toString())
                     ] as const,
                     [
                         BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
                         BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
-                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(64, 96)).toString()),
                         BigNumber.from(buffer32ToBigInt(merged3).toString())
                     ] as const,
                 ] as const;

@@ -3,7 +3,7 @@ import {ethers} from 'hardhat';
 import {BigNumberish} from '@ethersproject/bignumber/src.ts';
 import {toBytes32} from '../../../lib/utilities';
 
-import {getTriadAt} from './triadTreeSample';
+import {getPairAt} from './triadTreeSample';
 import {randomInt} from 'crypto';
 
 const randomNumber = '999';
@@ -24,9 +24,9 @@ type DepositSample = {
     amounts: [BigNumberish, BigNumberish, BigNumberish];
     pubSpendingKeys: [G1Point, G1Point, G1Point];
     secrets: [
-        [BytesLike, BytesLike, BytesLike],
-        [BytesLike, BytesLike, BytesLike],
-        [BytesLike, BytesLike, BytesLike],
+        [BytesLike, BytesLike],
+        [BytesLike, BytesLike],
+        [BytesLike, BytesLike],
     ];
     createdAtNum: BigNumberish;
 };
@@ -36,7 +36,7 @@ export const depositSample: DepositSample = {
     tokenIds: [randomInt(0, 1e10), randomInt(0, 1e10), randomInt(0, 1e10)],
     amounts: [randomNumber, randomNumber, randomNumber],
     pubSpendingKeys: [randomG1Point, randomG1Point, randomG1Point],
-    secrets: [getTriadAt(0), getTriadAt(1), getTriadAt(2)],
+    secrets: [getPairAt(0), getPairAt(1), getPairAt(2)],
     createdAtNum: randomNumber,
 };
 

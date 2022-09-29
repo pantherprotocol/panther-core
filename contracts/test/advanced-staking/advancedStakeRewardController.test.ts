@@ -739,16 +739,8 @@ describe('AdvancedStakeRewardController', () => {
             ).to.be.eq(BigNumber.from(0));
         });
 
-        it('should update the PRP reward limits', async () => {
-            await asrController.updateZkpAndPrpRewardsLimit();
-
-            expect((await asrController.limits()).prpRewards).to.be.eq(
-                asrControllerPrpBalance,
-            );
-        });
-
         it('should update ZKP reward limit and approve Vault as spender', async () => {
-            await asrController.updateZkpAndPrpRewardsLimit();
+            await asrController.updateZkpRewardsLimit();
 
             expect((await asrController.limits()).zkpRewards).to.be.eq(
                 asrControllerZkpBalance,
@@ -803,7 +795,6 @@ describe('AdvancedStakeRewardController', () => {
 
                     await asrController.fakeTotals({
                         zkpRewards: 1e15,
-                        prpRewards: 1e5,
                         nftRewards: 3323,
                         scZkpStaked: 1000,
                     });
@@ -853,10 +844,6 @@ describe('AdvancedStakeRewardController', () => {
             expect((await asrController.totals()).zkpRewards).to.be.eq(
                 BigNumber.from(zkpRewards),
                 'zkpRewards',
-            );
-            expect((await asrController.totals()).prpRewards).to.be.eq(
-                prpRewards,
-                'prpRewards',
             );
             expect((await asrController.totals()).nftRewards).to.be.eq(
                 nftRewards,
@@ -924,7 +911,7 @@ describe('AdvancedStakeRewardController', () => {
                 expScZkpStaked = amountToStake.div(1e15);
                 expPrpReward = rewardParams.prpPerStake;
 
-                await asrController.updateZkpAndPrpRewardsLimit();
+                await asrController.updateZkpRewardsLimit();
                 await asrController
                     .connect(owner)
                     .setNftRewardLimit(asrControllerNftRewardsLimit);
@@ -1159,9 +1146,6 @@ describe('AdvancedStakeRewardController', () => {
                     rewardParams.startZkpApy,
                 );
                 expect(actualParams.endZkpApy).to.be.eq(rewardParams.endZkpApy);
-                expect(actualParams.prpPerStake).to.be.eq(
-                    rewardParams.prpPerStake,
-                );
             });
 
             it('should NOT revert if new start APY is equal to new end APY', async () => {

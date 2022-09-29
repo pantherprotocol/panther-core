@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import {toBytes32, Triad, zeroLeavesTriad} from '../../../lib/utilities';
+import {Pair, toBytes32, Triad, zeroLeavesTriad} from '../../../lib/utilities';
 
 export function getTriadAt(index: number): Triad {
     return [
@@ -7,6 +7,10 @@ export function getTriadAt(index: number): Triad {
         toBytes32(3 * index + 2),
         toBytes32(3 * index + 3),
     ];
+}
+
+export function getPairAt(index: number): Pair {
+    return [toBytes32(3 * index + 1), toBytes32(3 * index + 2)];
 }
 export const triads = [
     [1, 2, 3],

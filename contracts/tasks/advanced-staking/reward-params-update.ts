@@ -52,7 +52,7 @@ async function getDefaultRewardParams(
     advancedStakeRewardController: AdvancedStakeRewardController,
     taskArgs: TaskArguments,
 ): Promise<AdvancedStakeRewardController.RewardParamsStruct> {
-    const {startTime, endTime, startZkpApy, endZkpApy, prpPerStake} =
+    const {startTime, endTime, startZkpApy, endZkpApy} =
         await advancedStakeRewardController.rewardParams();
 
     return {
@@ -60,7 +60,6 @@ async function getDefaultRewardParams(
         endTime,
         startZkpApy: taskArgs.startZkpApy || startZkpApy,
         endZkpApy: taskArgs.endZkpApy || endZkpApy,
-        prpPerStake: taskArgs.prpPerStake || prpPerStake,
     };
 }
 

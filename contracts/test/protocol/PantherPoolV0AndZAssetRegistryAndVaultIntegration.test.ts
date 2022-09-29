@@ -22,7 +22,7 @@ import {deriveKeypairFromSeed} from '../../lib/keychain';
 
 import {PantherPoolV0AndZAssetRegistryAndVaultTester} from '../../types/contracts';
 import {deployPantherPoolV0AndZAssetRegistryAndVaultTester} from './helpers/pantherPoolV0AndZAssetRegistryAndVaultTester';
-import {PathElementsType, toBytes32, Triad} from '../../lib/utilities';
+import {Pair, PathElementsType, toBytes32} from '../../lib/utilities';
 import {BigNumber} from 'ethers';
 import type {BytesLike} from '@ethersproject/bytes';
 
@@ -154,15 +154,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                             ),
                         ).toString(),
                     ),
-                    toBytes32(
-                        buffer32ToBigInt(
-                            senderTransaction.cipheredTextMessageV1.slice(
-                                64,
-                                96,
-                            ),
-                        ).toString(),
-                    ),
-                ] as Triad;
+                ] as Pair;
                 const createdAtNum = BigInt('1652375774');
                 await pantherPoolV0AndZAssetRegistryAndVaultTester.generateDepositsExtended(
                     [amounts[0], amounts[1], amounts[2]],

@@ -144,7 +144,7 @@ export async function updateZkpAndPrpRewardsLimit(
 ) {
     console.log('Updating ZKP and PRP rewards limit...');
 
-    const tx = await advController.updateZkpAndPrpRewardsLimit();
+    const tx = await advController.updateZkpRewardsLimit();
     const receipt = await tx.wait();
 
     console.log('Transaction confirmed:', receipt);

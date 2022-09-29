@@ -30,12 +30,6 @@ yarn hardhat terms:add --network mumbai
 # info: Don't forget to change the `allowedSince`, `allowedTill` and `lockedTill`.
 echo '{"advanced":{"isEnabled":"true","isRewarded":"true","minAmountScaled":"100","maxAmountScaled":"0","allowedSince":"26 Jun 2022 12:00:00 GMT","allowedTill":"28 Jun 2022 12:00:00 GMT","lockedTill":"29 Jun 2022 12:00:00 GMT","exactLockPeriod":"0","minLockPeriod":"0"}}' | yarn hardhat terms:add --json true --network mumbai
 
-### ===== Add the PRP amounts to AdvancedStakeRewardController contract: =====
-
-# info: --amount is the prp amount. you can change it to any amount you want.
-yarn hardhat grant:enable --curator <AdvancedStakeRewardController_address> --amount 1000000 --network mumbai
-
-
 ### ===== Whitelist ZKP: =====
 
 # info: --token is the address of ZKP token. you can change it to any token you want. --scale should not be changed.
@@ -57,7 +51,7 @@ yarn hardhat exittime:update --network mumbai
 ### ===== Update the reward parameters in the AdvancedStakeRewardController: =====
 
 # info: you can change parameters as well. The unit of --start-time and --end-time can be second, minute. day, week and so on.
-yarn hardhat rewards:params:update --start-time '1 second' --end-time '1 week' --start-zkp-apy 50 --end-zkp-apy 30 --prp-per-stake 10000 --network mumbai
+yarn hardhat rewards:params:update --start-time '1 second' --end-time '1 week' --start-zkp-apy 50 --end-zkp-apy 30 --network mumbai
 
 
 ### ===== Go to zkpToken repo and execute the following command to increase the ZKP balance of AdvancedStakeRewardController: =====

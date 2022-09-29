@@ -107,8 +107,11 @@ contract PantherPoolV0AndZAssetRegistryAndVaultTester is MockPantherPoolV0 {
 
         uint256[CIPHERTEXT1_WORDS][OUT_UTXOs] memory secretss;
         secretss[0][0] = secrets[0];
+        secretss[0][1] = secrets[1];
         secretss[1][0] = secrets[0];
+        secretss[1][1] = secrets[1];
         secretss[2][0] = secrets[0];
+        secretss[2][1] = secrets[1];
 
         for (uint256 i = 0; i < OUT_UTXOs; i++) {
             this.approveVault(extAmounts[i], i);

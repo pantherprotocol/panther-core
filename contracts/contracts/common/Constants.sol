@@ -15,8 +15,9 @@ uint256 constant OUT_RWRD_UTXOs = 2;
 
 // Number of 32-bit words in the `secrets` of the `NewCommitment` events
 uint256 constant UTXO_SECRETS = 4;
-// Number of 32-bit words in the ciphertext in the "type 1" message
-uint256 constant CIPHERTEXT1_WORDS = 1;
+// Number of 32-bit words in the ciphertext in the "type 1" message - include:
+// Shared-Key-Packed - 32 bytes, encrypted-message type 1 - random-for-utxo-commitment
+uint256 constant CIPHERTEXT1_WORDS = 2;
 
 // For overflow protection and circuits optimization
 // (must be less than the FIELD_SIZE)

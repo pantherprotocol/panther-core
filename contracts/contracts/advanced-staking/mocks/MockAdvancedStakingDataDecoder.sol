@@ -3,14 +3,15 @@
 pragma solidity ^0.8.0;
 
 import "../actions/AdvancedStakingDataDecoder.sol";
+import "../../common/Constants.sol";
 
 contract MockAdvancedStakingDataDecoder is AdvancedStakingDataDecoder {
     function internalUnpackStakingData(bytes memory data)
         external
         pure
         returns (
-            G1Point[2] memory pubSpendingKeys,
-            uint256[1][2] memory secrets
+            G1Point[OUT_RWRD_UTXOs] memory pubSpendingKeys,
+            uint256[CIPHERTEXT1_WORDS][OUT_RWRD_UTXOs] memory secrets
         )
     {
         return unpackStakingData(data);

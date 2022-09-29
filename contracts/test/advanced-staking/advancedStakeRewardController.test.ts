@@ -19,7 +19,7 @@ import {
 } from '../../types/contracts';
 import {getBlockTimestamp} from '../../lib/provider';
 
-describe('AdvancedStakeRewardController', () => {
+describe.only('AdvancedStakeRewardController', () => {
     const fakeVaultAddress = '0x4321555555555555555555555555555555551234';
     const rewardingPeriod = 200;
     const prpRewardPerStake = 10000;
@@ -93,7 +93,6 @@ describe('AdvancedStakeRewardController', () => {
             owner.address,
             rewardMaster.address,
             pantherPool.address,
-            prpGrantor.address,
             zkpToken.address,
             nftToken.address,
         )) as MockAdvancedStakeRewardController;

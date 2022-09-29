@@ -155,31 +155,30 @@ export class SenderTransaction {
         this.ephemeralSharedPubKeyPacked = babyjub.packPoint(
             this.ephemeralSharedPubKey,
         );
-        this.iv = crypto.randomBytes(16);
-        this.textToBeCiphered = crypto.randomBytes(36);
-        this.cipheredText = crypto.randomBytes(48);
-        this.cipheredTextMessageV1 = crypto.randomBytes(96);
+        this.iv = this.ephemeralPubKeyPacked.slice(16, 32);
+        this.textToBeCiphered = crypto.randomBytes(32);
+        this.cipheredText = crypto.randomBytes(32);
+        this.cipheredTextMessageV1 = crypto.randomBytes(64);
     }
 
     public encryptMessageV1() {
-        // [0] - Pack prolog & random
-        // Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
-        const prolog = 0xeeffeeff; // THIS prolog must be used as is, according to specs
+        // [0] - Pack random
+        // Version-1: Random = 32bytes ( decrypt in place just for test )
         const textToBeCiphered = new Uint8Array([
-            ...bigIntToBuffer32(prolog).slice(32 - 4, 32),
             ...bigIntToBuffer32(this.spenderRandom),
         ]);
         if (textToBeCiphered.length != this.textToBeCiphered.length) {
-            throw 'Size of text to be ciphered V1 must be equal to 36 bytes';
+            throw 'Size of text to be ciphered V1 must be equal to 32 bytes';
         }
         this.textToBeCiphered = textToBeCiphered;
         // [1] - cipher
-        // const iv = crypto.randomBytes(16);
         const cipher = crypto.createCipheriv(
-            'aes-256-cbc',
-            this.ephemeralPubKeyPacked,
+            'aes-128-cbc',
+            this.ephemeralPubKeyPacked.slice(0, 16),
             this.iv,
         );
+        cipher.setAutoPadding(false);
+
         const cipheredText1 = cipher.update(this.textToBeCiphered);
         const cipheredText2 = cipher.final();
         // [2] - semi-pack
@@ -187,14 +186,13 @@ export class SenderTransaction {
             ...cipheredText1,
             ...cipheredText2,
         ]);
-        if (this.cipheredText.length != 48) {
-            throw 'Size of ciphered text V1 must be equal to 48 bytes';
+        if (this.cipheredText.length != 32) {
+            throw 'Size of ciphered text V1 must be equal to 32 bytes';
         }
     }
 
     public packCipheredText() {
         this.cipheredTextMessageV1 = new Uint8Array([
-            ...this.iv,
             ...this.ephemeralSharedPubKeyPacked,
             ...this.cipheredText,
         ]);
@@ -245,29 +243,22 @@ export class RecipientTransaction {
             generateRandomBabyJubValue(),
         );
         this.iv = crypto.randomBytes(16);
-        this.cipheredTextMessageV1 = crypto.randomBytes(96);
-        this.cipheredText = crypto.randomBytes(48);
+        this.cipheredTextMessageV1 = crypto.randomBytes(64);
+        this.cipheredText = crypto.randomBytes(32);
         this.decryptedText = crypto.randomBytes(32);
     }
 
-    unpackRandomAndCheckProlog() {
-        // [0] - Prolog check
-        const prolog = BigInt(0xeeffeeff);
-        const prolog_from_chain = buffer32ToBigInt(
-            this.decryptedText.slice(0, 0 + 4),
-        );
-        if (prolog_from_chain != prolog) {
-            throw 'Prolog V1 is not equal';
-        }
-        // [1] - Unpack random - from now on funds can be spent
+    unpackRandom() {
+        // [0] - Unpack random - from now on funds can be spent
         this.spenderRandom = buffer32ToBigInt(
-            this.decryptedText.slice(4, 4 + 32),
+            this.decryptedText.slice(0, 0 + 32),
         );
-        // [2] - Make derived public & private keys
+        // [1] - Make derived public & private keys
         this.spenderKeys.privateKey = multiplyScalars(
             this.spenderRootKeys.privateKey,
             this.spenderRandom,
         );
+        // [2] - Set public key
         this.spenderKeys.publicKey = babyjub.mulPointEscalar(
             this.spenderRootKeys.publicKey,
             this.spenderRandom,
@@ -277,15 +268,17 @@ export class RecipientTransaction {
     public decryptMessageV1() {
         // [0] - decipher - if fails it will throw
         const decipher = crypto.createDecipheriv(
-            'aes-256-cbc',
-            this.ephemeralPubKeyPacked,
+            'aes-128-cbc',
+            this.ephemeralPubKeyPacked.slice(0, 16),
             this.iv,
         );
+        decipher.setAutoPadding(false);
+
         const decrypted1 = decipher.update(this.cipheredText);
         const decrypted2 = decipher.final();
         // [2] - semi-unpack
         this.decryptedText = new Uint8Array([...decrypted1, ...decrypted2]);
-        if (this.decryptedText.length != 36) {
+        if (this.decryptedText.length != 32) {
             throw 'decrypted text V1 must be equal to 36 bytes';
         }
     }
@@ -293,15 +286,13 @@ export class RecipientTransaction {
     public unpackMessageV1(cipheredTextMessageV1: Uint8Array) {
         // [0] - check size
         if (cipheredTextMessageV1.length != this.cipheredTextMessageV1.length) {
-            throw 'CipheredTextMessageV1 must be equal to 96';
+            throw 'CipheredTextMessageV1 must be equal to 64';
         }
         this.cipheredTextMessageV1 = cipheredTextMessageV1;
-        // [1] - IV
-        this.iv = this.cipheredTextMessageV1.slice(0, 0 + 16);
-        // [2] - Keys
+        // [1] - Keys
         this.ephemeralSharedPubKeyPacked = this.cipheredTextMessageV1.slice(
-            16,
-            16 + 32,
+            0,
+            0 + 32,
         );
         this.ephemeralSharedPubKey = babyjub.unpackPoint(
             this.ephemeralSharedPubKeyPacked,
@@ -311,8 +302,10 @@ export class RecipientTransaction {
             this.spenderRootKeys.privateKey,
         );
         this.ephemeralPubKeyPacked = babyjub.packPoint(this.ephemeralPubKey);
+        // [2] - IV
+        this.iv = this.ephemeralPubKeyPacked.slice(16, 32);
         // [3] - Ciphered text
-        this.cipheredText = this.cipheredTextMessageV1.slice(48, 48 + 48);
+        this.cipheredText = this.cipheredTextMessageV1.slice(32, 32 + 32);
     }
 }
 
@@ -336,7 +329,7 @@ export class SenderRecipientSimulator {
         this.sender.packCipheredText();
         this.recipient.unpackMessageV1(this.sender.cipheredTextMessageV1);
         this.recipient.decryptMessageV1();
-        this.recipient.unpackRandomAndCheckProlog();
+        this.recipient.unpackRandom();
         if (this.recipient.spenderRandom != this.sender.spenderRandom) {
             throw 'Sent random is equal to received random';
         }

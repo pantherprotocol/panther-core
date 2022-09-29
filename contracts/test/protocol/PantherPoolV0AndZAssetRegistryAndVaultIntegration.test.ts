@@ -99,18 +99,25 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 spenderRootKeys,
             );
             // [5] - Deserialize --- we actually will first get this text from chain
-            recipientTransaction.unpackMessageV1(
-                senderTransaction.cipheredTextMessageV1,
-            );
+            try {
+                recipientTransaction.unpackMessageV1(
+                    senderTransaction.cipheredTextMessageV1,
+                );
+            } catch (e) {
+                throw Error("Can't unpack: " + e.toString());
+            }
             // [6] - Decrypt ( try... )
             try {
                 recipientTransaction.decryptMessageV1();
             } catch (e) {
-                // can't decrypt - this message is not for us
+                throw Error(
+                    "can't decrypt - this message is not for us " +
+                        e.toString(),
+                );
             }
             // [7] - Extract random ( try ... )
             try {
-                recipientTransaction.unpackRandomAndCheckProlog();
+                recipientTransaction.unpackRandom();
             } catch (e) {
                 // prolog is not equal to expected
             }
@@ -279,7 +286,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 }
                 // [7] - Extract random ( try ... )
                 try {
-                    recipientTransaction.unpackRandomAndCheckProlog();
+                    recipientTransaction.unpackRandom();
                 } catch (e) {
                     console.log('prolog is not equal to expected');
                 }

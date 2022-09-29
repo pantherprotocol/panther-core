@@ -88,7 +88,7 @@ describe('PantherPoolV0', () => {
             }
             // [7] - Extract random ( try ... )
             try {
-                txIn.unpackRandomAndCheckProlog();
+                txIn.unpackRandom();
             } catch (e) {
                 // prolog is not equal to expected
             }
@@ -125,7 +125,7 @@ describe('PantherPoolV0', () => {
             }
             // [7] - Extract random ( try ... )
             try {
-                txIn.unpackRandomAndCheckProlog();
+                txIn.unpackRandom();
             } catch (e) {
                 // prolog is not equal to expected
             }
@@ -163,7 +163,7 @@ describe('PantherPoolV0', () => {
             }
             // [7] - Extract random ( try ... )
             try {
-                txIn.unpackRandomAndCheckProlog();
+                txIn.unpackRandom();
             } catch (e) {
                 // prolog is not equal to expected
             }

@@ -382,7 +382,7 @@ contract AdvancedStakeRewardController is
             address(0) // ZERO_TOKEN
         ];
 
-        uint256[OUT_MAX_UTXOs] memory subIds = [0, 0, nftTokenId];
+        uint256[OUT_MAX_UTXOs] memory subIds = [0, nftTokenId, 0];
         uint256[OUT_MAX_UTXOs] memory extAmounts = [
             zkpAmount,
             nftAmount,

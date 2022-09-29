@@ -40,17 +40,10 @@ export const data = utils.hexConcat([
     zeroHexPad(params.pubSpendingKey0Y, 32),
     zeroHexPad(params.pubSpendingKey1X, 32),
     zeroHexPad(params.pubSpendingKey1Y, 32),
-    zeroHexPad(params.pubSpendingKey2X, 32),
-    zeroHexPad(params.pubSpendingKey2Y, 32),
     zeroHexPad(params.secret00, 32),
     zeroHexPad(params.secret01, 32),
-    zeroHexPad(params.secret02, 32),
     zeroHexPad(params.secret10, 32),
     zeroHexPad(params.secret11, 32),
-    zeroHexPad(params.secret12, 32),
-    zeroHexPad(params.secret20, 32),
-    zeroHexPad(params.secret21, 32),
-    zeroHexPad(params.secret22, 32),
 ]);
 
 export const depositFakeInput = {

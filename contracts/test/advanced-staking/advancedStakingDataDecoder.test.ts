@@ -39,15 +39,6 @@ describe('AdvancedStakingDataDecoder', () => {
             ).to.be.equal(params.pubSpendingKey1Y.toLowerCase());
         });
 
-        it('should decode the 3rd pubSpendingKey', () => {
-            expect(
-                ethers.BigNumber.from(act.pubSpendingKeys[2].x).toHexString(),
-            ).to.be.equal(params.pubSpendingKey2X.toLowerCase());
-            expect(
-                ethers.BigNumber.from(act.pubSpendingKeys[2].y).toHexString(),
-            ).to.be.equal(params.pubSpendingKey2Y.toLowerCase());
-        });
-
         it('should decode the 1st Ciphertext', () => {
             expect(
                 ethers.BigNumber.from(act.secrets[0][0]).toHexString(),
@@ -55,9 +46,6 @@ describe('AdvancedStakingDataDecoder', () => {
             expect(
                 ethers.BigNumber.from(act.secrets[0][1]).toHexString(),
             ).to.be.equal(params.secret01.toLowerCase());
-            expect(
-                ethers.BigNumber.from(act.secrets[0][2]).toHexString(),
-            ).to.be.equal(params.secret02.toLowerCase());
         });
 
         it('should decode the 2nd Ciphertext', () => {
@@ -67,21 +55,6 @@ describe('AdvancedStakingDataDecoder', () => {
             expect(
                 ethers.BigNumber.from(act.secrets[1][1]).toHexString(),
             ).to.be.equal(params.secret11.toLowerCase());
-            expect(
-                ethers.BigNumber.from(act.secrets[1][2]).toHexString(),
-            ).to.be.equal(params.secret12.toLowerCase());
-        });
-
-        it('should decode the 3rd Ciphertext', () => {
-            expect(
-                ethers.BigNumber.from(act.secrets[2][0]).toHexString(),
-            ).to.be.equal(params.secret20.toLowerCase());
-            expect(
-                ethers.BigNumber.from(act.secrets[2][1]).toHexString(),
-            ).to.be.equal(params.secret21.toLowerCase());
-            expect(
-                ethers.BigNumber.from(act.secrets[2][2]).toHexString(),
-            ).to.be.equal(params.secret22.toLowerCase());
         });
     });
 });

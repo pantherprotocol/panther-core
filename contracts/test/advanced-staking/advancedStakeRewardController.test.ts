@@ -12,23 +12,20 @@ import {data} from './assets/advancesStakingData.data';
 
 import {
     FakePantherPoolV0,
-    FakePrpGrantor,
     MockAdvancedStakeRewardController,
     TokenMock,
     ERC721Mock,
 } from '../../types/contracts';
 import {getBlockTimestamp} from '../../lib/provider';
 
-describe.only('AdvancedStakeRewardController', () => {
+describe('AdvancedStakeRewardController', () => {
     const fakeVaultAddress = '0x4321555555555555555555555555555555551234';
     const rewardingPeriod = 200;
-    const prpRewardPerStake = 10000;
     const rewardingStartApy = 70;
     const rewardingEndApy = 40;
     const rewardingRoundingNumber = BigNumber.from('10000000000000000');
     const advStake = '0xcc995ce8';
     const asrControllerZkpBalance = BigNumber.from(10).pow(24);
-    const asrControllerPrpBalance = BigNumber.from(10 * prpRewardPerStake);
     const asrControllerNftRewardsLimit = BigNumber.from(10);
 
     let asrController: MockAdvancedStakeRewardController;
@@ -38,7 +35,6 @@ describe.only('AdvancedStakeRewardController', () => {
     let staker: SignerWithAddress;
     let rewardMaster: SignerWithAddress;
     let pantherPool: FakePantherPoolV0;
-    let prpGrantor: FakePrpGrantor;
     let rewardingStartTime: number;
     let rewardingEndTime: number;
     let snapshotId: number;
@@ -48,7 +44,6 @@ describe.only('AdvancedStakeRewardController', () => {
         endZkpApy: number;
         endTime: number;
         startZkpApy: number;
-        prpPerStake: number;
     };
 
     const getDefaultRewardParams = (): RewardParams => ({
@@ -56,7 +51,6 @@ describe.only('AdvancedStakeRewardController', () => {
         endTime: rewardingEndTime,
         startZkpApy: rewardingStartApy,
         endZkpApy: rewardingEndApy,
-        prpPerStake: prpRewardPerStake,
     });
 
     before(async () => {
@@ -80,11 +74,6 @@ describe.only('AdvancedStakeRewardController', () => {
             exitTime,
         )) as FakePantherPoolV0;
 
-        const FakePrpGrantor = await ethers.getContractFactory(
-            'FakePrpGrantor',
-        );
-        prpGrantor = (await FakePrpGrantor.deploy()) as FakePrpGrantor;
-
         const MockAdvancedStakeRewardController =
             await ethers.getContractFactory(
                 'MockAdvancedStakeRewardController',
@@ -105,12 +94,6 @@ describe.only('AdvancedStakeRewardController', () => {
         await zkpToken
             .connect(owner)
             .transfer(asrController.address, asrControllerZkpBalance);
-
-        // grant PRPs for rewards
-        await prpGrantor.issueOwnerGrant(
-            asrController.address,
-            asrControllerPrpBalance,
-        );
     });
 
     beforeEach(async () => {
@@ -833,7 +816,6 @@ describe.only('AdvancedStakeRewardController', () => {
         async function checkTotals(
             scZkpStaked: BigNumberish,
             zkpRewards: BigNumberish,
-            prpRewards: BigNumberish,
             nftRewards: BigNumberish,
         ) {
             expect((await asrController.totals()).scZkpStaked).to.be.eq(
@@ -897,7 +879,6 @@ describe.only('AdvancedStakeRewardController', () => {
         describe('Generate rewards', () => {
             let expZkpReward: BigNumber;
             let expScZkpStaked: BigNumber;
-            let expPrpReward: number;
 
             beforeEach(async () => {
                 const rewardParams = getDefaultRewardParams();
@@ -908,7 +889,6 @@ describe.only('AdvancedStakeRewardController', () => {
                     .div(rewardingRoundingNumber)
                     .mul(rewardingRoundingNumber);
                 expScZkpStaked = amountToStake.div(1e15);
-                expPrpReward = rewardParams.prpPerStake;
 
                 await asrController.updateZkpRewardsLimit();
                 await asrController
@@ -932,15 +912,9 @@ describe.only('AdvancedStakeRewardController', () => {
                             staker.address,
                             0, // firstLeafId
                             expZkpReward,
-                            expPrpReward,
                             1, // nft
                         );
-                    await checkTotals(
-                        expScZkpStaked,
-                        expZkpReward,
-                        expPrpReward,
-                        1,
-                    );
+                    await checkTotals(expScZkpStaked, expZkpReward, 1);
                 });
             });
 
@@ -956,14 +930,12 @@ describe.only('AdvancedStakeRewardController', () => {
                             staker.address,
                             4, // firstLeafId
                             expZkpReward,
-                            expPrpReward,
                             1, // nft
                         );
 
                     await checkTotals(
                         expScZkpStaked.mul(2),
                         expZkpReward.mul(2),
-                        expPrpReward * 2,
                         2,
                     );
                 });
@@ -984,14 +956,12 @@ describe.only('AdvancedStakeRewardController', () => {
                             staker.address,
                             8, // firstLeafId
                             expZkpReward,
-                            expPrpReward,
                             1, // nft
                         );
 
                     await checkTotals(
                         expScZkpStaked.mul(3),
                         expZkpReward.mul(3),
-                        expPrpReward * 3,
                         3,
                     );
                 });
@@ -1121,7 +1091,6 @@ describe.only('AdvancedStakeRewardController', () => {
                     endTime: oldParams.endTime + 5,
                     startZkpApy: oldParams.startZkpApy + 3,
                     endZkpApy: oldParams.endZkpApy + 6,
-                    prpPerStake: oldParams.prpPerStake + 777,
                 };
 
                 expect(

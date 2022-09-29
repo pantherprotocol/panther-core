@@ -27,7 +27,14 @@ export const T_END = Number(process.env.ADVANCED_STAKING_T_END) * 1000;
 const APY_START = 70;
 const APY_END = 40;
 const DAPY_DT = (APY_END - APY_START) / (T_END - T_START);
-const PRP_REWARD_PER_STAKE = '10000';
+// Due to the recent changes in the smart contract, the PRP UTXOs are not being
+// generated upon staking. This is a temporary solution to hardcode the PRP
+// rewards. Only first 2000 stakes will get 2000 PRP rewards. The rest will get
+// 0 PRP rewards. This will be removed once the PRP UTXOs are generated upon
+// deployment of the version 1.0 of the protocol. MASP doc:
+// https://docs.google.com/document/d/1BTWHstTgNKcapOe0PLQR41vbC0aEDYmbBenfzTq8TVs
+export const PRP_REWARD_PER_STAKE = '2000';
+export const NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD = 2000;
 
 export function zZkpReward(
     amount: BigNumber,

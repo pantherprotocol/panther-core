@@ -3,17 +3,13 @@ import {useCallback, useEffect, useState} from 'react';
 
 import {Box, Button, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {BigNumber, utils} from 'ethers';
+import {BigNumber} from 'ethers';
 
 import attentionIcon from '../../../images/attention-triangle-icon.svg';
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
 import {parseTxErrorMessage} from '../../../lib/errors';
-import {
-    formatCurrency,
-    formatTimeSince,
-    getFormattedFractions,
-} from '../../../lib/format';
+import {formatCurrency, formatTimeSince} from '../../../lib/format';
 import {fiatPrice} from '../../../lib/tokenPrice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {
@@ -165,10 +161,6 @@ export default function PrivateBalance() {
         showWalletActionInProgressSelector('signMessage'),
     );
 
-    const [whole, fractional] = totalPrice
-        ? getFormattedFractions(utils.formatEther(totalPrice))
-        : [];
-
     return (
         <>
             {showWalletSignatureInProgress && <SignatureRequestModal />}
@@ -178,12 +170,10 @@ export default function PrivateBalance() {
                         Total Private zAsset Balance
                     </Typography>
                     <Typography className="amount">
-                        {whole && fractional ? (
-                            <>
-                                <span>${whole}</span>
-
-                                <span className="substring">.{fractional}</span>
-                            </>
+                        {totalPrice ? (
+                            <span>
+                                ${formatCurrency(totalPrice, {decimals: 2})}
+                            </span>
                         ) : (
                             '-'
                         )}

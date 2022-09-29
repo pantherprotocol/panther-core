@@ -1,10 +1,7 @@
 import {AdvancedStakeRewardController} from './../../types/contracts/AdvancedStakeRewardController';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task, types} from 'hardhat/config';
-import {
-    updateZkpAndPrpRewardsLimit,
-    setNftRewardLimit,
-} from '../../lib/staking';
+import {updateZkpRewardsLimit, setNftRewardLimit} from '../../lib/staking';
 
 const TASK_REWARDS_LIMIT_ADD = 'rewards:limit:add';
 
@@ -19,8 +16,8 @@ task(
         types.int,
     )
     .addOptionalParam(
-        'zkpPrpLimits',
-        'Whether task updates the ZKP and PRP rewards limit',
+        'zkpLimit',
+        'Whether task updates the ZKP reward limit',
         true,
         types.boolean,
     )
@@ -29,8 +26,7 @@ task(
             'AdvancedStakeRewardController',
         )) as AdvancedStakeRewardController;
 
-        if (_taskArgs.zkpPrpLimits)
-            await updateZkpAndPrpRewardsLimit(controller);
+        if (_taskArgs.zkpLimit) await updateZkpRewardsLimit(controller);
 
         if (_taskArgs.nftLimit)
             await setNftRewardLimit(controller, _taskArgs.nftLimit);

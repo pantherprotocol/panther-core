@@ -109,12 +109,6 @@ task(TASK_REWARDS_PARAMS_UPDATE, 'Update advanced stake reward parameters')
         undefined,
         types.int,
     )
-    .addOptionalParam(
-        'prpPerStake',
-        'Defines amount of PRP reward (per a stake)',
-        undefined,
-        types.int,
-    )
 
     .setAction(
         async (taskArgs: TaskArguments, hre: HardhatRuntimeEnvironment) => {

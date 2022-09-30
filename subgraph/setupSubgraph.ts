@@ -17,32 +17,15 @@ function logError(message) {
 
 const Contract = {
     advancedStakeRewardController: 'AdvancedStakeRewardController',
+    pantherPoolV0: 'PantherPoolV0',
 };
-
-// getting the panther pool address and start block from .env file
-function getPantherPoolInfo() {
-    let pantherPoolAddress = process.env.PANTHER_POOL_ADDRESS;
-    let pantherPoolStartBlock = process.env.PANTHER_POOL_START_BLOCK;
-
-    if (!pantherPoolAddress) {
-        pantherPoolAddress = '0x0000000000000000000000000000000000000000';
-        logWarning('panther pool address is not set, using zero address');
-    }
-    if (!pantherPoolStartBlock) {
-        pantherPoolStartBlock = '0';
-        logWarning('panther pool start block is not set, using 0 value');
-    }
-
-    logInfo(`Panther pool address: ${pantherPoolAddress}`);
-    logInfo(`Panther pool start block: ${pantherPoolStartBlock}`);
-
-    return {pantherPoolAddress, pantherPoolStartBlock};
-}
 
 // importing the contract artifacts
 function requireContractArtifacts(contract, network, env) {
     logInfo(
-        `Getting artifacts of ${contract} for ${env} env and ${network} network...`,
+        `Getting artifacts of ${contract} ${
+            env ? ` for ${env} env and ` : ''
+        }on ${network} network...`,
     );
 
     const deploymentPath = path.join(
@@ -91,51 +74,52 @@ function getContractArtifacts(contract) {
 
 // generate subgraph.yaml file
 function genSubgraphYaml() {
-    const {pantherPoolAddress, pantherPoolStartBlock} = getPantherPoolInfo();
-
-    const {
-        address: AdvancedStakeRewardControllerAddress,
-        receipt: AdvancedStakeRewardControllerReceipt,
-    } = getContractArtifacts(Contract.advancedStakeRewardController);
-
-    logInfo(
-        `AdvanceStakeRewardController address: ${AdvancedStakeRewardControllerAddress}`,
-    );
-    logInfo(
-        `AdvanceStakeRewardController start block: ${AdvancedStakeRewardControllerReceipt.blockNumber}`,
-    );
-
-    const template = fs
+    let template = fs
         .readFileSync(path.join(__dirname, 'subgraph.template.yaml'))
         .toString();
 
-    const finalResult = template
-        .replace(
-            '<% AdvancedStakeRewardController_ADDRESS %>',
-            AdvancedStakeRewardControllerAddress,
-        )
-        .replace(
-            '<% AdvancedStakeRewardController_STARTBLOCK %>',
-            AdvancedStakeRewardControllerReceipt.blockNumber.toString(),
-        )
-        .replace('<% PantherPoolV0_ADDRESS %>', pantherPoolAddress)
-        .replace('<% PantherPoolV0_STARTBLOCK %>', pantherPoolStartBlock);
+    for (const contract in Contract) {
+        const {address, receipt} = getContractArtifacts(Contract[contract]);
 
-    fs.writeFileSync(path.join(__dirname, 'subgraph.yaml'), finalResult);
+        logInfo(`contract address: ${address}`);
+        logInfo(`contract start block: ${receipt.blockNumber}`);
+
+        template = template
+            .replace(`<% ${Contract[contract]}_ADDRESS %>`, address)
+            .replace(
+                `<% ${Contract[contract]}_STARTBLOCK %>`,
+                receipt.blockNumber.toString(),
+            );
+    }
+
+    fs.writeFileSync(path.join(__dirname, 'subgraph.yaml'), template);
 }
 
 // copy contracts abi to the abis folder
 function copyAbis() {
     logInfo('Copying abis to subgraph/abis ...');
 
-    const {abi: AdvancedStakeRewardControllerAbi} = getContractArtifacts(
-        Contract.advancedStakeRewardController,
-    );
+    const abiDir = path.join(__dirname, 'abis');
 
-    fs.writeFileSync(
-        path.join(__dirname, 'abis', 'AdvancedStakeRewardController.json'),
-        JSON.stringify(AdvancedStakeRewardControllerAbi),
-    );
+    // Create abi directory if it does not exist
+    if (!fs.existsSync(abiDir)) {
+        fs.mkdirSync(abiDir);
+    }
+
+    for (const contract in Contract) {
+        let {abi} = getContractArtifacts(Contract[contract]);
+
+        // Delete multi-dimensional array from panther pool ABI.
+        // Github issue: https://github.com/graphprotocol/graph-cli/issues/342
+        if (Contract.pantherPoolV0 === 'PantherPoolV0') {
+            abi = abi.filter(el => el.name !== 'generateDeposits');
+        }
+
+        fs.writeFileSync(
+            path.join(abiDir, `${Contract[contract]}.json`),
+            JSON.stringify(abi),
+        );
+    }
 }
 
 if (require.main === module) {

@@ -38,5 +38,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 export default func;
 
-func.tags = ['grantor-upgrade'];
+func.tags = ['grantor-upgrade', 'protocol'];
 func.dependencies = ['check-params', 'grantor-impl'];

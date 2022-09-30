@@ -4,22 +4,18 @@ import {DeployFunction} from 'hardhat-deploy/types';
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {
         deployments: {deploy},
+        ethers,
         getNamedAccounts,
     } = hre;
     const {deployer} = await getNamedAccounts();
-    const multisig =
-        process.env.DAO_MULTISIG_ADDRESS ||
-        (await getNamedAccounts()).multisig ||
-        deployer;
 
-    const pantherPool = await hre.ethers.getContract('PantherPoolV0');
-
-    await deploy('PrpGrantor_Implementation', {
-        contract: 'PrpGrantor',
+    await deploy('Vault_Proxy', {
+        contract: 'EIP173Proxy',
         from: deployer,
         args: [
-            multisig, // owner
-            pantherPool.address, // grantProcessor
+            ethers.constants.AddressZero, // implementation will be changed
+            deployer, // owner will be changed
+            [], // data
         ],
         log: true,
         autoMine: true,
@@ -27,5 +23,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ['grantor-impl'];
-func.dependencies = ['check-params', 'pool'];
+func.tags = ['vault-proxy', 'protocol'];
+func.dependencies = ['check-params'];

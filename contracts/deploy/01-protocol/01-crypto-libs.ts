@@ -4,7 +4,7 @@ import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
     getPoseidonT6Contract,
-} from '../lib/poseidonBuilder';
+} from '../../lib/poseidonBuilder';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {
@@ -54,5 +54,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ['crypto-libs'];
+func.tags = ['crypto-libs', 'protocol'];
 func.dependencies = ['check-params'];

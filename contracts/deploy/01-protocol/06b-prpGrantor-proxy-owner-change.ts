@@ -30,5 +30,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 export default func;
 
-func.tags = ['grantor-owner', 'pchain'];
+func.tags = ['grantor-owner', 'pchain', 'protocol'];
 func.dependencies = ['check-params', 'grantor-upgrade'];

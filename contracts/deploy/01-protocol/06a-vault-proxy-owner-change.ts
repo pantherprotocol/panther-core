@@ -26,5 +26,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 export default func;
 
-func.tags = ['vault-owner', 'pchain'];
+func.tags = ['vault-owner', 'pchain', 'protocol'];
 func.dependencies = ['check-params', 'vault-upgrade'];

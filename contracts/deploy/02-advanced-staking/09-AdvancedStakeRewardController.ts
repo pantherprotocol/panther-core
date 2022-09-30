@@ -11,14 +11,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     );
 
     const rewardMaster = await hre.ethers.getContract('RewardMaster');
+    const pantherPool = await hre.ethers.getContract('PantherPoolV0_Proxy');
+    const prpGrantor = await hre.ethers.getContract('PrpGrantor_Proxy');
 
     await deploy('AdvancedStakeRewardController', {
         from: deployer,
         args: [
             deployer,
             rewardMaster.address,
-            process.env.PANTHER_POOL,
-            process.env.PRP_GRANTOR,
+            pantherPool.address,
+            prpGrantor.address,
             process.env.ZKP_TOKEN_ADDRESS,
             process.env.PNFT_TOKEN_ADDRESS,
         ],

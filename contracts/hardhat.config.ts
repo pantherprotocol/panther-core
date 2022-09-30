@@ -26,6 +26,10 @@ import './tasks/advanced-staking/rewards-limit-add';
 import './tasks/advanced-staking/reward-params-update';
 import './tasks/advanced-staking/vesting-list';
 
+import './tasks/protocol/exitTime-update';
+import './tasks/protocol/grant-issue';
+import './tasks/protocol/zAsset-add';
+
 import {HardhatUserConfig} from 'hardhat/config';
 import {NetworkUserConfig, HttpNetworkAccountsUserConfig} from 'hardhat/types';
 import {config as dotenvConfig} from 'dotenv';

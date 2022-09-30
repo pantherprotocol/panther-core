@@ -6,10 +6,10 @@ import "./interfaces/IErc20Min.sol";
 import "./interfaces/ITotalStaked.sol";
 import "./actions/StakingMsgProcessor.sol";
 import "./interfaces/IRewardAdviser.sol";
-import "./utils/Claimable.sol";
-import "./utils/ImmutableOwnable.sol";
-import "./utils/NonReentrant.sol";
-import "./utils/Utils.sol";
+import "../common/Claimable.sol";
+import "../common/ImmutableOwnable.sol";
+import "../common/NonReentrant.sol";
+import "../common/Utils.sol";
 
 /**
  * @title StakeRewardController

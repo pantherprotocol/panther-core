@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 import "./actions/StakingMsgProcessor.sol";
 import "./interfaces/IRewardAdviser.sol";
-import "./utils/Utils.sol";
+import "../common/Utils.sol";
 
 /**
  * @title StakeRewardAdviser

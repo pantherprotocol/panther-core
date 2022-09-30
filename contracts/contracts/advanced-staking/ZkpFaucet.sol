@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./utils/Claimable.sol";
-import "./utils/ImmutableOwnable.sol";
+import "../common/Claimable.sol";
+import "../common/ImmutableOwnable.sol";
 
 // When called `drink`, it sends tokens to the `_to`
 // As a prerequisite, it shall get enough tokens on the balance

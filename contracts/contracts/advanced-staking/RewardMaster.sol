@@ -7,10 +7,10 @@ import "./interfaces/IActionMsgReceiver.sol";
 import "./interfaces/IErc20Min.sol";
 import "./interfaces/IRewardAdviser.sol";
 import "./interfaces/IRewardPool.sol";
-import "./utils/ImmutableOwnable.sol";
-import "./utils/Claimable.sol";
-import "./utils/NonReentrant.sol";
-import "./utils/Utils.sol";
+import "../common/ImmutableOwnable.sol";
+import "../common/Claimable.sol";
+import "../common/NonReentrant.sol";
+import "../common/Utils.sol";
 
 /***
  * @title RewardMaster

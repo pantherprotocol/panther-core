@@ -37,6 +37,6 @@ describe('Claimable', () => {
                 user.address,
                 ethers.constants.MaxUint256,
             ),
-        ).revertedWith('claimErc20: TRANSFER_FAILED');
+        ).revertedWith('TransferHelper::safeTransfer: transfer failed');
     });
 });

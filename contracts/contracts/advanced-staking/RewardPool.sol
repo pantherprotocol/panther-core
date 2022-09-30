@@ -6,8 +6,8 @@ pragma solidity ^0.8.0;
 
 import "./interfaces/IVestingPools.sol";
 import "./interfaces/IRewardPool.sol";
-import "./utils/ImmutableOwnable.sol";
-import "./utils/Utils.sol";
+import "../common/ImmutableOwnable.sol";
+import "../common/Utils.sol";
 
 /**
  * @title RewardPool

@@ -9,10 +9,10 @@ import "./interfaces/IERC721Receiver.sol";
 import "./interfaces/INftGrantor.sol";
 import "./interfaces/IPantherPoolV0.sol";
 import "./interfaces/IRewardAdviser.sol";
-import "./utils/Claimable.sol";
-import "./utils/ImmutableOwnable.sol";
-import "./utils/NonReentrant.sol";
-import "./utils/Utils.sol";
+import "../common/Claimable.sol";
+import "../common/ImmutableOwnable.sol";
+import "../common/NonReentrant.sol";
+import "../common/Utils.sol";
 import "../common/TransferHelper.sol";
 
 /**

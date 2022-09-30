@@ -2,7 +2,7 @@
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.0;
 
-import "../utils/Claimable.sol";
+import "../../common/Claimable.sol";
 
 contract MockClaimable is Claimable {
     function internalClaimErc20(

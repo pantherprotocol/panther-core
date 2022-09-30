@@ -3,10 +3,10 @@ pragma solidity ^0.8.0;
 
 import "./interfaces/IErc20Min.sol";
 import "./interfaces/IRewardPool.sol";
-import "./utils/Claimable.sol";
-import "./utils/ImmutableOwnable.sol";
-import "./utils/Utils.sol";
-import "./utils/NonReentrant.sol";
+import "../common/Claimable.sol";
+import "../common/ImmutableOwnable.sol";
+import "../common/Utils.sol";
+import "../common/NonReentrant.sol";
 
 /**
  * @title MaticRewardPool

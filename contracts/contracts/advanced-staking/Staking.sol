@@ -7,8 +7,8 @@ import "./interfaces/IActionMsgReceiver.sol";
 import "./interfaces/IErc20Min.sol";
 import "./interfaces/IStakingTypes.sol";
 import "./interfaces/IVotingPower.sol";
-import "./utils/ImmutableOwnable.sol";
-import "./utils/Utils.sol";
+import "../common/ImmutableOwnable.sol";
+import "../common/Utils.sol";
 
 /**
  * @title Staking

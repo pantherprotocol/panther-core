@@ -34,13 +34,11 @@ export function encryptMessage(
     const {cipherKey, iv} = extractCipherKeyAndIV(sharedKey);
 
     try {
-        const cipher = crypto.createCipheriv('aes128', cipherKey, iv);
+        const cipher = crypto.createCipheriv('aes-128-cbc', cipherKey, iv);
+        cipher.setAutoPadding(false);
         const cipheredText1 = cipher.update(plaintext);
         const cipheredText2 = cipher.final();
-        return {
-            iv,
-            data: new Uint8Array([...cipheredText1, ...cipheredText2]),
-        };
+        return new Uint8Array([...cipheredText1, ...cipheredText2]);
     } catch (error) {
         throw Error(`Failed to encrypt message: ${error}`);
     }
@@ -51,10 +49,11 @@ export function decryptMessage(
     sharedKey: PackedEcdhSharedKey,
 ): Uint8Array {
     const {cipherKey, iv} = extractCipherKeyAndIV(sharedKey);
-    const decipher = crypto.createDecipheriv('aes128', cipherKey, iv);
+    const decipher = crypto.createDecipheriv('aes-128-cbc', cipherKey, iv);
+    decipher.setAutoPadding(false);
 
     return new Uint8Array([
-        ...decipher.update(ciphertext.data),
+        ...decipher.update(ciphertext),
         ...decipher.final(),
     ]);
 }

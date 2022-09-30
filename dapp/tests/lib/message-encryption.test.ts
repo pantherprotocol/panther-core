@@ -61,26 +61,12 @@ describe('Cryptographic operations', () => {
     });
 
     describe('Ciphertext', () => {
-        it('should be of the correct format', () => {
-            expect(ciphertext).toHaveProperty('iv');
-            expect(ciphertext).toHaveProperty('data');
-            expect(ciphertext.data.length).toBeGreaterThan(0);
-        });
-
         it('should differ from the plaintext', () => {
-            expect(
-                bigIntToUint8Array(plaintext) !== ciphertext.data,
-            ).toBeTruthy();
+            expect(bigIntToUint8Array(plaintext) !== ciphertext).toBeTruthy();
         });
 
-        it('should be smaller than the SNARK field size (BN254)', () => {
-            expect(
-                uint8ArrayToBigInt(ciphertext.iv) < BN254_FIELD_SIZE,
-            ).toBeTruthy();
-        });
-
-        it('should have 48 bytes of data', () => {
-            expect(ciphertext.data.length).toEqual(48);
+        it('should have 32 bytes of data', () => {
+            expect(ciphertext.length).toEqual(32);
         });
     });
 
@@ -89,31 +75,6 @@ describe('Cryptographic operations', () => {
             expect(decryptedCiphertext.toString()).toEqual(
                 plaintext.toString(),
             );
-        });
-
-        it('should throw error if decryption is attempted with incorrect key', () => {
-            const sk = BigInt(1);
-            const randomKeypair = deriveKeypairFromSeed(sk);
-            const differentKey = generateEcdhSharedKey(
-                sk,
-                randomKeypair.publicKey,
-            );
-
-            expect(() => {
-                const decrypted = decryptMessage(
-                    ciphertext,
-                    packPublicKey(differentKey),
-                );
-                // this part only for debugging purposes:
-                console.log('Diagnostics for sometimes failing test:', {
-                    decrypted,
-                    plaintext,
-                    isTheSame: uint8ArrayToBigInt(decrypted) === plaintext,
-                    differentKey,
-                    ecdhSharedKey12,
-                    decryptedCiphertext,
-                });
-            }).toThrow(/bad decrypt/);
         });
     });
 });

@@ -10,8 +10,6 @@ import TermsOfService from '../TermsOfService';
 
 import {ScrollableDialogProps} from './ScrollableDialog.interface';
 
-import './styles.scss';
-
 export default function ScrollableDialog(props: ScrollableDialogProps) {
     return (
         <div className="terms-dialog">

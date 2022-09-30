@@ -1,15 +1,11 @@
 @import '../../variables';
 
 .terms-of-service {
-    font-size: 130%;
-    ol {
-        list-style-type: decimal;
+    padding: 20px 80px;
 
-        li ol {
-            list-style-type: lower-alpha;
-            li ol {
-                list-style-type: decimal;
-            }
+    a {
+        &:hover {
+            color: inherit;
         }
     }
 }

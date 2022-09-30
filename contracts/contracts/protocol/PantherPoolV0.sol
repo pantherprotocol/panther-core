@@ -27,8 +27,6 @@ import "./pantherPool/PubKeyGenerator.sol";
  * It locks assets (ERC-20, ERC-721 or ERC-1155 tokens) of a user with the `Vault` smart
  * contract and generates UTXO's in the MASP for the user (i.e. builds merkle trees of
  * UTXO's commitments).
- * It can also generate UTX0's with "Panther Reward Points" (aka "PRP", a special unit).
- * To get a PRP UTXO, a user must be given a "grant" booked in the `PrpGrantor` contract.
  * The present contract is assumed to have the "grant processor" role with the latest.
  * This contract does not implement the functionality for spending UTXO's (other than the
  * `exit` described further) and is supposed to be upgraded with the new one.
@@ -138,7 +136,6 @@ contract PantherPoolV0 is
 
     /// @notice Transfer assets from the msg.sender to the VAULT and generate UTXOs in the MASP
     /// @param tokens Address of the token contract for every UTXO
-    /// @dev For PRP granted the address ot this contract (proxy) is supposed to be used
     /// @param tokenIds For ERC-721 and ERC-1155 - token ID or subId of the token, 0 for ERC-20
     /// @param amounts Token amounts (unscaled) to be deposited
     /// @param pubSpendingKeys Public Spending Key for every UTXO

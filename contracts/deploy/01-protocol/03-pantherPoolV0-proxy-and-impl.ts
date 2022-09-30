@@ -14,7 +14,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const registry = await hre.ethers.getContract('ZAssetsRegistry_Proxy');
     const vaultProxy = await hre.ethers.getContract('Vault_Proxy');
-    const grantorProxy = await hre.ethers.getContract('PrpGrantor_Proxy');
 
     const poseidonT3 = await get('PoseidonT3');
     const poseidonT4 = await get('PoseidonT4');
@@ -22,12 +21,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     await deploy('PantherPoolV0', {
         from: deployer,
-        args: [
-            multisig,
-            registry.address,
-            vaultProxy.address,
-            grantorProxy.address,
-        ],
+        args: [multisig, registry.address, vaultProxy.address],
         libraries: {
             PoseidonT3: poseidonT3.address,
             PoseidonT4: poseidonT4.address,

@@ -12,6 +12,5 @@ type AdvancedStakingReward @entity {
     commitments: [Bytes!]
     utxoData: Bytes
     zZkpAmount: BigInt
-    prpAmount: BigInt
     staker: Staker!
 }

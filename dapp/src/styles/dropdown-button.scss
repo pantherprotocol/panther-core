@@ -47,7 +47,8 @@
     }
 
     .MuiSelect-select {
-        margin-top: -26px !important;
+        position: relative;
+        bottom: 26px;
         width: 200px !important;
         height: 50px !important;
         color: $white !important;

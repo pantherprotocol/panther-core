@@ -98,6 +98,10 @@ contract AdvancedStakeRewardController is
     }
 
     // solhint-disable var-name-mixedcase
+    // These three constants used to align with IPantherPool::generateDeposits API
+    uint256 private constant ZERO_AMOUNT = 0;
+    uint256 private constant ZERO_TOKEN_ID = 0;
+    address private constant ZERO_TOKEN = address(0);
 
     /// @notice RewardMaster contract instance
     address public immutable REWARD_MASTER;
@@ -379,14 +383,14 @@ contract AdvancedStakeRewardController is
             // PantherPool reverts if non-zero address provided for zero amount
             zkpAmount == 0 ? address(0) : ZKP_TOKEN,
             nftAmount == 0 ? address(0) : NFT_TOKEN,
-            address(0) // ZERO_TOKEN
+            ZERO_TOKEN
         ];
 
-        uint256[OUT_MAX_UTXOs] memory subIds = [0, nftTokenId, 0];
+        uint256[OUT_MAX_UTXOs] memory subIds = [0, nftTokenId, ZERO_TOKEN_ID];
         uint256[OUT_MAX_UTXOs] memory extAmounts = [
             zkpAmount,
             nftAmount,
-            0 // ZERO_AMOUNT
+            ZERO_AMOUNT
         ];
 
         uint32 createdAt = safe32TimeNow();

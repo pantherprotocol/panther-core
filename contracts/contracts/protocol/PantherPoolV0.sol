@@ -257,7 +257,11 @@ contract PantherPoolV0 is
         bytes32 merkleRoot,
         uint256 cacheIndexHint
     ) external nonReentrant {
-        require(safe32TimeNow() >= exitTime, ERR_TOO_EARLY_EXIT);
+        // if exitTime == 0 -> `exit` is not accepted since init phase is not finished yet
+        require(
+            safe32TimeNow() >= exitTime && exitTime != 0,
+            ERR_TOO_EARLY_EXIT
+        );
         _verifyExitCommitment(privSpendingKey, msg.sender);
 
         {

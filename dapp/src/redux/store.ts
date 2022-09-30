@@ -11,6 +11,7 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
+import acknowledgedNotificationsReducer from './slices/acknowledgedNotifications';
 import advancedStakeInputRewardsReducer from './slices/advancedStakePredictedRewards';
 import advancedStakesRewardsReducer from './slices/advancedStakesRewards';
 import blurReducer from './slices/blur';
@@ -31,7 +32,12 @@ import zkpTokenBalanceReducer from './slices/zkpTokenBalance';
 const rootPersistConfig = {
     key: 'root',
     storage: storage,
-    whitelist: ['advancedStakesRewards', 'firstVisit', 'isWalletConnected'],
+    whitelist: [
+        'advancedStakesRewards',
+        'firstVisit',
+        'isWalletConnected',
+        'acknowledgedNotifications',
+    ],
 };
 export const rootReducer = combineReducers({
     advancedStakesRewards: advancedStakesRewardsReducer,
@@ -50,6 +56,7 @@ export const rootReducer = combineReducers({
     stakeAmount: stakeAmountReducer,
     isWalletConnected: isWalletConnectedReducer,
     remainingPrpRewards: remainingPrpRewardsReducer,
+    acknowledgedNotifications: acknowledgedNotificationsReducer,
 });
 
 export const persistedReducer = persistReducer(rootPersistConfig, rootReducer);

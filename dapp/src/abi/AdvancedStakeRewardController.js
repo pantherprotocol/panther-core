@@ -1,61 +1,11 @@
 export const abi = [
     {
         inputs: [
-            {
-                internalType: 'address',
-                name: '_owner',
-                type: 'address',
-            },
-            {
-                internalType: 'address',
-                name: 'rewardMaster',
-                type: 'address',
-            },
-            {
-                internalType: 'address',
-                name: 'pantherPool',
-                type: 'address',
-            },
-            {
-                internalType: 'address',
-                name: 'prpGrantor',
-                type: 'address',
-            },
-            {
-                internalType: 'address',
-                name: 'zkpToken',
-                type: 'address',
-            },
-            {
-                internalType: 'address',
-                name: 'nftToken',
-                type: 'address',
-            },
-            {
-                internalType: 'uint32',
-                name: 'prpRewardPerStake',
-                type: 'uint32',
-            },
-            {
-                internalType: 'uint32',
-                name: 'rewardingStartTime',
-                type: 'uint32',
-            },
-            {
-                internalType: 'uint32',
-                name: 'rewardingEndTime',
-                type: 'uint32',
-            },
-            {
-                internalType: 'uint8',
-                name: 'rewardingStartApy',
-                type: 'uint8',
-            },
-            {
-                internalType: 'uint8',
-                name: 'rewardingEndApy',
-                type: 'uint8',
-            },
+            {internalType: 'address', name: '_owner', type: 'address'},
+            {internalType: 'address', name: 'rewardMaster', type: 'address'},
+            {internalType: 'address', name: 'pantherPool', type: 'address'},
+            {internalType: 'address', name: 'zkpToken', type: 'address'},
+            {internalType: 'address', name: 'nftToken', type: 'address'},
         ],
         stateMutability: 'nonpayable',
         type: 'constructor',
@@ -84,12 +34,6 @@ export const abi = [
             {
                 indexed: false,
                 internalType: 'uint256',
-                name: 'prp',
-                type: 'uint256',
-            },
-            {
-                indexed: false,
-                internalType: 'uint256',
                 name: 'nft',
                 type: 'uint256',
             },
@@ -105,11 +49,6 @@ export const abi = [
                     {
                         internalType: 'uint96',
                         name: 'zkpRewards',
-                        type: 'uint96',
-                    },
-                    {
-                        internalType: 'uint96',
-                        name: 'prpRewards',
                         type: 'uint96',
                     },
                     {
@@ -132,26 +71,10 @@ export const abi = [
         inputs: [
             {
                 components: [
-                    {
-                        internalType: 'uint64',
-                        name: 'startTime',
-                        type: 'uint64',
-                    },
-                    {
-                        internalType: 'uint64',
-                        name: 'endTime',
-                        type: 'uint64',
-                    },
-                    {
-                        internalType: 'uint64',
-                        name: 'startApy',
-                        type: 'uint64',
-                    },
-                    {
-                        internalType: 'uint64',
-                        name: 'endApy',
-                        type: 'uint64',
-                    },
+                    {internalType: 'uint32', name: 'startTime', type: 'uint32'},
+                    {internalType: 'uint32', name: 'endTime', type: 'uint32'},
+                    {internalType: 'uint8', name: 'startZkpApy', type: 'uint8'},
+                    {internalType: 'uint8', name: 'endZkpApy', type: 'uint8'},
                 ],
                 indexed: false,
                 internalType:
@@ -166,80 +89,35 @@ export const abi = [
     {
         inputs: [],
         name: 'OWNER',
-        outputs: [
-            {
-                internalType: 'address',
-                name: '',
-                type: 'address',
-            },
-        ],
+        outputs: [{internalType: 'address', name: '', type: 'address'}],
         stateMutability: 'view',
         type: 'function',
     },
     {
         inputs: [],
         name: 'PANTHER_POOL',
-        outputs: [
-            {
-                internalType: 'address',
-                name: '',
-                type: 'address',
-            },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-    },
-    {
-        inputs: [],
-        name: 'PRP_REWARD_PER_STAKE',
-        outputs: [
-            {
-                internalType: 'uint256',
-                name: '',
-                type: 'uint256',
-            },
-        ],
+        outputs: [{internalType: 'address', name: '', type: 'address'}],
         stateMutability: 'view',
         type: 'function',
     },
     {
         inputs: [],
         name: 'REWARD_MASTER',
-        outputs: [
-            {
-                internalType: 'address',
-                name: '',
-                type: 'address',
-            },
-        ],
+        outputs: [{internalType: 'address', name: '', type: 'address'}],
         stateMutability: 'view',
         type: 'function',
     },
     {
         inputs: [],
         name: 'START_BLOCK',
-        outputs: [
-            {
-                internalType: 'uint256',
-                name: '',
-                type: 'uint256',
-            },
-        ],
+        outputs: [{internalType: 'uint256', name: '', type: 'uint256'}],
         stateMutability: 'view',
         type: 'function',
     },
     {
         inputs: [
-            {
-                internalType: 'bytes4',
-                name: 'action',
-                type: 'bytes4',
-            },
-            {
-                internalType: 'bytes',
-                name: 'message',
-                type: 'bytes',
-            },
+            {internalType: 'bytes4', name: 'action', type: 'bytes4'},
+            {internalType: 'bytes', name: 'message', type: 'bytes'},
         ],
         name: 'getRewardAdvice',
         outputs: [
@@ -280,126 +158,39 @@ export const abi = [
         type: 'function',
     },
     {
-        inputs: [
-            {
-                components: [
-                    {
-                        internalType: 'uint64',
-                        name: 'startTime',
-                        type: 'uint64',
-                    },
-                    {
-                        internalType: 'uint64',
-                        name: 'endTime',
-                        type: 'uint64',
-                    },
-                    {
-                        internalType: 'uint64',
-                        name: 'startApy',
-                        type: 'uint64',
-                    },
-                    {
-                        internalType: 'uint64',
-                        name: 'endApy',
-                        type: 'uint64',
-                    },
-                ],
-                internalType:
-                    'struct AdvancedStakeRewardController.RewardParams',
-                name: '_rewardParams',
-                type: 'tuple',
-            },
-            {
-                internalType: 'uint64',
-                name: 'rewardedSince',
-                type: 'uint64',
-            },
-        ],
+        inputs: [{internalType: 'uint256', name: 'time', type: 'uint256'}],
         name: 'getZkpApyAt',
-        outputs: [
-            {
-                internalType: 'uint256',
-                name: '',
-                type: 'uint256',
-            },
-        ],
-        stateMutability: 'pure',
+        outputs: [{internalType: 'uint256', name: '', type: 'uint256'}],
+        stateMutability: 'view',
         type: 'function',
     },
     {
         inputs: [],
         name: 'limits',
         outputs: [
-            {
-                internalType: 'uint96',
-                name: 'zkpRewards',
-                type: 'uint96',
-            },
-            {
-                internalType: 'uint96',
-                name: 'prpRewards',
-                type: 'uint96',
-            },
-            {
-                internalType: 'uint24',
-                name: 'nftRewards',
-                type: 'uint24',
-            },
+            {internalType: 'uint96', name: 'zkpRewards', type: 'uint96'},
+            {internalType: 'uint24', name: 'nftRewards', type: 'uint24'},
         ],
         stateMutability: 'view',
         type: 'function',
     },
     {
         inputs: [
-            {
-                internalType: 'address',
-                name: '',
-                type: 'address',
-            },
-            {
-                internalType: 'address',
-                name: '',
-                type: 'address',
-            },
-            {
-                internalType: 'uint256',
-                name: '',
-                type: 'uint256',
-            },
-            {
-                internalType: 'bytes',
-                name: '',
-                type: 'bytes',
-            },
+            {internalType: 'address', name: '', type: 'address'},
+            {internalType: 'address', name: '', type: 'address'},
+            {internalType: 'uint256', name: '', type: 'uint256'},
+            {internalType: 'bytes', name: '', type: 'bytes'},
         ],
         name: 'onERC721Received',
-        outputs: [
-            {
-                internalType: 'bytes4',
-                name: '',
-                type: 'bytes4',
-            },
-        ],
+        outputs: [{internalType: 'bytes4', name: '', type: 'bytes4'}],
         stateMutability: 'view',
         type: 'function',
     },
     {
         inputs: [
-            {
-                internalType: 'address',
-                name: 'token',
-                type: 'address',
-            },
-            {
-                internalType: 'address',
-                name: 'to',
-                type: 'address',
-            },
-            {
-                internalType: 'uint256',
-                name: 'amount',
-                type: 'uint256',
-            },
+            {internalType: 'address', name: 'token', type: 'address'},
+            {internalType: 'address', name: 'to', type: 'address'},
+            {internalType: 'uint256', name: 'amount', type: 'uint256'},
         ],
         name: 'rescueErc20',
         outputs: [],
@@ -410,26 +201,10 @@ export const abi = [
         inputs: [],
         name: 'rewardParams',
         outputs: [
-            {
-                internalType: 'uint64',
-                name: 'startTime',
-                type: 'uint64',
-            },
-            {
-                internalType: 'uint64',
-                name: 'endTime',
-                type: 'uint64',
-            },
-            {
-                internalType: 'uint64',
-                name: 'startApy',
-                type: 'uint64',
-            },
-            {
-                internalType: 'uint64',
-                name: 'endApy',
-                type: 'uint64',
-            },
+            {internalType: 'uint32', name: 'startTime', type: 'uint32'},
+            {internalType: 'uint32', name: 'endTime', type: 'uint32'},
+            {internalType: 'uint8', name: 'startZkpApy', type: 'uint8'},
+            {internalType: 'uint8', name: 'endZkpApy', type: 'uint8'},
         ],
         stateMutability: 'view',
         type: 'function',
@@ -451,26 +226,9 @@ export const abi = [
         inputs: [],
         name: 'totals',
         outputs: [
-            {
-                internalType: 'uint96',
-                name: 'zkpRewards',
-                type: 'uint96',
-            },
-            {
-                internalType: 'uint96',
-                name: 'prpRewards',
-                type: 'uint96',
-            },
-            {
-                internalType: 'uint24',
-                name: 'nftRewards',
-                type: 'uint24',
-            },
-            {
-                internalType: 'uint40',
-                name: 'scZkpStaked',
-                type: 'uint40',
-            },
+            {internalType: 'uint96', name: 'zkpRewards', type: 'uint96'},
+            {internalType: 'uint24', name: 'nftRewards', type: 'uint24'},
+            {internalType: 'uint40', name: 'scZkpStaked', type: 'uint40'},
         ],
         stateMutability: 'view',
         type: 'function',
@@ -478,24 +236,16 @@ export const abi = [
     {
         inputs: [
             {
-                internalType: 'uint32',
-                name: 'startTime',
-                type: 'uint32',
-            },
-            {
-                internalType: 'uint32',
-                name: 'endTime',
-                type: 'uint32',
-            },
-            {
-                internalType: 'uint8',
-                name: 'startApy',
-                type: 'uint8',
-            },
-            {
-                internalType: 'uint8',
-                name: 'endApy',
-                type: 'uint8',
+                components: [
+                    {internalType: 'uint32', name: 'startTime', type: 'uint32'},
+                    {internalType: 'uint32', name: 'endTime', type: 'uint32'},
+                    {internalType: 'uint8', name: 'startZkpApy', type: 'uint8'},
+                    {internalType: 'uint8', name: 'endZkpApy', type: 'uint8'},
+                ],
+                internalType:
+                    'struct AdvancedStakeRewardController.RewardParams',
+                name: '_newParams',
+                type: 'tuple',
             },
         ],
         name: 'updateRewardParams',
@@ -505,7 +255,7 @@ export const abi = [
     },
     {
         inputs: [],
-        name: 'updateZkpAndPrpRewardsLimit',
+        name: 'updateZkpRewardsLimit',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',

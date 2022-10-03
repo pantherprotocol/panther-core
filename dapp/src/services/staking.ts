@@ -137,7 +137,7 @@ async function craftAdvancedStakeData(
 
     // generate 3 spending pubKeys and secret messages:
     // one for each reward in zZKP, PRP, and NFT
-    for (let index = 0; index < 3; index++) {
+    for (let index = 0; index < 2; index++) {
         const randomSecret = generateRandomBabyJubValue();
         const spendingChildPublicKey = generateChildPublicKey(
             rootSpendingKeypair.publicKey,

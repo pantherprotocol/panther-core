@@ -8,12 +8,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import TermsOfService from '../TermsOfService';
 
+import {ScrollableDialogProps} from './ScrollableDialog.interface';
+
 import './styles.scss';
 
-export default function ScrollableDialog(props: {
-    handleClose: () => void;
-    title: string;
-}) {
+export default function ScrollableDialog(props: ScrollableDialogProps) {
     return (
         <div className="terms-dialog">
             <Dialog

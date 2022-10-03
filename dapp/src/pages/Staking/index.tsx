@@ -13,7 +13,6 @@ import Welcome from '../../components/Welcome';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {acknowledgedNotificationSelector} from '../../redux/slices/acknowledgedNotifications';
 import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
-import {getRemainingPrpRewards} from '../../redux/slices/remainingPrpRewards';
 import {getStakeTerms} from '../../redux/slices/stakeTerms';
 import {getTotalsOfAdvancedStakes} from '../../redux/slices/totalsOfAdvancedStakes';
 import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
@@ -33,7 +32,6 @@ const Staking = (): React.ReactElement => {
         dispatch(getTotalUnclaimedClassicRewards, context);
         dispatch(getAdvancedStakesRewards, {context});
         dispatch(getStakeTerms, context);
-        dispatch(getRemainingPrpRewards);
     }, [context, dispatch]);
 
     const firstVisit = useAppSelector(

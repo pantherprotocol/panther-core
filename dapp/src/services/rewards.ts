@@ -237,27 +237,38 @@ export async function unusedPrpGrantAmount(): Promise<BigNumber | null> {
     }
 }
 
-export async function rewardsVested(): Promise<BigNumber | Error> {
+export async function rewardsVested(): Promise<
+    | {
+          zkpRewards: BigNumber;
+          nftRewards: number;
+      }
+    | Error
+> {
     try {
         const maspChainId = MASP_CHAIN_ID as MaspChainIds;
         const contract = getAdvancedStakeRewardControllerContract(maspChainId);
-        const limits = await contract.limits();
-        return limits.zkpRewards;
+        return contract.limits();
     } catch (error) {
-        const msg = new Error(`Failed to get total rewards. ${error}`);
+        const msg = new Error(`Failed to get vested rewards. ${error}`);
         console.error(msg);
         return msg;
     }
 }
 
-export async function rewardsClaimed(): Promise<BigNumber | Error> {
+export async function rewardsClaimed(): Promise<
+    | {
+          zkpRewards: BigNumber;
+          nftRewards: number;
+          scZkpStaked: number;
+      }
+    | Error
+> {
     try {
         const maspChainId = MASP_CHAIN_ID as MaspChainIds;
         const contract = getAdvancedStakeRewardControllerContract(maspChainId);
-        const totals = await contract.totals();
-        return totals.zkpRewards;
+        return await contract.totals();
     } catch (error) {
-        const msg = new Error(`Failed to get rewards claimed. ${error}`);
+        const msg = new Error(`Failed to get claimed rewards. ${error}`);
         console.error(msg);
         return msg;
     }

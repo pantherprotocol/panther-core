@@ -14,12 +14,11 @@ import {switchNetwork} from '../../services/wallet';
 import DropdownList from '../Common/DropdownList';
 import {networkLogo} from '../Common/NetworkLogo';
 
+import {NetworkButtonProps} from './NetworkButton.interface';
+
 import './styles.scss';
 
-export const NetworkButton = (props: {
-    networkLogo: string;
-    networkName: string;
-}) => {
+export const NetworkButton = (props: NetworkButtonProps) => {
     const [open, setOpen] = useState<boolean>(false);
 
     return (

@@ -12,7 +12,7 @@ import UnstakingTab from '../UnstakeTab';
 
 import './styles.scss';
 
-export default function StakingUnstakingCard() {
+const StakingUnstakingCard = () => {
     const [toggle, setToggle] = useState('stake');
 
     const handleChange = (
@@ -40,7 +40,10 @@ export default function StakingUnstakingCard() {
     };
 
     return (
-        <Box className="advanced-balance-card-holder">
+        <Box
+            className="advanced-balance-card-holder"
+            data-testid="staking-unstaking-card_wrapper"
+        >
             <Card className="advanced-balance-card">
                 <Box>
                     <ToggleButtonGroup size="large" {...control}>
@@ -58,4 +61,6 @@ export default function StakingUnstakingCard() {
             </Card>
         </Box>
     );
-}
+};
+
+export default StakingUnstakingCard;

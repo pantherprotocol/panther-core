@@ -4,11 +4,11 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {name: network} = hre.network;
     if (
-        !process.env.DEPLOY_BRIDGE ||
         // Deployment on these networks supported only
-        (network != 'polygon' && network != 'mumbai')
+        network != 'polygon' &&
+        network != 'mumbai'
     ) {
-        console.log('Skip bridge deployment...');
+        console.log('Skip AdvancedStakeActionMsgRelayer_Proxy deployment...');
         return;
     }
 
@@ -33,4 +33,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ['msg-relayer-proxy'];
+func.tags = ['bridge', 'msg-relayer-proxy'];

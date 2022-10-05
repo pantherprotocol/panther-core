@@ -19,11 +19,13 @@ const getParams = async (network: string) => {
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {name: network} = hre.network;
     if (
-        !process.env.DEPLOY_BRIDGE ||
         // Deployment on these networks supported only
-        (network != 'mainnet' && network != 'goerli')
+        network != 'mainnet' &&
+        network != 'goerli'
     ) {
-        console.log('Skip bridge deployment...');
+        console.log(
+            'Skip AdvancedStakeRewardAdviserAndMsgSender deployment...',
+        );
         return;
     }
 
@@ -58,4 +60,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ['msg-sender'];
+func.tags = ['bridge', 'msg-sender'];
+func.dependencies = ['reward-master'];

@@ -4,9 +4,9 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {name: network} = hre.network;
     if (
-        !process.env.DEPLOY_BRIDGE ||
         // Deployment on these networks supported only
-        (network != 'polygon' && network != 'mumbai')
+        network != 'polygon' &&
+        network != 'mumbai'
     ) {
         console.log('Skip relayer proxy upgrade...');
         return;
@@ -60,5 +60,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 export default func;
 
-func.tags = ['msg-relayer-upgrade'];
+func.tags = ['bridge', 'msg-relayer-upgrade'];
 func.dependencies = ['msg-relayer-imp'];

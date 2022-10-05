@@ -5,6 +5,8 @@ import mockConsole from 'jest-mock-console';
 describe('Advanced stakes', () => {
     process.env.ADVANCED_STAKING_T_START = '1652356800'; // 2022/05/12 12:00 UTC
     process.env.ADVANCED_STAKING_T_END = '1656590400'; // 2022/06/30 12:00 UTC
+    process.env.ADVANCED_STAKING_APY_START = '70';
+    process.env.ADVANCED_STAKING_APY_END = '40';
 
     // Next line produces the following lint error, therefore disabled:
     // "Require statement not part of import statement

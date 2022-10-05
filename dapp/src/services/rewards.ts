@@ -24,8 +24,8 @@ https://docs.google.com/document/d/1lsZlE3RsUlk-Dx_dXAqKxXKWZD18ZuuNA-DKoEsArm4/
 */
 export const T_START = Number(process.env.ADVANCED_STAKING_T_START) * 1000;
 export const T_END = Number(process.env.ADVANCED_STAKING_T_END) * 1000;
-const APY_START = 70;
-const APY_END = 40;
+export const APY_START = Number(process.env.ADVANCED_STAKING_APY_START);
+export const APY_END = Number(process.env.ADVANCED_STAKING_APY_END);
 const DAPY_DT = (APY_END - APY_START) / (T_END - T_START);
 // Due to the recent changes in the smart contract, the PRP UTXOs are not being
 // generated upon staking. This is a temporary solution to hardcode the PRP

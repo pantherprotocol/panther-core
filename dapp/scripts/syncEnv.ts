@@ -21,6 +21,7 @@
 import child_process from 'child_process';
 import fs from 'fs';
 
+import {JsonRpcProvider} from '@ethersproject/providers';
 // eslint-disable-next-line import/order
 import * as dotenv from 'dotenv';
 
@@ -103,13 +104,19 @@ type Terms = {
     allowedSince: number;
     allowedTill: number;
     lockedTill: number;
+    apyStart: number;
+    apyEnd: number;
 };
 
-async function getStakingTerms(staking: Staking): Promise<Terms> {
+async function getTerms(
+    staking: Staking,
+    provider: JsonRpcProvider,
+): Promise<Terms> {
     const ADVANCED = ethers.utils.id('advanced').slice(0, 10);
     const terms = await staking.terms(ADVANCED);
     const {allowedSince, allowedTill, lockedTill} = terms;
-    return {allowedSince, allowedTill, lockedTill};
+    const [, , apyStart, apyEnd] = await getControllerTerms(provider, staking);
+    return {allowedSince, allowedTill, lockedTill, apyStart, apyEnd};
 }
 
 function reportStakingTerms(terms: Terms) {
@@ -131,10 +138,10 @@ function reportStakingTerms(terms: Terms) {
     );
 }
 
-async function getControllerTimes(
+async function getControllerTerms(
     provider: ethers.providers.JsonRpcProvider,
     staking: Staking,
-): Promise<[number, number]> {
+): Promise<[number, number, number, number]> {
     const rewardMasterAddress = await staking.REWARD_MASTER();
     console.log(`Staking contract has REWARD_MASTER at ${rewardMasterAddress}`);
 
@@ -151,16 +158,18 @@ async function getControllerTimes(
         `RewardMaster has advisor (AdvancedStakeRewardController) at ${controllerAddress}`,
     );
     const controller = getAdvancedStakeRewardControllerContract(CHAIN_ID);
-
-    const rewardingStart = (await controller.rewardParams()).startTime;
-    const rewardingEnd = (await controller.rewardParams()).endTime;
+    const params = await controller.rewardParams();
+    const rewardingStart = params.startTime;
+    const rewardingEnd = params.endTime;
+    const startApy = params.startZkpApy;
+    const endApy = params.endZkpApy;
     info(
         `rewardingStart is ${rewardingStart} (${new Date(
             rewardingStart * 1000,
         )})`,
     );
     info(`rewardingEnd is ${rewardingEnd} (${new Date(rewardingEnd * 1000)})`);
-    return [rewardingStart, rewardingEnd];
+    return [rewardingStart, rewardingEnd, startApy, endApy];
 }
 
 type Environment = {[name: string]: string};
@@ -220,7 +229,7 @@ async function checkControllerTimes(
     staking: Staking,
     terms: Terms,
 ): Promise<void> {
-    const [rewardingStart, rewardingEnd] = await getControllerTimes(
+    const [rewardingStart, rewardingEnd] = await getControllerTerms(
         provider,
         staking,
     );
@@ -321,7 +330,8 @@ function checkEnvVarsForSync(
     const data = [
         ['ADVANCED_STAKING_T_START', String(terms.allowedSince)],
         ['ADVANCED_STAKING_T_END', String(terms.allowedTill)],
-        ['ADVANCED_STAKING_T_UNLOCK', String(terms.lockedTill)],
+        ['ADVANCED_STAKING_APY_START', String(terms.apyStart)],
+        ['ADVANCED_STAKING_APY_END', String(terms.apyEnd)],
     ];
     const changes: Change[] = [];
     for (const [name, value] of data) {
@@ -374,7 +384,7 @@ async function main() {
     console.log();
 
     const staking = getStakingContract(provider, 80001);
-    const terms = await getStakingTerms(staking);
+    const terms = await getTerms(staking, provider);
     reportStakingTerms(terms);
 
     console.log();

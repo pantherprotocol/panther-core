@@ -16,4 +16,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ['classic-staking', 'StakeRewardAdviser'];
+func.tags = ['classic-staking', 'stake-reward-adviser'];

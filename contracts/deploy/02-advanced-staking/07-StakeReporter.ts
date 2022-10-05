@@ -21,5 +21,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ['classic-staking', 'StakesReporter'];
-func.dependencies = ['Staking', 'StakeRewardController'];
+func.tags = ['classic-staking', 'stakes-reporter'];
+func.dependencies = ['staking', 'stake-reward-controller'];

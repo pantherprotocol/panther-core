@@ -18,6 +18,7 @@ import './tasks/advanced-staking/proposal-gen';
 import './tasks/advanced-staking/reward-adviser-add';
 import './tasks/advanced-staking/reward-pool-init';
 import './tasks/advanced-staking/staking-list';
+import './tasks/advanced-staking/staking-bridge-local';
 import './tasks/advanced-staking/terms-add';
 import './tasks/advanced-staking/terms-add-advanced-local';
 import './tasks/advanced-staking/time-increase';

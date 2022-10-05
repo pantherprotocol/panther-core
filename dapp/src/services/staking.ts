@@ -16,7 +16,6 @@ import {IKeypair} from '../lib/types';
 import type {IStakingTypes, Staking} from '../types/contracts/Staking';
 import {StakeRewardBN, StakeTypes} from '../types/staking';
 
-import {MaspChainIds} from './connectors';
 import {
     ContractName,
     chainHasStakesReporter,
@@ -28,9 +27,8 @@ import {
     getStakingContract,
     getTokenContract,
     hasContract,
-    getAdvancedStakeRewardControllerContract,
 } from './contracts';
-import {env, MASP_CHAIN_ID} from './env';
+import {env} from './env';
 import axios from './http';
 import {encryptRandomSecret} from './message-encryption';
 import {calculateRewardsForStake} from './rewards';
@@ -48,7 +46,7 @@ export const ADVANCED_TYPE_HEX = utils.id('advanced').slice(0, 10);
 
 // scaling factor of staked total. See struct Totals in
 // AdvancedStakeRewardController.sol
-const STAKED_SCALING_FACTOR = BigNumber.from(10).pow(15);
+export const ZKP_STAKED_SCALING_FACTOR = BigNumber.from(10).pow(15);
 
 const EIP712_TYPES = {
     Permit: [
@@ -137,7 +135,7 @@ async function craftAdvancedStakeData(
 
     // generate 3 spending pubKeys and secret messages:
     // one for each reward in zZKP, PRP, and NFT
-    for (let index = 0; index < 3; index++) {
+    for (let index = 0; index < 2; index++) {
         const randomSecret = generateRandomBabyJubValue();
         const spendingChildPublicKey = generateChildPublicKey(
             rootSpendingKeypair.publicKey,
@@ -650,20 +648,4 @@ export async function getStakingTermsFromContract(
     const stakingContract = getStakingContract(library, chainId);
     const stakingTypeHex = utils.id(stakeType).slice(0, 10);
     return await stakingContract.terms(stakingTypeHex);
-}
-
-export async function getSumAllAdvancedStakes(): Promise<BigNumber | Error> {
-    try {
-        const contract = getAdvancedStakeRewardControllerContract(
-            MASP_CHAIN_ID as MaspChainIds,
-        );
-        const staked = (await contract.totals()).scZkpStaked;
-        return BigNumber.from(staked.toString()).mul(STAKED_SCALING_FACTOR);
-    } catch (error) {
-        const msg = new Error(
-            `Failed to get sum of all advanced staked. ${error}`,
-        );
-        console.error(msg);
-        return msg;
-    }
 }

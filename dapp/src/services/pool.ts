@@ -21,12 +21,21 @@ import {AdvancedStakeRewards, UTXOStatus} from '../types/staking';
 import {
     getPoolContract,
     getSignableContract,
+    getTokenContract,
     getZAssetsRegistryContract,
 } from './contracts';
 import {env} from './env';
 import {safeFetch} from './http';
 import {deriveSpendingChildKeypair} from './keychain';
 import {decryptRandomSecret as decryptRandomSecret} from './message-encryption';
+
+// 452 (225 bytes) is the size of the UTXO data containing 1 zZKP UTXO, 1
+// NFT UTXO generated during advanced stake. First byte is reserved for the
+// msg version number: 0x24 (36) for the current version.
+// See documentation for more details:
+// https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k/
+const ADVANCED_STAKE_UTXO_DATA_SIZE = 452;
+const ADVANCED_STAKE_MESSAGE_TYPE = '0x24';
 
 export async function getExitTime(
     library: any,
@@ -176,9 +185,8 @@ export async function exit(
         cannotDecode,
         isChildKeyInvalid,
         childSpendingKeypair,
-        tokenAddress,
+        zAssetId,
         amounts,
-        tokenId,
         nullifier,
     } = await unpackUTXOAndDeriveKeys(
         contract,
@@ -207,8 +215,24 @@ export async function exit(
         ];
     }
 
+    const tokenContract = getTokenContract(library, chainId);
     const zAssetsRegistry = getZAssetsRegistryContract(library, chainId);
-    const zAssetId = await zAssetsRegistry.getZAssetId(tokenAddress, tokenId);
+    const tokenId = BigInt(0);
+    const zAssetBN = await zAssetsRegistry.getZAssetId(
+        tokenContract.address,
+        tokenId,
+    );
+
+    if (zAssetBN.toHexString() !== zAssetId) {
+        return [
+            UTXOStatus.UNDEFINED,
+            {
+                message: 'zAsset is not registered.',
+                details: 'Expected: ' + bigintToBytes32 + ', got: ' + zAssetId,
+            } as DetailedError,
+        ];
+    }
+
     const commitmentHex = bigintToBytes32(
         poseidon([
             bigintToBytes32(childSpendingKeypair!.publicKey[0]),
@@ -263,7 +287,7 @@ export async function exit(
 
     const result = await poolContractExit(
         contract,
-        tokenAddress!,
+        tokenContract.address,
         tokenId as bigint,
         amounts as bigint,
         creationTime,
@@ -335,9 +359,8 @@ async function unpackUTXOAndDeriveKeys(
     cannotDecode?: boolean;
     childSpendingKeypair?: IKeypair;
     ciphertextMsg?: string;
-    tokenAddress?: string;
+    zAssetId?: string;
     amounts?: bigint;
-    tokenId?: bigint;
     nullifier?: string;
 }> {
     const decoded = decodeUTXOData(utxoData);
@@ -348,7 +371,7 @@ async function unpackUTXOAndDeriveKeys(
             cannotDecode: true,
         };
     }
-    const [ciphertextMsg, tokenAddress, amounts, tokenId] = decoded;
+    const [ciphertextMsg, zAssetId, amounts] = decoded;
 
     const randomSecret = decryptRandomSecret(
         ciphertextMsg,
@@ -379,60 +402,54 @@ async function unpackUTXOAndDeriveKeys(
         status,
         childSpendingKeypair,
         ciphertextMsg,
-        tokenAddress,
+        zAssetId,
         amounts,
-        tokenId,
         nullifier,
     };
 }
 
-function decodeUTXOData(
-    utxoData: string,
-): [string, string, bigint, bigint] | Error {
-    // 328, 648 and 968 are the size of the UTXO data containing 1 UTXO, 2 UTXOs
-    // and 3 UTXOs commitments, respectively. First byte is reserved for the msg
-    // version number. Next 92 bytes after the Message type is packed message
-    // with UTXO secrets, 32 bytes for the token address, and the last 32 bytes
-    // for the token id. See documentation for more details:
+function decodeUTXOData(utxoData: string): [string, string, bigint] | Error {
+    // 452 (225 bytes) is the size of the UTXO data containing 1 zZKP UTXO, 1
+    // NFT UTXO generated during advanced stake. First byte is reserved for the
+    // msg version number. Next 96 bytes after the Message type are: 64 bytes
+    // are packed message with UTXO secrets, 32 bytes for the zAssetsID. Last
+    // 128 bytes are the bytes with the NFT data (ignored for now).
+    // See documentation for more details:
     // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k/
-    if (
-        utxoData.length !== 968 &&
-        utxoData.length !== 648 &&
-        utxoData.length !== 328
-    ) {
+    if (utxoData.length !== ADVANCED_STAKE_UTXO_DATA_SIZE) {
         const msg = 'Invalid UTXO data length';
         console.error(msg);
         return new Error(msg);
     }
 
-    if (utxoData.slice(0, 4) !== '0xab') {
+    if (utxoData.slice(0, 4) !== ADVANCED_STAKE_MESSAGE_TYPE) {
         const msg = 'Invalid UTXO data or message type';
         console.error(msg);
         return new Error(msg);
     }
 
     const decoded = utils.defaultAbiCoder.decode(
-        ['uint256[3]', 'uint256', 'uint256'],
+        ['uint256[2]', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256'],
         '0x' + utxoData.slice(4, utxoData.length),
     );
+
     const secrets = decoded[0];
     const ciphertextMsg = secrets
         .map(toBytes32)
         .map((v: string) => v.slice(2))
         .join('');
 
-    const tokenAndAmount = BigNumber.from(decoded[1]);
-    const tokenAddress = bigintToBytes(tokenAndAmount.shr(96).toBigInt(), 20);
-    const amount = tokenAndAmount
+    const zAssetIdAndAmount = BigNumber.from(decoded[1]);
+    const zAssetId = bigintToBytes(zAssetIdAndAmount.shr(96).toBigInt(), 20);
+    const amount = zAssetIdAndAmount
         .and(BigInt('0xFFFFFFFFFFFFFFFFFFFFFFFF'))
         .toBigInt();
-    const tokenId = decoded[2];
 
     console.debug(
-        `ciphertextMsg=${ciphertextMsg}, tokenAddress=${tokenAddress}, amount=${amount}, tokenId=${tokenId}`,
+        `ciphertextMsg=${ciphertextMsg}, zAssetId=${zAssetId}, amount=${amount}}`,
     );
 
-    return [ciphertextMsg, tokenAddress, amount, tokenId];
+    return [ciphertextMsg, zAssetId, amount];
 }
 
 function checkUnpackingErrors(

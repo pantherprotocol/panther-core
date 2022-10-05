@@ -32,7 +32,6 @@ export function getAdvancedStakingRewardQuery(staker: string): string {
             commitments
             utxoData
             zZkpAmount
-            prpAmount
           }
         }
       }

@@ -2,7 +2,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import {safeParseStringToBN} from '../../lib/numbers';
 import {rewardsVested, rewardsClaimed} from '../../services/rewards';
-import {getSumAllAdvancedStakes} from '../../services/staking';
+import {ZKP_STAKED_SCALING_FACTOR} from '../../services/staking';
 import {createExtraReducers, LoadingStatus} from '../slices/shared';
 import {RootState} from '../store';
 
@@ -27,23 +27,21 @@ export const getTotalsOfAdvancedStakes = createAsyncThunk(
     async (): Promise<AdvancedStakingState | null> => {
         const totals: AdvancedStakingState = {};
 
-        const totalStaked = await getSumAllAdvancedStakes();
-        if (!totalStaked || totalStaked instanceof Error) {
+        const claimed = await rewardsClaimed();
+        if (claimed instanceof Error) {
             return totals;
         }
-        totals.staked = totalStaked.toString();
+        totals.staked = ZKP_STAKED_SCALING_FACTOR.mul(
+            claimed.scZkpStaked,
+        ).toString();
+
+        totals.claimedRewards = claimed.zkpRewards.toString();
 
         const vested = await rewardsVested();
         if (!vested || vested instanceof Error) {
             return totals;
         }
-        totals.vestedRewards = vested.toString();
-
-        const claimed = await rewardsClaimed();
-        if (!claimed || claimed instanceof Error) {
-            return totals;
-        }
-        totals.claimedRewards = claimed.toString();
+        totals.vestedRewards = vested.zkpRewards.toString();
 
         return totals;
     },

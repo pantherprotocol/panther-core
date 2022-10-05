@@ -174,10 +174,27 @@ export function calculateRewardsForAdvancedStake(
             (r: AdvancedStakeRewardsResponse) =>
                 r.creationTime === stake.stakedAt,
         );
+
         if (rewards) {
+            // TODO: this hardcoded value should be removed in v 1.0 Due to the
+            // recent changes in the smart contract, the PRP UTXOs are not being
+            // generated upon staking. This is a temporary solution to hardcode
+            // the PRP rewards. Only first 2000 stakes will get 2000 PRP
+            // rewards. The rest will get 0 PRP rewards. This will be removed
+            // once the PRP UTXOs are generated upon deployment of the version
+            // 1.0 of the protocol. Magic number 4 comes from the fact that
+            // commitments generate 4 leaves in the tree. Therefore, to get the
+            // sequential number of the stake, we need to divide the left leafId
+            // by 4.
+            const quadIndex = BigNumber.from(rewards.id).toNumber() / 4;
+            const prpAmount =
+                quadIndex < NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD
+                    ? PRP_REWARD_PER_STAKE
+                    : '0';
+
             return {
                 [StakingRewardTokenID.zZKP]: BigNumber.from(rewards.zZkpAmount),
-                [StakingRewardTokenID.PRP]: BigNumber.from(rewards.prpAmount),
+                [StakingRewardTokenID.PRP]: BigNumber.from(prpAmount),
             };
         }
     }
@@ -220,27 +237,38 @@ export async function unusedPrpGrantAmount(): Promise<BigNumber | null> {
     }
 }
 
-export async function rewardsVested(): Promise<BigNumber | Error> {
+export async function rewardsVested(): Promise<
+    | {
+          zkpRewards: BigNumber;
+          nftRewards: number;
+      }
+    | Error
+> {
     try {
         const maspChainId = MASP_CHAIN_ID as MaspChainIds;
         const contract = getAdvancedStakeRewardControllerContract(maspChainId);
-        const limits = await contract.limits();
-        return limits.zkpRewards;
+        return contract.limits();
     } catch (error) {
-        const msg = new Error(`Failed to get total rewards. ${error}`);
+        const msg = new Error(`Failed to get vested rewards. ${error}`);
         console.error(msg);
         return msg;
     }
 }
 
-export async function rewardsClaimed(): Promise<BigNumber | Error> {
+export async function rewardsClaimed(): Promise<
+    | {
+          zkpRewards: BigNumber;
+          nftRewards: number;
+          scZkpStaked: number;
+      }
+    | Error
+> {
     try {
         const maspChainId = MASP_CHAIN_ID as MaspChainIds;
         const contract = getAdvancedStakeRewardControllerContract(maspChainId);
-        const totals = await contract.totals();
-        return totals.zkpRewards;
+        return await contract.totals();
     } catch (error) {
-        const msg = new Error(`Failed to get rewards claimed. ${error}`);
+        const msg = new Error(`Failed to get claimed rewards. ${error}`);
         console.error(msg);
         return msg;
     }

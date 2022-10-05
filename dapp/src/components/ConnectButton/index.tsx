@@ -1,5 +1,6 @@
 import React, {useCallback} from 'react';
 
+import {Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
@@ -23,17 +24,21 @@ const ConnectButton = () => {
     }, [onConnect, dispatch]);
 
     return (
-        <PrimaryActionButton
-            onClick={
-                isNoEthereumProviderError ? safeOpenMetamask : onWalletConnect
-            }
-        >
-            <span>
-                {isNoEthereumProviderError
-                    ? 'Install MetaMask'
-                    : 'Connect Wallet'}
-            </span>
-        </PrimaryActionButton>
+        <Box data-testid="connect-button_connect-button_container">
+            <PrimaryActionButton
+                onClick={
+                    isNoEthereumProviderError
+                        ? safeOpenMetamask
+                        : onWalletConnect
+                }
+            >
+                <span data-testid="connect-button_connect-button_text">
+                    {isNoEthereumProviderError
+                        ? 'Install MetaMask'
+                        : 'Connect Wallet'}
+                </span>
+            </PrimaryActionButton>
+        </Box>
     );
 };
 export default ConnectButton;

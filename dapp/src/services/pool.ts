@@ -377,7 +377,12 @@ async function unpackUTXOAndDeriveKeys(
         ciphertextMsg,
         rootReadingPrivateKey,
     );
-
+    if (!randomSecret) {
+        return {
+            status: UTXOStatus.UNDEFINED,
+            error: new Error(`Failed to decrypt random secret ${randomSecret}`),
+        };
+    }
     const [childSpendingKeypair, isChildKeyValid] = deriveSpendingChildKeypair(
         rootSpendingKeypair,
         randomSecret,

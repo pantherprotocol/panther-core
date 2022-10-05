@@ -66,7 +66,7 @@ export function encryptRandomSecret(
 export function decryptRandomSecret(
     ciphertextMsg: string,
     rootReadingPrivateKey: PrivateKey,
-): bigint {
+): bigint | undefined {
     console.time('decryptRandomSecret()');
     const [sharedKeyPacked, iCiphertext] = sliceCipherMsg(ciphertextMsg);
     const ephemeralSharedPubKey = unpackPublicKey(sharedKeyPacked);
@@ -75,12 +75,15 @@ export function decryptRandomSecret(
         rootReadingPrivateKey,
         ephemeralSharedPubKey,
     );
-
-    const randomSecretHex = decryptMessage(
-        iCiphertext,
-        packPublicKey(ephemeralPubKey),
-    );
-
+    let randomSecretHex;
+    try {
+        randomSecretHex = decryptMessage(
+            iCiphertext,
+            packPublicKey(ephemeralPubKey),
+        );
+    } catch (error) {
+        throw new Error(`Failed to get random secret ${error}`);
+    }
     console.timeEnd('decryptRandomSecret()');
     return uint8ArrayToBigInt(randomSecretHex);
 }

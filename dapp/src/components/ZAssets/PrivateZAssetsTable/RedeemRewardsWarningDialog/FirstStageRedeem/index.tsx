@@ -15,6 +15,7 @@ import {useWeb3React} from '@web3-react/core';
 import {utils} from 'ethers';
 import moment from 'moment';
 
+import {parseTxErrorMessage} from '../../../../../lib/errors';
 import {formatCurrency} from '../../../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../../../redux/hooks';
 import {updateExitCommitmentTime} from '../../../../../redux/slices/advancedStakesRewards';
@@ -34,6 +35,7 @@ import {isDetailedError} from '../../../../../types/error';
 import {AdvancedStakeRewards} from '../../../../../types/staking';
 import BackButton from '../../../../BackButton';
 import {notifyError} from '../../../../Common/errors';
+import {openNotification} from '../../../../Common/notification';
 import PrimaryActionButton from '../../../../Common/PrimaryActionButton';
 
 export default function FirstStageRedeem(props: {
@@ -92,14 +94,25 @@ export default function FirstStageRedeem(props: {
                 data: {account, caller: 'redeem button'},
             },
         });
-        const tx = await registerCommitToExit(
-            library,
-            account as string,
-            chainId as number,
-            rewards.utxoData,
-            BigInt(rewards.id),
-            keys,
-        );
+        handleClose();
+        let tx;
+        try {
+            tx = await registerCommitToExit(
+                library,
+                account as string,
+                chainId as number,
+                rewards.utxoData,
+                BigInt(rewards.id),
+                keys,
+            );
+        } catch (err) {
+            dispatch(registerWalletActionFailure, 'registerCommitToExit');
+            return openNotification(
+                'Transaction error',
+                parseTxErrorMessage(err),
+                'danger',
+            );
+        }
         if (isDetailedError(tx)) {
             dispatch(registerWalletActionFailure, 'registerCommitToExit');
             return notifyError(tx);

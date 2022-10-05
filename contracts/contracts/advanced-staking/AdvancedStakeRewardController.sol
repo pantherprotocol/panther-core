@@ -24,7 +24,7 @@ import "../common/TransferHelper.sol";
  * receives the `getRewardAdvice` call from the `RewardMaster` contract with the `STAKE` action
  * type and the stake data (the `message`) being the call parameters.
  * On the `getRewardAdvice` call received, this contract:
- * - computes the amounts of the $ZKP reward, and the optional NFT reward
+ * - computes the amounts of the $ZKP reward and the optional NFT reward
  * - if the `NFT_TOKEN` is non-zero address, it calls `grantOneToken` on the NFT_TOKEN, and gets
  * the `tokenId` of the minted NFT token
  * - calls `generateDeposits` of the PantherPoolV0, providing amounts/parameters of $ZKP, and
@@ -261,8 +261,11 @@ contract AdvancedStakeRewardController is
         address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
 
         // Updating the rewards limits
-        bool isUpdated;
-        isUpdated = _updateZkpRewardsLimitAndAllowance(_limits, totals, vault);
+        bool isUpdated = _updateZkpRewardsLimitAndAllowance(
+            _limits,
+            totals,
+            vault
+        );
 
         if (isUpdated) {
             limits = _limits;

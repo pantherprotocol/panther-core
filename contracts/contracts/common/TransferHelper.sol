@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // solhint-disable avoid-low-level-calls
 // solhint-disable compiler-version
-pragma solidity >=0.6.0;
+pragma solidity >=0.8.0;
 
 /// @title TransferHelper library
 /// @dev Helper methods for interacting with ERC20, ERC721, ERC1155 tokens and sending ETH

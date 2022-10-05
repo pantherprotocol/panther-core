@@ -27,7 +27,6 @@ import "./pantherPool/PubKeyGenerator.sol";
  * It locks assets (ERC-20, ERC-721 or ERC-1155 tokens) of a user with the `Vault` smart
  * contract and generates UTXO's in the MASP for the user (i.e. builds merkle trees of
  * UTXO's commitments).
- * The present contract is assumed to have the "grant processor" role with the latest.
  * This contract does not implement the functionality for spending UTXO's (other than the
  * `exit` described further) and is supposed to be upgraded with the new one.
  * The new contract, the "v.1" of the MASP, is planned to implement spending of UTXO's
@@ -181,7 +180,8 @@ contract PantherPoolV0 is
 
                 commitments[utxoIndex] = ZERO_VALUE;
                 perUtxoData[utxoIndex] = "";
-                // no need to update msgTypes as UTXO_DATA_TYPE5 == 0
+                // As UTXO_DATA_TYPE5 is 0, next statement may be skipped
+                // msgTypes |= UTXO_DATA_TYPE5;
             } else {
                 // non-zero UTXO
                 commitments[utxoIndex] = generateCommitment(

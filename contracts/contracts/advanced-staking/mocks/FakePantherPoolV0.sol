@@ -143,35 +143,4 @@ contract FakePantherPoolV0 is IPantherPoolV0 {
         isSpent[nullifier] = true;
         emit Nullifier(nullifier);
     }
-
-    function grant(address grantee, bytes4 grantType)
-        external
-        override
-        returns (uint256 prpAmount)
-    {
-        // bytes4(keccak256("forAdvancedStakeGrant"))
-        require(
-            grantType == bytes4(0x31a180d4),
-            "FakePantherPoolV0: INVALID_GRANT_TYPE"
-        );
-
-        prpAmount = 1000;
-        emit PrpGrantIssued(grantType, grantee, prpAmount);
-    }
 }
-
-// TODO: write FakePantherPoolV0::generateDeposits u-test based on the following example
-/*
-Example:
-```js
-const {depositFakeInput: {tokens, tokenIds, extAmounts, pubSpendingKeys, secrets}, utxoData} = require(
-    './test/assets/advancesStakingData.data.ts'
-)
-const [ createdAt, exitTime, vaultAddr ] = [ '0xb0bab0', '0x62626262', '0x6379dfD29D1b4bC713152F6B683223891ea118C2']
-const FakePantherPoolV0 = await ethers.getContractFactory('FakePantherPoolV0')
-const fakePool = await FakePantherPoolV0.deploy(vaultAddr, exitTime)
-let tx = await fakePool.generateDeposits(tokens, tokenIds, extAmounts, pubSpendingKeys, secrets, createdAt)
-let rcp = await tx.wait()
-assert(!!rcp.logs[0].data.match(new RegExp(utxoData.replace('0x', ''))))
-```
-*/

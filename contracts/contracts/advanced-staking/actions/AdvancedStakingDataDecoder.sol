@@ -46,14 +46,13 @@ abstract contract AdvancedStakingDataDecoder {
             slot #1: 0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f
             slot #2: 0x2021000000000000000000000000000000000000000000000000000000000000
 
+            If `OUT_RWRD_UTXOs == 2` and `CIPHERTEXT1_WORDS == 2`,
             `bytes memory data` expected to be:
-            concatenate( // each element is 32-bit long
+            concatenate( // each element is 32-byte long
                 pubSpendingKeys[0].x, pubSpendingKeys[0].y,
                 pubSpendingKeys[1].x, pubSpendingKeys[1].y,
-                pubSpendingKeys[2].x, pubSpendingKeys[2].y,
-                (secrets[0])[0], (secrets[0])[1], (secrets[0])[2],
-                (secrets[1])[0], (secrets[1])[1], (secrets[1])[2],
-                (secrets[2])[0], (secrets[2])[1], (secrets[2])[2],
+                (secrets[0])[0], (secrets[0])[1],
+                (secrets[1])[0], (secrets[1])[1]
             )
         */
         for (uint256 i = 0; i < OUT_RWRD_UTXOs; i++) {

@@ -10,16 +10,6 @@ import { CIPHERTEXT1_WORDS, OUT_MAX_UTXOs, PATH_ELEMENTS_NUM } from "../../commo
  */
 interface IPantherPoolV0 {
     /**
-     * @notice Increase the "unused grants" amount (in PRPs) of the given grantee by the amount
-     * defined by the given "grant type"
-     * @return prpAmount The amount (in PRPs) of the grant
-     * @dev An authorized "curator" may call with the enabled (added) "grant type" only
-     */
-    function grant(address grantee, bytes4 grantType)
-        external
-        returns (uint256 prpAmount);
-
-    /**
      * @notice Transfer assets from the msg.sender to the VAULT and generate UTXOs in the MASP
      * @param tokens Address of the token contract for every UTXO
      * @dev For PRP granted the address ot this contract (proxy) is supposed to be used
@@ -70,18 +60,6 @@ interface IPantherPoolV0 {
         uint256 creationTime,
         bytes32[OUT_MAX_UTXOs] commitments,
         bytes utxoData
-    );
-
-    /**
-     * @dev PRP grant issued
-     * @param grantType "Type" of the PRP grant
-     * @param grantee User to whom the grant is issued
-     * @param prpAmount Amount of the grant in PRP
-     */
-    event PrpGrantIssued(
-        bytes4 indexed grantType,
-        address grantee,
-        uint256 prpAmount
     );
 
     /**

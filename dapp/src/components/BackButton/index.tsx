@@ -8,8 +8,15 @@ import './styles.scss';
 
 function BackButton(props: {onClick: () => any}) {
     return (
-        <Box className="back-button-holder">
-            <IconButton className="back-button" onClick={props.onClick}>
+        <Box
+            className="back-button-holder"
+            data-testid="back-button_back-button_holder"
+        >
+            <IconButton
+                className="back-button"
+                onClick={props.onClick}
+                data-testid="back-button_back-button_icon"
+            >
                 <img src={backButtonLeftArrow} />
                 <Typography id="caption">Back</Typography>
             </IconButton>

@@ -1,9 +1,9 @@
 import React from 'react';
 
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {Box, Tooltip} from '@mui/material';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
+import copyIcon from '../../../images/copy-icon.svg';
 import Address from '../../Address';
 
 import './styles.scss';
@@ -15,9 +15,9 @@ export default function AddressWithSetting(props: {account: string}) {
                 <Address />
             </Box>
             <Tooltip title="Copy Wallet Address" placement="top">
-                <span>
+                <span className="copy-icon-wrapper">
                     <CopyToClipboard text={props.account}>
-                        <ContentCopyIcon className="content-copy-icon" />
+                        <img src={copyIcon} alt="copy-icon" />
                     </CopyToClipboard>
                 </span>
             </Tooltip>

@@ -15,10 +15,10 @@ test('should render', () => {
     expect(smallButton).toBeInTheDocument();
 });
 
-test('click on button should trigger onClick event', () => {
+test('click on button should trigger onClick event', async () => {
     renderComponent(<SmallButton text={buttonText} onClick={handleClick} />);
     const smallButton = screen.queryByTestId('small-button_holder');
-    waitFor(() => expect(smallButton).toBeInTheDocument());
+    await waitFor(() => expect(smallButton).toBeInTheDocument());
     smallButton && fireEvent.click(smallButton);
     waitFor(() => expect(handleClick).toBeCalled());
 });

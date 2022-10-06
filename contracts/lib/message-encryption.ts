@@ -1,35 +1,18 @@
 import crypto from 'crypto';
 import {babyjub} from 'circomlibjs';
-import {utils} from 'ethers';
-
-import {bigintToBytes32} from './conversions';
 import {
-    deriveKeypairFromSeed,
     formatPrivateKeyForBabyJub,
     generatePublicKey,
     generateRandomBabyJubValue,
     multiplyScalars,
 } from './keychain';
-import {ICiphertext} from './types/message';
 import {
     PrivateKey,
     PublicKey,
-    EcdhSharedKey,
     EcdhSharedKeyPoint,
     IKeypair,
 } from './types/keypair';
-import {Buffer} from 'buffer';
 import {bigintToBuf, bufToBigint} from 'bigint-conversion';
-
-export const generateEcdhSharedKey = (
-    privateKey: PrivateKey,
-    publicKey: PublicKey,
-): EcdhSharedKey => {
-    return babyjub.mulPointEscalar(
-        publicKey,
-        formatPrivateKeyForBabyJub(privateKey),
-    )[0];
-};
 
 export const generateEcdhSharedKeyPoint = (
     privateKey: PrivateKey,
@@ -40,42 +23,6 @@ export const generateEcdhSharedKeyPoint = (
         formatPrivateKeyForBabyJub(privateKey),
     );
 };
-
-export function encryptMessage(
-    plaintext: string,
-    sharedKey: EcdhSharedKey,
-): ICiphertext {
-    const iv = crypto.randomBytes(16);
-
-    try {
-        const cipher = crypto.createCipheriv(
-            'aes-256-cbc',
-            utils.arrayify(bigintToBytes32(sharedKey as bigint)),
-            iv,
-        );
-        return {
-            iv: iv.toString('hex'),
-            data: cipher.update(plaintext, 'utf8', 'hex') + cipher.final('hex'),
-        };
-    } catch (error) {
-        throw Error(`Failed to encrypt message: ${error}`);
-    }
-}
-
-export function decryptMessage(
-    ciphertext: ICiphertext,
-    sharedKey: EcdhSharedKey,
-): string {
-    const decipher = crypto.createDecipheriv(
-        'aes-256-cbc',
-        utils.arrayify(bigintToBytes32(sharedKey as bigint)),
-        Buffer.from(ciphertext.iv, 'hex'),
-    );
-
-    return (
-        decipher.update(ciphertext.data, 'hex', 'utf8') + decipher.final('utf8')
-    );
-}
 
 // TODO: move it to utils or lib since its related to pack-unpack operation
 export function bigIntToBuffer32(bn) {
@@ -306,36 +253,5 @@ export class RecipientTransaction {
         this.iv = this.ephemeralPubKeyPacked.slice(16, 32);
         // [3] - Ciphered text
         this.cipheredText = this.cipheredTextMessageV1.slice(32, 32 + 32);
-    }
-}
-
-export class SenderRecipientSimulator {
-    public recipient: RecipientTransaction;
-    public sender: SenderTransaction;
-
-    constructor(spenderSeed?: BigInt, rootKeyPair?: IKeypair) {
-        this.recipient = new RecipientTransaction(
-            rootKeyPair ??
-                deriveKeypairFromSeed(spenderSeed ?? BigInt('0xAABBCCDDEEFF')),
-        );
-        this.sender = new SenderTransaction(
-            this.recipient.spenderRootKeys.publicKey,
-        );
-    }
-
-    // After this step we can use this.sender.cipherTextMessageV1 to be sent on-chain
-    public executeCryptographySimulation() {
-        this.sender.encryptMessageV1();
-        this.sender.packCipheredText();
-        this.recipient.unpackMessageV1(this.sender.cipheredTextMessageV1);
-        this.recipient.decryptMessageV1();
-        this.recipient.unpackRandom();
-        if (this.recipient.spenderRandom != this.sender.spenderRandom) {
-            throw 'Sent random is equal to received random';
-        }
-    }
-    // After this step commitments & secrets can be plugged-in to generateDeposits
-    public executeCommitmentCreationAndPacking() {
-        // TODO: impl
     }
 }

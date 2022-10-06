@@ -212,13 +212,18 @@ export const refreshUTXOsStatuses = createAsyncThunk(
             account,
         )(state);
 
-        const statusesNeedUpdate = await getChangedUTXOsStatuses(
-            library,
-            account,
-            chainId,
-            Object.values(advancedRewards),
-            keys,
-        );
+        let statusesNeedUpdate;
+        try {
+            statusesNeedUpdate = await getChangedUTXOsStatuses(
+                library,
+                account,
+                chainId,
+                Object.values(advancedRewards),
+                keys,
+            );
+        } catch (err) {
+            throw new Error(`Failed to get changed UTXOs statuses: ${err}`);
+        }
 
         return [chainId, account, statusesNeedUpdate];
     },

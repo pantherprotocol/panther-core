@@ -35,6 +35,7 @@ import {chainHasPoolContract} from '../../../services/contracts';
 import {deriveRootKeypairs} from '../../../services/keychain';
 import {StakingRewardTokenID} from '../../../types/staking';
 import {notifyError} from '../../Common/errors';
+import {openNotification} from '../../Common/notification';
 import SignatureRequestModal from '../../SignatureRequestModal';
 
 import './styles.scss';
@@ -104,11 +105,22 @@ export default function PrivateBalance() {
                     data: {account, caller: 'components/PrivateBalance'},
                 },
             });
+
             dispatch(refreshUTXOsStatuses, {context, keys});
+
+            if (status === 'failed') {
+                openNotification(
+                    'Failed to refresh UTXOs',
+                    `Cannot  refresh UTXOs`,
+                    'danger',
+                    60000,
+                );
+            }
+
             dispatch(registerWalletActionSuccess, 'refreshUTXOsStatuses');
             setFirstUTXOScan('complete');
         },
-        [account, context, dispatch, library],
+        [account, context, dispatch, library, status],
     );
 
     const refreshIfUndefinedUTXOs = useCallback(async () => {

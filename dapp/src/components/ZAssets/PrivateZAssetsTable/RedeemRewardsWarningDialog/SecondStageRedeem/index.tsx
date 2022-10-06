@@ -206,7 +206,7 @@ export default function SecondStageRedeem(props: {
             <BackButton onClick={handleClose} />
             <DialogTitle>
                 <Typography className="modal-dialog-title redeem-dialog-title">
-                    2. Early ZKP Redemption
+                    2. Early zZKP Redemption
                 </Typography>
             </DialogTitle>
 
@@ -219,12 +219,20 @@ export default function SecondStageRedeem(props: {
                     display="inline"
                 >
                     <Box display="inline" className="content-body">
-                        <Typography>
-                            You have initiated an early zZKP redemption.
-                            Initiation will <br />
-                            take {delayTimeFormatted} before you are able to
-                            claim your balance.
-                        </Typography>
+                        {isLockPeriodPassed ? (
+                            <Typography>
+                                You can redeem now, please check and ensure that
+                                your <br />
+                                transaction is completed.
+                            </Typography>
+                        ) : (
+                            <Typography>
+                                {' '}
+                                You have initiated an early zZKP redemption.
+                                <br /> Please claim your balance after{' '}
+                                {delayTimeFormatted}
+                            </Typography>
+                        )}
                     </Box>
                 </Box>
             </DialogContent>

@@ -1,5 +1,6 @@
 @import 'variables';
 @import '~react-notifications-component/dist/scss/notification';
+@import './mixins.scss';
 
 /* inter-regular - latin */
 @font-face {
@@ -317,3 +318,5 @@ a {
 .bold-beige {
     color: $color-beige !important;
 }
+
+@include styled-scroll-bar;

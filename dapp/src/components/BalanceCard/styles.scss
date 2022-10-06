@@ -2,11 +2,11 @@
 
 .balance-card-holder {
     .balance-card {
-        background-color: $card-background-darker !important;
+        background-color: $card-background-darker;
         border: 1px solid transparent;
-        border-radius: 22px !important;
+        border-radius: 22px;
         box-sizing: border-box;
-        margin-bottom: 25px !important;
+        margin-bottom: 25px;
         mix-blend-mode: normal;
         backdrop-filter: blur(50px);
         padding: 16px 16px 24px;
@@ -76,15 +76,9 @@
 
     .title {
         height: 35px;
-        font-size: $title-font-size !important;
+        font-size: $title-font-size;
         display: flex;
         align-items: center;
         opacity: 0.6;
-    }
-
-    @media (max-width: 600px) {
-        .address-container {
-            width: 100% !important;
-        }
     }
 }

@@ -28,15 +28,15 @@
     }
 
     label {
-        top: 3px !important;
-        transition: none !important;
-        transform: none !important;
+        top: 3px;
+        transition: none;
+        transform: none;
         overflow: initial;
         display: flex;
         width: 100%;
 
         &:focus {
-            top: 10px !important;
+            top: 10px;
             left: 10px;
         }
     }
@@ -47,14 +47,14 @@
     }
 
     .MuiSelect-select {
-        position: relative;
         bottom: 26px;
-        width: 200px !important;
+        position: relative;
+        width: 200px;
         height: 50px !important;
-        color: $white !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        background-color: transparent !important;
+        color: $white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent;
     }
 }

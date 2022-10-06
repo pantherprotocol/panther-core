@@ -6,8 +6,8 @@
 
     @media (max-width: $medium-screen-size) {
         flex-direction: column !important;
-        gap: 20px !important;
-        margin-bottom: 20px !important;
+        gap: 20px;
+        margin-bottom: 20px;
     }
 
     .logo {
@@ -15,7 +15,7 @@
         width: 10%;
 
         @media (max-width: $medium-screen-size) {
-            margin-right: 0 !important;
+            margin-right: 0;
         }
     }
 
@@ -26,7 +26,7 @@
         margin: 0px 10px;
 
         @media (max-width: $medium-screen-size) {
-            padding: 0 !important;
+            padding: 0;
         }
 
         &.selected {

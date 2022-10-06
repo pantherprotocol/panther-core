@@ -1,12 +1,12 @@
 @import '../../../../variables';
 
 .private-zAsset-row {
-    background: transparent !important;
+    background: transparent;
     opacity: 0.7;
     backdrop-filter: blur(600px);
-    border-radius: 0px !important;
-    padding: 15px !important;
-    border: 2px solid white !important;
+    border-radius: 0px;
+    padding: 15px;
+    border: 2px solid white;
 
     .expand-icon {
         width: 3%;

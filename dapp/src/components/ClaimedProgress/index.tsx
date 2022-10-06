@@ -28,7 +28,10 @@ export default function ClaimedProgress(props: ClaimedProgressTypes) {
     )} zZKP claimed (~${Math.ceil(percentage)}%)`;
 
     return (
-        <Box className="claimed-progress-container">
+        <Box
+            className="claimed-progress-container"
+            data-testid="claimed-progress_claimed-progress_container"
+        >
             <Box className="claimed-progress">
                 <Typography className="title">
                     Advanced Staking Rewards
@@ -40,7 +43,10 @@ export default function ClaimedProgress(props: ClaimedProgressTypes) {
                         value={percentage}
                     />
                 </Box>
-                <Typography className="claimed-value">
+                <Typography
+                    className="claimed-value"
+                    data-testid="claimed-progress_claimed-progress_value"
+                >
                     {claimedValue}
                 </Typography>
             </Box>

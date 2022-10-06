@@ -86,10 +86,18 @@ const SignatureRequestModal = () => {
     const [title, text] = getText(cause?.trigger);
 
     return (
-        <Dialog className="modal-dialog signature-request" open={true}>
-            <Box className="x-icon">
+        <Dialog
+            className="modal-dialog signature-request"
+            open={true}
+            data-testid="signature-request-modal_signature-request-modal_container"
+        >
+            <Box
+                onClick={handleClose}
+                className="x-icon"
+                data-testid="signature-request-modal_signature-request-modal_close-icon"
+            >
                 <Tooltip title={'Click to close Dialog box'} placement="top">
-                    <IconButton onClick={handleClose}>
+                    <IconButton>
                         <img src={xIcon} />
                     </IconButton>
                 </Tooltip>

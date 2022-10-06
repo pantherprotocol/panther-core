@@ -12,11 +12,9 @@ import {
     Typography,
 } from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {utils} from 'ethers';
 import moment from 'moment';
 
 import {parseTxErrorMessage} from '../../../../../lib/errors';
-import {formatCurrency} from '../../../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../../../redux/hooks';
 import {updateExitCommitmentTime} from '../../../../../redux/slices/advancedStakesRewards';
 import {poolV0ExitDelaySelector} from '../../../../../redux/slices/poolV0';
@@ -52,8 +50,6 @@ export default function FirstStageRedeem(props: {
     const walletActionCause = useAppSelector(walletActionCauseSelector);
     const walletActionStatus = useAppSelector(walletActionStatusSelector);
     const exitDelay = useAppSelector(poolV0ExitDelaySelector);
-
-    const prp = formatCurrency(utils.parseEther(props.rewards.PRP));
 
     const delayTimeFormatted =
         exitDelay &&
@@ -136,7 +132,7 @@ export default function FirstStageRedeem(props: {
             <BackButton onClick={handleClose} />
             <DialogTitle>
                 <Typography className="modal-dialog-title redeem-dialog-title">
-                    1. Early ZKP Redemption
+                    1. Early zZKP Redemption
                 </Typography>
             </DialogTitle>
 
@@ -150,22 +146,16 @@ export default function FirstStageRedeem(props: {
                         <Box>
                             <Typography className="text">
                                 <span className="semi-bold-text">WARNING!</span>{' '}
-                                If you redeem ZKP before v1.0 of the protocol
-                                has launched,
-                                <strong>
-                                    {' '}
-                                    you will forfeit your{' '}
-                                    <span className="semi-bold-text">
-                                        {prp} PRP
-                                    </span>{' '}
-                                    staking reward.
-                                </strong>
-                                You will however, keep your early stake bonus.
+                                Using Early Redemption now will forfeit the{' '}
+                                <br /> portion of PRP rewards that is accrued
+                                due to your zZKP
+                                <br /> balance in the pool which will be
+                                calculated and issued only at launch of CoreV1.
                             </Typography>
                             <Typography className="text semi-bold-text">
                                 Early redemption will take {delayTimeFormatted}{' '}
-                                to initiate before you are able to redeem your
-                                ZKP.
+                                to initiate before you
+                                <br /> are able to redeem your ZKP.
                             </Typography>
                             <Typography className="text">
                                 Read more about early zZKP redemption in

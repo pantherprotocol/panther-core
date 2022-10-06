@@ -43,6 +43,6 @@ test('should format numbers correctly', async () => {
     const claimedProgressValue = await claimedProgressValueElement?.innerHTML;
 
     await waitFor(() => {
-        expect(claimedProgressValue?.includes('10k out of 10m')).toBeTruthy();
+        expect(claimedProgressValue?.includes('10k / 10m')).toBeTruthy();
     });
 });

@@ -16,7 +16,6 @@ export function handleRewardGenerated(event: RewardGenerated): void {
         commitments: null,
         utxoData: null,
         zZkpAmount: event.params.zkp,
-        prpAmount: event.params.prp,
         staker: stakerId,
     });
 }
@@ -33,7 +32,6 @@ export function handleNewCommitments(event: NewCommitments): void {
         commitments: event.params.commitments,
         utxoData: event.params.utxoData,
         zZkpAmount: null,
-        prpAmount: null,
         staker: stakerId,
     });
 }

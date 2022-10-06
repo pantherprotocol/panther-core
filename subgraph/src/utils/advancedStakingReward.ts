@@ -47,7 +47,6 @@ export function createOrUpdateAdvancedStakingReward(
     if (params.utxoData) advancedStakingReward.utxoData = params.utxoData;
 
     if (params.zZkpAmount) advancedStakingReward.zZkpAmount = params.zZkpAmount;
-    if (params.prpAmount) advancedStakingReward.prpAmount = params.prpAmount;
 
     advancedStakingReward.staker = params.staker;
 

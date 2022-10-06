@@ -6,6 +6,5 @@ export class AdvancedStakingRewardParameters {
     commitments: Array<Bytes> | null;
     utxoData: Bytes | null;
     zZkpAmount: BigInt | null;
-    prpAmount: BigInt | null;
     staker: string;
 }

@@ -1,6 +1,6 @@
 {
   "address": "0xc36599D03803b4587eE6b7344B193223614377aC",
-  "abi": [
+  "abi":[
     {
       "inputs": [
         {
@@ -16,11 +16,6 @@
         {
           "internalType": "address",
           "name": "pantherPool",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "prpGrantor",
           "type": "address"
         },
         {
@@ -61,12 +56,6 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "prp",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
           "name": "nft",
           "type": "uint256"
         }
@@ -82,11 +71,6 @@
             {
               "internalType": "uint96",
               "name": "zkpRewards",
-              "type": "uint96"
-            },
-            {
-              "internalType": "uint96",
-              "name": "prpRewards",
               "type": "uint96"
             },
             {
@@ -128,11 +112,6 @@
               "internalType": "uint8",
               "name": "endZkpApy",
               "type": "uint8"
-            },
-            {
-              "internalType": "uint32",
-              "name": "prpPerStake",
-              "type": "uint32"
             }
           ],
           "indexed": false,
@@ -276,11 +255,6 @@
           "type": "uint96"
         },
         {
-          "internalType": "uint96",
-          "name": "prpRewards",
-          "type": "uint96"
-        },
-        {
           "internalType": "uint24",
           "name": "nftRewards",
           "type": "uint24"
@@ -369,11 +343,6 @@
           "internalType": "uint8",
           "name": "endZkpApy",
           "type": "uint8"
-        },
-        {
-          "internalType": "uint32",
-          "name": "prpPerStake",
-          "type": "uint32"
         }
       ],
       "stateMutability": "view",
@@ -399,11 +368,6 @@
         {
           "internalType": "uint96",
           "name": "zkpRewards",
-          "type": "uint96"
-        },
-        {
-          "internalType": "uint96",
-          "name": "prpRewards",
           "type": "uint96"
         },
         {
@@ -443,11 +407,6 @@
               "internalType": "uint8",
               "name": "endZkpApy",
               "type": "uint8"
-            },
-            {
-              "internalType": "uint32",
-              "name": "prpPerStake",
-              "type": "uint32"
             }
           ],
           "internalType": "struct AdvancedStakeRewardController.RewardParams",
@@ -462,7 +421,7 @@
     },
     {
       "inputs": [],
-      "name": "updateZkpAndPrpRewardsLimit",
+      "name": "updateZkpRewardsLimit",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

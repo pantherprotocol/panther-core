@@ -19,7 +19,7 @@ dataSources:
         - name: AdvancedStakeRewardController
           file: ./abis/AdvancedStakeRewardController.json
       eventHandlers:
-        - event: RewardGenerated(indexed address,uint256,uint256,uint256,uint256)
+        - event: RewardGenerated(indexed address,uint256,uint256,uint256)
           handler: handleRewardGenerated
       file: ./src/handleAdvancedStakingRewards.ts
   - kind: ethereum

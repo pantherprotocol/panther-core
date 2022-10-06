@@ -38,6 +38,7 @@ const UnstakeButton = (props: {
     );
     return (
         <Button
+            data-testid="unstake-table_unstake-button_container"
             className={`unstake-button ${!row.unstakable ? 'locked' : ''}`}
             disabled={disabled}
             onClick={() => {

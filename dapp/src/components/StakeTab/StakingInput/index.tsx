@@ -51,15 +51,14 @@ export default function StakingInput(props: StakingInputProps) {
         (amount: string) => {
             if (tokenBalance && Number(tokenBalance)) {
                 const bn = safeParseUnits(amount);
-                if (!bn) {
-                    dispatch(resetStakeAmount);
-                    dispatch(resetRewards);
+                if (bn) {
+                    dispatch(setStakeAmount, amount as string);
+                    dispatch(calculateRewards, [bn.toString(), minLockPeriod]);
                     return;
                 }
-
-                dispatch(setStakeAmount, amount as string);
-                dispatch(calculateRewards, [bn.toString(), minLockPeriod]);
             }
+            dispatch(resetStakeAmount);
+            dispatch(resetRewards);
         },
         [tokenBalance, dispatch, minLockPeriod],
     );

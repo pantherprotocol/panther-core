@@ -11,6 +11,7 @@ import {
 import poseidon from 'circomlibjs/src/poseidon';
 import {utils, Contract, BigNumber} from 'ethers';
 import {ContractTransaction} from 'ethers/lib/ethers';
+import {Result} from 'ethers/lib/utils';
 
 import {parseTxErrorMessage} from '../lib/errors';
 import {formatTime} from '../lib/format';
@@ -29,13 +30,14 @@ import {safeFetch} from './http';
 import {deriveSpendingChildKeypair} from './keychain';
 import {decryptRandomSecret as decryptRandomSecret} from './message-encryption';
 
-// 452 (225 bytes) is the size of the UTXO data containing 1 zZKP UTXO, 1
-// NFT UTXO generated during advanced stake. First byte is reserved for the
-// msg version number: 0x24 (36) for the current version.
-// See documentation for more details:
+// 452 (225 bytes) and 260 (128 bytes) are the sizes of the UTXO data containing
+// 1 zZKP UTXO, and with and without 1 NFT UTXO, respectfully. First byte is
+// reserved for the msg version number: 0x24 or 0x20 for the version with and
+// without NFT. See documentation for more details:
 // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k/
-const ADVANCED_STAKE_UTXO_DATA_SIZE = 452;
-const ADVANCED_STAKE_MESSAGE_TYPE = '0x24';
+const ADVANCED_STAKE_UTXO_DATA_SIZES = [452, 260];
+const ADVANCED_STAKE_MESSAGE_TYPE_WITH_NFT = '0x24';
+const ADVANCED_STAKE_MESSAGE_TYPE_NO_NFT = '0x20';
 
 export async function getExitTime(
     library: any,
@@ -414,29 +416,30 @@ async function unpackUTXOAndDeriveKeys(
 }
 
 function decodeUTXOData(utxoData: string): [string, string, bigint] | Error {
-    // 452 (225 bytes) is the size of the UTXO data containing 1 zZKP UTXO, 1
-    // NFT UTXO generated during advanced stake. First byte is reserved for the
-    // msg version number. Next 96 bytes after the Message type are: 64 bytes
-    // are packed message with UTXO secrets, 32 bytes for the zAssetsID. Last
-    // 128 bytes are the bytes with the NFT data (ignored for now).
-    // See documentation for more details:
+    // 452 (225 bytes) and 260 (128) are the size of the UTXO data containing 1
+    // zZKP UTXO, with and without NFT UTXO generated during advanced stake.
+    // First byte is reserved for the msg version number. Next 96 bytes after
+    // the Message type are: 64 bytes are packed message with UTXO secrets, 32
+    // bytes for the zAssetsID. Last 128 bytes are the bytes with the NFT data
+    // (ignored for now). See documentation for more details:
     // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k/
-    if (utxoData.length !== ADVANCED_STAKE_UTXO_DATA_SIZE) {
+    if (!ADVANCED_STAKE_UTXO_DATA_SIZES.includes(utxoData.length)) {
+        console.log('utxoData.length', utxoData.length);
         const msg = 'Invalid UTXO data length';
         console.error(msg);
         return new Error(msg);
     }
 
-    if (utxoData.slice(0, 4) !== ADVANCED_STAKE_MESSAGE_TYPE) {
+    let decoded: Result;
+    if (utxoData.slice(0, 4) == ADVANCED_STAKE_MESSAGE_TYPE_WITH_NFT) {
+        decoded = decodeWithNFT(utxoData);
+    } else if (utxoData.slice(0, 4) == ADVANCED_STAKE_MESSAGE_TYPE_NO_NFT) {
+        decoded = decodeDataWithoutNFT(utxoData);
+    } else {
         const msg = 'Invalid UTXO data or message type';
         console.error(msg);
         return new Error(msg);
     }
-
-    const decoded = utils.defaultAbiCoder.decode(
-        ['uint256[2]', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256'],
-        '0x' + utxoData.slice(4, utxoData.length),
-    );
 
     const secrets = decoded[0];
     const ciphertextMsg = secrets
@@ -455,6 +458,20 @@ function decodeUTXOData(utxoData: string): [string, string, bigint] | Error {
     );
 
     return [ciphertextMsg, zAssetId, amount];
+}
+
+function decodeDataWithoutNFT(utxoData: string) {
+    return utils.defaultAbiCoder.decode(
+        ['uint256[2]', 'uint256'],
+        '0x' + utxoData.slice(4, utxoData.length),
+    );
+}
+
+function decodeWithNFT(utxoData: string) {
+    return utils.defaultAbiCoder.decode(
+        ['uint256[2]', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256'],
+        '0x' + utxoData.slice(4, utxoData.length),
+    );
 }
 
 function checkUnpackingErrors(

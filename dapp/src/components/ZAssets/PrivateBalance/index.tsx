@@ -179,7 +179,10 @@ export default function PrivateBalance() {
     return (
         <>
             {showWalletSignatureInProgress && <SignatureRequestModal />}
-            <Box className="private-zAssets-balance-container">
+            <Box
+                className="private-zAssets-balance-container"
+                data-testid="ZAssets_private-balance_container"
+            >
                 <Box className="private-zAssets-balance">
                     <Typography className="title">
                         Total Private zAsset Balance

@@ -15,7 +15,7 @@ export const SNARK_FIELD_SIZE = BigInt(
 );
 
 export const deriveKeypairFromSeed = (
-    seed = generateRandomBabyJubValue(),
+    seed = generateRandomBabyJubModSubOrderValue(),
 ): IKeypair => {
     const privateKey = truncateToSnarkField(seed); //
     const publicKey = generatePublicKey(privateKey);
@@ -42,11 +42,13 @@ export const generatePublicKey = (privateKey: PrivateKey): PublicKey => {
     assert(privateKey < SNARK_FIELD_SIZE);
     return babyjub.mulPointEscalar(
         babyjub.Base8,
-        formatPrivateKeyForBabyJub(privateKey),
+        formatPrivateKeyForBabyJubModSubOrder(privateKey),
     );
 };
 
-export const formatPrivateKeyForBabyJub = (privateKey: PrivateKey) => {
+export const formatPrivateKeyForBabyJubModSubOrder = (
+    privateKey: PrivateKey,
+) => {
     return (privateKey as bigint) % babyjub.subOrder;
     /* THIS CODE IS NOT IN USE - Steve & Roman
     const sBuff = eddsa.pruneBuffer(
@@ -84,8 +86,9 @@ const bigIntToBuffer = (i: BigInt): Buffer => {
     return Buffer.from(hexStr, 'hex');
 };
 
-export const generateRandomBabyJubValue = (): BigInt => {
-    const random = generateRandomness();
+export const generateRandomBabyJubModSubOrderValue = (): BigInt => {
+    const random = generateRandomness() % babyjub.subOrder;
+    assert(random < babyjub.subOrder);
     const privateKey: PrivateKey = random % SNARK_FIELD_SIZE;
     assert(privateKey < SNARK_FIELD_SIZE);
     return privateKey;

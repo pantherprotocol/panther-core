@@ -14,8 +14,8 @@ import assert from 'assert';
 import {
     bigIntToBuffer32,
     buffer32ToBigInt,
-    RecipientTransaction,
-    SenderTransaction,
+    UtxoRecipientData,
+    UtxoSenderData,
 } from '../../lib/message-encryption';
 
 import {deriveKeypairFromSeed} from '../../lib/keychain';
@@ -86,7 +86,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
             const spenderSeed = BigInt('0xAABBCCDDEEFF');
             const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
             // [1] - Sender side generation - for every new tx
-            const senderTransaction = new SenderTransaction(
+            const senderTransaction = new UtxoSenderData(
                 spenderRootKeys.publicKey,
             );
             // [2] - Encrypt ( can throw ... )
@@ -95,9 +95,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
             senderTransaction.packCipheredText(); // tx.cipheredTextMessageV1 will be used as secret to be sent on chain
             // [4] - Send on-chain -> extract event etc ...
             // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
-            const recipientTransaction = new RecipientTransaction(
-                spenderRootKeys,
-            );
+            const recipientTransaction = new UtxoRecipientData(spenderRootKeys);
             // [5] - Deserialize --- we actually will first get this text from chain
             try {
                 recipientTransaction.unpackMessageV1(
@@ -262,7 +260,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 const spenderSeed = BigInt('0xAABBCCDDEEFF');
                 const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
                 // [1] - Sender side generation - for every new tx
-                const senderTransaction = new SenderTransaction(
+                const senderTransaction = new UtxoSenderData(
                     spenderRootKeys.publicKey,
                 );
                 // [2] - Encrypt ( can throw ... )
@@ -271,7 +269,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 senderTransaction.packCipheredText(); // tx.cipheredTextMessageV1 will be used as secret to be sent on chain
                 // [4] - Send on-chain -> extract event etc ...
                 // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
-                const recipientTransaction = new RecipientTransaction(
+                const recipientTransaction = new UtxoRecipientData(
                     spenderRootKeys,
                 );
                 // [5] - Deserialize --- we actually will first get this text from chain

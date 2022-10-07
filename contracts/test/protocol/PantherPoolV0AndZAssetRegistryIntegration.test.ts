@@ -20,15 +20,15 @@ import {BytesLike} from 'ethers/lib/ethers';
 import {
     buffer32ToBigInt,
     bigIntToBuffer32,
-    RecipientTransaction,
-    SenderTransaction,
+    UtxoRecipientData,
+    UtxoSenderData,
 } from '../../lib/message-encryption';
 
 import crypto from 'crypto';
 import {BigNumber} from 'ethers';
 import {
     deriveKeypairFromSeed,
-    generateRandomBabyJubValue,
+    generateRandomBabyJubModSubOrderValue,
     multiplyScalars,
 } from '../../lib/keychain';
 
@@ -70,14 +70,14 @@ describe('PantherPoolV0', () => {
             const spenderSeed = BigInt('0xAABBCCDDEEFF');
             const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
             // [1] - Sender side generation - for every new tx
-            const tx = new SenderTransaction(spenderRootKeys.publicKey);
+            const tx = new UtxoSenderData(spenderRootKeys.publicKey);
             // [2] - Encrypt ( can throw ... )
             tx.encryptMessageV1();
             // [3] - Pack & Serialize - after this step data can be sent on chain
             tx.packCipheredText();
             // [4] - Send on-chain -> extract event etc ...
             // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
-            const txIn = new RecipientTransaction(spenderRootKeys);
+            const txIn = new UtxoRecipientData(spenderRootKeys);
             // [5] - Deserialize --- we actually will first get this text from chain
             txIn.unpackMessageV1(tx.cipheredTextMessageV1);
             // [6] - Decrypt ( try... )
@@ -107,14 +107,14 @@ describe('PantherPoolV0', () => {
             const spenderSeed = BigInt('0xAABBCCDDEEFF');
             const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
             // [1] - Sender side generation - for every new tx
-            const tx = new SenderTransaction(spenderRootKeys.publicKey);
+            const tx = new UtxoSenderData(spenderRootKeys.publicKey);
             // [2] - Encrypt ( can throw ... )
             tx.encryptMessageV1();
             // [3] - Pack & Serialize - after this step data can be sent on chain
             tx.packCipheredText();
             // [4] - Send on-chain -> extract event etc ...
             // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
-            const txIn = new RecipientTransaction(spenderRootKeys);
+            const txIn = new UtxoRecipientData(spenderRootKeys);
             // [5] - Deserialize --- we actually will first get this text from chain
             txIn.unpackMessageV1(tx.cipheredTextMessageV1);
             // [6] - Decrypt ( try... )
@@ -145,14 +145,14 @@ describe('PantherPoolV0', () => {
             const spenderSeed = BigInt('0xAABBCCDDEEFF');
             const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
             // [1] - Sender side generation - for every new tx
-            const tx = new SenderTransaction(spenderRootKeys.publicKey);
+            const tx = new UtxoSenderData(spenderRootKeys.publicKey);
             // [2] - Encrypt ( can throw ... )
             tx.encryptMessageV1();
             // [3] - Pack & Serialize - after this step data can be sent on chain
             tx.packCipheredText(); // tx.cipheredTextMessageV1 will be used as secret to be sent on chain
             // [4] - Send on-chain -> extract event etc ...
             // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
-            const txIn = new RecipientTransaction(spenderRootKeys);
+            const txIn = new UtxoRecipientData(spenderRootKeys);
             // [5] - Deserialize --- we actually will first get this text from chain
             txIn.unpackMessageV1(tx.cipheredTextMessageV1);
             // [6] - Decrypt ( try... )
@@ -181,11 +181,11 @@ describe('PantherPoolV0', () => {
         // In production new-key can't be used without this double-test
         describe('Flow of key-generation, commitments creation (ERC20), generate-deposits + exit && double checks on every-step', function () {
             // [0] - Recipient side
-            const s = generateRandomBabyJubValue(); // Spender Private Key
+            const s = generateRandomBabyJubModSubOrderValue(); // Spender Private Key
             const S = babyjub.mulPointEscalar(babyjub.Base8, s); // Spender Public Key - Shared & known to sender
             // [1] - Sender side - NOTE: 2 different randoms can be created - One for Ephemeral Key and one for speding
             // We use here same random for both for simplicity
-            const r = generateRandomBabyJubValue(); // Sender generates random value
+            const r = generateRandomBabyJubModSubOrderValue(); // Sender generates random value
             // This key used to create commitments with `generateDeposits` solidity call
             const K = babyjub.mulPointEscalar(S, r); // Sender generates Shared Ephemeral Key = rsB = rS
             const R = babyjub.mulPointEscalar(babyjub.Base8, r); // This key is shared in open form = rB

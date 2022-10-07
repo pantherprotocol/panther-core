@@ -10,59 +10,67 @@ import crypto from 'crypto';
 import {babyjub, poseidon} from 'circomlibjs';
 import {IKeypair, PrivateKey, PublicKey} from './types/keypair';
 
+// ALT_BN128 (also known as BN254) order and BabyJubJub field prime
 export const SNARK_FIELD_SIZE = BigInt(
     '21888242871839275222246405745257275088548364400416034343698204186575808495617',
 );
+assert(babyjub.p === SNARK_FIELD_SIZE);
 
-export const deriveKeypairFromSeed = (
-    seed = generateRandomBabyJubModSubOrderValue(),
-): IKeypair => {
-    const privateKey = truncateToSnarkField(seed); //
-    const publicKey = generatePublicKey(privateKey);
-    return {
-        privateKey: privateKey,
-        publicKey: publicKey,
-    };
+export const deriveKeypairFromPrivateKey = (privateKey: BigInt): IKeypair => {
+    assert(privateKey < babyjub.subOrder);
+    const publicKey = derivePublicKeyFromPrivate(privateKey);
+    return {privateKey, publicKey};
 };
 
-export const multiplyScalars = (a: BigInt, b: BigInt): BigInt => {
-    return ((a as bigint) * (b as bigint)) % babyjub.subOrder;
+export const deriveKeypairFromSeed = (seed: BigInt): IKeypair => {
+    assert(seed != BigInt(0));
+    const privateKey = moduloBabyJubSubFieldPrime(seed);
+    return deriveKeypairFromPrivateKey(privateKey);
 };
 
 export const deriveKeypairFromSignature = (signature: string): IKeypair => {
     const pKey = derivePrivateKeyFromSignature(signature);
-    return deriveKeypairFromSeed(pKey);
+    return deriveKeypairFromPrivateKey(pKey);
 };
 
-export const truncateToSnarkField = (v: BigInt): BigInt => {
-    return (v as bigint) % SNARK_FIELD_SIZE;
-};
-
-export const generatePublicKey = (privateKey: PrivateKey): PublicKey => {
-    assert(privateKey < SNARK_FIELD_SIZE);
-    return babyjub.mulPointEscalar(
-        babyjub.Base8,
-        formatPrivateKeyForBabyJubModSubOrder(privateKey),
-    );
-};
-
-export const formatPrivateKeyForBabyJubModSubOrder = (
+export const derivePublicKeyFromPrivate = (
     privateKey: PrivateKey,
-) => {
-    return (privateKey as bigint) % babyjub.subOrder;
-    /* THIS CODE IS NOT IN USE - Steve & Roman
-    const sBuff = eddsa.pruneBuffer(
-        createBlakeHash('blake512')
-            .update(bigIntToBuffer(privateKey))
-            .digest()
-            .slice(0, 32),
-    );
-    const s = ff.utils.leBuff2int(sBuff);
-    return ff.Scalar.shr(s, 3);
-    */
+): PublicKey => {
+    assert(privateKey < babyjub.subOrder);
+    return babyjub.mulPointEscalar(babyjub.Base8, privateKey);
 };
 
-const generateRandomness = (): bigint => {
+export const deriveChildPubKeyFromRootPubKey = (
+    rootPubKey: PublicKey,
+    random: BigInt,
+): PublicKey => {
+    // MUST (not asserted here): rootPubKey to be generated from the babyjub.Base8
+    assert(random < babyjub.subOrder);
+    return babyjub.mulPointEscalar(rootPubKey, random);
+};
+
+export const derivePrivateKeyFromSignature = (signature: string): BigInt => {
+    const pair = extractSecretsPair(signature);
+    if (!pair) {
+        throwKeychainError('Failed to extract secrets pair from signature');
+    }
+    return moduloBabyJubSubFieldPrime(poseidon(pair));
+};
+
+export const deriveChildPrivKeyFromRootPrivKey = (
+    rootPrivKey: PrivateKey,
+    random: BigInt,
+): PrivateKey => {
+    assert(rootPrivKey < babyjub.subOrder);
+    assert(random < babyjub.subOrder);
+    const product = (rootPrivKey as bigint) * (random as bigint);
+    return moduloBabyJubSubFieldPrime(product);
+};
+
+export const generateRandomKeypair = () =>
+    deriveKeypairFromPrivateKey(generateRandomInBabyJubSubField());
+
+export const generateRandom256Bits = (): bigint => {
     const min = BigInt(
         '6350874878119819312338956282401532410528162663560392320966563075034087161851',
     );
@@ -70,33 +78,26 @@ const generateRandomness = (): bigint => {
     // eslint-disable-next-line no-constant-condition
     while (true) {
         randomness = BigInt('0x' + crypto.randomBytes(32).toString('hex'));
-        if (randomness >= min) {
-            break;
-        }
+        if (randomness >= min) break;
     }
     return randomness;
 };
 
-// eslint-disable-next-line
-const bigIntToBuffer = (i: BigInt): Buffer => {
-    let hexStr = i.toString(16);
-    while (hexStr.length < 64) {
-        hexStr = '0' + hexStr;
-    }
-    return Buffer.from(hexStr, 'hex');
+export const generateRandomInBabyJubSubField = (): BigInt => {
+    return moduloBabyJubSubFieldPrime(generateRandom256Bits());
 };
 
-export const generateRandomBabyJubModSubOrderValue = (): BigInt => {
-    const random = generateRandomness() % babyjub.subOrder;
-    assert(random < babyjub.subOrder);
-    const privateKey: PrivateKey = random % SNARK_FIELD_SIZE;
-    assert(privateKey < SNARK_FIELD_SIZE);
-    return privateKey;
+export const moduloSnarkFieldPrime = (v: BigInt | bigint): BigInt => {
+    return (v as bigint) % SNARK_FIELD_SIZE;
+};
+
+export const moduloBabyJubSubFieldPrime = (value: BigInt | bigint) => {
+    return (value as bigint) % babyjub.subOrder;
 };
 
 export const extractSecretsPair = (
     signature: string,
-): [r: bigint, s: bigint] => {
+): [r: BigInt, s: BigInt] => {
     if (!signature) {
         throwKeychainError('Signature must be provided');
     }
@@ -116,17 +117,9 @@ export const extractSecretsPair = (
     const r = signature.slice(2, 66);
     const s = signature.slice(66, 130);
     return [
-        BigInt('0x' + r) % SNARK_FIELD_SIZE,
-        BigInt('0x' + s) % SNARK_FIELD_SIZE,
+        moduloSnarkFieldPrime(BigInt('0x' + r)),
+        moduloSnarkFieldPrime(BigInt('0x' + s)),
     ];
-};
-
-export const derivePrivateKeyFromSignature = (signature: string): BigInt => {
-    const pair = extractSecretsPair(signature);
-    if (!pair) {
-        throwKeychainError('Failed to extract secrets pair from signature');
-    }
-    return poseidon(pair);
 };
 
 const throwKeychainError = (errMsg: string) => {

@@ -3,7 +3,7 @@ import {ethers} from 'ethers';
 
 import {
     deriveKeypairFromSignature,
-    deriveKeypairFromSeed,
+    generateRandomKeypair,
     packPublicKey,
 } from '../src/lib/keychain';
 import {
@@ -21,7 +21,7 @@ describe('Message encryption and decryption', () => {
 
         const readingKeypair: IKeypair = deriveKeypairFromSignature(signature);
         // spending keypair(R,r)
-        const childRandomKeypair = deriveKeypairFromSeed();
+        const childRandomKeypair = generateRandomKeypair();
 
         // generates by sender ECDH(rootReadingPubKey, r)
         const spendingEcdhSharedKey = generateEcdhSharedKey(

@@ -5,19 +5,16 @@ https://github.com/appliedzkp/maci/blob/master/crypto/ts/index.ts
 
 import crypto from 'crypto';
 
-import {bigIntToBuffer} from '@panther-core/crypto/lib/bigint-conversions';
-import createBlakeHash from 'blake-hash';
-import {babyjub, eddsa, poseidon} from 'circomlibjs';
-import * as ff from 'ffjavascript';
+import {babyjub, poseidon} from 'circomlibjs';
 
 import {
-    assertInBN254Field,
-    assertInBabyJubJubField,
+    assertInSnarkField,
+    assertInBabyJubJubSubOrder,
     assert,
 } from './assertions';
 import {IKeypair, PrivateKey, PublicKey} from './types';
 
-export const BN254_FIELD_SIZE = BigInt(
+export const SNARK_FIELD_SIZE = BigInt(
     '21888242871839275222246405745257275088548364400416034343698204186575808495617',
 );
 
@@ -27,12 +24,12 @@ export const isChildPubKeyValid = (
     randomSecret: bigint,
 ): boolean => {
     console.time('isChildPubKeyValid()');
-    assertInBN254Field(childPubKey[0], 'Child public key X');
-    assertInBN254Field(childPubKey[1], 'Child public key Y');
-    assertInBN254Field(rootKeypair.publicKey[0], 'Root public key X');
-    assertInBN254Field(rootKeypair.publicKey[1], 'Root public key Y');
+    assertInSnarkField(childPubKey[0], 'Child public key X');
+    assertInSnarkField(childPubKey[1], 'Child public key Y');
+    assertInSnarkField(rootKeypair.publicKey[0], 'Root public key X');
+    assertInSnarkField(rootKeypair.publicKey[1], 'Root public key Y');
     const rs = multiplyScalars(rootKeypair.privateKey, randomSecret);
-    const rs_B = generatePublicKey(rs);
+    const rs_B = derivePublicKeyFromPrivate(rs);
     const s_rB = generateChildPublicKey(rootKeypair.publicKey, randomSecret);
     const isValid =
         childPubKey[0] === rs_B[0] &&
@@ -45,18 +42,24 @@ export const isChildPubKeyValid = (
     return isValid;
 };
 
-export const deriveKeypairFromSeed = (
-    seed = generateRandomBabyJubValue(),
-): IKeypair => {
-    const privateKey = truncateToBabyjubSubOrder(seed); //
-    const publicKey = generatePublicKey(privateKey);
+export const deriveKeypairFromPrivateKey = (privateKey: BigInt): IKeypair => {
+    const pkey = privateKey as bigint;
+    assertInBabyJubJubSubOrder(pkey, 'privateKey');
+    const publicKey = derivePublicKeyFromPrivate(pkey);
     return {
-        privateKey: privateKey,
+        privateKey: pkey,
         publicKey: publicKey,
     };
 };
 
-export const generateEphemeralKeypair = deriveKeypairFromSeed;
+export const deriveKeypairFromSeed = (seed: BigInt): IKeypair => {
+    assert(seed != BigInt(0), 'Zero seed is not allowed');
+    const privateKey = moduloBabyJubSubFiledPrime(seed);
+    return deriveKeypairFromPrivateKey(privateKey);
+};
+
+export const generateRandomKeypair = () =>
+    deriveKeypairFromPrivateKey(generateRandomInBabyJubSubField());
 
 export const generateChildPublicKey = (
     rootPublicKey: PublicKey,
@@ -64,15 +67,15 @@ export const generateChildPublicKey = (
 ): PublicKey => {
     console.time('generateChildPublicKey()');
     const childPublicKey = babyjub.mulPointEscalar(rootPublicKey, scalar);
-    assertInBN254Field(childPublicKey[0], 'Child public key X');
-    assertInBN254Field(childPublicKey[1], 'Child public key Y');
+    assertInSnarkField(childPublicKey[0], 'Child public key X');
+    assertInSnarkField(childPublicKey[1], 'Child public key Y');
     console.timeEnd('generateChildPublicKey()');
     return childPublicKey;
 };
 
 export const multiplyScalars = (a: bigint, b: bigint): bigint => {
-    assertInBabyJubJubField(a, 'Scalar a');
-    assertInBabyJubJubField(b, 'Scalar b');
+    assertInBabyJubJubSubOrder(a, 'Scalar a');
+    assertInBabyJubJubSubOrder(b, 'Scalar b');
     return (a * b) % babyjub.subOrder;
 };
 
@@ -84,41 +87,27 @@ export const deriveKeypairFromSignature = (signature: string): IKeypair => {
     return deriveKeypairFromSeed(pKey);
 };
 
-export const truncateToSnarkField = (v: bigint): bigint => {
+export const moduloSnarkFieldPrime = (v: bigint): bigint => {
     // The public keys need to be truncated in the SNARK field.
-    return v % BN254_FIELD_SIZE;
+    return v % SNARK_FIELD_SIZE;
 };
 
-export function truncateToBabyjubSubOrder(v: bigint): bigint {
+export function moduloBabyJubSubFiledPrime(v: bigint): bigint {
     // The private key lives in the scalar field of the babyjubjub suborder.
     return v % babyjub.subOrder;
 }
 
-export const generatePublicKey = (privateKey: PrivateKey): PublicKey => {
-    assertInBabyJubJubField(privateKey, 'privateKey');
+export const derivePublicKeyFromPrivate = (
+    privateKey: PrivateKey,
+): PublicKey => {
+    assertInBabyJubJubSubOrder(privateKey, 'privateKey');
     const pubKey = babyjub.mulPointEscalar(babyjub.Base8, privateKey);
-    assertInBN254Field(pubKey[0], 'public key X');
-    assertInBN254Field(pubKey[1], 'public key Y');
+    assertInSnarkField(pubKey[0], 'public key X');
+    assertInSnarkField(pubKey[1], 'public key Y');
     return pubKey;
 };
 
-/*
- * A function intended to improve a randomness of the seed as in
- * the EdDSA key generation algorithm.
- *  https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5
- */
-export const hashAndBitShift = (seed: bigint): bigint => {
-    const sBuff = eddsa.pruneBuffer(
-        createBlakeHash('blake512')
-            .update(bigIntToBuffer(seed))
-            .digest()
-            .slice(0, 32),
-    );
-    const s = ff.utils.leBuff2int(sBuff);
-    return ff.Scalar.shr(s, 3);
-};
-
-const generateRandomness = (): bigint => {
+const generateRandom256Bits = (): bigint => {
     const min = BigInt(
         '6350874878119819312338956282401532410528162663560392320966563075034087161851',
     );
@@ -132,11 +121,10 @@ const generateRandomness = (): bigint => {
     return randomness;
 };
 
-export const generateRandomBabyJubValue = (): bigint => {
-    const seed = hashAndBitShift(generateRandomness());
-    const privateKey = truncateToBabyjubSubOrder(seed);
-    assertInBabyJubJubField(privateKey, 'privateKey');
-    return privateKey;
+export const generateRandomInBabyJubSubField = (): bigint => {
+    const random = moduloBabyJubSubFiledPrime(generateRandom256Bits());
+    assertInBabyJubJubSubOrder(random, 'random');
+    return random;
 };
 
 export const extractSecretsPair = (
@@ -159,8 +147,8 @@ export const extractSecretsPair = (
     const r = signature.slice(2, 66);
     const s = signature.slice(66, 130);
     return [
-        BigInt('0x' + r) % BN254_FIELD_SIZE,
-        BigInt('0x' + s) % BN254_FIELD_SIZE,
+        BigInt('0x' + r) % SNARK_FIELD_SIZE,
+        BigInt('0x' + s) % SNARK_FIELD_SIZE,
     ];
 };
 
@@ -169,7 +157,7 @@ export const derivePrivateKeyFromSignature = (signature: string): bigint => {
     if (!pair) {
         throw new Error('Failed to extract secrets pair from signature');
     }
-    const privKey = truncateToBabyjubSubOrder(poseidon(pair));
-    assertInBabyJubJubField(privKey, 'privateKey');
+    const privKey = moduloBabyJubSubFiledPrime(poseidon(pair));
+    assertInBabyJubJubSubOrder(privKey, 'privateKey');
     return privKey;
 };

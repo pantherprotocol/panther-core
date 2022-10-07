@@ -28,8 +28,9 @@ import crypto from 'crypto';
 import {BigNumber} from 'ethers';
 import {
     deriveKeypairFromSeed,
-    generateRandomBabyJubModSubOrderValue,
-    multiplyScalars,
+    deriveChildPrivKeyFromRootPrivKey,
+    derivePublicKeyFromPrivate,
+    generateRandomInBabyJubSubField,
 } from '../../lib/keychain';
 
 import {getExitCommitment} from './data/depositAndFakeExitSample';
@@ -67,17 +68,22 @@ describe('PantherPoolV0', () => {
         // TODO: Continue from [9]..
         describe('GenerateDeposits -> Exit flow with randoms - BAD-PATH - TO BE CONTINUED', function () {
             // [0] - Spender side generation - one time - Root public key will be shared
-            const spenderSeed = BigInt('0xAABBCCDDEEFF');
-            const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
+            const rootSeed = BigInt('0xAABBCCDDEEFF');
+            const readingSeed = BigInt('0xFFEEDDCCBBAA');
+            const recipientRootKeys = deriveKeypairFromSeed(rootSeed);
+            const recipientReadingKeys = deriveKeypairFromSeed(readingSeed);
             // [1] - Sender side generation - for every new tx
-            const tx = new UtxoSenderData(spenderRootKeys.publicKey);
+            const tx = new UtxoSenderData(
+                recipientRootKeys.publicKey,
+                recipientReadingKeys.publicKey,
+            );
             // [2] - Encrypt ( can throw ... )
             tx.encryptMessageV1();
             // [3] - Pack & Serialize - after this step data can be sent on chain
             tx.packCipheredText();
             // [4] - Send on-chain -> extract event etc ...
             // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
-            const txIn = new UtxoRecipientData(spenderRootKeys);
+            const txIn = new UtxoRecipientData(recipientReadingKeys);
             // [5] - Deserialize --- we actually will first get this text from chain
             txIn.unpackMessageV1(tx.cipheredTextMessageV1);
             // [6] - Decrypt ( try... )
@@ -88,13 +94,15 @@ describe('PantherPoolV0', () => {
             }
             // [7] - Extract random ( try ... )
             try {
-                txIn.unpackRandom();
+                txIn.deriveRecipientSpendingKeysFromRootKeysAndRandom(
+                    recipientRootKeys,
+                );
             } catch (e) {
                 // prolog is not equal to expected
             }
             // [8] - We ready to use random in spend flow
             it('Sent random is equal to received random', () => {
-                expect(txIn.spenderRandom).equal(tx.spenderRandom);
+                expect(txIn.recipientRandom).equal(tx.recipientRandom);
             });
             // [9] - Generate bad commitments - out-of-bounds 2**96
             // [10] - Try to execute GenerateDeposits ... -> MUST FAIL
@@ -104,17 +112,22 @@ describe('PantherPoolV0', () => {
         // TODO: Continue from [9]..
         describe('GenerateDeposits -> Exit flow with randoms - TO BE CONTINUED', function () {
             // [0] - Spender side generation - one time - Root public key will be shared
-            const spenderSeed = BigInt('0xAABBCCDDEEFF');
-            const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
+            const rootSeed = BigInt('0xAABBCCDDEEFF');
+            const readingSeed = BigInt('0xFFEEDDCCBBAA');
+            const recipientRootKeys = deriveKeypairFromSeed(rootSeed);
+            const recipientReadingKeys = deriveKeypairFromSeed(readingSeed);
             // [1] - Sender side generation - for every new tx
-            const tx = new UtxoSenderData(spenderRootKeys.publicKey);
+            const tx = new UtxoSenderData(
+                recipientRootKeys.publicKey,
+                recipientReadingKeys.publicKey,
+            );
             // [2] - Encrypt ( can throw ... )
             tx.encryptMessageV1();
             // [3] - Pack & Serialize - after this step data can be sent on chain
             tx.packCipheredText();
             // [4] - Send on-chain -> extract event etc ...
             // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
-            const txIn = new UtxoRecipientData(spenderRootKeys);
+            const txIn = new UtxoRecipientData(recipientReadingKeys);
             // [5] - Deserialize --- we actually will first get this text from chain
             txIn.unpackMessageV1(tx.cipheredTextMessageV1);
             // [6] - Decrypt ( try... )
@@ -125,13 +138,15 @@ describe('PantherPoolV0', () => {
             }
             // [7] - Extract random ( try ... )
             try {
-                txIn.unpackRandom();
+                txIn.deriveRecipientSpendingKeysFromRootKeysAndRandom(
+                    recipientRootKeys,
+                );
             } catch (e) {
                 // prolog is not equal to expected
             }
             // [8] - We ready to use random in spend flow
             it('Sent random is equal to received random', () => {
-                expect(txIn.spenderRandom).equal(tx.spenderRandom);
+                expect(txIn.recipientRandom).equal(tx.recipientRandom);
             });
             // [9] - Commitments creation - TODO: max commitment 2*96 , min commitment 0 ? & random
             // [10] - Double check zAssetId solidity vs TS versions
@@ -142,17 +157,22 @@ describe('PantherPoolV0', () => {
 
         describe('Keys generation & other cryptography used in advanced-staking', function () {
             // [0] - Spender side generation - one time - Root public key will be shared
-            const spenderSeed = BigInt('0xAABBCCDDEEFF');
-            const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
+            const rootSeed = BigInt('0xAABBCCDDEEFF');
+            const readingSeed = BigInt('0xFFEEDDCCBBAA');
+            const recipientRootKeys = deriveKeypairFromSeed(rootSeed);
+            const recipientReadingKeys = deriveKeypairFromSeed(readingSeed);
             // [1] - Sender side generation - for every new tx
-            const tx = new UtxoSenderData(spenderRootKeys.publicKey);
+            const tx = new UtxoSenderData(
+                recipientRootKeys.publicKey,
+                recipientReadingKeys.publicKey,
+            );
             // [2] - Encrypt ( can throw ... )
             tx.encryptMessageV1();
             // [3] - Pack & Serialize - after this step data can be sent on chain
             tx.packCipheredText(); // tx.cipheredTextMessageV1 will be used as secret to be sent on chain
             // [4] - Send on-chain -> extract event etc ...
             // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
-            const txIn = new UtxoRecipientData(spenderRootKeys);
+            const txIn = new UtxoRecipientData(recipientReadingKeys);
             // [5] - Deserialize --- we actually will first get this text from chain
             txIn.unpackMessageV1(tx.cipheredTextMessageV1);
             // [6] - Decrypt ( try... )
@@ -163,13 +183,15 @@ describe('PantherPoolV0', () => {
             }
             // [7] - Extract random ( try ... )
             try {
-                txIn.unpackRandom();
+                txIn.deriveRecipientSpendingKeysFromRootKeysAndRandom(
+                    recipientRootKeys,
+                );
             } catch (e) {
                 // prolog is not equal to expected
             }
             // [8] - We ready to use random in spend flow
             it('Sent random is equal to received random', () => {
-                expect(txIn.spenderRandom).equal(tx.spenderRandom);
+                expect(txIn.recipientRandom).equal(tx.recipientRandom);
             });
         });
 
@@ -181,11 +203,11 @@ describe('PantherPoolV0', () => {
         // In production new-key can't be used without this double-test
         describe('Flow of key-generation, commitments creation (ERC20), generate-deposits + exit && double checks on every-step', function () {
             // [0] - Recipient side
-            const s = generateRandomBabyJubModSubOrderValue(); // Spender Private Key
+            const s = generateRandomInBabyJubSubField(); // Spender Private Key
             const S = babyjub.mulPointEscalar(babyjub.Base8, s); // Spender Public Key - Shared & known to sender
             // [1] - Sender side - NOTE: 2 different randoms can be created - One for Ephemeral Key and one for speding
             // We use here same random for both for simplicity
-            const r = generateRandomBabyJubModSubOrderValue(); // Sender generates random value
+            const r = generateRandomInBabyJubSubField(); // Sender generates random value
             // This key used to create commitments with `generateDeposits` solidity call
             const K = babyjub.mulPointEscalar(S, r); // Sender generates Shared Ephemeral Key = rsB = rS
             const R = babyjub.mulPointEscalar(babyjub.Base8, r); // This key is shared in open form = rB
@@ -700,13 +722,13 @@ describe('PantherPoolV0', () => {
                 ];
 
                 // This private key must be used inside `exit` function
-                const sr = multiplyScalars(s, buffer32ToBigInt(r_from_chain)); // spender derived private key
+                const sr = deriveChildPrivKeyFromRootPrivKey(
+                    s,
+                    buffer32ToBigInt(r_from_chain),
+                ); // spender derived private key
 
                 // This public key must be used in panther-core V1
-                const SpenderDerivedPubKey = babyjub.mulPointEscalar(
-                    babyjub.Base8,
-                    sr,
-                ); // S = sB S' = srB
+                const SpenderDerivedPubKey = derivePublicKeyFromPrivate(sr); // S = sB S' = srB
                 const SpenderDerivedPubKey_from_chain =
                     await poolV0.testGeneratePublicSpendingKey(sr as bigint);
                 expect(

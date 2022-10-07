@@ -7,8 +7,8 @@ import {
 
 import {
     packPublicKey,
-    generateRandomBabyJubValue,
-    generatePublicKey,
+    generateRandomInBabyJubSubField,
+    derivePublicKeyFromPrivate,
     unpackPublicKey,
 } from '../lib/keychain';
 import {
@@ -34,13 +34,13 @@ export function encryptRandomSecret(
     rootReadingPubKey: PublicKey,
 ): string {
     console.time('encryptRandomSecret()');
-    const ephemeralRandom = generateRandomBabyJubValue();
+    const ephemeralRandom = generateRandomInBabyJubSubField();
     const ephemeralPubKey = generateEcdhSharedKey(
         ephemeralRandom,
         rootReadingPubKey,
     );
     const ephemeralPubKeyPacked = packPublicKey(ephemeralPubKey);
-    const ephemeralSharedPubKey = generatePublicKey(ephemeralRandom);
+    const ephemeralSharedPubKey = derivePublicKeyFromPrivate(ephemeralRandom);
     const ephemeralSharedPubKeyPacked = packPublicKey(ephemeralSharedPubKey);
     const plaintext = bigintToBytes32(randomSecret).slice(2);
 

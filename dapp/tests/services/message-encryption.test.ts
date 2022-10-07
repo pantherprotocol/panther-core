@@ -1,8 +1,8 @@
 import {describe, expect} from '@jest/globals';
 
 import {
-    deriveKeypairFromSeed,
-    generateRandomBabyJubValue,
+    generateRandomKeypair,
+    generateRandomInBabyJubSubField,
 } from '../../src/lib/keychain';
 import {} from '../../src/lib/message-encryption';
 import {
@@ -14,8 +14,8 @@ import {
 } from '../../src/services/message-encryption';
 
 describe('Random secret encryption', () => {
-    const rootReadingKeypair = deriveKeypairFromSeed();
-    const randomSecret = generateRandomBabyJubValue();
+    const rootReadingKeypair = generateRandomKeypair();
+    const randomSecret = generateRandomInBabyJubSubField();
 
     const ciphertext = encryptRandomSecret(
         randomSecret,

@@ -7,7 +7,7 @@ import {Wallet} from 'ethers';
 
 import {
     deriveKeypairFromSignature,
-    deriveKeypairFromSeed,
+    generateRandomKeypair,
     packPublicKey,
 } from '../src/lib/keychain';
 import {
@@ -52,7 +52,7 @@ describe('Transaction integration test', () => {
         const sS = deriveKeypairFromSignature(signedMessageByS);
 
         // Sender actions:
-        const rR = deriveKeypairFromSeed(); // Random (r, R)
+        const rR = generateRandomKeypair(); // Random (r, R)
         const Sprime = babyjub.mulPointEscalar(sS.publicKey, rR.privateKey);
 
         const K = generateEcdhSharedKey(rR.privateKey, vV.publicKey);

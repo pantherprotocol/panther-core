@@ -53,7 +53,11 @@ const Links = () => {
                     {isNormalLink(link) ? (
                         <SafeLink href={link.href}>{link.text}</SafeLink>
                     ) : (
-                        <Link to="#" onClick={link.onclick}>
+                        <Link
+                            to="#"
+                            onClick={link.onclick}
+                            data-testid={link.text}
+                        >
                             {link.text}
                         </Link>
                     )}

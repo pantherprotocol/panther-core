@@ -8,6 +8,11 @@
     mix-blend-mode: normal;
     border: 1px solid rgba(102, 141, 198, 0.4);
     border-radius: 22px;
+    padding: 10px;
+
+    @media (max-width: $medium-screen-size) {
+        width: 90%;
+    }
 
     .welcome-title {
         text-align: center;
@@ -21,6 +26,10 @@
         background-clip: text;
         margin-top: 30px;
         margin-bottom: 10px;
+
+        @media (max-width: $small-screen-size) {
+            font-size: $big-font-size;
+        }
     }
 
     .welcome-message {
@@ -36,9 +45,12 @@
         display: flex;
         justify-content: space-between;
 
+        @media (max-width: $medium-screen-size) {
+            flex-direction: column;
+        }
+
         .welcome-feature {
             width: 220px;
-
             height: 280px;
             display: flex;
             justify-content: space-around;
@@ -52,10 +64,13 @@
             padding: 10px 15px;
             color: $white;
             text-align: center;
-
             box-sizing: border-box;
-
             background: linear-gradient(0deg, #222a45, #222a45), #0f1229;
+
+            @media (max-width: $medium-screen-size) {
+                width: 100%;
+                margin: 5px 0;
+            }
 
             &-icon {
                 display: flex;

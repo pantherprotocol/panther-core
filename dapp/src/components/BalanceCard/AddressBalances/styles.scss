@@ -1,11 +1,15 @@
 @import '../../../variables';
 
 .address-balance {
-    padding: 24px 15px 0;
+    padding: 10px 15px 0;
 
     .title-box {
         display: flex;
         align-items: center;
+
+        .title {
+            opacity: 0.5;
+        }
     }
 
     .amount-box {
@@ -18,8 +22,8 @@
             justify-content: center;
 
             .balance {
-                font-weight: $bold-font-weight;
-                font-size: $big-font-size;
+                font-weight: $semi-bold-font-weight;
+                font-size: $title-font-size;
                 line-height: 42px;
                 .substring {
                     margin-right: 3px;
@@ -36,7 +40,7 @@
 
         .amount-usd {
             font-weight: $light-font-weight;
-            font-size: $title-font-size;
+            font-size: 17px;
             line-height: 45px;
             display: flex;
             align-items: center;

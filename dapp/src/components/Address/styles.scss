@@ -11,7 +11,7 @@
     .user-avatar {
         width: 34px;
         height: 34px;
-        margin-left: 18px;
+        margin-left: 10px;
         margin-top: 3px;
 
         @media (max-width: $medium-screen-size) {
@@ -29,7 +29,7 @@
     .account-address {
         font-size: $normal-font-size;
         line-height: 48px;
-        margin: 0 18px;
+        margin: 0 10px 0 15px;
 
         @media (max-width: $medium-screen-size) {
             font-size: 14px;

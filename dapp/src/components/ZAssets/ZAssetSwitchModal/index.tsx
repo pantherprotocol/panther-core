@@ -46,10 +46,17 @@ const ZAssetSwitchModal = ({
     }, [dispatch, open]);
 
     return (
-        <Dialog className="modal-dialog zassets-modal" open={Boolean(open)}>
+        <Dialog
+            className="modal-dialog zassets-modal"
+            open={Boolean(open)}
+            data-testid="zassets-switch-network-modal"
+        >
             <Box className="x-icon">
                 <Tooltip title={'Click to close Dialog box'} placement="top">
-                    <IconButton onClick={handleClose}>
+                    <IconButton
+                        onClick={handleClose}
+                        data-testid="assets-switch-network-modal-close-button"
+                    >
                         <img src={xIcon} />
                     </IconButton>
                 </Tooltip>

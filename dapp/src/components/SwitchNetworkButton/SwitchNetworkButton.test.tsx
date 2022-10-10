@@ -7,7 +7,8 @@ import {renderComponent} from '../../utils/test-utils';
 import SwitchNetworkButton from './index';
 
 test('should render', () => {
-    renderComponent(<SwitchNetworkButton />);
+    const onChange = jest.fn();
+    renderComponent(<SwitchNetworkButton onChange={onChange} />);
     const switchNetworkButtonComponent = screen.queryByTestId(
         'switch-network-button_container',
     );
@@ -16,8 +17,12 @@ test('should render', () => {
 
 test('click on button should trigger onClick event', () => {
     const defaultNetworkChainId = 80001;
+    const onChange = jest.fn();
     renderComponent(
-        <SwitchNetworkButton defaultNetwork={defaultNetworkChainId} />,
+        <SwitchNetworkButton
+            defaultNetwork={defaultNetworkChainId}
+            onChange={onChange}
+        />,
     );
     const switchNetworkButtonComponent = screen.queryByTestId(
         'switch-network-button_container',

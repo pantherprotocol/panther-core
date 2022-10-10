@@ -13,6 +13,7 @@ import {
     injected,
 } from '../../../services/connectors';
 import {CHAIN_IDS} from '../../../services/env';
+import {switchNetwork} from '../../../services/wallet';
 import ConnectButton from '../../ConnectButton';
 import {NetworkButton} from '../../NetworkButton';
 import SwitchNetworkButton from '../../SwitchNetworkButton';
@@ -67,7 +68,7 @@ export default function WalletHeader() {
 
             {wrongNetwork && (
                 <Box className="address-btn">
-                    <SwitchNetworkButton />
+                    <SwitchNetworkButton onChange={switchNetwork} />
                 </Box>
             )}
 

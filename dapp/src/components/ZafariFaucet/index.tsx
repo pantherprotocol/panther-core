@@ -19,6 +19,7 @@ import {formatAccountAddress} from '../../services/account';
 import {isWrongNetwork, supportedNetworks} from '../../services/connectors';
 import {FAUCET_CHAIN_IDS} from '../../services/env';
 import {craftSendFaucetTransaction, faucetDrink} from '../../services/faucet';
+import {switchNetwork} from '../../services/wallet';
 import {isDetailedError, DetailedError} from '../../types/error';
 import {notifyError} from '../Common/errors';
 import {MessageWithTx} from '../Common/MessageWithTx';
@@ -209,7 +210,10 @@ function ZafariFaucet() {
             </Card>
             {wrongNetwork ? (
                 <Box className="connect-button">
-                    <SwitchNetworkButton defaultNetwork={FAUCET_CHAIN_IDS[0]} />
+                    <SwitchNetworkButton
+                        defaultNetwork={FAUCET_CHAIN_IDS[0]}
+                        onChange={switchNetwork}
+                    />
                 </Box>
             ) : (
                 <Box className="connect-button">

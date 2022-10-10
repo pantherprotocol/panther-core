@@ -13,8 +13,8 @@
 
     .expected-rewards-card-title {
         font-weight: $bold-font-weight;
-        font-size: $normal-font-size;
-        padding: 10px 16px;
+        font-size: $small-font-size;
+        padding: 0 0 13px 23px;
         background: linear-gradient(92.53deg, $color-beige 0%, #d0a7a8 95.77%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -22,8 +22,8 @@
     }
 
     .expected-rewards-card-container {
-        background: $card-background-darker;
-        padding: 5px 16px;
+        background: rgba(49, 57, 80, 1);
+        padding: 10px 23px;
         border-radius: 10px;
         flex-direction: column;
         width: 100%;
@@ -65,7 +65,6 @@
                     $color-beige 0%,
                     #d0a7a8 95.77%
                 );
-                padding-right: 10px;
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;

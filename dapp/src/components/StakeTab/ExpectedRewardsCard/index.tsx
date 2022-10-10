@@ -20,7 +20,7 @@ export function ExpectedRewardsCard() {
     return (
         <Box className="expected-rewards-card">
             <Typography className="expected-rewards-card-title">
-                Your Expected Advanced Staking Rewards:
+                Advanced Staking Rewards:
             </Typography>
             <Box className="expected-rewards-card-container">
                 <Box className="expected-rewards-card-content">

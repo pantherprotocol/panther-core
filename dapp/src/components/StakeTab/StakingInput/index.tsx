@@ -120,7 +120,7 @@ export default function StakingInput(props: StakingInputProps) {
                         onChange={inputHandler}
                         autoComplete="off"
                         autoFocus={true}
-                        placeholder="0.0"
+                        placeholder="0"
                         disableUnderline={true}
                         disabled={disabled}
                         aria-describedby="staking-value-helper-text"

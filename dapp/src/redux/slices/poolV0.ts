@@ -49,7 +49,7 @@ const poolV0Slice = createSlice({
 export const poolV0ExitTimeSelector = (
     state: RootState,
 ): number | undefined => {
-    return state.poolV0.value.exitTime;
+    return state?.poolV0?.value?.exitTime;
 };
 
 export const poolV0ExitDelaySelector = (

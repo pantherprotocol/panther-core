@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
 
-import {Box, Input, InputAdornment, Typography} from '@mui/material';
+import {Box, Input, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {utils} from 'ethers';
 
@@ -22,9 +22,7 @@ import {
     isStakingOpenSelector,
 } from '../../../redux/slices/stakeTerms';
 import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
-import {currentNetwork} from '../../../services/connectors';
 import {StakeType} from '../../../types/staking';
-import {networkLogo} from '../../Common/NetworkLogo';
 
 import {StakingInputProps} from './StakingInput.interface';
 
@@ -44,8 +42,6 @@ export default function StakingInput(props: StakingInputProps) {
         termsSelector(chainId!, StakeType.Advanced, 'minLockPeriod'),
     );
     const disabled = !account || !isStakingOpen;
-
-    const network = currentNetwork(chainId);
 
     const onChange = useCallback(
         (amount: string) => {
@@ -127,24 +123,17 @@ export default function StakingInput(props: StakingInputProps) {
                         placeholder="0.0"
                         disableUnderline={true}
                         disabled={disabled}
-                        endAdornment={
-                            <InputAdornment
-                                position="end"
-                                className="staking-input-symbol"
-                            >
-                                <span className="staking-symbol-holder">
-                                    {network?.logo && (
-                                        <img
-                                            src={networkLogo(network.logo)}
-                                            alt="Network logo"
-                                        />
-                                    )}
-                                    <span>ZKP</span>
-                                </span>
-                            </InputAdornment>
-                        }
                         aria-describedby="staking-value-helper-text"
                     />
+                    <Typography
+                        variant="caption"
+                        component="span"
+                        className={`staking-input-token-name ${
+                            props.amountToStake && ' invisible-token-name'
+                        }`}
+                    >
+                        ZKP
+                    </Typography>
                 </Box>
                 <Typography
                     variant="caption"

@@ -2,7 +2,9 @@ import React, {ReactElement, useCallback} from 'react';
 
 import {Typography, Card, CardContent} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import moment from 'moment';
 
+import warningIcon from '../../../images/warning-icon-triangle.svg';
 import {formatTime, secondsToFullDays} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
 import {
@@ -10,7 +12,6 @@ import {
     isStakingPostCloseSelector,
     termsSelector,
 } from '../../../redux/slices/stakeTerms';
-import {isEthereumNetwork} from '../../../services/connectors';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
 import {StakeType} from '../../../types/staking';
 import {SafeMuiLink} from '../../Common/links';
@@ -49,51 +50,48 @@ export default function StakingInfo() {
         subtitle: string;
         body: ReactElement;
     } => {
-        let subtitle =
-            'Advanced staking ' +
-            (isAdvancedStakingOpen ? 'is open!' : 'will open');
-        if (!isAdvancedStakingOpen) {
-            if (allowedSince) {
-                const allowedSinceDate = formatTime(
-                    Number(allowedSince) * 1000,
-                );
-                subtitle += isAdvancedStakingOpen ? ' since' : ' on';
-                subtitle += ' ' + allowedSinceDate;
+        let subtitle = 'Advanced staking ';
+
+        if (isAdvancedStakingOpen) {
+            if (minLockPeriod) {
+                const unlockDate = moment.now() + Number(minLockPeriod) * 1000;
+
+                subtitle += `will lock your tokens until ${moment(
+                    unlockDate,
+                ).format('D MMM YYYY')}`;
             } else {
-                subtitle += isAdvancedStakingOpen ? '!' : ' soon!';
+                subtitle += 'is now open';
+            }
+        } else {
+            subtitle += 'will open';
+            if (allowedSince) {
+                const allowedSinceDate = moment(Number(allowedSince) * 1000);
+                subtitle += ' on ' + allowedSinceDate.format('D MMM YYYY');
+            } else {
+                subtitle += ' soon!';
             }
         }
 
-        const allowedTillDate =
-            allowedTill && formatTime(Number(allowedTill) * 1000);
         const body = (
-            <Typography>
-                Advanced Staking will{' '}
-                {allowedTill && `be open until ${allowedTillDate}, will `}
-                lock your tokens
-                {minLockPeriod && minLockPeriod > 0
-                    ? ` for ${secondsToFullDays(
-                          minLockPeriod as number,
-                      )} days and `
-                    : ', and '}
-                create zZKP as rewards in the Multi-Asset Shielded Pool (MASP).{' '}
-                {chainId &&
-                    isEthereumNetwork(chainId) &&
-                    'You may have to wait up to 10 minutes to see this reflected on Polygon. '}
-                By staking your ZKP, you become one of the first people to
-                create zAssets and contribute to bootstrapping and testing of
-                the MASP.
-            </Typography>
+            <>
+                <Typography className="staking-info-text-paragraph">
+                    You will need to unstake in order for your staked assets to
+                    be liquid
+                    <br />
+                    again. Rewards are earned automatically.{' '}
+                    <span className="learn-more-link">Learn more.</span>
+                </Typography>
+                <Typography>
+                    Your staked ZKP will create zZKP as rewards in the
+                    Multi-Asset Shielded Pool. By staking your ZKP, you become
+                    one of the first users to create zAssets and contribute to
+                    the bootstrapping of the MASP.
+                </Typography>
+            </>
         );
 
         return {subtitle, body};
-    }, [
-        isAdvancedStakingOpen,
-        allowedSince,
-        allowedTill,
-        minLockPeriod,
-        chainId,
-    ]);
+    }, [isAdvancedStakingOpen, minLockPeriod, allowedSince]);
 
     const getAdvancedStakingClosedText = useCallback((): {
         subtitle: string;
@@ -258,8 +256,16 @@ export default function StakingInfo() {
     return (
         <Card variant="outlined" className="staking-info-container">
             <CardContent className="staking-info-card-content">
-                <Typography variant="subtitle2" className="staking-info-title">
-                    {subtitle}
+                <Typography
+                    variant="subtitle2"
+                    className="staking-info-title-wrapper"
+                >
+                    <img
+                        src={warningIcon}
+                        alt="warning-icon"
+                        className="warning-icon"
+                    />{' '}
+                    <span className="staking-info-title">{subtitle}</span>
                 </Typography>
                 <div className="staking-info-text">{body}</div>
             </CardContent>

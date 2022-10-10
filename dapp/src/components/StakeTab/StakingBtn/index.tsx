@@ -10,6 +10,7 @@ import {awaitConfirmationAndRetrieveEvent} from '../../../lib/events';
 import {formatCurrency} from '../../../lib/format';
 import {safeParseUnits} from '../../../lib/numbers';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
+import {calculatedRewardsSelector} from '../../../redux/slices/advancedStakePredictedRewards';
 import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/advancedStakesRewards';
 import {getChainBalance} from '../../../redux/slices/chainBalance';
 import {getTotalsOfAdvancedStakes} from '../../../redux/slices/totalsOfAdvancedStakes';
@@ -29,6 +30,7 @@ import {getZkpTokenBalance} from '../../../redux/slices/zkpTokenBalance';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
 import {deriveRootKeypairs} from '../../../services/keychain';
 import {advancedStake} from '../../../services/staking';
+import {StakingRewardTokenID} from '../../../types/staking';
 import {notifyError} from '../../Common/errors';
 import {MessageWithTx} from '../../Common/MessageWithTx';
 import {openNotification, removeNotification} from '../../Common/notification';
@@ -40,6 +42,7 @@ const getButtonText = (
     amountBN: BigNumber | null,
     minStake: number | null,
     tokenBalance: BigNumber | null,
+    zZkpBN: BigNumber | null | undefined,
 ): [string, boolean] => {
     if (minStake === null) {
         return ["Couldn't get minimum stake", false];
@@ -61,6 +64,16 @@ const getButtonText = (
     }
 
     if (amountBN.gte(utils.parseEther(minStake.toString()))) {
+        if (!zZkpBN || zZkpBN.lt(utils.parseEther('0.01'))) {
+            console.debug(
+                `Insufficient zZKP rewards to stake: ${utils.formatEther(
+                    zZkpBN!,
+                )} <0.01`,
+            );
+
+            return ['Insufficient zZKP rewards to stake', false];
+        }
+
         console.debug(
             'Sufficient ZKP balance:',
             utils.formatEther(amountBN),
@@ -97,11 +110,15 @@ const StakingBtn = (props: {
         tokenBalance,
     } = props;
 
+    const rewards = useAppSelector(calculatedRewardsSelector);
+    const zZkpBN = rewards?.[StakingRewardTokenID.zZKP];
+
     const [buttonText, ready] = getButtonText(
         amountToStake,
         amountToStakeBN,
         minStake,
         tokenBalance,
+        zZkpBN,
     );
 
     const walletActionCause = useAppSelector(walletActionCauseSelector);

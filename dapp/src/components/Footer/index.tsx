@@ -7,9 +7,9 @@ import Socials from './Socials';
 
 import './styles.scss';
 
-export const Footer = () => {
+const Footer = () => {
     return (
-        <Grid container className="footer-holder">
+        <Grid container className="footer-holder" data-testid="footer">
             <Grid item xs={12} md={6} className="footer-socials">
                 <Socials />
             </Grid>
@@ -19,3 +19,5 @@ export const Footer = () => {
         </Grid>
     );
 };
+
+export default Footer;

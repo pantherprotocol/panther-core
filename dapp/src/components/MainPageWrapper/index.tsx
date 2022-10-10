@@ -8,7 +8,7 @@ import {useAppSelector} from '../../redux/hooks';
 import {blurSelector} from '../../redux/slices/blur';
 import {isBlockedCountry} from '../../services/geo-location';
 import BlockedUser from '../BlockedUser';
-import {Footer} from '../Footer';
+import Footer from '../Footer';
 import Header from '../Header';
 
 import './styles.scss';

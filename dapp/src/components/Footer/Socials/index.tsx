@@ -40,7 +40,10 @@ const socialData = [
 ];
 const Socials = () => {
     return (
-        <div className="adv-staking-footer-socials">
+        <div
+            className="adv-staking-footer-socials"
+            data-testid="footer-social-links"
+        >
             {socialData.map((social, index) => (
                 <SafeLink href={social.href} key={index}>
                     <img src={social.icon.src} alt={social.icon.alt} />

@@ -161,7 +161,7 @@ function ZafariFaucet() {
             <Card className="details">
                 <Box className="details-row">
                     <Typography className="caption">Network:</Typography>
-                    <Typography className="network-name">
+                    <div className="network-name">
                         {!active ? (
                             <Typography className="wallet-not-connected">
                                 Wallet not connected
@@ -169,7 +169,7 @@ function ZafariFaucet() {
                         ) : (
                             chainId && networkName(chainId)
                         )}
-                    </Typography>
+                    </div>
                 </Box>
                 <Box className="details-row">
                     <Typography className="caption">Token:</Typography>

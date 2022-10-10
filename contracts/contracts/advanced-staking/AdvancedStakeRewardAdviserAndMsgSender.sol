@@ -43,7 +43,7 @@ contract AdvancedStakeRewardAdviserAndMsgSender is
 
     // solhint-enable var-name-mixedcase
 
-    /// @notice Message nonce (i.e. sequential number of the next message)
+    /// @notice Message nonce (i.e. sequential number of the latest message)
     uint256 public nonce;
 
     /// @param _rewardMaster Address of the RewardMaster contract on the mainnet/Goerli
@@ -71,16 +71,16 @@ contract AdvancedStakeRewardAdviserAndMsgSender is
         // Ignore other messages except the STAKE
         if (action != STAKE) return;
 
-        uint24 _nonce = uint24(nonce);
-        bytes memory content = _encodeBridgedData(_nonce, action, message);
+        // Overflow ignored as the nonce is unexpected ever be that big
+        uint24 _nonce = uint24(nonce + 1);
+        nonce = uint256(_nonce);
 
+        bytes memory content = _encodeBridgedData(_nonce, action, message);
         IFxStateSender(FX_ROOT).sendMessageToChild(
             ACTION_MSG_RECEIVER,
             content
         );
 
         emit StakeMsgBridged(_nonce, content);
-        // It may overflow and start from 0 again, which is OK
-        nonce = uint256(++_nonce);
     }
 }

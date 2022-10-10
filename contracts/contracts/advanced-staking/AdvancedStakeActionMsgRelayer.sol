@@ -39,7 +39,7 @@ contract AdvancedStakeActionMsgRelayer is
 
     // solhint-enable var-name-mixedcase
 
-    /// @notice Message nonce (i.e. sequential number of the next message)
+    /// @notice Message nonce (i.e. sequential number of the latest message)
     uint256 public nonce;
 
     /// @param _rewardMaster Address of the RewardMaster contract on the Polygon/Mumbai
@@ -81,8 +81,11 @@ contract AdvancedStakeActionMsgRelayer is
             bytes memory message
         ) = _decodeBridgedData(content);
 
-        // Protection against replay attacks/errors
-        require(nonce++ == _nonce, "AMR:INVALID_NONCE");
+        // Protection against replay attacks/errors. It's supposed that:
+        // - failed `.onAction` shall not stop further messages bridging
+        // - nonce is expected never be large enough to overflow.
+        require(_nonce > nonce, "AMR:INVALID_NONCE");
+        nonce = _nonce;
 
         IActionMsgReceiver(REWARD_MASTER).onAction(action, message);
 

@@ -7,7 +7,7 @@ import {ContractName, getContractAddress} from '../../services/contracts';
 import {addressLink, safeWindowOpen} from '../Common/links';
 import {WalletHeaderActionButton} from '../Common/WalletHeaderActionButton';
 
-export const ContractButton = () => {
+const ContractButton = () => {
     const context = useWeb3React();
     const {chainId} = context;
 
@@ -23,6 +23,9 @@ export const ContractButton = () => {
             text="ZKP Contract"
             onClick={openContractUrl}
             logo={{src: etherscanIcon, alt: 'Etherscan logo'}}
+            dataTestId="contract-button_action-button"
         />
     );
 };
+
+export default ContractButton;

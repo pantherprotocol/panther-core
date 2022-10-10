@@ -10,13 +10,15 @@ export default function Balance(props: {
     name: string;
 }) {
     return (
-        <Box className="asset-balance">
+        <Box className="asset-balance" data-testid="zasset-balance">
             <Typography className="balance">
                 {props.balance}
-                <span> {props.name} </span>
+                <span data-testid="zasset-balance-name">{props.name}</span>
             </Typography>
             <Typography className="balance-value">
-                <span> {props.balanceValue} </span>
+                <span data-testid="zasset-balance-value">
+                    {props.balanceValue}
+                </span>
             </Typography>
         </Box>
     );

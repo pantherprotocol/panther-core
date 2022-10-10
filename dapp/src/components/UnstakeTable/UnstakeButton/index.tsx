@@ -29,13 +29,7 @@ const UnstakeButton = (props: {
     const disabled =
         anotherUnstakingInProgress ||
         (chainHasAdvancedStaking(chainId) ? !row.unstakable : true);
-    console.log(
-        'mayas',
-        anotherUnstakingInProgress,
-        disabled,
-        walletActionCause?.trigger,
-        walletActionStatus,
-    );
+
     return (
         <Button
             data-testid="unstake-table_unstake-button_container"

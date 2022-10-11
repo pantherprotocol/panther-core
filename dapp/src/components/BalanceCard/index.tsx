@@ -41,7 +41,7 @@ const BalanceCard = () => {
     );
 
     return (
-        <Box className="balance-card-holder">
+        <Box className="balance-card-holder" data-testid="balance-card_wrapper">
             <Card className="balance-card">
                 {account && (
                     <Box className="balance-card-address-holder">

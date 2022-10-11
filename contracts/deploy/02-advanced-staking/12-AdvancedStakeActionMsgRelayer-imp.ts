@@ -1,22 +1,10 @@
-import {ethers} from 'hardhat';
-import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
-
+import {DeployFunction} from 'hardhat-deploy/types';
+import {
+    getContractAddress,
+    getContractEnvAddress,
+} from '../../lib/deploymentHelpers';
 import resources from './resources.json';
-
-const getParams = async (network: string) => {
-    const msgSender = process.env.ADVANCED_STAKE_REWARD_ADVISER_AND_MSG_SENDER;
-
-    const rewardMaster = (await ethers.getContract('RewardMaster')).address;
-    const fxChild =
-        resources.addresses.fxChild[network as 'polygon' | 'mumbai'];
-
-    return {
-        msgSender,
-        rewardMaster,
-        fxChild,
-    };
-};
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {name: network} = hre.network;
@@ -37,7 +25,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     } = hre;
     const {deployer} = await getNamedAccounts();
 
-    const {rewardMaster, msgSender, fxChild} = await getParams(network);
+    const rewardMaster = await getContractAddress(
+        hre,
+        'RewardMaster',
+        'REWARD_MASTER',
+    );
+    const msgSender = getContractEnvAddress(
+        hre,
+        'ADVANCED_STAKE_REWARD_ADVISER_AND_MSG_SENDER',
+    );
+    const fxChild =
+        resources.addresses.fxChild[network as 'polygon' | 'mumbai'];
 
     if (!msgSender) {
         console.log(

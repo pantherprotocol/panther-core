@@ -1,10 +1,19 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
+import {
+    reuseEnvAddress,
+    getContractAddress,
+    getContractEnvAddress,
+} from '../../lib/deploymentHelpers';
+
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
     const {deploy} = deployments;
     const {deployer} = await getNamedAccounts();
+
+    console.log(`Deploying Staking on ${hre.network.name}...`);
+    if (reuseEnvAddress(hre, 'STAKING')) return;
 
     let contract = 'TestnetStaking';
 
@@ -12,14 +21,19 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         contract = 'Staking';
     }
 
-    const master = await hre.ethers.getContract('RewardMaster');
+    const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
+    const rewardMaster = await getContractAddress(
+        hre,
+        'RewardMaster',
+        'REWARD_MASTER',
+    );
 
     await deploy('Staking', {
         contract,
         from: deployer,
-        args: [process.env.ZKP_TOKEN_ADDRESS, master.address, deployer],
+        args: [zkpToken, rewardMaster, deployer],
         log: true,
-        autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+        autoMine: true,
     });
 };
 

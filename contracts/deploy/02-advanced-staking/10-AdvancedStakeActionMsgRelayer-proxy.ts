@@ -1,5 +1,6 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {reuseEnvAddress} from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {name: network} = hre.network;
@@ -11,6 +12,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         console.log('Skip AdvancedStakeActionMsgRelayer_Proxy deployment...');
         return;
     }
+
+    if (reuseEnvAddress(hre, 'ADVANCED_STAKE_ACTION_MSG_RELAYER_PROXY')) return;
 
     const {
         deployments: {deploy},

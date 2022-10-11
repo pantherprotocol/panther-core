@@ -1,25 +1,40 @@
-import {Contract} from 'ethers';
-import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {DeployFunction} from 'hardhat-deploy/types';
+
+import {
+    reuseEnvAddress,
+    getContractAddress,
+    getContractEnvAddress,
+} from '../../lib/deploymentHelpers';
+import {isPolygonOrMumbai} from '../../lib/checkNetwork';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
     const {deploy} = deployments;
     const {deployer} = await getNamedAccounts();
 
-    let pool: Contract;
+    console.log(`Deploying RewardMaster on ${hre.network.name}...`);
+    if (reuseEnvAddress(hre, 'REWARD_MASTER')) return;
 
-    if (hre.network.name == 'polygon' || hre.network.name == 'mumbai') {
-        pool = await hre.ethers.getContract('MaticRewardPool');
+    let pool: string;
+
+    if (isPolygonOrMumbai(hre)) {
+        pool = await getContractAddress(
+            hre,
+            'MaticRewardPool',
+            'MATIC_REWARD_POOL',
+        );
     } else {
-        pool = await hre.ethers.getContract('RewardPool');
+        pool = await getContractAddress(hre, 'RewardPool', 'REWARD_POOL');
     }
+
+    const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
 
     await deploy('RewardMaster', {
         from: deployer,
-        args: [process.env.ZKP_TOKEN_ADDRESS, pool.address, deployer],
+        args: [zkpToken, pool, deployer],
         log: true,
-        autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+        autoMine: true,
     });
 };
 export default func;

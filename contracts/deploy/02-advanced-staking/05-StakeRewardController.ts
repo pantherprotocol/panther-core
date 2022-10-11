@@ -1,25 +1,47 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
+import {
+    reuseEnvAddress,
+    getContractAddress,
+    getContractEnvAddress,
+} from '../../lib/deploymentHelpers';
+
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     if (!process.env.DEPLOY_CLASSIC_STAKING) return;
     const {deployments, getNamedAccounts} = hre;
     const {deploy} = deployments;
     const {deployer} = await getNamedAccounts();
 
+    console.log(`Deploying StakeRewardController on ${hre.network.name}...`);
+    if (reuseEnvAddress(hre, 'STAKE_REWARD_CONTROLLER')) return;
+
+    const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
+    const staking = await getContractAddress(hre, 'Staking', 'STAKING');
+    const rewardTreasury = await getContractAddress(
+        hre,
+        'RewardTreasury',
+        'REWARD_TREASURY',
+    );
+    const rewardMaster = await getContractAddress(
+        hre,
+        'RewardMaster',
+        'REWARD_MASTER',
+    );
+
     await deploy('StakeRewardController', {
         from: deployer,
         args: [
             deployer, // owner
-            process.env.ZKP_TOKEN_ADDRESS,
-            process.env.STAKING_CONTRACT,
-            process.env.REWARD_TREASURY,
-            process.env.REWARD_MASTER,
+            zkpToken,
+            staking,
+            rewardTreasury,
+            rewardMaster,
             deployer, //  history_provider,
             1646697599, // REWARDING_START - beginning of MaticRewardPool vesting
         ],
         log: true,
-        autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+        autoMine: true,
     });
 };
 export default func;

@@ -1,19 +1,29 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
+import {
+    reuseEnvAddress,
+    getContractEnvAddress,
+} from '../../lib/deploymentHelpers';
+
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
     const {deploy} = deployments;
     const {deployer} = await getNamedAccounts();
 
+    console.log(`Deploying RewardTreasury on ${hre.network.name}...`);
+    if (reuseEnvAddress(hre, 'REWARD_TREASURY')) return;
+
+    const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
+
     await deploy('RewardTreasury', {
         from: deployer,
         args: [
             deployer, // owner
-            process.env.ZKP_TOKEN_ADDRESS,
+            zkpToken,
         ],
         log: true,
-        autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+        autoMine: true,
     });
 };
 export default func;

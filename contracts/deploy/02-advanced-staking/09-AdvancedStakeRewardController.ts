@@ -1,6 +1,12 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
+import {
+    reuseEnvAddress,
+    getContractAddress,
+    getContractEnvAddress,
+} from '../../lib/deploymentHelpers';
+
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
     const {deploy} = deployments;
@@ -9,21 +15,26 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(
         `Deploying AdvancedStakeRewardController on ${hre.network.name}...`,
     );
+    if (reuseEnvAddress(hre, 'ADVANCED_STAKE_REWARD_CONTROLLER')) return;
 
-    const rewardMaster = await hre.ethers.getContract('RewardMaster');
-    const pantherPool = await hre.ethers.getContract('PantherPoolV0_Proxy');
+    const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
+    const pNftToken = getContractEnvAddress(hre, 'PNFT_TOKEN');
+    const rewardMaster = await getContractAddress(
+        hre,
+        'RewardMaster',
+        'REWARD_MASTER',
+    );
+    const pantherPool = await getContractAddress(
+        hre,
+        'PantherPoolV0_Proxy',
+        'PANTHER_POOL_V0_PROXY',
+    );
 
     await deploy('AdvancedStakeRewardController', {
         from: deployer,
-        args: [
-            deployer,
-            rewardMaster.address,
-            pantherPool.address,
-            process.env.ZKP_TOKEN_ADDRESS,
-            process.env.PNFT_TOKEN_ADDRESS,
-        ],
+        args: [deployer, rewardMaster, pantherPool, zkpToken, pNftToken],
         log: true,
-        autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+        autoMine: true,
     });
 };
 export default func;

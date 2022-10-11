@@ -1,6 +1,12 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
+import {
+    reuseEnvAddress,
+    getContractAddress,
+    getContractEnvAddress,
+} from '../../lib/deploymentHelpers';
+
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
     const {deploy} = deployments;
@@ -8,23 +14,31 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     console.log(`Deploying RewardPool on ${hre.network.name}...`);
 
+    const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
+
     if (hre.network.name == 'polygon' || hre.network.name == 'mumbai') {
-        console.log(`ZKP_TOKEN_ADDRESS=${process.env.ZKP_TOKEN_ADDRESS}`);
+        if (reuseEnvAddress(hre, 'MATIC_REWARD_POOL')) return;
 
         await deploy('MaticRewardPool', {
             from: deployer,
-            args: [process.env.ZKP_TOKEN_ADDRESS, deployer],
+            args: [zkpToken, deployer],
             log: true,
-            autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+            autoMine: true,
         });
     } else {
-        console.log(`VESTING_POOLS=${process.env.VESTING_POOLS}`);
+        if (reuseEnvAddress(hre, 'REWARD_POOL')) return;
+
+        const vestingPools = await getContractAddress(
+            hre,
+            'vestingPools',
+            'VESTING_POOLS',
+        );
 
         await deploy('RewardPool', {
             from: deployer,
-            args: [process.env.VESTING_POOLS, deployer],
+            args: [vestingPools, deployer],
             log: true,
-            autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+            autoMine: true,
         });
     }
 };

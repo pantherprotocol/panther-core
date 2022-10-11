@@ -1,20 +1,11 @@
-import {ethers} from 'hardhat';
-import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
-
+import {DeployFunction} from 'hardhat-deploy/types';
+import {
+    reuseEnvAddress,
+    getContractAddress,
+    getContractEnvAddress,
+} from '../../lib/deploymentHelpers';
 import resources from './resources.json';
-
-const getParams = async (network: string) => {
-    const msgRelayerProxy = process.env.ADVANCED_STAKE_ACTION_MSG_RELAYER_PROXY;
-    const rewardMaster = (await ethers.getContract('RewardMaster')).address;
-    const fxRoot = resources.addresses.fxRoot[network as 'mainnet' | 'goerli'];
-
-    return {
-        msgRelayerProxy,
-        rewardMaster,
-        fxRoot,
-    };
-};
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {name: network} = hre.network;
@@ -29,13 +20,25 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         return;
     }
 
+    if (reuseEnvAddress(hre, 'ADVANCED_STAKE_REWARD_ADVISER_AND_MSG_SENDER'))
+        return;
+
     const {
         deployments: {deploy},
         getNamedAccounts,
     } = hre;
     const {deployer} = await getNamedAccounts();
 
-    const {rewardMaster, msgRelayerProxy, fxRoot} = await getParams(network);
+    const rewardMaster = await getContractAddress(
+        hre,
+        'RewardMaster',
+        'REWARD_MASTER',
+    );
+    const msgRelayerProxy = getContractEnvAddress(
+        hre,
+        'ADVANCED_STAKE_ACTION_MSG_RELAYER_PROXY',
+    );
+    const fxRoot = resources.addresses.fxRoot[network as 'mainnet' | 'goerli'];
 
     if (!msgRelayerProxy) {
         console.log(

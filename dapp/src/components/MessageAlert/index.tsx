@@ -9,15 +9,11 @@ import {
     acknowledgeNotification,
 } from '../../redux/slices/acknowledgedNotifications';
 
+import {MessageAlertProps} from './MessageAlert.interface';
+
 import './styles.scss';
 
-interface alertType {
-    title: string;
-    body: string;
-    notificationOwner: string;
-}
-
-const MessageAlert = (props: alertType) => {
+const MessageAlert = (props: MessageAlertProps) => {
     const acknowledgedNotification = useAppSelector(
         acknowledgedNotificationSelector(props.notificationOwner),
     );

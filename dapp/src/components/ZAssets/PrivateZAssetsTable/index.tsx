@@ -20,10 +20,18 @@ export default function PrivateZAssetsTable() {
         Stake but created as a transaction in the MASP. You will be able to redeem $zZKP
         for $ZKP using the Withdraw option at the end of the Advanced Staking period.`;
 
-    const prpTooltip = `PRPs (Panther Reward Points). This additional reward, aimed toward incentivizing Advanced Staking, will also be created in the Shielded Pool as a calculation based on the number of $zZKP for a given user. Users will be able to convert PRPs to $zZKP using the Reward Converter when the core protocol (Panther Core V1) launches.`;
+    const prpTooltip = `PRPs (Panther Reward Points). This additional reward, aimed
+        toward incentivizing Advanced Staking, will also be created in the Shielded
+        Pool as a calculation based on the number of $zZKP for a given user. Users
+        will be able to convert PRPs to $zZKP using the Reward Converter when the core
+        protocol (Panther Core V1) launches.`;
 
     return (
-        <TableContainer className="private-zAsset-container" component={Paper}>
+        <TableContainer
+            className="private-zAsset-container"
+            component={Paper}
+            data-testid="ZAssets_private-zassets-table_container"
+        >
             <Table aria-label="collapsible table">
                 <TableHead>
                     <TableRow className="main-header-row">
@@ -34,6 +42,7 @@ export default function PrivateZAssetsTable() {
                                 data-html="true"
                                 placement="top"
                                 className="tooltip-icon"
+                                data-testid="ZAssets_private-zassets-table_zasset-tooltip"
                             >
                                 <img src={infoIcon} />
                             </Tooltip>
@@ -48,6 +57,7 @@ export default function PrivateZAssetsTable() {
                                 data-html="true"
                                 placement="top"
                                 className="tooltip-icon"
+                                data-testid="ZAssets_private-zassets-table_prp-tooltip"
                             >
                                 <img src={infoIcon} />
                             </Tooltip>

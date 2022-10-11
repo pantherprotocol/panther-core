@@ -1,10 +1,10 @@
 import type {BytesLike} from '@ethersproject/bytes';
 import {utils} from 'ethers';
 
-export const bigIntToBuffer = (bigint: bigint, width = 32) => {
-    const hex = bigint.toString(16);
+export function bigIntToBuffer(bn: bigint, width = 32) {
+    const hex = bn.toString(16);
     return Buffer.from(hex.padStart(width * 2, '0').slice(0, width * 2), 'hex');
-};
+}
 
 export const bufferToBigInt = (buf: Buffer) => {
     const hex = buf.toString('hex');

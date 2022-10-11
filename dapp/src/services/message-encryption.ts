@@ -75,17 +75,23 @@ export function decryptRandomSecret(
         rootReadingPrivateKey,
         ephemeralSharedPubKey,
     );
-    let randomSecretHex;
+    let randomSecretUInt8;
     try {
-        randomSecretHex = decryptMessage(
+        randomSecretUInt8 = decryptMessage(
             iCiphertext,
             packPublicKey(ephemeralPubKey),
         );
     } catch (error) {
         throw new Error(`Failed to get random secret ${error}`);
     }
+
+    // check if first 5 most significant bits are zeros
+    if ((randomSecretUInt8[0] & 0xf8) != 0x00) {
+        throw new Error('Failed to decrypt random secret. Incorrect prolog');
+    }
+
     console.timeEnd('decryptRandomSecret()');
-    return uint8ArrayToBigInt(randomSecretHex);
+    return uint8ArrayToBigInt(randomSecretUInt8);
 }
 
 export function sliceCipherMsg(

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {IconButton} from '@mui/material';
+import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
@@ -17,6 +17,10 @@ export function ExpectedRewardsCard() {
     const zZkpBN = rewards?.[StakingRewardTokenID.zZKP];
     const predictedRewardsBN = rewards?.[StakingRewardTokenID.PRP];
 
+    const zZkpTooltip = `zZKP rewards generated upon staking in the Multi-Asset Shielded Pool (MASP). Staking is not possible in the case of zero zZKP rewards.`;
+
+    const prpTooltip = `PRPs (Panther Reward Points). This additional reward, aimed toward incentivizing Advanced Staking, will also be created in the Shielded Pool as a calculation based on the number of $zZKP for a given user. Users will be able to convert PRPs to $zZKP using the Reward Converter when the core protocol (Panther Core V1) launches.`;
+
     return (
         <Box className="expected-rewards-card">
             <Typography className="expected-rewards-card-title">
@@ -26,9 +30,16 @@ export function ExpectedRewardsCard() {
                 <Box className="expected-rewards-card-content">
                     <Typography className="title">
                         ZKP Staking Reward:
-                        <IconButton>
-                            <img src={questionmarkIcon} />
-                        </IconButton>
+                        <Tooltip
+                            title={zZkpTooltip}
+                            data-html="true"
+                            placement="top"
+                            className="tooltip-icon"
+                        >
+                            <IconButton>
+                                <img src={questionmarkIcon} />
+                            </IconButton>
+                        </Tooltip>
                     </Typography>
                     <Typography className="amount">
                         {zZkpBN ? `${formatCurrency(zZkpBN)} zZKP` : '-'}
@@ -37,9 +48,16 @@ export function ExpectedRewardsCard() {
                 <Box className="expected-rewards-card-content">
                     <Typography className="title">
                         Privacy Reward Points:
-                        <IconButton>
-                            <img src={questionmarkIcon} />
-                        </IconButton>
+                        <Tooltip
+                            title={prpTooltip}
+                            data-html="true"
+                            placement="top"
+                            className="tooltip-icon"
+                        >
+                            <IconButton>
+                                <img src={questionmarkIcon} />
+                            </IconButton>
+                        </Tooltip>
                     </Typography>
 
                     <Typography className="amount">

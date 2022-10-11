@@ -106,6 +106,7 @@ export default function UnstakedBalance() {
                     </Tooltip>
                 )}
                 <IconButton
+                    className="refresh-button"
                     onClick={() =>
                         RefreshTokenBalanceAndRewards('manual refresh')
                     }

@@ -454,7 +454,7 @@ function decodeUTXOData(utxoData: string): [string, string, bigint] | Error {
         .toBigInt();
 
     console.debug(
-        `ciphertextMsg=${ciphertextMsg}, zAssetId=${zAssetId}, amount=${amount}}`,
+        `decoding UTXO data: zAssetId=${zAssetId}, amount=${amount}}`,
     );
 
     return [ciphertextMsg, zAssetId, amount];

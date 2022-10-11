@@ -11,7 +11,7 @@ export default function Network(props: {networkName: string}) {
     const {active} = useWeb3React();
 
     return (
-        <Box className="asset-network">
+        <Box className="asset-network" data-testid="ZAssets_network_container">
             {active ? (
                 <>
                     <Typography className="network-logo">

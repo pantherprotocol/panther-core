@@ -1,6 +1,5 @@
 import React from 'react';
 
-import {Web3Provider} from '@ethersproject/providers';
 import {CaptureConsole} from '@sentry/integrations';
 import * as Sentry from '@sentry/react';
 import {BrowserTracing} from '@sentry/tracing';
@@ -12,14 +11,9 @@ import {PersistGate} from 'redux-persist/integration/react';
 import App from './App';
 import {persistor, store} from './redux/store';
 import reportWebVitals from './reportWebVitals';
+import {getLibrary} from './services/provider';
 
 import './styles.scss';
-
-function getLibrary(provider: any): Web3Provider {
-    const library = new Web3Provider(provider);
-    library.pollingInterval = 12000;
-    return library;
-}
 
 Sentry.init({
     dsn: process.env.SENTRY_DSN,

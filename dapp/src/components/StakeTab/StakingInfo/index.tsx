@@ -76,9 +76,7 @@ export default function StakingInfo() {
             <>
                 <Typography className="staking-info-text-paragraph">
                     You will need to unstake in order for your staked assets to
-                    be liquid
-                    <br />
-                    again. Rewards are earned automatically.{' '}
+                    be liquid again. Rewards are earned automatically.{' '}
                     <span className="learn-more-link">Learn more.</span>
                 </Typography>
                 <Typography>

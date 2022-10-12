@@ -32,11 +32,17 @@ export const featuredata: Featuretype[] = [
 
 function Feature(props: {feature: Featuretype}) {
     return (
-        <Box className="welcome-feature">
+        <Box
+            className="welcome-feature"
+            data-testid="welcome_feature_container"
+        >
             <Box className="welcome-feature-icon">
                 <img src={props.feature.icon} />
             </Box>
-            <Typography className="welcome-feature-title">
+            <Typography
+                className="welcome-feature-title"
+                data-testid="welcome_feature_title"
+            >
                 {props.feature.title}
             </Typography>
             <Typography className="welcome-feature-message">

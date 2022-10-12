@@ -1,13 +1,12 @@
-import React, {ReactElement} from 'react';
+import React from 'react';
 
 import {Select} from '@mui/material';
 
+import {DropdownListProps} from './DropdownList.interface';
+
 import './styles.scss';
 
-function DropdownList(props: {
-    setOpen: (open: boolean) => void;
-    children: ReactElement[];
-}) {
+function DropdownList(props: DropdownListProps) {
     return (
         <Select
             labelId="dropdown-list-button-label"

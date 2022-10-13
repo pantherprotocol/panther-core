@@ -13,9 +13,10 @@
     border-radius: 22px !important;
     padding: 20px 20px 0 20px !important;
 
-    @media (max-width: 768px) {
-        width: 90%;
-        padding: 25px 15px 0 15px !important;
+    @media (max-width: $medium-screen-size) {
+        width: 92%;
+        padding: 26px 12px 0 12px !important;
+        margin-bottom: 100px;
     }
 
     .title {
@@ -26,7 +27,7 @@
         align-items: center;
         color: $white;
         line-height: 38px;
-        @media (max-width: 768px) {
+        @media (max-width: $medium-screen-size) {
             font-size: 24px;
         }
     }
@@ -41,7 +42,7 @@
         color: #d2d2d2;
         margin-top: 30px;
         margin-bottom: 48px;
-        @media (max-width: 768px) {
+        @media (max-width: $medium-screen-size) {
             font-size: $normal-font-size;
             text-align: center;
             padding: 0 25px;
@@ -63,18 +64,19 @@
         border-radius: 13.4609px;
         box-shadow: none;
         padding: 20px 25px;
-        @media (max-width: 768px) {
+        @media (max-width: $medium-screen-size) {
             margin-top: 25px;
+            padding: 19px 25px 18px 23px;
         }
 
         .details-row {
             display: flex;
             justify-content: space-between;
             padding: 5px;
-            font-weight: 500;
-            font-size: 18px;
+            font-weight: $normal-font-weight;
+            font-size: $title-font-size;
             line-height: 38px;
-            @media (max-width: 768px) {
+            @media (max-width: $medium-screen-size) {
                 align-items: baseline;
             }
 
@@ -85,7 +87,7 @@
                 line-height: 33px;
                 color: $white;
                 text-align: left;
-                @media (max-width: 768px) {
+                @media (max-width: $medium-screen-size) {
                     font-size: $normal-font-size;
                 }
             }
@@ -102,7 +104,7 @@
             .network-name {
                 font-weight: $normal-font-weight;
                 font-size: $title-font-size;
-                @media (max-width: 768px) {
+                @media (max-width: $medium-screen-size) {
                     font-size: $normal-font-size;
                 }
             }
@@ -110,14 +112,14 @@
             .token-symbol {
                 color: #ffdfbd;
                 font-weight: $normal-font-weight;
-                font-size: $title-font-size;
+                font-size: $normal-font-size;
             }
 
             .wallet-not-connected {
                 font-weight: $normal-font-weight;
                 font-size: $title-font-size;
                 align-self: center;
-                @media (max-width: 768px) {
+                @media (max-width: $medium-screen-size) {
                     font-size: $normal-font-size;
                     line-height: 0.1;
                     color: transparent;
@@ -135,7 +137,7 @@
                 font-weight: $normal-font-weight;
                 font-size: $title-font-size;
                 align-self: center;
-                @media (max-width: 768px) {
+                @media (max-width: $medium-screen-size) {
                     font-size: $normal-font-size;
                 }
             }
@@ -162,10 +164,18 @@
             ),
             #205bea;
         border-radius: 14.3583px;
-        @media (max-width: 768px) {
+        @media (max-width: $medium-screen-size) {
             height: 57px;
-            margin-top: 37px;
+            margin-top: 31px;
             margin-bottom: 30px;
+        }
+
+        .zafari-faucet_connect-button {
+            padding-top: 30px;
+            font-size: 16px;
+            @media (max-width: $medium-screen-size) {
+                padding-top: 15px;
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ import {setConnected} from '../../redux/slices/isWalletConnected';
 import {safeOpenMetamask} from '../Common/links';
 import PrimaryActionButton from '../Common/PrimaryActionButton';
 
-const ConnectButton = () => {
+const ConnectButton = (props: {styles?: string}) => {
     const context = useWeb3React();
     const {error} = context;
     const isNoEthereumProviderError = error instanceof NoEthereumProviderError;
@@ -26,6 +26,7 @@ const ConnectButton = () => {
     return (
         <Box data-testid="connect-button_connect-button_container">
             <PrimaryActionButton
+                styles={`${props.styles ?? ''}`}
                 onClick={
                     isNoEthereumProviderError
                         ? safeOpenMetamask

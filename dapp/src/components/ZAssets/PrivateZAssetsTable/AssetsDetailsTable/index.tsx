@@ -36,6 +36,9 @@ const AssetsDetailsTable = () => {
 
     const dispatch = useAppDispatch();
     const [gotExitTime, registerExitTimeCall] = useState<boolean>(false);
+    const [selectedRewardId, setSelectedRewardId] = useState<
+        string | undefined
+    >(undefined);
 
     useEffect(() => {
         if (gotExitTime || !chainId || !library) return;
@@ -58,8 +61,13 @@ const AssetsDetailsTable = () => {
                 </TableHead>
                 <TableBody>
                     {rewardsFilteredAndSorted.map(
-                        (rewards: AdvancedStakeRewards, key: number) => (
-                            <AssetsDetailsRow rewards={rewards} key={key} />
+                        (reward: AdvancedStakeRewards) => (
+                            <AssetsDetailsRow
+                                reward={reward}
+                                key={reward.id}
+                                isSelected={reward.id === selectedRewardId}
+                                onSelectReward={setSelectedRewardId}
+                            />
                         ),
                     )}
                 </TableBody>

@@ -38,9 +38,9 @@ import PrimaryActionButton from '../../../../Common/PrimaryActionButton';
 
 export default function FirstStageRedeem(props: {
     handleClose: () => void;
-    rewards: AdvancedStakeRewards;
+    reward: AdvancedStakeRewards;
 }) {
-    const {handleClose, rewards} = props;
+    const {handleClose, reward} = props;
     const [redemptionConfirmed, setRedeemConfirmed] = useState(false);
 
     const dispatch = useAppDispatch();
@@ -97,8 +97,8 @@ export default function FirstStageRedeem(props: {
                 library,
                 account as string,
                 chainId as number,
-                rewards.utxoData,
-                BigInt(rewards.id),
+                reward.utxoData,
+                BigInt(reward.id),
                 keys,
             );
         } catch (err) {
@@ -118,7 +118,7 @@ export default function FirstStageRedeem(props: {
         dispatch(updateExitCommitmentTime, [
             chainId,
             account,
-            rewards.id,
+            reward.id,
             moment().unix(),
         ]);
     };

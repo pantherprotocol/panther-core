@@ -31,7 +31,7 @@ import {
     deriveChildPrivKeyFromRootPrivKey,
     derivePublicKeyFromPrivate,
     generateRandomInBabyJubSubField,
-} from '../../lib/keychain';
+} from '@panther-core/crypto/lib/keychain';
 
 import {getExitCommitment} from './data/depositAndFakeExitSample';
 

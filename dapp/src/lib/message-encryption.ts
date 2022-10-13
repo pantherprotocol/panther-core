@@ -1,14 +1,14 @@
 import crypto from 'crypto';
 
-import {babyjub} from 'circomlibjs';
-
 import {
-    ICiphertext,
     PrivateKey,
     PublicKey,
     EcdhSharedKey,
     PackedEcdhSharedKey,
-} from './types';
+} from '@panther-core/crypto/lib/types/keypair';
+import {babyjub} from 'circomlibjs';
+
+import {ICiphertext} from './types/message';
 
 export const generateEcdhSharedKey = (
     privateKey: PrivateKey,

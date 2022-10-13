@@ -1,6 +1,7 @@
+import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
+
 import {Asset} from './asset';
 import {ICommitment} from './event';
-import {IKeypair} from './keypair';
 
 //should have commitment and nullifier wit utxo as base class
 

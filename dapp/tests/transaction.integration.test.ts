@@ -2,14 +2,14 @@ import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
 } from '@panther-core/crypto/lib/bigint-conversions';
-import {babyjub} from 'circomlibjs';
-import {Wallet} from 'ethers';
-
 import {
     deriveKeypairFromSignature,
     generateRandomKeypair,
     packPublicKey,
-} from '../src/lib/keychain';
+} from '@panther-core/crypto/lib/keychain';
+import {babyjub} from 'circomlibjs';
+import {Wallet} from 'ethers';
+
 import {
     encryptMessage,
     generateEcdhSharedKey,

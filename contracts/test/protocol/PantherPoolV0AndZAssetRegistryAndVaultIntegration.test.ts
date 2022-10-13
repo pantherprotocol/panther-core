@@ -18,7 +18,7 @@ import {
     UtxoSenderData,
 } from '../../lib/message-encryption';
 
-import {deriveKeypairFromSeed} from '../../lib/keychain';
+import {deriveKeypairFromSeed} from '@panther-core/crypto/lib/keychain';
 
 import {PantherPoolV0AndZAssetRegistryAndVaultTester} from '../../types/contracts';
 import {deployPantherPoolV0AndZAssetRegistryAndVaultTester} from './helpers/pantherPoolV0AndZAssetRegistryAndVaultTester';

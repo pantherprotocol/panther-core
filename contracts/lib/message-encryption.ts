@@ -6,19 +6,19 @@ import {
     generateRandomInBabyJubSubField,
     deriveChildPrivKeyFromRootPrivKey,
     deriveChildPubKeyFromRootPubKey,
-} from './keychain';
+} from '@panther-core/crypto/lib/keychain';
 import {
     PrivateKey,
     PublicKey,
-    EcdhSharedKeyPoint,
+    EcdhSharedKey,
     IKeypair,
-} from './types/keypair';
+} from '@panther-core/crypto/lib/types/keypair';
 import {bigintToBuf, bufToBigint} from 'bigint-conversion';
 
 export const generateEcdhSharedKeyPoint = (
     privateKey: PrivateKey,
     publicKey: PublicKey,
-): EcdhSharedKeyPoint => {
+): EcdhSharedKey => {
     return babyjub.mulPointEscalar(
         publicKey,
         moduloBabyJubSubFieldPrime(privateKey),
@@ -66,21 +66,21 @@ export function buffer32ToBigInt(buf) {
 // 3. packCipheredTextV1
 export class UtxoSenderData {
     // Random to derive the (child) spending keypair with, included in the text to be ciphered
-    readonly recipientRandom: BigInt;
+    readonly recipientRandom: bigint;
     // (Child) spending public key, used to create the UTXO commitment
     // S` = spenderRandom * S, where S is recipientRootPubKey
-    readonly recipientPubKey: BigInt[];
+    readonly recipientPubKey: bigint[];
     // Random to derive ephemeral shared key with
-    readonly ephemeralRandom: BigInt;
+    readonly ephemeralRandom: bigint;
     // EC point to pack it into ephemeralSharedKeyPacked, equals to 'ephemeralRandom * W',
     // where W is the reading public key of the recipient
     // (recipient may compute it as 'w * ephemeralKey = ephemeralRandom * w * B')
-    readonly ephemeralSharedKey: BigInt[];
+    readonly ephemeralSharedKey: bigint[];
     // Packed version of ephemeralSharedKey, aes128EncryptionKey and aes128Iv extracted from it
     readonly ephemeralSharedKeyPacked: Uint8Array;
     // EC point to derive ephemeralSharedKey from, equals to 'ephemeralRandom * B';
     // (knowing it and 'w', recipient may compute 'ephemeralSharedKey = w * ephemeralKey')
-    readonly ephemeralKey: BigInt[];
+    readonly ephemeralKey: bigint[];
     // Packed version of ephemeralKey, it's shared with spender in open form
     readonly ephemeralKeyPacked: Uint8Array;
     // Key used in AES-128-cbc, extracted from ephemeralKeyPacked
@@ -182,12 +182,12 @@ export class UtxoRecipientData {
     // This pair is build using random & root private key
     recipientSpendingKeys: IKeypair;
     // Value that must be extracted from ciphered-text
-    recipientRandom: BigInt;
+    recipientRandom: bigint;
     // Value that must be derived in order to decrypt ciphered text
-    ephemeralSharedKey: BigInt[];
+    ephemeralSharedKey: bigint[];
     ephemeralSharedKeyPacked: Uint8Array;
     // Value that used to reconstruct ephemeralPubKey in order to be able to decrypt
-    ephemeralKey: BigInt[];
+    ephemeralKey: bigint[];
     ephemeralKeyPacked: Uint8Array;
     aes128EncryptionKey: Uint8Array;
     aes128Iv: Uint8Array;

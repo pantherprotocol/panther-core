@@ -13,7 +13,7 @@ import {BytesLike} from 'ethers/lib/ethers';
 import {
     deriveChildPrivKeyFromRootPrivKey,
     generateRandomInBabyJubSubField,
-} from '../../lib/keychain';
+} from '@panther-core/crypto/lib/keychain';
 import crypto from 'crypto';
 import {utils} from 'ethers';
 import {bigintToBytes32} from '../../lib/conversions';

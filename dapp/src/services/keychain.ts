@@ -1,15 +1,15 @@
+import {
+    deriveKeypairFromSignature,
+    deriveChildPrivKeyFromRootPrivKey,
+    deriveKeypairFromSeed,
+    deriveChildPubKeyFromRootPubKey,
+    isChildPubKeyValid,
+} from '@panther-core/crypto/lib/keychain';
+import {IKeypair, PrivateKey} from '@panther-core/crypto/lib/types/keypair';
 import {poseidon} from 'circomlibjs';
 import {Signer} from 'ethers';
 
 import {parseTxErrorMessage} from '../lib/errors';
-import {
-    deriveKeypairFromSignature,
-    multiplyScalars,
-    deriveKeypairFromSeed,
-    generateChildPublicKey,
-    isChildPubKeyValid,
-} from '../lib/keychain';
-import {IKeypair, PrivateKey} from '../lib/types';
 
 // generateSpendingChildKeypair generates child spending keypair (s', S')
 // using root spending private key and random scalar r as input.
@@ -17,7 +17,10 @@ export function generateSpendingChildKeypair(
     rootSpendingPrivKey: PrivateKey,
     r: bigint,
 ): IKeypair {
-    const spendingChildPrivKey = multiplyScalars(rootSpendingPrivKey, r);
+    const spendingChildPrivKey = deriveChildPrivKeyFromRootPrivKey(
+        rootSpendingPrivKey,
+        r,
+    );
     return deriveKeypairFromSeed(spendingChildPrivKey);
 }
 
@@ -50,12 +53,12 @@ export function deriveSpendingChildKeypair(
     randomSecret: bigint,
 ): [IKeypair, boolean] {
     console.time('deriveSpendingChildKeypair()');
-    const childSpendingPrivateKey = multiplyScalars(
+    const childSpendingPrivateKey = deriveChildPrivKeyFromRootPrivKey(
         rootSpendingKeypair.privateKey,
         randomSecret,
     );
 
-    const spendingChildPubKey = generateChildPublicKey(
+    const spendingChildPubKey = deriveChildPubKeyFromRootPubKey(
         rootSpendingKeypair.publicKey,
         randomSecret,
     );

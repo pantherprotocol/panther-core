@@ -1,17 +1,17 @@
 import {bigIntToUint8Array} from '@panther-core/crypto/lib/bigint-conversions';
-import {ethers} from 'ethers';
-
 import {
     deriveKeypairFromSignature,
     generateRandomKeypair,
     packPublicKey,
-} from '../src/lib/keychain';
+} from '@panther-core/crypto/lib/keychain';
+import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
+import {ethers} from 'ethers';
+
 import {
     encryptMessage,
     generateEcdhSharedKey,
     decryptMessage,
 } from '../src/lib/message-encryption';
-import {IKeypair} from '../src/lib/types/keypair';
 
 describe('Message encryption and decryption', () => {
     it('expect decrypt message to be equal initial plain message', async () => {

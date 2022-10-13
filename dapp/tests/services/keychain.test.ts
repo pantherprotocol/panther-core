@@ -1,12 +1,12 @@
 import {describe, expect} from '@jest/globals';
-import {Wallet} from 'ethers';
-
 import {
     deriveKeypairFromSignature,
     generateRandomInBabyJubSubField,
     SNARK_FIELD_SIZE,
-} from '../../src/lib/keychain';
-import {IKeypair} from '../../src/lib/types';
+} from '@panther-core/crypto/lib/keychain';
+import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
+import {Wallet} from 'ethers';
+
 import {
     deriveRootKeypairs,
     generateSpendingChildKeypair,

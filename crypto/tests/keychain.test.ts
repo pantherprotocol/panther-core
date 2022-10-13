@@ -1,7 +1,4 @@
 import {describe, expect} from '@jest/globals';
-import {babyjub} from 'circomlibjs';
-import {Wallet} from 'ethers';
-
 import {
     SNARK_FIELD_SIZE,
     generateRandomKeypair,
@@ -11,8 +8,10 @@ import {
     derivePublicKeyFromPrivate,
     generateRandomInBabyJubSubField,
     isChildPubKeyValid,
-    multiplyScalars,
-} from '../../src/lib/keychain';
+    deriveChildPrivKeyFromRootPrivKey,
+} from '../lib/keychain';
+import {babyjub} from 'circomlibjs';
+import {Wallet} from 'ethers';
 
 describe('Keychain', () => {
     const bigOne = BigInt(1);
@@ -99,7 +98,7 @@ describe('Keychain', () => {
         const r_sB = babyjub.mulPointEscalar(sB, r);
         const s_rB = babyjub.mulPointEscalar(rB, s);
 
-        const rs = multiplyScalars(r, s);
+        const rs = deriveChildPrivKeyFromRootPrivKey(r, s);
         const rs_B = babyjub.mulPointEscalar(B, rs);
 
         describe('should be associative', () => {
@@ -122,23 +121,25 @@ describe('Keychain', () => {
 
     describe('Check the field of definition', () => {
         describe('Private key outside babyjubjub filed', () => {
-            describe('multiplication of scalars', () => {
+            describe('deriveChildPrivKeyFromRootPrivKey', () => {
                 const r = generateRandomInBabyJubSubField();
-                it('should throw error if scalar a is outside BabyJubJub', () => {
-                    expect(() => multiplyScalars(SNARK_FIELD_SIZE, r)).toThrow(
-                        'Scalar a is not in the BabyJubJub field',
+                it('should throw error if rootPrivKey is outside BabyJubJub', () => {
+                    expect(() =>
+                        deriveChildPrivKeyFromRootPrivKey(SNARK_FIELD_SIZE, r),
+                    ).toThrow(
+                        'Root private key is not in the BabyJubJub suborder',
                     );
                 });
-                it('should throw error if scalar b is outside BabyJubJub', () => {
-                    expect(() => multiplyScalars(r, SNARK_FIELD_SIZE)).toThrow(
-                        'Scalar b is not in the BabyJubJub field',
-                    );
+                it('should throw error if random is outside BabyJubJub', () => {
+                    expect(() =>
+                        deriveChildPrivKeyFromRootPrivKey(r, SNARK_FIELD_SIZE),
+                    ).toThrow('Random is not in the BabyJubJub suborder');
                 });
             });
             it('should throw error during generation of public key', () => {
                 expect(() =>
                     derivePublicKeyFromPrivate(SNARK_FIELD_SIZE),
-                ).toThrow('privateKey is not in the BabyJubJub subfield');
+                ).toThrow('privateKey is not in the BabyJubJub suborder');
             });
         });
 

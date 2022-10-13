@@ -3,12 +3,12 @@ import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
 } from '@panther-core/crypto/lib/bigint-conversions';
-
 import {
     generateRandomKeypair,
     packPublicKey,
     SNARK_FIELD_SIZE,
-} from '../../src/lib/keychain';
+} from '@panther-core/crypto/lib/keychain';
+
 import {
     generateEcdhSharedKey,
     encryptMessage,

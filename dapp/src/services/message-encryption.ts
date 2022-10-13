@@ -4,21 +4,20 @@ import {
     bigintToBytes32,
     bigintToBytes,
 } from '@panther-core/crypto/lib/bigint-conversions';
-
 import {
     packPublicKey,
     generateRandomInBabyJubSubField,
     derivePublicKeyFromPrivate,
     unpackPublicKey,
-} from '../lib/keychain';
+} from '@panther-core/crypto/lib/keychain';
+import {PublicKey, PrivateKey} from '@panther-core/crypto/lib/types/keypair';
+
 import {
     decryptMessage,
     encryptMessage,
     generateEcdhSharedKey,
 } from '../lib/message-encryption';
-import {PublicKey, ICiphertext, PrivateKey} from '../lib/types';
-
-export const PROLOG = 'eeffeeff';
+import {ICiphertext} from '../lib/types';
 
 // sizes in bytes according to NewCommitments docs:
 // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k

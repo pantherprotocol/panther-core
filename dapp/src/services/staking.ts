@@ -2,17 +2,17 @@ import type {TypedDataDomain} from '@ethersproject/abstract-signer';
 import type {TransactionResponse} from '@ethersproject/providers';
 import {JsonRpcSigner} from '@ethersproject/providers';
 import {bigintToBytes32} from '@panther-core/crypto/lib/bigint-conversions';
+import {
+    deriveChildPubKeyFromRootPubKey,
+    generateRandomInBabyJubSubField,
+    isChildPubKeyValid,
+} from '@panther-core/crypto/lib/keychain';
+import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
 import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
 import type {ContractTransaction} from 'ethers';
 import {BigNumber, constants, utils} from 'ethers';
 
-import {
-    generateChildPublicKey,
-    generateRandomInBabyJubSubField,
-    isChildPubKeyValid,
-} from '../lib/keychain';
-import {IKeypair} from '../lib/types';
 import type {IStakingTypes, Staking} from '../types/contracts/Staking';
 import {StakeRewardBN, StakeTypes} from '../types/staking';
 
@@ -137,7 +137,7 @@ async function craftAdvancedStakeData(
     // one for each reward in zZKP, PRP, and NFT
     for (let index = 0; index < 2; index++) {
         const randomSecret = generateRandomInBabyJubSubField();
-        const spendingChildPublicKey = generateChildPublicKey(
+        const spendingChildPublicKey = deriveChildPubKeyFromRootPubKey(
             rootSpendingKeypair.publicKey,
             randomSecret,
         );

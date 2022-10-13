@@ -1,9 +1,9 @@
 import {describe, expect} from '@jest/globals';
-
 import {
     generateRandomKeypair,
     generateRandomInBabyJubSubField,
-} from '../../src/lib/keychain';
+} from '@panther-core/crypto/lib/keychain';
+
 import {} from '../../src/lib/message-encryption';
 import {
     CIPHERTEXT_MSG_SIZE,

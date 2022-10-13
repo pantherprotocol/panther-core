@@ -4,15 +4,14 @@ import {
     generateRandomKeypair,
     packPublicKey,
 } from '@panther-core/crypto/lib/keychain';
-import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
-import {ethers} from 'ethers';
-
 import {
     encryptMessage,
     generateEcdhSharedKey,
     decryptMessage,
-} from '../src/lib/message-encryption';
-import {extractCipherKeyAndIV} from '../src/services/message-encryption';
+} from '@panther-core/crypto/lib/message-encryption';
+import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
+import {extractCipherKeyAndIV} from '@panther-core/crypto/src/sdk/message-encryption';
+import {ethers} from 'ethers';
 
 describe('Message encryption and decryption', () => {
     it('expect decrypt message to be equal initial plain message', async () => {

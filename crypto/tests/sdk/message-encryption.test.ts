@@ -2,16 +2,15 @@ import {describe, expect} from '@jest/globals';
 import {
     generateRandomKeypair,
     generateRandomInBabyJubSubField,
-} from '@panther-core/crypto/lib/keychain';
+} from '../../src/keychain';
 
-import {} from '../../src/lib/message-encryption';
 import {
     CIPHERTEXT_MSG_SIZE,
     decryptRandomSecret,
     encryptRandomSecret,
     PACKED_PUB_KEY_SIZE,
     sliceCipherMsg,
-} from '../../src/services/message-encryption';
+} from '../../src/sdk/message-encryption';
 
 describe('Random secret encryption', () => {
     const rootReadingKeypair = generateRandomKeypair();

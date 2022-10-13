@@ -7,6 +7,7 @@ import {
     generateRandomInBabyJubSubField,
     isChildPubKeyValid,
 } from '@panther-core/crypto/lib/keychain';
+import {encryptRandomSecret} from '@panther-core/crypto/lib/sdk/message-encryption';
 import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
 import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
@@ -30,7 +31,6 @@ import {
 } from './contracts';
 import {env} from './env';
 import axios from './http';
-import {encryptRandomSecret} from './message-encryption';
 import {calculateRewardsForStake} from './rewards';
 import {
     AdvancedStakeRewardsResponse,

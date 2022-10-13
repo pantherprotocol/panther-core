@@ -1,4 +1,3 @@
-export type {Plaintext, ICiphertext} from './message';
 export type {
     ICommitment,
     ICommitmentPlaintext,

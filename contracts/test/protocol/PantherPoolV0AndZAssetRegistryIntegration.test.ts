@@ -17,12 +17,12 @@ import {poseidon, babyjub} from 'circomlibjs';
 import {TriadMerkleTree} from '../../lib/tree';
 import assert from 'assert';
 import {BytesLike} from 'ethers/lib/ethers';
+import {UtxoRecipientData, UtxoSenderData} from '../../lib/message-encryption';
+
 import {
-    buffer32ToBigInt,
-    bigIntToBuffer32,
-    UtxoRecipientData,
-    UtxoSenderData,
-} from '../../lib/message-encryption';
+    bigIntToBuffer,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/bigint-conversions';
 
 import crypto from 'crypto';
 import {BigNumber} from 'ethers';
@@ -212,7 +212,7 @@ describe('PantherPoolV0', () => {
             const K = babyjub.mulPointEscalar(S, r); // Sender generates Shared Ephemeral Key = rsB = rS
             const R = babyjub.mulPointEscalar(babyjub.Base8, r); // This key is shared in open form = rB
             // [2] - Encrypt text - Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
-            const textToBeCiphered = new Uint8Array([...bigIntToBuffer32(r)]);
+            const textToBeCiphered = new Uint8Array([...bigIntToBuffer(r)]);
             expect(
                 textToBeCiphered.length,
                 'cipher text before encryption',
@@ -222,8 +222,8 @@ describe('PantherPoolV0', () => {
             // ***********************************************
             const cipher = crypto.createCipheriv(
                 'aes-128-cbc',
-                bigIntToBuffer32(K[0]).slice(0, 16),
-                bigIntToBuffer32(K[0]).slice(16, 32),
+                bigIntToBuffer(K[0]).slice(0, 16),
+                bigIntToBuffer(K[0]).slice(16, 32),
             );
             cipher.setAutoPadding(false);
 
@@ -247,8 +247,8 @@ describe('PantherPoolV0', () => {
             const Ktag = babyjub.mulPointEscalar(R, s); // Sender generates Shared Ephemeral Key = rsB = rS
             const decipher = crypto.createDecipheriv(
                 'aes-128-cbc',
-                bigIntToBuffer32(Ktag[0]).slice(0, 16),
-                bigIntToBuffer32(Ktag[0]).slice(16, 32),
+                bigIntToBuffer(Ktag[0]).slice(0, 16),
+                bigIntToBuffer(Ktag[0]).slice(16, 32),
             );
             decipher.setAutoPadding(false);
 
@@ -287,8 +287,8 @@ describe('PantherPoolV0', () => {
             const K_from_chain = babyjub.mulPointEscalar(R_unpacked, s); // Sender generates Shared Ephemeral Key = rsB = rS
             const decipher_from_chain = crypto.createDecipheriv(
                 'aes-128-cbc',
-                bigIntToBuffer32(K_from_chain[0]).slice(0, 16),
-                bigIntToBuffer32(K_from_chain[0]).slice(16, 32),
+                bigIntToBuffer(K_from_chain[0]).slice(0, 16),
+                bigIntToBuffer(K_from_chain[0]).slice(16, 32),
             );
             decipher_from_chain.setAutoPadding(false);
 
@@ -304,7 +304,7 @@ describe('PantherPoolV0', () => {
             expect(decrypted_from_chain.length).equal(32);
             const r_from_chain = decrypted_from_chain.slice(0, 0 + 32);
             expect(
-                buffer32ToBigInt(r_from_chain),
+                uint8ArrayToBigInt(r_from_chain),
                 'extracted from chain random must be equal',
             ).equal(r);
             // [4] - TODO: call generateDeposits - with R & cipherTextMessageV1 for each OUT_UTXOs = 3
@@ -318,12 +318,12 @@ describe('PantherPoolV0', () => {
             ] as Pair;
             const secrets = [
                 toBytes32(
-                    buffer32ToBigInt(
+                    uint8ArrayToBigInt(
                         cipherTextMessageV1.slice(0, 32),
                     ).toString(),
                 ),
                 toBytes32(
-                    buffer32ToBigInt(
+                    uint8ArrayToBigInt(
                         cipherTextMessageV1.slice(32, 64),
                     ).toString(),
                 ),
@@ -452,10 +452,10 @@ describe('PantherPoolV0', () => {
                 CommitmentsInternal[1] = commitment1;
 
                 // [5] - Get event secretMsg = cipherTextMessageV1 = 3x256bit, token = 160bit, amount = 32bit = 4x256bit
-                const zAssetIdBuf1 = bigIntToBuffer32(
+                const zAssetIdBuf1 = bigIntToBuffer(
                     BigInt(zAssetIdSol.toString()),
                 );
-                const amountBuf1 = bigIntToBuffer32(amounts[0]);
+                const amountBuf1 = bigIntToBuffer(amounts[0]);
                 const merged1 = new Uint8Array([
                     ...zAssetIdBuf1.slice(0, 20),
                     ...amountBuf1.slice(0, 12).reverse(),
@@ -464,7 +464,7 @@ describe('PantherPoolV0', () => {
                 const secrets_from_chain1 = [
                     {
                         _hex: toBytes32(
-                            buffer32ToBigInt(
+                            uint8ArrayToBigInt(
                                 cipherTextMessageV1.slice(0, 32),
                             ).toString(),
                         ),
@@ -472,36 +472,36 @@ describe('PantherPoolV0', () => {
                     },
                     {
                         _hex: toBytes32(
-                            buffer32ToBigInt(
+                            uint8ArrayToBigInt(
                                 cipherTextMessageV1.slice(32, 64),
                             ).toString(),
                         ),
                         _isBigNumber: true,
                     },
                     {
-                        _hex: toBytes32(buffer32ToBigInt(merged1).toString()),
+                        _hex: toBytes32(uint8ArrayToBigInt(merged1).toString()),
                         _isBigNumber: true,
                     },
                 ];
                 // eslint-disable-next-line
                 const secrets_from_chain11: BigNumber[] = [
                     BigNumber.from(
-                        buffer32ToBigInt(
+                        uint8ArrayToBigInt(
                             cipherTextMessageV1.slice(0, 32),
                         ).toString(),
                     ),
                     BigNumber.from(
-                        buffer32ToBigInt(
+                        uint8ArrayToBigInt(
                             cipherTextMessageV1.slice(32, 64),
                         ).toString(),
                     ),
-                    BigNumber.from(buffer32ToBigInt(merged1).toString()),
+                    BigNumber.from(uint8ArrayToBigInt(merged1).toString()),
                 ];
 
-                const zAssetIdBuf2 = bigIntToBuffer32(
+                const zAssetIdBuf2 = bigIntToBuffer(
                     BigInt(zAssetIdSol.toString()),
                 );
-                const amountBuf2 = bigIntToBuffer32(amounts[1]);
+                const amountBuf2 = bigIntToBuffer(amounts[1]);
                 const merged2 = new Uint8Array([
                     ...zAssetIdBuf2.slice(0, 20),
                     ...amountBuf2.slice(0, 12).reverse(),
@@ -510,7 +510,7 @@ describe('PantherPoolV0', () => {
                 const secrets_from_chain2 = [
                     {
                         _hex: toBytes32(
-                            buffer32ToBigInt(
+                            uint8ArrayToBigInt(
                                 cipherTextMessageV1.slice(0, 32),
                             ).toString(),
                         ),
@@ -518,36 +518,36 @@ describe('PantherPoolV0', () => {
                     },
                     {
                         _hex: toBytes32(
-                            buffer32ToBigInt(
+                            uint8ArrayToBigInt(
                                 cipherTextMessageV1.slice(32, 64),
                             ).toString(),
                         ),
                         _isBigNumber: true,
                     },
                     {
-                        _hex: toBytes32(buffer32ToBigInt(merged2).toString()),
+                        _hex: toBytes32(uint8ArrayToBigInt(merged2).toString()),
                         _isBigNumber: true,
                     },
                 ];
                 // eslint-disable-next-line
                 const secrets_from_chain22: BigNumber[] = [
                     BigNumber.from(
-                        buffer32ToBigInt(
+                        uint8ArrayToBigInt(
                             cipherTextMessageV1.slice(0, 32),
                         ).toString(),
                     ),
                     BigNumber.from(
-                        buffer32ToBigInt(
+                        uint8ArrayToBigInt(
                             cipherTextMessageV1.slice(32, 64),
                         ).toString(),
                     ),
-                    BigNumber.from(buffer32ToBigInt(merged2).toString()),
+                    BigNumber.from(uint8ArrayToBigInt(merged2).toString()),
                 ];
 
-                const zAssetIdBuf3 = bigIntToBuffer32(
+                const zAssetIdBuf3 = bigIntToBuffer(
                     BigInt(zAssetIdSol.toString()),
                 );
-                const amountBuf3 = bigIntToBuffer32(amounts[2]);
+                const amountBuf3 = bigIntToBuffer(amounts[2]);
                 const merged3 = new Uint8Array([
                     ...zAssetIdBuf3.slice(0, 20),
                     ...amountBuf3.slice(0, 12).reverse(),
@@ -556,7 +556,7 @@ describe('PantherPoolV0', () => {
                 const secrets_from_chain3 = [
                     {
                         _hex: toBytes32(
-                            buffer32ToBigInt(
+                            uint8ArrayToBigInt(
                                 cipherTextMessageV1.slice(0, 32),
                             ).toString(),
                         ),
@@ -564,30 +564,30 @@ describe('PantherPoolV0', () => {
                     },
                     {
                         _hex: toBytes32(
-                            buffer32ToBigInt(
+                            uint8ArrayToBigInt(
                                 cipherTextMessageV1.slice(32, 64),
                             ).toString(),
                         ),
                         _isBigNumber: true,
                     },
                     {
-                        _hex: toBytes32(buffer32ToBigInt(merged3).toString()),
+                        _hex: toBytes32(uint8ArrayToBigInt(merged3).toString()),
                         _isBigNumber: true,
                     },
                 ];
                 // eslint-disable-next-line
                 const secrets_from_chain33: BigNumber[] = [
                     BigNumber.from(
-                        buffer32ToBigInt(
+                        uint8ArrayToBigInt(
                             cipherTextMessageV1.slice(0, 32),
                         ).toString(),
                     ),
                     BigNumber.from(
-                        buffer32ToBigInt(
+                        uint8ArrayToBigInt(
                             cipherTextMessageV1.slice(32, 64),
                         ).toString(),
                     ),
-                    BigNumber.from(buffer32ToBigInt(merged3).toString()),
+                    BigNumber.from(uint8ArrayToBigInt(merged3).toString()),
                 ];
                 // TODO: Add call to GenerateDepositsExtended with check of events parameters, see example ---
                 // 0 - leafId, 1 - creationTime, 2 - commitments[3], 3 - secrets[4][3]
@@ -617,19 +617,19 @@ describe('PantherPoolV0', () => {
                 // secrets array of arrays
                 const Secrets = [
                     [
-                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
-                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
-                        BigNumber.from(buffer32ToBigInt(merged1).toString())
+                        BigNumber.from(uint8ArrayToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                        BigNumber.from(uint8ArrayToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                        BigNumber.from(uint8ArrayToBigInt(merged1).toString())
                     ] as const,
                     [
-                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
-                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
-                        BigNumber.from(buffer32ToBigInt(merged2).toString())
+                        BigNumber.from(uint8ArrayToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                        BigNumber.from(uint8ArrayToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                        BigNumber.from(uint8ArrayToBigInt(merged2).toString())
                     ] as const,
                     [
-                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
-                        BigNumber.from(buffer32ToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
-                        BigNumber.from(buffer32ToBigInt(merged3).toString())
+                        BigNumber.from(uint8ArrayToBigInt(cipherTextMessageV1.slice(0, 32)).toString()),
+                        BigNumber.from(uint8ArrayToBigInt(cipherTextMessageV1.slice(32, 64)).toString()),
+                        BigNumber.from(uint8ArrayToBigInt(merged3).toString())
                     ] as const,
                 ] as const;
                 const leftLeafID = 0;
@@ -724,7 +724,7 @@ describe('PantherPoolV0', () => {
                 // This private key must be used inside `exit` function
                 const sr = deriveChildPrivKeyFromRootPrivKey(
                     s,
-                    buffer32ToBigInt(r_from_chain),
+                    uint8ArrayToBigInt(r_from_chain),
                 ); // spender derived private key
 
                 // This public key must be used in panther-core V1

@@ -1,21 +1,20 @@
 import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
-} from '@panther-core/crypto/lib/bigint-conversions';
+} from '../src/bigint-conversions';
 import {
     deriveKeypairFromSignature,
     generateRandomKeypair,
     packPublicKey,
-} from '@panther-core/crypto/lib/keychain';
-import {babyjub} from 'circomlibjs';
-import {Wallet} from 'ethers';
-
+} from '../src/keychain';
 import {
     encryptMessage,
     generateEcdhSharedKey,
     decryptMessage,
-} from '../src/lib/message-encryption';
-import {extractCipherKeyAndIV} from '../src/services/message-encryption';
+} from '../src/message-encryption';
+import {extractCipherKeyAndIV} from '../src/sdk/message-encryption';
+import {babyjub} from 'circomlibjs';
+import {Wallet} from 'ethers';
 
 /*
 For the transaction flow details, please refer to MASP document:
@@ -48,16 +47,6 @@ describe('Transaction integration test', () => {
             ckSpending,
             ivSpending,
         );
-
-        // sender calls the contract with data
-        // and publishes S, R and C (packing of data is omitted)
-        // const data = [
-        //     Sprime[0],
-        //     Sprime[1],
-        //     ...
-        //     [rR.publicKey, C],
-        //     ...
-        // ];
 
         // Receiver actions from here:
         const derivedK = generateEcdhSharedKey(vV.privateKey, rR.publicKey);

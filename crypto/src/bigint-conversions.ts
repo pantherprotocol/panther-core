@@ -22,8 +22,12 @@ export function uint8ArrayToBigInt(uint8Array: Uint8Array): bigint {
     return bufferToBigInt(Buffer.from(uint8Array));
 }
 
-export function toBytes32(data: BytesLike): string {
-    return utils.hexZeroPad(data, 32);
+export function bytesToHexString32(data: BytesLike): string {
+    return bytesToHexString(data, 32);
+}
+
+export function bytesToHexString(data: BytesLike, width = 32): string {
+    return utils.hexZeroPad(data, width);
 }
 
 export function bigintToBytes32(data: bigint): string {

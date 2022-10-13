@@ -7,14 +7,15 @@ import {
     generateRandomKeypair,
     packPublicKey,
     SNARK_FIELD_SIZE,
-} from '@panther-core/crypto/lib/keychain';
+} from '../src/keychain';
 
 import {
     generateEcdhSharedKey,
     encryptMessage,
     decryptMessage,
-} from '../../src/lib/message-encryption';
-import {extractCipherKeyAndIV} from '../../src/services/message-encryption';
+} from '../src/message-encryption';
+// TODO move to SDK
+import {extractCipherKeyAndIV} from '../src/sdk/message-encryption';
 
 describe('Cryptographic operations', () => {
     const keypair1 = generateRandomKeypair();

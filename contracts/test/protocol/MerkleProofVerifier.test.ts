@@ -18,7 +18,11 @@ import crypto from 'crypto';
 import {utils} from 'ethers';
 import {bigintToBytes32} from '../../lib/conversions';
 import {deployMerkleProofVerifierTester} from './helpers/merkleProofVerifierTester';
-import {bigIntToBuffer32, buffer32ToBigInt} from '../../lib/message-encryption';
+
+import {
+    bigIntToBuffer,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/bigint-conversions';
 
 describe('MerkleProofVerifier', () => {
     let merkleProofVerifierTester: MerkleProofVerifierTester;
@@ -704,8 +708,8 @@ describe('MerkleProofVerifier', () => {
                 const R = babyjub.mulPointEscalar(babyjub.Base8, r); // This key is shared in open form = rB
                 // [2] - Encrypt text - Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
                 const textToBeCiphered = new Uint8Array([
-                    ...bigIntToBuffer32(prolog).slice(32 - 4, 32),
-                    ...bigIntToBuffer32(r),
+                    ...bigIntToBuffer(BigInt(prolog)).slice(32 - 4, 32),
+                    ...bigIntToBuffer(r),
                 ]);
                 expect(
                     textToBeCiphered.length,
@@ -814,16 +818,18 @@ describe('MerkleProofVerifier', () => {
                 expect(
                     prolog_from_chain,
                     'extracted from chain prolog must be equal',
-                ).to.deep.equal(bigIntToBuffer32(prolog).slice(32 - 4, 32));
+                ).to.deep.equal(
+                    bigIntToBuffer(BigInt(prolog)).slice(32 - 4, 32),
+                );
                 const r_from_chain = decrypted_from_chain.slice(4, 4 + 32);
                 expect(
-                    buffer32ToBigInt(r_from_chain),
+                    uint8ArrayToBigInt(r_from_chain),
                     'extracted from chain random must be equal',
                 ).equal(r);
 
                 it('random ciphered -> packed -> unpacked -> deciphered', function () {
                     expect(
-                        buffer32ToBigInt(r_from_chain),
+                        uint8ArrayToBigInt(r_from_chain),
                         'extracted from chain random must be equal',
                     ).equal(r);
                 });

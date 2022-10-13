@@ -1,20 +1,16 @@
 import crypto from 'crypto';
 
-import {
-    PrivateKey,
-    PublicKey,
-    EcdhSharedKey,
-} from '@panther-core/crypto/lib/types/keypair';
+import {PrivateKey, PublicKey, EcdhSharedKey} from './types/keypair';
 import {babyjub} from 'circomlibjs';
 
 import {ICiphertext} from './types/message';
 
-export const generateEcdhSharedKey = (
+export function generateEcdhSharedKey(
     privateKey: PrivateKey,
     publicKey: PublicKey,
-): EcdhSharedKey => {
+): EcdhSharedKey {
     return babyjub.mulPointEscalar(publicKey, privateKey);
-};
+}
 
 export function encryptMessage(
     plaintext: Uint8Array,

@@ -1,8 +1,9 @@
 import {
-    toBytes32,
+    bytesToHexString32,
     bigintToBytes32,
     bigintToBytes,
 } from '@panther-core/crypto/lib/bigint-conversions';
+import {decryptRandomSecret} from '@panther-core/crypto/lib/sdk/message-encryption';
 import {
     generateMerkleProof,
     TriadMerkleTree,
@@ -28,7 +29,6 @@ import {
 import {env} from './env';
 import {safeFetch} from './http';
 import {deriveSpendingChildKeypair} from './keychain';
-import {decryptRandomSecret as decryptRandomSecret} from './message-encryption';
 
 // 452 (225 bytes) and 260 (128 bytes) are the sizes of the UTXO data containing
 // 1 zZKP UTXO, and with and without 1 NFT UTXO, respectfully. First byte is
@@ -443,7 +443,7 @@ function decodeUTXOData(utxoData: string): [string, string, bigint] | Error {
 
     const secrets = decoded[0];
     const ciphertextMsg = secrets
-        .map(toBytes32)
+        .map(bytesToHexString32)
         .map((v: string) => v.slice(2))
         .join('');
 

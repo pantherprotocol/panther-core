@@ -3,24 +3,20 @@ import {
     uint8ArrayToBigInt,
     bigintToBytes32,
     bigintToBytes,
-} from '@panther-core/crypto/lib/bigint-conversions';
+} from '../bigint-conversions';
 import {
     packPublicKey,
     generateRandomInBabyJubSubField,
     derivePublicKeyFromPrivate,
     unpackPublicKey,
-} from '@panther-core/crypto/lib/keychain';
+} from '../keychain';
 import {
     decryptMessage,
     encryptMessage,
     generateEcdhSharedKey,
-} from '@panther-core/crypto/lib/message-encryption';
-import {
-    PublicKey,
-    PrivateKey,
-    PackedEcdhSharedKey,
-} from '@panther-core/crypto/lib/types/keypair';
-import {ICiphertext} from '@panther-core/crypto/lib/types/message';
+} from '../message-encryption';
+import {PublicKey, PrivateKey, PackedEcdhSharedKey} from '../types/keypair';
+import {ICiphertext} from '../types/message';
 
 // sizes in bytes according to NewCommitments docs:
 // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k
@@ -35,7 +31,6 @@ export function encryptRandomSecret(
     randomSecret: bigint,
     rootReadingPubKey: PublicKey,
 ): string {
-    console.time('encryptRandomSecret()');
     const ephemeralRandom = generateRandomInBabyJubSubField();
     const ephemeralPubKey = generateEcdhSharedKey(
         ephemeralRandom,
@@ -63,7 +58,6 @@ export function encryptRandomSecret(
         PACKED_PUB_KEY_SIZE,
     ).slice(2);
 
-    console.timeEnd('encryptRandomSecret()');
     return ephemeralSharedPubKeyPackedHex + dataHex;
 }
 
@@ -71,7 +65,6 @@ export function decryptRandomSecret(
     ciphertextMsg: string,
     rootReadingPrivateKey: PrivateKey,
 ): bigint | undefined {
-    console.time('decryptRandomSecret()');
     const [sharedKeyPacked, iCiphertext] = sliceCipherMsg(ciphertextMsg);
     const ephemeralSharedPubKey = unpackPublicKey(sharedKeyPacked);
 
@@ -96,7 +89,6 @@ export function decryptRandomSecret(
         throw new Error('Failed to decrypt random secret. Incorrect padding');
     }
 
-    console.timeEnd('decryptRandomSecret()');
     return uint8ArrayToBigInt(randomSecretUInt8);
 }
 

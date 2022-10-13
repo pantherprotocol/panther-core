@@ -11,12 +11,12 @@ import {
 import {poseidon} from 'circomlibjs';
 import {MerkleProof, TriadMerkleTree} from '../../lib/tree';
 import assert from 'assert';
+import {UtxoRecipientData, UtxoSenderData} from '../../lib/message-encryption';
+
 import {
-    bigIntToBuffer32,
-    buffer32ToBigInt,
-    UtxoRecipientData,
-    UtxoSenderData,
-} from '../../lib/message-encryption';
+    bigIntToBuffer,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/bigint-conversions';
 
 import {deriveKeypairFromSeed} from '@panther-core/crypto/lib/keychain';
 
@@ -151,7 +151,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
             it('Async ... calls', async () => {
                 const secrets = [
                     toBytes32(
-                        buffer32ToBigInt(
+                        uint8ArrayToBigInt(
                             senderTransaction.cipheredTextMessageV1.slice(
                                 0,
                                 32,
@@ -159,7 +159,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                         ).toString(),
                     ),
                     toBytes32(
-                        buffer32ToBigInt(
+                        uint8ArrayToBigInt(
                             senderTransaction.cipheredTextMessageV1.slice(
                                 32,
                                 64,
@@ -312,8 +312,8 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 ) {
                     console.log(
                         'Double convert:',
-                        buffer32ToBigInt(
-                            bigIntToBuffer32(senderTransaction.recipientRandom),
+                        uint8ArrayToBigInt(
+                            bigIntToBuffer(senderTransaction.recipientRandom),
                         ),
                     );
                     console.log(

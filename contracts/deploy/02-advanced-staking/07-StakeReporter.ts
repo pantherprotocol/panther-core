@@ -1,7 +1,11 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
-import {reuseEnvAddress, getContractAddress} from '../../lib/deploymentHelpers';
+import {
+    reuseEnvAddress,
+    getContractAddress,
+    verifyUserConsentOnProd,
+} from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     if (!process.env.DEPLOY_CLASSIC_STAKING) return;
@@ -10,6 +14,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployer} = await getNamedAccounts();
 
     console.log(`Deploying StakesReporter on ${hre.network.name}...`);
+    await verifyUserConsentOnProd(hre, deployer);
     if (reuseEnvAddress(hre, 'STAKE_REPORTER')) return;
 
     const staking = await getContractAddress(hre, 'Staking', 'STAKING');

@@ -5,6 +5,7 @@ import {
     reuseEnvAddress,
     getContractAddress,
     getContractEnvAddress,
+    verifyUserConsentOnProd,
 } from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -13,6 +14,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployer} = await getNamedAccounts();
 
     console.log(`Deploying RewardPool on ${hre.network.name}...`);
+    await verifyUserConsentOnProd(hre, deployer);
 
     const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
 

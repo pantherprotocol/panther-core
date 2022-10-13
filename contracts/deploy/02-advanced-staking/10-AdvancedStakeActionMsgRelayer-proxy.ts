@@ -2,6 +2,8 @@ import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {reuseEnvAddress} from '../../lib/deploymentHelpers';
 
+import {verifyUserConsentOnProd} from '../../lib/deploymentHelpers';
+
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {name: network} = hre.network;
     if (
@@ -21,6 +23,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         getNamedAccounts,
     } = hre;
     const {deployer} = await getNamedAccounts();
+
+    console.log(
+        `Deploying AdvancedStakeActionMsgRelayer_Proxy on ${hre.network.name}...`,
+    );
+    await verifyUserConsentOnProd(hre, deployer);
 
     await deploy('AdvancedStakeActionMsgRelayer_Proxy', {
         contract: 'EIP173Proxy',

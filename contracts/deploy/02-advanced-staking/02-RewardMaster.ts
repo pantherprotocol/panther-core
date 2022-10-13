@@ -5,6 +5,7 @@ import {
     reuseEnvAddress,
     getContractAddress,
     getContractEnvAddress,
+    verifyUserConsentOnProd,
 } from '../../lib/deploymentHelpers';
 import {isPolygonOrMumbai} from '../../lib/checkNetwork';
 
@@ -14,6 +15,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployer} = await getNamedAccounts();
 
     console.log(`Deploying RewardMaster on ${hre.network.name}...`);
+    await verifyUserConsentOnProd(hre, deployer);
     if (reuseEnvAddress(hre, 'REWARD_MASTER')) return;
 
     let pool: string;

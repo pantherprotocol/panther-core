@@ -5,6 +5,7 @@ import {
     getContractEnvAddress,
 } from '../../lib/deploymentHelpers';
 import resources from './resources.json';
+import {verifyUserConsentOnProd} from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {name: network} = hre.network;
@@ -44,7 +45,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         return;
     }
 
-    console.log('deploying message relayer implementation...');
+    console.log(
+        `Deploying AdvancedStakeActionMsgRelayer_Implementation on ${hre.network.name}...`,
+    );
+    await verifyUserConsentOnProd(hre, deployer);
 
     console.log('rewardMaster', rewardMaster);
     console.log('msgSender', msgSender);

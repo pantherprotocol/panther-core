@@ -1,5 +1,6 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {ethers} from 'ethers';
+import inq from 'inquirer';
 
 function getContractEnvVariable(
     hre: HardhatRuntimeEnvironment,
@@ -70,4 +71,32 @@ async function getContractAddress(
     }
 }
 
-export {reuseEnvAddress, getContractAddress, getContractEnvAddress};
+async function verifyUserConsentOnProd(
+    hre: HardhatRuntimeEnvironment,
+    signer: string,
+) {
+    if (hre.network.name === 'mainnet' || hre.network.name === 'polygon') {
+        console.log(
+            '\x1b[32m',
+            `Using signer ${signer} to deploy on ${hre.network.name} network...`,
+            '\x1b[0m',
+        );
+
+        const answer = await inq.prompt({
+            type: 'confirm',
+            name: 'question',
+            message: 'Continue deploying the contract?',
+            default: false,
+        });
+        if (!answer.question) {
+            throw new Error('Signer was not confirmed');
+        }
+    }
+}
+
+export {
+    reuseEnvAddress,
+    getContractAddress,
+    getContractEnvAddress,
+    verifyUserConsentOnProd,
+};

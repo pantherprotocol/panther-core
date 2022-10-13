@@ -15,7 +15,7 @@ import NotFoundPage from './pages/NotFound';
 import Staking from './pages/Staking';
 import ZAssets from './pages/ZAssets';
 import {useAppDispatch} from './redux/hooks';
-import {getZKPTokenMarketPrice} from './redux/slices/zkpMarketPrice';
+import {getZKPTokenMarketPrice} from './redux/slices/marketPrices/zkpMarketPrice';
 import {getMissingEnvVars, env} from './services/env';
 
 import './styles.scss';

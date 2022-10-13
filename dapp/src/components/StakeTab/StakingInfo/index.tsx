@@ -11,7 +11,7 @@ import {
     isStakingOpenSelector,
     isStakingPostCloseSelector,
     termsSelector,
-} from '../../../redux/slices/stakeTerms';
+} from '../../../redux/slices/staking/stakeTerms';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
 import {StakeType} from '../../../types/staking';
 import {SafeMuiLink} from '../../Common/links';

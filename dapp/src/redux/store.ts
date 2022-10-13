@@ -11,22 +11,10 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import acknowledgedNotificationsReducer from './slices/acknowledgedNotifications';
-import advancedStakeInputRewardsReducer from './slices/advancedStakePredictedRewards';
-import advancedStakesRewardsReducer from './slices/advancedStakesRewards';
-import blurReducer from './slices/blur';
-import chainBalanceReducer from './slices/chainBalance';
-import isWalletConnectedReducer from './slices/isWalletConnected';
-import poolV0Reducer from './slices/poolV0';
-import remainingPrpRewardsReducer from './slices/remainingPrpRewards';
-import stakeAmountReducer from './slices/stakeAmount';
-import stakeTermsReducer from './slices/stakeTerms';
-import totalStakedReducer from './slices/totalsOfAdvancedStakes';
-import totalUnclaimedClassicRewardsReducer from './slices/totalUnclaimedClassicRewards';
-import Web3WalletLastActionReducer from './slices/web3WalletLastAction';
-import zkpMarketPriceReducer from './slices/zkpMarketPrice';
-import zkpStakedBalanceReducer from './slices/zkpStakedBalance';
-import zkpTokenBalanceReducer from './slices/zkpTokenBalance';
+import {marketPriceReducer} from './slices/marketPrices';
+import {stakingReducer} from './slices/staking';
+import {uiReducer} from './slices/ui';
+import {walletReducer} from './slices/wallet';
 
 const rootPersistConfig = {
     key: 'root',
@@ -37,23 +25,12 @@ const rootPersistConfig = {
         'acknowledgedNotifications',
     ],
 };
+
 export const rootReducer = combineReducers({
-    advancedStakesRewards: advancedStakesRewardsReducer,
-    blur: blurReducer,
-    chainBalance: chainBalanceReducer,
-    poolV0: poolV0Reducer,
-    totalsOfAdvancedStakes: totalStakedReducer,
-    zkpMarketPrice: zkpMarketPriceReducer,
-    zkpTokenBalance: zkpTokenBalanceReducer,
-    zkpStakedBalance: zkpStakedBalanceReducer,
-    advancedStakeInputRewards: advancedStakeInputRewardsReducer,
-    stakeTerms: stakeTermsReducer,
-    totalUnclaimedClassicRewards: totalUnclaimedClassicRewardsReducer,
-    Web3WalletLastAction: Web3WalletLastActionReducer,
-    stakeAmount: stakeAmountReducer,
-    isWalletConnected: isWalletConnectedReducer,
-    remainingPrpRewards: remainingPrpRewardsReducer,
-    acknowledgedNotifications: acknowledgedNotificationsReducer,
+    ui: uiReducer,
+    marketPrice: marketPriceReducer,
+    staking: stakingReducer,
+    wallet: walletReducer,
 });
 
 export const persistedReducer = persistReducer(rootPersistConfig, rootReducer);

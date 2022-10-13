@@ -1,6 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 
-import {RootState} from '../store';
+import {RootState} from '../../store';
 
 export interface BlurState {
     value: boolean;
@@ -11,7 +11,7 @@ const initialState: BlurState = {
 };
 
 export const blurSlice = createSlice({
-    name: 'blur',
+    name: 'ui/blur',
     initialState,
     reducers: {
         set: state => {
@@ -26,7 +26,7 @@ export const blurSlice = createSlice({
 export const {set: setBlur, remove: removeBlur} = blurSlice.actions;
 
 export const blurSelector = (state: RootState) => {
-    return state.blur?.value;
+    return state.ui.blur?.value;
 };
 
 export default blurSlice.reducer;

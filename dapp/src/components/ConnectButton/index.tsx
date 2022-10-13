@@ -6,7 +6,7 @@ import {NoEthereumProviderError} from '@web3-react/injected-connector';
 
 import {useOnConnect} from '../../hooks/web3';
 import {useAppDispatch} from '../../redux/hooks';
-import {setConnected} from '../../redux/slices/isWalletConnected';
+import {setConnected} from '../../redux/slices/ui/isWalletConnected';
 import {safeOpenMetamask} from '../Common/links';
 import PrimaryActionButton from '../Common/PrimaryActionButton';
 

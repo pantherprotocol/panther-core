@@ -2,11 +2,11 @@ import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
-import {getStakingTermsFromContract} from '../../services/staking';
-import type {IStakingTypes} from '../../types/contracts/Staking';
-import {StakeType, StakeTypes} from '../../types/staking';
-import {createExtraReducers, LoadingStatus} from '../slices/shared';
-import {RootState} from '../store';
+import {getStakingTermsFromContract} from '../../../services/staking';
+import type {IStakingTypes} from '../../../types/contracts/Staking';
+import {StakeType, StakeTypes} from '../../../types/staking';
+import {createExtraReducers, LoadingStatus} from '../../slices/shared';
+import {RootState} from '../../store';
 
 type StakeTermsByType = {
     [key in StakeTypes]?: IStakingTypes.TermsStructOutput;
@@ -66,7 +66,7 @@ function terms(
     chainId: number,
     stakeType: StakeType,
 ): IStakingTypes.TermsStructOutput | null {
-    return state.stakeTerms.value?.[chainId]?.[stakeType] ?? null;
+    return state.staking.stakeTerms.value?.[chainId]?.[stakeType] ?? null;
 }
 
 function isStakingPostClose(terms: IStakingTypes.TermsStructOutput): boolean {
@@ -141,7 +141,7 @@ export function termsSelector(
 }
 
 export function statusStakeTermsSelector(state: RootState): StakeTypeStatus {
-    return state.stakeTerms.status;
+    return state.staking.stakeTerms.status;
 }
 
 export default stakeTermsSlice.reducer;

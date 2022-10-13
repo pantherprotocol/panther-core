@@ -18,11 +18,6 @@ import {parseTxErrorMessage} from '../../../../../../src/services/errors';
 import {CONFIRMATIONS_NUM} from '../../../../../lib/constants';
 import {useAppDispatch, useAppSelector} from '../../../../../redux/hooks';
 import {
-    updateExitCommitmentTime,
-    updateUTXOStatus,
-} from '../../../../../redux/slices/advancedStakesRewards';
-import {poolV0ExitDelaySelector} from '../../../../../redux/slices/poolV0';
-import {
     progressToNewWalletAction,
     registerWalletActionFailure,
     registerWalletActionSuccess,
@@ -30,7 +25,12 @@ import {
     StartWalletActionPayload,
     walletActionCauseSelector,
     walletActionStatusSelector,
-} from '../../../../../redux/slices/web3WalletLastAction';
+} from '../../../../../redux/slices/ui/web3WalletLastAction';
+import {
+    updateExitCommitmentTime,
+    updateUTXOStatus,
+} from '../../../../../redux/slices/wallet/advancedStakesRewards';
+import {poolV0ExitDelaySelector} from '../../../../../redux/slices/wallet/poolV0';
 import {generateRootKeypairs} from '../../../../../services/keys';
 import {registerCommitToExit} from '../../../../../services/pool';
 import {isDetailedError} from '../../../../../types/error';

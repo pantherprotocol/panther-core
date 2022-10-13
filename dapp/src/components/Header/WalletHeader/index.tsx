@@ -5,8 +5,8 @@ import Grid from '@mui/material/Grid';
 import {useWeb3React} from '@web3-react/core';
 
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
-import {getChainBalance} from '../../../redux/slices/chainBalance';
-import {isWalletConnectedSelector} from '../../../redux/slices/isWalletConnected';
+import {isWalletConnectedSelector} from '../../../redux/slices/ui/isWalletConnected';
+import {getChainBalance} from '../../../redux/slices/wallet/chainBalance';
 import {
     currentNetwork,
     isWrongNetwork,

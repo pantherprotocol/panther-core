@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useEffect} from 'react';
 
 import {useAppDispatch} from '../../../../redux/hooks';
-import {removeBlur, setBlur} from '../../../../redux/slices/blur';
+import {removeBlur, setBlur} from '../../../../redux/slices/ui/blur';
 import {AdvancedStakeRewards} from '../../../../types/staking';
 
 import FirstStageRedeem from './FirstStageRedeem';

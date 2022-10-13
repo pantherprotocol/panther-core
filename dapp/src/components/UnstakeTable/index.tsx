@@ -15,18 +15,18 @@ import {BigNumber, constants} from 'ethers';
 import {awaitConfirmationAndRetrieveEvent} from '../../lib/events';
 import {formatTime} from '../../lib/format';
 import {useAppDispatch} from '../../redux/hooks';
-import {getChainBalance} from '../../redux/slices/chainBalance';
-import {getTotalsOfAdvancedStakes} from '../../redux/slices/totalsOfAdvancedStakes';
-import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
+import {getTotalsOfAdvancedStakes} from '../../redux/slices/staking/totalsOfAdvancedStakes';
+import {getTotalUnclaimedClassicRewards} from '../../redux/slices/staking/totalUnclaimedClassicRewards';
+import {getZkpStakedBalance} from '../../redux/slices/staking/zkpStakedBalance';
 import {
     registerWalletActionFailure,
     registerWalletActionSuccess,
     startWalletAction,
     StartWalletActionPayload,
     WalletActionTrigger,
-} from '../../redux/slices/web3WalletLastAction';
-import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
-import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
+} from '../../redux/slices/ui/web3WalletLastAction';
+import {getChainBalance} from '../../redux/slices/wallet/chainBalance';
+import {getZkpTokenBalance} from '../../redux/slices/wallet/zkpTokenBalance';
 import {parseTxErrorMessage} from '../../services/errors';
 import {unstake, getStakesAndRewards} from '../../services/staking';
 import {MessageWithTx} from '../Common/MessageWithTx';

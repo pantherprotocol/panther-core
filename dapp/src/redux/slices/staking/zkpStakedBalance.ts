@@ -2,16 +2,19 @@ import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
-import {safeParseStringToBN} from '../../lib/numbers';
-import * as stakingService from '../../services/staking';
-import {RootState} from '../store';
-
-import {BalanceState, createExtraReducers, initialBalanceState} from './shared';
+import {safeParseStringToBN} from '../../../lib/numbers';
+import * as stakingService from '../../../services/staking';
+import {RootState} from '../../store';
+import {
+    BalanceState,
+    createExtraReducers,
+    initialBalanceState,
+} from '../shared';
 
 const initialState: BalanceState = initialBalanceState;
 
 export const getZkpStakedBalance = createAsyncThunk(
-    'balance/getZkpStaked',
+    'staking/balance/staked/ZKP',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
     ): Promise<string | null> => {
@@ -45,7 +48,7 @@ export const stakedBalanceSlice = createSlice({
 });
 
 export const zkpStakedBalanceSelector = (state: RootState) =>
-    safeParseStringToBN(state.zkpStakedBalance.value);
+    safeParseStringToBN(state.staking.zkpStakedBalance.value);
 
 export const {reset: resetZkpStakedBalance} = stakedBalanceSlice.actions;
 export default stakedBalanceSlice.reducer;

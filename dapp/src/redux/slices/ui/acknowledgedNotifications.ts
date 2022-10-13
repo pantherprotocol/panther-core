@@ -1,6 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 
-import {RootState} from '../store';
+import {RootState} from '../../store';
 
 export interface acknowledgedNotificationsState {
     [key: string]: boolean;
@@ -17,7 +17,7 @@ export enum PageWithNotification {
 }
 
 export const acknowledgedNotificationsSlice = createSlice({
-    name: 'acknowledgedNotifications',
+    name: 'ui/acknowledgedNotifications',
     initialState,
     reducers: {
         acknowledgeNotification: (state, action) => {
@@ -36,7 +36,7 @@ export function acknowledgedNotificationSelector(
     notificationOwner: string,
 ): (state: RootState) => boolean {
     return (state: RootState): boolean => {
-        return state.acknowledgedNotifications?.[notificationOwner];
+        return state.ui.acknowledgedNotifications?.[notificationOwner];
     };
 }
 

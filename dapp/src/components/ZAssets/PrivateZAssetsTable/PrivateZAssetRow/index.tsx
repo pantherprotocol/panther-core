@@ -13,8 +13,8 @@ import pantherIcon from '../../../../images/zAssets-panther-logo.svg';
 import {formatCurrency} from '../../../../lib/format';
 import {calcUSDPrice} from '../../../../lib/tokenPrice';
 import {useAppSelector} from '../../../../redux/hooks';
-import {totalSelector} from '../../../../redux/slices/advancedStakesRewards';
-import {marketPriceSelector} from '../../../../redux/slices/zkpMarketPrice';
+import {zkpMarketPriceSelector} from '../../../../redux/slices/marketPrices/zkpMarketPrice';
+import {totalSelector} from '../../../../redux/slices/wallet/advancedStakesRewards';
 import {StakingRewardTokenID} from '../../../../types/staking';
 import Balance from '../../Balance';
 import Network from '../../Network';
@@ -24,7 +24,7 @@ import './styles.scss';
 
 export default function PrivateZAssetRow() {
     const {account, chainId} = useWeb3React();
-    const zkpPrice = useAppSelector(marketPriceSelector);
+    const zkpPrice = useAppSelector(zkpMarketPriceSelector);
     const unclaimedZZKP = useAppSelector(
         totalSelector(chainId, account, StakingRewardTokenID.zZKP),
     );

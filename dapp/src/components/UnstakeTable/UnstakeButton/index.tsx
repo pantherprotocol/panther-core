@@ -8,7 +8,7 @@ import {
     walletActionCauseSelector,
     walletActionStatusSelector,
     WalletActionTrigger,
-} from '../../../redux/slices/web3WalletLastAction';
+} from '../../../redux/slices/ui/web3WalletLastAction';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
 
 import './styles.scss';

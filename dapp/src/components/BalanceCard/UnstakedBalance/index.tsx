@@ -9,7 +9,6 @@ import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
 import {formatUSD, getFormattedFractions} from '../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
-import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/advancedStakesRewards';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -17,12 +16,13 @@ import {
     startWalletAction,
     StartWalletActionPayload,
     WalletSignatureTrigger,
-} from '../../../redux/slices/web3WalletLastAction';
+} from '../../../redux/slices/ui/web3WalletLastAction';
+import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/wallet/advancedStakesRewards';
 import {
     getZkpTokenBalance,
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
-} from '../../../redux/slices/zkpTokenBalance';
+} from '../../../redux/slices/wallet/zkpTokenBalance';
 import {generateRootKeypairs} from '../../../services/keys';
 import {notifyError} from '../../Common/errors';
 import ExactValueTooltip from '../../Common/ExactValueTooltip';

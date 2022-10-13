@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TYPEDIR=typing
+TYPEDIR=types
 
 emit_types() {
     local module="$1"
@@ -54,7 +54,6 @@ main() {
     fi
 
     emit_types snarkjs
-
     emit_types circomlibjs
     # This is needed to avoid errors unless we have --skipLibCheck:
     # rm $TYPEDIR/circomlibjs/src/smt.d.ts

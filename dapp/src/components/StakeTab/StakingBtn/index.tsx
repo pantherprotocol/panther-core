@@ -2,10 +2,11 @@ import {useCallback} from 'react';
 import * as React from 'react';
 
 import {Box, Button} from '@mui/material';
+import {parseTxErrorMessage} from '@panther-core/crypto/lib/errors';
+import {deriveRootKeypairs} from '@panther-core/crypto/lib/sdk/keychain';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 
-import {parseTxErrorMessage} from '../../../lib/errors';
 import {awaitConfirmationAndRetrieveEvent} from '../../../lib/events';
 import {formatCurrency} from '../../../lib/format';
 import {safeParseUnits} from '../../../lib/numbers';
@@ -28,7 +29,6 @@ import {
 import {getZkpStakedBalance} from '../../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../../redux/slices/zkpTokenBalance';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
-import {deriveRootKeypairs} from '../../../services/keychain';
 import {advancedStake} from '../../../services/staking';
 import {StakingRewardTokenID} from '../../../types/staking';
 import {notifyError} from '../../Common/errors';

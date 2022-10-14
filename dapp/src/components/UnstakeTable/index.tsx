@@ -9,10 +9,10 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import {parseTxErrorMessage} from '@panther-core/crypto/lib/errors';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, constants} from 'ethers';
 
-import {parseTxErrorMessage} from '../../lib/errors';
 import {awaitConfirmationAndRetrieveEvent} from '../../lib/events';
 import {formatTime} from '../../lib/format';
 import {useAppDispatch} from '../../redux/hooks';

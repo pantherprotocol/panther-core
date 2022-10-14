@@ -2,7 +2,7 @@ import {describe, expect} from '@jest/globals';
 import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
-} from '@panther-core/crypto/lib/bigint-conversions';
+} from '../src/bigint-conversions';
 import {
     generateRandomKeypair,
     packPublicKey,

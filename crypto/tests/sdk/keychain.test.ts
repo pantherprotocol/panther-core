@@ -3,14 +3,13 @@ import {
     deriveKeypairFromSignature,
     generateRandomInBabyJubSubField,
     SNARK_FIELD_SIZE,
-} from '@panther-core/crypto/lib/keychain';
-import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
-import {Wallet} from 'ethers';
-
+} from '../../lib/keychain';
 import {
     deriveRootKeypairs,
     generateSpendingChildKeypair,
-} from '../../src/services/keychain';
+} from '../../src/sdk/keychain';
+import {IKeypair} from '../../lib/types/keypair';
+import {Wallet} from 'ethers';
 
 describe('Spending child keypair', () => {
     let spendingChildKeypair: IKeypair;

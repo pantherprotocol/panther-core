@@ -2,13 +2,14 @@ import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
 
 import {Box, Button, Tooltip, Typography} from '@mui/material';
+import {parseTxErrorMessage} from '@panther-core/crypto/lib/errors';
+import {deriveRootKeypairs} from '@panther-core/crypto/lib/sdk/keychain';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 
 import attentionIcon from '../../../images/attention-triangle-icon.svg';
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
-import {parseTxErrorMessage} from '../../../lib/errors';
 import {formatCurrency, formatTimeSince} from '../../../lib/format';
 import {fiatPrice} from '../../../lib/tokenPrice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
@@ -32,7 +33,6 @@ import {
 } from '../../../redux/slices/web3WalletLastAction';
 import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
 import {chainHasPoolContract} from '../../../services/contracts';
-import {deriveRootKeypairs} from '../../../services/keychain';
 import {StakingRewardTokenID} from '../../../types/staking';
 import {notifyError} from '../../Common/errors';
 import {openNotification} from '../../Common/notification';

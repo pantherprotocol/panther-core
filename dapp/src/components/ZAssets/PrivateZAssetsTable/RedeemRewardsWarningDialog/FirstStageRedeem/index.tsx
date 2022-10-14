@@ -11,10 +11,11 @@ import {
     FormGroup,
     Typography,
 } from '@mui/material';
+import {parseTxErrorMessage} from '@panther-core/crypto/lib/errors';
+import {deriveRootKeypairs} from '@panther-core/crypto/lib/sdk/keychain';
 import {useWeb3React} from '@web3-react/core';
 import moment from 'moment';
 
-import {parseTxErrorMessage} from '../../../../../lib/errors';
 import {useAppDispatch, useAppSelector} from '../../../../../redux/hooks';
 import {updateExitCommitmentTime} from '../../../../../redux/slices/advancedStakesRewards';
 import {poolV0ExitDelaySelector} from '../../../../../redux/slices/poolV0';
@@ -27,7 +28,6 @@ import {
     walletActionCauseSelector,
     walletActionStatusSelector,
 } from '../../../../../redux/slices/web3WalletLastAction';
-import {deriveRootKeypairs} from '../../../../../services/keychain';
 import {registerCommitToExit} from '../../../../../services/pool';
 import {isDetailedError} from '../../../../../types/error';
 import {AdvancedStakeRewards} from '../../../../../types/staking';

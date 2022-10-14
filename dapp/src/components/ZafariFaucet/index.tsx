@@ -1,13 +1,13 @@
 import React, {useCallback, useEffect, useState} from 'react';
 
 import {Box, Card, Typography} from '@mui/material';
+import {parseTxErrorMessage} from '@panther-core/crypto/lib/errors';
 import {useWeb3React} from '@web3-react/core';
 import {ContractTransaction} from 'ethers/lib/ethers';
 
 import goerliIcon from '../../images/goerli-logo.svg';
 import polygonIcon from '../../images/polygon-logo.svg';
 import {CONFIRMATIONS_NUM} from '../../lib/constants';
-import {parseTxErrorMessage} from '../../lib/errors';
 import {formatCurrency} from '../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getChainBalance} from '../../redux/slices/chainBalance';

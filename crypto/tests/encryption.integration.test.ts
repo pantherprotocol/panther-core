@@ -1,16 +1,16 @@
-import {bigIntToUint8Array} from '@panther-core/crypto/lib/bigint-conversions';
+import {bigIntToUint8Array} from '../src/bigint-conversions';
 import {
     deriveKeypairFromSignature,
     generateRandomKeypair,
     packPublicKey,
-} from '@panther-core/crypto/lib/keychain';
+} from '../src/keychain';
 import {
     encryptMessage,
     generateEcdhSharedKey,
     decryptMessage,
-} from '@panther-core/crypto/lib/message-encryption';
-import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
-import {extractCipherKeyAndIvFromPackedPoint} from '@panther-core/crypto/src/sdk/message-encryption';
+} from '../src/message-encryption';
+import {IKeypair} from '../src/types/keypair';
+import {extractCipherKeyAndIvFromPackedPoint} from '../src/sdk/message-encryption';
 import {ethers} from 'ethers';
 
 describe('Message encryption and decryption', () => {

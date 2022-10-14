@@ -3,6 +3,8 @@ import {
     bigintToBytes32,
     bigintToBytes,
 } from '@panther-core/crypto/lib/bigint-conversions';
+import {parseTxErrorMessage} from '@panther-core/crypto/lib/errors';
+import {deriveSpendingChildKeypair} from '@panther-core/crypto/lib/sdk/keychain';
 import {decryptRandomSecret} from '@panther-core/crypto/lib/sdk/message-encryption';
 import {
     generateMerkleProof,
@@ -15,7 +17,6 @@ import {utils, Contract, BigNumber} from 'ethers';
 import {ContractTransaction} from 'ethers/lib/ethers';
 import {Result} from 'ethers/lib/utils';
 
-import {parseTxErrorMessage} from '../lib/errors';
 import {formatTime} from '../lib/format';
 import {isDetailedError, DetailedError} from '../types/error';
 import {AdvancedStakeRewards, UTXOStatus} from '../types/staking';
@@ -28,7 +29,6 @@ import {
 } from './contracts';
 import {env} from './env';
 import {safeFetch} from './http';
-import {deriveSpendingChildKeypair} from './keychain';
 
 // 452 (225 bytes) and 260 (128 bytes) are the sizes of the UTXO data containing
 // 1 zZKP UTXO, and with and without 1 NFT UTXO, respectfully. First byte is

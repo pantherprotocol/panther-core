@@ -2,9 +2,9 @@ import {babyjub} from 'circomlibjs';
 import {
     derivePublicKeyFromPrivate,
     generateRandomInBabyJubSubField,
-    deriveChildPrivKeyFromRootPrivKey,
     deriveChildPubKeyFromRootPubKey,
 } from '@panther-core/crypto/lib/keychain';
+import {deriveSpendingChildKeypair} from '@panther-core/crypto/lib/sdk/keychain';
 import {PublicKey, IKeypair} from '@panther-core/crypto/lib/types/keypair';
 
 import {generateEcdhSharedKey} from '@panther-core/crypto/lib/message-encryption';
@@ -136,16 +136,10 @@ export class UtxoRecipientData {
             this.decryptedText.slice(0, 0 + 32),
         );
         // [1] - Make derived public & private keys
-        this.recipientSpendingKeys = {
-            publicKey: babyjub.mulPointEscalar(
-                recipientRootKeys.publicKey,
-                this.recipientRandom,
-            ),
-            privateKey: deriveChildPrivKeyFromRootPrivKey(
-                recipientRootKeys.privateKey,
-                this.recipientRandom,
-            ),
-        };
+        this.recipientSpendingKeys = deriveSpendingChildKeypair(
+            recipientRootKeys,
+            this.recipientRandom,
+        )[0];
     }
 
     // NOTE: if this function throws after `prolog` check --- it is 100% mean that this message is not for us

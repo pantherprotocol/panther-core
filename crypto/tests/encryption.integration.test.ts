@@ -10,7 +10,7 @@ import {
     decryptMessage,
 } from '@panther-core/crypto/lib/message-encryption';
 import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
-import {extractCipherKeyAndIV} from '@panther-core/crypto/src/sdk/message-encryption';
+import {extractCipherKeyAndIvFromPackedPoint} from '@panther-core/crypto/src/sdk/message-encryption';
 import {ethers} from 'ethers';
 
 describe('Message encryption and decryption', () => {
@@ -37,9 +37,10 @@ describe('Message encryption and decryption', () => {
 
         const secretRandom = childRandomKeypair.privateKey;
 
-        const {iv: ivSpending, cipherKey: ckSpending} = extractCipherKeyAndIV(
-            packPublicKey(spendingEcdhSharedKey),
-        );
+        const {iv: ivSpending, cipherKey: ckSpending} =
+            extractCipherKeyAndIvFromPackedPoint(
+                packPublicKey(spendingEcdhSharedKey),
+            );
 
         const ciphertext = encryptMessage(
             bigIntToUint8Array(secretRandom, 32),
@@ -47,9 +48,10 @@ describe('Message encryption and decryption', () => {
             ivSpending,
         );
 
-        const {iv: ivReading, cipherKey: ckReading} = extractCipherKeyAndIV(
-            packPublicKey(readingEcdhSharedKey),
-        );
+        const {iv: ivReading, cipherKey: ckReading} =
+            extractCipherKeyAndIvFromPackedPoint(
+                packPublicKey(readingEcdhSharedKey),
+            );
 
         const decryptedSecretRandom = decryptMessage(
             ciphertext,

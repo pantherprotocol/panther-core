@@ -25,7 +25,6 @@ export const isChildPubKeyValid = (
     rootKeypair: IKeypair,
     randomSecret: bigint,
 ): boolean => {
-    console.time('isChildPubKeyValid()');
     assertInSnarkField(childPubKey[0], 'Child public key X');
     assertInSnarkField(childPubKey[1], 'Child public key Y');
     assertInSnarkField(rootKeypair.publicKey[0], 'Root public key X');
@@ -46,7 +45,6 @@ export const isChildPubKeyValid = (
         s_rB[1] === childPubKey[1];
 
     console.debug(`generated public key is${isValid ? '' : ' NOT'} valid`);
-    console.timeEnd('isChildPubKeyValid()');
     return isValid;
 };
 

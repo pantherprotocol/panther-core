@@ -12,7 +12,7 @@ import {
     generateEcdhSharedKey,
     decryptMessage,
 } from '../src/message-encryption';
-import {extractCipherKeyAndIV} from '../src/sdk/message-encryption';
+import {extractCipherKeyAndIvFromPackedPoint} from '../src/sdk/message-encryption';
 import {babyjub} from 'circomlibjs';
 import {Wallet} from 'ethers';
 
@@ -40,7 +40,7 @@ describe('Transaction integration test', () => {
         const packedK = packPublicKey(K);
         const plainText = rR.privateKey.toString(16);
         const {iv: ivSpending, cipherKey: ckSpending} =
-            extractCipherKeyAndIV(packedK);
+            extractCipherKeyAndIvFromPackedPoint(packedK);
 
         const C = encryptMessage(
             bigIntToUint8Array(BigInt('0x' + plainText)),
@@ -52,7 +52,7 @@ describe('Transaction integration test', () => {
         const derivedK = generateEcdhSharedKey(vV.privateKey, rR.publicKey);
         const packedDerivedK = packPublicKey(derivedK);
         const {iv: ivReading, cipherKey: ckReading} =
-            extractCipherKeyAndIV(packedDerivedK);
+            extractCipherKeyAndIvFromPackedPoint(packedDerivedK);
         const decryptedText = uint8ArrayToBigInt(
             decryptMessage(C, ckReading, ivReading),
         );

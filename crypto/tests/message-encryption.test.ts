@@ -14,8 +14,7 @@ import {
     encryptMessage,
     decryptMessage,
 } from '../src/message-encryption';
-// TODO move to SDK
-import {extractCipherKeyAndIV} from '../src/sdk/message-encryption';
+import {extractCipherKeyAndIvFromPackedPoint} from '../src/sdk/message-encryption';
 
 describe('Cryptographic operations', () => {
     const keypair1 = generateRandomKeypair();
@@ -31,18 +30,16 @@ describe('Cryptographic operations', () => {
     );
 
     const plaintext = generateRandomKeypair().privateKey;
-    const {iv: ivSpending, cipherKey: ckSpending} = extractCipherKeyAndIV(
-        packPublicKey(ecdhSharedKey12),
-    );
+    const {iv: ivSpending, cipherKey: ckSpending} =
+        extractCipherKeyAndIvFromPackedPoint(packPublicKey(ecdhSharedKey12));
     const ciphertext = encryptMessage(
         bigIntToUint8Array(plaintext),
         ckSpending,
         ivSpending,
     );
 
-    const {iv: ivReading, cipherKey: ckReading} = extractCipherKeyAndIV(
-        packPublicKey(ecdhSharedKey21),
-    );
+    const {iv: ivReading, cipherKey: ckReading} =
+        extractCipherKeyAndIvFromPackedPoint(packPublicKey(ecdhSharedKey21));
 
     const decryptedCiphertext = uint8ArrayToBigInt(
         decryptMessage(ciphertext, ckReading, ivReading),

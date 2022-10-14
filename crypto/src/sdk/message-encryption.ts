@@ -40,7 +40,9 @@ export function encryptRandomSecret(
     const ephemeralSharedPubKey = derivePublicKeyFromPrivate(ephemeralRandom);
     const ephemeralSharedPubKeyPacked = packPublicKey(ephemeralSharedPubKey);
     const plaintext = bigintToBytes32(randomSecret).slice(2);
-    const {cipherKey, iv} = extractCipherKeyAndIV(ephemeralPubKeyPacked);
+    const {cipherKey, iv} = extractCipherKeyAndIvFromPackedPoint(
+        ephemeralPubKeyPacked,
+    );
 
     const ciphertext = encryptMessage(
         bigIntToUint8Array(BigInt('0x' + plaintext), PRIV_KEY_SIZE),
@@ -73,7 +75,7 @@ export function decryptRandomSecret(
         ephemeralSharedPubKey,
     );
 
-    const {cipherKey, iv} = extractCipherKeyAndIV(
+    const {cipherKey, iv} = extractCipherKeyAndIvFromPackedPoint(
         packPublicKey(ephemeralPubKey),
     );
 
@@ -92,7 +94,9 @@ export function decryptRandomSecret(
     return uint8ArrayToBigInt(randomSecretUInt8);
 }
 
-export function extractCipherKeyAndIV(packedKey: PackedEcdhSharedKey): {
+export function extractCipherKeyAndIvFromPackedPoint(
+    packedKey: PackedEcdhSharedKey,
+): {
     cipherKey: Buffer;
     iv: Buffer;
 } {

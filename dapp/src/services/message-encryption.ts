@@ -10,14 +10,17 @@ import {
     derivePublicKeyFromPrivate,
     unpackPublicKey,
 } from '@panther-core/crypto/lib/keychain';
-import {PublicKey, PrivateKey} from '@panther-core/crypto/lib/types/keypair';
-
 import {
     decryptMessage,
     encryptMessage,
     generateEcdhSharedKey,
-} from '../lib/message-encryption';
-import {ICiphertext} from '../lib/types';
+} from '@panther-core/crypto/lib/message-encryption';
+import {
+    PublicKey,
+    PrivateKey,
+    PackedEcdhSharedKey,
+} from '@panther-core/crypto/lib/types/keypair';
+import {ICiphertext} from '@panther-core/crypto/lib/types/message';
 
 // sizes in bytes according to NewCommitments docs:
 // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k
@@ -42,10 +45,12 @@ export function encryptRandomSecret(
     const ephemeralSharedPubKey = derivePublicKeyFromPrivate(ephemeralRandom);
     const ephemeralSharedPubKeyPacked = packPublicKey(ephemeralSharedPubKey);
     const plaintext = bigintToBytes32(randomSecret).slice(2);
+    const {cipherKey, iv} = extractCipherKeyAndIV(ephemeralPubKeyPacked);
 
     const ciphertext = encryptMessage(
         bigIntToUint8Array(BigInt('0x' + plaintext), PRIV_KEY_SIZE),
-        ephemeralPubKeyPacked,
+        cipherKey,
+        iv,
     );
 
     const ephemeralSharedPubKeyPackedHex = bigintToBytes(
@@ -74,23 +79,35 @@ export function decryptRandomSecret(
         rootReadingPrivateKey,
         ephemeralSharedPubKey,
     );
+
+    const {cipherKey, iv} = extractCipherKeyAndIV(
+        packPublicKey(ephemeralPubKey),
+    );
+
     let randomSecretUInt8;
     try {
-        randomSecretUInt8 = decryptMessage(
-            iCiphertext,
-            packPublicKey(ephemeralPubKey),
-        );
+        randomSecretUInt8 = decryptMessage(iCiphertext, cipherKey, iv);
     } catch (error) {
         throw new Error(`Failed to get random secret ${error}`);
     }
 
     // check if first 5 most significant bits are zeros
     if ((randomSecretUInt8[0] & 0xf8) != 0x00) {
-        throw new Error('Failed to decrypt random secret. Incorrect prolog');
+        throw new Error('Failed to decrypt random secret. Incorrect padding');
     }
 
     console.timeEnd('decryptRandomSecret()');
     return uint8ArrayToBigInt(randomSecretUInt8);
+}
+
+export function extractCipherKeyAndIV(packedKey: PackedEcdhSharedKey): {
+    cipherKey: Buffer;
+    iv: Buffer;
+} {
+    return {
+        cipherKey: Buffer.from(packedKey).slice(0, 16),
+        iv: Buffer.from(packedKey).slice(16, 32),
+    };
 }
 
 export function sliceCipherMsg(

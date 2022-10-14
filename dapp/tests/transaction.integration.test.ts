@@ -15,29 +15,11 @@ import {
     generateEcdhSharedKey,
     decryptMessage,
 } from '../src/lib/message-encryption';
+import {extractCipherKeyAndIV} from '../src/services/message-encryption';
 
 /*
-Recipient reading key V = vB
-Recipient master spending key S = sB
-Recipient publishes V, B
-
-Sender generates random r
-Sender generates sender’s ephemeral key R = rB
-Sender derives a shared key K=ECDH(V, r)  = rV = rvB
-Sender encrypts with K the UTXO opening values
-  M = (r, amount, token)
-  Ciphertext C = Enc(M, K).
-Sender derives the public spending key for a UTXO as S' = rS
-Sender publishes R and C
-  (the smart contract emits R, C, as well as creationTime and leafId)
-
-Recipient derives shared key K = vR= vrB
-Recipient decrypts ciphertext and gets the UTXO opening values
-  (r, amount, token) = M = Dec(C, K)
-Recipient derives the private spending key as s' = rs
-Recipient computes the commitment and the nullifier
-  commitment := Poseidon(S`.x, S`.y, amount, token, creationTime)
-  nullifier := Poseidon(s, leafId)
+For the transaction flow details, please refer to MASP document:
+https://docs.google.com/document/d/1BTWHstTgNKcapOe0PLQR41vbC0aEDYmbBenfzTq8TVs/
 
 */
 
@@ -58,9 +40,13 @@ describe('Transaction integration test', () => {
         const K = generateEcdhSharedKey(rR.privateKey, vV.publicKey);
         const packedK = packPublicKey(K);
         const plainText = rR.privateKey.toString(16);
+        const {iv: ivSpending, cipherKey: ckSpending} =
+            extractCipherKeyAndIV(packedK);
+
         const C = encryptMessage(
             bigIntToUint8Array(BigInt('0x' + plainText)),
-            packedK,
+            ckSpending,
+            ivSpending,
         );
 
         // sender calls the contract with data
@@ -76,8 +62,10 @@ describe('Transaction integration test', () => {
         // Receiver actions from here:
         const derivedK = generateEcdhSharedKey(vV.privateKey, rR.publicKey);
         const packedDerivedK = packPublicKey(derivedK);
+        const {iv: ivReading, cipherKey: ckReading} =
+            extractCipherKeyAndIV(packedDerivedK);
         const decryptedText = uint8ArrayToBigInt(
-            decryptMessage(C, packedDerivedK),
+            decryptMessage(C, ckReading, ivReading),
         );
         const sPrime = babyjub.mulPointEscalar(rR.publicKey, sS.privateKey);
 

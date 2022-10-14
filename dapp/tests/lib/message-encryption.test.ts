@@ -14,6 +14,7 @@ import {
     encryptMessage,
     decryptMessage,
 } from '../../src/lib/message-encryption';
+import {extractCipherKeyAndIV} from '../../src/services/message-encryption';
 
 describe('Cryptographic operations', () => {
     const keypair1 = generateRandomKeypair();
@@ -29,12 +30,21 @@ describe('Cryptographic operations', () => {
     );
 
     const plaintext = generateRandomKeypair().privateKey;
-    const ciphertext = encryptMessage(
-        bigIntToUint8Array(plaintext),
+    const {iv: ivSpending, cipherKey: ckSpending} = extractCipherKeyAndIV(
         packPublicKey(ecdhSharedKey12),
     );
+    const ciphertext = encryptMessage(
+        bigIntToUint8Array(plaintext),
+        ckSpending,
+        ivSpending,
+    );
+
+    const {iv: ivReading, cipherKey: ckReading} = extractCipherKeyAndIV(
+        packPublicKey(ecdhSharedKey21),
+    );
+
     const decryptedCiphertext = uint8ArrayToBigInt(
-        decryptMessage(ciphertext, packPublicKey(ecdhSharedKey21)),
+        decryptMessage(ciphertext, ckReading, ivReading),
     );
 
     describe('Private key', () => {

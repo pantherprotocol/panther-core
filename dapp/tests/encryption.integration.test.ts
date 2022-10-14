@@ -12,6 +12,7 @@ import {
     generateEcdhSharedKey,
     decryptMessage,
 } from '../src/lib/message-encryption';
+import {extractCipherKeyAndIV} from '../src/services/message-encryption';
 
 describe('Message encryption and decryption', () => {
     it('expect decrypt message to be equal initial plain message', async () => {
@@ -37,14 +38,24 @@ describe('Message encryption and decryption', () => {
 
         const secretRandom = childRandomKeypair.privateKey;
 
+        const {iv: ivSpending, cipherKey: ckSpending} = extractCipherKeyAndIV(
+            packPublicKey(spendingEcdhSharedKey),
+        );
+
         const ciphertext = encryptMessage(
             bigIntToUint8Array(secretRandom, 32),
-            packPublicKey(spendingEcdhSharedKey),
+            ckSpending,
+            ivSpending,
+        );
+
+        const {iv: ivReading, cipherKey: ckReading} = extractCipherKeyAndIV(
+            packPublicKey(readingEcdhSharedKey),
         );
 
         const decryptedSecretRandom = decryptMessage(
             ciphertext,
-            packPublicKey(readingEcdhSharedKey),
+            ckReading,
+            ivReading,
         );
 
         expect(decryptedSecretRandom).toEqual(

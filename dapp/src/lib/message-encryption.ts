@@ -4,7 +4,6 @@ import {
     PrivateKey,
     PublicKey,
     EcdhSharedKey,
-    PackedEcdhSharedKey,
 } from '@panther-core/crypto/lib/types/keypair';
 import {babyjub} from 'circomlibjs';
 
@@ -17,22 +16,11 @@ export const generateEcdhSharedKey = (
     return babyjub.mulPointEscalar(publicKey, privateKey);
 };
 
-function extractCipherKeyAndIV(packedKey: PackedEcdhSharedKey): {
-    cipherKey: Buffer;
-    iv: Buffer;
-} {
-    return {
-        cipherKey: Buffer.from(packedKey).slice(0, 16),
-        iv: Buffer.from(packedKey).slice(16, 32),
-    };
-}
-
 export function encryptMessage(
     plaintext: Uint8Array,
-    sharedKey: PackedEcdhSharedKey,
+    cipherKey: Uint8Array,
+    iv: Uint8Array,
 ): ICiphertext {
-    const {cipherKey, iv} = extractCipherKeyAndIV(sharedKey);
-
     try {
         const cipher = crypto.createCipheriv('aes-128-cbc', cipherKey, iv);
         cipher.setAutoPadding(false);
@@ -46,9 +34,9 @@ export function encryptMessage(
 
 export function decryptMessage(
     ciphertext: ICiphertext,
-    sharedKey: PackedEcdhSharedKey,
+    cipherKey: Uint8Array,
+    iv: Uint8Array,
 ): Uint8Array {
-    const {cipherKey, iv} = extractCipherKeyAndIV(sharedKey);
     const decipher = crypto.createDecipheriv('aes-128-cbc', cipherKey, iv);
     decipher.setAutoPadding(false);
 

@@ -74,17 +74,17 @@ export default function StakingInfo() {
 
         const body = (
             <>
-                <Typography className="staking-info-text-paragraph">
+                <p className="staking-info-text-paragraph">
                     You will need to unstake in order for your staked assets to
                     be liquid again. Rewards are earned automatically.{' '}
                     <span className="learn-more-link">Learn more.</span>
-                </Typography>
-                <Typography>
+                </p>
+                <p>
                     Your staked ZKP will create zZKP as rewards in the
                     Multi-Asset Shielded Pool. By staking your ZKP, you become
                     one of the first users to create zAssets and contribute to
                     the bootstrapping of the MASP.
-                </Typography>
+                </p>
             </>
         );
 
@@ -99,14 +99,14 @@ export default function StakingInfo() {
             subtitle: 'Advanced staking is closed for new stakes',
             body: (
                 <>
-                    <Typography>
+                    <p>
                         The advanced staking rewards program ended
                         {allowedTill
                             ? ' on ' + formatTime(Number(allowedTill) * 1000)
                             : ''}
                         , so new stakes were automatically disabled by the smart
                         contracts.
-                    </Typography>
+                    </p>
                     <p>
                         Advanced stakes are locked
                         {minLockPeriod && minLockPeriod > 0
@@ -119,6 +119,7 @@ export default function StakingInfo() {
                             href="https://docs.pantherprotocol.io/dao/support/faq/staking#when-unstake"
                             underline="always"
                             color="inherit"
+                            styles="strong-subtext"
                         >
                             at any time
                         </SafeMuiLink>
@@ -158,7 +159,7 @@ export default function StakingInfo() {
             subtitle: 'Classic staking is closed for new stakes',
             body: (
                 <>
-                    <Typography>
+                    <p>
                         The classic staking rewards program ended
                         {rewardsEnd
                             ? ' on ' + formatTime(rewardsEnd * 1000)
@@ -182,7 +183,7 @@ export default function StakingInfo() {
                             </>
                         )}
                         .
-                    </Typography>
+                    </p>
                     <p>
                         You can still unstake{' '}
                         <SafeMuiLink
@@ -236,10 +237,10 @@ export default function StakingInfo() {
             subtitle: 'Connect your wallet',
             body: (
                 <>
-                    <Typography>
+                    <p>
                         Advanced staking is now in progress. Connect your wallet
                         to find out more!
-                    </Typography>
+                    </p>
                 </>
             ),
         };
@@ -263,9 +264,9 @@ export default function StakingInfo() {
                         alt="warning-icon"
                         className="warning-icon"
                     />{' '}
-                    <span className="staking-info-title">{subtitle}</span>
+                    <span className="stake-info-title">{subtitle}</span>
                 </Typography>
-                <div className="staking-info-text">{body}</div>
+                <div className="stake-info-text">{body}</div>
             </CardContent>
         </Card>
     );

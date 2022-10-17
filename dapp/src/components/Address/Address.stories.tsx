@@ -6,8 +6,8 @@ import {Meta, Story} from '@storybook/react';
 import Jazzicon, {jsNumberForAddress} from 'react-jazzicon';
 import {Provider} from 'react-redux';
 
+import {formatAccountAddress} from '../../lib/format';
 import {store} from '../../redux/store';
-import {formatAccountAddress} from '../../services/account';
 
 import Address from './index';
 

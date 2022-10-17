@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import {useWeb3React} from '@web3-react/core';
 import Jazzicon, {jsNumberForAddress} from 'react-jazzicon';
 
-import {formatAccountAddress} from '../../services/account';
+import {formatAccountAddress} from '../../lib/format';
 
 import './styles.scss';
 

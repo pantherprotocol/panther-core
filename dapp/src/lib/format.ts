@@ -4,6 +4,8 @@ import moment from 'moment';
 import {getLocale} from './i18n';
 import {roundDown} from './numbers';
 
+const ADDRESS_SUBSTRING_LENGTH = 4;
+
 export function formatTime(
     date: number | null,
     options?: {style?: 'long' | 'full' | 'medium' | 'short'},
@@ -97,4 +99,13 @@ export function getFormattedFractions(amount: string): (string | undefined)[] {
           })
         : undefined;
     return [whole, fractional];
+}
+
+export function formatAccountAddress(
+    account: string | undefined | null,
+): string | null {
+    if (!account) return null;
+    const start = account.substring(2, ADDRESS_SUBSTRING_LENGTH);
+    const end = account.substring(account.length - ADDRESS_SUBSTRING_LENGTH);
+    return `0x${start}...${end}`;
 }

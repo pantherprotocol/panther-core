@@ -7,14 +7,13 @@ import {ContractTransaction} from 'ethers/lib/ethers';
 import goerliIcon from '../../images/goerli-logo.svg';
 import polygonIcon from '../../images/polygon-logo.svg';
 import {CONFIRMATIONS_NUM} from '../../lib/constants';
-import {formatCurrency} from '../../lib/format';
+import {formatAccountAddress, formatCurrency} from '../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {getChainBalance} from '../../redux/slices/chainBalance';
 import {
     getZkpTokenBalance,
     zkpTokenBalanceSelector,
 } from '../../redux/slices/zkpTokenBalance';
-import {formatAccountAddress} from '../../services/account';
 import {isWrongNetwork, supportedNetworks} from '../../services/connectors';
 import {FAUCET_CHAIN_IDS} from '../../services/env';
 import {parseTxErrorMessage} from '../../services/errors';

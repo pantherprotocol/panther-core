@@ -1,4 +1,4 @@
 coverage/
 lib/
-typing/
+types/
 jest.config.js

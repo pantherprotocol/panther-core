@@ -13,14 +13,14 @@ https://github.com/appliedzkp/incrementalquintree
 import assert from 'assert';
 import fs from 'fs';
 
+import {poseidon2or3} from '../../base/hashes';
+
 import {
     leafIdToTreeIdAndTriadId,
     compressString,
     decompressString,
     toBytes32,
 } from './utils';
-
-import {poseidon2or3} from '../../base/hashes';
 
 type PathElements = bigint[][];
 type Indices = number[];

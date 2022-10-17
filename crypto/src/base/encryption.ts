@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 
-import {PrivateKey, PublicKey, EcdhSharedKey} from '../types/keypair';
 import {babyjub} from 'circomlibjs';
 
+import {PrivateKey, PublicKey, EcdhSharedKey} from '../types/keypair';
 import {ICiphertext} from '../types/message';
 
 export function generateEcdhSharedKey(

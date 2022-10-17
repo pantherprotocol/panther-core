@@ -1,5 +1,6 @@
 import assert from 'assert';
 import crypto from 'crypto';
+
 import {poseidon} from 'circomlibjs';
 
 export const sha256 = (preimage: Buffer) => {

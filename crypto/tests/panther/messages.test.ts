@@ -1,9 +1,9 @@
 import {describe, expect} from '@jest/globals';
+
 import {
     generateRandomKeypair,
     generateRandomInBabyJubSubField,
 } from '../../src/base/keypairs';
-
 import {
     CIPHERTEXT_MSG_SIZE,
     decryptRandomSecret,

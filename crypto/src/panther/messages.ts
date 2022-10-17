@@ -1,22 +1,22 @@
 import {
-    bigIntToUint8Array,
-    uint8ArrayToBigInt,
-    bigintToBytes32,
-    bigintToBytes,
-} from '../utils/bigint-conversions';
+    decryptMessage,
+    encryptMessage,
+    generateEcdhSharedKey,
+} from '../base/encryption';
 import {
     packPublicKey,
     generateRandomInBabyJubSubField,
     derivePublicKeyFromPrivate,
     unpackPublicKey,
 } from '../base/keypairs';
-import {
-    decryptMessage,
-    encryptMessage,
-    generateEcdhSharedKey,
-} from '../base/encryption';
 import {PublicKey, PrivateKey, PackedEcdhSharedKey} from '../types/keypair';
 import {ICiphertext} from '../types/message';
+import {
+    bigIntToUint8Array,
+    uint8ArrayToBigInt,
+    bigintToBytes32,
+    bigintToBytes,
+} from '../utils/bigint-conversions';
 
 // sizes in bytes according to NewCommitments docs:
 // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k

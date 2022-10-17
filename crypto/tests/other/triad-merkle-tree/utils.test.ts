@@ -1,12 +1,13 @@
+import {describe, expect} from '@jest/globals';
+
+import {TriadMerkleTree} from '../../../src/other/triad-merkle-tree';
 import {
     compressString,
     createTriadMerkleTree,
     decompressString,
     readCommitmentsFromCommitmentLog,
 } from '../../../src/other/triad-merkle-tree/utils';
-import {describe, expect} from '@jest/globals';
 
-import {TriadMerkleTree} from '../../../src/other/triad-merkle-tree';
 import {fourthTree} from './data/trees';
 
 const TREE_SIZE = 1536;

@@ -1,5 +1,8 @@
 import {describe, expect} from '@jest/globals';
 
+import {Wallet} from 'ethers';
+
+import {IKeypair} from '../../lib/types/keypair';
 import {
     deriveKeypairFromSignature,
     generateRandomInBabyJubSubField,
@@ -9,8 +12,6 @@ import {
     deriveRootKeypairs,
     generateSpendingChildKeypair,
 } from '../../src/panther/keys';
-import {IKeypair} from '../../lib/types/keypair';
-import {Wallet} from 'ethers';
 
 describe('Spending child keypair', () => {
     let spendingChildKeypair: IKeypair;

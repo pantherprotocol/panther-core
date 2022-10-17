@@ -1,3 +1,7 @@
+import assert from 'assert';
+
+import _ from 'lodash';
+
 import {
     MerkleProof,
     TriadMerkleTree,
@@ -5,11 +9,9 @@ import {
     createTriadMerkleTree,
     readCommitmentsFromCommitmentLog,
 } from '../../../src/other/triad-merkle-tree';
+
 // @ts-ignore
 import {firstTree, secondTree, thirdTree} from './data/trees.js';
-
-import _ from 'lodash';
-import assert from 'assert';
 
 const ZERO_VALUE = BigInt(0);
 const TREE_DEPTH = 10;

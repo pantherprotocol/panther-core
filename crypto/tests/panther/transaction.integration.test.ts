@@ -1,20 +1,21 @@
-import {
-    bigIntToUint8Array,
-    uint8ArrayToBigInt,
-} from '../../src/utils/bigint-conversions';
-import {
-    deriveKeypairFromSignature,
-    generateRandomKeypair,
-    packPublicKey,
-} from '../../src/base/keypairs';
+import {babyjub} from 'circomlibjs';
+import {Wallet} from 'ethers';
+
 import {
     encryptMessage,
     generateEcdhSharedKey,
     decryptMessage,
 } from '../../src/base/encryption';
+import {
+    deriveKeypairFromSignature,
+    generateRandomKeypair,
+    packPublicKey,
+} from '../../src/base/keypairs';
 import {extractCipherKeyAndIvFromPackedPoint} from '../../src/panther/messages';
-import {babyjub} from 'circomlibjs';
-import {Wallet} from 'ethers';
+import {
+    bigIntToUint8Array,
+    uint8ArrayToBigInt,
+} from '../../src/utils/bigint-conversions';
 
 /*
 For the transaction flow details, please refer to MASP document:

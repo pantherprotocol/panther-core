@@ -1,20 +1,20 @@
 import {describe, expect} from '@jest/globals';
-import {
-    bigIntToUint8Array,
-    uint8ArrayToBigInt,
-} from '../../src/utils/bigint-conversions';
-import {
-    generateRandomKeypair,
-    packPublicKey,
-    SNARK_FIELD_SIZE,
-} from '../../src/base/keypairs';
 
 import {
     generateEcdhSharedKey,
     encryptMessage,
     decryptMessage,
 } from '../../src/base/encryption';
+import {
+    generateRandomKeypair,
+    packPublicKey,
+    SNARK_FIELD_SIZE,
+} from '../../src/base/keypairs';
 import {extractCipherKeyAndIvFromPackedPoint} from '../../src/panther/messages';
+import {
+    bigIntToUint8Array,
+    uint8ArrayToBigInt,
+} from '../../src/utils/bigint-conversions';
 
 describe('Cryptographic operations', () => {
     const keypair1 = generateRandomKeypair();

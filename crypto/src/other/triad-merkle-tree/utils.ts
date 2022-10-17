@@ -1,11 +1,13 @@
-import {MerkleProof, TriadMerkleTree, poseidon2or3} from '.';
-
-import LZString from 'lz-string';
-import _ from 'lodash';
 import assert from 'assert';
-import {ethers} from 'ethers';
-import {NewCommitmentEvent} from '../../types/commitments';
 import fs from 'fs';
+
+import {ethers} from 'ethers';
+import _ from 'lodash';
+import LZString from 'lz-string';
+
+import {NewCommitmentEvent} from '../../types/commitments';
+
+import {MerkleProof, TriadMerkleTree, poseidon2or3} from '.';
 
 const LEAF_NODE_SIZE = 3;
 

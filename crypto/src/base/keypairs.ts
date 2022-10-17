@@ -7,6 +7,7 @@ import crypto from 'crypto';
 
 // @ts-ignore
 import {babyjub, poseidon} from 'circomlibjs';
+
 import {IKeypair, PrivateKey, PublicKey} from '../types/keypair';
 import {
     assertInSnarkField,

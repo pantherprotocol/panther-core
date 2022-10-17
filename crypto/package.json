@@ -18,9 +18,10 @@
     "test": "yarn jest",
     "test:watch": "jest --clearCache && jest --watch",
     "tmt:build": "ts-node ./src/triad-merkle-tree/scripts/build.ts",
-    "lint": "yarn run lint:eslint && yarn run prettier:list-different",
-    "lint:eslint": "yarn eslint --max-warnings 0",
-    "lint:fix": "yarn lint:eslint --fix",
+    "lint": "yarn lint:ts && yarn run prettier:list-different",
+    "lint:eslint": "eslint --max-warnings 0",
+    "lint:ts": "yarn lint:eslint .",
+    "lint:fix": "eslint \"./**/*.{ts,tsx}\" --fix",
     "prettier:check": "cd .. && yarn prettier --check crypto",
     "prettier:fix": "cd .. && yarn prettier --write crypto",
     "prettier:list-different": "cd .. && yarn prettier --list-different crypto"

@@ -1,14 +1,11 @@
-// @ts-ignore
-
-// @ts-ignore
-import {ZqField} from 'ffjavascript';
 import assert from 'assert';
-import {ethers} from 'ethers';
 import fs from 'fs';
-// @ts-ignore
-import {groth16} from 'snarkjs';
-// @ts-ignore
+
 import {poseidon} from 'circomlibjs';
+import {ethers} from 'ethers';
+import {ZqField} from 'ffjavascript';
+import {groth16} from 'snarkjs';
+
 import {
     TriadMerkleTree,
     generateMerkleProof,
@@ -16,10 +13,10 @@ import {
     triadTreeMerkleProofToPathIndices,
 } from '../other/triad-merkle-tree';
 import {bigIntToBuffer, bufferToBigInt} from '../utils/bigint-conversions';
+
 import {sha256} from './hashes';
 import {builder} from './witness_calculator';
 
-// @ts-ignore
 export {groth16} from 'snarkjs';
 export type PackedProof = {a: any; b: any; c: any; inputs: any};
 export type FullProof = {proof: any; publicSignals: any};

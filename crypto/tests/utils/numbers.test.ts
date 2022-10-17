@@ -1,6 +1,7 @@
 import {describe, expect} from '@jest/globals';
-import {sumBigNumbers} from '../../src/utils/numbers';
 import {BigNumber} from 'ethers';
+
+import {sumBigNumbers} from '../../src/utils/numbers';
 
 describe('sumBigNumbers function tests', () => {
     it('should return the sum of array items only if the items are of types : Bignumber, number or bigint', () => {

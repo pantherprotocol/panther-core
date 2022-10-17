@@ -1,17 +1,18 @@
-import {bigIntToUint8Array} from '../../src/utils/bigint-conversions';
-import {
-    deriveKeypairFromSignature,
-    generateRandomKeypair,
-    packPublicKey,
-} from '../../src/base/keypairs';
+import {ethers} from 'ethers';
+
 import {
     encryptMessage,
     generateEcdhSharedKey,
     decryptMessage,
 } from '../../src/base/encryption';
-import {IKeypair} from '../../src/types/keypair';
+import {
+    deriveKeypairFromSignature,
+    generateRandomKeypair,
+    packPublicKey,
+} from '../../src/base/keypairs';
 import {extractCipherKeyAndIvFromPackedPoint} from '../../src/panther/messages';
-import {ethers} from 'ethers';
+import {IKeypair} from '../../src/types/keypair';
+import {bigIntToUint8Array} from '../../src/utils/bigint-conversions';
 
 describe('Message encryption and decryption', () => {
     it('expect decrypt message to be equal initial plain message', async () => {

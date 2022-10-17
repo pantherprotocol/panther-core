@@ -1,3 +1,6 @@
+import {poseidon} from 'circomlibjs';
+import {Signer} from 'ethers';
+
 import {
     deriveKeypairFromSignature,
     deriveChildPrivKeyFromRootPrivKey,
@@ -6,9 +9,6 @@ import {
     isChildPubKeyValid,
 } from '../base/keypairs';
 import {IKeypair, PrivateKey} from '../types/keypair';
-import {poseidon} from 'circomlibjs';
-import {Signer} from 'ethers';
-
 import {parseTxErrorMessage} from '../utils/errors';
 
 // generateSpendingChildKeypair generates child spending keypair (s', S')

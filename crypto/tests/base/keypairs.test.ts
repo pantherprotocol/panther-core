@@ -1,4 +1,7 @@
 import {describe, expect} from '@jest/globals';
+import {babyjub} from 'circomlibjs';
+import {Wallet} from 'ethers';
+
 import {
     SNARK_FIELD_SIZE,
     generateRandomKeypair,
@@ -10,8 +13,6 @@ import {
     isChildPubKeyValid,
     deriveChildPrivKeyFromRootPrivKey,
 } from '../../src/base/keypairs';
-import {babyjub} from 'circomlibjs';
-import {Wallet} from 'ethers';
 
 describe('Keychain', () => {
     const bigOne = BigInt(1);

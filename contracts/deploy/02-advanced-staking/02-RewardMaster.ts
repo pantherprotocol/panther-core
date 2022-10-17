@@ -7,7 +7,7 @@ import {
     getContractEnvAddress,
     verifyUserConsentOnProd,
 } from '../../lib/deploymentHelpers';
-import {isPolygonOrMumbai} from '../../lib/checkNetwork';
+import {isLocal, isPolygonOrMumbai} from '../../lib/checkNetwork';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
@@ -20,7 +20,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     let pool: string;
 
-    if (isPolygonOrMumbai(hre)) {
+    if (isPolygonOrMumbai(hre) || isLocal(hre)) {
         pool = await getContractAddress(
             hre,
             'MaticRewardPool',

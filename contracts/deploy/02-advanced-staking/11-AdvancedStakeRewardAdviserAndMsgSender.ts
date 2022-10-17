@@ -5,13 +5,12 @@ import {
     getContractAddress,
     getContractEnvAddress,
 } from '../../lib/deploymentHelpers';
+import {isPolygonOrMumbai} from '../../lib/checkNetwork';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    const {name: network} = hre.network;
     if (
-        // Deployment on these networks supported only
-        network != 'mainnet' &&
-        network != 'goerli'
+        // Deployment on Polygon or Mumbai networks supported only
+        !isPolygonOrMumbai(hre)
     ) {
         console.log(
             'Skip AdvancedStakeRewardAdviserAndMsgSender deployment...',

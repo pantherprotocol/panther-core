@@ -7,6 +7,11 @@ import {
     getContractEnvAddress,
     verifyUserConsentOnProd,
 } from '../../lib/deploymentHelpers';
+import {
+    isLocal,
+    isMainnetOrGoerli,
+    isPolygonOrMumbai,
+} from '../../lib/checkNetwork';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
@@ -18,7 +23,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
 
-    if (hre.network.name == 'polygon' || hre.network.name == 'mumbai') {
+    if (isPolygonOrMumbai(hre) || isLocal(hre)) {
         if (reuseEnvAddress(hre, 'MATIC_REWARD_POOL')) return;
 
         await deploy('MaticRewardPool', {
@@ -27,7 +32,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             log: true,
             autoMine: true,
         });
-    } else {
+    }
+
+    if (isMainnetOrGoerli(hre)) {
         if (reuseEnvAddress(hre, 'REWARD_POOL')) return;
 
         const vestingPools = await getContractAddress(

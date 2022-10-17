@@ -49,3 +49,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 export default func;
 
 func.tags = ['classic-staking', 'stake-reward-controller'];
+func.dependencies = ['check-params'];

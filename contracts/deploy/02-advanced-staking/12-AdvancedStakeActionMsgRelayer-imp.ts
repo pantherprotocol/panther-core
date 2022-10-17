@@ -4,11 +4,16 @@ import {
     getContractAddress,
     getContractEnvAddress,
 } from '../../lib/deploymentHelpers';
-import resources from './resources.json';
 import {verifyUserConsentOnProd} from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+    const {
+        deployments: {deploy},
+        getNamedAccounts,
+    } = hre;
+    const {deployer} = await getNamedAccounts();
     const {name: network} = hre.network;
+
     if (
         // Deployment on these networks supported only
         network != 'polygon' &&
@@ -19,12 +24,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         );
         return;
     }
-
-    const {
-        deployments: {deploy},
-        getNamedAccounts,
-    } = hre;
-    const {deployer} = await getNamedAccounts();
+    console.log(
+        `Deploying AdvancedStakeActionMsgRelayer_Implementation on ${hre.network.name}...`,
+    );
+    await verifyUserConsentOnProd(hre, deployer);
 
     const rewardMaster = await getContractAddress(
         hre,
@@ -35,8 +38,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         hre,
         'ADVANCED_STAKE_REWARD_ADVISER_AND_MSG_SENDER',
     );
-    const fxChild =
-        resources.addresses.fxChild[network as 'polygon' | 'mumbai'];
+    const fxChild = getContractEnvAddress(hre, 'FX_CHILD');
 
     if (!msgSender) {
         console.log(
@@ -44,11 +46,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         );
         return;
     }
-
-    console.log(
-        `Deploying AdvancedStakeActionMsgRelayer_Implementation on ${hre.network.name}...`,
-    );
-    await verifyUserConsentOnProd(hre, deployer);
 
     console.log('rewardMaster', rewardMaster);
     console.log('msgSender', msgSender);
@@ -65,4 +62,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 export default func;
 
 func.tags = ['bridge', 'msg-relayer-imp'];
-func.dependencies = ['msg-relayer-proxy', 'reward-master'];
+func.dependencies = ['check-params', 'msg-relayer-proxy', 'reward-master'];

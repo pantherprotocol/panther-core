@@ -61,4 +61,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 export default func;
 
 func.tags = ['bridge', 'msg-relayer-upgrade'];
-func.dependencies = ['msg-relayer-imp'];
+func.dependencies = ['check-params', 'msg-relayer-imp'];

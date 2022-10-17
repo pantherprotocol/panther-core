@@ -5,8 +5,6 @@ import {
     getContractAddress,
     getContractEnvAddress,
 } from '../../lib/deploymentHelpers';
-import resources from './resources.json';
-import {verifyUserConsentOnProd} from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {name: network} = hre.network;
@@ -39,19 +37,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         hre,
         'ADVANCED_STAKE_ACTION_MSG_RELAYER_PROXY',
     );
-    const fxRoot = resources.addresses.fxRoot[network as 'mainnet' | 'goerli'];
+    const fxRoot = getContractEnvAddress(hre, 'FX_ROOT');
 
     if (!msgRelayerProxy) {
         console.log(
-            'message relayer proxy is not defined, skip AdvancedStakeRewardAdviserAndMsgSender deployment...',
+            'message relayer proxy is not defined, skip message sender deployment...',
         );
         return;
     }
 
-    console.log(
-        `Deploying AdvancedStakeRewardAdviserAndMsgSender on ${hre.network.name}...`,
-    );
-    await verifyUserConsentOnProd(hre, deployer);
+    console.log('deploying message relayer implementation...');
 
     console.log('rewardMaster', rewardMaster);
     console.log('msgRelayerProxy', msgRelayerProxy);
@@ -68,4 +63,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 export default func;
 
 func.tags = ['bridge', 'msg-sender'];
-func.dependencies = ['reward-master'];
+func.dependencies = ['check-params', 'reward-master'];

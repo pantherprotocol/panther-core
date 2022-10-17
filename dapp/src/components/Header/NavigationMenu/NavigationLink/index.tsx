@@ -6,10 +6,11 @@ import {Link, useHistory} from 'react-router-dom';
 
 import {SafeLink} from '../../../Common/links';
 
-export default function NavigationLink(props: {
-    to: string;
-    children: string;
-}): React.ReactElement {
+import {NavigationLinkProps} from './NavigationLink.interface';
+
+export default function NavigationLink(
+    props: NavigationLinkProps,
+): React.ReactElement {
     const {children, to} = props;
     const history = useHistory();
     const {location} = history;

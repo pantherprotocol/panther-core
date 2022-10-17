@@ -1,5 +1,5 @@
 import {describe, expect} from '@jest/globals';
-import {parseTxErrorMessage} from '../lib/errors';
+import {parseTxErrorMessage} from '../../src/utils/errors';
 
 describe('Transaction error parsing', () => {
     beforeEach(() => {

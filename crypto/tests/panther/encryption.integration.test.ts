@@ -1,16 +1,16 @@
-import {bigIntToUint8Array} from '../src/bigint-conversions';
+import {bigIntToUint8Array} from '../../src/utils/bigint-conversions';
 import {
     deriveKeypairFromSignature,
     generateRandomKeypair,
     packPublicKey,
-} from '../src/keychain';
+} from '../../src/base/keypairs';
 import {
     encryptMessage,
     generateEcdhSharedKey,
     decryptMessage,
-} from '../src/message-encryption';
-import {IKeypair} from '../src/types/keypair';
-import {extractCipherKeyAndIvFromPackedPoint} from '../src/sdk/message-encryption';
+} from '../../src/base/encryption';
+import {IKeypair} from '../../src/types/keypair';
+import {extractCipherKeyAndIvFromPackedPoint} from '../../src/panther/messages';
 import {ethers} from 'ethers';
 
 describe('Message encryption and decryption', () => {

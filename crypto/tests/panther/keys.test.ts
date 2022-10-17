@@ -1,13 +1,14 @@
 import {describe, expect} from '@jest/globals';
+
 import {
     deriveKeypairFromSignature,
     generateRandomInBabyJubSubField,
     SNARK_FIELD_SIZE,
-} from '../../lib/keychain';
+} from '../../src/base/keypairs';
 import {
     deriveRootKeypairs,
     generateSpendingChildKeypair,
-} from '../../src/sdk/keychain';
+} from '../../src/panther/keys';
 import {IKeypair} from '../../lib/types/keypair';
 import {Wallet} from 'ethers';
 

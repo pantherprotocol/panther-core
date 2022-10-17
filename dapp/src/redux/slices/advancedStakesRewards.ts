@@ -1,6 +1,6 @@
 import {Web3Provider} from '@ethersproject/providers';
-import {sumBigNumbers} from '@panther-core/crypto/lib/numbers';
 import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
+import {sumBigNumbers} from '@panther-core/crypto/lib/utils/numbers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {poseidon} from 'circomlibjs';

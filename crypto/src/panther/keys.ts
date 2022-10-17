@@ -4,12 +4,12 @@ import {
     deriveKeypairFromSeed,
     deriveChildPubKeyFromRootPubKey,
     isChildPubKeyValid,
-} from '../keychain';
+} from '../base/keypairs';
 import {IKeypair, PrivateKey} from '../types/keypair';
 import {poseidon} from 'circomlibjs';
 import {Signer} from 'ethers';
 
-import {parseTxErrorMessage} from '../errors';
+import {parseTxErrorMessage} from '../utils/errors';
 
 // generateSpendingChildKeypair generates child spending keypair (s', S')
 // using root spending private key and random scalar r as input.

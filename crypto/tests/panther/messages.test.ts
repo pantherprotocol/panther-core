@@ -2,7 +2,7 @@ import {describe, expect} from '@jest/globals';
 import {
     generateRandomKeypair,
     generateRandomInBabyJubSubField,
-} from '../../src/keychain';
+} from '../../src/base/keypairs';
 
 import {
     CIPHERTEXT_MSG_SIZE,
@@ -10,7 +10,7 @@ import {
     encryptRandomSecret,
     PACKED_PUB_KEY_SIZE,
     sliceCipherMsg,
-} from '../../src/sdk/message-encryption';
+} from '../../src/panther/messages';
 
 describe('Random secret encryption', () => {
     const rootReadingKeypair = generateRandomKeypair();

@@ -13,7 +13,7 @@ import {BytesLike} from 'ethers/lib/ethers';
 import {
     deriveChildPrivKeyFromRootPrivKey,
     generateRandomInBabyJubSubField,
-} from '@panther-core/crypto/lib/keychain';
+} from '@panther-core/crypto/lib/base/keypairs';
 import crypto from 'crypto';
 import {utils} from 'ethers';
 import {bigintToBytes32} from '../../lib/conversions';
@@ -22,7 +22,7 @@ import {deployMerkleProofVerifierTester} from './helpers/merkleProofVerifierTest
 import {
     bigIntToBuffer,
     uint8ArrayToBigInt,
-} from '@panther-core/crypto/lib/bigint-conversions';
+} from '@panther-core/crypto/lib/utils/bigint-conversions';
 
 describe('MerkleProofVerifier', () => {
     let merkleProofVerifierTester: MerkleProofVerifierTester;

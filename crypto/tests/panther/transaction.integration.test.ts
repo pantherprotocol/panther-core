@@ -1,18 +1,18 @@
 import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
-} from '../src/bigint-conversions';
+} from '../../src/utils/bigint-conversions';
 import {
     deriveKeypairFromSignature,
     generateRandomKeypair,
     packPublicKey,
-} from '../src/keychain';
+} from '../../src/base/keypairs';
 import {
     encryptMessage,
     generateEcdhSharedKey,
     decryptMessage,
-} from '../src/message-encryption';
-import {extractCipherKeyAndIvFromPackedPoint} from '../src/sdk/message-encryption';
+} from '../../src/base/encryption';
+import {extractCipherKeyAndIvFromPackedPoint} from '../../src/panther/messages';
 import {babyjub} from 'circomlibjs';
 import {Wallet} from 'ethers';
 

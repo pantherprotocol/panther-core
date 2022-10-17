@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import {expect} from 'chai';
 import {deployMockCommitmentGenerator} from './helpers/mockCommitmentGenerator';
-import {poseidon2or3} from '@panther-core/crypto/lib/triad-merkle-tree';
+import {poseidon2or3} from '@panther-core/crypto/lib/other/triad-merkle-tree';
 import {BigNumber} from 'ethers';
 
 describe('CommitmentGenerator contract', function () {

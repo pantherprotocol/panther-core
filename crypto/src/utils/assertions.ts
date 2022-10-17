@@ -1,6 +1,6 @@
 import {babyjub} from 'circomlibjs';
 
-import {SNARK_FIELD_SIZE} from './keychain';
+import {SNARK_FIELD_SIZE} from '../base/keypairs';
 
 export function assert(condition: boolean, message: string) {
     if (!condition) {

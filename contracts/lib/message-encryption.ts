@@ -3,21 +3,21 @@ import {
     derivePublicKeyFromPrivate,
     generateRandomInBabyJubSubField,
     deriveChildPubKeyFromRootPubKey,
-} from '@panther-core/crypto/lib/keychain';
-import {deriveSpendingChildKeypair} from '@panther-core/crypto/lib/sdk/keychain';
+} from '@panther-core/crypto/lib/base/keypairs';
+import {deriveSpendingChildKeypair} from '@panther-core/crypto/lib/panther/keys';
 import {PublicKey, IKeypair} from '@panther-core/crypto/lib/types/keypair';
 
-import {generateEcdhSharedKey} from '@panther-core/crypto/lib/message-encryption';
+import {generateEcdhSharedKey} from '@panther-core/crypto/lib/base/encryption';
 
 import {
     encryptRandomSecret,
     decryptRandomSecret,
-} from '@panther-core/crypto/lib/sdk/message-encryption';
+} from '@panther-core/crypto/lib/panther/messages';
 
 import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
-} from '@panther-core/crypto/lib/bigint-conversions';
+} from '@panther-core/crypto/lib/utils/bigint-conversions';
 
 // Usage flow of this class:
 // 1. Constructor

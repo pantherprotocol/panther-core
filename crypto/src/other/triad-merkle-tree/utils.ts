@@ -4,7 +4,7 @@ import LZString from 'lz-string';
 import _ from 'lodash';
 import assert from 'assert';
 import {ethers} from 'ethers';
-import {NewCommitmentEvent} from '../types/commitments';
+import {NewCommitmentEvent} from '../../types/commitments';
 import fs from 'fs';
 
 const LEAF_NODE_SIZE = 3;

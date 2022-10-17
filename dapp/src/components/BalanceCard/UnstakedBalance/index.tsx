@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
-import {parseTxErrorMessage} from '@panther-core/crypto/lib/errors';
-import {deriveRootKeypairs} from '@panther-core/crypto/lib/sdk/keychain';
+import {deriveRootKeypairs} from '@panther-core/crypto/lib/panther/keys';
+import {parseTxErrorMessage} from '@panther-core/crypto/lib/utils/errors';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 

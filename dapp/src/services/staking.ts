@@ -1,14 +1,14 @@
 import type {TypedDataDomain} from '@ethersproject/abstract-signer';
 import type {TransactionResponse} from '@ethersproject/providers';
 import {JsonRpcSigner} from '@ethersproject/providers';
-import {bigintToBytes32} from '@panther-core/crypto/lib/bigint-conversions';
 import {
     deriveChildPubKeyFromRootPubKey,
     generateRandomInBabyJubSubField,
     isChildPubKeyValid,
-} from '@panther-core/crypto/lib/keychain';
-import {encryptRandomSecret} from '@panther-core/crypto/lib/sdk/message-encryption';
+} from '@panther-core/crypto/lib/base/keypairs';
+import {encryptRandomSecret} from '@panther-core/crypto/lib/panther/messages';
 import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
+import {bigintToBytes32} from '@panther-core/crypto/lib/utils/bigint-conversions';
 import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
 import type {ContractTransaction} from 'ethers';

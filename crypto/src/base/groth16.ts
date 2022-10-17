@@ -14,9 +14,9 @@ import {
     generateMerkleProof,
     triadTreeMerkleProofToPathElements,
     triadTreeMerkleProofToPathIndices,
-} from './triad-merkle-tree';
-import {bigIntToBuffer, bufferToBigInt} from './bigint-conversions';
-import {sha256} from './hash';
+} from '../other/triad-merkle-tree';
+import {bigIntToBuffer, bufferToBigInt} from '../utils/bigint-conversions';
+import {sha256} from './hashes';
 import {builder} from './witness_calculator';
 
 // @ts-ignore

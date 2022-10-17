@@ -16,9 +16,9 @@ import {UtxoRecipientData, UtxoSenderData} from '../../lib/message-encryption';
 import {
     bigIntToBuffer,
     uint8ArrayToBigInt,
-} from '@panther-core/crypto/lib/bigint-conversions';
+} from '@panther-core/crypto/lib/utils/bigint-conversions';
 
-import {deriveKeypairFromSeed} from '@panther-core/crypto/lib/keychain';
+import {deriveKeypairFromSeed} from '@panther-core/crypto/lib/base/keypairs';
 
 import {PantherPoolV0AndZAssetRegistryAndVaultTester} from '../../types/contracts';
 import {deployPantherPoolV0AndZAssetRegistryAndVaultTester} from './helpers/pantherPoolV0AndZAssetRegistryAndVaultTester';

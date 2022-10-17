@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 
 import {Box, Card, Typography} from '@mui/material';
-import {parseTxErrorMessage} from '@panther-core/crypto/lib/errors';
+import {parseTxErrorMessage} from '@panther-core/crypto/lib/utils/errors';
 import {useWeb3React} from '@web3-react/core';
 import {ContractTransaction} from 'ethers/lib/ethers';
 

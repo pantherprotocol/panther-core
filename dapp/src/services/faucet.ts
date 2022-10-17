@@ -1,4 +1,4 @@
-import {parseTxErrorMessage} from '@panther-core/crypto/lib/errors';
+import {parseTxErrorMessage} from '@panther-core/crypto/lib/utils/errors';
 import {BigNumber, Contract, utils} from 'ethers';
 import {ContractTransaction} from 'ethers/lib/ethers';
 

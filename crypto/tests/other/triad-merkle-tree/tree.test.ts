@@ -4,7 +4,7 @@ import {
     poseidon2or3,
     createTriadMerkleTree,
     readCommitmentsFromCommitmentLog,
-} from '../../triad-merkle-tree';
+} from '../../../src/other/triad-merkle-tree';
 // @ts-ignore
 import {firstTree, secondTree, thirdTree} from './data/trees.js';
 
@@ -151,7 +151,7 @@ describe('Testing Triad Tree with provided examples', () => {
 
         beforeAll(() => {
             const commitments = readCommitmentsFromCommitmentLog(
-                'src/triad-merkle-tree/__tests__/data/commitmentsLog-test-data.json',
+                'tests/other/triad-merkle-tree/data/commitmentsLog-test-data.json',
             );
             tree = createTriadMerkleTree(
                 15,
@@ -221,7 +221,7 @@ describe('Testing Triad Tree with provided examples', () => {
             for (let index = 0; index < 2 ** 3; index++) {
                 firstTree.insertBatch([BigInt(1), BigInt(1), BigInt(1)]);
             }
-            const path = 'src/triad-merkle-tree/__tests__/data/tree_zip';
+            const path = 'tests/other/triad-merkle-tree/data/tree_zip';
 
             firstTree.save(path, true);
             secondTree = TriadMerkleTree.loadFromFile(path, true);

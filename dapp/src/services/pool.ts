@@ -1,17 +1,17 @@
 import {
-    bytesToHexString32,
-    bigintToBytes32,
-    bigintToBytes,
-} from '@panther-core/crypto/lib/bigint-conversions';
-import {parseTxErrorMessage} from '@panther-core/crypto/lib/errors';
-import {deriveSpendingChildKeypair} from '@panther-core/crypto/lib/sdk/keychain';
-import {decryptRandomSecret} from '@panther-core/crypto/lib/sdk/message-encryption';
-import {
     generateMerkleProof,
     TriadMerkleTree,
     triadTreeMerkleProofToPathElements,
-} from '@panther-core/crypto/lib/triad-merkle-tree';
+} from '@panther-core/crypto/lib/other/triad-merkle-tree';
+import {deriveSpendingChildKeypair} from '@panther-core/crypto/lib/panther/keys';
+import {decryptRandomSecret} from '@panther-core/crypto/lib/panther/messages';
 import {IKeypair, PrivateKey} from '@panther-core/crypto/lib/types/keypair';
+import {
+    bytesToHexString32,
+    bigintToBytes32,
+    bigintToBytes,
+} from '@panther-core/crypto/lib/utils/bigint-conversions';
+import {parseTxErrorMessage} from '@panther-core/crypto/lib/utils/errors';
 import poseidon from 'circomlibjs/src/poseidon';
 import {utils, Contract, BigNumber} from 'ethers';
 import {ContractTransaction} from 'ethers/lib/ethers';

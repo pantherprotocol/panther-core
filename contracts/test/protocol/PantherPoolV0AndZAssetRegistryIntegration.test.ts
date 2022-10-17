@@ -22,7 +22,7 @@ import {UtxoRecipientData, UtxoSenderData} from '../../lib/message-encryption';
 import {
     bigIntToBuffer,
     uint8ArrayToBigInt,
-} from '@panther-core/crypto/lib/bigint-conversions';
+} from '@panther-core/crypto/lib/utils/bigint-conversions';
 
 import crypto from 'crypto';
 import {BigNumber} from 'ethers';
@@ -31,7 +31,7 @@ import {
     deriveChildPrivKeyFromRootPrivKey,
     derivePublicKeyFromPrivate,
     generateRandomInBabyJubSubField,
-} from '@panther-core/crypto/lib/keychain';
+} from '@panther-core/crypto/lib/base/keypairs';
 
 import {getExitCommitment} from './data/depositAndFakeExitSample';
 

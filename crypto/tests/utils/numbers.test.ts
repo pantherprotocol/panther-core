@@ -1,5 +1,5 @@
 import {describe, expect} from '@jest/globals';
-import {sumBigNumbers} from '../src/numbers';
+import {sumBigNumbers} from '../../src/utils/numbers';
 import {BigNumber} from 'ethers';
 
 describe('sumBigNumbers function tests', () => {

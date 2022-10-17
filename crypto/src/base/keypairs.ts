@@ -7,12 +7,12 @@ import crypto from 'crypto';
 
 // @ts-ignore
 import {babyjub, poseidon} from 'circomlibjs';
-import {IKeypair, PrivateKey, PublicKey} from './types/keypair';
+import {IKeypair, PrivateKey, PublicKey} from '../types/keypair';
 import {
     assertInSnarkField,
     assertInBabyJubJubSubOrder,
     assert,
-} from './assertions';
+} from '../utils/assertions';
 
 // ALT_BN128 (also known as BN254) order and BabyJubJub field prime
 export const SNARK_FIELD_SIZE = BigInt(

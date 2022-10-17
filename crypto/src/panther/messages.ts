@@ -3,18 +3,18 @@ import {
     uint8ArrayToBigInt,
     bigintToBytes32,
     bigintToBytes,
-} from '../bigint-conversions';
+} from '../utils/bigint-conversions';
 import {
     packPublicKey,
     generateRandomInBabyJubSubField,
     derivePublicKeyFromPrivate,
     unpackPublicKey,
-} from '../keychain';
+} from '../base/keypairs';
 import {
     decryptMessage,
     encryptMessage,
     generateEcdhSharedKey,
-} from '../message-encryption';
+} from '../base/encryption';
 import {PublicKey, PrivateKey, PackedEcdhSharedKey} from '../types/keypair';
 import {ICiphertext} from '../types/message';
 

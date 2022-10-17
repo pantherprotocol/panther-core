@@ -9,7 +9,7 @@ import {
     generateRandomInBabyJubSubField,
     isChildPubKeyValid,
     deriveChildPrivKeyFromRootPrivKey,
-} from '../lib/keychain';
+} from '../../src/base/keypairs';
 import {babyjub} from 'circomlibjs';
 import {Wallet} from 'ethers';
 

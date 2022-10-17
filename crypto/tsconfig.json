@@ -25,6 +25,6 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src"],
+  "include": ["src", "tests/other/__tests__"],
   "exclude": ["node_modules", "jest.config.js"]
 }

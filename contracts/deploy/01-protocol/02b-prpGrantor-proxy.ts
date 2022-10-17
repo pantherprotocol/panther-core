@@ -1,7 +1,10 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
-import {verifyUserConsentOnProd} from '../../lib/deploymentHelpers';
+import {
+    reuseEnvAddress,
+    verifyUserConsentOnProd,
+} from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {
@@ -11,6 +14,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     } = hre;
     const {deployer} = await getNamedAccounts();
     await verifyUserConsentOnProd(hre, deployer);
+    if (reuseEnvAddress(hre, 'PRP_GRANTOR_PROXY')) return;
 
     await deploy('PrpGrantor_Proxy', {
         contract: 'EIP173Proxy',

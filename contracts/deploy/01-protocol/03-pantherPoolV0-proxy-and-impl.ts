@@ -1,12 +1,16 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
+import {verifyUserConsentOnProd} from '../../lib/deploymentHelpers';
+
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {
         deployments: {deploy, get},
         getNamedAccounts,
     } = hre;
     const {deployer} = await getNamedAccounts();
+    await verifyUserConsentOnProd(hre, deployer);
+
     const multisig =
         process.env.DAO_MULTISIG_ADDRESS ||
         (await getNamedAccounts()).multisig ||

@@ -7,12 +7,15 @@ import {
     getPoseidonT6Contract,
 } from '../../lib/poseidonBuilder';
 
+import {verifyUserConsentOnProd} from '../../lib/deploymentHelpers';
+
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {
         deployments: {deploy},
         getNamedAccounts,
     } = hre;
     const {deployer} = await getNamedAccounts();
+    await verifyUserConsentOnProd(hre, deployer);
 
     const PoseidonT3 = await getPoseidonT3Contract();
     await deploy('PoseidonT3', {

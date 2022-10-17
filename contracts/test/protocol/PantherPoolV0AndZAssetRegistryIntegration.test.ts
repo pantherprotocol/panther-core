@@ -29,9 +29,9 @@ import {BigNumber} from 'ethers';
 import {
     deriveKeypairFromSeed,
     deriveChildPrivKeyFromRootPrivKey,
-    derivePublicKeyFromPrivate,
-    generateRandomInBabyJubSubField,
+    derivePubKeyFromPrivKey,
 } from '@panther-core/crypto/lib/base/keypairs';
+import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
 
 import {getExitCommitment} from './data/depositAndFakeExitSample';
 
@@ -728,7 +728,7 @@ describe('PantherPoolV0', () => {
                 ); // spender derived private key
 
                 // This public key must be used in panther-core V1
-                const SpenderDerivedPubKey = derivePublicKeyFromPrivate(sr); // S = sB S' = srB
+                const SpenderDerivedPubKey = derivePubKeyFromPrivKey(sr); // S = sB S' = srB
                 const SpenderDerivedPubKey_from_chain =
                     await poolV0.testGeneratePublicSpendingKey(sr as bigint);
                 expect(

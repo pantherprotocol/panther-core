@@ -15,15 +15,15 @@ import {
 import {bigIntToBuffer, bufferToBigInt} from '../utils/bigint-conversions';
 
 import {sha256} from './hashes';
-import {builder} from './witness_calculator';
+import {builder} from './witness-calculator';
 
 export {groth16} from 'snarkjs';
 export type PackedProof = {a: any; b: any; c: any; inputs: any};
 export type FullProof = {proof: any; publicSignals: any};
-export const BN254_FIELD_SIZE = BigInt(
+export const SNARK_FIELD_SIZE = BigInt(
     '21888242871839275222246405745257275088548364400416034343698204186575808495617',
 );
-export const Fq = new ZqField(BN254_FIELD_SIZE);
+export const Fq = new ZqField(SNARK_FIELD_SIZE);
 
 export const MINT_MSG_TYPE = [
     {name: 'to', type: 'address'},
@@ -76,8 +76,8 @@ export const extractSecretsPair = (
 
 export function convertToSecretPair(s: string): SecretPair {
     return [
-        BigInt('0x' + s.slice(2, 66)) % BN254_FIELD_SIZE,
-        BigInt('0x' + s.slice(66, 130)) % BN254_FIELD_SIZE,
+        BigInt('0x' + s.slice(2, 66)) % SNARK_FIELD_SIZE,
+        BigInt('0x' + s.slice(66, 130)) % SNARK_FIELD_SIZE,
     ];
 }
 
@@ -112,7 +112,7 @@ export const preparePublicInput = (
                     bigIntToBuffer(root),
                 ]),
             ),
-        ) % BN254_FIELD_SIZE;
+        ) % SNARK_FIELD_SIZE;
 
     return {
         nullifier,
@@ -251,7 +251,7 @@ export const packToSolidityProof = (fullProof: any): PackedProof => {
         c: replica.pi_c.slice(0, 2),
         inputs: publicSignals.map((x: any) => {
             x = BigInt(x);
-            return (x % BN254_FIELD_SIZE).toString();
+            return (x % SNARK_FIELD_SIZE).toString();
         }),
     };
 };

@@ -2,14 +2,11 @@ import {describe, expect} from '@jest/globals';
 
 import {
     generateEcdhSharedKey,
-    encryptMessage,
-    decryptMessage,
+    encryptPlainText,
+    decryptCipherText,
 } from '../../src/base/encryption';
-import {
-    generateRandomKeypair,
-    packPublicKey,
-    SNARK_FIELD_SIZE,
-} from '../../src/base/keypairs';
+import {generateRandomKeypair, packPublicKey} from '../../src/base/keypairs';
+import {SNARK_FIELD_SIZE} from '../../src/base/field-operations';
 import {extractCipherKeyAndIvFromPackedPoint} from '../../src/panther/messages';
 import {
     bigIntToUint8Array,
@@ -32,7 +29,7 @@ describe('Cryptographic operations', () => {
     const plaintext = generateRandomKeypair().privateKey;
     const {iv: ivSpending, cipherKey: ckSpending} =
         extractCipherKeyAndIvFromPackedPoint(packPublicKey(ecdhSharedKey12));
-    const ciphertext = encryptMessage(
+    const ciphertext = encryptPlainText(
         bigIntToUint8Array(plaintext),
         ckSpending,
         ivSpending,
@@ -42,7 +39,7 @@ describe('Cryptographic operations', () => {
         extractCipherKeyAndIvFromPackedPoint(packPublicKey(ecdhSharedKey21));
 
     const decryptedCiphertext = uint8ArrayToBigInt(
-        decryptMessage(ciphertext, ckReading, ivReading),
+        decryptCipherText(ciphertext, ckReading, ivReading),
     );
 
     describe('Private key', () => {

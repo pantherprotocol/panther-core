@@ -3,16 +3,22 @@ import {babyjub} from 'circomlibjs';
 import {Wallet} from 'ethers';
 
 import {
-    SNARK_FIELD_SIZE,
     generateRandomKeypair,
-    deriveKeypairFromSignature,
-    derivePrivateKeyFromSignature,
-    extractSecretsPair,
-    derivePublicKeyFromPrivate,
-    generateRandomInBabyJubSubField,
+    derivePubKeyFromPrivKey,
     isChildPubKeyValid,
     deriveChildPrivKeyFromRootPrivKey,
 } from '../../src/base/keypairs';
+
+import {
+    SNARK_FIELD_SIZE,
+    generateRandomInBabyJubSubField,
+} from '../../src/base/field-operations';
+
+import {
+    deriveKeypairFromSignature,
+    derivePrivKeyFromSignature,
+    extractSecretsPair,
+} from '../../src/panther/keys';
 
 describe('Keychain', () => {
     const bigOne = BigInt(1);
@@ -27,7 +33,7 @@ describe('Keychain', () => {
     describe('Seed', () => {
         it('should be within SNARK_FIELD_SIZE', () => {
             expect(
-                derivePrivateKeyFromSignature(signature) < SNARK_FIELD_SIZE,
+                derivePrivKeyFromSignature(signature) < SNARK_FIELD_SIZE,
             ).toBeTruthy();
         });
     });
@@ -138,9 +144,9 @@ describe('Keychain', () => {
                 });
             });
             it('should throw error during generation of public key', () => {
-                expect(() =>
-                    derivePublicKeyFromPrivate(SNARK_FIELD_SIZE),
-                ).toThrow('privateKey is not in the BabyJubJub suborder');
+                expect(() => derivePubKeyFromPrivKey(SNARK_FIELD_SIZE)).toThrow(
+                    'privateKey is not in the BabyJubJub suborder',
+                );
             });
         });
 

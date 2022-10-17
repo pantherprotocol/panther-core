@@ -1,15 +1,15 @@
 import {
-    decryptMessage,
-    encryptMessage,
+    decryptCipherText,
+    encryptPlainText,
     generateEcdhSharedKey,
 } from '../base/encryption';
 import {
     packPublicKey,
-    generateRandomInBabyJubSubField,
-    derivePublicKeyFromPrivate,
+    derivePubKeyFromPrivKey,
     unpackPublicKey,
 } from '../base/keypairs';
-import {PublicKey, PrivateKey, PackedEcdhSharedKey} from '../types/keypair';
+import {generateRandomInBabyJubSubField} from '../base/field-operations';
+import {PublicKey, PrivateKey, ephemeralKeyPacked} from '../types/keypair';
 import {ICiphertext} from '../types/message';
 import {
     bigIntToUint8Array,
@@ -22,12 +22,12 @@ import {
 // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k
 export const PACKED_PUB_KEY_SIZE = 32;
 export const PRIV_KEY_SIZE = 32;
-export const CIPHERTEXT_MSG_SIZE = 32;
+export const CIPHERTEXT_MSG_TYPE_V1_SIZE = 32;
 
 // encryptRandomSecret creates a message with encrypted randomSecret
 // of the following format:
 // msg = [IV, packedR, ...encrypted(prolog, r)]
-export function encryptRandomSecret(
+export function encryptAndPackMessageTypeV1(
     randomSecret: bigint,
     rootReadingPubKey: PublicKey,
 ): string {
@@ -37,14 +37,14 @@ export function encryptRandomSecret(
         rootReadingPubKey,
     );
     const ephemeralPubKeyPacked = packPublicKey(ephemeralPubKey);
-    const ephemeralSharedPubKey = derivePublicKeyFromPrivate(ephemeralRandom);
+    const ephemeralSharedPubKey = derivePubKeyFromPrivKey(ephemeralRandom);
     const ephemeralSharedPubKeyPacked = packPublicKey(ephemeralSharedPubKey);
     const plaintext = bigintToBytes32(randomSecret).slice(2);
     const {cipherKey, iv} = extractCipherKeyAndIvFromPackedPoint(
         ephemeralPubKeyPacked,
     );
 
-    const ciphertext = encryptMessage(
+    const ciphertext = encryptPlainText(
         bigIntToUint8Array(BigInt('0x' + plaintext), PRIV_KEY_SIZE),
         cipherKey,
         iv,
@@ -63,25 +63,26 @@ export function encryptRandomSecret(
     return ephemeralSharedPubKeyPackedHex + dataHex;
 }
 
-export function decryptRandomSecret(
+export function unpackAndDecryptMessageTypeV1(
     ciphertextMsg: string,
     rootReadingPrivateKey: PrivateKey,
 ): bigint | undefined {
-    const [sharedKeyPacked, iCiphertext] = sliceCipherMsg(ciphertextMsg);
-    const ephemeralSharedPubKey = unpackPublicKey(sharedKeyPacked);
+    const [ephemeralKeyPacked, iCiphertext] =
+        unpackMessageTypeV1(ciphertextMsg);
+    const ephemeralKey = unpackPublicKey(ephemeralKeyPacked);
 
-    const ephemeralPubKey = generateEcdhSharedKey(
+    const ephemeralSharedKey = generateEcdhSharedKey(
         rootReadingPrivateKey,
-        ephemeralSharedPubKey,
+        ephemeralKey,
     );
 
     const {cipherKey, iv} = extractCipherKeyAndIvFromPackedPoint(
-        packPublicKey(ephemeralPubKey),
+        packPublicKey(ephemeralSharedKey),
     );
 
     let randomSecretUInt8;
     try {
-        randomSecretUInt8 = decryptMessage(iCiphertext, cipherKey, iv);
+        randomSecretUInt8 = decryptCipherText(iCiphertext, cipherKey, iv);
     } catch (error) {
         throw new Error(`Failed to get random secret ${error}`);
     }
@@ -95,7 +96,7 @@ export function decryptRandomSecret(
 }
 
 export function extractCipherKeyAndIvFromPackedPoint(
-    packedKey: PackedEcdhSharedKey,
+    packedKey: ephemeralKeyPacked,
 ): {
     cipherKey: Buffer;
     iv: Buffer;
@@ -106,8 +107,8 @@ export function extractCipherKeyAndIvFromPackedPoint(
     };
 }
 
-export function sliceCipherMsg(
-    ciphertextMsg: string,
+export function unpackMessageTypeV1(
+    ciphertextMessageTypeV1: string,
 ): [Uint8Array, ICiphertext] {
     /*
     struct CiphertextMsg {
@@ -119,35 +120,33 @@ export function sliceCipherMsg(
     https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k/edit#bookmark=id.vxygmc6485de
     */
     // sizes in Hex string:
-    const ephemeralPublicKeyWidth = PACKED_PUB_KEY_SIZE * 2;
-    const ciphertextWidth = CIPHERTEXT_MSG_SIZE * 2;
+    const ephemeralKeyWidth = PACKED_PUB_KEY_SIZE * 2;
+    const ciphertextWidth = CIPHERTEXT_MSG_TYPE_V1_SIZE * 2;
 
-    if (ciphertextMsg.length != ephemeralPublicKeyWidth + ciphertextWidth) {
-        throw `Message must be equal to ${
-            ephemeralPublicKeyWidth + ciphertextWidth
-        }`;
+    if (ciphertextMessageTypeV1.length != ephemeralKeyWidth + ciphertextWidth) {
+        throw `Message must be equal to ${ephemeralKeyWidth + ciphertextWidth}`;
     }
 
-    const packedEphemeralPubKeyHex = ciphertextMsg.slice(
+    const ephemeralKeyPackedHex = ciphertextMessageTypeV1.slice(
         0,
-        ephemeralPublicKeyWidth,
+        ephemeralKeyWidth,
     );
-    const packedEphemeralPubKey = bigIntToUint8Array(
-        BigInt('0x' + packedEphemeralPubKeyHex),
+    const ephemeralKeyPacked = bigIntToUint8Array(
+        BigInt('0x' + ephemeralKeyPackedHex),
         PACKED_PUB_KEY_SIZE,
     );
     console.debug(
-        `packedEphemeralPubKey: ${packedEphemeralPubKeyHex} with ${packedEphemeralPubKey.length} bytes`,
+        `packedEphemeralPubKey: ${ephemeralKeyPackedHex} with ${ephemeralKeyPacked.length} bytes`,
     );
 
-    const cipheredTextHex = ciphertextMsg.slice(ephemeralPublicKeyWidth);
+    const cipheredTextHex = ciphertextMessageTypeV1.slice(ephemeralKeyWidth);
     const cipheredText = bigIntToUint8Array(
         BigInt('0x' + cipheredTextHex),
-        CIPHERTEXT_MSG_SIZE,
+        CIPHERTEXT_MSG_TYPE_V1_SIZE,
     );
     console.debug(
         `cipheredText: ${cipheredTextHex} with ${cipheredText.length} bytes`,
     );
 
-    return [packedEphemeralPubKey, cipheredText];
+    return [ephemeralKeyPacked, cipheredText];
 }

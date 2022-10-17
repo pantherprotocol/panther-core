@@ -12,7 +12,7 @@ export function generateEcdhSharedKey(
     return babyjub.mulPointEscalar(publicKey, privateKey);
 }
 
-export function encryptMessage(
+export function encryptPlainText(
     plaintext: Uint8Array,
     cipherKey: Uint8Array,
     iv: Uint8Array,
@@ -28,7 +28,7 @@ export function encryptMessage(
     }
 }
 
-export function decryptMessage(
+export function decryptCipherText(
     ciphertext: ICiphertext,
     cipherKey: Uint8Array,
     iv: Uint8Array,

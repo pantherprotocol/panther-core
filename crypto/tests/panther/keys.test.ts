@@ -4,13 +4,13 @@ import {Wallet} from 'ethers';
 
 import {IKeypair} from '../../lib/types/keypair';
 import {
-    deriveKeypairFromSignature,
-    generateRandomInBabyJubSubField,
     SNARK_FIELD_SIZE,
-} from '../../src/base/keypairs';
+    generateRandomInBabyJubSubField,
+} from '../../src/base/field-operations';
 import {
     deriveRootKeypairs,
     generateSpendingChildKeypair,
+    deriveKeypairFromSignature,
 } from '../../src/panther/keys';
 
 describe('Spending child keypair', () => {

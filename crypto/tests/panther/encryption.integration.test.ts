@@ -1,15 +1,12 @@
 import {ethers} from 'ethers';
 
 import {
-    encryptMessage,
+    encryptPlainText,
     generateEcdhSharedKey,
-    decryptMessage,
+    decryptCipherText,
 } from '../../src/base/encryption';
-import {
-    deriveKeypairFromSignature,
-    generateRandomKeypair,
-    packPublicKey,
-} from '../../src/base/keypairs';
+import {generateRandomKeypair, packPublicKey} from '../../src/base/keypairs';
+import {deriveKeypairFromSignature} from '../../src/panther/keys';
 import {extractCipherKeyAndIvFromPackedPoint} from '../../src/panther/messages';
 import {IKeypair} from '../../src/types/keypair';
 import {bigIntToUint8Array} from '../../src/utils/bigint-conversions';
@@ -43,7 +40,7 @@ describe('Message encryption and decryption', () => {
                 packPublicKey(spendingEcdhSharedKey),
             );
 
-        const ciphertext = encryptMessage(
+        const ciphertext = encryptPlainText(
             bigIntToUint8Array(secretRandom, 32),
             ckSpending,
             ivSpending,
@@ -54,7 +51,7 @@ describe('Message encryption and decryption', () => {
                 packPublicKey(readingEcdhSharedKey),
             );
 
-        const decryptedSecretRandom = decryptMessage(
+        const decryptedSecretRandom = decryptCipherText(
             ciphertext,
             ckReading,
             ivReading,

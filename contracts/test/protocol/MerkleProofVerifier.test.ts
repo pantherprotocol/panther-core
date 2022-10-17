@@ -10,10 +10,8 @@ import {poseidon, babyjub} from 'circomlibjs';
 import {TriadMerkleTree} from '../../lib/tree';
 import assert = require('assert');
 import {BytesLike} from 'ethers/lib/ethers';
-import {
-    deriveChildPrivKeyFromRootPrivKey,
-    generateRandomInBabyJubSubField,
-} from '@panther-core/crypto/lib/base/keypairs';
+import {deriveChildPrivKeyFromRootPrivKey} from '@panther-core/crypto/lib/base/keypairs';
+import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
 import crypto from 'crypto';
 import {utils} from 'ethers';
 import {bigintToBytes32} from '../../lib/conversions';

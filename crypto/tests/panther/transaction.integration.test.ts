@@ -2,15 +2,12 @@ import {babyjub} from 'circomlibjs';
 import {Wallet} from 'ethers';
 
 import {
-    encryptMessage,
+    encryptPlainText,
     generateEcdhSharedKey,
-    decryptMessage,
+    decryptCipherText,
 } from '../../src/base/encryption';
-import {
-    deriveKeypairFromSignature,
-    generateRandomKeypair,
-    packPublicKey,
-} from '../../src/base/keypairs';
+import {generateRandomKeypair, packPublicKey} from '../../src/base/keypairs';
+import {deriveKeypairFromSignature} from '../../src/panther/keys';
 import {extractCipherKeyAndIvFromPackedPoint} from '../../src/panther/messages';
 import {
     bigIntToUint8Array,
@@ -43,7 +40,7 @@ describe('Transaction integration test', () => {
         const {iv: ivSpending, cipherKey: ckSpending} =
             extractCipherKeyAndIvFromPackedPoint(packedK);
 
-        const C = encryptMessage(
+        const C = encryptPlainText(
             bigIntToUint8Array(BigInt('0x' + plainText)),
             ckSpending,
             ivSpending,
@@ -55,7 +52,7 @@ describe('Transaction integration test', () => {
         const {iv: ivReading, cipherKey: ckReading} =
             extractCipherKeyAndIvFromPackedPoint(packedDerivedK);
         const decryptedText = uint8ArrayToBigInt(
-            decryptMessage(C, ckReading, ivReading),
+            decryptCipherText(C, ckReading, ivReading),
         );
         const sPrime = babyjub.mulPointEscalar(rR.publicKey, sS.privateKey);
 

@@ -1,17 +1,17 @@
 import {babyjub} from 'circomlibjs';
 import {
-    derivePublicKeyFromPrivate,
-    generateRandomInBabyJubSubField,
+    derivePubKeyFromPrivKey,
     deriveChildPubKeyFromRootPubKey,
 } from '@panther-core/crypto/lib/base/keypairs';
+import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
 import {deriveSpendingChildKeypair} from '@panther-core/crypto/lib/panther/keys';
 import {PublicKey, IKeypair} from '@panther-core/crypto/lib/types/keypair';
 
 import {generateEcdhSharedKey} from '@panther-core/crypto/lib/base/encryption';
 
 import {
-    encryptRandomSecret,
-    decryptRandomSecret,
+    encryptAndPackMessageTypeV1,
+    unpackAndDecryptMessageTypeV1,
 } from '@panther-core/crypto/lib/panther/messages';
 
 import {
@@ -72,7 +72,7 @@ export class UtxoSenderData {
         this.ephemeralSharedKeyPacked = babyjub.packPoint(
             this.ephemeralSharedKey,
         );
-        this.ephemeralKey = derivePublicKeyFromPrivate(this.ephemeralRandom);
+        this.ephemeralKey = derivePubKeyFromPrivKey(this.ephemeralRandom);
         this.ephemeralKeyPacked = babyjub.packPoint(this.ephemeralKey);
         // this.ephemeralSharedKeyPacked[0] is the LSByte of this.ephemeralSharedKey[1], and
         // this.ephemeralSharedKeyPacked[31] is the modified (in the MSBit) MSByte of this.ephemeralSharedKey[1]
@@ -82,7 +82,7 @@ export class UtxoSenderData {
 
     public encryptMessageV1() {
         this.cipheredTextMessageV1 = Buffer.from(
-            encryptRandomSecret(
+            encryptAndPackMessageTypeV1(
                 this.recipientRandom,
                 this.recipientReadingPubKey,
             ),
@@ -147,7 +147,7 @@ export class UtxoRecipientData {
     // additional check during UTXO commitment regeneration.
     public decryptMessageV1() {
         this.decryptedText = bigIntToUint8Array(
-            decryptRandomSecret(
+            unpackAndDecryptMessageTypeV1(
                 Buffer.from(this.cipheredTextMessageV1).toString('hex'),
                 this.recipientReadingKeys.privateKey,
             ),

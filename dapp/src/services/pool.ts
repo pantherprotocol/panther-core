@@ -4,7 +4,7 @@ import {
     triadTreeMerkleProofToPathElements,
 } from '@panther-core/crypto/lib/other/triad-merkle-tree';
 import {deriveSpendingChildKeypair} from '@panther-core/crypto/lib/panther/keys';
-import {decryptRandomSecret} from '@panther-core/crypto/lib/panther/messages';
+import {unpackAndDecryptMessageTypeV1} from '@panther-core/crypto/lib/panther/messages';
 import {IKeypair, PrivateKey} from '@panther-core/crypto/lib/types/keypair';
 import {
     bytesToHexString32,
@@ -375,7 +375,7 @@ async function unpackUTXOAndDeriveKeys(
     }
     const [ciphertextMsg, zAssetId, amounts] = decoded;
 
-    const randomSecret = decryptRandomSecret(
+    const randomSecret = unpackAndDecryptMessageTypeV1(
         ciphertextMsg,
         rootReadingPrivateKey,
     );

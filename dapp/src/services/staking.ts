@@ -1,12 +1,12 @@
 import type {TypedDataDomain} from '@ethersproject/abstract-signer';
 import type {TransactionResponse} from '@ethersproject/providers';
 import {JsonRpcSigner} from '@ethersproject/providers';
+import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
 import {
     deriveChildPubKeyFromRootPubKey,
-    generateRandomInBabyJubSubField,
     isChildPubKeyValid,
 } from '@panther-core/crypto/lib/base/keypairs';
-import {encryptRandomSecret} from '@panther-core/crypto/lib/panther/messages';
+import {encryptAndPackMessageTypeV1} from '@panther-core/crypto/lib/panther/messages';
 import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
 import {bigintToBytes32} from '@panther-core/crypto/lib/utils/bigint-conversions';
 import CoinGecko from 'coingecko-api';
@@ -154,7 +154,7 @@ async function craftAdvancedStakeData(
         }
         console.debug('publicSpendingKey:', spendingChildPublicKey);
 
-        const msg = encryptRandomSecret(
+        const msg = encryptAndPackMessageTypeV1(
             randomSecret,
             rootReadingKeypair.publicKey,
         );

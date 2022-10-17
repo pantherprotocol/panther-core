@@ -10,7 +10,6 @@ import {
 } from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    if (!process.env.DEPLOY_CLASSIC_STAKING) return;
     const {deployments, getNamedAccounts} = hre;
     const {deploy} = deployments;
     const {deployer} = await getNamedAccounts();

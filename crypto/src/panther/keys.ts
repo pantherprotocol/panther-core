@@ -9,7 +9,6 @@ import {
     isChildPubKeyValid,
 } from '../base/keypairs';
 import {IKeypair, PrivateKey} from '../types/keypair';
-import {parseTxErrorMessage} from '../utils/errors';
 
 // generateSpendingChildKeypair generates child spending keypair (s', S')
 // using root spending private key and random scalar r as input.
@@ -24,9 +23,7 @@ export function generateSpendingChildKeypair(
     return deriveKeypairFromSeed(spendingChildPrivKey);
 }
 
-export async function deriveRootKeypairs(
-    signer: Signer,
-): Promise<IKeypair[] | Error> {
+export async function deriveRootKeypairs(signer: Signer): Promise<IKeypair[]> {
     const derivationMessage = `Greetings from Panther Protocol!
 
 Sign this message in order to obtain the keys to your Panther wallet.
@@ -34,13 +31,7 @@ Sign this message in order to obtain the keys to your Panther wallet.
 This signature will not cost you any fees.
 
 Keypair version: 1`;
-    let signature: string;
-    try {
-        signature = await signer.signMessage(derivationMessage);
-    } catch (error) {
-        return new Error(parseTxErrorMessage(error));
-    }
-
+    const signature = await signer.signMessage(derivationMessage);
     const hashedSignature = poseidon([signature]);
     return [
         deriveKeypairFromSignature(signature),

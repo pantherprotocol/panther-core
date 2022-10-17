@@ -9,8 +9,6 @@ import {
     LinearProgress,
     Typography,
 } from '@mui/material';
-import {deriveRootKeypairs} from '@panther-core/crypto/lib/panther/keys';
-import {parseTxErrorMessage} from '@panther-core/crypto/lib/utils/errors';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 import moment from 'moment';
@@ -27,6 +25,8 @@ import {
     startWalletAction,
     StartWalletActionPayload,
 } from '../../../../../redux/slices/web3WalletLastAction';
+import {parseTxErrorMessage} from '../../../../../services/errors';
+import {generateRootKeypairs} from '../../../../../services/keys';
 import {exit} from '../../../../../services/pool';
 import {isDetailedError} from '../../../../../types/error';
 import {AdvancedStakeRewards, UTXOStatus} from '../../../../../types/staking';
@@ -81,7 +81,7 @@ export default function SecondStageRedeem(props: {
             data: {account},
         } as StartWalletActionPayload);
         const signer = library.getSigner(account);
-        const keys = await deriveRootKeypairs(signer);
+        const keys = await generateRootKeypairs(signer);
         if (keys instanceof Error) {
             notifyError({
                 message: 'Panther wallet error',

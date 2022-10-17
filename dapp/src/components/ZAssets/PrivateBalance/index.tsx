@@ -2,11 +2,10 @@ import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
 
 import {Box, Button, Tooltip, Typography} from '@mui/material';
-import {deriveRootKeypairs} from '@panther-core/crypto/lib/panther/keys';
-import {parseTxErrorMessage} from '@panther-core/crypto/lib/utils/errors';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 
+import {parseTxErrorMessage} from '../../../../src/services/errors';
 import attentionIcon from '../../../images/attention-triangle-icon.svg';
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
@@ -33,6 +32,7 @@ import {
 } from '../../../redux/slices/web3WalletLastAction';
 import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
 import {chainHasPoolContract} from '../../../services/contracts';
+import {generateRootKeypairs} from '../../../services/keys';
 import {StakingRewardTokenID} from '../../../types/staking';
 import {notifyError} from '../../Common/errors';
 import {openNotification} from '../../Common/notification';
@@ -84,7 +84,7 @@ export default function PrivateBalance() {
                 data: {account},
             } as StartWalletActionPayload);
             const signer = library.getSigner(account);
-            const keys = await deriveRootKeypairs(signer);
+            const keys = await generateRootKeypairs(signer);
             if (keys instanceof Error) {
                 dispatch(registerWalletActionFailure, 'signMessage');
                 notifyError({

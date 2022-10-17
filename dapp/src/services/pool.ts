@@ -11,7 +11,6 @@ import {
     bigintToBytes32,
     bigintToBytes,
 } from '@panther-core/crypto/lib/utils/bigint-conversions';
-import {parseTxErrorMessage} from '@panther-core/crypto/lib/utils/errors';
 import poseidon from 'circomlibjs/src/poseidon';
 import {utils, Contract, BigNumber} from 'ethers';
 import {ContractTransaction} from 'ethers/lib/ethers';
@@ -28,6 +27,7 @@ import {
     getZAssetsRegistryContract,
 } from './contracts';
 import {env} from './env';
+import {parseTxErrorMessage} from './errors';
 import {safeFetch} from './http';
 
 // 452 (225 bytes) and 260 (128 bytes) are the sizes of the UTXO data containing

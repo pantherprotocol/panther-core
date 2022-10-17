@@ -9,7 +9,6 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import {parseTxErrorMessage} from '@panther-core/crypto/lib/utils/errors';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, constants} from 'ethers';
 
@@ -28,6 +27,7 @@ import {
 } from '../../redux/slices/web3WalletLastAction';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
+import {parseTxErrorMessage} from '../../services/errors';
 import {unstake, getStakesAndRewards} from '../../services/staking';
 import {MessageWithTx} from '../Common/MessageWithTx';
 import {removeNotification, openNotification} from '../Common/notification';

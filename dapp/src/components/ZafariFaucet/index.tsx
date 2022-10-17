@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 
 import {Box, Card, Typography} from '@mui/material';
-import {parseTxErrorMessage} from '@panther-core/crypto/lib/utils/errors';
 import {useWeb3React} from '@web3-react/core';
 import {ContractTransaction} from 'ethers/lib/ethers';
 
@@ -18,6 +17,7 @@ import {
 import {formatAccountAddress} from '../../services/account';
 import {isWrongNetwork, supportedNetworks} from '../../services/connectors';
 import {FAUCET_CHAIN_IDS} from '../../services/env';
+import {parseTxErrorMessage} from '../../services/errors';
 import {craftSendFaucetTransaction, faucetDrink} from '../../services/faucet';
 import {switchNetwork} from '../../services/wallet';
 import {isDetailedError, DetailedError} from '../../types/error';

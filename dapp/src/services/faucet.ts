@@ -1,10 +1,10 @@
-import {parseTxErrorMessage} from '@panther-core/crypto/lib/utils/errors';
 import {BigNumber, Contract, utils} from 'ethers';
 import {ContractTransaction} from 'ethers/lib/ethers';
 
 import {DetailedError} from '../types/error';
 
 import {getFaucetContract, getSignableContract} from './contracts';
+import {parseTxErrorMessage} from './errors';
 
 export async function craftSendFaucetTransaction(
     library: any,

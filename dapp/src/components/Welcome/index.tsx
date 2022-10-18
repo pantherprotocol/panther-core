@@ -14,7 +14,10 @@ export default function Welcome() {
     const dispatch = useAppDispatch();
 
     return (
-        <Box className="welcome-container">
+        <Box
+            className="welcome-container"
+            data-testid="welcome_welcome_container"
+        >
             <Grid item xs={12} md={12}>
                 <Typography className="welcome-title">
                     Panther Advanced Staking

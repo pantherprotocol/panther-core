@@ -217,7 +217,9 @@ function ZafariFaucet() {
                 </Box>
             ) : (
                 <Box className="connect-button">
-                    {!active && !wrongNetwork && <ConnectButton />}
+                    {!active && !wrongNetwork && (
+                        <ConnectButton styles="zafari-faucet_connect-button" />
+                    )}
                     {active && !wrongNetwork && (
                         <PrimaryActionButton onClick={sendFaucet}>
                             <span>Request Test Tokens</span>

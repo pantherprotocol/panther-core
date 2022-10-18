@@ -153,7 +153,10 @@ function ZafariFaucet() {
     }, [context, dispatch, library, chainId, account]);
 
     return (
-        <Card className="zafari-faucet-container">
+        <Card
+            className="zafari-faucet-container"
+            data-testid="zafari-faucet_zafari-faucet_container"
+        >
             <Typography className="title">Get Test Tokens</Typography>
             <Typography className="welcome-message">
                 Welcome to Panther Protocol’s incentivized testnet! You can
@@ -162,7 +165,10 @@ function ZafariFaucet() {
             <Card className="details">
                 <Box className="details-row">
                     <Typography className="caption">Network:</Typography>
-                    <div className="network-name">
+                    <div
+                        className="network-name"
+                        data-testid="zafari-faucet_zafari-faucet_network"
+                    >
                         {!active ? (
                             <Typography className="wallet-not-connected">
                                 Wallet not connected
@@ -180,16 +186,18 @@ function ZafariFaucet() {
                     <Typography className="caption" id="wallet-caption">
                         Wallet Address:
                     </Typography>
-                    {!active && (
-                        <Typography className="wallet-not-connected">
-                            Wallet not connected
-                        </Typography>
-                    )}
-                    {active && !wrongNetwork && (
-                        <Typography className="wallet-address">
-                            {formatAccountAddress(account)}
-                        </Typography>
-                    )}
+                    <Box data-testid="zafari-faucet_zafari-faucet_address">
+                        {!active && (
+                            <Typography className="wallet-not-connected">
+                                Wallet not connected
+                            </Typography>
+                        )}
+                        {active && !wrongNetwork && (
+                            <Typography className="wallet-address">
+                                {formatAccountAddress(account)}
+                            </Typography>
+                        )}
+                    </Box>
                 </Box>
                 {active && !wrongNetwork && (
                     <Box className="details-row">
@@ -216,9 +224,12 @@ function ZafariFaucet() {
                     />
                 </Box>
             ) : (
-                <Box className="connect-button">
+                <Box
+                    className="connect-button"
+                    data-testid="zafari-faucet_zafari-faucet_button-holder"
+                >
                     {!active && !wrongNetwork && (
-                        <ConnectButton styles="zafari-faucet_connect-button" />
+                        <ConnectButton data-testid="zafari-faucet_zafari-faucet_connect-button" />
                     )}
                     {active && !wrongNetwork && (
                         <PrimaryActionButton onClick={sendFaucet}>

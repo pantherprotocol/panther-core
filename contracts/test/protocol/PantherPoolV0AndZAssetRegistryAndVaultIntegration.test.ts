@@ -11,14 +11,14 @@ import {
 import {poseidon} from 'circomlibjs';
 import {MerkleProof, TriadMerkleTree} from '../../lib/tree';
 import assert from 'assert';
-import {
-    bigIntToBuffer32,
-    buffer32ToBigInt,
-    RecipientTransaction,
-    SenderTransaction,
-} from '../../lib/message-encryption';
+import {UtxoRecipientData, UtxoSenderData} from '../../lib/message-encryption';
 
-import {deriveKeypairFromSeed} from '../../lib/keychain';
+import {
+    bigIntToBuffer,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/utils/bigint-conversions';
+
+import {deriveKeypairFromSeed} from '@panther-core/crypto/lib/base/keypairs';
 
 import {PantherPoolV0AndZAssetRegistryAndVaultTester} from '../../types/contracts';
 import {deployPantherPoolV0AndZAssetRegistryAndVaultTester} from './helpers/pantherPoolV0AndZAssetRegistryAndVaultTester';
@@ -83,11 +83,14 @@ describe('PantherPoolV0 and Vault Integration', () => {
 
         describe('GenerateDeposits -> Exit - Integration test', function () {
             // [0] - Spender side generation - one time - Root public key will be shared
-            const spenderSeed = BigInt('0xAABBCCDDEEFF');
-            const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
+            const rootSeed = BigInt('0xAABBCCDDEEFF');
+            const readingSeed = BigInt('0xFFEEDDCCBBAA');
+            const recipientRootKeys = deriveKeypairFromSeed(rootSeed);
+            const recipientReadingKeys = deriveKeypairFromSeed(readingSeed);
             // [1] - Sender side generation - for every new tx
-            const senderTransaction = new SenderTransaction(
-                spenderRootKeys.publicKey,
+            const senderTransaction = new UtxoSenderData(
+                recipientRootKeys.publicKey,
+                recipientReadingKeys.publicKey,
             );
             // [2] - Encrypt ( can throw ... )
             senderTransaction.encryptMessageV1();
@@ -95,8 +98,8 @@ describe('PantherPoolV0 and Vault Integration', () => {
             senderTransaction.packCipheredText(); // tx.cipheredTextMessageV1 will be used as secret to be sent on chain
             // [4] - Send on-chain -> extract event etc ...
             // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
-            const recipientTransaction = new RecipientTransaction(
-                spenderRootKeys,
+            const recipientTransaction = new UtxoRecipientData(
+                recipientReadingKeys,
             );
             // [5] - Deserialize --- we actually will first get this text from chain
             try {
@@ -117,36 +120,38 @@ describe('PantherPoolV0 and Vault Integration', () => {
             }
             // [7] - Extract random ( try ... )
             try {
-                recipientTransaction.unpackRandom();
+                recipientTransaction.deriveRecipientSpendingKeysFromRootKeysAndRandom(
+                    recipientRootKeys,
+                );
             } catch (e) {
                 // prolog is not equal to expected
             }
             // [8] - We ready to use random in spend flow
             it('Sent random is equal to received random', () => {
-                expect(recipientTransaction.spenderRandom).equal(
-                    senderTransaction.spenderRandom,
+                expect(recipientTransaction.recipientRandom).equal(
+                    senderTransaction.recipientRandom,
                 );
             });
             // [9] - Double check sender derived public = recipient derived public key
             it('Sender derived pub-key is equal to recipient derived pub-key', () => {
                 if (
-                    recipientTransaction.spenderKeys.publicKey[0] !=
-                        senderTransaction.spenderPubKey[0] ||
-                    recipientTransaction.spenderKeys.publicKey[1] !=
-                        senderTransaction.spenderPubKey[1]
+                    recipientTransaction.recipientSpendingKeys.publicKey[0] !=
+                        senderTransaction.recipientPubKey[0] ||
+                    recipientTransaction.recipientSpendingKeys.publicKey[1] !=
+                        senderTransaction.recipientPubKey[1]
                 ) {
                     console.log('Tx-OUT:', senderTransaction);
                     console.log('Tx-IN:', recipientTransaction);
                 }
-                expect(recipientTransaction.spenderKeys.publicKey).deep.equal(
-                    senderTransaction.spenderPubKey,
-                );
+                expect(
+                    recipientTransaction.recipientSpendingKeys.publicKey,
+                ).deep.equal(senderTransaction.recipientPubKey);
             });
 
             it('Async ... calls', async () => {
                 const secrets = [
                     toBytes32(
-                        buffer32ToBigInt(
+                        uint8ArrayToBigInt(
                             senderTransaction.cipheredTextMessageV1.slice(
                                 0,
                                 32,
@@ -154,7 +159,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                         ).toString(),
                     ),
                     toBytes32(
-                        buffer32ToBigInt(
+                        uint8ArrayToBigInt(
                             senderTransaction.cipheredTextMessageV1.slice(
                                 32,
                                 64,
@@ -166,8 +171,8 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 await pantherPoolV0AndZAssetRegistryAndVaultTester.generateDepositsExtended(
                     [amounts[0], amounts[1], amounts[2]],
                     [
-                        BigNumber.from(senderTransaction.spenderPubKey[0]),
-                        BigNumber.from(senderTransaction.spenderPubKey[1]),
+                        BigNumber.from(senderTransaction.recipientPubKey[0]),
+                        BigNumber.from(senderTransaction.recipientPubKey[1]),
                     ],
                     secrets,
                     createdAtNum,
@@ -182,8 +187,12 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 for (let i = 0; i < UTXOs; ++i) {
                     commitments[i] =
                         await pantherPoolV0AndZAssetRegistryAndVaultTester.testGenerateCommitments(
-                            BigNumber.from(senderTransaction.spenderPubKey[0]),
-                            BigNumber.from(senderTransaction.spenderPubKey[1]),
+                            BigNumber.from(
+                                senderTransaction.recipientPubKey[0],
+                            ),
+                            BigNumber.from(
+                                senderTransaction.recipientPubKey[1],
+                            ),
                             amounts[i],
                             BigNumber.from(zAssetIds[i]),
                             createdAtNum,
@@ -208,7 +217,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 for (let i = 0; i < UTXOs; ++i) {
                     await pantherPoolV0AndZAssetRegistryAndVaultTester.commitToExit(
                         getExitCommitment(
-                            recipientTransaction.spenderKeys.privateKey.toString(),
+                            recipientTransaction.recipientSpendingKeys.privateKey.toString(),
                             pantherPoolV0AndZAssetRegistryAndVaultTester.address,
                         ),
                     );
@@ -221,7 +230,8 @@ describe('PantherPoolV0 and Vault Integration', () => {
                         0,
                         amounts[i],
                         createdAtNum,
-                        recipientTransaction.spenderKeys.privateKey as bigint,
+                        recipientTransaction.recipientSpendingKeys
+                            .privateKey as bigint,
                         leftLeafId,
                         ((): PathElementsType => {
                             const pathElements: BytesLike[] = [];
@@ -259,11 +269,14 @@ describe('PantherPoolV0 and Vault Integration', () => {
         describe('Key Generation Loop Test - Long test', function () {
             for (let i = 0; i < 2; ++i) {
                 // [0] - Spender side generation - one time - Root public key will be shared
-                const spenderSeed = BigInt('0xAABBCCDDEEFF');
-                const spenderRootKeys = deriveKeypairFromSeed(spenderSeed);
+                const rootSeed = BigInt('0xAABBCCDDEEFF');
+                const readingSeed = BigInt('0xFFEEDDCCBBAA');
+                const recipientRootKeys = deriveKeypairFromSeed(rootSeed);
+                const recipientReadingKeys = deriveKeypairFromSeed(readingSeed);
                 // [1] - Sender side generation - for every new tx
-                const senderTransaction = new SenderTransaction(
-                    spenderRootKeys.publicKey,
+                const senderTransaction = new UtxoSenderData(
+                    recipientRootKeys.publicKey,
+                    recipientReadingKeys.publicKey,
                 );
                 // [2] - Encrypt ( can throw ... )
                 senderTransaction.encryptMessageV1();
@@ -271,8 +284,8 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 senderTransaction.packCipheredText(); // tx.cipheredTextMessageV1 will be used as secret to be sent on chain
                 // [4] - Send on-chain -> extract event etc ...
                 // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
-                const recipientTransaction = new RecipientTransaction(
-                    spenderRootKeys,
+                const recipientTransaction = new UtxoRecipientData(
+                    recipientReadingKeys,
                 );
                 // [5] - Deserialize --- we actually will first get this text from chain
                 recipientTransaction.unpackMessageV1(
@@ -286,36 +299,38 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 }
                 // [7] - Extract random ( try ... )
                 try {
-                    recipientTransaction.unpackRandom();
+                    recipientTransaction.deriveRecipientSpendingKeysFromRootKeysAndRandom(
+                        recipientRootKeys,
+                    );
                 } catch (e) {
                     console.log('prolog is not equal to expected');
                 }
                 // [8] - We ready to use random in spend flow
                 if (
-                    recipientTransaction.spenderRandom !=
-                    senderTransaction.spenderRandom
+                    recipientTransaction.recipientRandom !=
+                    senderTransaction.recipientRandom
                 ) {
                     console.log(
                         'Double convert:',
-                        buffer32ToBigInt(
-                            bigIntToBuffer32(senderTransaction.spenderRandom),
+                        uint8ArrayToBigInt(
+                            bigIntToBuffer(senderTransaction.recipientRandom),
                         ),
                     );
                     console.log(
                         'Initial value:',
-                        senderTransaction.spenderRandom,
+                        senderTransaction.recipientRandom,
                     );
                     console.log(
                         'Extracted value:',
-                        recipientTransaction.spenderRandom,
+                        recipientTransaction.recipientRandom,
                     );
 
                     console.log('Tx-OUT:', senderTransaction);
                     console.log('Tx-IN:', recipientTransaction);
                 }
                 it('Sent random is equal to received random', () => {
-                    expect(recipientTransaction.spenderRandom).equal(
-                        senderTransaction.spenderRandom,
+                    expect(recipientTransaction.recipientRandom).equal(
+                        senderTransaction.recipientRandom,
                     );
                 });
             }

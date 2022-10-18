@@ -3,16 +3,22 @@ import {babyjub} from 'circomlibjs';
 import {Wallet} from 'ethers';
 
 import {
-    BN254_FIELD_SIZE,
-    deriveKeypairFromSeed,
-    deriveKeypairFromSignature,
-    derivePrivateKeyFromSignature,
-    extractSecretsPair,
-    generatePublicKey,
-    generateRandomBabyJubValue,
+    generateRandomKeypair,
+    derivePubKeyFromPrivKey,
     isChildPubKeyValid,
-    multiplyScalars,
-} from '../../src/lib/keychain';
+    deriveChildPrivKeyFromRootPrivKey,
+} from '../../src/base/keypairs';
+
+import {
+    SNARK_FIELD_SIZE,
+    generateRandomInBabyJubSubField,
+} from '../../src/base/field-operations';
+
+import {
+    deriveKeypairFromSignature,
+    derivePrivKeyFromSignature,
+    extractSecretsPair,
+} from '../../src/panther/keys';
 
 describe('Keychain', () => {
     const bigOne = BigInt(1);
@@ -25,18 +31,18 @@ describe('Keychain', () => {
     });
 
     describe('Seed', () => {
-        it('should be within BN254_FIELD_SIZE', () => {
+        it('should be within SNARK_FIELD_SIZE', () => {
             expect(
-                derivePrivateKeyFromSignature(signature) < BN254_FIELD_SIZE,
+                derivePrivKeyFromSignature(signature) < SNARK_FIELD_SIZE,
             ).toBeTruthy();
         });
     });
 
     describe('Signature elements', () => {
-        it('should be within BN254_FIELD_SIZE', () => {
+        it('should be within SNARK_FIELD_SIZE', () => {
             const [r, s] = extractSecretsPair(signature);
-            expect(r < BN254_FIELD_SIZE).toBeTruthy();
-            expect(s < BN254_FIELD_SIZE).toBeTruthy();
+            expect(r < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(s < SNARK_FIELD_SIZE).toBeTruthy();
         });
 
         it('should throw error if signature is not valid', () => {
@@ -62,8 +68,8 @@ describe('Keychain', () => {
         it('should be smaller than babyJubJub and BN254 field sizes, respectively', () => {
             const keypair = deriveKeypairFromSignature(signature);
             expect(keypair.privateKey < babyjub.subOrder).toBeTruthy();
-            expect(keypair.publicKey[0] < BN254_FIELD_SIZE).toBeTruthy();
-            expect(keypair.publicKey[1] < BN254_FIELD_SIZE).toBeTruthy();
+            expect(keypair.publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair.publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
         });
 
         it('should be deterministically generated', () => {
@@ -76,30 +82,30 @@ describe('Keychain', () => {
 
     describe('Private and public key of random keypair', () => {
         it('should be smaller than babyJubJub and BN254 field sizes, respectively', () => {
-            const keypair = deriveKeypairFromSeed();
+            const keypair = generateRandomKeypair();
             expect(keypair.privateKey < babyjub.subOrder).toBeTruthy();
-            expect(keypair.publicKey[0] < BN254_FIELD_SIZE).toBeTruthy();
-            expect(keypair.publicKey[1] < BN254_FIELD_SIZE).toBeTruthy();
+            expect(keypair.publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair.publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
         });
 
         it('should not be deterministic', () => {
-            const keypairOne = deriveKeypairFromSeed();
-            const keypairTwo = deriveKeypairFromSeed();
+            const keypairOne = generateRandomKeypair();
+            const keypairTwo = generateRandomKeypair();
             expect(keypairOne.privateKey).not.toEqual(keypairTwo.privateKey);
             expect(keypairOne.publicKey).not.toEqual(keypairTwo.publicKey);
         });
     });
 
     describe('Multiplication of private key', () => {
-        const r = generateRandomBabyJubValue();
-        const s = generateRandomBabyJubValue();
+        const r = generateRandomInBabyJubSubField();
+        const s = generateRandomInBabyJubSubField();
         const B = babyjub.Base8;
         const sB = babyjub.mulPointEscalar(B, s);
         const rB = babyjub.mulPointEscalar(B, r);
         const r_sB = babyjub.mulPointEscalar(sB, r);
         const s_rB = babyjub.mulPointEscalar(rB, s);
 
-        const rs = multiplyScalars(r, s);
+        const rs = deriveChildPrivKeyFromRootPrivKey(r, s);
         const rs_B = babyjub.mulPointEscalar(B, rs);
 
         describe('should be associative', () => {
@@ -122,39 +128,41 @@ describe('Keychain', () => {
 
     describe('Check the field of definition', () => {
         describe('Private key outside babyjubjub filed', () => {
-            describe('multiplication of scalars', () => {
-                const r = generateRandomBabyJubValue();
-                it('should throw error if scalar a is outside BabyJubJub', () => {
-                    expect(() => multiplyScalars(BN254_FIELD_SIZE, r)).toThrow(
-                        'Scalar a is not in the BabyJubJub field',
+            describe('deriveChildPrivKeyFromRootPrivKey', () => {
+                const r = generateRandomInBabyJubSubField();
+                it('should throw error if rootPrivKey is outside BabyJubJub', () => {
+                    expect(() =>
+                        deriveChildPrivKeyFromRootPrivKey(SNARK_FIELD_SIZE, r),
+                    ).toThrow(
+                        'Root private key is not in the BabyJubJub suborder',
                     );
                 });
-                it('should throw error if scalar b is outside BabyJubJub', () => {
-                    expect(() => multiplyScalars(r, BN254_FIELD_SIZE)).toThrow(
-                        'Scalar b is not in the BabyJubJub field',
-                    );
+                it('should throw error if random is outside BabyJubJub', () => {
+                    expect(() =>
+                        deriveChildPrivKeyFromRootPrivKey(r, SNARK_FIELD_SIZE),
+                    ).toThrow('Random is not in the BabyJubJub suborder');
                 });
             });
             it('should throw error during generation of public key', () => {
-                expect(() => generatePublicKey(BN254_FIELD_SIZE)).toThrow(
-                    'privateKey is not in the BabyJubJub field',
+                expect(() => derivePubKeyFromPrivKey(SNARK_FIELD_SIZE)).toThrow(
+                    'privateKey is not in the BabyJubJub suborder',
                 );
             });
         });
 
         describe('Public key outside BN254 field', () => {
-            const r = generateRandomBabyJubValue();
+            const r = generateRandomInBabyJubSubField();
             const pubKeyWithinSnark = [
-                BN254_FIELD_SIZE - bigOne,
-                BN254_FIELD_SIZE - bigOne,
+                SNARK_FIELD_SIZE - bigOne,
+                SNARK_FIELD_SIZE - bigOne,
             ];
             const pubKeyXNotWithinSnark = [
-                BN254_FIELD_SIZE + bigOne,
-                BN254_FIELD_SIZE - bigOne,
+                SNARK_FIELD_SIZE + bigOne,
+                SNARK_FIELD_SIZE - bigOne,
             ];
-            const pubKeyYotWithinSnark = [
-                BN254_FIELD_SIZE - bigOne,
-                BN254_FIELD_SIZE + bigOne,
+            const pubKeyNotWithinSnark = [
+                SNARK_FIELD_SIZE - bigOne,
+                SNARK_FIELD_SIZE + bigOne,
             ];
             describe('validity check in isChildPubKeyValid()', () => {
                 describe('Child public key', () => {
@@ -172,7 +180,7 @@ describe('Keychain', () => {
                     it('should throw error for Y coordinate', () => {
                         expect(() =>
                             isChildPubKeyValid(
-                                pubKeyYotWithinSnark,
+                                pubKeyNotWithinSnark,
                                 {privateKey: r, publicKey: pubKeyWithinSnark},
                                 r,
                             ),
@@ -202,8 +210,8 @@ describe('Keychain', () => {
         });
     });
     describe('Validity check in generateChildPublicKey()', () => {
-        const rootKeypair = deriveKeypairFromSeed();
-        const secret = generateRandomBabyJubValue();
+        const rootKeypair = generateRandomKeypair();
+        const secret = generateRandomInBabyJubSubField();
         const validChildPubKey = babyjub.mulPointEscalar(
             rootKeypair.publicKey,
             secret,

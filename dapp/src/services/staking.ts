@@ -1,18 +1,19 @@
 import type {TypedDataDomain} from '@ethersproject/abstract-signer';
 import type {TransactionResponse} from '@ethersproject/providers';
 import {JsonRpcSigner} from '@ethersproject/providers';
-import {bigintToBytes32} from '@panther-core/crypto/lib/bigint-conversions';
+import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
+import {
+    deriveChildPubKeyFromRootPubKey,
+    isChildPubKeyValid,
+} from '@panther-core/crypto/lib/base/keypairs';
+import {encryptAndPackMessageTypeV1} from '@panther-core/crypto/lib/panther/messages';
+import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
+import {bigintToBytes32} from '@panther-core/crypto/lib/utils/bigint-conversions';
 import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
 import type {ContractTransaction} from 'ethers';
 import {BigNumber, constants, utils} from 'ethers';
 
-import {
-    generateChildPublicKey,
-    generateRandomBabyJubValue,
-    isChildPubKeyValid,
-} from '../lib/keychain';
-import {IKeypair} from '../lib/types';
 import type {IStakingTypes, Staking} from '../types/contracts/Staking';
 import {StakeRewardBN, StakeTypes} from '../types/staking';
 
@@ -30,7 +31,6 @@ import {
 } from './contracts';
 import {env} from './env';
 import axios from './http';
-import {encryptRandomSecret} from './message-encryption';
 import {calculateRewardsForStake} from './rewards';
 import {
     AdvancedStakeRewardsResponse,
@@ -136,8 +136,8 @@ async function craftAdvancedStakeData(
     // generate 3 spending pubKeys and secret messages:
     // one for each reward in zZKP, PRP, and NFT
     for (let index = 0; index < 2; index++) {
-        const randomSecret = generateRandomBabyJubValue();
-        const spendingChildPublicKey = generateChildPublicKey(
+        const randomSecret = generateRandomInBabyJubSubField();
+        const spendingChildPublicKey = deriveChildPubKeyFromRootPubKey(
             rootSpendingKeypair.publicKey,
             randomSecret,
         );
@@ -154,7 +154,7 @@ async function craftAdvancedStakeData(
         }
         console.debug('publicSpendingKey:', spendingChildPublicKey);
 
-        const msg = encryptRandomSecret(
+        const msg = encryptAndPackMessageTypeV1(
             randomSecret,
             rootReadingKeypair.publicKey,
         );

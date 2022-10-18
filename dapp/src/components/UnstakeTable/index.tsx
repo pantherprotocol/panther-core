@@ -12,7 +12,6 @@ import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, constants} from 'ethers';
 
-import {parseTxErrorMessage} from '../../lib/errors';
 import {awaitConfirmationAndRetrieveEvent} from '../../lib/events';
 import {formatTime} from '../../lib/format';
 import {useAppDispatch} from '../../redux/hooks';
@@ -28,6 +27,7 @@ import {
 } from '../../redux/slices/web3WalletLastAction';
 import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
+import {parseTxErrorMessage} from '../../services/errors';
 import {unstake, getStakesAndRewards} from '../../services/staking';
 import {MessageWithTx} from '../Common/MessageWithTx';
 import {removeNotification, openNotification} from '../Common/notification';

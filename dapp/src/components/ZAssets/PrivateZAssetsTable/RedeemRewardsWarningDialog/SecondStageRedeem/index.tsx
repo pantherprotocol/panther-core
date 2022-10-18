@@ -13,7 +13,6 @@ import {useWeb3React} from '@web3-react/core';
 import {BigNumber} from 'ethers';
 import moment from 'moment';
 
-import {parseTxErrorMessage} from '../../../../../lib/errors';
 import {awaitConfirmationAndRetrieveEvent} from '../../../../../lib/events';
 import {formatCurrency} from '../../../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../../../redux/hooks';
@@ -26,7 +25,8 @@ import {
     startWalletAction,
     StartWalletActionPayload,
 } from '../../../../../redux/slices/web3WalletLastAction';
-import {deriveRootKeypairs} from '../../../../../services/keychain';
+import {parseTxErrorMessage} from '../../../../../services/errors';
+import {generateRootKeypairs} from '../../../../../services/keys';
 import {exit} from '../../../../../services/pool';
 import {isDetailedError} from '../../../../../types/error';
 import {AdvancedStakeRewards, UTXOStatus} from '../../../../../types/staking';
@@ -81,7 +81,7 @@ export default function SecondStageRedeem(props: {
             data: {account},
         } as StartWalletActionPayload);
         const signer = library.getSigner(account);
-        const keys = await deriveRootKeypairs(signer);
+        const keys = await generateRootKeypairs(signer);
         if (keys instanceof Error) {
             notifyError({
                 message: 'Panther wallet error',

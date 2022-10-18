@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TYPEDIR=typing
+TYPEDIR=types
 
 emit_types() {
     local module="$1"
@@ -54,12 +54,9 @@ main() {
     fi
 
     emit_types snarkjs
-
     emit_types circomlibjs
     # This is needed to avoid errors unless we have --skipLibCheck:
     # rm $TYPEDIR/circomlibjs/src/smt.d.ts
-
-    emit_types blake-hash
 
     # FIXME: remove this monkey-patch when this PR is merged:
     # https://github.com/iden3/ffjavascript/pull/25

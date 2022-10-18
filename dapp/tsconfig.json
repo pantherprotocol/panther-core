@@ -32,12 +32,5 @@
     "noImplicitAny": true
   },
   "exclude": ["node_modules", "build"],
-  "include": [
-    "src",
-    "scripts",
-    "tests",
-    "__mocks__",
-    "webpack.config.js",
-    "../crypto/node_modules/typescript/lib/lib.dom.d.ts"
-  ]
+  "include": ["src", "scripts", "tests", "__mocks__", "webpack.config.js"]
 }

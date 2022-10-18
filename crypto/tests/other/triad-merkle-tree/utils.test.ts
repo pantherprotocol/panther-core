@@ -1,12 +1,13 @@
+import {describe, expect} from '@jest/globals';
+
+import {TriadMerkleTree} from '../../../src/other/triad-merkle-tree';
 import {
     compressString,
     createTriadMerkleTree,
     decompressString,
     readCommitmentsFromCommitmentLog,
-} from '../utils';
-import {describe, expect} from '@jest/globals';
+} from '../../../src/other/triad-merkle-tree/utils';
 
-import {TriadMerkleTree} from '..';
 import {fourthTree} from './data/trees';
 
 const TREE_SIZE = 1536;
@@ -28,14 +29,14 @@ describe('Generation, loading and compression of the Triad Merkle tree', () => {
     });
 
     it('shoud be saved and loaded without compression', () => {
-        const path = 'src/triad-merkle-tree/__tests__/data/tree_zip.txt';
+        const path = 'tests/other/triad-merkle-tree/data/tree_zip.txt';
         tree.save(path, false);
         const t = TriadMerkleTree.loadFromFile(path, false);
         expect('0x' + BigInt(t.root).toString(16)).toBe(fourthTree.root);
     });
 
     it('should be saved and loaded with compression', () => {
-        const path = 'src/triad-merkle-tree/__tests__/data/tree_zip.txt';
+        const path = 'tests/other/triad-merkle-tree/data/tree_zip.txt';
         tree.save(path, true);
         const t = TriadMerkleTree.loadFromFile(path, true);
         expect('0x' + BigInt(t.root).toString(16)).toBe(fourthTree.root);
@@ -55,7 +56,7 @@ describe('Reading, writing input files', () => {
 
         beforeAll(() => {
             const path =
-                'src/triad-merkle-tree/__tests__/data/commitmentsLog-test-data.json';
+                'tests/other/triad-merkle-tree/data/commitmentsLog-test-data.json';
             commitments = readCommitmentsFromCommitmentLog(path);
         });
 

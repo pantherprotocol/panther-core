@@ -4,9 +4,9 @@ import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 
+import {parseTxErrorMessage} from '../../../../src/services/errors';
 import infoIcon from '../../../images/info-icon.svg';
 import refreshIcon from '../../../images/refresh-icon.svg';
-import {parseTxErrorMessage} from '../../../lib/errors';
 import {formatUSD, getFormattedFractions} from '../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/advancedStakesRewards';
@@ -23,7 +23,7 @@ import {
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
 } from '../../../redux/slices/zkpTokenBalance';
-import {deriveRootKeypairs} from '../../../services/keychain';
+import {generateRootKeypairs} from '../../../services/keys';
 import {notifyError} from '../../Common/errors';
 
 import './styles.scss';
@@ -46,7 +46,7 @@ export default function UnstakedBalance() {
                 data: {account},
             } as StartWalletActionPayload);
             const signer = library!.getSigner(account!);
-            const keys = await deriveRootKeypairs(signer);
+            const keys = await generateRootKeypairs(signer);
             if (keys instanceof Error) {
                 dispatch(registerWalletActionFailure, 'signMessage');
                 notifyError({

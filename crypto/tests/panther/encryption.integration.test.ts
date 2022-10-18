@@ -1,17 +1,15 @@
-import {bigIntToUint8Array} from '@panther-core/crypto/lib/bigint-conversions';
 import {ethers} from 'ethers';
 
 import {
-    deriveKeypairFromSignature,
-    deriveKeypairFromSeed,
-    packPublicKey,
-} from '../src/lib/keychain';
-import {
-    encryptMessage,
+    encryptPlainText,
     generateEcdhSharedKey,
-    decryptMessage,
-} from '../src/lib/message-encryption';
-import {IKeypair} from '../src/lib/types/keypair';
+    decryptCipherText,
+} from '../../src/base/encryption';
+import {generateRandomKeypair, packPublicKey} from '../../src/base/keypairs';
+import {deriveKeypairFromSignature} from '../../src/panther/keys';
+import {extractCipherKeyAndIvFromPackedPoint} from '../../src/panther/messages';
+import {IKeypair} from '../../src/types/keypair';
+import {bigIntToUint8Array} from '../../src/utils/bigint-conversions';
 
 describe('Message encryption and decryption', () => {
     it('expect decrypt message to be equal initial plain message', async () => {
@@ -21,7 +19,7 @@ describe('Message encryption and decryption', () => {
 
         const readingKeypair: IKeypair = deriveKeypairFromSignature(signature);
         // spending keypair(R,r)
-        const childRandomKeypair = deriveKeypairFromSeed();
+        const childRandomKeypair = generateRandomKeypair();
 
         // generates by sender ECDH(rootReadingPubKey, r)
         const spendingEcdhSharedKey = generateEcdhSharedKey(
@@ -37,14 +35,26 @@ describe('Message encryption and decryption', () => {
 
         const secretRandom = childRandomKeypair.privateKey;
 
-        const ciphertext = encryptMessage(
+        const {iv: ivSpending, cipherKey: ckSpending} =
+            extractCipherKeyAndIvFromPackedPoint(
+                packPublicKey(spendingEcdhSharedKey),
+            );
+
+        const ciphertext = encryptPlainText(
             bigIntToUint8Array(secretRandom, 32),
-            packPublicKey(spendingEcdhSharedKey),
+            ckSpending,
+            ivSpending,
         );
 
-        const decryptedSecretRandom = decryptMessage(
+        const {iv: ivReading, cipherKey: ckReading} =
+            extractCipherKeyAndIvFromPackedPoint(
+                packPublicKey(readingEcdhSharedKey),
+            );
+
+        const decryptedSecretRandom = decryptCipherText(
             ciphertext,
-            packPublicKey(readingEcdhSharedKey),
+            ckReading,
+            ivReading,
         );
 
         expect(decryptedSecretRandom).toEqual(

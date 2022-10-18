@@ -10,12 +10,17 @@ import {poseidon, babyjub} from 'circomlibjs';
 import {TriadMerkleTree} from '../../lib/tree';
 import assert = require('assert');
 import {BytesLike} from 'ethers/lib/ethers';
-import {generateRandomBabyJubValue, multiplyScalars} from '../../lib/keychain';
+import {deriveChildPrivKeyFromRootPrivKey} from '@panther-core/crypto/lib/base/keypairs';
+import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
 import crypto from 'crypto';
 import {utils} from 'ethers';
 import {bigintToBytes32} from '../../lib/conversions';
 import {deployMerkleProofVerifierTester} from './helpers/merkleProofVerifierTester';
-import {bigIntToBuffer32, buffer32ToBigInt} from '../../lib/message-encryption';
+
+import {
+    bigIntToBuffer,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/utils/bigint-conversions';
 
 describe('MerkleProofVerifier', () => {
     let merkleProofVerifierTester: MerkleProofVerifierTester;
@@ -692,17 +697,17 @@ describe('MerkleProofVerifier', () => {
             describe('CipherTest encryption decryption', function () {
                 const prolog = 0xeeffeeff;
                 // [0] - Recipient side
-                const s = generateRandomBabyJubValue(); // Spender Private Key
+                const s = generateRandomInBabyJubSubField(); // Spender Private Key
                 const S = babyjub.mulPointEscalar(babyjub.Base8, s); // Spender Public Key - Shared & known to sender
                 // [1] - Sender side
-                const r = generateRandomBabyJubValue(); // Sender generates random value
+                const r = generateRandomInBabyJubSubField(); // Sender generates random value
                 // This key used to create commitments with `generateDeposits` solidity call
                 const K = babyjub.mulPointEscalar(S, r)[0]; // Sender generates Shared Ephemeral Key = rsB = rS
                 const R = babyjub.mulPointEscalar(babyjub.Base8, r); // This key is shared in open form = rB
                 // [2] - Encrypt text - Version-1: Prolog,Random = 4bytes, 32bytes ( decrypt in place just for test )
                 const textToBeCiphered = new Uint8Array([
-                    ...bigIntToBuffer32(prolog).slice(32 - 4, 32),
-                    ...bigIntToBuffer32(r),
+                    ...bigIntToBuffer(BigInt(prolog)).slice(32 - 4, 32),
+                    ...bigIntToBuffer(r),
                 ]);
                 expect(
                     textToBeCiphered.length,
@@ -811,16 +816,18 @@ describe('MerkleProofVerifier', () => {
                 expect(
                     prolog_from_chain,
                     'extracted from chain prolog must be equal',
-                ).to.deep.equal(bigIntToBuffer32(prolog).slice(32 - 4, 32));
+                ).to.deep.equal(
+                    bigIntToBuffer(BigInt(prolog)).slice(32 - 4, 32),
+                );
                 const r_from_chain = decrypted_from_chain.slice(4, 4 + 32);
                 expect(
-                    buffer32ToBigInt(r_from_chain),
+                    uint8ArrayToBigInt(r_from_chain),
                     'extracted from chain random must be equal',
                 ).equal(r);
 
                 it('random ciphered -> packed -> unpacked -> deciphered', function () {
                     expect(
-                        buffer32ToBigInt(r_from_chain),
+                        uint8ArrayToBigInt(r_from_chain),
                         'extracted from chain random must be equal',
                     ).equal(r);
                 });
@@ -840,9 +847,9 @@ describe('MerkleProofVerifier', () => {
                 // [9] - TODO: extract 'r' & you are ready to execute `exit`
                 // [10]- TODO: execute `exit` function to see if you can use locked funds
                 // This private key must be used inside `exit` function
-                // const sr = multiplyScalars(s, r); // spender derived private key
+                // const sr = deriveChildPrivKeyFromRootPrivKey(s, r); // spender derived private key
                 // This public key must be used in panther-core V1
-                ///const SpenderDerivedPubKey = babyjub.mulPointEscalar(babyjub.Base8, sr); // S = sB S' = srB
+                ///const SpenderDerivedPubKey = derivePublicKeyFromPrivate(sr); // S = sB S' = srB
 
                 // [111] - Solidity code
                 //const Ssol = await trees.GeneratePublicSpendingKey(s);
@@ -862,7 +869,7 @@ describe('MerkleProofVerifier', () => {
                 // TODO: increase to billion + logn-test
                 for (let i = 0; i < 2; ++i) {
                     // [0] - spender will generate it and share its public key with sender
-                    const s = generateRandomBabyJubValue();
+                    const s = generateRandomInBabyJubSubField();
                     const S = babyjub.mulPointEscalar(babyjub.Base8, s);
                     it('SpenderDerivedPubKeyTypeScript == SpenderDerivedPubKeySolidity', async () => {
                         // [1] - Solidity code
@@ -879,19 +886,19 @@ describe('MerkleProofVerifier', () => {
 
             describe('Spend & Random Keys generation', () => {
                 // [0] - spender will generate it and share its public key with sender
-                const s = generateRandomBabyJubValue();
+                const s = generateRandomInBabyJubSubField();
                 const S = babyjub.mulPointEscalar(babyjub.Base8, s);
                 //console.log("SpenderRootPubKey:", S);
                 //console.log("SpenderRootPrivKey:", s);
                 // [1] - random value generated by sender and shared via encrypted message
-                const r = generateRandomBabyJubValue();
+                const r = generateRandomInBabyJubSubField();
                 //console.log("SenderRandom:", r);
                 // [2] - SpenderDerivedPubKey - generated by sender and used to create UTXO output
                 const SpenderDerivedPubKeyOnSenderSide =
                     babyjub.mulPointEscalar(S, r); // S = sB, S' = rsB
                 //console.log("SpenderDerivedPubKeyOnSenderSide:", SpenderDerivedPubKeyOnSenderSide[0], SpenderDerivedPubKeyOnSenderSide[1]);
                 // [3] - Spender provides its privKey * Random to generate SpenderDerivedPrivateKey - checked inside snarks that it can generate pub-key
-                const sr = multiplyScalars(s, r);
+                const sr = deriveChildPrivKeyFromRootPrivKey(s, r);
                 //console.log("SpenderDerivedPrivKeyOnRecipientSide:", sr );
                 // [4] - Generate SpenderDerivedPubKey - this key used to create UTXO we are trying to spend
                 // Circuit take s' = sr

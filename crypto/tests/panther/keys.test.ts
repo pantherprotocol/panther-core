@@ -1,16 +1,17 @@
 import {describe, expect} from '@jest/globals';
+
 import {Wallet} from 'ethers';
 
+import {IKeypair} from '../../lib/types/keypair';
 import {
-    deriveKeypairFromSignature,
-    generateRandomBabyJubValue,
-    BN254_FIELD_SIZE,
-} from '../../src/lib/keychain';
-import {IKeypair} from '../../src/lib/types';
+    SNARK_FIELD_SIZE,
+    generateRandomInBabyJubSubField,
+} from '../../src/base/field-operations';
 import {
     deriveRootKeypairs,
     generateSpendingChildKeypair,
-} from '../../src/services/keychain';
+    deriveKeypairFromSignature,
+} from '../../src/panther/keys';
 
 describe('Spending child keypair', () => {
     let spendingChildKeypair: IKeypair;
@@ -24,7 +25,7 @@ describe('Spending child keypair', () => {
         );
         spendingRootKeypair = deriveKeypairFromSignature(spendingSignature);
 
-        const r = generateRandomBabyJubValue();
+        const r = generateRandomInBabyJubSubField();
         spendingChildKeypair = generateSpendingChildKeypair(
             spendingRootKeypair.privateKey,
             r,
@@ -36,13 +37,13 @@ describe('Spending child keypair', () => {
         expect(spendingChildKeypair.publicKey).toBeDefined();
     });
 
-    it('should be smaller than BN254_FIELD_SIZE', () => {
-        expect(spendingChildKeypair.privateKey < BN254_FIELD_SIZE).toBeTruthy();
+    it('should be smaller than SNARK_FIELD_SIZE', () => {
+        expect(spendingChildKeypair.privateKey < SNARK_FIELD_SIZE).toBeTruthy();
         expect(
-            spendingChildKeypair.publicKey[0] < BN254_FIELD_SIZE,
+            spendingChildKeypair.publicKey[0] < SNARK_FIELD_SIZE,
         ).toBeTruthy();
         expect(
-            spendingChildKeypair.publicKey[1] < BN254_FIELD_SIZE,
+            spendingChildKeypair.publicKey[1] < SNARK_FIELD_SIZE,
         ).toBeTruthy();
     });
 });
@@ -55,12 +56,12 @@ describe('Keychain', () => {
             const keypairs: IKeypair[] = (await deriveRootKeypairs(
                 randomAccount,
             )) as IKeypair[];
-            expect(keypairs[0].privateKey < BN254_FIELD_SIZE).toBeTruthy();
-            expect(keypairs[0].publicKey[0] < BN254_FIELD_SIZE).toBeTruthy();
-            expect(keypairs[0].publicKey[1] < BN254_FIELD_SIZE).toBeTruthy();
-            expect(keypairs[1].privateKey < BN254_FIELD_SIZE).toBeTruthy();
-            expect(keypairs[1].publicKey[0] < BN254_FIELD_SIZE).toBeTruthy();
-            expect(keypairs[1].publicKey[1] < BN254_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[0].privateKey < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[0].publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[0].publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[1].privateKey < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[1].publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypairs[1].publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
         });
 
         it('should be deterministic', async () => {

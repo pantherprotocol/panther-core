@@ -1,21 +1,22 @@
 import {
-    toBytes32,
-    bigintToBytes32,
-    bigintToBytes,
-} from '@panther-core/crypto/lib/bigint-conversions';
-import {
     generateMerkleProof,
     TriadMerkleTree,
     triadTreeMerkleProofToPathElements,
-} from '@panther-core/crypto/lib/triad-merkle-tree';
+} from '@panther-core/crypto/lib/other/triad-merkle-tree';
+import {deriveSpendingChildKeypair} from '@panther-core/crypto/lib/panther/keys';
+import {unpackAndDecryptMessageTypeV1} from '@panther-core/crypto/lib/panther/messages';
+import {IKeypair, PrivateKey} from '@panther-core/crypto/lib/types/keypair';
+import {
+    bytesToHexString32,
+    bigintToBytes32,
+    bigintToBytes,
+} from '@panther-core/crypto/lib/utils/bigint-conversions';
 import poseidon from 'circomlibjs/src/poseidon';
 import {utils, Contract, BigNumber} from 'ethers';
 import {ContractTransaction} from 'ethers/lib/ethers';
 import {Result} from 'ethers/lib/utils';
 
-import {parseTxErrorMessage} from '../lib/errors';
 import {formatTime} from '../lib/format';
-import {IKeypair, PrivateKey} from '../lib/types';
 import {isDetailedError, DetailedError} from '../types/error';
 import {AdvancedStakeRewards, UTXOStatus} from '../types/staking';
 
@@ -26,9 +27,8 @@ import {
     getZAssetsRegistryContract,
 } from './contracts';
 import {env} from './env';
+import {parseTxErrorMessage} from './errors';
 import {safeFetch} from './http';
-import {deriveSpendingChildKeypair} from './keychain';
-import {decryptRandomSecret as decryptRandomSecret} from './message-encryption';
 
 // 452 (225 bytes) and 260 (128 bytes) are the sizes of the UTXO data containing
 // 1 zZKP UTXO, and with and without 1 NFT UTXO, respectfully. First byte is
@@ -375,7 +375,7 @@ async function unpackUTXOAndDeriveKeys(
     }
     const [ciphertextMsg, zAssetId, amounts] = decoded;
 
-    const randomSecret = decryptRandomSecret(
+    const randomSecret = unpackAndDecryptMessageTypeV1(
         ciphertextMsg,
         rootReadingPrivateKey,
     );
@@ -443,7 +443,7 @@ function decodeUTXOData(utxoData: string): [string, string, bigint] | Error {
 
     const secrets = decoded[0];
     const ciphertextMsg = secrets
-        .map(toBytes32)
+        .map(bytesToHexString32)
         .map((v: string) => v.slice(2))
         .join('');
 

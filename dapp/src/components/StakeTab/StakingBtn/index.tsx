@@ -5,7 +5,7 @@ import {Box, Button} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {BigNumber, utils} from 'ethers';
 
-import {parseTxErrorMessage} from '../../../lib/errors';
+import {parseTxErrorMessage} from '../../../../src/services/errors';
 import {awaitConfirmationAndRetrieveEvent} from '../../../lib/events';
 import {formatCurrency} from '../../../lib/format';
 import {safeParseUnits} from '../../../lib/numbers';
@@ -28,7 +28,7 @@ import {
 import {getZkpStakedBalance} from '../../../redux/slices/zkpStakedBalance';
 import {getZkpTokenBalance} from '../../../redux/slices/zkpTokenBalance';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
-import {deriveRootKeypairs} from '../../../services/keychain';
+import {generateRootKeypairs} from '../../../services/keys';
 import {advancedStake} from '../../../services/staking';
 import {StakingRewardTokenID} from '../../../types/staking';
 import {notifyError} from '../../Common/errors';
@@ -144,7 +144,7 @@ const StakingBtn = (props: {
             } as StartWalletActionPayload);
 
             const signer = library.getSigner(account);
-            const keys = await deriveRootKeypairs(signer);
+            const keys = await generateRootKeypairs(signer);
 
             if (keys instanceof Error) {
                 dispatch(registerWalletActionFailure, 'signMessage');

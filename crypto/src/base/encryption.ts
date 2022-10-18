@@ -2,37 +2,21 @@ import crypto from 'crypto';
 
 import {babyjub} from 'circomlibjs';
 
-import {
-    ICiphertext,
-    PrivateKey,
-    PublicKey,
-    EcdhSharedKey,
-    PackedEcdhSharedKey,
-} from './types';
+import {PrivateKey, PublicKey, EcdhSharedKey} from '../types/keypair';
+import {ICiphertext} from '../types/message';
 
-export const generateEcdhSharedKey = (
+export function generateEcdhSharedKey(
     privateKey: PrivateKey,
     publicKey: PublicKey,
-): EcdhSharedKey => {
+): EcdhSharedKey {
     return babyjub.mulPointEscalar(publicKey, privateKey);
-};
-
-function extractCipherKeyAndIV(packedKey: PackedEcdhSharedKey): {
-    cipherKey: Buffer;
-    iv: Buffer;
-} {
-    return {
-        cipherKey: Buffer.from(packedKey).slice(0, 16),
-        iv: Buffer.from(packedKey).slice(16, 32),
-    };
 }
 
-export function encryptMessage(
+export function encryptPlainText(
     plaintext: Uint8Array,
-    sharedKey: PackedEcdhSharedKey,
+    cipherKey: Uint8Array,
+    iv: Uint8Array,
 ): ICiphertext {
-    const {cipherKey, iv} = extractCipherKeyAndIV(sharedKey);
-
     try {
         const cipher = crypto.createCipheriv('aes-128-cbc', cipherKey, iv);
         cipher.setAutoPadding(false);
@@ -44,11 +28,11 @@ export function encryptMessage(
     }
 }
 
-export function decryptMessage(
+export function decryptCipherText(
     ciphertext: ICiphertext,
-    sharedKey: PackedEcdhSharedKey,
+    cipherKey: Uint8Array,
+    iv: Uint8Array,
 ): Uint8Array {
-    const {cipherKey, iv} = extractCipherKeyAndIV(sharedKey);
     const decipher = crypto.createDecipheriv('aes-128-cbc', cipherKey, iv);
     decipher.setAutoPadding(false);
 

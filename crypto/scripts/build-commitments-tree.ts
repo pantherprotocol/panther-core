@@ -24,13 +24,14 @@
 */
 
 import _ from 'lodash';
+import yargs from 'yargs/yargs';
+
 import {
     TriadMerkleTree,
     createTriadMerkleTree,
     toBytes32,
     readCommitmentsFromCommitmentLog,
-} from '../src/triad-merkle-tree';
-import yargs from 'yargs/yargs';
+} from '../src/other/triad-merkle-tree';
 
 const TREE_DEPTH = 15;
 const TREE_SIZE = 2 ** (TREE_DEPTH - 1) * 3;

@@ -1,32 +1,29 @@
-// @ts-ignore
-
-// @ts-ignore
-import {ZqField} from 'ffjavascript';
 import assert from 'assert';
-import {ethers} from 'ethers';
 import fs from 'fs';
-// @ts-ignore
-import {groth16} from 'snarkjs';
-// @ts-ignore
+
 import {poseidon} from 'circomlibjs';
+import {ethers} from 'ethers';
+import {ZqField} from 'ffjavascript';
+import {groth16} from 'snarkjs';
+
 import {
     TriadMerkleTree,
     generateMerkleProof,
     triadTreeMerkleProofToPathElements,
     triadTreeMerkleProofToPathIndices,
-} from './triad-merkle-tree';
-import {bigIntToBuffer, bufferToBigInt} from './bigint-conversions';
-import {sha256} from './hash';
-import {builder} from './witness_calculator';
+} from '../other/triad-merkle-tree';
+import {bigIntToBuffer, bufferToBigInt} from '../utils/bigint-conversions';
 
-// @ts-ignore
+import {sha256} from './hashes';
+import {builder} from './witness-calculator';
+
 export {groth16} from 'snarkjs';
 export type PackedProof = {a: any; b: any; c: any; inputs: any};
 export type FullProof = {proof: any; publicSignals: any};
-export const BN254_FIELD_SIZE = BigInt(
+export const SNARK_FIELD_SIZE = BigInt(
     '21888242871839275222246405745257275088548364400416034343698204186575808495617',
 );
-export const Fq = new ZqField(BN254_FIELD_SIZE);
+export const Fq = new ZqField(SNARK_FIELD_SIZE);
 
 export const MINT_MSG_TYPE = [
     {name: 'to', type: 'address'},
@@ -79,8 +76,8 @@ export const extractSecretsPair = (
 
 export function convertToSecretPair(s: string): SecretPair {
     return [
-        BigInt('0x' + s.slice(2, 66)) % BN254_FIELD_SIZE,
-        BigInt('0x' + s.slice(66, 130)) % BN254_FIELD_SIZE,
+        BigInt('0x' + s.slice(2, 66)) % SNARK_FIELD_SIZE,
+        BigInt('0x' + s.slice(66, 130)) % SNARK_FIELD_SIZE,
     ];
 }
 
@@ -115,7 +112,7 @@ export const preparePublicInput = (
                     bigIntToBuffer(root),
                 ]),
             ),
-        ) % BN254_FIELD_SIZE;
+        ) % SNARK_FIELD_SIZE;
 
     return {
         nullifier,
@@ -254,7 +251,7 @@ export const packToSolidityProof = (fullProof: any): PackedProof => {
         c: replica.pi_c.slice(0, 2),
         inputs: publicSignals.map((x: any) => {
             x = BigInt(x);
-            return (x % BN254_FIELD_SIZE).toString();
+            return (x % SNARK_FIELD_SIZE).toString();
         }),
     };
 };

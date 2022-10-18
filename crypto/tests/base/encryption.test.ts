@@ -1,23 +1,21 @@
 import {describe, expect} from '@jest/globals';
+
+import {
+    generateEcdhSharedKey,
+    encryptPlainText,
+    decryptCipherText,
+} from '../../src/base/encryption';
+import {generateRandomKeypair, packPublicKey} from '../../src/base/keypairs';
+import {SNARK_FIELD_SIZE} from '../../src/base/field-operations';
+import {extractCipherKeyAndIvFromPackedPoint} from '../../src/panther/messages';
 import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
-} from '@panther-core/crypto/lib/bigint-conversions';
-
-import {
-    deriveKeypairFromSeed,
-    packPublicKey,
-    BN254_FIELD_SIZE,
-} from '../../src/lib/keychain';
-import {
-    generateEcdhSharedKey,
-    encryptMessage,
-    decryptMessage,
-} from '../../src/lib/message-encryption';
+} from '../../src/utils/bigint-conversions';
 
 describe('Cryptographic operations', () => {
-    const keypair1 = deriveKeypairFromSeed();
-    const keypair2 = deriveKeypairFromSeed();
+    const keypair1 = generateRandomKeypair();
+    const keypair2 = generateRandomKeypair();
 
     const ecdhSharedKey12 = generateEcdhSharedKey(
         keypair1.privateKey,
@@ -28,18 +26,25 @@ describe('Cryptographic operations', () => {
         keypair1.publicKey,
     );
 
-    const plaintext = deriveKeypairFromSeed().privateKey;
-    const ciphertext = encryptMessage(
+    const plaintext = generateRandomKeypair().privateKey;
+    const {iv: ivSpending, cipherKey: ckSpending} =
+        extractCipherKeyAndIvFromPackedPoint(packPublicKey(ecdhSharedKey12));
+    const ciphertext = encryptPlainText(
         bigIntToUint8Array(plaintext),
-        packPublicKey(ecdhSharedKey12),
+        ckSpending,
+        ivSpending,
     );
+
+    const {iv: ivReading, cipherKey: ckReading} =
+        extractCipherKeyAndIvFromPackedPoint(packPublicKey(ecdhSharedKey21));
+
     const decryptedCiphertext = uint8ArrayToBigInt(
-        decryptMessage(ciphertext, packPublicKey(ecdhSharedKey21)),
+        decryptCipherText(ciphertext, ckReading, ivReading),
     );
 
     describe('Private key', () => {
         it('should be smaller than the SNARK field size (BN254)', () => {
-            expect(keypair1.privateKey < BN254_FIELD_SIZE).toBeTruthy();
+            expect(keypair1.privateKey < SNARK_FIELD_SIZE).toBeTruthy();
             // TODO: add tests to ensure that the prune buffer step worked
         });
     });
@@ -47,8 +52,8 @@ describe('Cryptographic operations', () => {
     describe("Public key's constituent values ", () => {
         it('should be smaller than the SNARK field size (BN254)', () => {
             // TODO: Figure out if these checks are correct and enough
-            expect(keypair1.publicKey[0] < BN254_FIELD_SIZE).toBeTruthy();
-            expect(keypair1.publicKey[1] < BN254_FIELD_SIZE).toBeTruthy();
+            expect(keypair1.publicKey[0] < SNARK_FIELD_SIZE).toBeTruthy();
+            expect(keypair1.publicKey[1] < SNARK_FIELD_SIZE).toBeTruthy();
         });
     });
 

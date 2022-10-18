@@ -12,8 +12,8 @@ https://github.com/appliedzkp/incrementalquintree
 
 import assert from 'assert';
 import fs from 'fs';
-// @ts-ignore
-import {poseidon} from 'circomlibjs';
+
+import {poseidon2or3} from '../../base/hashes';
 
 import {
     leafIdToTreeIdAndTriadId,
@@ -82,11 +82,6 @@ const calcInitialVals = (
     const root = hashFunc(filledSubtrees[depth - 1]);
 
     return {zeros, filledSubtrees, filledPaths, root};
-};
-
-const poseidon2or3 = (inputs: bigint[]): bigint => {
-    assert(inputs.length === 3 || inputs.length === 2);
-    return poseidon(inputs);
 };
 
 const _convertBnToHex = (bn: bigint): string => {

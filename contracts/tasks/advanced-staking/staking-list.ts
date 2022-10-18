@@ -2,7 +2,7 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task} from 'hardhat/config';
 import {Event} from 'ethers';
 import fs from 'fs';
-import {filterPaginator} from '@panther-core/crypto/lib/paginator';
+import {filterPaginator} from '@panther-core/crypto/lib/utils/paginator';
 
 const QUERY_BLOCKS = 500;
 

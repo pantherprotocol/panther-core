@@ -14,7 +14,7 @@ import {
 import {useWeb3React} from '@web3-react/core';
 import moment from 'moment';
 
-import {parseTxErrorMessage} from '../../../../../lib/errors';
+import {parseTxErrorMessage} from '../../../../../../src/services/errors';
 import {useAppDispatch, useAppSelector} from '../../../../../redux/hooks';
 import {updateExitCommitmentTime} from '../../../../../redux/slices/advancedStakesRewards';
 import {poolV0ExitDelaySelector} from '../../../../../redux/slices/poolV0';
@@ -27,7 +27,7 @@ import {
     walletActionCauseSelector,
     walletActionStatusSelector,
 } from '../../../../../redux/slices/web3WalletLastAction';
-import {deriveRootKeypairs} from '../../../../../services/keychain';
+import {generateRootKeypairs} from '../../../../../services/keys';
 import {registerCommitToExit} from '../../../../../services/pool';
 import {isDetailedError} from '../../../../../types/error';
 import {AdvancedStakeRewards} from '../../../../../types/staking';
@@ -73,7 +73,7 @@ export default function FirstStageRedeem(props: {
             data: {account},
         } as StartWalletActionPayload);
         const signer = library.getSigner(account);
-        const keys = await deriveRootKeypairs(signer);
+        const keys = await generateRootKeypairs(signer);
         if (keys instanceof Error) {
             dispatch(registerWalletActionFailure, 'signMessage');
             return notifyError({

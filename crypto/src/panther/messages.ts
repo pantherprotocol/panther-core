@@ -7,6 +7,8 @@ import {
     packPublicKey,
     derivePubKeyFromPrivKey,
     unpackPublicKey,
+    PACKED_PUB_KEY_SIZE,
+    PRIV_KEY_SIZE,
 } from '../base/keypairs';
 import {generateRandomInBabyJubSubField} from '../base/field-operations';
 import {PublicKey, PrivateKey, ephemeralKeyPacked} from '../types/keypair';
@@ -20,8 +22,6 @@ import {
 
 // sizes in bytes according to NewCommitments docs:
 // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k
-export const PACKED_PUB_KEY_SIZE = 32;
-export const PRIV_KEY_SIZE = 32;
 export const CIPHERTEXT_MSG_TYPE_V1_SIZE = 32;
 
 // encryptRandomSecret creates a message with encrypted randomSecret

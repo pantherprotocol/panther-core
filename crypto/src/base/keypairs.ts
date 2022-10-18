@@ -18,6 +18,9 @@ import {
     assert,
 } from '../utils/assertions';
 
+export const PACKED_PUB_KEY_SIZE = 32;
+export const PRIV_KEY_SIZE = 32;
+
 export const isChildPubKeyValid = (
     childPubKey: PublicKey,
     rootKeypair: IKeypair,

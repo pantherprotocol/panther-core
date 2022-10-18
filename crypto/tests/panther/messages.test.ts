@@ -1,12 +1,14 @@
 import {describe, expect} from '@jest/globals';
 
-import {generateRandomKeypair} from '../../src/base/keypairs';
+import {
+    generateRandomKeypair,
+    PACKED_PUB_KEY_SIZE,
+} from '../../src/base/keypairs';
 import {generateRandomInBabyJubSubField} from '../../src/base/field-operations';
 import {
     CIPHERTEXT_MSG_TYPE_V1_SIZE,
     unpackAndDecryptMessageTypeV1,
     encryptAndPackMessageTypeV1,
-    PACKED_PUB_KEY_SIZE,
     unpackMessageTypeV1,
 } from '../../src/panther/messages';
 

@@ -94,7 +94,11 @@ export default function UnstakingInfo() {
                         . The rewards are created as zZKP and PRP which can be
                         seen on the{' '}
                     </span>
-                    <Link className="unstaking-info-link" to={'/zAssets'}>
+                    <Link
+                        className="unstaking-info-link"
+                        to={'/zAssets'}
+                        data-testid="unstake-tab_unstaking-info_link"
+                    >
                         zAsset page
                     </Link>
                     <span>.</span>

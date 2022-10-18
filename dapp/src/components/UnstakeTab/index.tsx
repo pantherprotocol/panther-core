@@ -10,7 +10,10 @@ import './styles.scss';
 
 export default function UnstakingTab() {
     return (
-        <Box className="unstaking-tab-holder">
+        <Box
+            className="unstaking-tab-holder"
+            data-testid="unstake-tab_unstaking-tab_container"
+        >
             <UnstakingInfo />
             <UnstakeTable />
         </Box>

@@ -1554,8 +1554,15 @@ export default function TermsOfService() {
 
     `;
     return (
-        <Box className="terms-of-service">
-            <div dangerouslySetInnerHTML={{__html: content}} />;
+        <Box
+            className="terms-of-service"
+            data-testid="terms-of-service_terms-of-service_container"
+        >
+            <div
+                dangerouslySetInnerHTML={{__html: content}}
+                data-testid="terms-of-service_terms-of-service_content"
+            />
+            ;
         </Box>
     );
 }

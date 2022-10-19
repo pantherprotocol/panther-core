@@ -104,13 +104,13 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 recipientTransaction.unpackMessageV1(
                     senderTransaction.cipheredTextMessageV1,
                 );
-            } catch (e) {
+            } catch (e: any) {
                 throw Error("Can't unpack: " + e.toString());
             }
             // [6] - Decrypt ( try... )
             try {
                 recipientTransaction.decryptMessageV1();
-            } catch (e) {
+            } catch (e: any) {
                 throw Error(
                     "can't decrypt - this message is not for us " +
                         e.toString(),

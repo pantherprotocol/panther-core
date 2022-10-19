@@ -8,8 +8,8 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import Jazzicon, {jsNumberForAddress} from 'react-jazzicon';
 import {Provider} from 'react-redux';
 
+import {formatAccountAddress} from '../../../lib/format';
 import {store} from '../../../redux/store';
-import {formatAccountAddress} from '../../../services/account';
 
 import {AddressWithSettingProps} from './AddressWithSetting.interface';
 

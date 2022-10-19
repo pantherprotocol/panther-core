@@ -10,6 +10,9 @@
         color: $highlighted-text;
         font-weight: $bold-font-weight;
         line-height: 22px;
+        span {
+            margin-left: 5px;
+        }
     }
 
     .balance-value {

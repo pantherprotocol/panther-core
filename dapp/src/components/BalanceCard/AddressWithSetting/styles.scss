@@ -12,6 +12,11 @@
 
     .copy-icon-wrapper {
         padding-bottom: 15px;
+        cursor: pointer;
+    }
+
+    .copied {
+        cursor: unset;
     }
 
     .content-copy-icon {

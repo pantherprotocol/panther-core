@@ -20,6 +20,7 @@
         .balance-box {
             display: flex;
             justify-content: center;
+            align-items: baseline;
 
             .balance {
                 font-weight: $semi-bold-font-weight;

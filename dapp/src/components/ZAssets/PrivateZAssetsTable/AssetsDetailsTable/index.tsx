@@ -7,18 +7,22 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
 import {useWeb3React} from '@web3-react/core';
 import AssetsDetailsRow from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsRow';
+import infoIcon from 'images/info-icon.svg';
 import {useAppSelector, useAppDispatch} from 'redux/hooks';
 import {advancedStakesRewardsSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {getPoolV0ExitTime} from 'redux/slices/wallet/poolV0';
+import {chainHasPoolContract} from 'services/contracts';
 import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
 
 import './styles.scss';
 
 const AssetsDetailsTable = () => {
     const context = useWeb3React();
-    const {account, chainId, library} = context;
+    const {active, account, chainId, library} = context;
+
     const advancedStakesRewards = useAppSelector(
         advancedStakesRewardsSelector(chainId, account),
     );
@@ -46,17 +50,47 @@ const AssetsDetailsTable = () => {
     }, [context, chainId, library, dispatch, gotExitTime]);
 
     return (
-        <Box sx={{margin: 1}}>
-            <Table size="small" aria-label="purchases">
-                <TableHead>
-                    <TableRow className="staked-zAsset-row">
-                        <TableCell>Date:</TableCell>
-                        <TableCell align="right">Amount:</TableCell>
-                        <TableCell align="right">Rewards Earned:</TableCell>
-                        <TableCell align="right"></TableCell>
+        <Box className="assets-details-table_container">
+            <Table
+                size="small"
+                aria-label="purchases"
+                className="assets-details-table_table"
+            >
+                <TableHead
+                    className={`assets-details-table_header ${
+                        active &&
+                        chainId &&
+                        !chainHasPoolContract(chainId) &&
+                        'wrong-network'
+                    }`}
+                >
+                    <TableRow className="assets-details-table_header-row">
+                        <TableCell
+                            align="right"
+                            className="assets-details-table_header-cell"
+                        >
+                            Amount:
+                        </TableCell>
+                        <TableCell className="assets-details-table_header-cell">
+                            Deposit Date:
+                        </TableCell>
+                        <TableCell
+                            align="right"
+                            className="assets-details-table_header-cell"
+                        >
+                            <span className="title">Rewards Earned:</span>
+                            <Tooltip
+                                title="Rewards Earned Tooltip"
+                                data-html="true"
+                                placement="top"
+                                className="tooltip-icon"
+                            >
+                                <img src={infoIcon} />
+                            </Tooltip>
+                        </TableCell>
                     </TableRow>
                 </TableHead>
-                <TableBody>
+                <TableBody className="assets-details-table_body">
                     {rewardsFilteredAndSorted.map(
                         (reward: AdvancedStakeRewards) => (
                             <AssetsDetailsRow

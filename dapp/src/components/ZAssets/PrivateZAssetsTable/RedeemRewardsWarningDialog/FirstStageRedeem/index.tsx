@@ -16,7 +16,10 @@ import {useWeb3React} from '@web3-react/core';
 import BackButton from 'components/BackButton';
 import {notifyError} from 'components/Common/errors';
 import {MessageWithTx} from 'components/Common/MessageWithTx';
-import {openNotification} from 'components/Common/notification';
+import {
+    openNotification,
+    removeNotification,
+} from 'components/Common/notification';
 import PrimaryActionButton from 'components/Common/PrimaryActionButton';
 import {formatDuration, getUnixTime} from 'date-fns';
 import {CONFIRMATIONS_NUM} from 'lib/constants';
@@ -126,6 +129,17 @@ export default function FirstStageRedeem(props: {
             return notifyError(tx);
         }
 
+        const inProgress = openNotification(
+            'Registration in progress',
+            <MessageWithTx
+                message="Your commitment transaction is currently in progress. Please wait for confirmation!"
+                chainId={chainId}
+                txHash={tx?.hash}
+            />,
+
+            'info',
+        );
+
         // null is returned when there was no actual transaction and commitment
         // was registered before. See Error PP:E32 in poolContractCommitToExit()
         if (tx !== null) {
@@ -139,6 +153,8 @@ export default function FirstStageRedeem(props: {
             reward.id,
             getUnixTime(new Date()),
         ]);
+
+        removeNotification(inProgress);
 
         openNotification(
             'Registration completed successfully',

@@ -1,32 +1,85 @@
 @import '../../../../variables';
 
 .private-zAsset-row {
-    background: transparent;
-    opacity: 0.7;
-    backdrop-filter: blur(600px);
     border-radius: 0px;
     padding: 15px;
-    border: 2px solid white;
+    border: 2px solid $white;
+    position: relative;
 
-    .expand-icon {
-        width: 3%;
+    @media (max-width: $medium-screen-size) {
+        bottom: 10px;
+    }
 
-        @media (max-width: $medium-screen-size) {
-            width: initial;
-        }
+    td {
+        padding: 0;
     }
 
     .logo-cell {
-        width: 10%;
+        display: flex;
+        align-items: center;
 
         @media (max-width: $medium-screen-size) {
-            width: initial;
+            padding-left: 10px;
+            padding-bottom: 0;
+            padding-top: 17px;
+        }
+
+        .expand-icon {
+            color: $white;
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(
+                    180deg,
+                    rgba(152, 195, 245, 0.05) 0%,
+                    rgba(152, 195, 245, 0) 72%
+                ),
+                rgba(164, 183, 219, 0.1);
+            mix-blend-mode: normal;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(18px);
+            border-radius: 5px;
+            margin-right: 19px;
+
+            @media (max-width: $medium-screen-size) {
+                position: relative;
+            }
+        }
+
+        img {
+            margin-right: 30px;
+            width: 57px;
+            height: 57px;
+            @media (max-width: $medium-screen-size) {
+                width: 54px;
+                height: 49px;
+            }
+
+            @media (max-width: $medium-screen-size) {
+                margin-right: 22px;
+            }
         }
     }
 
-    .prp {
+    .apr {
         font-weight: $bold-font-weight !important;
         font-size: $normal-font-size;
         color: $color-beige !important;
+        position: relative;
+
+        @media (max-width: $medium-screen-size) {
+            display: none;
+            font-size: $smaller-font-size;
+        }
+
+        .content {
+            position: absolute;
+            left: 73px;
+            top: 19px;
+        }
+    }
+
+    .wrong-network {
+        padding-left: 74px;
+        color: $white !important;
     }
 }

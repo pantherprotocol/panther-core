@@ -234,12 +234,7 @@ a {
 
 .MuiTable-root {
     border-collapse: separate !important;
-    border-spacing: 0 8px !important;
-}
-
-.MuiTable-root,
-.MuiTableContainer-root {
-    background-color: $transparent !important;
+    border-spacing: 0 12px !important;
 }
 
 .MuiTableRow-head th {
@@ -257,16 +252,15 @@ a {
 }
 
 .MuiTableBody-root .MuiTableRow-root {
-    background: $table-background;
     border-radius: 8px;
 }
 
 .MuiTableBody-root .MuiTableRow-root .MuiTableCell-root:first-child {
-    border-radius: 8px 0 0 8px;
+    border-radius: 10px 0 0 10px;
 }
 
 .MuiTableBody-root .MuiTableRow-root .MuiTableCell-root:last-child {
-    border-radius: 0 8px 8px 0;
+    border-radius: 0px 10px 10px 0;
 }
 
 .MuiTable-root .btn {

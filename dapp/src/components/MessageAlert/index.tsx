@@ -23,8 +23,7 @@ const MessageAlert = (props: MessageAlertProps) => {
         <>
             {!acknowledgedNotification && (
                 <Box className="message-alert-container">
-                    <Box className="alert-box"></Box>
-                    <Box className="content-box">
+                    <Box className="alert-box">
                         <img
                             src={xIcon}
                             alt="close"

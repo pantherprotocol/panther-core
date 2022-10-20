@@ -39,7 +39,7 @@ export default function ZAssets(): React.ReactElement {
                         <MessageAlert
                             title="Enhance Panther's privacy and earn rewards"
                             body="Deposit assets to improve Panther's anonymity set and
-                        earn rewards for securing the protocol."
+                        earn rewards for securing the protocol"
                             notificationOwner="zAssetsPage"
                         />
                     )}

@@ -1,9 +1,53 @@
-.staked-zAsset-row {
-    background: transparent !important;
-    mix-blend-mode: normal;
-    opacity: 0.7;
-    box-sizing: border-box;
-    backdrop-filter: blur(600px);
-    border-radius: 0px;
-    padding: 10px;
+@import '../../../../variables.scss';
+
+.assets-details-table_container {
+    @media (max-width: $medium-screen-size) {
+        margin: 0;
+        padding: 0;
+    }
+    .assets-details-table_table {
+        .assets-details-table_header {
+            @media (max-width: $medium-screen-size) {
+                display: none;
+            }
+            .assets-details-table_header-row {
+                background: transparent;
+                mix-blend-mode: normal;
+                box-sizing: border-box;
+                border-radius: 0px;
+                padding: 10px;
+
+                .assets-details-table_header-cell {
+                    width: 27%;
+                    text-align: left;
+                    opacity: unset;
+                    font-size: $normal-font-size;
+                    font-weight: $light-font-weight;
+
+                    &:first-child {
+                        padding-left: 25px;
+                    }
+
+                    &:nth-child(2) {
+                        padding-left: 13px;
+                    }
+
+                    &:nth-child(3) {
+                        padding-left: 0;
+                        padding-right: 0;
+                    }
+
+                    .tooltip-icon {
+                        padding-left: 7px;
+                        position: relative;
+                        top: 4px;
+                    }
+                }
+            }
+        }
+
+        .wrong-network {
+            display: none;
+        }
+    }
 }

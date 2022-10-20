@@ -683,7 +683,7 @@ describe('PantherPoolV0', () => {
                 const zAssetId = zAssetIdSol;
                 const createTime = createdAtNum;
                 // TODO: re-generate K by using data sended on-chain
-                const pubKey: BigInt[] = [K[0], K[1]];
+                const pubKey = [K[0], K[1]];
                 const commitments = [
                     generateCommitmentNum(
                         pubKey[0],

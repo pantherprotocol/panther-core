@@ -33,8 +33,8 @@ describe('PantherPoolV0 and Vault Integration', () => {
     let pantherPoolV0AndZAssetRegistryAndVaultTester: PantherPoolV0AndZAssetRegistryAndVaultTester;
     let snapshot: number;
     const UTXOs = 3;
-    const tokensAddresses: BigInt[] = [BigInt(0), BigInt(0), BigInt(0)];
-    const zAssetIds: BigInt[] = [BigInt(0), BigInt(0), BigInt(0)];
+    const tokensAddresses = [BigInt(0), BigInt(0), BigInt(0)];
+    const zAssetIds = [BigInt(0), BigInt(0), BigInt(0)];
     const amounts = [BigInt(1000), BigInt(1000), BigInt(1000)];
 
     before(async () => {
@@ -182,7 +182,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 // const createdAtBytes32 = toBytes32(createdAtNum.toString());
                 const commitments: BigNumber[] = [];
                 commitments.fill(BigNumber.from(0), UTXOs);
-                const commitmentsForTree: BigInt[] = [];
+                const commitmentsForTree = [];
                 commitmentsForTree.fill(BigInt(0), UTXOs);
                 for (let i = 0; i < UTXOs; ++i) {
                     commitments[i] =

@@ -8,7 +8,7 @@ import {MerkleProofVerifierTester} from '../../types/contracts';
 // @ts-ignore
 import {poseidon, babyjub} from 'circomlibjs';
 import {TriadMerkleTree} from '../../lib/tree';
-import assert = require('assert');
+import {poseidon2or3} from '@panther-core/crypto/lib/base/hashes';
 import {BytesLike} from 'ethers/lib/ethers';
 import {deriveChildPrivKeyFromRootPrivKey} from '@panther-core/crypto/lib/base/keypairs';
 import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
@@ -41,9 +41,9 @@ describe('MerkleProofVerifier', () => {
             });
 
             const amountsOut = [BigInt('7'), BigInt('8'), BigInt('9')];
-            const token: BigInt = BigInt('111');
-            const createTime: BigInt = BigInt('1651062006');
-            const pubKey: BigInt[] = [
+            const token = BigInt('111');
+            const createTime = BigInt('1651062006');
+            const pubKey = [
                 BigInt(
                     '18387562449515087847139054493296768033506512818644357279697022045358977016147',
                 ),
@@ -279,11 +279,6 @@ describe('MerkleProofVerifier', () => {
             await revertSnapshot(snapshot);
         });
 
-        const poseidon2or3 = (inputs: bigint[]): bigint => {
-            assert(inputs.length === 3 || inputs.length === 2);
-            return poseidon(inputs);
-        };
-
         describe('should be equality between ts & solidity path elements & proof will success', function () {
             const PANTHER_CORE_ZERO_VALUE = BigInt(
                 '2896678800030780677881716886212119387589061708732637213728415628433288554509',
@@ -296,9 +291,9 @@ describe('MerkleProofVerifier', () => {
             );
 
             const amountsOut = [BigInt('7'), BigInt('8'), BigInt('9')];
-            const token: BigInt = BigInt('111');
-            const createTime: BigInt = BigInt('1651062006');
-            const pubKey: BigInt[] = [
+            const token = BigInt('111');
+            const createTime = BigInt('1651062006');
+            const pubKey = [
                 BigInt(
                     '18387562449515087847139054493296768033506512818644357279697022045358977016147',
                 ),

@@ -1,5 +1,7 @@
 @import '../../variables.scss';
 
+$slider-indicator-color: #d9d9d9;
+
 .welcome-container {
     margin: 0 auto;
     width: max-content;
@@ -9,9 +11,12 @@
     border: 1px solid rgba(102, 141, 198, 0.4);
     border-radius: 22px;
     padding: 10px;
+    box-shadow: 0px 3px 13px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(36px);
 
     @media (max-width: $medium-screen-size) {
         width: 90%;
+        padding: 15px 9px 31px;
     }
 
     .welcome-title {
@@ -28,7 +33,8 @@
         margin-bottom: 10px;
 
         @media (max-width: $small-screen-size) {
-            font-size: $big-font-size;
+            font-size: $title-font-size;
+            margin-top: 0;
         }
     }
 
@@ -38,6 +44,9 @@
         line-height: 20px;
         text-align: center;
         opacity: 0.8;
+        @media (max-width: $medium-screen-size) {
+            padding: 0 10px;
+        }
     }
 
     .features-holder {
@@ -69,7 +78,9 @@
 
             @media (max-width: $medium-screen-size) {
                 width: 100%;
-                margin: 5px 0;
+                height: 285px;
+                margin: 28px 0 0;
+                padding: 33px 22px 30px;
             }
 
             &-icon {
@@ -80,6 +91,11 @@
                 font-weight: $semi-bold-font-weight;
                 font-size: $title-font-size;
                 line-height: 25px;
+
+                @media (max-width: $medium-screen-size) {
+                    font-size: $title-font-size + 1;
+                    margin-top: 10px;
+                }
             }
 
             &-message {
@@ -87,7 +103,67 @@
                 text-align: center;
                 opacity: 0.8;
                 color: #a5bdd9;
-                padding-bottom: 10px;
+            }
+        }
+    }
+
+    .welcome_slide--invisible {
+        display: none;
+        @media (min-width: ($medium-screen-size + 1)) {
+            display: flex;
+        }
+    }
+
+    .welcome_slide--visible {
+        display: none;
+        @media (max-width: $medium-screen-size) {
+            display: block;
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        // slider wrapper
+        .css-ohwg9z {
+            position: static;
+
+            // slider next button
+            .css-e1mnrr {
+                width: 40px;
+                height: 40px;
+                background: transparent;
+                border: 1px solid $color-beige;
+                border-radius: 5px;
+                top: 265px;
+                right: 8px;
+
+                button {
+                    background-color: transparent;
+                    position: relative;
+                    right: 10px;
+                    color: $color-beige;
+                }
+            }
+
+            // slider back button
+            .css-zbwuqm {
+                @extend .css-e1mnrr;
+                right: 0;
+                left: 8px;
+            }
+
+            // slider indicator
+            .css-1m9128y {
+                margin-top: 38px;
+
+                // selected indicator dot
+                .css-8ucetn-MuiButtonBase-root-MuiIconButton-root {
+                    color: $slider-indicator-color;
+                }
+                // not selected indicator dots
+                .css-bbreus-MuiButtonBase-root-MuiIconButton-root {
+                    color: $slider-indicator-color;
+                    opacity: 0.2;
+                }
             }
         }
     }
@@ -96,5 +172,9 @@
         height: 54px;
         background: $btn-blue;
         border-radius: 16px;
+
+        @media (max-width: $medium-screen-size) {
+            margin: 28px 4px 0;
+        }
     }
 }

@@ -1,5 +1,6 @@
 // @ts-ignore
 import {ethers} from 'hardhat';
+
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,

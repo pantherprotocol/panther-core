@@ -1,7 +1,9 @@
 import {expect} from 'chai';
-import hardhat from 'hardhat';
-import {data, params} from './assets/advancesStakingData.data';
+// eslint-disable-next-line
 import {BigNumberish} from 'ethers';
+import hardhat from 'hardhat';
+
+import {data, params} from './assets/advancesStakingData.data';
 
 const {ethers} = hardhat;
 

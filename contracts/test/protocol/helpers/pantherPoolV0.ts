@@ -1,8 +1,9 @@
 // @ts-ignore
+import {smock} from '@defi-wonderland/smock';
 import {ethers} from 'hardhat';
+
 import {MockPantherPoolV0} from '../../../types/contracts';
 
-import {smock} from '@defi-wonderland/smock';
 import {getPantherPoolMocFactoryByName} from './pantherPoolMockFactory';
 
 export {deployPantherPoolV0};

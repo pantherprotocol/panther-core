@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import Web3 from 'web3';
 import {poseidon} from 'circomlibjs';
+import Web3 from 'web3';
 
 const {keccak256, toBN} = Web3.utils;
 

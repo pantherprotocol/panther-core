@@ -1,10 +1,12 @@
-import * as _ from 'lodash';
 import {utils} from 'ethers';
+import * as _ from 'lodash';
+
 import {RewardMaster} from '../types/contracts/RewardMaster';
-import {TestnetStaking} from './../types/contracts/TestnetStaking';
-import {Staking, IStakingTypes} from '../types/contracts/Staking';
 import {StakeRewardController} from '../types/contracts/StakeRewardController';
+import {Staking, IStakingTypes} from '../types/contracts/Staking';
+
 import {AdvancedStakeRewardController} from './../types/contracts/AdvancedStakeRewardController';
+import {TestnetStaking} from './../types/contracts/TestnetStaking';
 import {
     classicActionHash,
     advancedActionHash,

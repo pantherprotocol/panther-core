@@ -11,6 +11,7 @@ https://github.com/appliedzkp/incrementalquintree
 */
 
 import assert from 'assert';
+
 // @ts-ignore
 import {poseidon} from 'circomlibjs';
 

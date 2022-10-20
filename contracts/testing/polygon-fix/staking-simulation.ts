@@ -1,12 +1,13 @@
 // Run via: yarn ts-node testing/polygon-fix/staking-simulation.ts
 
-import fs from 'fs';
-import _ from 'lodash';
-import {BigNumber, constants, Wallet, utils} from 'ethers';
 import {assert} from 'console';
+import fs from 'fs';
 
-import {fe, pe, parseDate, toDate} from '../../lib/units-shortcuts';
+import {BigNumber, constants, Wallet, utils} from 'ethers';
+import _ from 'lodash';
+
 import {getBlockTimestamp} from '../../lib/provider';
+import {fe, pe, parseDate, toDate} from '../../lib/units-shortcuts';
 
 import stakedHistory from './data/staking-events-till-25884010.json';
 

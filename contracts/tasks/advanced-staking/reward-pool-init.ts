@@ -1,5 +1,5 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task} from 'hardhat/config';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
 task('rewardpool:init', 'Initializes the RewardPool')
     .addPositionalParam('poolId', 'VestingPools pool index')

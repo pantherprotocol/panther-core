@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import {expect} from 'chai';
+
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,

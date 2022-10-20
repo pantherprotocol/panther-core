@@ -3,12 +3,13 @@
    1) stakes claimed json file
    2) stakes created json file.
 */
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {task} from 'hardhat/config';
-import {BigNumber, constants, utils} from 'ethers';
 import fs from 'fs';
+
+import {BigNumber, constants, utils, Contract} from 'ethers';
+import {task} from 'hardhat/config';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+
 import {Stake} from './staking-list';
-import {Contract} from 'ethers';
 
 task('unstaked:rewards', 'Output staking events data as JSON')
     .addParam(

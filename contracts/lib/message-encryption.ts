@@ -1,23 +1,20 @@
-import {babyjub} from 'circomlibjs';
+import {generateEcdhSharedKey} from '@panther-core/crypto/lib/base/encryption';
+import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
 import {
     derivePubKeyFromPrivKey,
     deriveChildPubKeyFromRootPubKey,
 } from '@panther-core/crypto/lib/base/keypairs';
-import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
 import {deriveSpendingChildKeypair} from '@panther-core/crypto/lib/panther/keys';
-import {PublicKey, IKeypair} from '@panther-core/crypto/lib/types/keypair';
-
-import {generateEcdhSharedKey} from '@panther-core/crypto/lib/base/encryption';
-
 import {
     encryptAndPackMessageTypeV1,
     unpackAndDecryptMessageTypeV1,
 } from '@panther-core/crypto/lib/panther/messages';
-
+import {PublicKey, IKeypair} from '@panther-core/crypto/lib/types/keypair';
 import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
 } from '@panther-core/crypto/lib/utils/bigint-conversions';
+import {babyjub} from 'circomlibjs';
 
 // Usage flow of this class:
 // 1. Constructor

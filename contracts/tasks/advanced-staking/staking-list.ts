@@ -1,8 +1,10 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {task} from 'hardhat/config';
-import {Event} from 'ethers';
 import fs from 'fs';
+
 import {filterPaginator} from '@panther-core/crypto/lib/utils/paginator';
+// eslint-disable-next-line
+import {Event} from 'ethers';
+import {task} from 'hardhat/config';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
 const QUERY_BLOCKS = 500;
 

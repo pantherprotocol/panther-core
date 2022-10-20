@@ -1,8 +1,9 @@
-import {HardhatRuntimeEnvironment, TaskArguments} from 'hardhat/types';
+import {Contract} from 'ethers';
 import {task} from 'hardhat/config';
+import {HardhatRuntimeEnvironment, TaskArguments} from 'hardhat/types';
+
 import {addRewardAdviser} from '../../lib/staking';
 import {RewardMaster} from '../../types/contracts';
-import {Contract} from 'ethers';
 
 const TASK_ADVISER_ADD = 'adviser:add';
 

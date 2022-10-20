@@ -1,6 +1,6 @@
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
-import {ethers, network} from 'hardhat';
 import {BigNumber, utils} from 'ethers';
+import {ethers, network} from 'hardhat';
 
 const provider = ethers.provider;
 

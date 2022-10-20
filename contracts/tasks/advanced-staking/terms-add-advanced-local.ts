@@ -1,7 +1,8 @@
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers';
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {task} from 'hardhat/config';
 import {utils} from 'ethers';
+import {task} from 'hardhat/config';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+
 import {hash4bytes} from '../../lib/hash';
 
 const TERMS_ADD_ADVANCED_LOCAL = 'terms:add:advanced:local';

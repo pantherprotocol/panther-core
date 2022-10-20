@@ -1,5 +1,3 @@
-import {ethers} from 'hardhat';
-
 // For some reason this import is required in order to ensure
 // hre.ethers.provider is available when running:
 //
@@ -8,6 +6,7 @@ import {ethers} from 'hardhat';
 // even though https://hardhat.org/guides/scripts.html suggests it shouldn't
 // be necessary:
 import '@nomiclabs/hardhat-ethers';
+import {ethers} from 'hardhat';
 
 export async function getBlockNumber() {
     return (await ethers.provider.getBlock('latest')).number;

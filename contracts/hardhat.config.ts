@@ -1,40 +1,35 @@
-import '@nomiclabs/hardhat-waffle';
-import '@nomiclabs/hardhat-etherscan';
+import {resolve} from 'path';
+
 import '@nomiclabs/hardhat-ethers';
+import '@nomiclabs/hardhat-etherscan';
+import '@nomiclabs/hardhat-waffle';
 import '@typechain/hardhat';
+import {config as dotenvConfig} from 'dotenv';
 import 'hardhat-contract-sizer';
 import 'hardhat-deploy';
 import 'hardhat-gas-reporter';
+import {HardhatUserConfig} from 'hardhat/config';
+import {NetworkUserConfig, HttpNetworkAccountsUserConfig} from 'hardhat/types';
 import 'solidity-coverage';
 
-import './tasks/advanced-staking/terms-add';
-import './tasks/advanced-staking/terms-update';
-import './tasks/advanced-staking/terms-add-advanced-local';
-import './tasks/advanced-staking/reward-adviser-add';
-import './tasks/advanced-staking/reward-pool-init';
 import './tasks/advanced-staking/commitments-list';
 import './tasks/advanced-staking/matic-reward-pool-init';
 import './tasks/advanced-staking/proposal-gen';
 import './tasks/advanced-staking/reward-adviser-add';
+import './tasks/advanced-staking/reward-params-update';
 import './tasks/advanced-staking/reward-pool-init';
-import './tasks/advanced-staking/staking-list';
+import './tasks/advanced-staking/rewards-limit-add';
 import './tasks/advanced-staking/staking-bridge-local';
+import './tasks/advanced-staking/staking-list';
 import './tasks/advanced-staking/terms-add';
 import './tasks/advanced-staking/terms-add-advanced-local';
+import './tasks/advanced-staking/terms-update';
 import './tasks/advanced-staking/time-increase';
 import './tasks/advanced-staking/unstaked-rewards';
-import './tasks/advanced-staking/rewards-limit-add';
-import './tasks/advanced-staking/reward-params-update';
 import './tasks/advanced-staking/vesting-list';
-
 import './tasks/protocol/exitTime-update';
 import './tasks/protocol/grant-issue';
 import './tasks/protocol/zAsset-add';
-
-import {HardhatUserConfig} from 'hardhat/config';
-import {NetworkUserConfig, HttpNetworkAccountsUserConfig} from 'hardhat/types';
-import {config as dotenvConfig} from 'dotenv';
-import {resolve} from 'path';
 
 dotenvConfig({path: resolve(__dirname, './.env')});
 

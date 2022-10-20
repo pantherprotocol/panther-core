@@ -1,11 +1,12 @@
-import {ethers} from 'hardhat';
 import {assert, expect} from 'chai';
 import {BigNumber, constants} from 'ethers';
+import {ethers} from 'hardhat';
+
+import {revertSnapshot, takeSnapshot} from '../../lib/hardhat';
 import {
     MockVotingPowerSource,
     VotingPowerInformer,
 } from '../../types/contracts';
-import {revertSnapshot, takeSnapshot} from '../../lib/hardhat';
 
 const toBN = BigNumber.from;
 const E18 = toBN(10).pow(18);

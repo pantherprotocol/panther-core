@@ -1,26 +1,25 @@
-// SPDX-License-Identifier: MIT
-import {expect} from 'chai';
-
-// @ts-ignore
-import {toBytes32, PathElementsType, Triad} from '../../lib/utilities';
-import {takeSnapshot, revertSnapshot} from './helpers/hardhat';
-import {MerkleProofVerifierTester} from '../../types/contracts';
-// @ts-ignore
-import {poseidon, babyjub} from 'circomlibjs';
-import {TriadMerkleTree} from '../../lib/tree';
-import {poseidon2or3} from '@panther-core/crypto/lib/base/hashes';
-import {BytesLike} from 'ethers/lib/ethers';
-import {deriveChildPrivKeyFromRootPrivKey} from '@panther-core/crypto/lib/base/keypairs';
-import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
 import crypto from 'crypto';
-import {utils} from 'ethers';
-import {bigintToBytes32} from '../../lib/conversions';
-import {deployMerkleProofVerifierTester} from './helpers/merkleProofVerifierTester';
 
+import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
+import {poseidon2or3} from '@panther-core/crypto/lib/base/hashes';
+import {deriveChildPrivKeyFromRootPrivKey} from '@panther-core/crypto/lib/base/keypairs';
 import {
     bigIntToBuffer,
     uint8ArrayToBigInt,
 } from '@panther-core/crypto/lib/utils/bigint-conversions';
+import {expect} from 'chai';
+// @ts-ignore
+import {poseidon, babyjub} from 'circomlibjs';
+import {utils} from 'ethers';
+import {BytesLike} from 'ethers/lib/ethers';
+
+import {bigintToBytes32} from '../../lib/conversions';
+import {TriadMerkleTree} from '../../lib/tree';
+import {toBytes32, PathElementsType, Triad} from '../../lib/utilities';
+import {MerkleProofVerifierTester} from '../../types/contracts';
+
+import {takeSnapshot, revertSnapshot} from './helpers/hardhat';
+import {deployMerkleProofVerifierTester} from './helpers/merkleProofVerifierTester';
 
 describe('MerkleProofVerifier', () => {
     let merkleProofVerifierTester: MerkleProofVerifierTester;

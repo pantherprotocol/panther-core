@@ -1,7 +1,9 @@
-import {ethers} from 'hardhat';
-import {BigNumber, ContractTransaction} from 'ethers';
 import {FakeContract, smock} from '@defi-wonderland/smock';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
+// eslint-disable-next-line
+import {BigNumber, ContractTransaction} from 'ethers';
+import {ethers} from 'hardhat';
+
 import {
     RewardPool,
     IErc20Min,

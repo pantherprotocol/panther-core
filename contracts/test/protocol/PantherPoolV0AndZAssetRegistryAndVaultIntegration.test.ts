@@ -1,32 +1,30 @@
 // SPDX-License-Identifier: MIT
-import {expect} from 'chai';
+import assert from 'assert';
 
+import type {BytesLike} from '@ethersproject/bytes';
+import {deriveKeypairFromSeed} from '@panther-core/crypto/lib/base/keypairs';
+import {
+    bigIntToBuffer,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/utils/bigint-conversions';
+import {expect} from 'chai';
 // @ts-ignore
+import {poseidon} from 'circomlibjs';
+import {BigNumber} from 'ethers';
+
+import {UtxoRecipientData, UtxoSenderData} from '../../lib/message-encryption';
+import {MerkleProof, TriadMerkleTree} from '../../lib/tree';
+import {Pair, PathElementsType, toBytes32} from '../../lib/utilities';
+import {PantherPoolV0AndZAssetRegistryAndVaultTester} from '../../types/contracts';
+
+import {getExitCommitment} from './data/depositAndFakeExitSample';
 import {
     takeSnapshot,
     revertSnapshot,
     increaseTime,
     getBlockTimestamp,
 } from './helpers/hardhat';
-import {poseidon} from 'circomlibjs';
-import {MerkleProof, TriadMerkleTree} from '../../lib/tree';
-import assert from 'assert';
-import {UtxoRecipientData, UtxoSenderData} from '../../lib/message-encryption';
-
-import {
-    bigIntToBuffer,
-    uint8ArrayToBigInt,
-} from '@panther-core/crypto/lib/utils/bigint-conversions';
-
-import {deriveKeypairFromSeed} from '@panther-core/crypto/lib/base/keypairs';
-
-import {PantherPoolV0AndZAssetRegistryAndVaultTester} from '../../types/contracts';
 import {deployPantherPoolV0AndZAssetRegistryAndVaultTester} from './helpers/pantherPoolV0AndZAssetRegistryAndVaultTester';
-import {Pair, PathElementsType, toBytes32} from '../../lib/utilities';
-import {BigNumber} from 'ethers';
-import type {BytesLike} from '@ethersproject/bytes';
-
-import {getExitCommitment} from './data/depositAndFakeExitSample';
 
 describe('PantherPoolV0 and Vault Integration', () => {
     // eslint-disable-next-line no-unused-vars

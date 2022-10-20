@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
-import {expect} from 'chai';
-import {ethers} from 'hardhat';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers';
-import {revertSnapshot, takeSnapshot} from './helpers/hardhat';
-import {PrpGrantor} from '../../types/contracts';
+import {expect} from 'chai';
 import {BigNumber} from 'ethers';
+import {ethers} from 'hardhat';
+
+import {PrpGrantor} from '../../types/contracts';
+
+import {revertSnapshot, takeSnapshot} from './helpers/hardhat';
 
 describe('PrpGrantor contract', function () {
     // bytes4(keccak256("forAdvancedStakeGrant"))

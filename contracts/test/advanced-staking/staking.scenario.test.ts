@@ -1,14 +1,14 @@
-import {BigNumber, constants, Contract} from 'ethers';
-import chai from 'chai';
-import {ethers} from 'hardhat';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
+import chai from 'chai';
+import {BigNumber, constants, Contract} from 'ethers';
+import {ethers} from 'hardhat';
 
+import {mineBlock, revertSnapshot, takeSnapshot} from '../../lib/hardhat';
 import {RewardMaster, RewardPool, Staking} from '../../types/contracts';
 
-import abiZkpToken from './assets/ZKPToken.json';
-import abiVestingPools from './assets/VestingPools.json';
 import {getScenario, Scenario} from './assets/staking.scenario.data';
-import {mineBlock, revertSnapshot, takeSnapshot} from '../../lib/hardhat';
+import abiVestingPools from './assets/VestingPools.json';
+import abiZkpToken from './assets/ZKPToken.json';
 
 const expect = chai.expect;
 

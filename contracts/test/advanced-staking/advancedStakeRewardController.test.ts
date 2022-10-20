@@ -1,22 +1,24 @@
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
+import {assert, expect} from 'chai';
+// eslint-disable-next-line
+import {BigNumber, BigNumberish} from 'ethers';
+import {ethers} from 'hardhat';
+
 import {
     increaseTime,
     mineBlock,
     revertSnapshot,
     takeSnapshot,
 } from '../../lib/hardhat';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
-import {ethers} from 'hardhat';
-import {assert, expect} from 'chai';
-import {BigNumber, BigNumberish} from 'ethers';
-import {data} from './assets/advancesStakingData.data';
-
+import {getBlockTimestamp} from '../../lib/provider';
 import {
     FakePantherPoolV0,
     MockAdvancedStakeRewardController,
     TokenMock,
     ERC721Mock,
 } from '../../types/contracts';
-import {getBlockTimestamp} from '../../lib/provider';
+
+import {data} from './assets/advancesStakingData.data';
 
 describe('AdvancedStakeRewardController', () => {
     const fakeVaultAddress = '0x4321555555555555555555555555555555551234';

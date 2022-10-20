@@ -1,7 +1,8 @@
+import * as fs from 'fs';
+
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 // import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {BigNumber, Contract, utils} from 'ethers';
-import * as fs from 'fs';
 
 // import {Staking} from '../types/contracts/Staking';
 // import {StakeRewardController} from '../types/contracts/StakeRewardController';

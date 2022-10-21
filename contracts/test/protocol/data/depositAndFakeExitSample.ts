@@ -1,10 +1,12 @@
+import {randomInt} from 'crypto';
+
+import {BigNumberish} from '@ethersproject/bignumber/src.ts';
 import {BytesLike} from '@ethersproject/bytes/src.ts';
 import {ethers} from 'hardhat';
-import {BigNumberish} from '@ethersproject/bignumber/src.ts';
+
 import {toBytes32} from '../../../lib/utilities';
 
 import {getPairAt} from './triadTreeSample';
-import {randomInt} from 'crypto';
 
 const randomNumber = '999';
 const randomAddress = ethers.Wallet.createRandom().address;

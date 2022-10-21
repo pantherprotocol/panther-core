@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // @ts-ignore
-import {ethers} from 'hardhat';
 import {BytesLike} from '@ethersproject/bytes/src.ts';
+import {ethers} from 'hardhat';
 
 type Tuple<T, N extends number, A extends any[] = []> = A extends {
     length: N;

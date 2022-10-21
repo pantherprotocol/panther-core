@@ -1,7 +1,8 @@
-import {ethers} from 'hardhat';
-import {expect} from 'chai';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 import {FakeContract, smock} from '@defi-wonderland/smock';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
+import {expect} from 'chai';
+import {ethers} from 'hardhat';
+
 import {ERC20, RewardTreasury} from '../../types/contracts';
 
 describe('Reward treasury', () => {

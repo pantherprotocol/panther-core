@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 // @ts-ignore
-import {ethers} from 'hardhat';
-// @ts-ignore
 import {
     createCode,
     generateABI,
     // @ts-ignore
 } from 'circomlibjs/src/poseidon_gencontract.js';
+import {ethers} from 'hardhat';
+// @ts-ignore
 
 const getPoseidonT3Contract = getPoseidonContract(2);
 const getPoseidonT4Contract = getPoseidonContract(3);

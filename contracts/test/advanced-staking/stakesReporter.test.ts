@@ -1,13 +1,14 @@
-import {ethers} from 'hardhat';
-import {BigNumber, utils as u} from 'ethers';
-import {expect} from 'chai';
 import {FakeContract, smock} from '@defi-wonderland/smock';
+import {expect} from 'chai';
+import {BigNumber, utils as u} from 'ethers';
+import {ethers} from 'hardhat';
+
+import {parseDate} from '../../lib/units-shortcuts';
 import {
     StakesReporter,
     StakeRewardController,
     Staking,
 } from '../../types/contracts';
-import {parseDate} from '../../lib/units-shortcuts';
 
 describe('Stakes Reporter', () => {
     let stakesReporter: StakesReporter;

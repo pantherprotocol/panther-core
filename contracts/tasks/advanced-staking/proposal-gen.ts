@@ -1,5 +1,5 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {task} from 'hardhat/config';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
 import {
     CLASSIC,

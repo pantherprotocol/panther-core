@@ -1,5 +1,6 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,

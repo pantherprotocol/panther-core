@@ -43,13 +43,8 @@ work.
 */
 
 const _ = require('lodash');
-const {
-    classicActionHash,
-    hash4bytes,
-    CLASSIC,
-    STAKE,
-    UNSTAKE,
-} = require('../../lib/hash');
+
+const {getEventFromReceipt} = require('../../lib/events');
 const {
     impersonate,
     // unimpersonate,
@@ -57,10 +52,13 @@ const {
     mineBlock,
     ensureMinBalance,
 } = require('../../lib/hardhat');
-const {addRewardAdviser, saveHistoricalData} = require('../../lib/staking');
-const {getEventFromReceipt} = require('../../lib/events');
-const {pe, fe, parseDate, toDate} = require('../../lib/units-shortcuts');
-const {getBlockTimestamp} = require('../../lib/provider');
+const {
+    classicActionHash,
+    hash4bytes,
+    CLASSIC,
+    STAKE,
+    UNSTAKE,
+} = require('../../lib/hash');
 const {
     MINTER,
     OWNER,
@@ -72,6 +70,9 @@ const {
     showStates: _showStates,
     ensureMinTokenBalance,
 } = require('../../lib/polygon-fix');
+const {getBlockTimestamp} = require('../../lib/provider');
+const {addRewardAdviser, saveHistoricalData} = require('../../lib/staking');
+const {pe, fe, parseDate, toDate} = require('../../lib/units-shortcuts');
 
 module.exports = (hre, stakesData) => {
     const {ethers} = hre;

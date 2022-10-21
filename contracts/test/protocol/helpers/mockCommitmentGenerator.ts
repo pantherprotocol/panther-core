@@ -1,5 +1,6 @@
 // @ts-ignore
 import {ethers} from 'hardhat';
+
 import {getPoseidonT4Contract} from '../../../lib/poseidonBuilder';
 import {MockCommitmentGenerator} from '../../../types/contracts';
 

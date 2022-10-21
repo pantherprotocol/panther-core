@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
-import {ethers} from 'hardhat';
 import {expect} from 'chai';
 import {BigNumber} from 'ethers';
+import {ethers} from 'hardhat';
 
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
 } from '../../lib/poseidonBuilder';
-
 import {toBytes32} from '../../lib/utilities';
 
 function printProgress(progress) {

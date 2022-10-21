@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import {BigNumber, BigNumberish} from 'ethers';
 
 export type PoolParams = {

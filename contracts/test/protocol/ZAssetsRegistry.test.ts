@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
-import {ethers} from 'hardhat';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers';
 import {expect} from 'chai';
+import {BigNumber} from 'ethers';
+import {ethers} from 'hardhat';
+
 import {ZAssetsRegistry} from '../../types/contracts';
+
 import {
     getIds,
     getMissingIds,
@@ -12,8 +16,6 @@ import {
     getERC20AlternateAssetId,
 } from './data/zAssetsSample';
 import {revertSnapshot, takeSnapshot} from './helpers/hardhat';
-import {BigNumber} from 'ethers';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers';
 
 describe('ZAssetsRegistry contract', function () {
     let zAssetsRegistry: ZAssetsRegistry;

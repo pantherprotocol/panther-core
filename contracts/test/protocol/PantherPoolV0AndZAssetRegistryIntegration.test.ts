@@ -1,42 +1,40 @@
 // SPDX-License-Identifier: MIT
-import {expect} from 'chai';
+import assert from 'assert';
+import crypto from 'crypto';
 
+import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
+import {
+    deriveKeypairFromSeed,
+    deriveChildPrivKeyFromRootPrivKey,
+    derivePubKeyFromPrivKey,
+} from '@panther-core/crypto/lib/base/keypairs';
+import {
+    bigIntToBuffer,
+    uint8ArrayToBigInt,
+} from '@panther-core/crypto/lib/utils/bigint-conversions';
+import {expect} from 'chai';
 // @ts-ignore
+import {poseidon, babyjub} from 'circomlibjs';
+import {BigNumber} from 'ethers';
+import {BytesLike} from 'ethers/lib/ethers';
+import {ethers} from 'hardhat';
+
+import {UtxoRecipientData, UtxoSenderData} from '../../lib/message-encryption';
+import {TriadMerkleTree} from '../../lib/tree';
 import {toBytes32, PathElementsType, Pair} from '../../lib/utilities';
+import {
+    PantherPoolV0AndZAssetRegistryTester,
+    ZAssetsRegistry,
+} from '../../types/contracts';
+
+import {getExitCommitment} from './data/depositAndFakeExitSample';
 import {
     takeSnapshot,
     revertSnapshot,
     getBlockTimestamp,
     increaseTime,
 } from './helpers/hardhat';
-import {
-    PantherPoolV0AndZAssetRegistryTester,
-    ZAssetsRegistry,
-} from '../../types/contracts';
-import {poseidon, babyjub} from 'circomlibjs';
-import {TriadMerkleTree} from '../../lib/tree';
-import assert from 'assert';
-import {BytesLike} from 'ethers/lib/ethers';
-import {UtxoRecipientData, UtxoSenderData} from '../../lib/message-encryption';
-
-import {
-    bigIntToBuffer,
-    uint8ArrayToBigInt,
-} from '@panther-core/crypto/lib/utils/bigint-conversions';
-
-import crypto from 'crypto';
-import {BigNumber} from 'ethers';
-import {
-    deriveKeypairFromSeed,
-    deriveChildPrivKeyFromRootPrivKey,
-    derivePubKeyFromPrivKey,
-} from '@panther-core/crypto/lib/base/keypairs';
-import {generateRandomInBabyJubSubField} from '@panther-core/crypto/lib/base/field-operations';
-
-import {getExitCommitment} from './data/depositAndFakeExitSample';
-
 import {deployPantherPoolV0AndZAssetRegistryTester} from './helpers/pantherPoolV0AndZAssetRegistryTester';
-import {ethers} from 'hardhat';
 
 describe('PantherPoolV0', () => {
     let poolV0: PantherPoolV0AndZAssetRegistryTester;

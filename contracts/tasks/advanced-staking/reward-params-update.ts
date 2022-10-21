@@ -1,11 +1,14 @@
 import fs from 'fs';
-import {AdvancedStakeRewardController} from './../../types/contracts/AdvancedStakeRewardController';
-import {HardhatRuntimeEnvironment, TaskArguments} from 'hardhat/types';
-import {task, types} from 'hardhat/config';
-import {parseDate} from '../../lib/units-shortcuts';
-import {updateRewardParams} from '../../lib/staking';
+
 import daysJs from 'dayjs';
+import {task, types} from 'hardhat/config';
+import {HardhatRuntimeEnvironment, TaskArguments} from 'hardhat/types';
 import _ from 'lodash';
+
+import {updateRewardParams} from '../../lib/staking';
+import {parseDate} from '../../lib/units-shortcuts';
+
+import {AdvancedStakeRewardController} from './../../types/contracts/AdvancedStakeRewardController';
 
 const TASK_REWARDS_PARAMS_UPDATE = 'rewards:params:update';
 

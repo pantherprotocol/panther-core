@@ -1,15 +1,18 @@
 import fs from 'fs';
+
+import daysJs from 'dayjs';
+import {task, types} from 'hardhat/config';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import _ from 'lodash';
+
+import {hash4bytes} from '../../lib/hash';
+import {updateTerms} from '../../lib/staking';
+import {parseDate} from '../../lib/units-shortcuts';
+
 import {
     TestnetStaking,
     IStakingTypes,
 } from './../../types/contracts/TestnetStaking';
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {task, types} from 'hardhat/config';
-import {parseDate} from '../../lib/units-shortcuts';
-import {updateTerms} from '../../lib/staking';
-import {hash4bytes} from '../../lib/hash';
-import daysJs from 'dayjs';
-import _ from 'lodash';
 
 const TASK_TERMS_UPDATE = 'terms:update';
 

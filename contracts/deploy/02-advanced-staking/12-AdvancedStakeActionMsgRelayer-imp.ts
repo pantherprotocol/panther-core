@@ -1,6 +1,7 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {DeployFunction} from 'hardhat-deploy/types';
 import {ethers} from 'hardhat';
+import {DeployFunction} from 'hardhat-deploy/types';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
+
 import resources from './resources.json';
 
 const getParams = async (network: string) => {

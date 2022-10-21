@@ -1,7 +1,8 @@
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
-import {ethers} from 'hardhat';
 import {expect} from 'chai';
 import {BigNumber} from 'ethers';
+import {ethers} from 'hardhat';
+
 import {MockClaimable, TokenMock} from '../../types/contracts';
 
 describe('Claimable', () => {

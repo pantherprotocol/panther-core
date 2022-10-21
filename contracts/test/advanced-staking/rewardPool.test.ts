@@ -1,10 +1,12 @@
-import chai from 'chai';
-const expect = chai.expect;
-import hre from 'hardhat';
-const {getSigners} = hre.ethers;
-import {BigNumber, BaseContract} from 'ethers';
 import {smock, MockContract, FakeContract} from '@defi-wonderland/smock';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
+import chai from 'chai';
+import {BigNumber, BaseContract} from 'ethers';
+import hre from 'hardhat';
+
+const expect = chai.expect;
+
+const {getSigners} = hre.ethers;
 
 chai.should(); // if you like should syntax
 chai.use(smock.matchers);

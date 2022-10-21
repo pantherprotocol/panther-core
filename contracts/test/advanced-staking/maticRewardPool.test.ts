@@ -1,10 +1,11 @@
-import {ethers} from 'hardhat';
-import {BigNumber} from 'ethers';
-import {expect} from 'chai';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 import {FakeContract, smock} from '@defi-wonderland/smock';
-import {IErc20Min, MaticRewardPool} from '../../types/contracts';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
+import {expect} from 'chai';
+import {BigNumber} from 'ethers';
+import {ethers} from 'hardhat';
+
 import {mineBlock, revertSnapshot, takeSnapshot} from '../../lib/hardhat';
+import {IErc20Min, MaticRewardPool} from '../../types/contracts';
 
 describe('Matic Reward Pool', () => {
     let rewardToken: FakeContract<IErc20Min>;

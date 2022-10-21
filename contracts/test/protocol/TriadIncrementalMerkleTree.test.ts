@@ -8,10 +8,11 @@ import {
     zeroTriadTreeRoot,
     zeroLeavesTriad,
 } from '../../lib/utilities';
-import {takeSnapshot, revertSnapshot} from './helpers/hardhat';
 import {MockTriadIncrementalMerkleTrees} from '../../types/contracts';
-import {deployMockTrees} from './helpers/mockTriadTrees';
+
 import {triads, rootsSeen} from './data/triadTreeSample';
+import {takeSnapshot, revertSnapshot} from './helpers/hardhat';
+import {deployMockTrees} from './helpers/mockTriadTrees';
 
 describe('IncrementalMerkleTree', () => {
     let trees: MockTriadIncrementalMerkleTrees;

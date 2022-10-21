@@ -1,6 +1,6 @@
+import {utils} from 'ethers';
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {utils} from 'ethers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     if (!process.env.DEPLOY_CLASSIC_STAKING) return;

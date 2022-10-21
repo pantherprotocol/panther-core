@@ -1,10 +1,10 @@
-import {ethers} from 'hardhat';
-import {BigNumber} from 'ethers';
-import {Provider} from '@ethersproject/providers';
-import {expect} from 'chai';
-import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
 import {FakeContract} from '@defi-wonderland/smock';
-import {RewardMasterFixture} from './shared';
+import {Provider} from '@ethersproject/providers';
+import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
+import {expect} from 'chai';
+import {BigNumber} from 'ethers';
+import {ethers} from 'hardhat';
+
 import {mineBlock, revertSnapshot, takeSnapshot} from '../../lib/hardhat';
 import {
     RewardPool,
@@ -12,6 +12,8 @@ import {
     RewardMaster,
     IRewardAdviser,
 } from '../../types/contracts';
+
+import {RewardMasterFixture} from './shared';
 
 describe('Reward Master', () => {
     let fixture: RewardMasterFixture;

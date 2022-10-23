@@ -55,6 +55,7 @@ contract MaticRewardPool is
 
         if (amount != 0) {
             // trusted contract - no reentrancy guard needed
+            // slither-disable-next-line unchecked-transfer
             token.transfer(recipient, amount);
             emit Vested(amount);
         }

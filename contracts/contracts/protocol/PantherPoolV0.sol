@@ -225,6 +225,7 @@ contract PantherPoolV0 is
     /// @param exitCommitment Commitment to the UTXO spending key and the recipient address.
     /// MUST be equal to keccak256(abi.encode(uint256(privSpendingKey), address(recipient)).
     function commitToExit(bytes32 exitCommitment) external {
+        // slither-disable-next-line incorrect-equality
         require(
             exitCommitments[exitCommitment] == uint32(0),
             ERR_EXITCOMMIT_EXISTS

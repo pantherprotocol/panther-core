@@ -254,6 +254,7 @@ contract StakeRewardController is
 
             // finally use extrapolation, unless data from the past requested
             uint32 _timeNow = safe32TimeNow();
+            // slither-disable-next-line incorrect-equality
             bool isForNow = timestamp == 0 || timestamp == _timeNow;
             bool isForFuture = timestamp > _timeNow;
             if (isForNow || isForFuture) {

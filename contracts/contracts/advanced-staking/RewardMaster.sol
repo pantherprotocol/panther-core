@@ -133,6 +133,7 @@ contract RewardMaster is
     // This amount the account would get if shares would be redeemed now
     function entitled(address account) public view returns (uint256 reward) {
         UserRecord memory rec = records[account];
+        // slither-disable-next-line incorrect-equality
         if (rec.shares == 0) return 0;
 
         // no reentrancy guard needed for the known contract call
@@ -231,6 +232,7 @@ contract RewardMaster is
         // and `sharesToRedeem` does not exceed `rec.shares`
         newShares = uint256(rec.shares) - sharesToRedeem;
 
+        // slither-disable-next-line incorrect-equality
         uint256 offsetRedeemed = newShares == 0
             ? uint256(rec.offset)
             : (uint256(rec.offset) * sharesToRedeem) / uint256(rec.shares);
@@ -322,6 +324,7 @@ contract RewardMaster is
 
         uint32 blocksPast = _blockNow - lastVestedBlock;
         if (
+            // slither-disable-next-line incorrect-equality
             (blocksPast == 0) ||
             (isMinVestingBlocksApplied && blocksPast < MIN_VESTING_BLOCKS) ||
             _totalShares < MIN_SHARES_REWARDED

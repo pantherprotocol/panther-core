@@ -30,5 +30,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ['grantor-proxy', 'protocol'];
+func.tags = ['grantor-proxy'];
 func.dependencies = ['check-params'];

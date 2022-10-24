@@ -4,7 +4,6 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {
     getPoseidonT3Contract,
     getPoseidonT4Contract,
-    getPoseidonT6Contract,
 } from '../../lib/poseidonBuilder';
 
 import {
@@ -41,20 +40,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             contract: {
                 abi: PoseidonT4.interface.format('json'),
                 bytecode: PoseidonT4.bytecode,
-            },
-            from: deployer,
-            args: [],
-            libraries: {},
-            log: true,
-            autoMine: true,
-        });
-    }
-    if (!reuseEnvAddress(hre, 'POSEIDON_T6')) {
-        const PoseidonT6 = await getPoseidonT6Contract();
-        await deploy('PoseidonT6', {
-            contract: {
-                abi: PoseidonT6.interface.format('json'),
-                bytecode: PoseidonT6.bytecode,
             },
             from: deployer,
             args: [],

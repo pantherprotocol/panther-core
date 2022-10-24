@@ -39,15 +39,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const poseidonT4 =
         getContractEnvAddress(hre, 'POSEIDON_T4') ||
         (await get('PoseidonT4')).address;
-    const poseidonT6 =
-        getContractEnvAddress(hre, 'POSEIDON_T6') ||
-        (await get('PoseidonT6')).address;
 
     const constructorArgs = [multisig, registry, vaultProxy];
     const libraries = {
         PoseidonT3: poseidonT3,
         PoseidonT4: poseidonT4,
-        PoseidonT6: poseidonT6,
     };
 
     if (reuseEnvAddress(hre, 'PANTHER_POOL_V0_PROXY')) {

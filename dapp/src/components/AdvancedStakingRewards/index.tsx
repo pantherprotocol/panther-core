@@ -30,10 +30,12 @@ function AdvancedStakingRewards() {
                 total={total ? Number(utils.formatEther(total)) : 0}
             />
 
-            <RemainingDays />
-            {advancedStakingAPY && (
-                <StakingAPR advancedStakingAPY={advancedStakingAPY} />
-            )}
+            <Box className="info-wrapper">
+                <RemainingDays />
+                {advancedStakingAPY && (
+                    <StakingAPR advancedStakingAPY={advancedStakingAPY} />
+                )}
+            </Box>
         </Box>
     );
 }

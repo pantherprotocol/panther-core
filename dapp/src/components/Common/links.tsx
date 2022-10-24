@@ -19,8 +19,14 @@ export function SafeLink(props: {
 export const SafeMuiLink = (props: {
     [key: string]: any;
     children: string | ReactElement;
+    styles?: string;
 }): ReactElement => (
-    <Link {...props} target="_blank" rel="noopener noreferrer">
+    <Link
+        {...props}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${props.styles ?? ''}`}
+    >
         {props.children}
     </Link>
 );

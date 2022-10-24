@@ -1,22 +1,29 @@
 import React from 'react';
 
 import {TableCell, TableRow, Typography} from '@mui/material';
+import {BigNumber} from 'ethers';
 
 import {formatCurrency, formatTime} from '../../../lib/format';
 import {WalletActionTrigger} from '../../../redux/slices/web3WalletLastAction';
 import {isClassic} from '../../../services/rewards';
-import {CLASSIC_TYPE_HEX} from '../../../services/staking';
+import {CLASSIC_TYPE_HEX, StakeRow} from '../../../services/staking';
 import {
     AdvancedStakeRewardsBN,
     ClassicStakeRewardBN,
     StakingRewardTokenID,
 } from '../../../types/staking';
+import ExactValueTooltip from '../../Common/ExactValueTooltip';
 import UnstakeButton from '../UnstakeButton';
 
 import './styles.scss';
 
+function getRewards(row: StakeRow): BigNumber {
+    return row.stakeType === CLASSIC_TYPE_HEX && isClassic(row.reward)
+        ? (row.reward as ClassicStakeRewardBN)
+        : (row.reward as AdvancedStakeRewardsBN)[StakingRewardTokenID.zZKP];
+}
 const UnstakeRow = (props: {
-    row: any;
+    row: StakeRow;
     chainId: number | undefined;
     unstakeById: (id: any, trigger: WalletActionTrigger) => Promise<void>;
 }) => {
@@ -47,24 +54,23 @@ const UnstakeRow = (props: {
                     </TableCell>
 
                     <TableCell align="left">
-                        <Typography>
-                            {formatCurrency(row.amount, {
-                                decimals: 2,
-                            })}{' '}
-                        </Typography>
+                        <ExactValueTooltip balance={row.amount}>
+                            <Typography>
+                                {formatCurrency(row.amount, {
+                                    decimals: 2,
+                                })}{' '}
+                            </Typography>
+                        </ExactValueTooltip>
+
                         <Typography>ZKP</Typography>
                     </TableCell>
                     <TableCell align="left">
-                        <Typography>
-                            {formatCurrency(
-                                row.stakeType === CLASSIC_TYPE_HEX &&
-                                    isClassic(row.reward)
-                                    ? (row.reward as ClassicStakeRewardBN)
-                                    : (row.reward as AdvancedStakeRewardsBN)[
-                                          StakingRewardTokenID.zZKP
-                                      ],
-                            )}
-                        </Typography>
+                        <ExactValueTooltip balance={getRewards(row)}>
+                            <Typography>
+                                {formatCurrency(getRewards(row))}
+                            </Typography>
+                        </ExactValueTooltip>
+
                         <Typography>
                             {row.stakeType === CLASSIC_TYPE_HEX
                                 ? 'ZKP'

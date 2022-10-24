@@ -57,8 +57,15 @@ export function formatCurrency(
 
     const currencyFormat = new Intl.NumberFormat(getLocale(), {
         // minimumSignificantDigits: 10,
-        minimumFractionDigits: 10,
-        // maximumFractionDigits: 5,
+        minimumFractionDigits: 3,
+
+        /**
+          we have to set the maximumFractionDigits,
+          otherwise the format function willn't consider the
+          the  minimumFractionDigits, and will use it as maximumFractionDigits
+          
+        */
+        maximumFractionDigits: 18,
 
         // TypeScript doesn't allow these :-(
         // roundingMode: 'floor',

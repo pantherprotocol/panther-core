@@ -28,6 +28,7 @@ interface IEntitled {
  * - shall be authorized as the "RewardAdviser" with the RewardMaster for "classic" stakes
  * - shall hold reward tokens on its balance
  */
+// slither-disable-next-line missing-inheritance
 contract StakeRewardController2 is IRewardAdviser {
     // solhint-disable var-name-mixedcase
 

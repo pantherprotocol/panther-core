@@ -31,6 +31,7 @@ contract RewardTreasury is ImmutableOwnable, NonReentrant, Claimable {
         onlyOwner
     {
         // call to the trusted contract - no reentrancy guard needed
+        // slither-disable-next-line unused-return
         IErc20Approve(token).approve(spender, amount);
     }
 

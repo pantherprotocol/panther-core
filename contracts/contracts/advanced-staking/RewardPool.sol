@@ -61,6 +61,7 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
 
         if (amount != 0) {
             // here and after, no reentrancy guard needed for calls to VESTING_POOLS
+            // slither-disable-next-line unused-return
             IVestingPools(VESTING_POOLS).releaseTo(poolId, recipient, amount);
             emit Vested(amount);
         }

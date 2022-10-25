@@ -51,6 +51,7 @@ contract PantherPoolV0 is
 {
     // The contract is supposed to run behind a proxy DELEGATECALLing it.
     // On upgrades, adjust `__gap` to match changes of the storage layout.
+    // slither-disable-next-line unused-state
     uint256[50] private __gap;
 
     // solhint-disable var-name-mixedcase
@@ -69,6 +70,7 @@ contract PantherPoolV0 is
     uint24 public exitDelay;
 
     // (rest of the storage slot) reserved for upgrades
+    // slither-disable-next-line unused-state
     uint200 private _reserved;
 
     // solhint-enable var-name-mixedcase

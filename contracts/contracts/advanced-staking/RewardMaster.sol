@@ -249,6 +249,7 @@ contract RewardMaster is
         nonZeroAmount(shares)
         nonZeroAddress(to)
     {
+        // slither-disable-next-line reentrancy-benign
         (uint256 _accumRewardPerShare, , ) = _triggerVesting(true, true);
 
         UserRecord memory rec = records[to];
@@ -257,6 +258,7 @@ contract RewardMaster is
             SCALE;
         uint256 newShares = uint256(rec.shares) + shares;
 
+        // slither-disable-next-line reentrancy-benign
         records[to] = UserRecord(safe96(newShares), safe160(newOffset));
         totalShares = safe128(uint256(totalShares) + shares);
 

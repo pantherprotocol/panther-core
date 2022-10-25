@@ -183,8 +183,8 @@ export default function FirstStageRedeem(props: {
                         }
                         label={
                             <Typography className="redemption-label">
-                                I understand I will lose my eligible staking
-                                rewards
+                                I understand I will lose a part of my PRP
+                                rewards.
                             </Typography>
                         }
                     />
@@ -204,7 +204,7 @@ export default function FirstStageRedeem(props: {
                             'disabled'
                         }`}
                     >
-                        Redeem zZKP and forfeit staking rewards
+                        Redeem zZKP
                     </PrimaryActionButton>
                 </Box>
             </DialogActions>

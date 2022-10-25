@@ -19,6 +19,8 @@ import {StakeType} from '../../types/staking';
 import './styles.scss';
 
 function AdvancedStakingRewards() {
+    const context = useWeb3React();
+    const {active} = context;
     const claimed = useAppSelector(totalClaimedRewardsSelector);
     const total = useAppSelector(totalVestedRewardsSelector);
     const advancedStakingAPY = getAdvStakingAPY(new Date().getTime());
@@ -36,7 +38,10 @@ function AdvancedStakingRewards() {
             <Box className="info-wrapper">
                 <RemainingDays />
                 {advancedStakingAPY && (
-                    <StakingAPR advancedStakingAPY={advancedStakingAPY} />
+                    <StakingAPR
+                        advancedStakingAPY={advancedStakingAPY}
+                        isConnected={active}
+                    />
                 )}
             </Box>
         </Box>
@@ -98,7 +103,10 @@ function RemainingDays() {
     );
 }
 
-export function StakingAPR(props: {advancedStakingAPY: number}) {
+export function StakingAPR(props: {
+    advancedStakingAPY: number;
+    isConnected: boolean;
+}) {
     return (
         <Box
             className="staking-apr"
@@ -109,7 +117,9 @@ export function StakingAPR(props: {advancedStakingAPY: number}) {
                 className="value"
                 data-testid="advanced-staking-rewards_staking-apr_value"
             >
-                {formatPercentage(props.advancedStakingAPY / 100)}
+                {props.isConnected
+                    ? formatPercentage(props.advancedStakingAPY / 100)
+                    : '0'}
             </Typography>
         </Box>
     );

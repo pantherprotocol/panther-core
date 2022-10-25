@@ -25,7 +25,9 @@ test('should render', async () => {
 test('should format APR correctly', async () => {
     const testAPY = 40;
 
-    renderComponent(<StakingAPR advancedStakingAPY={testAPY} />);
+    renderComponent(
+        <StakingAPR advancedStakingAPY={testAPY} isConnected={true} />,
+    );
 
     const stakingAprContainer = screen.queryByTestId(
         'advanced-staking-rewards_staking-apr_container',

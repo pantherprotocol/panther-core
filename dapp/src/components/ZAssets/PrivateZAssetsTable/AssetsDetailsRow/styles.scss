@@ -1,17 +1,5 @@
 @import '../../../../variables.scss';
 .zAsset-staking-holder {
-    .zAsset-staking-type {
-        background: rgba(75, 86, 107, 0.3);
-        mix-blend-mode: normal;
-        backdrop-filter: blur(80px);
-        border-radius: 10px;
-        font-size: 16px;
-        line-height: 2px;
-        color: white;
-        padding: 10px;
-        font-weight: normal;
-    }
-
     .staking-date {
         font-weight: normal !important;
     }

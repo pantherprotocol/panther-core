@@ -21,6 +21,7 @@ abstract contract RewardAdvisersList {
     /// @dev mapping from ActionOracle and (type of) action to ActionController
     mapping(address => mapping(bytes4 => address)) public rewardAdvisers;
 
+    // slither-disable-next-line dead-code
     function _addRewardAdviser(
         address oracle,
         bytes4 action,
@@ -37,12 +38,14 @@ abstract contract RewardAdvisersList {
         emit AdviserUpdated(oracle, action, adviser);
     }
 
+    // slither-disable-next-line dead-code
     function _removeRewardAdviser(address oracle, bytes4 action) internal {
         require(rewardAdvisers[oracle][action] != address(0), "ACM:E3");
         rewardAdvisers[oracle][action] = address(0);
         emit AdviserUpdated(oracle, action, address(0));
     }
 
+    // slither-disable-next-line dead-code
     function _getRewardAdviserOrRevert(address oracle, bytes4 action)
         internal
         view

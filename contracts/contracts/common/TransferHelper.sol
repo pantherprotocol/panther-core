@@ -8,6 +8,7 @@ pragma solidity >=0.8.0;
 /// Based on the Uniswap/solidity-lib/contracts/libraries/TransferHelper.sol
 library TransferHelper {
     /// @dev Approve the `operator` to spend all of ERC720 tokens on behalf of `owner`.
+    // slither-disable-next-line dead-code
     function safeSetApprovalForAll(
         address token,
         address operator,
@@ -24,6 +25,7 @@ library TransferHelper {
     }
 
     /// @dev Get the ERC20 balance of `account`
+    // slither-disable-next-line dead-code
     function safeBalanceOf(address token, address account)
         internal
         returns (uint256 balance)
@@ -41,6 +43,7 @@ library TransferHelper {
     }
 
     /// @dev Approve the `spender` to spend the `amount` of ERC20 token on behalf of `owner`.
+    // slither-disable-next-line dead-code
     function safeApprove(
         address token,
         address to,
@@ -73,6 +76,7 @@ library TransferHelper {
     }
 
     /// @dev Transfer `value` ERC20 tokens on behalf of `from` to `to`.
+    // slither-disable-next-line dead-code
     function safeTransferFrom(
         address token,
         address from,
@@ -87,6 +91,7 @@ library TransferHelper {
     }
 
     /// @dev Transfer an ERC721 token with id of `tokenId` on behalf of `from` to `to`.
+    // slither-disable-next-line dead-code
     function erc721SafeTransferFrom(
         address token,
         uint256 tokenId,
@@ -101,6 +106,7 @@ library TransferHelper {
     }
 
     /// @dev Transfer `amount` ERC1155 token with id of `tokenId` on behalf of `from` to `to`.
+    // slither-disable-next-line dead-code
     function erc1155SafeTransferFrom(
         address token,
         address from,
@@ -117,6 +123,7 @@ library TransferHelper {
     }
 
     /// @dev Transfer `value` Ether from caller to `to`.
+    // slither-disable-next-line dead-code
     function safeTransferETH(address to, uint256 value) internal {
         (bool success, ) = to.call{ value: value }(new bytes(0));
         require(
@@ -125,6 +132,7 @@ library TransferHelper {
         );
     }
 
+    // slither-disable-next-line dead-code
     function _requireTransferSuccess(bool success, bytes memory res)
         private
         pure

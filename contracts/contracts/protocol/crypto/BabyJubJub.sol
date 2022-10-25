@@ -28,6 +28,7 @@ library BabyJubJub {
      * x3 = (x1y2 + y1x2) / (1 + dx1x2y1y2)
      * y3 = (y1y2 - ax1x2) / (1 - dx1x2y1y2)
      */
+    // slither-disable-next-line dead-code
     function pointAdd(G1Point memory g1, G1Point memory g2)
         internal
         view
@@ -57,6 +58,7 @@ library BabyJubJub {
     /**
      * @dev Perform modular subtraction
      */
+    // slither-disable-next-line dead-code
     function submod(
         uint256 _a,
         uint256 _b,
@@ -74,6 +76,7 @@ library BabyJubJub {
     /**
      * @dev Compute modular inverse of a number
      */
+    // slither-disable-next-line dead-code
     function inverse(uint256 _a) internal view returns (uint256) {
         // We can use Euler's theorem instead of the extended Euclidean algorithm
         // Since m = Q and Q is prime we have: a^-1 = a^(m - 2) (mod m)
@@ -83,6 +86,7 @@ library BabyJubJub {
     /**
      * @dev Helper function to call the bigModExp precompile
      */
+    // slither-disable-next-line dead-code
     function expmod(
         uint256 _b,
         uint256 _e,
@@ -109,6 +113,7 @@ library BabyJubJub {
         }
     }
 
+    // slither-disable-next-line dead-code
     function mulPointEscalar(G1Point memory point, uint256 scalar)
         internal
         view

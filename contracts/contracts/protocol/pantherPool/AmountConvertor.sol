@@ -21,6 +21,7 @@ abstract contract AmountConvertor {
 
     // Conversion from the unscaled amount (aka amount) to the scaled one.
     // Returns the scaled amount and the reminder.
+    // slither-disable-next-line dead-code
     function _scaleAmount(uint256 amount, uint8 scale)
         internal
         pure
@@ -46,6 +47,7 @@ abstract contract AmountConvertor {
 
     // Conversion from the scaled amount to unscaled one.
     // Returns the unscaled amount.
+    // slither-disable-next-line dead-code
     function _unscaleAmount(uint64 scaledAmount, uint8 scale)
         internal
         pure
@@ -57,11 +59,13 @@ abstract contract AmountConvertor {
         return _sanitizeAmount(amount);
     }
 
+    // slither-disable-next-line dead-code
     function _sanitizeAmount(uint256 amount) internal pure returns (uint96) {
         require(amount < MAX_EXT_AMOUNT, ERR_TOO_LARGE_AMOUNT);
         return uint96(amount);
     }
 
+    // slither-disable-next-line dead-code
     function _sanitizeScaledAmount(uint256 scaledAmount)
         internal
         pure
@@ -79,6 +83,7 @@ abstract contract AmountConvertor {
     // Note: implementation accepts 0..255 values for nonZeroScale
     // It is responsibility of the caller check it is indeed less than 255 since 10^255 overflows uint256
     // This overflow check not implemented here since caller will implement it in upper level
+    // slither-disable-next-line dead-code
     function _getScalingFactor(uint8 nonZeroScale)
         private
         pure

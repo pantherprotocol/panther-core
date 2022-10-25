@@ -58,8 +58,10 @@ contract StakeZeroRewardAdviser is StakingMsgProcessor, IRewardAdviser {
             );
     }
 
-    // solhint-disable-next-line no-empty-blocks
+    /* solhint-disable no-empty-blocks */
+    // slither-disable-next-line dead-code
     function _onRequest(bytes4 action, bytes memory message) internal virtual {
         // Child contracts may re-define it
     }
+    /* solhint-enable no-empty-blocks */
 }

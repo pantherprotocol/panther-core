@@ -38,7 +38,6 @@
           "index",
           "unknown"
         ],
-        "pathGroupsExcludedImportTypes": ["react"],
         "newlines-between": "always",
         "warnOnUnassignedImports": true,
         "alphabetize": {"order": "asc", "caseInsensitive": true}

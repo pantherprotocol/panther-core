@@ -131,6 +131,7 @@ contract RewardMaster is
 
     /// @notice Returns reward token amount entitled to the given user/account
     // This amount the account would get if shares would be redeemed now
+    // slither-disable-next-line external-function
     function entitled(address account) public view returns (uint256 reward) {
         UserRecord memory rec = records[account];
         if (rec.shares == 0) return 0;

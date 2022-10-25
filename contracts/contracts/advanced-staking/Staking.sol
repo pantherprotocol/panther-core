@@ -122,6 +122,7 @@ contract Staking is
      * @param data - Arbitrary data for "RewardMaster" (zero, if inapplicable)
      * @return stake ID
      */
+    // slither-disable-next-line external-function
     function stake(
         uint256 amount,
         bytes4 stakeType,
@@ -265,6 +266,7 @@ contract Staking is
     }
 
     /// @inheritdoc IVotingPower
+    // slither-disable-next-line external-function
     function latestGlobalsSnapshotBlock()
         public
         view

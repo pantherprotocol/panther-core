@@ -6,7 +6,7 @@ import "../../common/Types.sol";
 
 contract ElGamalEncryption {
     function add(ElGamalCiphertext memory ct1, ElGamalCiphertext memory ct2)
-        public
+        external
         view
         returns (ElGamalCiphertext memory ct3)
     {

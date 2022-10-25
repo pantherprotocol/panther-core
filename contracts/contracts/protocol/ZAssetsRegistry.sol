@@ -90,7 +90,7 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
 
     /// @notice Returns ZAsset record for the given record ID
     function getZAsset(uint160 zAssetRecId)
-        public
+        external
         view
         override
         returns (ZAsset memory asset)
@@ -111,7 +111,7 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
     /// @return zAssetRecId ID of the ZAsset record
     /// @return asset ZAsset record for the token
     function getZAssetAndIds(address token, uint256 subId)
-        public
+        external
         view
         override
         returns (

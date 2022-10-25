@@ -125,6 +125,7 @@ contract TriadIncrementalMerkleTrees is
     }
 
     /// @inheritdoc IRootsHistory
+    // slither-disable-next-line external-function
     function isKnownRoot(
         uint256 treeId,
         bytes32 root,

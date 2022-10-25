@@ -52,33 +52,37 @@ function calcRemainingDays(
         return ['', '?'];
     }
     if (moment(now).isSameOrBefore(allowedSince)) {
-        return ['Opening', now.to(allowedSince)];
+        return ['Remaining', allowedSince.diff(now, 'days') + ' days'];
     }
     if (moment(now).isBetween(allowedSince, allowedTill)) {
-        return ['Closing', now.to(allowedTill)];
+        return ['Remaining', allowedTill.diff(now, 'days') + ' days'];
     }
     if (moment(now).isAfter(allowedTill)) {
-        return ['Staking is closed', ''];
+        return ['Staking is closed', '0 days'];
     }
-    return ['', '?'];
+    return ['', '0 days'];
 }
 
 function RemainingDays() {
     const context = useWeb3React();
     const {chainId} = context;
 
-    const allowedSince = useAppSelector(
+    let allowedSince = useAppSelector(
         termsSelector(chainId!, StakeType.Advanced, 'allowedSince'),
     );
 
-    const allowedTill = useAppSelector(
+    let allowedTill = useAppSelector(
         termsSelector(chainId!, StakeType.Advanced, 'allowedTill'),
     );
+
+    // Falling back to env variables if terms are not loaded
+    allowedSince = allowedSince ?? Number(process.env.ADVANCED_STAKING_T_START);
+    allowedTill = allowedTill ?? Number(process.env.ADVANCED_STAKING_T_END);
 
     const [title, daysRemaining]: [string, string] =
         typeof allowedTill === 'number' && typeof allowedSince === 'number'
             ? calcRemainingDays(allowedSince, allowedTill)
-            : ['', '?'];
+            : ['Connect Wallet', '-'];
 
     return (
         <Box className="remaining-days">

@@ -101,6 +101,9 @@ describe('PantherPoolV0 and Vault Integration', () => {
             );
             // [5] - Deserialize --- we actually will first get this text from chain
             try {
+                if (!senderTransaction.cipheredTextMessageV1)
+                    throw new Error('Undefined ciphered text message V1');
+
                 recipientTransaction.unpackMessageV1(
                     senderTransaction.cipheredTextMessageV1,
                 );
@@ -121,7 +124,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 recipientTransaction.deriveRecipientSpendingKeysFromRootKeysAndRandom(
                     recipientRootKeys,
                 );
-            } catch (e) {
+            } catch (e: any) {
                 // prolog is not equal to expected
             }
             // [8] - We ready to use random in spend flow
@@ -132,6 +135,9 @@ describe('PantherPoolV0 and Vault Integration', () => {
             });
             // [9] - Double check sender derived public = recipient derived public key
             it('Sender derived pub-key is equal to recipient derived pub-key', () => {
+                if (!recipientTransaction.recipientSpendingKeys) {
+                    throw new Error('Undefined recipient spending keys');
+                }
                 if (
                     recipientTransaction.recipientSpendingKeys.publicKey[0] !=
                         senderTransaction.recipientPubKey[0] ||
@@ -147,6 +153,12 @@ describe('PantherPoolV0 and Vault Integration', () => {
             });
 
             it('Async ... calls', async () => {
+                if (!senderTransaction.cipheredTextMessageV1) {
+                    throw new Error('undefined ciphered text message V1');
+                }
+                if (!recipientTransaction.recipientSpendingKeys) {
+                    throw new Error('undefined recipient spending keys');
+                }
                 const secrets = [
                     toBytes32(
                         uint8ArrayToBigInt(
@@ -276,6 +288,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                     recipientRootKeys.publicKey,
                     recipientReadingKeys.publicKey,
                 );
+
                 // [2] - Encrypt ( can throw ... )
                 senderTransaction.encryptMessageV1();
                 // [3] - Pack & Serialize - after this step data can be sent on chain
@@ -285,6 +298,9 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 const recipientTransaction = new UtxoRecipientData(
                     recipientReadingKeys,
                 );
+                if (!senderTransaction.cipheredTextMessageV1)
+                    throw new Error('undefined ciphered text message V1');
+
                 // [5] - Deserialize --- we actually will first get this text from chain
                 recipientTransaction.unpackMessageV1(
                     senderTransaction.cipheredTextMessageV1,

@@ -2,6 +2,7 @@
 import {expect} from 'chai';
 // @ts-ignore
 import {ethers} from 'hardhat';
+
 import {MockPubKeyGenerator} from '../../types/contracts';
 
 describe('PubKeyGenerator contract', function () {

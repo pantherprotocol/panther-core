@@ -14,6 +14,7 @@ import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
 } from '@panther-core/crypto/lib/utils/bigint-conversions';
+//@ts-ignore
 import {babyjub} from 'circomlibjs';
 
 // Usage flow of this class:
@@ -45,11 +46,11 @@ export class UtxoSenderData {
     // IV  (128 bits) used in AES-128-cbc, extracted from ephemeralKeyPacked
     readonly aes128Iv: Uint8Array;
     // Text to be ciphered
-    textToBeCiphered: Uint8Array;
+    textToBeCiphered: Uint8Array | undefined;
     // Ciphered text
-    cipheredText: Uint8Array;
+    cipheredText: Uint8Array | undefined;
     // Message (of type 1, with ephemeralKeyPacked and ciphertext) to be sent on-chain
-    cipheredTextMessageV1: Uint8Array;
+    cipheredTextMessageV1: Uint8Array | undefined;
 
     public constructor(
         recipientRootPubKey: PublicKey,
@@ -88,7 +89,10 @@ export class UtxoSenderData {
     }
 
     public packCipheredText() {
-        if (this.cipheredTextMessageV1.length != 64) {
+        if (
+            this.cipheredTextMessageV1 &&
+            this.cipheredTextMessageV1.length != 64
+        ) {
             throw (
                 'Size of ciphered text message V1 must be equal to 64 bytes, 32 byte for packed-key, and 32 bytes for encrypted random, but it is equal to:' +
                 this.cipheredTextMessageV1.length
@@ -105,20 +109,20 @@ export class UtxoRecipientData {
     // Only spender have it
     readonly recipientReadingKeys: IKeypair;
     // This pair is build using random & root private key
-    recipientSpendingKeys: IKeypair;
+    recipientSpendingKeys: IKeypair | undefined;
     // Value that must be extracted from ciphered-text
-    recipientRandom: bigint;
+    recipientRandom: bigint | undefined;
     // Value that must be derived in order to decrypt ciphered text
-    ephemeralSharedKey: bigint[];
-    ephemeralSharedKeyPacked: Uint8Array;
+    ephemeralSharedKey: bigint[] | undefined;
+    ephemeralSharedKeyPacked: Uint8Array | undefined;
     // Value that used to reconstruct ephemeralPubKey in order to be able to decrypt
-    ephemeralKey: bigint[];
-    ephemeralKeyPacked: Uint8Array;
-    aes128EncryptionKey: Uint8Array;
-    aes128Iv: Uint8Array;
-    cipheredTextMessageV1: Uint8Array;
-    cipheredText: Uint8Array;
-    decryptedText: Uint8Array;
+    ephemeralKey: bigint[] | undefined;
+    ephemeralKeyPacked: Uint8Array | undefined;
+    aes128EncryptionKey: Uint8Array | undefined;
+    aes128Iv: Uint8Array | undefined;
+    cipheredTextMessageV1: Uint8Array | undefined;
+    cipheredText: Uint8Array | undefined;
+    decryptedText: Uint8Array | undefined;
 
     constructor(recipientReadingKeys: IKeypair) {
         // [0] - Real keys
@@ -128,6 +132,8 @@ export class UtxoRecipientData {
     public deriveRecipientSpendingKeysFromRootKeysAndRandom(
         recipientRootKeys: IKeypair,
     ) {
+        if (!this.decryptedText) throw new Error('Undefined decrypted text');
+
         // [0] - Unpack random - from now on funds can be spent
         this.recipientRandom = uint8ArrayToBigInt(
             this.decryptedText.slice(0, 0 + 32),
@@ -143,12 +149,18 @@ export class UtxoRecipientData {
     // BUT, if this function succeeds, it `can be` for us, but it is not 100%, and user of this class must do
     // additional check during UTXO commitment regeneration.
     public decryptMessageV1() {
-        this.decryptedText = bigIntToUint8Array(
-            unpackAndDecryptMessageTypeV1(
-                Buffer.from(this.cipheredTextMessageV1).toString('hex'),
-                this.recipientReadingKeys.privateKey,
-            ),
+        if (!this.cipheredTextMessageV1)
+            throw new Error('Undefined ciphered text message V1');
+
+        const unpackAndDecryptMessage = unpackAndDecryptMessageTypeV1(
+            Buffer.from(this.cipheredTextMessageV1).toString('hex'),
+            this.recipientReadingKeys.privateKey,
         );
+
+        if (!unpackAndDecryptMessage)
+            throw new Error('Empty unpack and decrypt message');
+
+        this.decryptedText = bigIntToUint8Array(unpackAndDecryptMessage);
 
         if ((this.decryptedText[0] & 0xf8) != 0x00) {
             throw 'This message is not for us';

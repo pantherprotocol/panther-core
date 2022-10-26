@@ -10,22 +10,24 @@ import {
     formatTime,
 } from '../../../../lib/format';
 import {getAdvStakingAPY} from '../../../../services/rewards';
-import {AdvancedStakeRewards} from '../../../../types/staking';
-import RedeemRewards from '../RedeemRewards';
+import RedeemRewards from '../RedeemReward';
+
+import {AssetsDetailsRowProperties} from './AssetsDetailsRow.interface';
 
 import './styles.scss';
 
-const AssetsDetailsRow = (props: {rewards: AdvancedStakeRewards}) => {
-    const balance = formatCurrency(BigNumber.from(props.rewards.zZKP));
-    const prp = formatCurrency(utils.parseEther(props.rewards.PRP));
+const AssetsDetailsRow = (props: AssetsDetailsRowProperties) => {
+    const {reward, isSelected, onSelectReward} = props;
+    const balance = formatCurrency(BigNumber.from(reward.zZKP));
+    const prp = formatCurrency(utils.parseEther(reward.PRP));
     const advancedStakingAPY = getAdvStakingAPY(
-        Number(props.rewards.creationTime) * 1000,
+        Number(reward.creationTime) * 1000,
     );
 
     return (
-        <TableRow key={props.rewards.id} className="zAsset-staking-holder">
+        <TableRow key={reward.id} className="zAsset-staking-holder">
             <TableCell component="th" scope="row" className="staking-date">
-                {formatTime(Number(props.rewards.creationTime) * 1000, {
+                {formatTime(Number(reward.creationTime) * 1000, {
                     style: 'short',
                 })}
             </TableCell>
@@ -43,7 +45,12 @@ const AssetsDetailsRow = (props: {rewards: AdvancedStakeRewards}) => {
             </TableCell>
 
             <TableCell align="center">
-                <RedeemRewards rewards={props.rewards} />
+                <RedeemRewards
+                    reward={reward}
+                    key={reward.id}
+                    isSelected={isSelected}
+                    onSelectReward={onSelectReward}
+                />
             </TableCell>
         </TableRow>
     );

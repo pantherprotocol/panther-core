@@ -10,8 +10,9 @@ import {useAppSelector} from '../../../../redux/hooks';
 import {poolV0ExitTimeSelector} from '../../../../redux/slices/poolV0';
 import {showWalletActionInProgressSelector} from '../../../../redux/slices/web3WalletLastAction';
 import {getCommitmentTreeUrl} from '../../../../services/env';
-import {AdvancedStakeRewards} from '../../../../types/staking';
 import RedeemRewardsWarningDialog from '../RedeemRewardsWarningDialog';
+
+import {RedeemRewardProperties} from './RedeemReward.interface';
 
 import './styles.scss';
 
@@ -46,28 +47,28 @@ function getButtonContents(
     );
 }
 
-export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
-    const {rewards} = props;
+const RedeemRewards = (props: RedeemRewardProperties) => {
+    const {reward, isSelected, onSelectReward} = props;
 
     const context = useWeb3React();
     const {chainId} = context;
     const exitTime = useAppSelector(poolV0ExitTimeSelector);
 
-    const [warningDialogShown, setWarningDialogShown] = useState(false);
-    const [selectedRewardId, setSelectedRewardId] = useState('');
+    const [warningDialogShown, setWarningDialogShown] =
+        useState<boolean>(false);
 
-    const openWarningDialog = (id: string) => {
+    const showExitInProgress = useAppSelector(
+        showWalletActionInProgressSelector('exit'),
+    );
+
+    const openWarningDialog = () => {
+        onSelectReward(reward.id);
         setWarningDialogShown(true);
-        setSelectedRewardId(id);
     };
 
     const handleCloseWarningDialog = () => {
         setWarningDialogShown(false);
     };
-
-    const showExitInProgress = useAppSelector(
-        showWalletActionInProgressSelector('exit'),
-    );
 
     const afterExitTime = exitTime ? exitTime * 1000 < Date.now() : false;
     const treeUri = getCommitmentTreeUrl(chainId!);
@@ -75,19 +76,18 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
 
     return (
         <Box>
-            {' '}
             <Button
                 variant="contained"
                 className="redeem-button"
                 endIcon={
-                    isRedemptionPossible && !showExitInProgress ? (
+                    !(showExitInProgress && isSelected) ? (
                         <img src={rightSideArrow} />
                     ) : null
                 }
                 disabled={!isRedemptionPossible || showExitInProgress}
-                onClick={() => openWarningDialog(rewards.id)}
+                onClick={openWarningDialog}
             >
-                {showExitInProgress && rewards.id === selectedRewardId ? (
+                {showExitInProgress && isSelected ? (
                     <>
                         <i
                             className="fa fa-refresh fa-spin"
@@ -114,9 +114,12 @@ export default function RedeemRewards(props: {rewards: AdvancedStakeRewards}) {
             {warningDialogShown && (
                 <RedeemRewardsWarningDialog
                     handleClose={handleCloseWarningDialog}
-                    rewards={rewards}
+                    key={reward.id}
+                    reward={reward}
                 />
             )}
         </Box>
     );
-}
+};
+
+export default RedeemRewards;

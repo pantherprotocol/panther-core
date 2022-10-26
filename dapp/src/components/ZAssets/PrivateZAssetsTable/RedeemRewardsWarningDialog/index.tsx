@@ -12,9 +12,9 @@ import './styles.scss';
 
 export default function RedeemRewardsWarningDialog(props: {
     handleClose: () => void;
-    rewards: AdvancedStakeRewards;
+    reward: AdvancedStakeRewards;
 }) {
-    const {handleClose, rewards} = props;
+    const {handleClose, reward} = props;
     const dispatch = useAppDispatch();
 
     useEffect((): (() => any) => {
@@ -23,18 +23,18 @@ export default function RedeemRewardsWarningDialog(props: {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return rewards.exitCommitmentTime ? (
+    return reward.exitCommitmentTime ? (
         <SecondStageRedeem
             {...{
                 handleClose,
-                rewards,
+                reward,
             }}
         />
     ) : (
         <FirstStageRedeem
             {...{
                 handleClose,
-                rewards,
+                reward,
             }}
         />
     );

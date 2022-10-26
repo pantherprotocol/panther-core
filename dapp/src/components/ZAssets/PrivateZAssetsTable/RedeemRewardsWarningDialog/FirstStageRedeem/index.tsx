@@ -15,8 +15,12 @@ import {useWeb3React} from '@web3-react/core';
 import moment from 'moment';
 
 import {parseTxErrorMessage} from '../../../../../../src/services/errors';
+import {CONFIRMATIONS_NUM} from '../../../../../lib/constants';
 import {useAppDispatch, useAppSelector} from '../../../../../redux/hooks';
-import {updateExitCommitmentTime} from '../../../../../redux/slices/advancedStakesRewards';
+import {
+    updateExitCommitmentTime,
+    updateUTXOStatus,
+} from '../../../../../redux/slices/advancedStakesRewards';
 import {poolV0ExitDelaySelector} from '../../../../../redux/slices/poolV0';
 import {
     progressToNewWalletAction,
@@ -30,9 +34,10 @@ import {
 import {generateRootKeypairs} from '../../../../../services/keys';
 import {registerCommitToExit} from '../../../../../services/pool';
 import {isDetailedError} from '../../../../../types/error';
-import {AdvancedStakeRewards} from '../../../../../types/staking';
+import {AdvancedStakeRewards, UTXOStatus} from '../../../../../types/staking';
 import BackButton from '../../../../BackButton';
 import {notifyError} from '../../../../Common/errors';
+import {MessageWithTx} from '../../../../Common/MessageWithTx';
 import {openNotification} from '../../../../Common/notification';
 import PrimaryActionButton from '../../../../Common/PrimaryActionButton';
 
@@ -91,9 +96,11 @@ export default function FirstStageRedeem(props: {
             },
         });
         handleClose();
+
         let tx;
+        let status: UTXOStatus;
         try {
-            tx = await registerCommitToExit(
+            [tx, status] = await registerCommitToExit(
                 library,
                 account as string,
                 chainId as number,
@@ -109,9 +116,17 @@ export default function FirstStageRedeem(props: {
                 'danger',
             );
         }
+
         if (isDetailedError(tx)) {
+            dispatch(updateUTXOStatus, [chainId, account, reward.id, status]);
             dispatch(registerWalletActionFailure, 'registerCommitToExit');
             return notifyError(tx);
+        }
+
+        // null is returned when there was no actual transaction and commitment
+        // was registered before. See Error PP:E32 in poolContractCommitToExit()
+        if (tx !== null) {
+            await tx.wait(CONFIRMATIONS_NUM);
         }
 
         dispatch(registerWalletActionSuccess, 'registerCommitToExit');
@@ -121,6 +136,18 @@ export default function FirstStageRedeem(props: {
             reward.id,
             moment().unix(),
         ]);
+
+        openNotification(
+            'Registration completed successfully',
+            <MessageWithTx
+                message="Congratulations! You registered successfully commitment transaction!"
+                txHash={tx?.hash}
+                chainId={chainId}
+            />,
+
+            'info',
+            10000,
+        );
     };
 
     return (

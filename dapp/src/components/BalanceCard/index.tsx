@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import {Box, Card} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import {constants} from 'ethers';
 
 import {fiatPrice} from '../../lib/tokenPrice';
 import {useAppSelector} from '../../redux/hooks';
@@ -60,27 +61,35 @@ const BalanceCard = () => {
                     amountUSD={zkpStakedUSDValue}
                 />
 
-                {chainId && chainHasPoolContract(chainId) && (
-                    <AddressBalances
-                        title={'Reward Balance:'}
-                        balance={zZkpRewardBalance}
-                        rewardsTokenSymbol={'zZKP'}
-                        amountUSD={zZkpRewardsUSDValue}
-                    />
-                )}
+                <AddressBalances
+                    title={'Reward Balance:'}
+                    balance={
+                        chainId && chainHasPoolContract(chainId)
+                            ? zZkpRewardBalance
+                            : constants.Zero
+                    }
+                    rewardsTokenSymbol={'zZKP'}
+                    amountUSD={
+                        chainId && chainHasPoolContract(chainId)
+                            ? zZkpRewardsUSDValue
+                            : constants.Zero
+                    }
+                />
 
-                {chainId && chainHasPoolContract(chainId) && (
-                    <AddressBalances
-                        title={'Privacy Reward Points:'}
-                        balance={prpRewardBalance}
-                        scale={0}
-                        rewardsTokenSymbol={'PRP'}
-                        // TODO:add definition for redeem function
-                        redeem={() => {
-                            console.error('Not implemented');
-                        }}
-                    />
-                )}
+                <AddressBalances
+                    title={'Privacy Reward Points:'}
+                    balance={
+                        chainId && chainHasPoolContract(chainId)
+                            ? prpRewardBalance
+                            : constants.Zero
+                    }
+                    scale={0}
+                    rewardsTokenSymbol={'PRP'}
+                    // TODO:add definition for redeem function
+                    redeem={() => {
+                        console.error('Not implemented');
+                    }}
+                />
             </Card>
         </Box>
     );

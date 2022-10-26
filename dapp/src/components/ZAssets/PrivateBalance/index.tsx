@@ -202,7 +202,10 @@ export default function PrivateBalance() {
                                 <span className="substring">.{fractional}</span>
                             </>
                         ) : (
-                            '0.00'
+                            <>
+                                <span>0</span>
+                                <span className="substring">.00</span>
+                            </>
                         )}
                     </Typography>
                     <Typography className="zkp-rewards">

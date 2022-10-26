@@ -11,7 +11,10 @@ import './styles.scss';
 export default function WrongZAssetsNetwork() {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     return (
-        <Box className="wrong-network-container">
+        <Box
+            className="wrong-network-container"
+            data-testid="ZAssets_WrongZassetsNetwork_container"
+        >
             <Box className="wrong-network-box"></Box>
             <Box className="content">
                 <ZAssetSwitchModal

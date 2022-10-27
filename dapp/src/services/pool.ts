@@ -83,7 +83,7 @@ export async function registerCommitToExit(
     utxoData: string,
     leafId: bigint,
     keys: IKeypair[],
-): Promise<ContractTransaction | DetailedError> {
+): Promise<[ContractTransaction | DetailedError | null, UTXOStatus]> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -113,14 +113,16 @@ export async function registerCommitToExit(
         childSpendingKeypair,
     );
     if (isDetailedError(possibleError)) {
-        return possibleError;
+        return [possibleError, status];
     }
 
     if (status === UTXOStatus.SPENT) {
-        return {
+        const detailedError = {
             message: 'zAsset is already spent.',
             details: 'Spent nullifier: ' + nullifier,
         } as DetailedError;
+
+        return [detailedError, status];
     }
 
     const commitmentHash = getExitCommitment(
@@ -128,25 +130,24 @@ export async function registerCommitToExit(
         account,
     );
 
-    return await poolContractCommitToExit(contract, commitmentHash);
+    const res = await poolContractCommitToExit(contract, commitmentHash);
+    return [res, status];
 }
 
 export async function poolContractCommitToExit(
     poolContract: Contract,
     commitmentHash: string,
-): Promise<ContractTransaction | DetailedError> {
-    let tx: any;
-
+): Promise<ContractTransaction | DetailedError | null> {
     try {
-        tx = await poolContract.commitToExit(commitmentHash);
-        return tx;
+        return await poolContract.commitToExit(commitmentHash);
     } catch (err) {
         const parsedError = parseTxErrorMessage(err);
         if (parsedError === 'execution reverted: PP:E32') {
             // special case for "already registered commitment".
             // This could happen when the cache of the browser is cleared
-            return tx;
+            return null;
         }
+
         return {
             message: 'Transaction error',
             details: parsedError,

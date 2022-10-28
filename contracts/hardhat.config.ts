@@ -27,8 +27,8 @@ import './tasks/advanced-staking/terms-update';
 import './tasks/advanced-staking/time-increase';
 import './tasks/advanced-staking/unstaked-rewards';
 import './tasks/advanced-staking/vesting-list';
-import './tasks/protocol/exitTime-update';
 import './tasks/protocol/grant-issue';
+import './tasks/protocol/pool-time-update.ts';
 import './tasks/protocol/zAsset-add';
 
 dotenvConfig({path: resolve(__dirname, './.env')});

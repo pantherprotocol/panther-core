@@ -57,5 +57,6 @@ abstract contract CommitmentsTrees is TriadIncrementalMerkleTrees {
 
     // NOTE: The contract is supposed to run behind a proxy DELEGATECALLing it.
     // For compatibility on upgrades, decrease `__gap` if new variables added.
+    // slither-disable-next-line unused-state
     uint256[50] private __gap;
 }

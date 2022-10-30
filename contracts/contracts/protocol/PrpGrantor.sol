@@ -28,6 +28,7 @@ import "./interfaces/IPrpGrantor.sol";
 contract PrpGrantor is ImmutableOwnable, IPrpGrantor {
     // The contract is supposed to run behind a proxy DELEGATECALLing it.
     // On upgrades, adjust `__gap` to match changes of the storage layout.
+    // slither-disable-next-line unused-state
     uint256[50] private __gap;
 
     // solhint-disable var-name-mixedcase

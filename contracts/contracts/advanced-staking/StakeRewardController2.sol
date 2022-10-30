@@ -45,6 +45,7 @@ contract StakeRewardController2 is IRewardAdviser {
     address public immutable REWARD_MASTER;
 
     // bytes4(keccak256("classic"))
+    // slither-disable-next-line unused-state
     bytes4 private constant STAKE_TYPE = 0x4ab0941a;
     // bytes4(keccak256(abi.encodePacked(bytes4(keccak256("unstake"), STAKE_TYPE)))
     bytes4 private constant UNSTAKE = 0x493bdf45;

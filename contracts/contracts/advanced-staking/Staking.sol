@@ -442,6 +442,7 @@ contract Staking is
         );
 
         // known contract - reentrancy guard and `safeTransferFrom` unneeded
+        // slither-disable-next-line reentrancy-benign
         require(
             TOKEN.transferFrom(staker, address(this), amount),
             "Staking: transferFrom failed"
@@ -469,6 +470,7 @@ contract Staking is
         stakes[staker].push(_stake);
 
         totalStaked = uint96(_totalStake);
+        // slither-disable-next-line reentrancy-benign
         _addPower(staker, amount);
 
         emit StakeCreated(staker, stakeID, amount, stakeType, lockedTill);

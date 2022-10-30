@@ -328,6 +328,7 @@ contract StakeRewardController is
         activeSince = _timeNow;
 
         // Call to a trusted contract - no reentrancy guard needed
+        // slither-disable-next-line reentrancy-benign
         uint256 actualTotalStaked = ITotalStaked(STAKING).totalStaked();
         uint256 savedTotalStaked = uint256(totalStaked);
 
@@ -335,6 +336,7 @@ contract StakeRewardController is
             // new stakes have been created since historical data finalization
             uint256 increase = actualTotalStaked - savedTotalStaked;
             // it roughly adjusts totals by counting an equivalent "stake"
+            // slither-disable-next-line reentrancy-benign
             _countNewStake(safe96(increase), _timeNow);
         } else if (savedTotalStaked > actualTotalStaked) {
             // some "old" stakes was repaid after historical data finalization.

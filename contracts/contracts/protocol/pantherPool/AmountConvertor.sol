@@ -35,6 +35,7 @@ abstract contract AmountConvertor {
             unchecked {
                 uint256 factor = _getScalingFactor(scale);
                 // divider can't be zero
+                // slither-disable-next-line divide-before-multiply
                 _scaledAmount = amount / factor;
                 // `restoredAmount` can not exceed the `amount`
                 uint256 restoredAmount = _scaledAmount * factor;

@@ -13,16 +13,20 @@
                 height: 15px;
                 margin-right: 12px;
             }
-            .staking-info-title {
+            .stake-info-title {
                 font-weight: $semi-bold-font-weight;
                 font-size: $normal-font-size;
                 display: flex;
                 align-items: center;
                 color: $white;
                 /* FIXME: use common variable */
+
+                @media (max-width: $medium-screen-size) {
+                    font-size: $tiny-font-size;
+                }
             }
         }
-        .staking-info-text {
+        .stake-info-text {
             font-size: $small-font-size;
             font-weight: $light-font-weight;
             line-height: 22px;
@@ -30,6 +34,10 @@
             opacity: 0.8;
             padding: 5px 0;
             text-align: start;
+
+            @media (max-width: $medium-screen-size) {
+                font-size: $tiny-font-size;
+            }
 
             strong {
                 opacity: 1;

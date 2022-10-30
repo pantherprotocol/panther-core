@@ -118,7 +118,7 @@ contract PantherPoolV0 is
     /// @notice Update the exit time and the exit delay
     /// @dev Owner only may calls
     function updateExitTimes(uint32 newExitTime, uint24 newExitDelay)
-        public
+        external
         onlyOwner
     {
         require(

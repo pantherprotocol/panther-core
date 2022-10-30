@@ -15,6 +15,10 @@
         align-items: center;
         color: $color-beige;
         /* FIXME: use common variable */
+
+        @media (max-width: $medium-screen-size) {
+            font-size: $small-font-size;
+        }
     }
 
     .unstaking-info-text {
@@ -25,6 +29,10 @@
         padding: 5px 0;
         text-align: start;
 
+        @media (max-width: $medium-screen-size) {
+            font-size: $tiny-font-size;
+        }
+
         strong {
             opacity: 1;
         }
@@ -33,6 +41,10 @@
     .unstaking-info-link {
         color: white;
         text-decoration: underline;
+        @media (max-width: $medium-screen-size) {
+            font-size: $tiny-font-size;
+            padding-left: 0;
+        }
     }
 
     .unstaking-info-message {

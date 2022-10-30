@@ -47,7 +47,7 @@ $refresh-button-background: linear-gradient(
             color: $white;
             opacity: 0.6;
 
-            @media (max-width: 768px) {
+            @media (max-width: $medium-screen-size) {
                 font-size: $normal-font-size;
             }
         }
@@ -63,7 +63,7 @@ $refresh-button-background: linear-gradient(
             color: $white;
             place-items: baseline;
 
-            @media (max-width: 768px) {
+            @media (max-width: $medium-screen-size) {
                 font-size: 34px;
             }
 
@@ -81,7 +81,7 @@ $refresh-button-background: linear-gradient(
             align-items: center;
             color: $white;
 
-            @media (max-width: 768px) {
+            @media (max-width: $medium-screen-size) {
                 font-weight: $light-font-weight;
                 font-size: $normal-font-size;
                 line-height: unset;
@@ -92,7 +92,7 @@ $refresh-button-background: linear-gradient(
                 font-weight: $light-font-weight;
                 margin-left: 5px;
 
-                @media (max-width: 768px) {
+                @media (max-width: $medium-screen-size) {
                     margin-left: 4px;
                 }
             }

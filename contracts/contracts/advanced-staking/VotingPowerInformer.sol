@@ -34,7 +34,7 @@ contract VotingPowerInformer {
     /// @notice Returns votes of a voter scaled to even number of tokens
     /// @dev "own" and "delegated" voting power summed up and scaled by 1e-18
     function getVotes(address voter)
-        public
+        external
         view
         nonZeroAddress(voter)
         returns (uint256)
@@ -44,7 +44,7 @@ contract VotingPowerInformer {
 
     /// @notice Returns votes of all voters scaled to even number of tokens
     /// @dev "own" and "delegated" voting power summed up and scaled by 1e-18
-    function getTotalVotes() public view returns (uint256) {
+    function getTotalVotes() external view returns (uint256) {
         return _getPower(GLOBAL_ACCOUNT) / 1e18;
     }
 
@@ -53,7 +53,7 @@ contract VotingPowerInformer {
     /// @dev "own" and "delegated" voting power summed up
     /// (function named so for compatibility with snapshot.org "strategies")
     function balanceOf(address voter)
-        public
+        external
         view
         nonZeroAddress(voter)
         returns (uint256)

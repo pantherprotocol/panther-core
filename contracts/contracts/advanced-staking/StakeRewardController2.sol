@@ -126,6 +126,7 @@ contract StakeRewardController2 is IRewardAdviser {
         uint256 amount
     ) external {
         require(_reentrancyStatus != 1, "SRC: can't be re-entered");
+        // slither-disable-next-line write-after-write
         _reentrancyStatus = 1;
 
         require(OWNER == msg.sender, "SRC: unauthorized");

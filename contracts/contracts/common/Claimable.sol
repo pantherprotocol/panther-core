@@ -12,6 +12,7 @@ import "./TransferHelper.sol";
 abstract contract Claimable {
     /// @dev Withdraws ERC20 tokens from this contract
     /// (take care of reentrancy attack risk mitigation)
+    // slither-disable-next-line dead-code
     function _claimErc20(
         address token,
         address to,
@@ -23,6 +24,7 @@ abstract contract Claimable {
 
     /// @dev Withdraws ERC20 tokens from this contract
     /// (take care of reentrancy attack risk mitigation)
+    // slither-disable-next-line dead-code
     function _claimEthOrErc20(
         address token,
         address to,

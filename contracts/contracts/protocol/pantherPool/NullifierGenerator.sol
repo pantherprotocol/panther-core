@@ -7,6 +7,7 @@ import { FIELD_SIZE } from "../crypto/SnarkConstants.sol";
 import { ERR_TOO_LARGE_LEAFID, ERR_TOO_LARGE_PRIVKEY } from "../errMsgs/PantherPoolErrMsgs.sol";
 
 abstract contract NullifierGenerator {
+    // slither-disable-next-line dead-code
     function generateNullifier(uint256 privSpendingKey, uint256 leafId)
         internal
         pure

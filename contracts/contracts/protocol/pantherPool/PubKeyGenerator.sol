@@ -8,6 +8,7 @@ import { FIELD_SIZE } from "../crypto/SnarkConstants.sol";
 import "../crypto/BabyJubJub.sol";
 
 abstract contract PubKeyGenerator {
+    // slither-disable-next-line dead-code
     function generatePubSpendingKey(uint256 privKey)
         internal
         view

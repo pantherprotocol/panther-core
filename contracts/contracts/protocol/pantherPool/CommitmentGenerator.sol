@@ -14,6 +14,7 @@ abstract contract CommitmentGenerator {
     /// @param scaledAmount 64 bit size - used in circom
     /// @param zAssetId 160 bit size - used in circom
     /// @param creationTime 32 bit size - used in circom
+    // slither-disable-next-line dead-code
     function generateCommitment(
         uint256 pubSpendingKeyX,
         uint256 pubSpendingKeyY,

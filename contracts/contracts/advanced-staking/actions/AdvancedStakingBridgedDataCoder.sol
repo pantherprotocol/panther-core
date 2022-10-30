@@ -6,6 +6,7 @@ pragma solidity >=0.8.0;
  * @dev It encode (pack) and decodes (unpack) messages for bridging them between networks
  */
 abstract contract AdvancedStakingBridgedDataCoder {
+    // slither-disable-next-line dead-code
     function _encodeBridgedData(
         uint24 _nonce,
         bytes4 action,
@@ -16,6 +17,7 @@ abstract contract AdvancedStakingBridgedDataCoder {
 
     // For efficiency we use "packed" (rather than "ABI") encoding.
     // It results in shorter data, but requires custom unpack function.
+    // slither-disable-next-line dead-code
     function _decodeBridgedData(bytes memory content)
         internal
         pure

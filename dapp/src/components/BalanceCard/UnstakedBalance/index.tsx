@@ -125,7 +125,7 @@ export default function UnstakedBalance() {
                     <Typography component="div" className="token-balance">
                         {whole && fractional ? (
                             <>
-                                <span>${whole}</span>
+                                <span>{whole}</span>
 
                                 <span className="substring">.{fractional}</span>
                             </>

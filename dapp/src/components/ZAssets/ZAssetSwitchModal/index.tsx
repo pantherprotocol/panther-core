@@ -78,7 +78,7 @@ const ZAssetSwitchModal = ({
                     >
                         <>
                             <Typography className="network-name">
-                                {supportedNetworks[MASP_CHAIN_ID!].name}
+                                {supportedNetworks[MASP_CHAIN_ID!]?.name}
                             </Typography>
                             <div className="network-logo-wrapper">
                                 <img

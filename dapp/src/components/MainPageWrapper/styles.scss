@@ -1,3 +1,5 @@
+@import '../../variables.scss';
+
 .main-page {
     padding-left: 0;
     padding-right: 0;
@@ -27,5 +29,8 @@
 
     .footer-container {
         min-height: 5vh;
+        @media (max-width: $medium-screen-size) {
+            margin-top: 80px;
+        }
     }
 }

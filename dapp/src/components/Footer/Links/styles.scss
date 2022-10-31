@@ -3,17 +3,40 @@
 .adv-staking-footer-links {
     display: flex;
     justify-content: center;
-    font-weight: $normal-font-weight;
-    font-size: $normal-font-size;
-    color: $grey-text;
+    color: $footer-link-color;
     padding: 20px;
+
+    @media (max-width: $medium-screen-size) {
+        padding: 20px 0 10px;
+    }
 
     a {
         padding: 0 20px;
-        color: $grey-text;
+        color: $footer-link-color;
+        font-weight: $normal-font-weight;
+        font-size: $normal-font-size;
+
+        @media (max-width: $medium-screen-size) {
+            font-weight: $light-font-weight;
+            font-size: $small-font-size;
+            color: $white;
+        }
 
         &:hover {
             color: $white;
+        }
+
+        &:last-child {
+            padding-right: 0;
+            @media (max-width: $medium-screen-size) {
+                padding-right: 20px;
+            }
+        }
+    }
+
+    .separator {
+        @media (max-width: $medium-screen-size) {
+            display: none;
         }
     }
 }

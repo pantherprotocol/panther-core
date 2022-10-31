@@ -1,17 +1,48 @@
+@import '../../variables.scss';
+
 .footer-holder {
     width: 100% !important;
-    display: flex;
-    flex: 1;
     position: relative;
     bottom: 0;
 
-    .footer-links {
-        display: flex;
-        justify-content: end;
+    @media (max-width: $medium-screen-size) {
+        bottom: 20px;
     }
 
-    .footer-socials {
+    .title {
+        display: none;
+        @media (max-width: $medium-screen-size) {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(217, 218, 223, 1);
+            font-size: $bigger-font-size;
+            font-weight: $bold-font-weight;
+        }
+
+        img {
+            width: 42px;
+            height: 42px;
+            margin-right: 10px;
+        }
+    }
+
+    .links-container {
         display: flex;
-        justify-content: start;
+        flex: 1;
+        justify-content: space-between;
+        .footer-links {
+            display: flex;
+            justify-content: end;
+        }
+
+        .footer-socials {
+            display: flex;
+            justify-content: start;
+        }
+        @media (max-width: $medium-screen-size) {
+            flex-direction: column-reverse !important;
+            align-items: center;
+        }
     }
 }

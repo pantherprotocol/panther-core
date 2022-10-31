@@ -1,3 +1,5 @@
+@import '../../variables.scss';
+
 .main-page {
     padding-left: 0;
     padding-right: 0;
@@ -17,12 +19,19 @@
 
     .header-container {
         min-height: 10vh;
+        @media (max-width: $medium-screen-size) {
+            margin-bottom: 20px;
+        }
     }
 
     .body-container {
         min-height: 84vh;
         padding-top: 100px;
         padding-bottom: 10px;
+
+        @media (max-width: $medium-screen-size) {
+            padding-top: 0;
+        }
     }
 
     .footer-container {

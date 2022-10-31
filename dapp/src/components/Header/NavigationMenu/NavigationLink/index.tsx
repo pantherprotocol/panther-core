@@ -15,20 +15,15 @@ export default function NavigationLink(
     const {location} = history;
     const {pathname} = location;
 
-    if (!to.startsWith('/')) {
-        // external link
-        return (
-            <Box className="nav-item">
+    return (
+        <Box className={`nav-item ${pathname === to ? 'selected' : ''}`}>
+            {!to.startsWith('/') ? (
                 <Typography>
                     <SafeLink href={to}>{children}</SafeLink>
                 </Typography>
-            </Box>
-        );
-    }
-
-    return (
-        <Box className={`nav-item ${pathname === to ? 'selected' : ''}`}>
-            <Link to={to}>{children}</Link>
+            ) : (
+                <Link to={to}>{children}</Link>
+            )}
         </Box>
     );
 }

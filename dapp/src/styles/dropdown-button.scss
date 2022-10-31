@@ -3,11 +3,23 @@
 .dropdown-button-container {
     display: flex;
     height: 45px;
-    padding: 6px 15px;
+    padding: 6px 16px 6px 12px;
     border-radius: 10px;
     width: 201px;
     background: rgba(99, 114, 136, 0.2);
     border-radius: 10px;
+
+    @media (max-width: $normal-screen-size) {
+        height: 36px;
+        width: 169px;
+        padding: 6px 12px 6px 14px;
+    }
+
+    @media (max-width: $tiny-screen-size) {
+        padding-left: 35px;
+        width: 100%;
+    }
+
     > div {
         width: 100%;
     }
@@ -24,6 +36,10 @@
         img {
             width: 30px;
             height: auto;
+
+            @media (max-width: $normal-screen-size) {
+                width: 19px;
+            }
         }
     }
 
@@ -38,6 +54,10 @@
         &:focus {
             top: 10px;
             left: 10px;
+        }
+
+        @media (max-width: $normal-screen-size) {
+            top: 0;
         }
     }
 

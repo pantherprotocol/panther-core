@@ -11,7 +11,7 @@ import ConnectButton from './index';
 test('should render', async () => {
     renderComponent(<ConnectButton />);
     const connectButtonContainer = screen.queryByTestId(
-        'connect-button_connect-button_container',
+        'common_primary-action-button_container',
     );
     await waitFor(() => expect(connectButtonContainer).toBeInTheDocument());
 });
@@ -24,7 +24,7 @@ test('click on button should trigger onClick event', async () => {
     );
 
     const connectButtonContainer = screen.queryByTestId(
-        'connect-button_connect-button_container',
+        'common_primary-action-button_container',
     );
     const connectButtonTextSpan = screen.queryByTestId(
         'connect-button_connect-button_text',

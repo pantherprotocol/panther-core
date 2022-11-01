@@ -1,6 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 
-import {RootState} from '../store';
+import {RootState} from '../../store';
 
 export interface isWalletConnectedState {
     value: boolean;
@@ -11,7 +11,7 @@ const initialState: isWalletConnectedState = {
 };
 
 export const isWalletConnectedSlice = createSlice({
-    name: 'walletConnection',
+    name: 'ui/walletConnection',
     initialState,
     reducers: {
         setConnected: state => {
@@ -26,7 +26,7 @@ export const isWalletConnectedSlice = createSlice({
 export const {setConnected, setDisconnected} = isWalletConnectedSlice.actions;
 
 export const isWalletConnectedSelector = (state: RootState): boolean => {
-    return state.isWalletConnected?.value;
+    return state.ui.isWalletConnected?.value;
 };
 
 export default isWalletConnectedSlice.reducer;

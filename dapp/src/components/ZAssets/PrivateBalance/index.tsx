@@ -16,14 +16,8 @@ import {
 } from '../../../lib/format';
 import {fiatPrice} from '../../../lib/tokenPrice';
 import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
-import {
-    lastRefreshTime,
-    statusSelector,
-    hasUndefinedUTXOsSelector,
-    totalSelector,
-    refreshUTXOsStatuses,
-} from '../../../redux/slices/advancedStakesRewards';
-import {isWalletConnectedSelector} from '../../../redux/slices/isWalletConnected';
+import {zkpMarketPriceSelector} from '../../../redux/slices/marketPrices/zkpMarketPrice';
+import {isWalletConnectedSelector} from '../../../redux/slices/ui/isWalletConnected';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -33,8 +27,14 @@ import {
     StartWalletActionPayload,
     WalletSignatureTrigger,
     walletActionStatusSelector,
-} from '../../../redux/slices/web3WalletLastAction';
-import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
+} from '../../../redux/slices/ui/web3WalletLastAction';
+import {
+    lastRefreshTime,
+    statusSelector,
+    hasUndefinedUTXOsSelector,
+    totalSelector,
+    refreshUTXOsStatuses,
+} from '../../../redux/slices/wallet/advancedStakesRewards';
 import {chainHasPoolContract} from '../../../services/contracts';
 import {generateRootKeypairs} from '../../../services/keys';
 import {StakingRewardTokenID} from '../../../types/staking';
@@ -57,7 +57,7 @@ export default function PrivateBalance() {
         'needed' | 'in progress' | 'complete' | 'failed'
     >('needed');
 
-    const zkpPrice = useAppSelector(marketPriceSelector);
+    const zkpPrice = useAppSelector(zkpMarketPriceSelector);
     const unclaimedZZKP = useAppSelector(
         totalSelector(chainId, account, StakingRewardTokenID.zZKP),
     );

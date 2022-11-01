@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/named
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
-import {RootState} from '../store';
+import {RootState} from '../../store';
 
 export type WalletActionStatus =
     | 'in progress'
@@ -71,7 +71,7 @@ function startAction(
 }
 
 export const Web3WalletLastActionSlice = createSlice({
-    name: 'Web3WalletLastAction',
+    name: 'ui/Web3WalletLastAction',
     initialState,
     reducers: {
         startAction: (
@@ -135,19 +135,19 @@ export const Web3WalletLastActionSlice = createSlice({
 });
 
 export const walletActionStatusSelector = (state: RootState) =>
-    state.Web3WalletLastAction.status;
+    state.ui.Web3WalletLastAction.status;
 
 export function showWalletActionInProgressSelector(
     action: WalletActionName,
 ): (state: RootState) => boolean {
     return (state: RootState) =>
-        state.Web3WalletLastAction.status == 'in progress' &&
-        state.Web3WalletLastAction.action == action &&
-        !state.Web3WalletLastAction.acknowledgedByUser;
+        state.ui.Web3WalletLastAction.status == 'in progress' &&
+        state.ui.Web3WalletLastAction.action == action &&
+        !state.ui.Web3WalletLastAction.acknowledgedByUser;
 }
 
 export const walletActionCauseSelector = (state: RootState) =>
-    state.Web3WalletLastAction.cause;
+    state.ui.Web3WalletLastAction.cause;
 
 export const {
     startAction: startWalletAction,

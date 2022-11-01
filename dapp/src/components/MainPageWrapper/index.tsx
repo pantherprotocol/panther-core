@@ -5,7 +5,7 @@ import {Box} from '@mui/system';
 
 import background from '../../images/background-v0.5.png';
 import {useAppSelector} from '../../redux/hooks';
-import {blurSelector} from '../../redux/slices/blur';
+import {blurSelector} from '../../redux/slices/ui/blur';
 import {isBlockedCountry} from '../../services/geo-location';
 import BlockedUser from '../BlockedUser';
 import Footer from '../Footer';

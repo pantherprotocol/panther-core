@@ -1,10 +1,10 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
-import {safeParseStringToBN} from '../../lib/numbers';
-import {rewardsVested, rewardsClaimed} from '../../services/rewards';
-import {ZKP_STAKED_SCALING_FACTOR} from '../../services/staking';
-import {createExtraReducers, LoadingStatus} from '../slices/shared';
-import {RootState} from '../store';
+import {safeParseStringToBN} from '../../../lib/numbers';
+import {rewardsVested, rewardsClaimed} from '../../../services/rewards';
+import {ZKP_STAKED_SCALING_FACTOR} from '../../../services/staking';
+import {RootState} from '../../store';
+import {createExtraReducers, LoadingStatus} from '../shared';
 
 type AdvancedStakingState = {
     staked?: string;
@@ -23,7 +23,7 @@ const initialState: totalsOfAdvancedStakesState = {
 };
 
 export const getTotalsOfAdvancedStakes = createAsyncThunk(
-    'getTotalsOfAdvancedStakes',
+    'staking/advanced/total',
     async (): Promise<AdvancedStakingState | null> => {
         const totals: AdvancedStakingState = {};
 
@@ -57,20 +57,22 @@ export const stakedBalanceSlice = createSlice({
 });
 
 export const totalStakedSelector = (state: RootState) => {
-    return state.totalsOfAdvancedStakes.value
-        ? safeParseStringToBN(state.totalsOfAdvancedStakes.value.staked)
+    return state.staking.totalsOfAdvancedStakes.value
+        ? safeParseStringToBN(state.staking.totalsOfAdvancedStakes.value.staked)
         : null;
 };
 
 export const totalClaimedRewardsSelector = (state: RootState) => {
-    return state.totalsOfAdvancedStakes.value
-        ? safeParseStringToBN(state.totalsOfAdvancedStakes.value.claimedRewards)
+    return state.staking.totalsOfAdvancedStakes.value
+        ? safeParseStringToBN(
+              state.staking.totalsOfAdvancedStakes.value.claimedRewards,
+          )
         : null;
 };
 
 export const totalVestedRewardsSelector = (state: RootState) => {
     return safeParseStringToBN(
-        state.totalsOfAdvancedStakes.value?.vestedRewards,
+        state.staking.totalsOfAdvancedStakes.value?.vestedRewards,
     );
 };
 

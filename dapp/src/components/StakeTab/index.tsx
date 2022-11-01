@@ -8,12 +8,12 @@ import {useWeb3React} from '@web3-react/core';
 
 import StakingInfo from '../../components/StakeTab/StakingInfo';
 import {useAppSelector} from '../../redux/hooks';
-import {stakeAmountSelector} from '../../redux/slices/stakeAmount';
+import {stakeAmountSelector} from '../../redux/slices/staking/stakeAmount';
 import {
     isStakingOpenSelector,
     termsSelector,
-} from '../../redux/slices/stakeTerms';
-import {zkpTokenBalanceSelector} from '../../redux/slices/zkpTokenBalance';
+} from '../../redux/slices/staking/stakeTerms';
+import {zkpTokenBalanceSelector} from '../../redux/slices/wallet/zkpTokenBalance';
 import {isWrongNetwork} from '../../services/connectors';
 import {CHAIN_IDS} from '../../services/env';
 import {switchNetwork} from '../../services/wallet';

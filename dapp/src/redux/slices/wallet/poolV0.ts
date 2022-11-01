@@ -2,9 +2,9 @@ import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
-import * as pool from '../../services/pool';
-import {createExtraReducers, LoadingStatus} from '../slices/shared';
-import {RootState} from '../store';
+import * as pool from '../../../services/pool';
+import {RootState} from '../../store';
+import {createExtraReducers, LoadingStatus} from '../shared';
 
 interface PoolV0ExitTimeState {
     value: PoolV0Parameters;
@@ -22,7 +22,7 @@ const initialState: PoolV0ExitTimeState = {
 };
 
 const getExitTime = createAsyncThunk(
-    'poolV0/getExitTime',
+    'poolV0/exitTime',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
     ): Promise<PoolV0Parameters | null> => {
@@ -49,13 +49,13 @@ const poolV0Slice = createSlice({
 export const poolV0ExitTimeSelector = (
     state: RootState,
 ): number | undefined => {
-    return state?.poolV0?.value?.exitTime;
+    return state?.wallet.poolV0?.value?.exitTime;
 };
 
 export const poolV0ExitDelaySelector = (
     state: RootState,
 ): number | undefined => {
-    return state.poolV0.value.exitDelay;
+    return state.wallet.poolV0.value.exitDelay;
 };
 
 export default poolV0Slice.reducer;

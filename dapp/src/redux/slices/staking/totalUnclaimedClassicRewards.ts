@@ -4,11 +4,11 @@ import {sumBigNumbers} from '@panther-core/crypto/lib/utils/numbers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
-import {safeParseStringToBN} from '../../lib/numbers';
-import {isClassic} from '../../services/rewards';
-import * as stakingService from '../../services/staking';
-import {createExtraReducers, LoadingStatus} from '../slices/shared';
-import {RootState} from '../store';
+import {safeParseStringToBN} from '../../../lib/numbers';
+import {isClassic} from '../../../services/rewards';
+import * as stakingService from '../../../services/staking';
+import {createExtraReducers, LoadingStatus} from '../../slices/shared';
+import {RootState} from '../../store';
 
 interface TotalClassicRewardsState {
     value: string | null;
@@ -21,7 +21,7 @@ const initialState: TotalClassicRewardsState = {
 };
 
 export const getTotalUnclaimedClassicRewards = createAsyncThunk(
-    'getUnclaimedClassicStakesRewards',
+    'staking/rewards/classic/unclaimed',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
     ): Promise<string | null> => {
@@ -63,13 +63,15 @@ export const totalUnclaimedClassicRewardsSlice = createSlice({
 export const totalUnclaimedClassicRewardsSelector = (
     state: RootState,
 ): BigNumber | null => {
-    return safeParseStringToBN(state.totalUnclaimedClassicRewards.value);
+    return safeParseStringToBN(
+        state.staking.totalUnclaimedClassicRewards.value,
+    );
 };
 
 export const statusUnclaimedRewardsSelector = (
     state: RootState,
 ): LoadingStatus => {
-    return state.totalUnclaimedClassicRewards.status;
+    return state.staking.totalUnclaimedClassicRewards.status;
 };
 
 export const {reset: resetUnclaimedClassicRewards} =

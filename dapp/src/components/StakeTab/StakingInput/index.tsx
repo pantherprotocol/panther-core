@@ -12,16 +12,16 @@ import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {
     calculateRewards,
     resetRewards,
-} from '../../../redux/slices/advancedStakePredictedRewards';
+} from '../../../redux/slices/staking/advancedStakePredictedRewards';
 import {
     resetStakeAmount,
     setStakeAmount,
-} from '../../../redux/slices/stakeAmount';
+} from '../../../redux/slices/staking/stakeAmount';
 import {
     termsSelector,
     isStakingOpenSelector,
-} from '../../../redux/slices/stakeTerms';
-import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
+} from '../../../redux/slices/staking/stakeTerms';
+import {zkpTokenBalanceSelector} from '../../../redux/slices/wallet/zkpTokenBalance';
 import {StakeType} from '../../../types/staking';
 
 import {StakingInputProps} from './StakingInput.interface';

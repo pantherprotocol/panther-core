@@ -3,19 +3,22 @@ import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
-import {formatCurrency} from '../../lib/format';
-import {formatEther, safeParseStringToBN} from '../../lib/numbers';
-import {fiatPrice} from '../../lib/tokenPrice';
-import * as accountService from '../../services/account';
-import {RootState} from '../store';
-
-import {BalanceState, createExtraReducers, initialBalanceState} from './shared';
-import {marketPriceSelector} from './zkpMarketPrice';
+import {formatCurrency} from '../../../lib/format';
+import {formatEther, safeParseStringToBN} from '../../../lib/numbers';
+import {fiatPrice} from '../../../lib/tokenPrice';
+import * as accountService from '../../../services/account';
+import {RootState} from '../../store';
+import {zkpMarketPriceSelector} from '../marketPrices/zkpMarketPrice';
+import {
+    BalanceState,
+    createExtraReducers,
+    initialBalanceState,
+} from '../shared';
 
 const initialState: BalanceState = initialBalanceState;
 
 export const getZkpTokenBalance = createAsyncThunk(
-    'balance/getTokenBalance',
+    'wallet/balance/unstaked/ZKP',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
     ): Promise<string | null> => {
@@ -50,12 +53,12 @@ export const tokenBalanceSlice = createSlice({
 });
 
 export const zkpTokenBalanceSelector = (state: RootState) =>
-    safeParseStringToBN(state.zkpTokenBalance.value);
+    safeParseStringToBN(state.wallet.zkpTokenBalance.value);
 
 export const zkpUnstakedUSDMarketPriceSelector = (
     state: RootState,
 ): BigNumber | null => {
-    const price = marketPriceSelector(state);
+    const price = zkpMarketPriceSelector(state);
     const balance = zkpTokenBalanceSelector(state);
 
     if (!price) {

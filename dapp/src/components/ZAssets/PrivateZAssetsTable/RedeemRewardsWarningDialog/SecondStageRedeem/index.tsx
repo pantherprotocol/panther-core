@@ -16,15 +16,15 @@ import moment from 'moment';
 import {awaitConfirmationAndRetrieveEvent} from '../../../../../lib/events';
 import {formatCurrency} from '../../../../../lib/format';
 import {useAppDispatch, useAppSelector} from '../../../../../redux/hooks';
-import {updateUTXOStatus} from '../../../../../redux/slices/advancedStakesRewards';
-import {poolV0ExitDelaySelector} from '../../../../../redux/slices/poolV0';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
     registerWalletActionSuccess,
     startWalletAction,
     StartWalletActionPayload,
-} from '../../../../../redux/slices/web3WalletLastAction';
+} from '../../../../../redux/slices/ui/web3WalletLastAction';
+import {updateUTXOStatus} from '../../../../../redux/slices/wallet/advancedStakesRewards';
+import {poolV0ExitDelaySelector} from '../../../../../redux/slices/wallet/poolV0';
 import {parseTxErrorMessage} from '../../../../../services/errors';
 import {generateRootKeypairs} from '../../../../../services/keys';
 import {exit} from '../../../../../services/pool';

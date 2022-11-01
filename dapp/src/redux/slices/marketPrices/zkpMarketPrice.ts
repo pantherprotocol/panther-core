@@ -1,22 +1,18 @@
 import {formatEther} from '@ethersproject/units';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
-import {safeParseStringToBN} from '../../lib/numbers';
-import * as stakingService from '../../services/staking';
-import {createExtraReducers, LoadingStatus} from '../slices/shared';
-import {RootState} from '../store';
+import {safeParseStringToBN} from '../../../lib/numbers';
+import * as stakingService from '../../../services/staking';
+import {RootState} from '../../store';
+import {BalanceState, createExtraReducers} from '../shared';
 
-interface ZkpTokenMarketPriceState {
-    value: string | null;
-    status: LoadingStatus;
-}
-const initialState: ZkpTokenMarketPriceState = {
+const initialState: BalanceState = {
     value: null,
     status: 'idle',
 };
 
 export const getZKPTokenMarketPrice = createAsyncThunk(
-    'balance/getZKPTokenMarketPrice',
+    'marketPrices/$ZKP',
     async (): Promise<string | null> => {
         const price = await stakingService.getZKPMarketPrice();
         if (price) {
@@ -26,7 +22,7 @@ export const getZKPTokenMarketPrice = createAsyncThunk(
     },
 );
 
-export const marketPriceSlice = createSlice({
+export const zkpMarketPriceSlice = createSlice({
     name: 'zkpMarketPrice',
     initialState,
     reducers: {},
@@ -38,11 +34,8 @@ export const marketPriceSlice = createSlice({
     },
 });
 
-export const marketPriceSelector = (state: RootState) => {
-    return safeParseStringToBN(state.zkpMarketPrice.value);
+export const zkpMarketPriceSelector = (state: RootState) => {
+    return safeParseStringToBN(state.marketPrice.zkpMarketPrice.value);
 };
 
-export const statuszkpMarketPriceSelector = (state: RootState) =>
-    state.zkpMarketPrice.status;
-
-export default marketPriceSlice.reducer;
+export default zkpMarketPriceSlice.reducer;

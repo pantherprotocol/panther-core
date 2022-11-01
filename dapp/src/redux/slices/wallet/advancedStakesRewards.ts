@@ -6,21 +6,21 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {poseidon} from 'circomlibjs';
 import {BigNumber, constants} from 'ethers';
 
-import {sleep} from '../../lib/time';
-import {getChangedUTXOsStatuses, UTXOStatusByID} from '../../services/pool';
+import {sleep} from '../../../lib/time';
+import {getChangedUTXOsStatuses, UTXOStatusByID} from '../../../services/pool';
 import {
     PRP_REWARD_PER_STAKE,
     NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD,
-} from '../../services/rewards';
-import {getAdvancedStakingReward} from '../../services/staking';
-import {AdvancedStakeRewardsResponse} from '../../services/subgraph';
+} from '../../../services/rewards';
+import {getAdvancedStakingReward} from '../../../services/staking';
+import {AdvancedStakeRewardsResponse} from '../../../services/subgraph';
 import {
     AdvancedStakeRewards,
     AdvancedStakeTokenIDs,
     UTXOStatus,
-} from '../../types/staking';
-import {LoadingStatus} from '../slices/shared';
-import {RootState} from '../store';
+} from '../../../types/staking';
+import {LoadingStatus} from '../../slices/shared';
+import {RootState} from '../../store';
 
 const MAX_RETRIES = 5;
 const INITIAL_RETRY_DELAY = 1000;
@@ -58,7 +58,7 @@ function shortAddressHash(address: string): string {
 }
 
 export const getAdvancedStakesRewards = createAsyncThunk(
-    'advancedStakesRewards',
+    'wallet/advancedStakesRewards/get',
     async (
         payload: {
             context: Web3ReactContextInterface<Web3Provider>;
@@ -111,7 +111,7 @@ export const getAdvancedStakesRewards = createAsyncThunk(
 );
 
 export const getAdvancedStakesRewardsAndUpdateStatus = createAsyncThunk(
-    'getAdvancedStakesRewardsAndUpdateStatus',
+    'wallet/advancedStakesRewards/getAndUpdateStatus',
     async (
         payload: {
             context: Web3ReactContextInterface<Web3Provider>;
@@ -193,7 +193,7 @@ async function getRewardsFromGraph(
 }
 
 export const refreshUTXOsStatuses = createAsyncThunk(
-    'refreshUTXOsStatuses',
+    'wallet/advancedStakesRewards/refreshUTXOsStatuses',
     async (
         payload: {
             context: Web3ReactContextInterface<Web3Provider>;
@@ -272,7 +272,7 @@ async function getRewardsFromGraphWithRetry(
 }
 
 export const advancedStakesRewardsSlice = createSlice({
-    name: 'advancedStakesRewards',
+    name: 'wallet/advancedStakesRewards',
     initialState,
     reducers: {
         reset: state => {
@@ -359,7 +359,7 @@ export const advancedStakesRewardsSelector = (
         if (!chainId) return {};
 
         const rewardsByAddressAndId = (
-            state.advancedStakesRewards as AdvancedStakesRewardsState
+            state.wallet.advancedStakesRewards as AdvancedStakesRewardsState
         ).value as AdvancedStakeRewardsByChainId;
 
         const addrHash = shortAddressHash(address);
@@ -423,11 +423,11 @@ export function hasUndefinedUTXOsSelector(
 }
 
 export function lastRefreshTime(state: RootState): number | null {
-    return state.advancedStakesRewards.lastRefreshTime;
+    return state.wallet.advancedStakesRewards.lastRefreshTime;
 }
 
 export function statusSelector(state: RootState): LoadingStatus {
-    return state.advancedStakesRewards.status;
+    return state.wallet.advancedStakesRewards.status;
 }
 
 export const {

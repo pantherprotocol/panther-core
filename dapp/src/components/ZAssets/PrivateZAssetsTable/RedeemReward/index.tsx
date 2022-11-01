@@ -7,8 +7,8 @@ import {useWeb3React} from '@web3-react/core';
 import rightSideArrow from '../../../../images/right-arrow-icon.svg';
 import {formatTime} from '../../../../lib/format';
 import {useAppSelector} from '../../../../redux/hooks';
-import {poolV0ExitTimeSelector} from '../../../../redux/slices/poolV0';
-import {showWalletActionInProgressSelector} from '../../../../redux/slices/web3WalletLastAction';
+import {showWalletActionInProgressSelector} from '../../../../redux/slices/ui/web3WalletLastAction';
+import {poolV0ExitTimeSelector} from '../../../../redux/slices/wallet/poolV0';
 import {getCommitmentTreeUrl} from '../../../../services/env';
 import RedeemRewardsWarningDialog from '../RedeemRewardsWarningDialog';
 

@@ -3,7 +3,7 @@ import React from 'react';
 import {Box, Grid, Typography} from '@mui/material';
 
 import {useAppDispatch} from '../../redux/hooks';
-import {acknowledgeNotification} from '../../redux/slices/acknowledgedNotifications';
+import {acknowledgeNotification} from '../../redux/slices/ui/acknowledgedNotifications';
 import ContinueButton from '../ContinueButton';
 
 import Feature, {featuredata} from './Feature';

@@ -8,11 +8,11 @@ import moment from 'moment';
 import ClaimedProgress from '../../components/ClaimedProgress';
 import {formatPercentage} from '../../lib/format';
 import {useAppSelector} from '../../redux/hooks';
-import {termsSelector} from '../../redux/slices/stakeTerms';
+import {termsSelector} from '../../redux/slices/staking/stakeTerms';
 import {
     totalClaimedRewardsSelector,
     totalVestedRewardsSelector,
-} from '../../redux/slices/totalsOfAdvancedStakes';
+} from '../../redux/slices/staking/totalsOfAdvancedStakes';
 import {getAdvStakingAPY} from '../../services/rewards';
 import {StakeType} from '../../types/staking';
 

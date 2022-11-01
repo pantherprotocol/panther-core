@@ -2,14 +2,14 @@ import {BigNumber} from 'ethers';
 // eslint-disable-next-line
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
-import {safeParseStringToBN} from '../../lib/numbers';
-import {prpReward, zZkpReward} from '../../services/rewards';
+import {safeParseStringToBN} from '../../../lib/numbers';
+import {prpReward, zZkpReward} from '../../../services/rewards';
 import {
     StakeReward,
     StakeRewardsBN,
     StakingRewardTokenID,
-} from '../../types/staking';
-import {RootState} from '../store';
+} from '../../../types/staking';
+import {RootState} from '../../store';
 
 interface StakesRewardsState {
     value: StakeReward | null;
@@ -18,7 +18,7 @@ interface StakesRewardsState {
 const initialState: StakesRewardsState = {value: {} as StakeReward};
 
 export const calculatedRewardSlice = createSlice({
-    name: 'advancedStakeInputRewards',
+    name: 'staking/advancedStakeInputRewards',
     initialState,
     reducers: {
         reset: (state): void => {
@@ -50,7 +50,7 @@ export const calculatedRewardSlice = createSlice({
 export const calculatedRewardsSelector = (
     state: RootState,
 ): StakeRewardsBN | null => {
-    const data = state.advancedStakeInputRewards.value;
+    const data = state.staking.advancedStakeInputRewards.value;
     if (!data) return null;
     const dataBN = {} as StakeRewardsBN;
 

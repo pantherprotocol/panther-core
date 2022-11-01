@@ -2,15 +2,18 @@ import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 
-import {safeParseStringToBN} from '../../lib/numbers';
-import {RootState} from '../store';
-
-import {BalanceState, createExtraReducers, initialBalanceState} from './shared';
+import {safeParseStringToBN} from '../../../lib/numbers';
+import {RootState} from '../../store';
+import {
+    BalanceState,
+    createExtraReducers,
+    initialBalanceState,
+} from '../shared';
 
 const initialState: BalanceState = initialBalanceState;
 
 export const getChainBalance = createAsyncThunk(
-    'balance/getChainBalance',
+    'wallet/balance/chain/Tokens',
     async (
         context: Web3ReactContextInterface<Web3Provider>,
     ): Promise<string | null> => {
@@ -24,7 +27,7 @@ export const getChainBalance = createAsyncThunk(
 );
 
 const chainBalanceSlice = createSlice({
-    name: 'chainBalance',
+    name: 'wallet/chainBalance',
     initialState,
     reducers: {
         reset: state => {
@@ -38,7 +41,7 @@ const chainBalanceSlice = createSlice({
 });
 
 export const chainBalanceSelector = (state: RootState) =>
-    safeParseStringToBN(state.chainBalance.value);
+    safeParseStringToBN(state.wallet.chainBalance.value);
 
 export const {reset: resetChainBalance} = chainBalanceSlice.actions;
 export default chainBalanceSlice.reducer;

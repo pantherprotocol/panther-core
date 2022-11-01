@@ -6,9 +6,9 @@ import {constants} from 'ethers';
 
 import {fiatPrice} from '../../lib/tokenPrice';
 import {useAppSelector} from '../../redux/hooks';
-import {totalSelector} from '../../redux/slices/advancedStakesRewards';
-import {marketPriceSelector} from '../../redux/slices/zkpMarketPrice';
-import {zkpStakedBalanceSelector} from '../../redux/slices/zkpStakedBalance';
+import {zkpMarketPriceSelector} from '../../redux/slices/marketPrices/zkpMarketPrice';
+import {zkpStakedBalanceSelector} from '../../redux/slices/staking/zkpStakedBalance';
+import {totalSelector} from '../../redux/slices/wallet/advancedStakesRewards';
 import {Network, supportedNetworks} from '../../services/connectors';
 import {chainHasPoolContract} from '../../services/contracts';
 import {StakingRewardTokenID} from '../../types/staking';
@@ -26,7 +26,7 @@ const BalanceCard = () => {
     const currentNetwork: Network | null =
         context && chainId ? supportedNetworks[chainId] : null;
 
-    const zkpPrice = useAppSelector(marketPriceSelector);
+    const zkpPrice = useAppSelector(zkpMarketPriceSelector);
 
     const zkpStakedBalance = useAppSelector(zkpStakedBalanceSelector);
     const zkpStakedUSDValue = fiatPrice(zkpStakedBalance, zkpPrice);

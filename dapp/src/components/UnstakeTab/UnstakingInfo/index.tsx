@@ -6,7 +6,7 @@ import {Link} from 'react-router-dom';
 
 import {secondsToFullDays} from '../../../lib/format';
 import {useAppSelector} from '../../../redux/hooks';
-import {termsSelector} from '../../../redux/slices/stakeTerms';
+import {termsSelector} from '../../../redux/slices/staking/stakeTerms';
 import {chainHasAdvancedStaking} from '../../../services/contracts';
 import {StakeType} from '../../../types/staking';
 

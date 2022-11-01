@@ -46,7 +46,7 @@ const babelConfig = process.env.BABEL_UWC
     : [];
 
 module.exports = {
-    entry: ['babel-polyfill', './src/index.tsx'],
+    entry: ['babel-polyfill', path.resolve(__dirname, './src/index.tsx')],
     ...(process.env.NODE_ENV === 'production'
         ? {}
         : {

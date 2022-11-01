@@ -4,7 +4,7 @@ import {createTheme} from '@mui/material';
 import {ThemeProvider} from '@mui/material/styles';
 import {ReactNotifications} from 'react-notifications-component';
 import {Route} from 'react-router';
-import {BrowserRouter as Router, Switch} from 'react-router-dom';
+import {HashRouter as Router, Switch} from 'react-router-dom';
 
 import {isBlockedCountry} from '../src/services/geo-location';
 

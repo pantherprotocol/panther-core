@@ -1,6 +1,5 @@
 import {configureStore, combineReducers} from '@reduxjs/toolkit';
 import {
-    persistReducer,
     persistStore,
     FLUSH,
     REHYDRATE,
@@ -9,22 +8,11 @@ import {
     PURGE,
     REGISTER,
 } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
 
 import {marketPriceReducer} from './slices/marketPrices';
 import {stakingReducer} from './slices/staking';
 import {uiReducer} from './slices/ui';
 import {walletReducer} from './slices/wallet';
-
-const rootPersistConfig = {
-    key: 'root',
-    storage: storage,
-    whitelist: [
-        'advancedStakesRewards',
-        'isWalletConnected',
-        'acknowledgedNotifications',
-    ],
-};
 
 export const rootReducer = combineReducers({
     ui: uiReducer,
@@ -33,10 +21,8 @@ export const rootReducer = combineReducers({
     wallet: walletReducer,
 });
 
-export const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
-
 export const store = configureStore({
-    reducer: persistedReducer,
+    reducer: rootReducer,
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
             serializableCheck: {

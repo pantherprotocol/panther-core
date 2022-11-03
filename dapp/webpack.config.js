@@ -212,8 +212,12 @@ module.exports = {
               ]
             : []),
     ],
-    optimization: {
-        minimize: true,
-        minimizer: [new TerserPlugin()],
-    },
+    optimization:
+        process.env.NODE_ENV === 'production' ||
+        process.env.NODE_ENV === 'staging'
+            ? {
+                  minimize: true,
+                  minimizer: [new TerserPlugin()],
+              }
+            : {},
 };

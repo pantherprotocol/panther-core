@@ -28,7 +28,7 @@ export const CIPHERTEXT_MSG_TYPE_V1_SIZE = 32;
 // of the following format:
 // msg = [IV, packedR, ...encrypted(prolog, r)]
 export function encryptAndPackMessageTypeV1(
-    randomSecret: bigint,
+    secret: bigint,
     rootReadingPubKey: PublicKey,
 ): string {
     const ephemeralRandom = generateRandomInBabyJubSubField();
@@ -39,7 +39,7 @@ export function encryptAndPackMessageTypeV1(
     const ephemeralPubKeyPacked = packPublicKey(ephemeralPubKey);
     const ephemeralSharedPubKey = derivePubKeyFromPrivKey(ephemeralRandom);
     const ephemeralSharedPubKeyPacked = packPublicKey(ephemeralSharedPubKey);
-    const plaintext = bigintToBytes32(randomSecret).slice(2);
+    const plaintext = bigintToBytes32(secret).slice(2);
     const {cipherKey, iv} = extractCipherKeyAndIvFromPackedPoint(
         ephemeralPubKeyPacked,
     );

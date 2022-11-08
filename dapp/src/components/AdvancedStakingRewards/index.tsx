@@ -6,7 +6,7 @@ import {utils} from 'ethers';
 import moment from 'moment';
 
 import ClaimedProgress from '../../components/ClaimedProgress';
-import {formatPercentage} from '../../lib/format';
+import StakingAPR from '../../components/StakingAPR';
 import {useAppSelector} from '../../redux/hooks';
 import {termsSelector} from '../../redux/slices/staking/stakeTerms';
 import {
@@ -39,8 +39,7 @@ function AdvancedStakingRewards() {
                 <RemainingDays />
                 {advancedStakingAPY && (
                     <StakingAPR
-                        advancedStakingAPY={advancedStakingAPY}
-                        isConnected={active}
+                        advancedStakingAPY={active ? advancedStakingAPY : 0}
                     />
                 )}
             </Box>
@@ -99,28 +98,6 @@ function RemainingDays() {
         >
             <Typography className="text">{title}</Typography>
             <Typography className="value">{daysRemaining}</Typography>
-        </Box>
-    );
-}
-
-export function StakingAPR(props: {
-    advancedStakingAPY: number;
-    isConnected: boolean;
-}) {
-    return (
-        <Box
-            className="staking-apr"
-            data-testid="advanced-staking-rewards_staking-apr_container"
-        >
-            <Typography className="text">Staking APR</Typography>
-            <Typography
-                className="value"
-                data-testid="advanced-staking-rewards_staking-apr_value"
-            >
-                {props.isConnected
-                    ? formatPercentage(props.advancedStakingAPY / 100)
-                    : '0'}
-            </Typography>
         </Box>
     );
 }

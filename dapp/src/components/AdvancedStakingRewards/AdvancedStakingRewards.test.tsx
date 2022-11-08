@@ -2,9 +2,10 @@ import * as React from 'react';
 
 import {screen, waitFor} from '@testing-library/react';
 
+import StakingAPR from '../../components/StakingAPR';
 import {renderComponent} from '../../utils/test-utils';
 
-import AdvancedStakingRewards, {StakingAPR} from './index';
+import AdvancedStakingRewards from './index';
 
 test('should render', async () => {
     renderComponent(<AdvancedStakingRewards />);
@@ -25,9 +26,7 @@ test('should render', async () => {
 test('should format APR correctly', async () => {
     const testAPY = 40;
 
-    renderComponent(
-        <StakingAPR advancedStakingAPY={testAPY} isConnected={true} />,
-    );
+    renderComponent(<StakingAPR advancedStakingAPY={testAPY} />);
 
     const stakingAprContainer = screen.queryByTestId(
         'advanced-staking-rewards_staking-apr_container',

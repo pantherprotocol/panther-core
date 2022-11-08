@@ -24,7 +24,10 @@ function AdvancedStakingRewards() {
     const advancedStakingAPY = getAdvStakingAPY(new Date().getTime());
 
     return (
-        <Box className="advanced-staking-rewards">
+        <Box
+            className="advanced-staking-rewards"
+            data-testid="advanced-staking-rewards_advanced-staking-rewards_container"
+        >
             <ClaimedProgress
                 claimed={claimed ? Number(utils.formatEther(claimed)) : 0}
                 total={total ? Number(utils.formatEther(total)) : 0}
@@ -85,18 +88,27 @@ function RemainingDays() {
             : ['Connect Wallet', '-'];
 
     return (
-        <Box className="remaining-days">
+        <Box
+            className="remaining-days"
+            data-testid="advanced-staking-rewards_remaining-days_container"
+        >
             <Typography className="text">{title}</Typography>
             <Typography className="value">{daysRemaining}</Typography>
         </Box>
     );
 }
 
-function StakingAPR(props: {advancedStakingAPY: number}) {
+export function StakingAPR(props: {advancedStakingAPY: number}) {
     return (
-        <Box className="staking-apr">
+        <Box
+            className="staking-apr"
+            data-testid="advanced-staking-rewards_staking-apr_container"
+        >
             <Typography className="text">Staking APR</Typography>
-            <Typography className="value">
+            <Typography
+                className="value"
+                data-testid="advanced-staking-rewards_staking-apr_value"
+            >
                 {formatPercentage(props.advancedStakingAPY / 100)}
             </Typography>
         </Box>

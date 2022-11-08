@@ -56,9 +56,17 @@ const BalanceCard = () => {
                 <UnstakedBalance />
                 <AddressBalances
                     title={'Staked ZKP Balance:'}
-                    balance={zkpStakedBalance}
+                    balance={
+                        chainId && chainHasPoolContract(chainId)
+                            ? zkpStakedBalance
+                            : constants.Zero
+                    }
                     rewardsTokenSymbol={'ZKP'}
-                    amountUSD={zkpStakedUSDValue}
+                    amountUSD={
+                        chainId && chainHasPoolContract(chainId)
+                            ? zkpStakedUSDValue
+                            : constants.Zero
+                    }
                 />
 
                 <AddressBalances

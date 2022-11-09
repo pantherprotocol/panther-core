@@ -17,11 +17,11 @@ import polygonIcon from 'images/polygon-logo.svg';
 import {CONFIRMATIONS_NUM} from 'lib/constants';
 import {formatAccountAddress, formatCurrency} from 'lib/format';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
-import {getChainBalance} from 'redux/slices/wallet/chainBalance';
+import {getChainBalance} from 'redux/slices/wallet/chain-balance';
 import {
     getZkpTokenBalance,
     zkpTokenBalanceSelector,
-} from 'redux/slices/wallet/zkpTokenBalance';
+} from 'redux/slices/wallet/zkp-token-balance';
 import {isWrongNetwork, supportedNetworks} from 'services/connectors';
 import {FAUCET_CHAIN_IDS} from 'services/env';
 import {parseTxErrorMessage} from 'services/errors';

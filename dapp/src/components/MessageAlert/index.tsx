@@ -6,7 +6,7 @@ import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     acknowledgedNotificationSelector,
     acknowledgeNotification,
-} from 'redux/slices/ui/acknowledgedNotifications';
+} from 'redux/slices/ui/acknowledged-notifications';
 
 import {MessageAlertProps} from './MessageAlert.interface';
 

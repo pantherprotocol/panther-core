@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import questionmarkIcon from 'images/questionmark-icon.svg';
 import {formatCurrency} from 'lib/format';
 import {useAppSelector} from 'redux/hooks';
-import {calculatedRewardsSelector} from 'redux/slices/staking/advancedStakePredictedRewards';
+import {calculatedRewardsSelector} from 'redux/slices/staking/advanced-stake-predicted-rewards';
 import {StakingRewardTokenID} from 'types/staking';
 
 import './styles.scss';

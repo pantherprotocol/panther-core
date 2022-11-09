@@ -6,7 +6,7 @@ import {safeOpenMetamask} from 'components/Common/links';
 import PrimaryActionButton from 'components/Common/PrimaryActionButton';
 import {useOnConnect} from 'hooks/web3';
 import {useAppDispatch} from 'redux/hooks';
-import {setConnected} from 'redux/slices/ui/isWalletConnected';
+import {setConnected} from 'redux/slices/ui/is-wallet-connected';
 
 const ConnectButton = (props: {styles?: string}) => {
     const context = useWeb3React();

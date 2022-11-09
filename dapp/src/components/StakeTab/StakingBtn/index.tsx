@@ -14,10 +14,10 @@ import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {formatCurrency} from 'lib/format';
 import {safeParseUnits} from 'lib/numbers';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
-import {calculatedRewardsSelector} from 'redux/slices/staking/advancedStakePredictedRewards';
-import {getTotalsOfAdvancedStakes} from 'redux/slices/staking/totalsOfAdvancedStakes';
-import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/totalUnclaimedClassicRewards';
-import {getZkpStakedBalance} from 'redux/slices/staking/zkpStakedBalance';
+import {calculatedRewardsSelector} from 'redux/slices/staking/advanced-stake-predicted-rewards';
+import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/total-unclaimed-classic-rewards';
+import {getTotalsOfAdvancedStakes} from 'redux/slices/staking/totals-of-advanced-stakes';
+import {getZkpStakedBalance} from 'redux/slices/staking/zkp-staked-balance';
 import {
     startWalletAction,
     StartWalletActionPayload,
@@ -27,10 +27,10 @@ import {
     WalletActionTrigger,
     walletActionCauseSelector,
     walletActionStatusSelector,
-} from 'redux/slices/ui/web3WalletLastAction';
-import {getAdvancedStakesRewardsAndUpdateStatus} from 'redux/slices/wallet/advancedStakesRewards';
-import {getChainBalance} from 'redux/slices/wallet/chainBalance';
-import {getZkpTokenBalance} from 'redux/slices/wallet/zkpTokenBalance';
+} from 'redux/slices/ui/web3-wallet-last-action';
+import {getAdvancedStakesRewardsAndUpdateStatus} from 'redux/slices/wallet/advanced-stakes-rewards';
+import {getChainBalance} from 'redux/slices/wallet/chain-balance';
+import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
 import {chainHasAdvancedStaking} from 'services/contracts';
 import {parseTxErrorMessage} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';

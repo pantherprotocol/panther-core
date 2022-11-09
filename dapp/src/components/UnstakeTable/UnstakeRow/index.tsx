@@ -5,7 +5,7 @@ import ExactValueTooltip from 'components/Common/ExactValueTooltip';
 import UnstakeButton from 'components/UnstakeTable/UnstakeButton';
 import {BigNumber} from 'ethers';
 import {formatCurrency, formatTime} from 'lib/format';
-import {WalletActionTrigger} from 'redux/slices/ui/web3WalletLastAction';
+import {WalletActionTrigger} from 'redux/slices/ui/web3-wallet-last-action';
 import {isClassic} from 'services/rewards';
 import {CLASSIC_TYPE_HEX, StakeRow} from 'services/staking';
 import {

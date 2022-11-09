@@ -4,8 +4,8 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {formatCurrency} from 'lib/format';
 import {formatEther, safeParseStringToBN} from 'lib/numbers';
-import {fiatPrice} from 'lib/tokenPrice';
-import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkpMarketPrice';
+import {fiatPrice} from 'lib/token-price';
+import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
 import {
     BalanceState,
     createExtraReducers,

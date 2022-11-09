@@ -4,7 +4,7 @@ import {Box, Typography} from '@mui/material';
 import {screen, waitFor} from '@testing-library/react';
 import {formatCurrency} from 'lib/format';
 import {safeParseUnits} from 'lib/numbers';
-import {fiatPrice} from 'lib/tokenPrice';
+import {fiatPrice} from 'lib/token-price';
 import {renderComponent} from 'utils/test-utils';
 
 import PrivateBalance from './index';

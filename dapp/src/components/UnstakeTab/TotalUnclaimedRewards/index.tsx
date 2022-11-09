@@ -5,8 +5,8 @@ import {useWeb3React} from '@web3-react/core';
 import {constants} from 'ethers';
 import {formatCurrency} from 'lib/format';
 import {useAppSelector} from 'redux/hooks';
-import {totalUnclaimedClassicRewardsSelector} from 'redux/slices/staking/totalUnclaimedClassicRewards';
-import {totalSelector} from 'redux/slices/wallet/advancedStakesRewards';
+import {totalUnclaimedClassicRewardsSelector} from 'redux/slices/staking/total-unclaimed-classic-rewards';
+import {totalSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {StakingRewardTokenID} from 'types/staking';
 
 import './styles.scss';

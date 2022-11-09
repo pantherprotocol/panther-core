@@ -12,7 +12,7 @@ import {ReactNotifications} from 'react-notifications-component';
 import {Route} from 'react-router';
 import {HashRouter as Router, Switch} from 'react-router-dom';
 import {useAppDispatch} from 'redux/hooks';
-import {getZKPTokenMarketPrice} from 'redux/slices/marketPrices/zkpMarketPrice';
+import {getZKPTokenMarketPrice} from 'redux/slices/marketPrices/zkp-market-price';
 import {getMissingEnvVars, env} from 'services/env';
 import {isBlockedCountry} from 'services/geo-location';
 

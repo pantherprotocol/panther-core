@@ -2,10 +2,10 @@ import {combineReducers} from '@reduxjs/toolkit';
 import {persistReducer} from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import advancedStakesRewardsReducer from './advancedStakesRewards';
-import chainBalanceReducer from './chainBalance';
+import advancedStakesRewardsReducer from './advanced-stakes-rewards';
+import chainBalanceReducer from './chain-balance';
 import poolV0Reducer from './poolV0';
-import zkpTokenBalanceReducer from './zkpTokenBalance';
+import zkpTokenBalanceReducer from './zkp-token-balance';
 
 const walletPersistConfig = {
     key: 'wallet',

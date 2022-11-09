@@ -2,10 +2,10 @@ import {combineReducers} from '@reduxjs/toolkit';
 import {persistReducer} from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import acknowledgedNotificationsReducer from './acknowledgedNotifications';
+import acknowledgedNotificationsReducer from './acknowledged-notifications';
 import blurReducer from './blur';
-import isWalletConnectedReducer from './isWalletConnected';
-import Web3WalletLastActionReducer from './web3WalletLastAction';
+import isWalletConnectedReducer from './is-wallet-connected';
+import Web3WalletLastActionReducer from './web3-wallet-last-action';
 
 const uiPersistConfig = {
     key: 'ui',

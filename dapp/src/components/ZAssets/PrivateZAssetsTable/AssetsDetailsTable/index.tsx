@@ -52,10 +52,8 @@ const AssetsDetailsTable = () => {
                 <TableHead>
                     <TableRow className="staked-zAsset-row">
                         <TableCell>Date:</TableCell>
-                        <TableCell>Type:</TableCell>
                         <TableCell align="right">Amount:</TableCell>
                         <TableCell align="right">Rewards Earned:</TableCell>
-                        <TableCell align="right">APY:</TableCell>
                         <TableCell align="right"></TableCell>
                     </TableRow>
                 </TableHead>

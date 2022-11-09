@@ -1,0 +1,18 @@
+@import '../../variables';
+
+.top-notification-banner {
+    padding: 10px;
+    justify-content: center;
+    font-weight: $semi-bold-font-weight;
+    font-size: $normal-font-size;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: -0.015em;
+    color: $white;
+
+    background: linear-gradient(180deg, #5f6c85 0%, #5f6c85 100%);
+    mix-blend-mode: normal;
+    backdrop-filter: blur(25px);
+}

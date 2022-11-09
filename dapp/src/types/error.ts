@@ -1,3 +1,5 @@
+import {isObject} from 'lodash';
+
 export type DetailedError = {
     message: string;
     details: string;
@@ -9,6 +11,7 @@ export function isDetailedError(
 ): possiblyDetailedError is DetailedError {
     return (
         possiblyDetailedError &&
+        isObject(possiblyDetailedError) &&
         'message' in possiblyDetailedError &&
         'details' in possiblyDetailedError
     );

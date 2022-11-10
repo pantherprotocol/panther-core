@@ -2,9 +2,10 @@ import * as React from 'react';
 
 import {screen, waitFor} from '@testing-library/react';
 
+import StakingAPR from '../../components/StakingAPR';
 import {renderComponent} from '../../utils/test-utils';
 
-import AdvancedStakingRewards, {StakingAPR} from './index';
+import AdvancedStakingRewards from './index';
 
 test('should render', async () => {
     renderComponent(<AdvancedStakingRewards />);

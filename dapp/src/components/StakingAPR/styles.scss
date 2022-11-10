@@ -1,0 +1,6 @@
+@import '../AdvancedStakingRewards/styles.scss';
+
+.staking-apr {
+    @extend .remaining-days;
+    margin-left: 13px;
+}

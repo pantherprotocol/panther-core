@@ -1,9 +1,8 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-
-import {safeParseStringToBN} from '../../../lib/numbers';
-import {unusedPrpGrantAmount} from '../../../services/rewards';
-import {createExtraReducers, LoadingStatus} from '../../slices/shared';
-import {RootState} from '../../store';
+import {safeParseStringToBN} from 'lib/numbers';
+import {createExtraReducers, LoadingStatus} from 'redux/slices/shared';
+import {RootState} from 'redux/store';
+import {unusedPrpGrantAmount} from 'services/rewards';
 
 interface remainingPrpRewardsState {
     value: string | null;

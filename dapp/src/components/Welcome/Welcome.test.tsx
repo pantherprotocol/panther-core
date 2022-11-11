@@ -3,10 +3,9 @@ import * as React from 'react';
 import {Box, Grid, Typography} from '@mui/material';
 import {fireEvent, screen, waitFor} from '@testing-library/react';
 import {Web3ReactProvider} from '@web3-react/core';
-
-import ContinueButton from '../../components/ContinueButton';
-import {getLibrary} from '../../services/provider';
-import {renderComponent} from '../../utils/test-utils';
+import ContinueButton from 'components/ContinueButton';
+import {getLibrary} from 'services/provider';
+import {renderComponent} from 'utils/test-utils';
 
 import Feature, {featuredata} from './Feature';
 

@@ -3,17 +3,21 @@ import * as React from 'react';
 
 import {Box, Button} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import {notifyError} from 'components/Common/errors';
+import {MessageWithTx} from 'components/Common/MessageWithTx';
+import {
+    openNotification,
+    removeNotification,
+} from 'components/Common/notification';
 import {BigNumber, utils} from 'ethers';
-
-import {parseTxErrorMessage} from '../../../../src/services/errors';
-import {awaitConfirmationAndRetrieveEvent} from '../../../lib/events';
-import {formatCurrency} from '../../../lib/format';
-import {safeParseUnits} from '../../../lib/numbers';
-import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
-import {calculatedRewardsSelector} from '../../../redux/slices/staking/advancedStakePredictedRewards';
-import {getTotalsOfAdvancedStakes} from '../../../redux/slices/staking/totalsOfAdvancedStakes';
-import {getTotalUnclaimedClassicRewards} from '../../../redux/slices/staking/totalUnclaimedClassicRewards';
-import {getZkpStakedBalance} from '../../../redux/slices/staking/zkpStakedBalance';
+import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
+import {formatCurrency} from 'lib/format';
+import {safeParseUnits} from 'lib/numbers';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
+import {calculatedRewardsSelector} from 'redux/slices/staking/advancedStakePredictedRewards';
+import {getTotalsOfAdvancedStakes} from 'redux/slices/staking/totalsOfAdvancedStakes';
+import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/totalUnclaimedClassicRewards';
+import {getZkpStakedBalance} from 'redux/slices/staking/zkpStakedBalance';
 import {
     startWalletAction,
     StartWalletActionPayload,
@@ -23,17 +27,15 @@ import {
     WalletActionTrigger,
     walletActionCauseSelector,
     walletActionStatusSelector,
-} from '../../../redux/slices/ui/web3WalletLastAction';
-import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/wallet/advancedStakesRewards';
-import {getChainBalance} from '../../../redux/slices/wallet/chainBalance';
-import {getZkpTokenBalance} from '../../../redux/slices/wallet/zkpTokenBalance';
-import {chainHasAdvancedStaking} from '../../../services/contracts';
-import {generateRootKeypairs} from '../../../services/keys';
-import {advancedStake} from '../../../services/staking';
-import {StakingRewardTokenID} from '../../../types/staking';
-import {notifyError} from '../../Common/errors';
-import {MessageWithTx} from '../../Common/MessageWithTx';
-import {openNotification, removeNotification} from '../../Common/notification';
+} from 'redux/slices/ui/web3WalletLastAction';
+import {getAdvancedStakesRewardsAndUpdateStatus} from 'redux/slices/wallet/advancedStakesRewards';
+import {getChainBalance} from 'redux/slices/wallet/chainBalance';
+import {getZkpTokenBalance} from 'redux/slices/wallet/zkpTokenBalance';
+import {chainHasAdvancedStaking} from 'services/contracts';
+import {parseTxErrorMessage} from 'services/errors';
+import {generateRootKeypairs} from 'services/keys';
+import {advancedStake} from 'services/staking';
+import {StakingRewardTokenID} from 'types/staking';
 
 import './styles.scss';
 

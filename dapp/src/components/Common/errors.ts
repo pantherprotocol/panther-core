@@ -1,4 +1,4 @@
-import {DetailedError} from '../../types/error';
+import {DetailedError} from 'types/error';
 
 import {openNotification} from './notification';
 

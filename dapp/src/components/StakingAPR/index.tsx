@@ -1,8 +1,7 @@
 import React from 'react';
 
 import {Box, Typography} from '@mui/material';
-
-import {formatPercentage} from '../../lib/format';
+import {formatPercentage} from 'lib/format';
 
 import './styles.scss';
 

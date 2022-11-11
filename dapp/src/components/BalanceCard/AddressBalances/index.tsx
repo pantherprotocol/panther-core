@@ -3,12 +3,11 @@ import * as React from 'react';
 import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import ExactValueTooltip from 'components/Common/ExactValueTooltip';
 import {BigNumber, utils} from 'ethers';
-
-import infoIcon from '../../../images/info-icon.svg';
-import {DECIMALS} from '../../../lib/constants';
-import {formatUSD, getFormattedFractions} from '../../../lib/format';
-import ExactValueTooltip from '../../Common/ExactValueTooltip';
+import infoIcon from 'images/info-icon.svg';
+import {DECIMALS} from 'lib/constants';
+import {formatUSD, getFormattedFractions} from 'lib/format';
 
 import './styles.scss';
 

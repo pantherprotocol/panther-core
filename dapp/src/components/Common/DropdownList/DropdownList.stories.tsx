@@ -4,15 +4,14 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import {Box, FormControl, InputLabel, MenuItem} from '@mui/material';
 // eslint-disable-next-line import/named
 import {Meta, Story} from '@storybook/react';
+import {AddTokenButton} from 'components/AddTokenButton';
+import ContractButton from 'components/ContractButton';
+import {ContractsListButton} from 'components/ContractsListButton';
+import {LogoutButton} from 'components/LogoutButton';
 import {Provider} from 'react-redux';
 import {MemoryRouter} from 'react-router-dom';
-
-import {store} from '../../../redux/store';
-import '../../../styles/dropdown-button.scss';
-import {AddTokenButton} from '../../AddTokenButton';
-import ContractButton from '../../ContractButton';
-import {ContractsListButton} from '../../ContractsListButton';
-import {LogoutButton} from '../../LogoutButton';
+import {store} from 'redux/store';
+import 'styles/dropdown-button.scss';
 
 import {DropdownListProps} from './DropdownList.interface';
 

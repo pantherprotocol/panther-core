@@ -7,8 +7,7 @@
 import {useCallback} from 'react';
 
 import {useWeb3React} from '@web3-react/core';
-
-import {injected} from '../services/connectors';
+import {injected} from 'services/connectors';
 
 export function useOnConnect() {
     const {error, chainId, activate, deactivate} = useWeb3React();

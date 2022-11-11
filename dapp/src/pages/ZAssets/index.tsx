@@ -2,17 +2,16 @@ import React, {useEffect} from 'react';
 
 import {Box, Container} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-
-import {MainPageWrapper} from '../../components/MainPageWrapper';
-import MessageAlert from '../../components/MessageAlert';
-import PrivateBalance from '../../components/ZAssets/PrivateBalance';
-import PrivateZAssetsTable from '../../components/ZAssets/PrivateZAssetsTable';
-import WrongZAssetsNetwork from '../../components/ZAssets/WrongZassetsNetwork';
-import {useAppDispatch} from '../../redux/hooks';
-import {getAdvancedStakesRewards} from '../../redux/slices/wallet/advancedStakesRewards';
-import {getPoolV0ExitTime} from '../../redux/slices/wallet/poolV0';
-import {chainHasPoolContract} from '../../services/contracts';
-import {MASP_CHAIN_ID} from '../../services/env';
+import {MainPageWrapper} from 'components/MainPageWrapper';
+import MessageAlert from 'components/MessageAlert';
+import PrivateBalance from 'components/ZAssets/PrivateBalance';
+import PrivateZAssetsTable from 'components/ZAssets/PrivateZAssetsTable';
+import WrongZAssetsNetwork from 'components/ZAssets/WrongZassetsNetwork';
+import {useAppDispatch} from 'redux/hooks';
+import {getAdvancedStakesRewards} from 'redux/slices/wallet/advancedStakesRewards';
+import {getPoolV0ExitTime} from 'redux/slices/wallet/poolV0';
+import {chainHasPoolContract} from 'services/contracts';
+import {MASP_CHAIN_ID} from 'services/env';
 
 import './styles.scss';
 

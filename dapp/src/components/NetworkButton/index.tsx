@@ -7,12 +7,11 @@ import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Typography from '@mui/material/Typography';
-
-import {supportedNetworks} from '../../services/connectors';
-import {CHAIN_IDS} from '../../services/env';
-import {switchNetwork} from '../../services/wallet';
-import DropdownList from '../Common/DropdownList';
-import {networkLogo} from '../Common/NetworkLogo';
+import DropdownList from 'components/Common/DropdownList';
+import {networkLogo} from 'components/Common/NetworkLogo';
+import {supportedNetworks} from 'services/connectors';
+import {CHAIN_IDS} from 'services/env';
+import {switchNetwork} from 'services/wallet';
 
 import {NetworkButtonProps} from './NetworkButton.interface';
 

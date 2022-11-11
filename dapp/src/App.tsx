@@ -2,21 +2,19 @@ import React, {useCallback, useEffect} from 'react';
 
 import {createTheme} from '@mui/material';
 import {ThemeProvider} from '@mui/material/styles';
+import 'lib/bigint-serialize';
+import ContractsPage from 'pages/Contracts';
+import Faucet from 'pages/Faucet';
+import NotFoundPage from 'pages/NotFound';
+import Staking from 'pages/Staking';
+import ZAssets from 'pages/ZAssets';
 import {ReactNotifications} from 'react-notifications-component';
 import {Route} from 'react-router';
 import {HashRouter as Router, Switch} from 'react-router-dom';
-
-import {isBlockedCountry} from '../src/services/geo-location';
-
-import './lib/bigint-serialize';
-import ContractsPage from './pages/Contracts';
-import Faucet from './pages/Faucet';
-import NotFoundPage from './pages/NotFound';
-import Staking from './pages/Staking';
-import ZAssets from './pages/ZAssets';
-import {useAppDispatch} from './redux/hooks';
-import {getZKPTokenMarketPrice} from './redux/slices/marketPrices/zkpMarketPrice';
-import {getMissingEnvVars, env} from './services/env';
+import {useAppDispatch} from 'redux/hooks';
+import {getZKPTokenMarketPrice} from 'redux/slices/marketPrices/zkpMarketPrice';
+import {getMissingEnvVars, env} from 'services/env';
+import {isBlockedCountry} from 'services/geo-location';
 
 import './styles.scss';
 

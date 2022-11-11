@@ -1,10 +1,9 @@
 import React from 'react';
 
 import {Box, Typography} from '@mui/material';
-
-import governanceIcon from '../../images/governance-icon.png';
-import privacyIcon from '../../images/privacy-icon.png';
-import rewardsIcon from '../../images/rewards-icon.png';
+import governanceIcon from 'images/governance-icon.png';
+import privacyIcon from 'images/privacy-icon.png';
+import rewardsIcon from 'images/rewards-icon.png';
 
 type Featuretype = {
     title: string;

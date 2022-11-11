@@ -1,7 +1,7 @@
 import React from 'react';
 
-import {CHAIN_IDS} from '../../services/env';
-import PrimaryActionButton from '../Common/PrimaryActionButton';
+import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import {CHAIN_IDS} from 'services/env';
 
 const SwitchNetworkButton = (props: {
     defaultNetwork?: number;

@@ -5,22 +5,21 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {poseidon} from 'circomlibjs';
 import {BigNumber, constants} from 'ethers';
-
-import {sleep} from '../../../lib/time';
-import {getChangedUTXOsStatuses, UTXOStatusByID} from '../../../services/pool';
+import {sleep} from 'lib/time';
+import {LoadingStatus} from 'redux/slices/shared';
+import {RootState} from 'redux/store';
+import {getChangedUTXOsStatuses, UTXOStatusByID} from 'services/pool';
 import {
     PRP_REWARD_PER_STAKE,
     NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD,
-} from '../../../services/rewards';
-import {getAdvancedStakingReward} from '../../../services/staking';
-import {AdvancedStakeRewardsResponse} from '../../../services/subgraph';
+} from 'services/rewards';
+import {getAdvancedStakingReward} from 'services/staking';
+import {AdvancedStakeRewardsResponse} from 'services/subgraph';
 import {
     AdvancedStakeRewards,
     AdvancedStakeTokenIDs,
     UTXOStatus,
-} from '../../../types/staking';
-import {LoadingStatus} from '../../slices/shared';
-import {RootState} from '../../store';
+} from 'types/staking';
 
 const MAX_RETRIES = 5;
 const INITIAL_RETRY_DELAY = 1000;

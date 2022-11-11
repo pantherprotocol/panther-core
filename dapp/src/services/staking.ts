@@ -13,9 +13,8 @@ import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
 import type {ContractTransaction} from 'ethers';
 import {BigNumber, constants, utils} from 'ethers';
-
-import type {IStakingTypes, Staking} from '../types/contracts/Staking';
-import {StakeRewardBN, StakeTypes} from '../types/staking';
+import type {IStakingTypes, Staking} from 'types/contracts/Staking';
+import {StakeRewardBN, StakeTypes} from 'types/staking';
 
 import {
     ContractName,

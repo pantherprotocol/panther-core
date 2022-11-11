@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/named
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-
-import {RootState} from '../../store';
+import {RootState} from 'redux/store';
 
 export type WalletActionStatus =
     | 'in progress'

@@ -1,12 +1,11 @@
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
-
-import {getStakingTermsFromContract} from '../../../services/staking';
-import type {IStakingTypes} from '../../../types/contracts/Staking';
-import {StakeType, StakeTypes} from '../../../types/staking';
-import {createExtraReducers, LoadingStatus} from '../../slices/shared';
-import {RootState} from '../../store';
+import {createExtraReducers, LoadingStatus} from 'redux/slices/shared';
+import {RootState} from 'redux/store';
+import {getStakingTermsFromContract} from 'services/staking';
+import type {IStakingTypes} from 'types/contracts/Staking';
+import {StakeType, StakeTypes} from 'types/staking';
 
 type StakeTermsByType = {
     [key in StakeTypes]?: IStakingTypes.TermsStructOutput;

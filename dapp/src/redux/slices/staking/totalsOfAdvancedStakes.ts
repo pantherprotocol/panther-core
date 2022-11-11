@@ -1,10 +1,9 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-
-import {safeParseStringToBN} from '../../../lib/numbers';
-import {rewardsVested, rewardsClaimed} from '../../../services/rewards';
-import {ZKP_STAKED_SCALING_FACTOR} from '../../../services/staking';
-import {RootState} from '../../store';
-import {createExtraReducers, LoadingStatus} from '../shared';
+import {safeParseStringToBN} from 'lib/numbers';
+import {createExtraReducers, LoadingStatus} from 'redux/slices/shared';
+import {RootState} from 'redux/store';
+import {rewardsVested, rewardsClaimed} from 'services/rewards';
+import {ZKP_STAKED_SCALING_FACTOR} from 'services/staking';
 
 type AdvancedStakingState = {
     staked?: string;

@@ -7,11 +7,11 @@ import {Web3ReactProvider} from '@web3-react/core';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
+import {persistor, store} from 'redux/store';
+import {getLibrary} from 'services/provider';
 
 import App from './App';
-import {persistor, store} from './redux/store';
 import reportWebVitals from './reportWebVitals';
-import {getLibrary} from './services/provider';
 
 import './styles.scss';
 

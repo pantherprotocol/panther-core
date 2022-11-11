@@ -4,8 +4,7 @@ import React from 'react';
 import {Meta, Story} from '@storybook/react';
 import {Provider} from 'react-redux';
 import {Link, MemoryRouter} from 'react-router-dom';
-
-import {store} from '../../../../redux/store';
+import {store} from 'redux/store';
 
 import {NavigationLinkProps} from './NavigationLink.interface';
 

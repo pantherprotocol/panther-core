@@ -1,10 +1,9 @@
 import * as React from 'react';
 
 import {InputAdornment, Box} from '@mui/material';
-
-import {formatCurrency} from '../../../lib/format';
-import {useAppSelector} from '../../../redux/hooks';
-import {chainBalanceSelector} from '../../../redux/slices/wallet/chainBalance';
+import {formatCurrency} from 'lib/format';
+import {useAppSelector} from 'redux/hooks';
+import {chainBalanceSelector} from 'redux/slices/wallet/chainBalance';
 
 import {AccountBalanceProps} from './AccountBalance.interface';
 

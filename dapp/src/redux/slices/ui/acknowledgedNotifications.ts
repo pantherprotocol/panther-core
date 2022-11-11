@@ -1,6 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-
-import {RootState} from '../../store';
+import {RootState} from 'redux/store';
 
 export interface acknowledgedNotificationsState {
     [key: string]: boolean;

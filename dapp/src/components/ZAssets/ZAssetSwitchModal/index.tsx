@@ -9,15 +9,14 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-
-import networkLogo from '../../../images/polygon-white-logo.svg';
-import xIcon from '../../../images/x-icon.svg';
-import {useAppDispatch} from '../../../redux/hooks';
-import {removeBlur, setBlur} from '../../../redux/slices/ui/blur';
-import {supportedNetworks} from '../../../services/connectors';
-import {MASP_CHAIN_ID} from '../../../services/env';
-import {switchNetwork} from '../../../services/wallet';
-import PrimaryActionButton from '../../Common/PrimaryActionButton';
+import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import networkLogo from 'images/polygon-white-logo.svg';
+import xIcon from 'images/x-icon.svg';
+import {useAppDispatch} from 'redux/hooks';
+import {removeBlur, setBlur} from 'redux/slices/ui/blur';
+import {supportedNetworks} from 'services/connectors';
+import {MASP_CHAIN_ID} from 'services/env';
+import {switchNetwork} from 'services/wallet';
 
 import './styles.scss';
 

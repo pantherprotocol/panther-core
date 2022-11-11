@@ -4,12 +4,11 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {Box, Tooltip, Typography} from '@mui/material';
 // eslint-disable-next-line import/named
 import {Meta, Story} from '@storybook/react';
+import {formatAccountAddress} from 'lib/format';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import Jazzicon, {jsNumberForAddress} from 'react-jazzicon';
 import {Provider} from 'react-redux';
-
-import {formatAccountAddress} from '../../../lib/format';
-import {store} from '../../../redux/store';
+import {store} from 'redux/store';
 
 import {AddressWithSettingProps} from './AddressWithSetting.interface';
 

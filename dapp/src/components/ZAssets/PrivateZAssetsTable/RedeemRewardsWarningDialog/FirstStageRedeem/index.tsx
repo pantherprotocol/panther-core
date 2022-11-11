@@ -12,11 +12,14 @@ import {
     Typography,
 } from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import BackButton from 'components/BackButton';
+import {notifyError} from 'components/Common/errors';
+import {MessageWithTx} from 'components/Common/MessageWithTx';
+import {openNotification} from 'components/Common/notification';
+import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import {CONFIRMATIONS_NUM} from 'lib/constants';
 import moment from 'moment';
-
-import {parseTxErrorMessage} from '../../../../../../src/services/errors';
-import {CONFIRMATIONS_NUM} from '../../../../../lib/constants';
-import {useAppDispatch, useAppSelector} from '../../../../../redux/hooks';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -25,21 +28,17 @@ import {
     StartWalletActionPayload,
     walletActionCauseSelector,
     walletActionStatusSelector,
-} from '../../../../../redux/slices/ui/web3WalletLastAction';
+} from 'redux/slices/ui/web3WalletLastAction';
 import {
     updateExitCommitmentTime,
     updateUTXOStatus,
-} from '../../../../../redux/slices/wallet/advancedStakesRewards';
-import {poolV0ExitDelaySelector} from '../../../../../redux/slices/wallet/poolV0';
-import {generateRootKeypairs} from '../../../../../services/keys';
-import {registerCommitToExit} from '../../../../../services/pool';
-import {isDetailedError} from '../../../../../types/error';
-import {AdvancedStakeRewards, UTXOStatus} from '../../../../../types/staking';
-import BackButton from '../../../../BackButton';
-import {notifyError} from '../../../../Common/errors';
-import {MessageWithTx} from '../../../../Common/MessageWithTx';
-import {openNotification} from '../../../../Common/notification';
-import PrimaryActionButton from '../../../../Common/PrimaryActionButton';
+} from 'redux/slices/wallet/advancedStakesRewards';
+import {poolV0ExitDelaySelector} from 'redux/slices/wallet/poolV0';
+import {parseTxErrorMessage} from 'services/errors';
+import {generateRootKeypairs} from 'services/keys';
+import {registerCommitToExit} from 'services/pool';
+import {isDetailedError} from 'types/error';
+import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
 
 export default function FirstStageRedeem(props: {
     handleClose: () => void;

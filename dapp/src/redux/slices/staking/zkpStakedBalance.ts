@@ -1,15 +1,14 @@
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
-
-import {safeParseStringToBN} from '../../../lib/numbers';
-import * as stakingService from '../../../services/staking';
-import {RootState} from '../../store';
+import {safeParseStringToBN} from 'lib/numbers';
 import {
     BalanceState,
     createExtraReducers,
     initialBalanceState,
-} from '../shared';
+} from 'redux/slices/shared';
+import {RootState} from 'redux/store';
+import * as stakingService from 'services/staking';
 
 const initialState: BalanceState = initialBalanceState;
 

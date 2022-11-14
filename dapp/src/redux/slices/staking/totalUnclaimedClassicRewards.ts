@@ -3,12 +3,11 @@ import {Web3Provider} from '@ethersproject/providers';
 import {sumBigNumbers} from '@panther-core/crypto/lib/utils/numbers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
-
-import {safeParseStringToBN} from '../../../lib/numbers';
-import {isClassic} from '../../../services/rewards';
-import * as stakingService from '../../../services/staking';
-import {createExtraReducers, LoadingStatus} from '../../slices/shared';
-import {RootState} from '../../store';
+import {safeParseStringToBN} from 'lib/numbers';
+import {createExtraReducers, LoadingStatus} from 'redux/slices/shared';
+import {RootState} from 'redux/store';
+import {isClassic} from 'services/rewards';
+import * as stakingService from 'services/staking';
 
 interface TotalClassicRewardsState {
     value: string | null;

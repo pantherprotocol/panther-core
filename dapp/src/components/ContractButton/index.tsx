@@ -1,11 +1,10 @@
 import React, {useCallback} from 'react';
 
 import {useWeb3React} from '@web3-react/core';
-
-import etherscanIcon from '../../images/etherscan-icon.svg';
-import {ContractName, getContractAddress} from '../../services/contracts';
-import {addressLink, safeWindowOpen} from '../Common/links';
-import {WalletHeaderActionButton} from '../Common/WalletHeaderActionButton';
+import {addressLink, safeWindowOpen} from 'components/Common/links';
+import {WalletHeaderActionButton} from 'components/Common/WalletHeaderActionButton';
+import etherscanIcon from 'images/etherscan-icon.svg';
+import {ContractName, getContractAddress} from 'services/contracts';
 
 const ContractButton = () => {
     const context = useWeb3React();

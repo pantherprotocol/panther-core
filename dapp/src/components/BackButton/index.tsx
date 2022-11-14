@@ -1,8 +1,7 @@
 import React from 'react';
 
 import {Box, IconButton, Typography} from '@mui/material';
-
-import backButtonLeftArrow from '../../images/back-button-left-arrow.svg';
+import backButtonLeftArrow from 'images/back-button-left-arrow.svg';
 
 import './styles.scss';
 

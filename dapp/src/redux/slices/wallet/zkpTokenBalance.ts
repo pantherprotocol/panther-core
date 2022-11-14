@@ -2,18 +2,17 @@ import {BigNumber} from '@ethersproject/bignumber';
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
-
-import {formatCurrency} from '../../../lib/format';
-import {formatEther, safeParseStringToBN} from '../../../lib/numbers';
-import {fiatPrice} from '../../../lib/tokenPrice';
-import * as accountService from '../../../services/account';
-import {RootState} from '../../store';
-import {zkpMarketPriceSelector} from '../marketPrices/zkpMarketPrice';
+import {formatCurrency} from 'lib/format';
+import {formatEther, safeParseStringToBN} from 'lib/numbers';
+import {fiatPrice} from 'lib/tokenPrice';
+import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkpMarketPrice';
 import {
     BalanceState,
     createExtraReducers,
     initialBalanceState,
-} from '../shared';
+} from 'redux/slices/shared';
+import {RootState} from 'redux/store';
+import * as accountService from 'services/account';
 
 const initialState: BalanceState = initialBalanceState;
 

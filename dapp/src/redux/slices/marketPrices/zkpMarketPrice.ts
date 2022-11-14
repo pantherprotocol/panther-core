@@ -1,10 +1,9 @@
 import {formatEther} from '@ethersproject/units';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-
-import {safeParseStringToBN} from '../../../lib/numbers';
-import * as stakingService from '../../../services/staking';
-import {RootState} from '../../store';
-import {BalanceState, createExtraReducers} from '../shared';
+import {safeParseStringToBN} from 'lib/numbers';
+import {BalanceState, createExtraReducers} from 'redux/slices/shared';
+import {RootState} from 'redux/store';
+import * as stakingService from 'services/staking';
 
 const initialState: BalanceState = {
     value: null,

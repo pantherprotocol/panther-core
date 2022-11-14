@@ -1,13 +1,12 @@
 import React, {useCallback} from 'react';
 
 import {useWeb3React} from '@web3-react/core';
-
-import metamaskIcon from '../../images/meta-mask-icon.svg';
-import logo from '../../images/panther-logo.svg';
-import {DECIMALS} from '../../lib/constants';
-import {getTokenContract} from '../../services/contracts';
-import {openNotification} from '../Common/notification';
-import {WalletHeaderActionButton} from '../Common/WalletHeaderActionButton';
+import {openNotification} from 'components/Common/notification';
+import {WalletHeaderActionButton} from 'components/Common/WalletHeaderActionButton';
+import metamaskIcon from 'images/meta-mask-icon.svg';
+import logo from 'images/panther-logo.svg';
+import {DECIMALS} from 'lib/constants';
+import {getTokenContract} from 'services/contracts';
 
 export const AddTokenButton = () => {
     const context = useWeb3React();

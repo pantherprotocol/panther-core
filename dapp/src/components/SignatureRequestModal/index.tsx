@@ -9,15 +9,14 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-
-import xIcon from '../../images/x-icon.svg';
-import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {removeBlur, setBlur} from '../../redux/slices/ui/blur';
+import xIcon from 'images/x-icon.svg';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
+import {removeBlur, setBlur} from 'redux/slices/ui/blur';
 import {
     acknowledgeByUser,
     walletActionCauseSelector,
     WalletSignatureTrigger,
-} from '../../redux/slices/ui/web3WalletLastAction';
+} from 'redux/slices/ui/web3WalletLastAction';
 
 import './styles.scss';
 

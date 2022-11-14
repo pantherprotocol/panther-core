@@ -2,10 +2,9 @@ import * as React from 'react';
 
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
+import RedeemRewards from 'components/ZAssets/PrivateZAssetsTable/RedeemReward';
 import {BigNumber, utils} from 'ethers';
-
-import {formatCurrency, formatTime} from '../../../../lib/format';
-import RedeemRewards from '../RedeemReward';
+import {formatCurrency, formatTime} from 'lib/format';
 
 import {AssetsDetailsRowProperties} from './AssetsDetailsRow.interface';
 

@@ -1,8 +1,7 @@
 import {deriveRootKeypairs} from '@panther-core/crypto/lib/panther/keys';
 import {IKeypair} from '@panther-core/crypto/lib/types/keypair';
 import {Signer} from 'ethers';
-
-import {parseTxErrorMessage} from './errors';
+import {parseTxErrorMessage} from 'services/errors';
 
 export async function generateRootKeypairs(
     signer: Signer,

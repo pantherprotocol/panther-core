@@ -15,10 +15,9 @@ import poseidon from 'circomlibjs/src/poseidon';
 import {utils, Contract, BigNumber} from 'ethers';
 import {ContractTransaction} from 'ethers/lib/ethers';
 import {Result} from 'ethers/lib/utils';
-
-import {formatTime} from '../lib/format';
-import {isDetailedError, DetailedError} from '../types/error';
-import {AdvancedStakeRewards, UTXOStatus} from '../types/staking';
+import {formatTime} from 'lib/format';
+import {isDetailedError, DetailedError} from 'types/error';
+import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
 
 import {
     getPoolContract,

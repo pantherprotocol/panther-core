@@ -10,27 +10,29 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
+import {MessageWithTx} from 'components/Common/MessageWithTx';
+import {
+    removeNotification,
+    openNotification,
+} from 'components/Common/notification';
 import {BigNumber, constants} from 'ethers';
-
-import {awaitConfirmationAndRetrieveEvent} from '../../lib/events';
-import {formatTime} from '../../lib/format';
-import {useAppDispatch} from '../../redux/hooks';
-import {getTotalsOfAdvancedStakes} from '../../redux/slices/staking/totalsOfAdvancedStakes';
-import {getTotalUnclaimedClassicRewards} from '../../redux/slices/staking/totalUnclaimedClassicRewards';
-import {getZkpStakedBalance} from '../../redux/slices/staking/zkpStakedBalance';
+import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
+import {formatTime} from 'lib/format';
+import {useAppDispatch} from 'redux/hooks';
+import {getTotalsOfAdvancedStakes} from 'redux/slices/staking/totalsOfAdvancedStakes';
+import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/totalUnclaimedClassicRewards';
+import {getZkpStakedBalance} from 'redux/slices/staking/zkpStakedBalance';
 import {
     registerWalletActionFailure,
     registerWalletActionSuccess,
     startWalletAction,
     StartWalletActionPayload,
     WalletActionTrigger,
-} from '../../redux/slices/ui/web3WalletLastAction';
-import {getChainBalance} from '../../redux/slices/wallet/chainBalance';
-import {getZkpTokenBalance} from '../../redux/slices/wallet/zkpTokenBalance';
-import {parseTxErrorMessage} from '../../services/errors';
-import {unstake, getStakesAndRewards} from '../../services/staking';
-import {MessageWithTx} from '../Common/MessageWithTx';
-import {removeNotification, openNotification} from '../Common/notification';
+} from 'redux/slices/ui/web3WalletLastAction';
+import {getChainBalance} from 'redux/slices/wallet/chainBalance';
+import {getZkpTokenBalance} from 'redux/slices/wallet/zkpTokenBalance';
+import {parseTxErrorMessage} from 'services/errors';
+import {unstake, getStakesAndRewards} from 'services/staking';
 
 import UnstakeRow from './UnstakeRow';
 

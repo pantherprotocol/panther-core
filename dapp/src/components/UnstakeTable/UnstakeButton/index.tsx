@@ -1,15 +1,14 @@
 import React from 'react';
 
 import {Box, Button, Typography} from '@mui/material';
-
-import {formatTime} from '../../../lib/format';
-import {useAppSelector} from '../../../redux/hooks';
+import {formatTime} from 'lib/format';
+import {useAppSelector} from 'redux/hooks';
 import {
     walletActionCauseSelector,
     walletActionStatusSelector,
     WalletActionTrigger,
-} from '../../../redux/slices/ui/web3WalletLastAction';
-import {chainHasAdvancedStaking} from '../../../services/contracts';
+} from 'redux/slices/ui/web3WalletLastAction';
+import {chainHasAdvancedStaking} from 'services/contracts';
 
 import './styles.scss';
 

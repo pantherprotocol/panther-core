@@ -3,11 +3,10 @@ import React from 'react';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
 import {Box, Grid, Typography} from '@mui/material';
+import ContinueButton from 'components/ContinueButton';
 import Carousel from 'react-material-ui-carousel';
-
-import {useAppDispatch} from '../../redux/hooks';
-import {acknowledgeNotification} from '../../redux/slices/ui/acknowledgedNotifications';
-import ContinueButton from '../ContinueButton';
+import {useAppDispatch} from 'redux/hooks';
+import {acknowledgeNotification} from 'redux/slices/ui/acknowledgedNotifications';
 
 import Feature, {featuredata} from './Feature';
 

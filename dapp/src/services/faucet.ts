@@ -1,7 +1,6 @@
 import {BigNumber, Contract, utils} from 'ethers';
 import {ContractTransaction} from 'ethers/lib/ethers';
-
-import {DetailedError} from '../types/error';
+import {DetailedError} from 'types/error';
 
 import {getFaucetContract, getSignableContract} from './contracts';
 import {parseTxErrorMessage} from './errors';

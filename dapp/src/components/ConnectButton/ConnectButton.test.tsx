@@ -2,9 +2,8 @@ import * as React from 'react';
 
 import {fireEvent, screen, waitFor} from '@testing-library/react';
 import {Web3ReactProvider} from '@web3-react/core';
-
-import {getLibrary} from '../../services/provider';
-import {renderComponent} from '../../utils/test-utils';
+import {getLibrary} from 'services/provider';
+import {renderComponent} from 'utils/test-utils';
 
 import ConnectButton from './index';
 

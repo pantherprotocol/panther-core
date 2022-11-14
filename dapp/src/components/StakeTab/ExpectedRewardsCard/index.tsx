@@ -3,12 +3,11 @@ import * as React from 'react';
 import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-
-import questionmarkIcon from '../../../images/questionmark-icon.svg';
-import {formatCurrency} from '../../../lib/format';
-import {useAppSelector} from '../../../redux/hooks';
-import {calculatedRewardsSelector} from '../../../redux/slices/staking/advancedStakePredictedRewards';
-import {StakingRewardTokenID} from '../../../types/staking';
+import questionmarkIcon from 'images/questionmark-icon.svg';
+import {formatCurrency} from 'lib/format';
+import {useAppSelector} from 'redux/hooks';
+import {calculatedRewardsSelector} from 'redux/slices/staking/advancedStakePredictedRewards';
+import {StakingRewardTokenID} from 'types/staking';
 
 import './styles.scss';
 

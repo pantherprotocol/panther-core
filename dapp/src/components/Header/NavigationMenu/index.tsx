@@ -2,10 +2,9 @@ import React from 'react';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-
-import logo from '../../../images/panther-logo.svg';
-import {env} from '../../../services/env';
-import {SafeLink} from '../../Common/links';
+import {SafeLink} from 'components/Common/links';
+import logo from 'images/panther-logo.svg';
+import {env} from 'services/env';
 
 import NavigationLink from './NavigationLink';
 

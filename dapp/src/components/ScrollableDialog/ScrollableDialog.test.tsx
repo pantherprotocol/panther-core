@@ -2,8 +2,7 @@ import * as React from 'react';
 
 import {waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
-import {renderComponent} from '../../utils/test-utils';
+import {renderComponent} from 'utils/test-utils';
 
 import ScrollableDialog from './index';
 

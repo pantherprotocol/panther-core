@@ -3,11 +3,10 @@ import React from 'react';
 import {Box, Typography} from '@mui/material';
 // eslint-disable-next-line import/named
 import {Meta, Story} from '@storybook/react';
+import {formatAccountAddress} from 'lib/format';
 import Jazzicon, {jsNumberForAddress} from 'react-jazzicon';
 import {Provider} from 'react-redux';
-
-import {formatAccountAddress} from '../../lib/format';
-import {store} from '../../redux/store';
+import {store} from 'redux/store';
 
 import Address from './index';
 

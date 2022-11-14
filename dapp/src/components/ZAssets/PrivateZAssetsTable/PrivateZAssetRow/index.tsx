@@ -8,17 +8,16 @@ import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
-
-import pantherIcon from '../../../../images/zAssets-panther-logo.svg';
-import {formatCurrency} from '../../../../lib/format';
-import {calcUSDPrice} from '../../../../lib/tokenPrice';
-import {useAppSelector} from '../../../../redux/hooks';
-import {zkpMarketPriceSelector} from '../../../../redux/slices/marketPrices/zkpMarketPrice';
-import {totalSelector} from '../../../../redux/slices/wallet/advancedStakesRewards';
-import {StakingRewardTokenID} from '../../../../types/staking';
-import Balance from '../../Balance';
-import Network from '../../Network';
-import AssetsDetails from '../AssetsDetailsTable';
+import Balance from 'components/ZAssets/Balance';
+import Network from 'components/ZAssets/Network';
+import AssetsDetails from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsTable';
+import pantherIcon from 'images/zAssets-panther-logo.svg';
+import {formatCurrency} from 'lib/format';
+import {calcUSDPrice} from 'lib/tokenPrice';
+import {useAppSelector} from 'redux/hooks';
+import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkpMarketPrice';
+import {totalSelector} from 'redux/slices/wallet/advancedStakesRewards';
+import {StakingRewardTokenID} from 'types/staking';
 
 import './styles.scss';
 

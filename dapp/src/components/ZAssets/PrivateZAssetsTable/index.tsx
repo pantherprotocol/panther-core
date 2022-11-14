@@ -8,8 +8,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-
-import infoIcon from '../../../images/info-icon.svg';
+import infoIcon from 'images/info-icon.svg';
 
 import PrivateZAsset from './PrivateZAssetRow';
 

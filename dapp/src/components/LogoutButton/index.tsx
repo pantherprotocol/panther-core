@@ -1,13 +1,12 @@
 import React, {useCallback} from 'react';
 
 import {useWeb3React} from '@web3-react/core';
-
-import {useAppDispatch} from '../../redux/hooks';
-import {resetUnclaimedClassicRewards} from '../../redux/slices/staking/totalUnclaimedClassicRewards';
-import {resetZkpStakedBalance} from '../../redux/slices/staking/zkpStakedBalance';
-import {setDisconnected} from '../../redux/slices/ui/isWalletConnected';
-import {resetZkpTokenBalance} from '../../redux/slices/wallet/zkpTokenBalance';
-import {WalletHeaderActionButton} from '../Common/WalletHeaderActionButton';
+import {WalletHeaderActionButton} from 'components/Common/WalletHeaderActionButton';
+import {useAppDispatch} from 'redux/hooks';
+import {resetUnclaimedClassicRewards} from 'redux/slices/staking/totalUnclaimedClassicRewards';
+import {resetZkpStakedBalance} from 'redux/slices/staking/zkpStakedBalance';
+import {setDisconnected} from 'redux/slices/ui/isWalletConnected';
+import {resetZkpTokenBalance} from 'redux/slices/wallet/zkpTokenBalance';
 
 export const LogoutButton = () => {
     const context = useWeb3React();

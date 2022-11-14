@@ -6,14 +6,13 @@ import {MenuItem} from '@mui/material';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-
-import {CHAIN_IDS} from '../../services/env';
-import Address from '../Address';
-import {AddTokenButton} from '../AddTokenButton';
-import DropdownList from '../Common/DropdownList';
-import ContractButton from '../ContractButton';
-import {ContractsListButton} from '../ContractsListButton';
-import {LogoutButton} from '../LogoutButton';
+import Address from 'components/Address';
+import {AddTokenButton} from 'components/AddTokenButton';
+import DropdownList from 'components/Common/DropdownList';
+import ContractButton from 'components/ContractButton';
+import {ContractsListButton} from 'components/ContractsListButton';
+import {LogoutButton} from 'components/LogoutButton';
+import {CHAIN_IDS} from 'services/env';
 
 import './styles.scss';
 

@@ -1,10 +1,9 @@
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
-
-import * as pool from '../../../services/pool';
-import {RootState} from '../../store';
-import {createExtraReducers, LoadingStatus} from '../shared';
+import {createExtraReducers, LoadingStatus} from 'redux/slices/shared';
+import {RootState} from 'redux/store';
+import * as pool from 'services/pool';
 
 interface PoolV0ExitTimeState {
     value: PoolV0Parameters;

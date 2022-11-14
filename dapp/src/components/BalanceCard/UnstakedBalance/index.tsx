@@ -2,13 +2,13 @@ import * as React from 'react';
 
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import {notifyError} from 'components/Common/errors';
+import ExactValueTooltip from 'components/Common/ExactValueTooltip';
 import {BigNumber, utils} from 'ethers';
-
-import {parseTxErrorMessage} from '../../../../src/services/errors';
-import infoIcon from '../../../images/info-icon.svg';
-import refreshIcon from '../../../images/refresh-icon.svg';
-import {formatUSD, getFormattedFractions} from '../../../lib/format';
-import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
+import infoIcon from 'images/info-icon.svg';
+import refreshIcon from 'images/refresh-icon.svg';
+import {formatUSD, getFormattedFractions} from 'lib/format';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -16,16 +16,15 @@ import {
     startWalletAction,
     StartWalletActionPayload,
     WalletSignatureTrigger,
-} from '../../../redux/slices/ui/web3WalletLastAction';
-import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/wallet/advancedStakesRewards';
+} from 'redux/slices/ui/web3WalletLastAction';
+import {getAdvancedStakesRewardsAndUpdateStatus} from 'redux/slices/wallet/advancedStakesRewards';
 import {
     getZkpTokenBalance,
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
-} from '../../../redux/slices/wallet/zkpTokenBalance';
-import {generateRootKeypairs} from '../../../services/keys';
-import {notifyError} from '../../Common/errors';
-import ExactValueTooltip from '../../Common/ExactValueTooltip';
+} from 'redux/slices/wallet/zkpTokenBalance';
+import {parseTxErrorMessage} from 'services/errors';
+import {generateRootKeypairs} from 'services/keys';
 
 import './styles.scss';
 

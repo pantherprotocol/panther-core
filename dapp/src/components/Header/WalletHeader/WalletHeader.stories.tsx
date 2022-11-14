@@ -5,9 +5,8 @@ import {Meta, Story} from '@storybook/react';
 import {Web3ReactProvider} from '@web3-react/core';
 import {Provider} from 'react-redux';
 import {MemoryRouter} from 'react-router-dom';
-
-import {store} from '../../../redux/store';
-import {getLibrary} from '../../../services/provider';
+import {store} from 'redux/store';
+import {getLibrary} from 'services/provider';
 
 import WalletHeader from './index';
 

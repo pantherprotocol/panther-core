@@ -3,14 +3,13 @@ import {ReactElement, useState} from 'react';
 
 import {Typography, Button, Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-
-import rightSideArrow from '../../../../images/right-arrow-icon.svg';
-import {formatTime} from '../../../../lib/format';
-import {useAppSelector} from '../../../../redux/hooks';
-import {showWalletActionInProgressSelector} from '../../../../redux/slices/ui/web3WalletLastAction';
-import {poolV0ExitTimeSelector} from '../../../../redux/slices/wallet/poolV0';
-import {getCommitmentTreeUrl} from '../../../../services/env';
-import RedeemRewardsWarningDialog from '../RedeemRewardsWarningDialog';
+import RedeemRewardsWarningDialog from 'components/ZAssets/PrivateZAssetsTable/RedeemRewardsWarningDialog';
+import rightSideArrow from 'images/right-arrow-icon.svg';
+import {formatTime} from 'lib/format';
+import {useAppSelector} from 'redux/hooks';
+import {showWalletActionInProgressSelector} from 'redux/slices/ui/web3WalletLastAction';
+import {poolV0ExitTimeSelector} from 'redux/slices/wallet/poolV0';
+import {getCommitmentTreeUrl} from 'services/env';
 
 import {RedeemRewardProperties} from './RedeemReward.interface';
 

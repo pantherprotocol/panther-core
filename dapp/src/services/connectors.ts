@@ -3,8 +3,7 @@ import {
     InjectedConnector,
     NoEthereumProviderError,
 } from '@web3-react/injected-connector';
-
-import {Web3ReactContextInterface} from '../types/web3';
+import {Web3ReactContextInterface} from 'types/web3';
 
 import {CHAIN_IDS, FAUCET_CHAIN_IDS} from './env';
 

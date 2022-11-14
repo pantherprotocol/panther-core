@@ -1,13 +1,12 @@
 import React from 'react';
 
 import {Box, Typography} from '@mui/material';
-
-import xIcon from '../../images/x-icon.svg';
-import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import xIcon from 'images/x-icon.svg';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     acknowledgedNotificationSelector,
     acknowledgeNotification,
-} from '../../redux/slices/ui/acknowledgedNotifications';
+} from 'redux/slices/ui/acknowledgedNotifications';
 
 import {MessageAlertProps} from './MessageAlert.interface';
 

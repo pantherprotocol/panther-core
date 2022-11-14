@@ -2,11 +2,10 @@ import * as React from 'react';
 
 import {Box, Typography} from '@mui/material';
 import {screen, waitFor} from '@testing-library/react';
-
-import {formatCurrency} from '../../../lib/format';
-import {safeParseUnits} from '../../../lib/numbers';
-import {fiatPrice} from '../../../lib/tokenPrice';
-import {renderComponent} from '../../../utils/test-utils';
+import {formatCurrency} from 'lib/format';
+import {safeParseUnits} from 'lib/numbers';
+import {fiatPrice} from 'lib/tokenPrice';
+import {renderComponent} from 'utils/test-utils';
 
 import PrivateBalance from './index';
 

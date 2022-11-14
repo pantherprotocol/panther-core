@@ -2,10 +2,9 @@ import React, {useState} from 'react';
 
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 import {Box, Tooltip} from '@mui/material';
+import Address from 'components/Address';
+import copyIcon from 'images/copy-icon.svg';
 import CopyToClipboard from 'react-copy-to-clipboard';
-
-import copyIcon from '../../../images/copy-icon.svg';
-import Address from '../../Address';
 
 import './styles.scss';
 

@@ -1,4 +1,4 @@
-import {AdvancedStakeRewards} from '../../../../types/staking';
+import {AdvancedStakeRewards} from 'types/staking';
 
 export type RedeemRewardProperties = {
     reward: AdvancedStakeRewards;

@@ -1,10 +1,10 @@
 import React from 'react';
 
-import discord from '../../../images/discord-icon.png';
-import medium from '../../../images/medium-icon.png';
-import telegram from '../../../images/telegram-icon.png';
-import twitter from '../../../images/twitter-icon.png';
-import {SafeLink} from '../../Common/links';
+import {SafeLink} from 'components/Common/links';
+import discord from 'images/discord-icon.png';
+import medium from 'images/medium-icon.png';
+import telegram from 'images/telegram-icon.png';
+import twitter from 'images/twitter-icon.png';
 
 import './styles.scss';
 

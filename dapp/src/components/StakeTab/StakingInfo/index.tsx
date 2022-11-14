@@ -2,19 +2,18 @@ import React, {ReactElement, useCallback} from 'react';
 
 import {Typography, Card, CardContent} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import {SafeMuiLink} from 'components/Common/links';
+import warningIcon from 'images/warning-icon-triangle.svg';
+import {formatTime, secondsToFullDays} from 'lib/format';
 import moment from 'moment';
-
-import warningIcon from '../../../images/warning-icon-triangle.svg';
-import {formatTime, secondsToFullDays} from '../../../lib/format';
-import {useAppSelector} from '../../../redux/hooks';
+import {useAppSelector} from 'redux/hooks';
 import {
     isStakingOpenSelector,
     isStakingPostCloseSelector,
     termsSelector,
-} from '../../../redux/slices/staking/stakeTerms';
-import {chainHasAdvancedStaking} from '../../../services/contracts';
-import {StakeType} from '../../../types/staking';
-import {SafeMuiLink} from '../../Common/links';
+} from 'redux/slices/staking/stakeTerms';
+import {chainHasAdvancedStaking} from 'services/contracts';
+import {StakeType} from 'types/staking';
 
 import './styles.scss';
 

@@ -2,12 +2,11 @@ import React, {useCallback} from 'react';
 
 import {useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
-
-import {useOnConnect} from '../../hooks/web3';
-import {useAppDispatch} from '../../redux/hooks';
-import {setConnected} from '../../redux/slices/ui/isWalletConnected';
-import {safeOpenMetamask} from '../Common/links';
-import PrimaryActionButton from '../Common/PrimaryActionButton';
+import {safeOpenMetamask} from 'components/Common/links';
+import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import {useOnConnect} from 'hooks/web3';
+import {useAppDispatch} from 'redux/hooks';
+import {setConnected} from 'redux/slices/ui/isWalletConnected';
 
 const ConnectButton = (props: {styles?: string}) => {
     const context = useWeb3React();

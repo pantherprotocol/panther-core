@@ -2,19 +2,18 @@ import React from 'react';
 
 import {Box, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import ClaimedProgress from 'components/ClaimedProgress';
+import StakingAPR from 'components/StakingAPR';
 import {utils} from 'ethers';
 import moment from 'moment';
-
-import ClaimedProgress from '../../components/ClaimedProgress';
-import StakingAPR from '../../components/StakingAPR';
-import {useAppSelector} from '../../redux/hooks';
-import {termsSelector} from '../../redux/slices/staking/stakeTerms';
+import {useAppSelector} from 'redux/hooks';
+import {termsSelector} from 'redux/slices/staking/stakeTerms';
 import {
     totalClaimedRewardsSelector,
     totalVestedRewardsSelector,
-} from '../../redux/slices/staking/totalsOfAdvancedStakes';
-import {getAdvStakingAPY} from '../../services/rewards';
-import {StakeType} from '../../types/staking';
+} from 'redux/slices/staking/totalsOfAdvancedStakes';
+import {getAdvStakingAPY} from 'services/rewards';
+import {StakeType} from 'types/staking';
 
 import './styles.scss';
 

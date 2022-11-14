@@ -1,10 +1,9 @@
 import * as React from 'react';
 
 import {fireEvent, screen, waitFor} from '@testing-library/react';
+import {MainPageWrapper} from 'components/MainPageWrapper';
 import {BrowserRouter as Router} from 'react-router-dom';
-
-import {MainPageWrapper} from '../../components/MainPageWrapper';
-import {renderComponent} from '../../utils/test-utils';
+import {renderComponent} from 'utils/test-utils';
 
 import SignatureRequestModal from './index';
 

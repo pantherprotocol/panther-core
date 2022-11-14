@@ -1,7 +1,7 @@
 // eslint-disable-next-line
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {safeParseUnits} from '../../../lib/numbers';
-import {RootState} from '../../store';
+import {safeParseUnits} from 'lib/numbers';
+import {RootState} from 'redux/store';
 
 interface StakeAmountState {
     value: string;

@@ -1,8 +1,7 @@
 import React from 'react';
 
+import {WalletHeaderActionButton} from 'components/Common/WalletHeaderActionButton';
 import {Link} from 'react-router-dom';
-
-import {WalletHeaderActionButton} from '../Common/WalletHeaderActionButton';
 
 export const ContractsListButton = () => {
     return (

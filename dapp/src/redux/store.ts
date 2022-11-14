@@ -8,11 +8,10 @@ import {
     PURGE,
     REGISTER,
 } from 'redux-persist';
-
-import {marketPriceReducer} from './slices/marketPrices';
-import {stakingReducer} from './slices/staking';
-import {uiReducer} from './slices/ui';
-import {walletReducer} from './slices/wallet';
+import {marketPriceReducer} from 'redux/slices/marketPrices';
+import {stakingReducer} from 'redux/slices/staking';
+import {uiReducer} from 'redux/slices/ui';
+import {walletReducer} from 'redux/slices/wallet';
 
 export const rootReducer = combineReducers({
     ui: uiReducer,

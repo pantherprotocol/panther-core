@@ -3,9 +3,8 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {useWeb3React} from '@web3-react/core';
+import {formatAccountAddress} from 'lib/format';
 import Jazzicon, {jsNumberForAddress} from 'react-jazzicon';
-
-import {formatAccountAddress} from '../../lib/format';
 
 import './styles.scss';
 

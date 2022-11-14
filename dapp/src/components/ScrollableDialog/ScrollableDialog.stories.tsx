@@ -4,8 +4,7 @@ import {action} from '@storybook/addon-actions';
 // eslint-disable-next-line import/named
 import {Meta, Story} from '@storybook/react';
 import {Provider} from 'react-redux';
-
-import {store} from '../../redux/store';
+import {store} from 'redux/store';
 
 import {ScrollableDialogProps} from './ScrollableDialog.interface';
 

@@ -2,11 +2,10 @@ import * as React from 'react';
 
 import {Box} from '@mui/material';
 import {fireEvent, screen, waitFor} from '@testing-library/react';
-
-import {supportedNetworks} from '../../../services/connectors';
-import {MASP_CHAIN_ID} from '../../../services/env';
-import {renderComponent} from '../../../utils/test-utils';
-import PrimaryActionButton from '../../Common/PrimaryActionButton';
+import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import {supportedNetworks} from 'services/connectors';
+import {MASP_CHAIN_ID} from 'services/env';
+import {renderComponent} from 'utils/test-utils';
 
 import WrongZAssetsNetwork from './index';
 

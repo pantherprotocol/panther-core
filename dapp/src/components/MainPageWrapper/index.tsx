@@ -2,14 +2,13 @@ import React, {useEffect, useState} from 'react';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import {Box} from '@mui/system';
-
-import background from '../../images/background-v0.5.png';
-import {useAppSelector} from '../../redux/hooks';
-import {blurSelector} from '../../redux/slices/ui/blur';
-import {isBlockedCountry} from '../../services/geo-location';
-import BlockedUser from '../BlockedUser';
-import Footer from '../Footer';
-import Header from '../Header';
+import BlockedUser from 'components/BlockedUser';
+import Footer from 'components/Footer';
+import Header from 'components/Header';
+import background from 'images/background-v0.5.png';
+import {useAppSelector} from 'redux/hooks';
+import {blurSelector} from 'redux/slices/ui/blur';
+import {isBlockedCountry} from 'services/geo-location';
 
 import './styles.scss';
 

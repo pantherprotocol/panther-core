@@ -2,7 +2,10 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
 import {isLocal} from '../../lib/checkNetwork';
 
-import {getContractEnvAddress} from '../../lib/deploymentHelpers';
+import {
+    fulfillLocalAddress,
+    getContractEnvAddress,
+} from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {getNamedAccounts, network} = hre;
@@ -18,12 +21,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployer} = await getNamedAccounts();
     if (!deployer) throw 'Err: deployer undefined';
 
-    if (!getContractEnvAddress(hre, 'ZKP_TOKEN'))
-        throw 'Undefined ZKP_TOKEN_ADDRESS';
-
     if (!isLocal(hre)) {
+        if (!getContractEnvAddress(hre, 'ZKP_TOKEN'))
+            throw `Undefined ZKP_TOKEN_${hre.network.name.toUpperCase}`;
+
         if (!process.env.DAO_MULTISIG_ADDRESS)
             throw 'Undefined DAO_MULTISIG_ADDRESS';
+    } else {
+        if (!fulfillLocalAddress(hre, 'ZKP_TOKEN'))
+            throw 'Undefined ZKP_TOKEN_LOCALHOST';
     }
 };
 

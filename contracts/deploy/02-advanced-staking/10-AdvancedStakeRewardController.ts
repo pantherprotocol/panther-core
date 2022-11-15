@@ -6,7 +6,9 @@ import {
     getContractAddress,
     getContractEnvAddress,
     verifyUserConsentOnProd,
+    fulfillLocalAddress,
 } from '../../lib/deploymentHelpers';
+import {isLocal} from '../../lib/checkNetwork';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
@@ -18,6 +20,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     );
     await verifyUserConsentOnProd(hre, deployer);
     if (reuseEnvAddress(hre, 'ADVANCED_STAKE_REWARD_CONTROLLER')) return;
+
+    if (isLocal(hre)) {
+        if (!fulfillLocalAddress(hre, 'PNFT_TOKEN'))
+            throw 'Undefined PNFT_TOKEN_LOCALHOST';
+    }
 
     const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
     const pNftToken = getContractEnvAddress(hre, 'PNFT_TOKEN');

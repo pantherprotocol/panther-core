@@ -2,6 +2,7 @@ import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
 import {isLocal} from '../../lib/checkNetwork';
+import {fulfillLocalAddress} from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {getNamedAccounts, network} = hre;
@@ -16,6 +17,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             throw 'Undefined DAO_MULTISIG_ADDRESS';
         if (!process.env.POOL_EXIT_TIME) throw 'Undefined POOL_EXIT_TIME';
     } else {
+        if (!fulfillLocalAddress(hre, 'ZKP_TOKEN'))
+            throw 'Undefined ZKP_TOKEN_LOCALHOST';
+
         if (
             process.env.POOL_EXIT_TIME &&
             +process.env.POOL_EXIT_TIME > Math.ceil(Date.now() / 1000)

@@ -44,6 +44,22 @@ function reuseEnvAddress(
     return resue;
 }
 
+export function fulfillLocalAddress(
+    hre: HardhatRuntimeEnvironment,
+    envWithoutNetworkSuffix: string,
+) {
+    const localAddress =
+        process.env[`${envWithoutNetworkSuffix}_LOCALHOST`] ||
+        process.env[`${envWithoutNetworkSuffix}_PCHAIN`];
+    process.env[`${envWithoutNetworkSuffix}_HARDHAT`];
+
+    process.env[
+        `${envWithoutNetworkSuffix}_${hre.network.name.toUpperCase()}`
+    ] = localAddress;
+
+    return localAddress;
+}
+
 async function getContractAddress(
     hre: HardhatRuntimeEnvironment,
     deploymentName: string,

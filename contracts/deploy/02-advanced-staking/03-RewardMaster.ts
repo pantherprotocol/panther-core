@@ -1,13 +1,13 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
+import {isLocal, isPolygonOrMumbai} from '../../lib/checkNetwork';
 import {
     reuseEnvAddress,
     getContractAddress,
     getContractEnvAddress,
     verifyUserConsentOnProd,
 } from '../../lib/deploymentHelpers';
-import {isLocal, isPolygonOrMumbai} from '../../lib/checkNetwork';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;

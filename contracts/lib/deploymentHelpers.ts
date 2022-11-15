@@ -1,5 +1,5 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {ethers} from 'ethers';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import inq from 'inquirer';
 
 function getContractEnvVariable(

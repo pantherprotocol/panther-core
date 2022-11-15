@@ -2,14 +2,13 @@ import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
 import {
-    getPoseidonT3Contract,
-    getPoseidonT4Contract,
-} from '../../lib/poseidonBuilder';
-
-import {
     reuseEnvAddress,
     verifyUserConsentOnProd,
 } from '../../lib/deploymentHelpers';
+import {
+    getPoseidonT3Contract,
+    getPoseidonT4Contract,
+} from '../../lib/poseidonBuilder';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {

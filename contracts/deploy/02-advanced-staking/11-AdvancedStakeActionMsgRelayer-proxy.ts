@@ -1,9 +1,11 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {reuseEnvAddress} from '../../lib/deploymentHelpers';
 
-import {verifyUserConsentOnProd} from '../../lib/deploymentHelpers';
 import {isPolygonOrMumbai} from '../../lib/checkNetwork';
+import {
+    reuseEnvAddress,
+    verifyUserConsentOnProd,
+} from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     if (

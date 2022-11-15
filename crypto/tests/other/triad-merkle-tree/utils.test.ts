@@ -5,6 +5,8 @@ import {
     compressString,
     createTriadMerkleTree,
     decompressString,
+    quadLeafIndexRangeForTreeId,
+    quadLeafCountPerTree,
     readCommitmentsFromCommitmentLog,
 } from '../../../src/other/triad-merkle-tree/utils';
 
@@ -88,6 +90,45 @@ describe('Reading, writing input files', () => {
                 '0x28abaa386cf04e365d93f79a7807a391d69f18db0e8ea8e45698a527bf28225b',
                 '0x0667764c376602b72ef22218e1673c2cc8546201f9a77807570b3e5de137680d',
             ]);
+        });
+    });
+});
+
+describe('Auxiliary tree functions', () => {
+    describe('#quadLeafIndexRangeForTreeId', () => {
+        it('should return correct range for treeId 0 and depth 4', () => {
+            const treeId = 0;
+            const treeDepth = 4;
+            const leafRange = quadLeafIndexRangeForTreeId(treeId, treeDepth);
+            expect(leafRange).toEqual([0, 31]);
+        });
+
+        it('should return correct range for treeId 0 and depth 4', () => {
+            const treeId = 0;
+            const treeDepth = 15;
+            const leafRange = quadLeafIndexRangeForTreeId(treeId, treeDepth);
+            expect(leafRange).toEqual([0, 65535]);
+        });
+
+        it('should return correct range for treeId 0 and depth 4', () => {
+            const treeId = 1;
+            const treeDepth = 15;
+            const leafRange = quadLeafIndexRangeForTreeId(treeId, treeDepth);
+            expect(leafRange).toEqual([65536, 131071]);
+        });
+    });
+
+    describe('#quadLeafCountPerTree', () => {
+        it('should return correct max leaf count for depth 4', () => {
+            const treeDepth = 4;
+            const maxLeafCount = quadLeafCountPerTree(treeDepth);
+            expect(maxLeafCount).toEqual(32);
+        });
+
+        it('should return correct max leaf count for depth 15', () => {
+            const treeDepth = 15;
+            const maxLeafCount = quadLeafCountPerTree(treeDepth);
+            expect(maxLeafCount).toEqual(65536);
         });
     });
 });

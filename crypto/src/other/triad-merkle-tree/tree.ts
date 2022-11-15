@@ -16,7 +16,7 @@ import fs from 'fs';
 import {poseidon2or3} from '../../base/hashes';
 
 import {
-    leafIdToTreeIdAndTriadId,
+    quadLeafIdToTreeIdAndTriadLeafId,
     compressString,
     decompressString,
     toBytes32,
@@ -37,7 +37,7 @@ export function generateMerkleProof(
     leafId: bigint,
     tree: TriadMerkleTree,
 ): [MerkleProof, number] {
-    const [treeId, triadLeafIndex] = leafIdToTreeIdAndTriadId(
+    const [treeId, triadLeafIndex] = quadLeafIdToTreeIdAndTriadLeafId(
         leafId,
         tree.depth,
     );

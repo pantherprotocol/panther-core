@@ -9,8 +9,10 @@ export {
     compressString,
     decompressString,
     toBytes32,
-    leafIdToTreeIdAndTriadId,
+    quadLeafIdToTreeIdAndTriadLeafId,
+    quadLeafIndexRangeForTreeId,
     triadTreeMerkleProofToPathIndices,
     triadTreeMerkleProofToPathElements,
     readCommitmentsFromCommitmentLog,
 } from './utils';
+export {LEAF_NODE_SIZE, TREE_DEPTH, TREE_ZERO_VALUE} from './constants';

@@ -62,8 +62,9 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
        (e.g. with "alternative" zAssets and re-defining ZAsset._unused)
     */
 
-    uint8 private constant MAX_SCALE = 32;
-    uint8 private constant MIN_SCALE = 0;
+    uint8 private constant MAX_SCALE = 32; // min scale is 0
+    uint8 private constant NO_SCALING = 0;
+    uint256 private constant DEFAULT_VER = 0;
 
     // Mapping from `zAssetRecId` to ZAsset (i.e. params of an zAsset)
     mapping(uint160 => ZAsset) private _registry;
@@ -125,13 +126,13 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
 
         // Gas optimized based on assumptions:
         // - most often, this code is called for the default zAsset of ERC-20
-        // - if `ver` is in [1..31], highly likely, it is an alternative zAsset
+        // - if `ver` is in [1..MAX_SCALE], likely it's an alternative zAsset
         _tokenId = subId;
         if (subId != 0) {
             // for an "alternative" zAsset, `subId` must be none-zero, ...
             uint256 ver = uint256(uint160(token)) ^ subId;
-            // ... and `ver` must be in [1..31]
-            if (ver < MAX_SCALE && ver != MIN_SCALE) {
+            // ... and `ver` must be in [1..MAX_SCALE]
+            if (ver < MAX_SCALE && ver != DEFAULT_VER) {
                 // Likely, it's the alternative zAsset w/ `zAssetRecId = subId`
                 asset = _registry[uint160(subId)];
 
@@ -143,7 +144,7 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
                     // as the code registering ZAssets is assumed to ensure it.
                     zAssetId = getZAssetId(token, subId);
                     zAssetRecId = uint160(subId);
-                    _tokenId = 0;
+                    _tokenId = DEFAULT_VER;
                     return (zAssetId, _tokenId, zAssetRecId, asset);
                 }
             }
@@ -228,7 +229,7 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
         // Valid range for ERC-20 is [0..31]
         // Valid range for ERC-721/ERC-1155 is 0
         require(
-            (asset.scale == 0 ||
+            (asset.scale == NO_SCALING ||
                 ((asset.scale < MAX_SCALE) &&
                     (asset.tokenType == ERC20_TOKEN_TYPE))),
             ERR_WRONG_ASSET_SCALE

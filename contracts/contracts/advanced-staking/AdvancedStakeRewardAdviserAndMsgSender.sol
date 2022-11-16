@@ -50,6 +50,7 @@ contract AdvancedStakeRewardAdviserAndMsgSender is
     /// @param _actionMsgReceiver Address of the AdvancedStakeActionMsgRelayer on Polygon/Mumbai
     /// @param _fxRoot Address of the `FxRoot` (PoS Bridge) contract on mainnet/Goerli
     constructor(
+        // slither-disable-next-line similar-names
         address _rewardMaster,
         address _actionMsgReceiver,
         address _fxRoot

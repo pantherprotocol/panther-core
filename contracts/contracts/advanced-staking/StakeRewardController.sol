@@ -336,7 +336,6 @@ contract StakeRewardController is
             // new stakes have been created since historical data finalization
             uint256 increase = actualTotalStaked - savedTotalStaked;
             // it roughly adjusts totals by counting an equivalent "stake"
-            // slither-disable-next-line reentrancy-benign
             _countNewStake(safe96(increase), _timeNow);
         } else if (savedTotalStaked > actualTotalStaked) {
             // some "old" stakes was repaid after historical data finalization.
@@ -384,7 +383,10 @@ contract StakeRewardController is
         totalStaked = safe96(uint256(totalStaked) - uint256(stakeAmount));
 
         if (reward != 0) {
-            // trusted contract - nether reentrancy guard nor safeTransfer required
+            // trusted contract - nether reentrancy guard nor safeTransfer required.
+            // "from" is fixed - "arbitrary from in transferFrom" vulnerability
+            // can't be exploited.
+            // slither-disable-next-line reentrancy-benign,arbitrary-send-erc20
             require(
                 IErc20Min(REWARD_TOKEN).transferFrom(
                     REWARD_TREASURY,

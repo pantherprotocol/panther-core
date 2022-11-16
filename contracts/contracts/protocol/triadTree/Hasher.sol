@@ -7,7 +7,6 @@ import { PoseidonT3, PoseidonT4 } from "../crypto/Poseidon.sol";
  * @dev Poseidon hash functions
  */
 abstract contract Hasher {
-    // slither-disable-next-line dead-code
     function hash(bytes32 left, bytes32 right) internal pure returns (bytes32) {
         bytes32[2] memory input;
         input[0] = left;
@@ -15,7 +14,6 @@ abstract contract Hasher {
         return PoseidonT3.poseidon(input);
     }
 
-    // slither-disable-next-line dead-code
     function hash(
         bytes32 left,
         bytes32 mid,

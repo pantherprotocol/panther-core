@@ -125,7 +125,6 @@ contract TriadIncrementalMerkleTrees is
     }
 
     /// @inheritdoc IRootsHistory
-    // slither-disable-next-line external-function
     function isKnownRoot(
         uint256 treeId,
         bytes32 root,
@@ -161,7 +160,6 @@ contract TriadIncrementalMerkleTrees is
      * @param leaves The 3 leaves to insert (must be less than SNARK_SCALAR_FIELD)
      * @return leftLeafId The `leafId` of the first leaf from 3 inserted
      */
-    // slither-disable-next-line dead-code
     function insertBatch(bytes32[TRIAD_SIZE] memory leaves)
         internal
         returns (uint256 leftLeafId)
@@ -224,7 +222,6 @@ contract TriadIncrementalMerkleTrees is
     }
 
     /// private functions follow (some of them made `internal` to ease testing)
-    // slither-disable-next-line dead-code
     function _isFullTree(uint256 leftLeafId) internal pure returns (bool) {
         unchecked {
             return
@@ -249,14 +246,12 @@ contract TriadIncrementalMerkleTrees is
     }
 
     // Returns `triadIndex` index in the triad-node of the given leaf = { 0, 1, 2 }
-    // slither-disable-next-line dead-code
     function _getTriadIndex(uint256 leafId) internal pure returns (uint256) {
         return getLeafIndex(leafId) % TRIAD_SIZE;
     }
 
     // Returns `triadNodeIndex` index of the triad-node of the given leaf
     // This index is the path to this node - used by anyone who needs the path
-    // slither-disable-next-line dead-code
     function _getTriadNodeIndex(uint256 leafId)
         internal
         pure

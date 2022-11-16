@@ -46,6 +46,7 @@ contract AdvancedStakeActionMsgRelayer is
     /// @param _stakeMsgSender Address of the AdvancedStakeRewardAdviserAndMsgSender on the mainnet/Goerli
     /// @param _fxChild Address of the `FxChild` (Bridge) contract on Polygon/Mumbai
     constructor(
+        // slither-disable-next-line similar-names
         address _rewardMaster,
         address _stakeMsgSender,
         address _fxChild

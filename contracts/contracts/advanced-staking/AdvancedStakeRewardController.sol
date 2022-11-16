@@ -118,8 +118,6 @@ contract AdvancedStakeRewardController is
 
     // solhint-enable var-name-mixedcase
 
-    uint8 private _reentrancyStatus;
-
     /// @notice Amounts of $ZKP and NFT allocated for rewards
     Limits public limits;
 
@@ -279,10 +277,7 @@ contract AdvancedStakeRewardController is
         address token,
         address to,
         uint256 amount
-    ) external {
-        require(_reentrancyStatus != 1, "ARC: can't be re-entered");
-        _reentrancyStatus = 1;
-
+    ) external nonReentrant {
         RewardParams memory _rewardParams = rewardParams;
 
         require(OWNER == msg.sender, "ARC: unauthorized");
@@ -292,7 +287,6 @@ contract AdvancedStakeRewardController is
         );
 
         _claimErc20(token, to, amount);
-        _reentrancyStatus = 2;
     }
 
     // Implementation of the {IERC721Receiver}. It accepts NFT_TOKEN transfers only.
@@ -444,9 +438,12 @@ contract AdvancedStakeRewardController is
         );
 
         // 3153600000 = 365 * 24 * 3600 seconds * 100 percents
+        // slither-disable-next-line too-many-digits
         zkpAmount = (stakeAmount * apy * period) / 3153600000;
         // round to 2nd digits after decimal point: X.YZ{0..0} x 1e18
         unchecked {
+            // rounding (accuracy loss is assumed)
+            // slither-disable-next-line divide-before-multiply
             zkpAmount = (zkpAmount / 1e16) * (1e16);
         }
     }

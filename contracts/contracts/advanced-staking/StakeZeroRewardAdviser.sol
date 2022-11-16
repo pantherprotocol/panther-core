@@ -11,7 +11,10 @@ import "./interfaces/IRewardAdviser.sol";
  * @dev The "zero" reward advice is the `Advice` with zero `sharesToCreate` and `sharesToRedeem`.
  * On "zero" advices, the RewardMaster skips creating/redeeming "treasure shares" for/to stakers.
  */
-contract StakeZeroRewardAdviser is StakingMsgProcessor, IRewardAdviser {
+abstract contract StakeZeroRewardAdviser is
+    StakingMsgProcessor,
+    IRewardAdviser
+{
     // solhint-disable var-name-mixedcase
 
     // `stakeAction` for the STAKE

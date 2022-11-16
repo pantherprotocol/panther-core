@@ -70,7 +70,7 @@ contract PantherPoolV0 is
     uint24 public exitDelay;
 
     // (rest of the storage slot) reserved for upgrades
-    // slither-disable-next-line unused-state
+    // slither-disable-next-line unused-state,constable-states
     uint200 private _reserved;
 
     // solhint-enable var-name-mixedcase

@@ -8,7 +8,6 @@ abstract contract StakingMsgProcessor {
     bytes4 internal constant STAKE_ACTION = bytes4(keccak256("stake"));
     bytes4 internal constant UNSTAKE_ACTION = bytes4(keccak256("unstake"));
 
-    // slither-disable-next-line dead-code
     function _encodeStakeActionType(bytes4 stakeType)
         internal
         pure
@@ -17,7 +16,6 @@ abstract contract StakingMsgProcessor {
         return bytes4(keccak256(abi.encodePacked(STAKE_ACTION, stakeType)));
     }
 
-    // slither-disable-next-line dead-code
     function _encodeUnstakeActionType(bytes4 stakeType)
         internal
         pure
@@ -26,7 +24,6 @@ abstract contract StakingMsgProcessor {
         return bytes4(keccak256(abi.encodePacked(UNSTAKE_ACTION, stakeType)));
     }
 
-    // slither-disable-next-line dead-code
     function _packStakingActionMsg(
         address staker,
         IStakingTypes.Stake memory stake,
@@ -46,7 +43,6 @@ abstract contract StakingMsgProcessor {
 
     // For efficiency we use "packed" (rather than "ABI") encoding.
     // It results in shorter data, but requires custom unpack function.
-    // slither-disable-next-line dead-code
     function _unpackStakingActionMsg(bytes memory message)
         internal
         pure

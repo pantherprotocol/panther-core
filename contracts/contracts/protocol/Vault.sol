@@ -15,9 +15,9 @@ import "./vault/OnERC721Received.sol";
  * @title Vault
  * @author Pantherprotocol Contributors
  * @notice Holder of assets (tokens) for `PantherPool` contract
- * @dev the contract is expected to transfer asset from user to
- * itself(Lock) and vice versa(Unlock). it uses
- * TransferHelper library to interact with tokens.
+ * @dev It transfers assets from user to itself (Lock) and vice versa (Unlock).
+ * `PantherPool` is assumed to be the `owner` that is authorized to trigger
+ * locking/unlocking assets.
  */
 contract Vault is
     ImmutableOwnable,
@@ -32,7 +32,9 @@ contract Vault is
         // Proxy-friendly: no storage initialization
     }
 
-    // The caller (i.e. Owner) must guard against reentrancy
+    // The caller (i.e. the owner) is supposed to apply reentrancy guard.
+    // If an adversarial "token", being called by this function, re-enters it
+    // directly, `onlyOwner` will revert as `msg.sender` won't be `owner`.
     function lockAsset(LockData calldata data)
         external
         override
@@ -40,6 +42,9 @@ contract Vault is
         checkLockData(data)
     {
         if (data.tokenType == ERC20_TOKEN_TYPE) {
+            // Owner, who only may call this code, is trusted to protect
+            // against "Arbitrary from in transferFrom" vulnerability
+            // slither-disable-next-line arbitrary-send-erc20
             data.token.safeTransferFrom(
                 data.extAccount,
                 address(this),
@@ -66,7 +71,9 @@ contract Vault is
         emit Locked(data);
     }
 
-    // The caller (i.e. Owner) must guard against reentrancy
+    // The caller (i.e. the owner) is supposed to apply reentrancy guard.
+    // If an adversarial "token", being called by this function, re-enters it
+    // directly, `onlyOwner` will revert as `msg.sender` won't be `owner`.
     function unlockAsset(LockData calldata data)
         external
         override

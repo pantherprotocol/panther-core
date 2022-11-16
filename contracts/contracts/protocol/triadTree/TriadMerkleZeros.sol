@@ -65,7 +65,6 @@ abstract contract TriadMerkleZeros {
             )
         );
 
-    // slither-disable-next-line dead-code
     function populateZeros(bytes32[TREE_DEPTH] memory zeros) internal pure {
         zeros[0] = bytes32(
             uint256(

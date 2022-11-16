@@ -36,6 +36,7 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
     /// @notice Address to vest tokens to
     address public recipient;
 
+    // slither-disable-next-line similar-names
     constructor(address _vestingPools, address _owner)
         ImmutableOwnable(_owner)
         nonZeroAddress(_vestingPools)

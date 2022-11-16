@@ -33,7 +33,6 @@ abstract contract CommitmentsTrees is TriadIncrementalMerkleTrees {
      * @param perUtxoData opening values (encrypted and public) for every UTXO
      * @return leftLeafId The `leafId` of the first leaf in the batch
      */
-    // slither-disable-next-line dead-code
     function addAndEmitCommitments(
         bytes32[OUT_MAX_UTXOs] memory commitments,
         uint8 msgTypes,

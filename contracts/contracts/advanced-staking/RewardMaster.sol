@@ -115,7 +115,9 @@ contract RewardMaster is
     event BalanceAdjusted(uint256 adjustment);
 
     constructor(
+        // slither-disable-next-line similar-names
         address _rewardToken,
+        // slither-disable-next-line similar-names
         address _rewardPool,
         address _owner
     ) ImmutableOwnable(_owner) {
@@ -252,7 +254,6 @@ contract RewardMaster is
         nonZeroAmount(shares)
         nonZeroAddress(to)
     {
-        // slither-disable-next-line reentrancy-benign
         (uint256 _accumRewardPerShare, , ) = _triggerVesting(true, true);
 
         UserRecord memory rec = records[to];
@@ -261,7 +262,6 @@ contract RewardMaster is
             SCALE;
         uint256 newShares = uint256(rec.shares) + shares;
 
-        // slither-disable-next-line reentrancy-benign
         records[to] = UserRecord(safe96(newShares), safe160(newOffset));
         totalShares = safe128(uint256(totalShares) + shares);
 
@@ -337,6 +337,7 @@ contract RewardMaster is
         }
 
         // known contracts, no reentrancy guard needed
+        // slither-disable-next-line reentrancy-benign
         uint256 newlyVested = IRewardPool(REWARD_POOL).vestRewards();
         newBalance = IErc20Min(REWARD_TOKEN).balanceOf(address(this));
 

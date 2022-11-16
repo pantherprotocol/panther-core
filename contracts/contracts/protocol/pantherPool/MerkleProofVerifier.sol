@@ -35,7 +35,6 @@ abstract contract MerkleProofVerifier {
     /// @dev Returns true if a `leaf` can be proved to be a part of a Merkle tree
     /// @dev defined by `root`. For this, a `proof` must be provided, containing
     /// @dev sibling hashes on the branch from the leaf to the root of the tree.
-    // slither-disable-next-line dead-code
     function verifyMerkleProof(
         bytes32 merkleRoot,
         uint256 triadIndex,

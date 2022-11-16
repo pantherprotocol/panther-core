@@ -160,7 +160,10 @@ contract PantherPoolV0 is
             timestamp = createdAt;
         }
 
+        // variables get initialized inside the loop bellow
+        // slither-disable-next-line uninitialized-local
         bytes32[OUT_MAX_UTXOs] memory commitments;
+        // slither-disable-next-line uninitialized-local
         bytes[OUT_MAX_UTXOs] memory perUtxoData;
 
         // Types of UTXO data messages packed into one byte

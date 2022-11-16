@@ -91,6 +91,7 @@ library BabyJubJub {
         uint256 _e,
         uint256 _m
     ) internal view returns (uint256 o) {
+        // slither-disable-next-line assembly
         assembly {
             let memPtr := mload(0x40)
             mstore(memPtr, 0x20) // Length of base _b

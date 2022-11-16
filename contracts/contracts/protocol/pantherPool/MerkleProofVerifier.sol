@@ -48,6 +48,8 @@ abstract contract MerkleProofVerifier {
         require(triadIndex < iTRIAD_INDEX_FORBIDDEN, ERR_TRIAD_INDEX_MAX_VALUE);
 
         // [1] - Compute zero level hash
+        // variable will be initialized inside the 'if' bellow
+        // slither-disable-next-line uninitialized-local
         bytes32 nodeHash;
         // NOTE: no else-case needed since this code executed after require at step [0]
         if (triadIndex == iTRIAD_INDEX_LEFT) {

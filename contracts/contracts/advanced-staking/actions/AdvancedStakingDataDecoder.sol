@@ -33,12 +33,14 @@ abstract contract AdvancedStakingDataDecoder {
         uint256[NUM_DATA_SLOTS + 1] memory words;
         // the 1st slot is `data.length`, then slots with values follow
         for (uint256 i = 1; i <= NUM_DATA_SLOTS; ++i) {
-            // solhint-disable-next-line no-inline-assembly
+            // solhint-disable no-inline-assembly
+            // slither-disable-next-line assembly
             assembly {
                 let offset := mul(i, 0x20)
                 let word := mload(add(data, offset))
                 mstore(add(words, offset), word)
             }
+            // solhint-enable no-inline-assembly
         }
         /*
             `bytes memory sample = 0x00010203..1f2021` stored in the memory like this:

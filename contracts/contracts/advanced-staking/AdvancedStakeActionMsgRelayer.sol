@@ -88,6 +88,8 @@ contract AdvancedStakeActionMsgRelayer is
         require(_nonce > nonce, "AMR:INVALID_NONCE");
         nonce = _nonce;
 
+        // trusted contract call - no reentrancy guard needed
+        // slither-disable-next-line reentrancy-benign,reentrancy-events
         IActionMsgReceiver(REWARD_MASTER).onAction(action, message);
 
         emit StakeMsgRelayed(_nonce, content);

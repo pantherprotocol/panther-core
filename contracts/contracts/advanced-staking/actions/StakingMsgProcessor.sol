@@ -62,7 +62,8 @@ abstract contract StakingMsgProcessor {
 
         uint256 stakerAndAmount;
         uint256 idAndStamps;
-        // solhint-disable-next-line no-inline-assembly
+        // solhint-disable no-inline-assembly
+        // slither-disable-next-line assembly
         assembly {
             // the 1st word (32 bytes) contains the `message.length`
             // we need the (entire) 2nd word ..
@@ -70,6 +71,7 @@ abstract contract StakingMsgProcessor {
             // .. and (16 bytes of) the 3rd word
             idAndStamps := mload(add(message, 0x40))
         }
+        // solhint-enable no-inline-assembly
 
         staker = address(uint160(stakerAndAmount >> 96));
         amount = uint96(stakerAndAmount & 0xFFFFFFFFFFFFFFFFFFFFFFFF);

@@ -157,6 +157,7 @@ contract RewardMaster is
     function onAction(bytes4 action, bytes memory message) external override {
         IRewardAdviser adviser = _getRewardAdviserOrRevert(msg.sender, action);
         // no reentrancy guard needed for the known contract call
+        // slither-disable-next-line reentrancy-benign,reentrancy-no-eth
         IRewardAdviser.Advice memory advice = adviser.getRewardAdvice(
             action,
             message
@@ -300,6 +301,7 @@ contract RewardMaster is
         if (reward != 0) {
             // known contract - nether reentrancy guard nor safeTransfer required
             require(
+                // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events
                 IErc20Min(REWARD_TOKEN).transfer(to, reward),
                 "RM: Internal transfer failed"
             );
@@ -337,7 +339,7 @@ contract RewardMaster is
         }
 
         // known contracts, no reentrancy guard needed
-        // slither-disable-next-line reentrancy-benign
+        // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events
         uint256 newlyVested = IRewardPool(REWARD_POOL).vestRewards();
         newBalance = IErc20Min(REWARD_TOKEN).balanceOf(address(this));
 

@@ -77,6 +77,8 @@ contract AdvancedStakeRewardAdviserAndMsgSender is
         nonce = uint256(_nonce);
 
         bytes memory content = _encodeBridgedData(_nonce, action, message);
+        // known contract call - no need in reentrancy guard
+        // slither-disable-next-line reentrancy-benign,reentrancy-events
         IFxStateSender(FX_ROOT).sendMessageToChild(
             ACTION_MSG_RECEIVER,
             content

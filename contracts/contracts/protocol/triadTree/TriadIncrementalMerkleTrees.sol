@@ -166,7 +166,10 @@ contract TriadIncrementalMerkleTrees is
     {
         leftLeafId = _nextLeafId;
 
+        // here the variable is intentionally declared only ...
+        // slither-disable-next-line uninitialized-local
         bytes32[TREE_DEPTH] memory zeros;
+        // ... and initialized in this call
         populateZeros(zeros);
 
         // index of a "current" node (0 for the leftmost node/leaf of a level)

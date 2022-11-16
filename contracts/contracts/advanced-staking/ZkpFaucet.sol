@@ -120,11 +120,12 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
         uint256 _value
     ) internal {
         // bytes4(keccak256(bytes('transfer(address,uint256)')));
-
-        // solhint-disable-next-line avoid-low-level-calls
+        // solhint-disable avoid-low-level-calls
+        // slither-disable-next-line low-level-calls
         (bool success, bytes memory data) = _token.call(
             abi.encodeWithSelector(0xa9059cbb, _to, _value)
         );
+        // solhint-enable avoid-low-level-calls
         require(
             success && (data.length == 0 || abi.decode(data, (bool))),
             "TransferHelper::safeTransfer: transfer failed"
@@ -200,7 +201,10 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
         require(_amount > 0, "amount cannot be 0");
 
         if (_claimedToken == address(0)) {
-            (bool sent, ) = _to.call{ value: _amount }(""); // solhint-disable-line avoid-low-level-calls
+            // solhint-disable avoid-low-level-calls
+            // slither-disable-next-line low-level-calls
+            (bool sent, ) = _to.call{ value: _amount }("");
+            // solhint-enable avoid-low-level-calls
             require(sent, "Failed to send native");
         } else {
             _claimErc20(_claimedToken, _to, _amount);

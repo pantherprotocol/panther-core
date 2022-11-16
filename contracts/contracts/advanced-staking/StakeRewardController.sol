@@ -328,7 +328,7 @@ contract StakeRewardController is
         activeSince = _timeNow;
 
         // Call to a trusted contract - no reentrancy guard needed
-        // slither-disable-next-line reentrancy-benign
+        // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events
         uint256 actualTotalStaked = ITotalStaked(STAKING).totalStaked();
         uint256 savedTotalStaked = uint256(totalStaked);
 
@@ -395,6 +395,7 @@ contract StakeRewardController is
                 ),
                 "SRC: Internal transfer failed"
             );
+            // slither-disable-next-line reentrancy-events
             emit RewardPaid(staker, reward);
         }
     }

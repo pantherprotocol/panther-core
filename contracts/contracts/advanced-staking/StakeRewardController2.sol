@@ -139,6 +139,8 @@ contract StakeRewardController2 is IRewardAdviser {
         );
 
         _transferErc20(token, to, amount);
+        // state variable intentionally written after the external call
+        // slither-disable-next-line reentrancy-no-eth
         _reentrancyStatus = 2;
     }
 
@@ -158,6 +160,7 @@ contract StakeRewardController2 is IRewardAdviser {
         unclaimedRewards = _unclaimedRewards - reward;
 
         // trusted contract - reentrancy guard unneeded
+        // slither-disable-next-line reentrancy-benign,reentrancy-events
         _transferErc20(REWARD_TOKEN, staker, reward);
         emit RewardPaid(staker, reward);
     }
@@ -168,12 +171,14 @@ contract StakeRewardController2 is IRewardAdviser {
         returns (address staker)
     {
         uint256 stakerAndAmount;
-        // solhint-disable-next-line no-inline-assembly
+        // solhint-disable no-inline-assembly
+        // slither-disable-next-line assembly
         assembly {
             // the 1st word (32 bytes) contains the `message.length`
             // we need the (entire) 2nd word ..
             stakerAndAmount := mload(add(message, 0x20))
         }
+        // solhint-enable no-inline-assembly
         staker = address(uint160(stakerAndAmount >> 96));
     }
 
@@ -184,6 +189,7 @@ contract StakeRewardController2 is IRewardAdviser {
         returns (uint256 reward)
     {
         // trusted contract - reentrancy guard unneeded
+        // slither-disable-next-line reentrancy-benign
         reward = IEntitled(REWARD_MASTER).entitled(staker);
     }
 
@@ -192,11 +198,13 @@ contract StakeRewardController2 is IRewardAdviser {
         address to,
         uint256 value
     ) internal {
-        // solhint-disable-next-line avoid-low-level-calls
+        // solhint-disable avoid-low-level-calls
+        // slither-disable-next-line low-level-calls
         (bool success, bytes memory data) = token.call(
             // bytes4(keccak256(bytes('transfer(address,uint256)')));
             abi.encodeWithSelector(0xa9059cbb, to, value)
         );
+        // solhint-enable avoid-low-level-calls
         require(
             success && (data.length == 0 || abi.decode(data, (bool))),
             "SRC: transferErc20 failed"

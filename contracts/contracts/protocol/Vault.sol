@@ -44,19 +44,21 @@ contract Vault is
         if (data.tokenType == ERC20_TOKEN_TYPE) {
             // Owner, who only may call this code, is trusted to protect
             // against "Arbitrary from in transferFrom" vulnerability
-            // slither-disable-next-line arbitrary-send-erc20
+            // slither-disable-next-line arbitrary-send-erc20,reentrancy-benign,reentrancy-events
             data.token.safeTransferFrom(
                 data.extAccount,
                 address(this),
                 data.extAmount
             );
         } else if (data.tokenType == ERC721_TOKEN_TYPE) {
+            // slither-disable-next-line reentrancy-benign,reentrancy-events
             data.token.erc721SafeTransferFrom(
                 data.tokenId,
                 data.extAccount,
                 address(this)
             );
         } else if (data.tokenType == ERC1155_TOKEN_TYPE) {
+            // slither-disable-next-line reentrancy-benign,reentrancy-events
             data.token.erc1155SafeTransferFrom(
                 data.extAccount,
                 address(this),
@@ -81,14 +83,17 @@ contract Vault is
         checkLockData(data)
     {
         if (data.tokenType == ERC20_TOKEN_TYPE) {
+            // slither-disable-next-line reentrancy-benign,reentrancy-events
             data.token.safeTransfer(data.extAccount, data.extAmount);
         } else if (data.tokenType == ERC721_TOKEN_TYPE) {
+            // slither-disable-next-line reentrancy-benign,reentrancy-events
             data.token.erc721SafeTransferFrom(
                 data.tokenId,
                 address(this),
                 data.extAccount
             );
         } else if (data.tokenType == ERC1155_TOKEN_TYPE) {
+            // slither-disable-next-line reentrancy-benign,reentrancy-events
             data.token.erc1155SafeTransferFrom(
                 address(this),
                 data.extAccount,

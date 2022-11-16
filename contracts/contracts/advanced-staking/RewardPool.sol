@@ -62,7 +62,7 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
 
         if (amount != 0) {
             // here and after, no reentrancy guard needed for calls to VESTING_POOLS
-            // slither-disable-next-line unused-return
+            // slither-disable-next-line unused-return,reentrancy-events
             IVestingPools(VESTING_POOLS).releaseTo(poolId, recipient, amount);
             emit Vested(amount);
         }
@@ -82,6 +82,7 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
         require(_endTime > timeNow(), "RP: expired");
         // this contract must be registered with the VestingPools
         require(
+            // slither-disable-next-line unused-return,reentrancy-events
             IVestingPools(VESTING_POOLS).getWallet(_poolId) == address(this),
             "RP:E7"
         );
@@ -100,10 +101,12 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
         onlyOwner
         nonZeroAddress(newWallet)
     {
+        // slither-disable-next-line reentrancy-benign
         IVestingPools(VESTING_POOLS).updatePoolWallet(poolId, newWallet);
     }
 
     function _releasableAmount() internal view returns (uint256) {
+        // slither-disable-next-line reentrancy-benign
         return IVestingPools(VESTING_POOLS).releasableAmount(poolId);
     }
 

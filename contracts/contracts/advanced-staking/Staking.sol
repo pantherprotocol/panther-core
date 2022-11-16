@@ -442,7 +442,7 @@ contract Staking is
         );
 
         // known contract - reentrancy guard and `safeTransferFrom` unneeded
-        // slither-disable-next-line reentrancy-benign
+        // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events
         require(
             TOKEN.transferFrom(staker, address(this), amount),
             "Staking: transferFrom failed"
@@ -654,12 +654,14 @@ contract Staking is
         bytes4 action = _encodeUnstakeActionType(_stake.stakeType);
         bytes memory message = _packStakingActionMsg(staker, _stake, data);
         // known contract - reentrancy guard unneeded
-        // solhint-disable-next-line no-empty-blocks
+        // solhint-disable no-empty-blocks
+        // slither-disable-next-line reentrancy-benign,reentrancy-events
         try REWARD_MASTER.onAction(action, message) {} catch {
             emit RewardMasterRevert(staker, _stake.id);
             // REWARD_MASTER must be unable to revert forced calls
             require(_isForced, "Staking: REWARD_MASTER reverts");
         }
+        // solhint-enable no-empty-blocks
     }
 
     modifier stakeExist(address staker, uint256 stakeID) {

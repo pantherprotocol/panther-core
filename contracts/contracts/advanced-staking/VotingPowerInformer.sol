@@ -28,6 +28,8 @@ contract VotingPowerInformer {
     address private constant GLOBAL_ACCOUNT = address(0);
 
     constructor(address _staking) {
+        // deployer is assumed not to call with the zero address
+        // slither-disable-next-line missing-zero-check
         staking = _staking;
     }
 

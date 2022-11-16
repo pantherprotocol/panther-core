@@ -13,8 +13,10 @@ import {
     PRP_REWARD_PER_STAKE,
     NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD,
 } from 'services/rewards';
-import {getAdvancedStakingReward} from 'services/staking';
-import {AdvancedStakeRewardsResponse} from 'services/subgraph';
+import {
+    AdvancedStakeRewardsResponse,
+    getAdvancedStakingReward,
+} from 'services/subgraph';
 import {
     AdvancedStakeRewards,
     AdvancedStakeTokenIDs,

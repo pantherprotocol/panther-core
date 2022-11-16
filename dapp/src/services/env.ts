@@ -7,7 +7,6 @@ const REQUIRED_ENV_VARS: string[] = [
     'APP_MODE',
     'CHAIN_IDS',
     'MASP_CHAIN_ID',
-    'REWARD_MASTER_CONTRACT_80001',
     'STAKES_REPORTER_CONTRACT_137',
     'STAKE_REWARD_CONTROLLER_2_CONTRACT_1',
     'ADVANCED_STAKING_T_START',
@@ -15,15 +14,7 @@ const REQUIRED_ENV_VARS: string[] = [
     'ADVANCED_STAKING_APY_START',
     'ADVANCED_STAKING_APY_END',
     'FAUCET_CHAIN_IDS',
-    'FAUCET_CONTRACT_80001',
-    'FAUCET_CONTRACT_5',
     'FAUCET_BASE_URL',
-    'SUBGRAPH_URL_80001',
-    'POOL_V0_CONTRACT_80001',
-    'ADVANCED_STAKE_REWARD_CONTROLLER_CONTRACT_80001',
-    'Z_ASSETS_REGISTRY_CONTRACT_80001',
-    'REWARD_MASTER_CONTRACT_5',
-    'COMMITMENT_TREE_URL_80001',
 ];
 
 const REQUIRED_CHAIN_ENV_VAR_PREFIXES: string[] = [
@@ -142,9 +133,9 @@ export const env: EnvVariables = {
     FAUCET_CONTRACT_137: process.env.FAUCET_CONTRACT_137,
     FAUCET_CONTRACT_5: process.env.FAUCET_CONTRACT_5,
 
-    SUBGRAPH_URL_80001: process.env.SUBGRAPH_URL_80001,
-    SUBGRAPH_URL_31337: process.env.SUBGRAPH_URL_31337,
-    SUBGRAPH_URL_137: process.env.SUBGRAPH_URL_137,
+    SUBGRAPH_ACCOUNTS_80001: process.env.SUBGRAPH_ACCOUNTS_80001,
+    SUBGRAPH_ACCOUNTS_31337: process.env.SUBGRAPH_ACCOUNTS_31337,
+    SUBGRAPH_ACCOUNTS_137: process.env.SUBGRAPH_ACCOUNTS_137,
 
     POOL_V0_CONTRACT_80001: process.env.POOL_V0_CONTRACT_80001,
     POOL_V0_CONTRACT_31337: process.env.POOL_V0_CONTRACT_31337,
@@ -155,10 +146,6 @@ export const env: EnvVariables = {
     Z_ASSETS_REGISTRY_CONTRACT_31337:
         process.env.Z_ASSETS_REGISTRY_CONTRACT_31337,
     Z_ASSETS_REGISTRY_CONTRACT_137: process.env.Z_ASSETS_REGISTRY_CONTRACT_137,
-
-    COMMITMENT_TREE_URL_80001: process.env.COMMITMENT_TREE_URL_80001,
-    COMMITMENT_TREE_URL_31337: process.env.COMMITMENT_TREE_URL_31337,
-    COMMITMENT_TREE_URL_137: process.env.COMMITMENT_TREE_URL_137,
 };
 
 export const BLOCKED_COUNTRIES = env.BLOCKED_COUNTRIES
@@ -191,6 +178,7 @@ function getRequiredChainEnvVars(chainId: number): string[] {
         (varName: string) => `${varName}_${chainId}`,
     );
 }
+
 function getRequiredEnvVars(): string[] {
     const requiredChainEnvVars: string[][] = CHAIN_IDS.map((chainId: number) =>
         getRequiredChainEnvVars(chainId),
@@ -202,8 +190,4 @@ export function getMissingEnvVars(): string[] {
     return getRequiredEnvVars()
         .filter(varName => !env[varName])
         .sort();
-}
-
-export function getCommitmentTreeUrl(chainId: number): string | undefined {
-    return env[`COMMITMENT_TREE_URL_${chainId}`];
 }

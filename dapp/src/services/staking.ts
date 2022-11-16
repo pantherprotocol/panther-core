@@ -13,9 +13,6 @@ import CoinGecko from 'coingecko-api';
 import {fromRpcSig} from 'ethereumjs-util';
 import type {ContractTransaction} from 'ethers';
 import {BigNumber, constants, utils} from 'ethers';
-import type {IStakingTypes, Staking} from 'types/contracts/Staking';
-import {StakeRewardBN, StakeTypes} from 'types/staking';
-
 import {
     ContractName,
     chainHasStakesReporter,
@@ -27,16 +24,15 @@ import {
     getStakingContract,
     getTokenContract,
     hasContract,
-} from './contracts';
-import {env} from './env';
-import axios from './http';
-import {calculateRewardsForStake} from './rewards';
+} from 'services/contracts';
+import {env} from 'services/env';
+import {calculateRewardsForStake} from 'services/rewards';
 import {
     AdvancedStakeRewardsResponse,
-    getAdvancedStakingRewardQuery,
-    getSubgraphUrl,
-    GraphResponse,
-} from './subgraph';
+    getAdvancedStakingReward,
+} from 'services/subgraph';
+import type {IStakingTypes, Staking} from 'types/contracts/Staking';
+import {StakeRewardBN, StakeTypes} from 'types/staking';
 
 const CoinGeckoClient = new CoinGecko();
 
@@ -607,36 +603,6 @@ export async function getZKPMarketPrice(): Promise<BigNumber | null> {
     }
     const price = utils.parseUnits(String(priceData.data[symbol]['usd']), 18);
     return price;
-}
-
-export async function getAdvancedStakingReward(
-    chainId: number,
-    address: string,
-): Promise<GraphResponse | Error> {
-    const subgraphEndpoint = getSubgraphUrl(chainId);
-    if (!subgraphEndpoint) {
-        return new Error('No subgraph endpoint configured');
-    }
-
-    const query = getAdvancedStakingRewardQuery(address);
-
-    try {
-        const data = await axios.post(subgraphEndpoint, {
-            query,
-        });
-
-        if (data.data.errors?.[0]?.message) {
-            return new Error(data.data.errors[0].message);
-        }
-
-        if (data.status === 200) {
-            return data.data.data;
-        }
-
-        return new Error(`Unexpected response status ${data.status}`);
-    } catch (error) {
-        return new Error(`Error on sending query to subgraph: ${error}`);
-    }
 }
 
 export async function getStakingTermsFromContract(

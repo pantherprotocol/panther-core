@@ -417,6 +417,7 @@ contract Staking is
         require(_terms.isEnabled, "Staking: Terms unknown or disabled");
 
         require(amount > 0, "Staking: Amount not set");
+        // slither-disable-next-line similar-names
         uint256 _totalStake = amount + uint256(totalStaked);
         require(_totalStake < 2**96, "Staking: Too big amount");
 

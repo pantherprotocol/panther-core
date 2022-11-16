@@ -69,6 +69,7 @@ contract StakesReporter {
         view
         returns (Stake[] memory, uint256[] memory)
     {
+        // trusted contract call - no reentrancy guard needed
         Stake[] memory stakes = STAKE_REGISTER.accountStakes(_account);
 
         uint256[] memory unclaimedRewards = new uint256[](stakes.length);
@@ -113,6 +114,7 @@ contract StakesReporter {
 
         if (stake.claimedAt == 0)
             unclaimedRewards = getRewards(
+                // trusted contract call - no reentrancy guard needed
                 ARPT_HISTORY.getScArptAt(stake.stakedAt),
                 ARPT_HISTORY.getScArptAt(uint32(0)),
                 stake.amount

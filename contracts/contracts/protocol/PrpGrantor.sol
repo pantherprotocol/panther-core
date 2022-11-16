@@ -62,6 +62,7 @@ contract PrpGrantor is ImmutableOwnable, IPrpGrantor {
     // (excluding burnt grants amounts)
     uint256 public override totalGrantsRedeemed;
 
+    // slither-disable-next-line similar-names
     constructor(address _owner, address _grantProcessor)
         ImmutableOwnable(_owner)
     {

@@ -21,6 +21,11 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
     // @notice enabling/disabling check for whitelisted addresses
     bool public restrictToWhitelisted;
 
+    event CupSizeUpdated(uint256 newCupSice);
+    event TokenPriceUpdated(uint256 newTokenPrice);
+    event MaxDrinkCountUpdated(uint256 newMaxDrinkCount);
+    event WhitelistRestrictUpdated(bool newIsRestricted);
+
     constructor(
         address _owner,
         address _token,
@@ -37,6 +42,11 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
         cupSize = _cupSize;
         maxAmountToPay = _maxAmountToPay;
         maxDrinkCount = _maxDrinkCount;
+
+        emit TokenPriceUpdated(_tokenPrice);
+        emit CupSizeUpdated(_cupSize);
+        emit MaxDrinkCountUpdated(_maxDrinkCount);
+        emit WhitelistRestrictUpdated(false);
     }
 
     /**
@@ -138,6 +148,7 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
      */
     function updateRestrictToWhitelisted(bool isRestricted) external onlyOwner {
         restrictToWhitelisted = isRestricted;
+        emit WhitelistRestrictUpdated(isRestricted);
     }
 
     /**
@@ -165,6 +176,7 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
     function updateCupSize(uint256 _cupSize) external onlyOwner {
         require(_cupSize > 0, "invalid size");
         cupSize = _cupSize;
+        emit CupSizeUpdated(_cupSize);
     }
 
     /**
@@ -173,6 +185,7 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
      */
     function updateTokenPrice(uint256 _tokenPrice) external onlyOwner {
         tokenPrice = _tokenPrice;
+        emit TokenPriceUpdated(_tokenPrice);
     }
 
     /**
@@ -182,6 +195,7 @@ contract ZkpFaucet is Claimable, ImmutableOwnable {
      */
     function updateMaxDrinkCount(uint256 _maxDrinkCount) external onlyOwner {
         maxDrinkCount = _maxDrinkCount;
+        emit MaxDrinkCountUpdated(_maxDrinkCount);
     }
 
     /**

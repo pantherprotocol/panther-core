@@ -53,7 +53,7 @@ export function createOrUpdateAdvancedStakingReward(
     advancedStakingReward.save();
 
     log.info('Advanced staking reward was updated {} {}', [
-        params.advancedStakingRewardId,
+        params.advancedStakingRewardId.toString(),
         params.staker,
     ]);
 

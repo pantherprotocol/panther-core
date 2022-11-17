@@ -3,6 +3,7 @@ import {RewardGenerated} from '../generated/AdvancedStakeRewardController/Advanc
 
 import {createOrUpdateStaker} from './utils/staker';
 import {createOrUpdateAdvancedStakingReward} from './utils/advancedStakingReward';
+import {createTriad} from './utils/triad';
 
 export function handleRewardGenerated(event: RewardGenerated): void {
     const stakerId = event.params.staker.toHexString();
@@ -22,16 +23,25 @@ export function handleRewardGenerated(event: RewardGenerated): void {
 
 export function handleNewCommitments(event: NewCommitments): void {
     const stakerId = event.transaction.from.toHexString();
-    const advancedStakingRewardId = event.params.leftLeafId.toHexString();
+    const leftLeafId = event.params.leftLeafId;
 
     createOrUpdateStaker(stakerId, event.block);
 
     createOrUpdateAdvancedStakingReward({
-        advancedStakingRewardId,
+        advancedStakingRewardId: leftLeafId.toHexString(),
         creationTime: event.block.timestamp.toI32(),
         commitments: event.params.commitments,
         utxoData: event.params.utxoData,
         zZkpAmount: null,
         staker: stakerId,
+    });
+
+    createTriad({
+        triadId: leftLeafId.toHexString(),
+        leafId: leftLeafId,
+        commitments: event.params.commitments,
+        utxoData: event.params.utxoData,
+        block: event.block,
+        txHash: event.transaction.hash,
     });
 }

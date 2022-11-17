@@ -14,3 +14,14 @@ type AdvancedStakingReward @entity {
     zZkpAmount: BigInt
     staker: Staker!
 }
+
+type Triad @entity {
+    id: ID!
+    leafId: Int!
+    commitments: [Bytes!]!
+    utxoData: Bytes!
+    treeId: Int!
+    blockNumber: Int!
+    creationTime: Int!
+    txHash: Bytes!
+}

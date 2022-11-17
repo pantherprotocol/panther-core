@@ -298,6 +298,10 @@ contract StakeRewardController is
             );
             require(amount != 0, "SRC: unexpected zero amount");
 
+            // "Costly operations" triggered by the next line are acceptable.
+            // Slither's "disable costly-loop detector" directives are inserted
+            // in lines (bellow) with such operations rather than here only (as
+            // otherwise slither reports false-positive issues).
             _countNewStake(amount, stakedAt);
 
             lastDate = stakedAt;
@@ -365,6 +369,8 @@ contract StakeRewardController is
             // if not registered yet for this time (i.e. block)
             scArptHistory[stakedAt] = scArpt != 0 ? scArpt : ZERO_SC_ARPT;
         }
+        // Note comments on "costly-loop" in `function saveHistoricalData`
+        // slither-disable-next-line costly-loop
         totalStaked = safe96(uint256(totalStaked) + uint256(stakeAmount));
     }
 
@@ -422,11 +428,15 @@ contract StakeRewardController is
             newScArpt,
             totalStaked
         );
+        // Note comments on "costly-loop" in `function saveHistoricalData`
+        // slither-disable-next-line costly-loop
         scAccumRewardPerToken = newScArpt;
         uint96 _totalRewardAccrued = safe96(
             uint256(totalRewardAccrued) + rewardAdded
         );
+        // slither-disable-next-line costly-loop
         totalRewardAccrued = _totalRewardAccrued;
+        // slither-disable-next-line costly-loop
         rewardUpdatedOn = actionTime;
 
         emit RewardAdded(rewardAdded, _totalRewardAccrued, newScArpt);

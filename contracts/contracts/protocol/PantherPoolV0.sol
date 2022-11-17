@@ -170,6 +170,12 @@ contract PantherPoolV0 is
         uint8 msgTypes = uint8(0);
 
         for (uint256 utxoIndex = 0; utxoIndex < OUT_MAX_UTXOs; utxoIndex++) {
+            // The next call can't trigger the "calls loop" since it triggers
+            // external calls to known contracts, which are trusted to handle
+            // reentrancy risk properly.
+            // Slither's "disable calls-loop detector" directives are inserted
+            // in lines (bellow) with external calls rather than here only (as
+            // otherwise slither reports false-positive issues).
             (uint160 zAssetId, uint64 scaledAmount) = _processDepositedAsset(
                 tokens[utxoIndex],
                 tokenIds[utxoIndex],
@@ -348,6 +354,9 @@ contract PantherPoolV0 is
         // At this point, a non-zero deposit of a real asset (token) expected
         uint256 _tokenId;
         ZAsset memory asset;
+
+        // Note comments on "calls-loop" in `function generateDeposits`
+        // slither-disable-next-line calls-loop
         (zAssetId, _tokenId, , asset) = IZAssetsRegistry(ASSET_REGISTRY)
             .getZAssetAndIds(token, subId);
         require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);
@@ -360,6 +369,7 @@ contract PantherPoolV0 is
         // (when and if future upgrades implement change claiming)
         if (change > 0) emit Change(token, change);
 
+        // slither-disable-next-line calls-loop
         IVault(VAULT).lockAsset(
             LockData(
                 asset.tokenType,

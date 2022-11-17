@@ -75,6 +75,11 @@ contract StakesReporter {
         uint256[] memory unclaimedRewards = new uint256[](stakes.length);
 
         for (uint256 i = 0; i < stakes.length; ) {
+            // The next call can't trigger the "calls loop" since it triggers
+            // external calls to a trusted contract only.
+            // Slither's "disable calls-loop detector" directive is inserted in
+            // the external call line rather than here (since otherwise slither
+            // reports false-positive issues).
             unclaimedRewards[i] = getUnclaimedRewards(stakes[i]);
 
             unchecked {
@@ -113,6 +118,8 @@ contract StakesReporter {
         uint256 unclaimedRewards = 0;
 
         if (stake.claimedAt == 0)
+            // note comments to "calls-loop" in `function getStakesInfo`
+            // slither-disable-next-line calls-loop
             unclaimedRewards = getRewards(
                 // trusted contract call - no reentrancy guard needed
                 ARPT_HISTORY.getScArptAt(stake.stakedAt),

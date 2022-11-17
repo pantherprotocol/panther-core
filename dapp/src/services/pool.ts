@@ -488,7 +488,6 @@ export async function isNullifierSpent(
     privateSpendingKey: PrivateKey,
     leafId: bigint,
 ): Promise<[boolean, string]> {
-    console.time('isNullifierSpent()');
     const nullifier = bigintToBytes32(
         poseidon([
             bigintToBytes32(privateSpendingKey),
@@ -496,7 +495,6 @@ export async function isNullifierSpent(
         ]),
     );
     const isSpent = await poolContract.isSpent(nullifier);
-    console.timeEnd('isNullifierSpent()');
     return [isSpent, nullifier];
 }
 

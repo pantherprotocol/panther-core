@@ -4,13 +4,22 @@
     display: flex;
     justify-content: start;
     width: 100%;
-    padding: 20px;
+    padding: 20px 34px;
+
+    @media (max-width: $medium-screen-size) {
+        padding: 20px 0 20px 15px;
+    }
 
     a {
-        padding: 0 15px;
+        padding: 0 17px;
 
         img {
             width: 22px;
+            height: 17px;
+        }
+
+        &:first-child {
+            padding-left: 0;
         }
     }
 }

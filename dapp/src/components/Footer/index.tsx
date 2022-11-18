@@ -1,6 +1,8 @@
 import React from 'react';
 
-import {Grid} from '@mui/material';
+import {Box} from '@mui/material';
+
+import logo from '../../images/panther-logo.svg';
 
 import Links from './Links';
 import Socials from './Socials';
@@ -9,14 +11,20 @@ import './styles.scss';
 
 const Footer = () => {
     return (
-        <Grid container className="footer-holder" data-testid="footer">
-            <Grid item xs={12} md={6} className="footer-socials">
-                <Socials />
-            </Grid>
-            <Grid item xs={12} md={6} className="footer-links">
-                <Links />
-            </Grid>
-        </Grid>
+        <Box className="footer-holder" data-testid="footer">
+            <Box className="title">
+                <img src={logo} />
+                <span>Panther</span>
+            </Box>
+            <Box className="links-container">
+                <Box className="footer-socials">
+                    <Socials />
+                </Box>
+                <Box className="footer-links">
+                    <Links />
+                </Box>
+            </Box>
+        </Box>
     );
 };
 

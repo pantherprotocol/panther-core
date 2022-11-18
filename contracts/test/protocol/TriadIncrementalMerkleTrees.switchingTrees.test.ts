@@ -25,7 +25,7 @@ const {
 } = dataForTreeChangeTest.triads;
 
 describe('TriadIncrementalMerkleTrees: Switching Tree ', function () {
-    let snapshot;
+    let snapshot: number;
     let trees: MockTriadIncrementalMerkleTrees;
 
     before(async () => {

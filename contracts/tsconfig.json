@@ -5,13 +5,13 @@
     "lib": ["es5", "es6"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "outDir": "dist",
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
     "target": "es2020",
-    "strictNullChecks": false
+    "strictNullChecks": true
   },
   "exclude": ["node_modules", "staging"],
   "include": [

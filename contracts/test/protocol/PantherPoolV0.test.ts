@@ -24,8 +24,8 @@ import {deployPantherPoolV0} from './helpers/pantherPoolV0';
 describe('PantherPoolV0', () => {
     let poolV0: MockPantherPoolV0;
     let zAssetsRegistry: FakeContract<ZAssetsRegistry>;
-    let msgSenderAddress;
-    let snapshot;
+    let msgSenderAddress: string;
+    let snapshot: number;
 
     before(async () => {
         msgSenderAddress = (await ethers.getSigners())[0].address;
@@ -145,7 +145,7 @@ describe('PantherPoolV0', () => {
             cacheIndexHint,
         } = exitSample;
 
-        let exitTime;
+        let exitTime: number;
 
         before(async () => {
             exitTime = (await getBlockTimestamp()) + 100;

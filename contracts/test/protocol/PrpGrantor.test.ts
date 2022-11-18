@@ -18,12 +18,12 @@ describe('PrpGrantor contract', function () {
 
     const grantAmount = 523786;
 
-    let snapshot;
+    let snapshot: number;
     let prpGrantor: PrpGrantor;
-    let deployer,
-        grantProcessor,
-        curatorOne,
-        curatorTwo,
+    let deployer: SignerWithAddress,
+        grantProcessor: SignerWithAddress,
+        curatorOne: SignerWithAddress,
+        curatorTwo: SignerWithAddress,
         grantee: SignerWithAddress;
     let maxPRPGrant: BigNumber;
 

@@ -82,6 +82,9 @@ describe('PantherPoolV0', () => {
             // [4] - Send on-chain -> extract event etc ...
             // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
             const txIn = new UtxoRecipientData(recipientReadingKeys);
+            if (!tx.cipheredTextMessageV1)
+                throw new Error('undefined ciphered text message V1');
+
             // [5] - Deserialize --- we actually will first get this text from chain
             txIn.unpackMessageV1(tx.cipheredTextMessageV1);
             // [6] - Decrypt ( try... )
@@ -126,6 +129,10 @@ describe('PantherPoolV0', () => {
             // [4] - Send on-chain -> extract event etc ...
             // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
             const txIn = new UtxoRecipientData(recipientReadingKeys);
+
+            if (!tx.cipheredTextMessageV1)
+                throw new Error('undefined ciphered text message V1');
+
             // [5] - Deserialize --- we actually will first get this text from chain
             txIn.unpackMessageV1(tx.cipheredTextMessageV1);
             // [6] - Decrypt ( try... )
@@ -171,6 +178,10 @@ describe('PantherPoolV0', () => {
             // [4] - Send on-chain -> extract event etc ...
             // ///////////////////////////////////////////// SEND ON CHAIN /////////////////////////////////////////////
             const txIn = new UtxoRecipientData(recipientReadingKeys);
+
+            if (!tx.cipheredTextMessageV1)
+                throw new Error('undefined ciphered text message V1');
+
             // [5] - Deserialize --- we actually will first get this text from chain
             txIn.unpackMessageV1(tx.cipheredTextMessageV1);
             // [6] - Decrypt ( try... )
@@ -360,11 +371,11 @@ describe('PantherPoolV0', () => {
                     BigNumber.from(0),
                 ];
                 const generateCommitmentNum = (
-                    pubKey_X,
-                    pubKey_Y,
-                    amount,
-                    zAssetIdValue,
-                    createTimeValue,
+                    pubKey_X: bigint,
+                    pubKey_Y: bigint,
+                    amount: BigInt,
+                    zAssetIdValue: BigNumber,
+                    createTimeValue: bigint,
                 ) => {
                     const commitment = poseidon2or3([
                         BigInt(pubKey_X), // pubSpendKey.x

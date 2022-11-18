@@ -9,7 +9,7 @@ import {
 } from '../../lib/poseidonBuilder';
 import {toBytes32} from '../../lib/utilities';
 
-function printProgress(progress) {
+function printProgress(progress: string) {
     process.stdout.clearLine(0);
     process.stdout.cursorTo(0);
     process.stdout.write(progress);

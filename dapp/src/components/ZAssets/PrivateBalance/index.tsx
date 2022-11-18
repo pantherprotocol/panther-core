@@ -197,7 +197,7 @@ export default function PrivateBalance() {
                     <Typography className="amount">
                         {whole && fractional ? (
                             <>
-                                <span>{whole}</span>
+                                <span>${whole}</span>
                                 <span className="substring">.{fractional}</span>
                             </>
                         ) : (

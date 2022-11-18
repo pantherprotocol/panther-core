@@ -197,6 +197,15 @@ export async function exit(
         leafId,
         utxoData,
     );
+    if (!zAssetId) {
+        return [
+            UTXOStatus.UNDEFINED,
+            {
+                message: 'zAssetId is not exist.',
+                details: 'No zAssetId returned',
+            } as DetailedError,
+        ];
+    }
     const possibleError = checkUnpackingErrors(
         error,
         isChildKeyInvalid,
@@ -217,86 +226,47 @@ export async function exit(
         ];
     }
 
-    const tokenContract = getTokenContract(library, chainId);
-    const zAssetsRegistry = getZAssetsRegistryContract(library, chainId);
+    const {address: tokenContractAddress} = getTokenContract(library, chainId);
     const tokenId = BigInt(0);
-    const zAssetBN = await zAssetsRegistry.getZAssetId(
-        tokenContract.address,
+
+    const isRegistered = await isZAssetsRegistered(
+        library,
+        chainId,
+        zAssetId,
+        tokenContractAddress,
         tokenId,
     );
-
-    if (zAssetBN.toHexString() !== zAssetId) {
-        return [
-            UTXOStatus.UNDEFINED,
-            {
-                message: 'zAsset is not registered.',
-                details: 'Expected: ' + bigintToBytes32 + ', got: ' + zAssetId,
-            } as DetailedError,
-        ];
+    if (isDetailedError(isRegistered)) {
+        return [UTXOStatus.UNDEFINED, isRegistered];
     }
 
-    const commitmentHex = bigintToBytes32(
-        poseidon([
-            bigintToBytes32(childSpendingKeypair!.publicKey[0]),
-            bigintToBytes32(childSpendingKeypair!.publicKey[1]),
-            bigintToBytes32(
-                BigNumber.from(amounts)
-                    .shl(192)
-                    .or(BigNumber.from(zAssetId).shl(32))
-                    .or(BigNumber.from(creationTime))
-                    .toBigInt(),
-            ),
-        ]),
+    const zZkpCommitment = getZzkpCommitment(
+        childSpendingKeypair,
+        amounts,
+        zAssetId,
+        creationTime,
+        commitments[0],
     );
-
-    const zZkpCommitment = commitments[0];
-    if (commitmentHex !== zZkpCommitment) {
-        return [
-            UTXOStatus.UNSPENT,
-            {
-                message: 'Invalid zAsset commitment.',
-                details:
-                    'Expected: ' + zZkpCommitment + ', got: ' + commitmentHex,
-            } as DetailedError,
-        ];
+    if (isDetailedError(zZkpCommitment)) {
+        return [UTXOStatus.UNSPENT, zZkpCommitment];
     }
 
-    const path = await generateMerklePath(leafId, chainId);
-    if (path instanceof Error) {
-        return [
-            UTXOStatus.UNSPENT,
-            {
-                message: 'Cannot generate Merkle proof of valid zAsset',
-                details: path.message,
-                triggerError: path,
-            } as DetailedError,
-        ];
+    const path = await getMerklePath(leafId, chainId, zZkpCommitment);
+    if (isDetailedError(path)) {
+        return [UTXOStatus.UNSPENT, path];
     }
-    const [pathElements, proofLeafHex, merkleTreeRoot] = path;
-
-    if (proofLeafHex !== zZkpCommitment) {
-        // This error also shoots when the tree is outdated
-
-        return [
-            UTXOStatus.UNSPENT,
-            {
-                message: "zAsset didn't match shielded pool entry.",
-                details:
-                    'Expected: ' + proofLeafHex + ', got: ' + zZkpCommitment,
-            } as DetailedError,
-        ];
-    }
+    const [pathElements, merkleTreeRoot] = path;
 
     const result = await poolContractExit(
         contract,
-        tokenContract.address,
+        tokenContractAddress,
         tokenId as bigint,
         amounts as bigint,
         creationTime,
         childSpendingKeypair!.privateKey,
         leafId as bigint,
-        pathElements,
-        merkleTreeRoot,
+        pathElements!,
+        merkleTreeRoot!,
         BigInt(0), // cacheIndexHint
     );
     if (isDetailedError(result)) {
@@ -523,7 +493,7 @@ export async function isNullifierSpent(
 async function generateMerklePath(
     leafId: bigint,
     chainId: number,
-): Promise<[string[], string, string, number] | Error> {
+): Promise<[string[], string, string] | Error> {
     const treeUri = env[`COMMITMENT_TREE_URL_${chainId}`];
 
     const treeResponse = await safeFetch(treeUri as string);
@@ -534,7 +504,7 @@ async function generateMerklePath(
     try {
         const treeJson = await treeResponse.json();
         const tree = TriadMerkleTree.deserialize(treeJson);
-        const [merkleProof, treeId] = generateMerkleProof(leafId, tree);
+        const [merkleProof] = generateMerkleProof(leafId, tree);
         const pathElements =
             triadTreeMerkleProofToPathElements(merkleProof).map(
                 bigintToBytes32,
@@ -544,7 +514,6 @@ async function generateMerklePath(
             pathElements,
             bigintToBytes32(merkleProof.leaf),
             bigintToBytes32(merkleProof.root),
-            treeId,
         ];
     } catch (error) {
         return error as Error;
@@ -585,4 +554,82 @@ async function poolContractExit(
             triggerError: err as Error,
         } as DetailedError;
     }
+}
+
+async function isZAssetsRegistered(
+    library: any,
+    chainId: number,
+    zAssetId: string,
+    tokenContractAddress: string,
+    tokenId: bigint,
+): Promise<DetailedError | boolean> {
+    const zAssetsRegistry = getZAssetsRegistryContract(library, chainId);
+    const zAssetBN = await zAssetsRegistry.getZAssetId(
+        tokenContractAddress,
+        tokenId,
+    );
+
+    if (zAssetBN.toHexString() !== zAssetId) {
+        return {
+            message: 'zAsset is not registered.',
+            details: 'Expected: ' + bigintToBytes32 + ', got: ' + zAssetId,
+        } as DetailedError;
+    }
+    return true;
+}
+
+function getZzkpCommitment(
+    childSpendingKeypair: IKeypair | undefined,
+    amounts: bigint | undefined,
+    zAssetId: string | undefined,
+    creationTime: number,
+    zZkpCommitment: string,
+): string | DetailedError {
+    const commitmentHex = bigintToBytes32(
+        poseidon([
+            bigintToBytes32(childSpendingKeypair!.publicKey[0]),
+            bigintToBytes32(childSpendingKeypair!.publicKey[1]),
+            bigintToBytes32(
+                BigNumber.from(amounts)
+                    .shl(192)
+                    .or(BigNumber.from(zAssetId).shl(32))
+                    .or(BigNumber.from(creationTime))
+                    .toBigInt(),
+            ),
+        ]),
+    );
+
+    if (commitmentHex !== zZkpCommitment) {
+        return {
+            message: 'Invalid zAsset commitment.',
+            details: 'Expected: ' + zZkpCommitment + ', got: ' + commitmentHex,
+        } as DetailedError;
+    }
+    return commitmentHex;
+}
+
+async function getMerklePath(
+    leafId: bigint,
+    chainId: number,
+    zZkpCommitment: string,
+): Promise<DetailedError | [string[], string]> {
+    const path = await generateMerklePath(leafId, chainId);
+    if (path instanceof Error) {
+        return {
+            message: 'Cannot generate Merkle proof of valid zAsset',
+            details: path.message,
+            triggerError: path,
+        } as DetailedError;
+    }
+    const [pathElements, proofLeafHex, merkleTreeRoot] = path;
+
+    if (proofLeafHex !== zZkpCommitment) {
+        // This error also shoots when the tree is outdated
+
+        return {
+            message: "zAsset didn't match shielded pool entry.",
+            details: 'Expected: ' + proofLeafHex + ', got: ' + zZkpCommitment,
+        } as DetailedError;
+    }
+    return [pathElements, merkleTreeRoot];
 }

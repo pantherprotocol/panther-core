@@ -7,7 +7,7 @@ import RedeemRewardsWarningDialog from 'components/ZAssets/PrivateZAssetsTable/R
 import rightSideArrow from 'images/right-arrow-icon.svg';
 import {formatTime} from 'lib/format';
 import {useAppSelector} from 'redux/hooks';
-import {showWalletActionInProgressSelector} from 'redux/slices/ui/web3WalletLastAction';
+import {showWalletActionInProgressSelector} from 'redux/slices/ui/web3-wallet-last-action';
 import {poolV0ExitTimeSelector} from 'redux/slices/wallet/poolV0';
 import {getCommitmentTreeUrl} from 'services/env';
 

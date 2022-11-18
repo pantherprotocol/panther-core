@@ -6,7 +6,7 @@ import {Box, Grid, Typography} from '@mui/material';
 import ContinueButton from 'components/ContinueButton';
 import Carousel from 'react-material-ui-carousel';
 import {useAppDispatch} from 'redux/hooks';
-import {acknowledgeNotification} from 'redux/slices/ui/acknowledgedNotifications';
+import {acknowledgeNotification} from 'redux/slices/ui/acknowledged-notifications';
 
 import Feature, {featuredata} from './Feature';
 

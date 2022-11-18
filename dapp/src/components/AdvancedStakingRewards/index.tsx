@@ -7,11 +7,11 @@ import StakingAPR from 'components/StakingAPR';
 import {utils} from 'ethers';
 import moment from 'moment';
 import {useAppSelector} from 'redux/hooks';
-import {termsSelector} from 'redux/slices/staking/stakeTerms';
+import {termsSelector} from 'redux/slices/staking/stake-terms';
 import {
     totalClaimedRewardsSelector,
     totalVestedRewardsSelector,
-} from 'redux/slices/staking/totalsOfAdvancedStakes';
+} from 'redux/slices/staking/totals-of-advanced-stakes';
 import {getAdvStakingAPY} from 'services/rewards';
 import {StakeType} from 'types/staking';
 

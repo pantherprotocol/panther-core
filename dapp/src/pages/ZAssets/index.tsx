@@ -8,7 +8,7 @@ import PrivateBalance from 'components/ZAssets/PrivateBalance';
 import PrivateZAssetsTable from 'components/ZAssets/PrivateZAssetsTable';
 import WrongZAssetsNetwork from 'components/ZAssets/WrongZassetsNetwork';
 import {useAppDispatch} from 'redux/hooks';
-import {getAdvancedStakesRewards} from 'redux/slices/wallet/advancedStakesRewards';
+import {getAdvancedStakesRewards} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {getPoolV0ExitTime} from 'redux/slices/wallet/poolV0';
 import {chainHasPoolContract} from 'services/contracts';
 import {MASP_CHAIN_ID} from 'services/env';

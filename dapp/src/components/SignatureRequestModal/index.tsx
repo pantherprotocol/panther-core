@@ -16,7 +16,7 @@ import {
     acknowledgeByUser,
     walletActionCauseSelector,
     WalletSignatureTrigger,
-} from 'redux/slices/ui/web3WalletLastAction';
+} from 'redux/slices/ui/web3-wallet-last-action';
 
 import './styles.scss';
 

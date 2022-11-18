@@ -9,12 +9,12 @@ import ConnectButton from 'components/ConnectButton';
 import StakingInfo from 'components/StakeTab/StakingInfo';
 import SwitchNetworkButton from 'components/SwitchNetworkButton';
 import {useAppSelector} from 'redux/hooks';
-import {stakeAmountSelector} from 'redux/slices/staking/stakeAmount';
+import {stakeAmountSelector} from 'redux/slices/staking/stake-amount';
 import {
     isStakingOpenSelector,
     termsSelector,
-} from 'redux/slices/staking/stakeTerms';
-import {zkpTokenBalanceSelector} from 'redux/slices/wallet/zkpTokenBalance';
+} from 'redux/slices/staking/stake-terms';
+import {zkpTokenBalanceSelector} from 'redux/slices/wallet/zkp-token-balance';
 import {isWrongNetwork} from 'services/connectors';
 import {CHAIN_IDS} from 'services/env';
 import {switchNetwork} from 'services/wallet';

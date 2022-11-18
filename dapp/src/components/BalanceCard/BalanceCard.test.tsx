@@ -7,6 +7,6 @@ import BalanceCard from '.';
 
 test('should render', () => {
     renderComponent(<BalanceCard />);
-    const inputWrapper = screen.getByTestId('balance-card');
+    const inputWrapper = screen.getByTestId('balance-card_wrapper');
     expect(inputWrapper).toBeInTheDocument();
 });

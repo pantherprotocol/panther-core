@@ -29,8 +29,8 @@ import {
     registerWalletActionSuccess,
     startWalletAction,
     StartWalletActionPayload,
-} from 'redux/slices/ui/web3WalletLastAction';
-import {updateUTXOStatus} from 'redux/slices/wallet/advancedStakesRewards';
+} from 'redux/slices/ui/web3-wallet-last-action';
+import {updateUTXOStatus} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {poolV0ExitDelaySelector} from 'redux/slices/wallet/poolV0';
 import {parseTxErrorMessage} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';

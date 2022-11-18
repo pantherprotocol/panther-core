@@ -13,10 +13,10 @@ import Network from 'components/ZAssets/Network';
 import AssetsDetails from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsTable';
 import pantherIcon from 'images/zAssets-panther-logo.svg';
 import {formatCurrency} from 'lib/format';
-import {calcUSDPrice} from 'lib/tokenPrice';
+import {calcUSDPrice} from 'lib/token-price';
 import {useAppSelector} from 'redux/hooks';
-import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkpMarketPrice';
-import {totalSelector} from 'redux/slices/wallet/advancedStakesRewards';
+import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
+import {totalSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {StakingRewardTokenID} from 'types/staking';
 
 import './styles.scss';

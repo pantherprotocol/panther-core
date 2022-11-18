@@ -5,7 +5,7 @@ import {useWeb3React} from '@web3-react/core';
 import {secondsToFullDays} from 'lib/format';
 import {Link} from 'react-router-dom';
 import {useAppSelector} from 'redux/hooks';
-import {termsSelector} from 'redux/slices/staking/stakeTerms';
+import {termsSelector} from 'redux/slices/staking/stake-terms';
 import {chainHasAdvancedStaking} from 'services/contracts';
 import {StakeType} from 'types/staking';
 

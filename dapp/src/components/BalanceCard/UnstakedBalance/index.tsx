@@ -16,13 +16,13 @@ import {
     startWalletAction,
     StartWalletActionPayload,
     WalletSignatureTrigger,
-} from 'redux/slices/ui/web3WalletLastAction';
-import {getAdvancedStakesRewardsAndUpdateStatus} from 'redux/slices/wallet/advancedStakesRewards';
+} from 'redux/slices/ui/web3-wallet-last-action';
+import {getAdvancedStakesRewardsAndUpdateStatus} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {
     getZkpTokenBalance,
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
-} from 'redux/slices/wallet/zkpTokenBalance';
+} from 'redux/slices/wallet/zkp-token-balance';
 import {parseTxErrorMessage} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 

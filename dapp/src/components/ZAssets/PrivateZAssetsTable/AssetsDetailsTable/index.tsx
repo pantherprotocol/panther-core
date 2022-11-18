@@ -10,7 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
 import AssetsDetailsRow from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsRow';
 import {useAppSelector, useAppDispatch} from 'redux/hooks';
-import {advancedStakesRewardsSelector} from 'redux/slices/wallet/advancedStakesRewards';
+import {advancedStakesRewardsSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {getPoolV0ExitTime} from 'redux/slices/wallet/poolV0';
 import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
 

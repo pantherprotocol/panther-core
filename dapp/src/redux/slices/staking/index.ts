@@ -1,12 +1,12 @@
 import {combineReducers} from '@reduxjs/toolkit';
 
-import advancedStakeInputRewardsReducer from './advancedStakePredictedRewards';
-import remainingPrpRewardsReducer from './remainingPrpRewards';
-import stakeAmountReducer from './stakeAmount';
-import stakeTermsReducer from './stakeTerms';
-import totalStakedReducer from './totalsOfAdvancedStakes';
-import totalUnclaimedClassicRewardsReducer from './totalUnclaimedClassicRewards';
-import zkpStakedBalanceReducer from './zkpStakedBalance';
+import advancedStakeInputRewardsReducer from './advanced-stake-predicted-rewards';
+import remainingPrpRewardsReducer from './remaining-prp-rewards';
+import stakeAmountReducer from './stake-amount';
+import stakeTermsReducer from './stake-terms';
+import totalUnclaimedClassicRewardsReducer from './total-unclaimed-classic-rewards';
+import totalStakedReducer from './totals-of-advanced-stakes';
+import zkpStakedBalanceReducer from './zkp-staked-balance';
 
 export const stakingReducer = combineReducers({
     totalsOfAdvancedStakes: totalStakedReducer,

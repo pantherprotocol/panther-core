@@ -19,18 +19,18 @@ import {BigNumber, constants} from 'ethers';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {formatTime} from 'lib/format';
 import {useAppDispatch} from 'redux/hooks';
-import {getTotalsOfAdvancedStakes} from 'redux/slices/staking/totalsOfAdvancedStakes';
-import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/totalUnclaimedClassicRewards';
-import {getZkpStakedBalance} from 'redux/slices/staking/zkpStakedBalance';
+import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/total-unclaimed-classic-rewards';
+import {getTotalsOfAdvancedStakes} from 'redux/slices/staking/totals-of-advanced-stakes';
+import {getZkpStakedBalance} from 'redux/slices/staking/zkp-staked-balance';
 import {
     registerWalletActionFailure,
     registerWalletActionSuccess,
     startWalletAction,
     StartWalletActionPayload,
     WalletActionTrigger,
-} from 'redux/slices/ui/web3WalletLastAction';
-import {getChainBalance} from 'redux/slices/wallet/chainBalance';
-import {getZkpTokenBalance} from 'redux/slices/wallet/zkpTokenBalance';
+} from 'redux/slices/ui/web3-wallet-last-action';
+import {getChainBalance} from 'redux/slices/wallet/chain-balance';
+import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
 import {parseTxErrorMessage} from 'services/errors';
 import {unstake, getStakesAndRewards} from 'services/staking';
 

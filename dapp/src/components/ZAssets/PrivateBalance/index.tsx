@@ -15,10 +15,10 @@ import {
     formatTimeSince,
     getFormattedFractions,
 } from 'lib/format';
-import {fiatPrice} from 'lib/tokenPrice';
+import {fiatPrice} from 'lib/token-price';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
-import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkpMarketPrice';
-import {isWalletConnectedSelector} from 'redux/slices/ui/isWalletConnected';
+import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
+import {isWalletConnectedSelector} from 'redux/slices/ui/is-wallet-connected';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -28,14 +28,14 @@ import {
     StartWalletActionPayload,
     WalletSignatureTrigger,
     walletActionStatusSelector,
-} from 'redux/slices/ui/web3WalletLastAction';
+} from 'redux/slices/ui/web3-wallet-last-action';
 import {
     lastRefreshTime,
     statusSelector,
     hasUndefinedUTXOsSelector,
     totalSelector,
     refreshUTXOsStatuses,
-} from 'redux/slices/wallet/advancedStakesRewards';
+} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {chainHasPoolContract} from 'services/contracts';
 import {parseTxErrorMessage} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';

@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # [0] - install specific version
-pip3 install --upgrade --no-deps --force-reinstall slither-analyzer==0.9.0
+if [[ -z "$(pip3 list 2> /dev/null | grep slither-analyzer)" ]]; then
+    echo "Fresh install of slither-analyzer with deps"
+    pip3 install slither-analyzer==0.9.0
+else
+    echo "Reinstall of slither-analyzer"
+    pip3 install --upgrade --no-deps --force-reinstall slither-analyzer==0.9.0
+fi
 # [1] - get package location
 SLITHER_PKG_LOCATION=$(pip3 show slither-analyzer | grep Location | awk '{print $2}')
 # [2] - file to patch

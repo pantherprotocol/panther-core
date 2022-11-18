@@ -34,6 +34,8 @@
     "prettier:list-different": "cd .. && yarn prettier --list-different contracts",
     "uml": "yarn sol2uml -i utils contracts -o ../docs/contracts.svg",
     "storage": "HARDHAT_NO_MNEMONIC=yes yarn hardhat storage | grep -v '/node_modules/\\.bin/hardhat storage' > docs/docgen/storage.layout.txt",
+    "slither:install": "./scripts/slither_install.sh",
+    "slither:check": "./scripts/slither_check.sh",
     "test": "HARDHAT_NO_MNEMONIC=yes hardhat test",
     "test:gas": "REPORT_GAS=yes yarn test",
     "test:ts": "echo '[i] not implemented: yarn pchain:load-snapshot --eval-and-exit \"jest --runInBand --detectOpenHandles --forceExit --verbose --colors\"'",

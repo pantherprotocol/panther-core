@@ -2,7 +2,6 @@ import React from 'react';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Toolbar';
 
 import NavigationMenu from './NavigationMenu';
@@ -15,10 +14,10 @@ const Header = () => {
         <Box sx={{flexGrow: 1}}>
             <AppBar position="static" className="app-bar">
                 <Toolbar className="main-toolbar">
-                    <Grid container>
+                    <Box className="header-content-wrapper">
                         <NavigationMenu />
                         <WalletHeader />
-                    </Grid>
+                    </Box>
                 </Toolbar>
             </AppBar>
         </Box>

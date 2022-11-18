@@ -15,8 +15,8 @@ $slider-indicator-color: #d9d9d9;
     backdrop-filter: blur(36px);
 
     @media (max-width: $medium-screen-size) {
-        width: 90%;
         padding: 15px 9px 31px;
+        width: 93%;
     }
 
     .welcome-title {

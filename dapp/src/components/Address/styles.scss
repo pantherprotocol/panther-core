@@ -8,16 +8,21 @@
     bottom: 10px;
     position: relative;
 
+    @media (max-width: $normal-screen-size) {
+        position: relative;
+        bottom: 12px;
+    }
+
     .user-avatar {
         width: 34px;
         height: 34px;
         margin-left: 10px;
         margin-top: 3px;
 
-        @media (max-width: $medium-screen-size) {
+        @media (max-width: $normal-screen-size) {
             width: 20px;
             height: 20px;
-            margin-left: 5px;
+            margin: 0;
 
             > div {
                 width: 20px !important;
@@ -31,8 +36,8 @@
         line-height: 48px;
         margin: 0 10px 0 15px;
 
-        @media (max-width: $medium-screen-size) {
-            font-size: 14px;
+        @media (max-width: $normal-screen-size) {
+            font-size: $small-font-size + 1;
             margin: 0 10px;
         }
     }

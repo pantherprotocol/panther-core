@@ -6,7 +6,25 @@
     color: $white;
     padding-top: 16px;
 
+    @media (max-width: $medium-screen-size) {
+        padding-top: 22px;
+    }
+
     .main-toolbar {
-        padding: 0 16px;
+        padding: 0 28px;
+
+        @media (max-width: $medium-screen-size) {
+            padding: 0 16px;
+        }
+        .header-content-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+
+            @media (max-width: $normal-screen-size) {
+                align-items: flex-start;
+                flex-direction: row;
+            }
+        }
     }
 }

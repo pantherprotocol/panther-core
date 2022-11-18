@@ -29,7 +29,7 @@ export const WalletButton = () => {
                 <InputLabel id="dropdown-list-button-label">
                     <Box className="dropdown-button-holder wallet-button-holder">
                         <Address />
-                        <KeyboardArrowDownIcon />
+                        <KeyboardArrowDownIcon className="arrow-icon" />
                     </Box>
                 </InputLabel>
                 {CHAIN_IDS.length > 1 && (

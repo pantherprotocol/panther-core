@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import MenuIcon from '@mui/icons-material/Menu';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import {SafeLink} from 'components/Common/links';
 import logo from 'images/panther-logo.svg';
 import {env} from 'services/env';
@@ -16,6 +17,8 @@ type MenuLink = {
 };
 
 export default function NavigationMenu() {
+    const [openMenu, setOpenMenu] = useState(false);
+
     const defaultModeLinks: MenuLink[] = [
         {name: 'Staking', url: '/'},
         {name: 'zAssets', url: '/zAssets'},
@@ -49,13 +52,27 @@ export default function NavigationMenu() {
     }
 
     return (
-        <Grid item lg={6} md={12} xs={12} className="nav-bar">
+        <Box className="nav-bar">
             <Box className="logo">
                 <SafeLink href="https://pantherprotocol.io/">
                     <img src={logo} alt="Logo" />
                 </SafeLink>
             </Box>
-            {links()}
-        </Grid>
+            <Box className="burger-menu" onClick={() => setOpenMenu(!openMenu)}>
+                <span>Menu</span>
+                {openMenu ? (
+                    <KeyboardArrowDownIcon className="menu-icon" />
+                ) : (
+                    <MenuIcon className="menu-icon" />
+                )}
+            </Box>
+            <Box
+                className={`navigation-link_container ${
+                    openMenu && 'expanded'
+                }`}
+            >
+                {links()}
+            </Box>
+        </Box>
     );
 }

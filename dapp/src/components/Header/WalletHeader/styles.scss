@@ -5,6 +5,10 @@
     justify-content: flex-end;
     align-items: center;
 
+    @media (max-width: $medium-screen-size) {
+        width: 50%;
+    }
+
     .addresses-box {
         display: flex;
         justify-content: space-between;
@@ -62,6 +66,31 @@
     .address-btn {
         max-width: 220px;
         width: 100%;
+
+        @media (max-width: $normal-screen-size) {
+            width: 100px;
+        }
+
+        button {
+            width: 220px;
+            height: 45px;
+            font-weight: $normal-font-weight;
+
+            @media (max-width: $normal-screen-size) {
+                height: 33px;
+            }
+            span {
+                @media (max-width: $normal-screen-size) {
+                    display: none;
+                }
+            }
+            &::after {
+                @media (max-width: $normal-screen-size) {
+                    content: 'Connect';
+                    font-size: 13px;
+                }
+            }
+        }
     }
 
     .header-right-container {

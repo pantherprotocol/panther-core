@@ -5,5 +5,17 @@
         justify-content: space-around;
         align-items: flex-start;
         padding: 0px 5px 0px 10px;
+
+        @media (max-width: $normal-screen-size) {
+            padding: 0;
+        }
+
+        .arrow-icon {
+            position: relative;
+            top: 2px;
+            @media (max-width: $normal-screen-size) {
+                top: 0;
+            }
+        }
     }
 }

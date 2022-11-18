@@ -1,9 +1,8 @@
 import React, {ReactElement} from 'react';
 
 import {Link} from '@mui/material';
-
-import {ContractName, getContractAddress} from '../../services/contracts';
-import {env} from '../../services/env';
+import {ContractName, getContractAddress} from 'services/contracts';
+import {env} from 'services/env';
 
 export function SafeLink(props: {
     href: string;

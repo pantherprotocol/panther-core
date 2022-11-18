@@ -3,21 +3,16 @@ import React, {useCallback, useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import {useWeb3React} from '@web3-react/core';
-
-import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
-import {getChainBalance} from '../../../redux/slices/chainBalance';
-import {isWalletConnectedSelector} from '../../../redux/slices/isWalletConnected';
-import {
-    currentNetwork,
-    isWrongNetwork,
-    injected,
-} from '../../../services/connectors';
-import {CHAIN_IDS} from '../../../services/env';
-import {switchNetwork} from '../../../services/wallet';
-import ConnectButton from '../../ConnectButton';
-import {NetworkButton} from '../../NetworkButton';
-import SwitchNetworkButton from '../../SwitchNetworkButton';
-import {WalletButton} from '../../WalletButton';
+import ConnectButton from 'components/ConnectButton';
+import {NetworkButton} from 'components/NetworkButton';
+import SwitchNetworkButton from 'components/SwitchNetworkButton';
+import {WalletButton} from 'components/WalletButton';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
+import {isWalletConnectedSelector} from 'redux/slices/ui/isWalletConnected';
+import {getChainBalance} from 'redux/slices/wallet/chainBalance';
+import {currentNetwork, isWrongNetwork, injected} from 'services/connectors';
+import {CHAIN_IDS} from 'services/env';
+import {switchNetwork} from 'services/wallet';
 
 import './styles.scss';
 

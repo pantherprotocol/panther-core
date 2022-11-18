@@ -2,30 +2,32 @@ import React, {useCallback, useEffect, useState} from 'react';
 
 import {Box, Card, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import {notifyError} from 'components/Common/errors';
+import {MessageWithTx} from 'components/Common/MessageWithTx';
+import {
+    openNotification,
+    removeNotification,
+} from 'components/Common/notification';
+import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import ConnectButton from 'components/ConnectButton';
+import SwitchNetworkButton from 'components/SwitchNetworkButton';
 import {ContractTransaction} from 'ethers/lib/ethers';
-
-import goerliIcon from '../../images/goerli-logo.svg';
-import polygonIcon from '../../images/polygon-logo.svg';
-import {CONFIRMATIONS_NUM} from '../../lib/constants';
-import {formatAccountAddress, formatCurrency} from '../../lib/format';
-import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {getChainBalance} from '../../redux/slices/chainBalance';
+import goerliIcon from 'images/goerli-logo.svg';
+import polygonIcon from 'images/polygon-logo.svg';
+import {CONFIRMATIONS_NUM} from 'lib/constants';
+import {formatAccountAddress, formatCurrency} from 'lib/format';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
+import {getChainBalance} from 'redux/slices/wallet/chainBalance';
 import {
     getZkpTokenBalance,
     zkpTokenBalanceSelector,
-} from '../../redux/slices/zkpTokenBalance';
-import {isWrongNetwork, supportedNetworks} from '../../services/connectors';
-import {FAUCET_CHAIN_IDS} from '../../services/env';
-import {parseTxErrorMessage} from '../../services/errors';
-import {craftSendFaucetTransaction, faucetDrink} from '../../services/faucet';
-import {switchNetwork} from '../../services/wallet';
-import {isDetailedError, DetailedError} from '../../types/error';
-import {notifyError} from '../Common/errors';
-import {MessageWithTx} from '../Common/MessageWithTx';
-import {openNotification, removeNotification} from '../Common/notification';
-import PrimaryActionButton from '../Common/PrimaryActionButton';
-import ConnectButton from '../ConnectButton';
-import SwitchNetworkButton from '../SwitchNetworkButton';
+} from 'redux/slices/wallet/zkpTokenBalance';
+import {isWrongNetwork, supportedNetworks} from 'services/connectors';
+import {FAUCET_CHAIN_IDS} from 'services/env';
+import {parseTxErrorMessage} from 'services/errors';
+import {craftSendFaucetTransaction, faucetDrink} from 'services/faucet';
+import {switchNetwork} from 'services/wallet';
+import {isDetailedError, DetailedError} from 'types/error';
 
 import './styles.scss';
 

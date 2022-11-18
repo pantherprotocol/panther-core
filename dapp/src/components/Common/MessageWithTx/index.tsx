@@ -1,9 +1,8 @@
 import React, {ReactElement} from 'react';
 
 import {Typography} from '@mui/material';
-
-import {formatAccountAddress} from '../../../lib/format';
-import {linkTextToTx} from '../links';
+import {linkTextToTx} from 'components/Common/links';
+import {formatAccountAddress} from 'lib/format';
 
 import {MessageWithTxProps} from './MessageWithTxProps.interface';
 

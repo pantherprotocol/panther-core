@@ -10,49 +10,48 @@ import {
     Typography,
 } from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import BackButton from 'components/BackButton';
+import {notifyError} from 'components/Common/errors';
+import {MessageWithTx} from 'components/Common/MessageWithTx';
+import {
+    openNotification,
+    removeNotification,
+} from 'components/Common/notification';
+import PrimaryActionButton from 'components/Common/PrimaryActionButton';
 import {BigNumber} from 'ethers';
+import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
+import {formatCurrency} from 'lib/format';
 import moment from 'moment';
-
-import {awaitConfirmationAndRetrieveEvent} from '../../../../../lib/events';
-import {formatCurrency} from '../../../../../lib/format';
-import {useAppDispatch, useAppSelector} from '../../../../../redux/hooks';
-import {updateUTXOStatus} from '../../../../../redux/slices/advancedStakesRewards';
-import {poolV0ExitDelaySelector} from '../../../../../redux/slices/poolV0';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
     registerWalletActionSuccess,
     startWalletAction,
     StartWalletActionPayload,
-} from '../../../../../redux/slices/web3WalletLastAction';
-import {parseTxErrorMessage} from '../../../../../services/errors';
-import {generateRootKeypairs} from '../../../../../services/keys';
-import {exit} from '../../../../../services/pool';
-import {isDetailedError} from '../../../../../types/error';
-import {AdvancedStakeRewards, UTXOStatus} from '../../../../../types/staking';
-import BackButton from '../../../../BackButton';
-import {notifyError} from '../../../../Common/errors';
-import {MessageWithTx} from '../../../../Common/MessageWithTx';
-import {
-    openNotification,
-    removeNotification,
-} from '../../../../Common/notification';
-import PrimaryActionButton from '../../../../Common/PrimaryActionButton';
+} from 'redux/slices/ui/web3WalletLastAction';
+import {updateUTXOStatus} from 'redux/slices/wallet/advancedStakesRewards';
+import {poolV0ExitDelaySelector} from 'redux/slices/wallet/poolV0';
+import {parseTxErrorMessage} from 'services/errors';
+import {generateRootKeypairs} from 'services/keys';
+import {exit} from 'services/pool';
+import {isDetailedError} from 'types/error';
+import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
 
 export default function SecondStageRedeem(props: {
     handleClose: () => void;
-    rewards: AdvancedStakeRewards;
+    reward: AdvancedStakeRewards;
 }) {
-    const {handleClose, rewards} = props;
+    const {handleClose, reward} = props;
 
     const dispatch = useAppDispatch();
     const context = useWeb3React();
     const {account, chainId, library} = context;
 
     const exitDelay = useAppSelector(poolV0ExitDelaySelector);
-    const zZKP = formatCurrency(BigNumber.from(props.rewards.zZKP));
+    const zZKP = formatCurrency(BigNumber.from(reward.zZKP));
 
-    const exitCommitmentTime = rewards.exitCommitmentTime;
+    const exitCommitmentTime = reward.exitCommitmentTime;
 
     const isLockPeriodPassed =
         exitCommitmentTime &&
@@ -104,10 +103,10 @@ export default function SecondStageRedeem(props: {
             library,
             account as string,
             chainId as number,
-            rewards.utxoData,
-            BigInt(rewards.id),
-            Number(rewards.creationTime),
-            rewards.commitments,
+            reward.utxoData,
+            BigInt(reward.id),
+            Number(reward.creationTime),
+            reward.commitments,
             keys,
         );
         if (isDetailedError(tx)) {
@@ -120,7 +119,7 @@ export default function SecondStageRedeem(props: {
             dispatch(updateUTXOStatus, [
                 chainId,
                 account,
-                rewards.id,
+                reward.id,
                 utxoStatus,
             ]);
 
@@ -146,7 +145,7 @@ export default function SecondStageRedeem(props: {
             dispatch(updateUTXOStatus, [
                 chainId,
                 account,
-                rewards.id,
+                reward.id,
                 UTXOStatus.UNDEFINED,
             ]);
 
@@ -162,7 +161,7 @@ export default function SecondStageRedeem(props: {
         dispatch(updateUTXOStatus, [
             chainId,
             account,
-            rewards.id,
+            reward.id,
             UTXOStatus.SPENT,
         ]);
 
@@ -177,7 +176,7 @@ export default function SecondStageRedeem(props: {
             'info',
             10000,
         );
-    }, [dispatch, library, account, chainId, rewards]);
+    }, [dispatch, library, account, chainId, reward]);
 
     function progressInPercent(
         exitCommitmentTime: number | undefined,

@@ -1,6 +1,5 @@
 import {BigNumber} from 'ethers';
-
-import {getTokenContract} from './contracts';
+import {getTokenContract} from 'services/contracts';
 
 export async function getTokenBalance(
     library: any,

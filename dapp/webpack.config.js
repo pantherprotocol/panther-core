@@ -9,6 +9,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
+const TerserPlugin = require('terser-webpack-plugin');
 
 // Set BABEL_UWC to get easy access to use-what-changed React hook debugging.
 // When enabled, this allows monitoring of when React hooks change simply by
@@ -45,7 +46,7 @@ const babelConfig = process.env.BABEL_UWC
     : [];
 
 module.exports = {
-    entry: ['babel-polyfill', './src/index.tsx'],
+    entry: ['babel-polyfill', path.resolve(__dirname, './src/index.tsx')],
     ...(process.env.NODE_ENV === 'production'
         ? {}
         : {
@@ -73,7 +74,8 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname, './build'),
-        filename: 'build-[contenthash].js',
+        // filename: 'build-[contenthash].js',
+        filename: 'bundle.js',
     },
     target: 'web',
     module: {
@@ -210,4 +212,12 @@ module.exports = {
               ]
             : []),
     ],
+    optimization:
+        process.env.NODE_ENV === 'production' ||
+        process.env.NODE_ENV === 'staging'
+            ? {
+                  minimize: true,
+                  minimizer: [new TerserPlugin()],
+              }
+            : {},
 };

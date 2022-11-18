@@ -63,7 +63,7 @@ export function formatCurrency(
           we have to set the maximumFractionDigits,
           otherwise the format function willn't consider the
           the  minimumFractionDigits, and will use it as maximumFractionDigits
-          
+
         */
         maximumFractionDigits: 18,
 

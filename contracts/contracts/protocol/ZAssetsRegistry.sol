@@ -130,6 +130,11 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
         _tokenId = subId;
         if (subId != 0) {
             // for an "alternative" zAsset, `subId` must be none-zero, ...
+            // since variant space for collision is only 0..MAX_SCALE and in our case MAX_SCALE ~5 bits
+            // we are not require asset.token == token since its un-realistic for collision to happen
+            // user controls `token` and `subId` and for collision to happen:
+            // 1) 0 < token ^ subId < 32
+            // 2) subId == zAssetRecId of another expensive asset
             uint256 ver = uint256(uint160(token)) ^ subId;
             // ... and `ver` must be in [1..MAX_SCALE]
             if (ver < MAX_SCALE && ver != DEFAULT_VER) {
@@ -161,8 +166,12 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
         }
 
         // For the default zAsset of an ERC-20 the `subId` must be 0
+        // asset.token must be equal to token since if it is not, then attacker can choose
+        // 160 bit `token` & 256 bit `subId` in such a manner that will lead to zAssetReqId
+        // that is equal to zAssetReqId related to another `token` & `subId` pair
         require(
-            subId == 0 || asset.tokenType != ERC20_TOKEN_TYPE,
+            (subId == 0 || asset.tokenType != ERC20_TOKEN_TYPE) &&
+                asset.token == token,
             ERR_ZERO_SUBID_EXPECTED
         );
         zAssetId = getZAssetId(token, _tokenId);

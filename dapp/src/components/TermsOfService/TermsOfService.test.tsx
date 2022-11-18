@@ -1,8 +1,7 @@
 import * as React from 'react';
 
 import {screen, waitFor} from '@testing-library/react';
-
-import {renderComponent} from '../../utils/test-utils';
+import {renderComponent} from 'utils/test-utils';
 
 import TermsOfService from './index';
 

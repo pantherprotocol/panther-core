@@ -1,8 +1,7 @@
 import * as React from 'react';
 
 import {fireEvent, screen, waitFor} from '@testing-library/react';
-
-import {renderComponent} from '../../utils/test-utils';
+import {renderComponent} from 'utils/test-utils';
 
 import {AddTokenButton} from './index';
 

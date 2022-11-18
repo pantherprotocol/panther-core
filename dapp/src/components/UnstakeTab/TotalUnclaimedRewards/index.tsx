@@ -3,12 +3,11 @@ import React from 'react';
 import {Box, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {constants} from 'ethers';
-
-import {formatCurrency} from '../../../lib/format';
-import {useAppSelector} from '../../../redux/hooks';
-import {totalSelector} from '../../../redux/slices/advancedStakesRewards';
-import {totalUnclaimedClassicRewardsSelector} from '../../../redux/slices/totalUnclaimedClassicRewards';
-import {StakingRewardTokenID} from '../../../types/staking';
+import {formatCurrency} from 'lib/format';
+import {useAppSelector} from 'redux/hooks';
+import {totalUnclaimedClassicRewardsSelector} from 'redux/slices/staking/totalUnclaimedClassicRewards';
+import {totalSelector} from 'redux/slices/wallet/advancedStakesRewards';
+import {StakingRewardTokenID} from 'types/staking';
 
 import './styles.scss';
 

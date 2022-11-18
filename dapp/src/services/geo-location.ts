@@ -1,5 +1,5 @@
-import {BLOCKED_COUNTRIES} from './env';
-import {safeFetch} from './http';
+import {BLOCKED_COUNTRIES} from 'services/env';
+import {safeFetch} from 'services/http';
 
 type IIpApi = {
     country: string;

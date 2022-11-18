@@ -1,5 +1,10 @@
 import {JsonRpcSigner} from '@ethersproject/providers';
 import {Contract, ethers} from 'ethers';
+import {AdvancedStakeRewardController} from 'types/contracts/AdvancedStakeRewardController';
+import {RewardMaster} from 'types/contracts/RewardMaster';
+import {StakeRewardController2} from 'types/contracts/StakeRewardController2';
+import {StakesReporter} from 'types/contracts/StakesReporter';
+import {Staking} from 'types/contracts/Staking';
 
 import {abi as ADVANCED_STAKE_REWARD_CONTROLLER_ABI} from '../abi/AdvancedStakeRewardController';
 import {abi as FAUCET_ABI} from '../abi/Faucet';
@@ -12,11 +17,6 @@ import {abi as STAKES_REPORTER_ABI} from '../abi/StakesReporter';
 import {abi as STAKING_ABI} from '../abi/Staking';
 import {abi as Z_ASSETS_REGISTRY_ABI} from '../abi/ZAssetsRegistry';
 import {abi as ZKPTOKEN_ABI} from '../abi/ZKPToken';
-import {AdvancedStakeRewardController} from '../types/contracts/AdvancedStakeRewardController';
-import {RewardMaster} from '../types/contracts/RewardMaster';
-import {StakeRewardController2} from '../types/contracts/StakeRewardController2';
-import {StakesReporter} from '../types/contracts/StakesReporter';
-import {Staking} from '../types/contracts/Staking';
 
 import {MaspChainIds, supportedNetworks} from './connectors';
 import {env} from './env';

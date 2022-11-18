@@ -2,9 +2,8 @@ import React from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import {SafeLink} from 'components/Common/links';
 import {Link, useHistory} from 'react-router-dom';
-
-import {SafeLink} from '../../../Common/links';
 
 import {NavigationLinkProps} from './NavigationLink.interface';
 

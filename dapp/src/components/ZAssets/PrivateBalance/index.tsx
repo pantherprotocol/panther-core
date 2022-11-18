@@ -3,27 +3,22 @@ import {useCallback, useEffect, useState} from 'react';
 
 import {Box, Button, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import {notifyError} from 'components/Common/errors';
+import {openNotification} from 'components/Common/notification';
+import SignatureRequestModal from 'components/SignatureRequestModal';
 import {BigNumber, utils} from 'ethers';
-
-import {parseTxErrorMessage} from '../../../../src/services/errors';
-import attentionIcon from '../../../images/attention-triangle-icon.svg';
-import infoIcon from '../../../images/info-icon.svg';
-import refreshIcon from '../../../images/refresh-icon.svg';
+import attentionIcon from 'images/attention-triangle-icon.svg';
+import infoIcon from 'images/info-icon.svg';
+import refreshIcon from 'images/refresh-icon.svg';
 import {
     formatCurrency,
     formatTimeSince,
     getFormattedFractions,
-} from '../../../lib/format';
-import {fiatPrice} from '../../../lib/tokenPrice';
-import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
-import {
-    lastRefreshTime,
-    statusSelector,
-    hasUndefinedUTXOsSelector,
-    totalSelector,
-    refreshUTXOsStatuses,
-} from '../../../redux/slices/advancedStakesRewards';
-import {isWalletConnectedSelector} from '../../../redux/slices/isWalletConnected';
+} from 'lib/format';
+import {fiatPrice} from 'lib/tokenPrice';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
+import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkpMarketPrice';
+import {isWalletConnectedSelector} from 'redux/slices/ui/isWalletConnected';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -33,14 +28,18 @@ import {
     StartWalletActionPayload,
     WalletSignatureTrigger,
     walletActionStatusSelector,
-} from '../../../redux/slices/web3WalletLastAction';
-import {marketPriceSelector} from '../../../redux/slices/zkpMarketPrice';
-import {chainHasPoolContract} from '../../../services/contracts';
-import {generateRootKeypairs} from '../../../services/keys';
-import {StakingRewardTokenID} from '../../../types/staking';
-import {notifyError} from '../../Common/errors';
-import {openNotification} from '../../Common/notification';
-import SignatureRequestModal from '../../SignatureRequestModal';
+} from 'redux/slices/ui/web3WalletLastAction';
+import {
+    lastRefreshTime,
+    statusSelector,
+    hasUndefinedUTXOsSelector,
+    totalSelector,
+    refreshUTXOsStatuses,
+} from 'redux/slices/wallet/advancedStakesRewards';
+import {chainHasPoolContract} from 'services/contracts';
+import {parseTxErrorMessage} from 'services/errors';
+import {generateRootKeypairs} from 'services/keys';
+import {StakingRewardTokenID} from 'types/staking';
 
 import './styles.scss';
 
@@ -57,7 +56,7 @@ export default function PrivateBalance() {
         'needed' | 'in progress' | 'complete' | 'failed'
     >('needed');
 
-    const zkpPrice = useAppSelector(marketPriceSelector);
+    const zkpPrice = useAppSelector(zkpMarketPriceSelector);
     const unclaimedZZKP = useAppSelector(
         totalSelector(chainId, account, StakingRewardTokenID.zZKP),
     );
@@ -202,7 +201,10 @@ export default function PrivateBalance() {
                                 <span className="substring">.{fractional}</span>
                             </>
                         ) : (
-                            '0.00'
+                            <>
+                                <span>0</span>
+                                <span className="substring">.00</span>
+                            </>
                         )}
                     </Typography>
                     <Typography className="zkp-rewards">

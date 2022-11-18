@@ -1,12 +1,11 @@
 import {BigNumber, constants, utils} from 'ethers';
-
-import {IStakingTypes} from '../types/contracts/Staking';
+import {IStakingTypes} from 'types/contracts/Staking';
 import {
     StakeRewardBN,
     ClassicStakeRewardBN,
     AdvancedStakeRewardsBN,
     StakingRewardTokenID,
-} from '../types/staking';
+} from 'types/staking';
 
 import {MaspChainIds} from './connectors';
 import {

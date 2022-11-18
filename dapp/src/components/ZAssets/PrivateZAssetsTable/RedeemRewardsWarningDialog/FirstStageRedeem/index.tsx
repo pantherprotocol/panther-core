@@ -12,12 +12,14 @@ import {
     Typography,
 } from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import BackButton from 'components/BackButton';
+import {notifyError} from 'components/Common/errors';
+import {MessageWithTx} from 'components/Common/MessageWithTx';
+import {openNotification} from 'components/Common/notification';
+import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import {CONFIRMATIONS_NUM} from 'lib/constants';
 import moment from 'moment';
-
-import {parseTxErrorMessage} from '../../../../../../src/services/errors';
-import {useAppDispatch, useAppSelector} from '../../../../../redux/hooks';
-import {updateExitCommitmentTime} from '../../../../../redux/slices/advancedStakesRewards';
-import {poolV0ExitDelaySelector} from '../../../../../redux/slices/poolV0';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -26,21 +28,23 @@ import {
     StartWalletActionPayload,
     walletActionCauseSelector,
     walletActionStatusSelector,
-} from '../../../../../redux/slices/web3WalletLastAction';
-import {generateRootKeypairs} from '../../../../../services/keys';
-import {registerCommitToExit} from '../../../../../services/pool';
-import {isDetailedError} from '../../../../../types/error';
-import {AdvancedStakeRewards} from '../../../../../types/staking';
-import BackButton from '../../../../BackButton';
-import {notifyError} from '../../../../Common/errors';
-import {openNotification} from '../../../../Common/notification';
-import PrimaryActionButton from '../../../../Common/PrimaryActionButton';
+} from 'redux/slices/ui/web3WalletLastAction';
+import {
+    updateExitCommitmentTime,
+    updateUTXOStatus,
+} from 'redux/slices/wallet/advancedStakesRewards';
+import {poolV0ExitDelaySelector} from 'redux/slices/wallet/poolV0';
+import {parseTxErrorMessage} from 'services/errors';
+import {generateRootKeypairs} from 'services/keys';
+import {registerCommitToExit} from 'services/pool';
+import {isDetailedError} from 'types/error';
+import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
 
 export default function FirstStageRedeem(props: {
     handleClose: () => void;
-    rewards: AdvancedStakeRewards;
+    reward: AdvancedStakeRewards;
 }) {
-    const {handleClose, rewards} = props;
+    const {handleClose, reward} = props;
     const [redemptionConfirmed, setRedeemConfirmed] = useState(false);
 
     const dispatch = useAppDispatch();
@@ -91,14 +95,16 @@ export default function FirstStageRedeem(props: {
             },
         });
         handleClose();
+
         let tx;
+        let status: UTXOStatus;
         try {
-            tx = await registerCommitToExit(
+            [tx, status] = await registerCommitToExit(
                 library,
                 account as string,
                 chainId as number,
-                rewards.utxoData,
-                BigInt(rewards.id),
+                reward.utxoData,
+                BigInt(reward.id),
                 keys,
             );
         } catch (err) {
@@ -109,18 +115,38 @@ export default function FirstStageRedeem(props: {
                 'danger',
             );
         }
+
         if (isDetailedError(tx)) {
+            dispatch(updateUTXOStatus, [chainId, account, reward.id, status]);
             dispatch(registerWalletActionFailure, 'registerCommitToExit');
             return notifyError(tx);
+        }
+
+        // null is returned when there was no actual transaction and commitment
+        // was registered before. See Error PP:E32 in poolContractCommitToExit()
+        if (tx !== null) {
+            await tx.wait(CONFIRMATIONS_NUM);
         }
 
         dispatch(registerWalletActionSuccess, 'registerCommitToExit');
         dispatch(updateExitCommitmentTime, [
             chainId,
             account,
-            rewards.id,
+            reward.id,
             moment().unix(),
         ]);
+
+        openNotification(
+            'Registration completed successfully',
+            <MessageWithTx
+                message="Congratulations! You registered successfully commitment transaction!"
+                txHash={tx?.hash}
+                chainId={chainId}
+            />,
+
+            'info',
+            10000,
+        );
     };
 
     return (
@@ -183,8 +209,8 @@ export default function FirstStageRedeem(props: {
                         }
                         label={
                             <Typography className="redemption-label">
-                                I understand I will lose my eligible staking
-                                rewards
+                                I understand I will lose a part of my PRP
+                                rewards.
                             </Typography>
                         }
                     />
@@ -204,7 +230,7 @@ export default function FirstStageRedeem(props: {
                             'disabled'
                         }`}
                     >
-                        Redeem zZKP and forfeit staking rewards
+                        Redeem zZKP
                     </PrimaryActionButton>
                 </Box>
             </DialogActions>

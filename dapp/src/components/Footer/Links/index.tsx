@@ -1,9 +1,8 @@
 import React, {useState} from 'react';
 
+import {SafeLink} from 'components/Common/links';
+import UserTerms from 'components/ScrollableDialog';
 import {Link} from 'react-router-dom';
-
-import {SafeLink} from '../../Common/links';
-import UserTerms from '../../ScrollableDialog';
 
 import './styles.scss';
 

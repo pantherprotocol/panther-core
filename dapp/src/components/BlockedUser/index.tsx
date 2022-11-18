@@ -9,12 +9,11 @@ import {
     Typography,
     IconButton,
 } from '@mui/material';
+import {SafeMuiLink} from 'components/Common/links';
+import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import UserTerms from 'components/ScrollableDialog';
+import warningIcon from 'images/warning-icon.svg';
 import {Link} from 'react-router-dom';
-
-import warningIcon from '../../images/warning-icon.svg';
-import {SafeMuiLink} from '../Common/links';
-import PrimaryActionButton from '../Common/PrimaryActionButton';
-import UserTerms from '../ScrollableDialog';
 
 import './styles.scss';
 

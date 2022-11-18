@@ -17,7 +17,7 @@
     "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
     "paths": {
-      "*": ["src/*", "types/*"],
+      "*": ["src/*", "types/*", "./*"],
       "crypto": ["./node_modules/crypto-browserify"],
       "stream": ["./node_modules/stream-browserify"],
       "assert": ["./node_modules/assert"],
@@ -32,5 +32,12 @@
     "noImplicitAny": true
   },
   "exclude": ["node_modules", "build"],
-  "include": ["src", "scripts", "tests", "__mocks__", "webpack.config.js"]
+  "include": [
+    "src",
+    "scripts",
+    "tests",
+    "__mocks__",
+    "webpack.config.js",
+    "jest.config.js"
+  ]
 }

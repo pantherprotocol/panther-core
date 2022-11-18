@@ -4,25 +4,24 @@ import {useCallback, useEffect, useState} from 'react';
 import {Box, Input, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {utils} from 'ethers';
-
-import logo from '../../../images/panther-logo.svg';
-import {formatCurrency} from '../../../lib/format';
-import {safeParseUnits} from '../../../lib/numbers';
-import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
+import logo from 'images/panther-logo.svg';
+import {formatCurrency} from 'lib/format';
+import {safeParseUnits} from 'lib/numbers';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     calculateRewards,
     resetRewards,
-} from '../../../redux/slices/advancedStakePredictedRewards';
+} from 'redux/slices/staking/advancedStakePredictedRewards';
 import {
     resetStakeAmount,
     setStakeAmount,
-} from '../../../redux/slices/stakeAmount';
+} from 'redux/slices/staking/stakeAmount';
 import {
     termsSelector,
     isStakingOpenSelector,
-} from '../../../redux/slices/stakeTerms';
-import {zkpTokenBalanceSelector} from '../../../redux/slices/zkpTokenBalance';
-import {StakeType} from '../../../types/staking';
+} from 'redux/slices/staking/stakeTerms';
+import {zkpTokenBalanceSelector} from 'redux/slices/wallet/zkpTokenBalance';
+import {StakeType} from 'types/staking';
 
 import {StakingInputProps} from './StakingInput.interface';
 

@@ -1,9 +1,8 @@
 import React from 'react';
 
 import {Container, Typography} from '@mui/material';
+import {MainPageWrapper} from 'components/MainPageWrapper';
 import {Link} from 'react-router-dom';
-
-import {MainPageWrapper} from '../../components/MainPageWrapper';
 
 const NotFoundPage = () => {
     return (

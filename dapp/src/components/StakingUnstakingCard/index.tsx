@@ -6,9 +6,8 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-
-import StakeTab from '../StakeTab';
-import UnstakingTab from '../UnstakeTab';
+import StakeTab from 'components/StakeTab';
+import UnstakingTab from 'components/UnstakeTab';
 
 import './styles.scss';
 

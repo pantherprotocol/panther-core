@@ -2,16 +2,16 @@ import * as React from 'react';
 
 import {Box, Card} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-
-import {fiatPrice} from '../../lib/tokenPrice';
-import {useAppSelector} from '../../redux/hooks';
-import {totalSelector} from '../../redux/slices/advancedStakesRewards';
-import {marketPriceSelector} from '../../redux/slices/zkpMarketPrice';
-import {zkpStakedBalanceSelector} from '../../redux/slices/zkpStakedBalance';
-import {Network, supportedNetworks} from '../../services/connectors';
-import {chainHasPoolContract} from '../../services/contracts';
-import {StakingRewardTokenID} from '../../types/staking';
-import AccountBalance from '../Header/AccountBalance';
+import AccountBalance from 'components/Header/AccountBalance';
+import {constants} from 'ethers';
+import {fiatPrice} from 'lib/tokenPrice';
+import {useAppSelector} from 'redux/hooks';
+import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkpMarketPrice';
+import {zkpStakedBalanceSelector} from 'redux/slices/staking/zkpStakedBalance';
+import {totalSelector} from 'redux/slices/wallet/advancedStakesRewards';
+import {Network, supportedNetworks} from 'services/connectors';
+import {chainHasPoolContract} from 'services/contracts';
+import {StakingRewardTokenID} from 'types/staking';
 
 import AddressBalances from './AddressBalances';
 import AddressWithSetting from './AddressWithSetting';
@@ -25,7 +25,7 @@ const BalanceCard = () => {
     const currentNetwork: Network | null =
         context && chainId ? supportedNetworks[chainId] : null;
 
-    const zkpPrice = useAppSelector(marketPriceSelector);
+    const zkpPrice = useAppSelector(zkpMarketPriceSelector);
 
     const zkpStakedBalance = useAppSelector(zkpStakedBalanceSelector);
     const zkpStakedUSDValue = fiatPrice(zkpStakedBalance, zkpPrice);
@@ -55,32 +55,48 @@ const BalanceCard = () => {
                 <UnstakedBalance />
                 <AddressBalances
                     title={'Staked ZKP Balance:'}
-                    balance={zkpStakedBalance}
+                    balance={
+                        chainId && chainHasPoolContract(chainId)
+                            ? zkpStakedBalance
+                            : constants.Zero
+                    }
                     rewardsTokenSymbol={'ZKP'}
-                    amountUSD={zkpStakedUSDValue}
+                    amountUSD={
+                        chainId && chainHasPoolContract(chainId)
+                            ? zkpStakedUSDValue
+                            : constants.Zero
+                    }
                 />
 
-                {chainId && chainHasPoolContract(chainId) && (
-                    <AddressBalances
-                        title={'Reward Balance:'}
-                        balance={zZkpRewardBalance}
-                        rewardsTokenSymbol={'zZKP'}
-                        amountUSD={zZkpRewardsUSDValue}
-                    />
-                )}
+                <AddressBalances
+                    title={'Reward Balance:'}
+                    balance={
+                        chainId && chainHasPoolContract(chainId)
+                            ? zZkpRewardBalance
+                            : constants.Zero
+                    }
+                    rewardsTokenSymbol={'zZKP'}
+                    amountUSD={
+                        chainId && chainHasPoolContract(chainId)
+                            ? zZkpRewardsUSDValue
+                            : constants.Zero
+                    }
+                />
 
-                {chainId && chainHasPoolContract(chainId) && (
-                    <AddressBalances
-                        title={'Privacy Reward Points:'}
-                        balance={prpRewardBalance}
-                        scale={0}
-                        rewardsTokenSymbol={'PRP'}
-                        // TODO:add definition for redeem function
-                        redeem={() => {
-                            console.error('Not implemented');
-                        }}
-                    />
-                )}
+                <AddressBalances
+                    title={'Privacy Reward Points:'}
+                    balance={
+                        chainId && chainHasPoolContract(chainId)
+                            ? prpRewardBalance
+                            : constants.Zero
+                    }
+                    scale={0}
+                    rewardsTokenSymbol={'PRP'}
+                    // TODO:add definition for redeem function
+                    redeem={() => {
+                        console.error('Not implemented');
+                    }}
+                />
             </Card>
         </Box>
     );

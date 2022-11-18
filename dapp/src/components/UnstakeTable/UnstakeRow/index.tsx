@@ -1,19 +1,18 @@
 import React from 'react';
 
 import {TableCell, TableRow, Typography} from '@mui/material';
+import ExactValueTooltip from 'components/Common/ExactValueTooltip';
+import UnstakeButton from 'components/UnstakeTable/UnstakeButton';
 import {BigNumber} from 'ethers';
-
-import {formatCurrency, formatTime} from '../../../lib/format';
-import {WalletActionTrigger} from '../../../redux/slices/web3WalletLastAction';
-import {isClassic} from '../../../services/rewards';
-import {CLASSIC_TYPE_HEX, StakeRow} from '../../../services/staking';
+import {formatCurrency, formatTime} from 'lib/format';
+import {WalletActionTrigger} from 'redux/slices/ui/web3WalletLastAction';
+import {isClassic} from 'services/rewards';
+import {CLASSIC_TYPE_HEX, StakeRow} from 'services/staking';
 import {
     AdvancedStakeRewardsBN,
     ClassicStakeRewardBN,
     StakingRewardTokenID,
-} from '../../../types/staking';
-import ExactValueTooltip from '../../Common/ExactValueTooltip';
-import UnstakeButton from '../UnstakeButton';
+} from 'types/staking';
 
 import './styles.scss';
 

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {useEffect} from 'react';
 
-import {useAppDispatch} from '../../../../redux/hooks';
-import {removeBlur, setBlur} from '../../../../redux/slices/blur';
-import {AdvancedStakeRewards} from '../../../../types/staking';
+import {useAppDispatch} from 'redux/hooks';
+import {removeBlur, setBlur} from 'redux/slices/ui/blur';
+import {AdvancedStakeRewards} from 'types/staking';
 
 import FirstStageRedeem from './FirstStageRedeem';
 import SecondStageRedeem from './SecondStageRedeem';
@@ -12,9 +12,9 @@ import './styles.scss';
 
 export default function RedeemRewardsWarningDialog(props: {
     handleClose: () => void;
-    rewards: AdvancedStakeRewards;
+    reward: AdvancedStakeRewards;
 }) {
-    const {handleClose, rewards} = props;
+    const {handleClose, reward} = props;
     const dispatch = useAppDispatch();
 
     useEffect((): (() => any) => {
@@ -23,18 +23,18 @@ export default function RedeemRewardsWarningDialog(props: {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return rewards.exitCommitmentTime ? (
+    return reward.exitCommitmentTime ? (
         <SecondStageRedeem
             {...{
                 handleClose,
-                rewards,
+                reward,
             }}
         />
     ) : (
         <FirstStageRedeem
             {...{
                 handleClose,
-                rewards,
+                reward,
             }}
         />
     );

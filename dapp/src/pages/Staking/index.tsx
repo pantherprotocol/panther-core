@@ -4,20 +4,19 @@ import {Container} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {Box} from '@mui/system';
 import {useWeb3React} from '@web3-react/core';
-
-import AdvancedStakingRewards from '../../components/AdvancedStakingRewards';
-import BalanceCard from '../../components/BalanceCard';
-import {MainPageWrapper} from '../../components/MainPageWrapper';
-import StakingUnstakingCard from '../../components/StakingUnstakingCard';
-import Welcome from '../../components/Welcome';
-import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {acknowledgedNotificationSelector} from '../../redux/slices/acknowledgedNotifications';
-import {getAdvancedStakesRewards} from '../../redux/slices/advancedStakesRewards';
-import {getStakeTerms} from '../../redux/slices/stakeTerms';
-import {getTotalsOfAdvancedStakes} from '../../redux/slices/totalsOfAdvancedStakes';
-import {getTotalUnclaimedClassicRewards} from '../../redux/slices/totalUnclaimedClassicRewards';
-import {getZkpStakedBalance} from '../../redux/slices/zkpStakedBalance';
-import {getZkpTokenBalance} from '../../redux/slices/zkpTokenBalance';
+import AdvancedStakingRewards from 'components/AdvancedStakingRewards';
+import BalanceCard from 'components/BalanceCard';
+import {MainPageWrapper} from 'components/MainPageWrapper';
+import StakingUnstakingCard from 'components/StakingUnstakingCard';
+import Welcome from 'components/Welcome';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
+import {getStakeTerms} from 'redux/slices/staking/stakeTerms';
+import {getTotalsOfAdvancedStakes} from 'redux/slices/staking/totalsOfAdvancedStakes';
+import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/totalUnclaimedClassicRewards';
+import {getZkpStakedBalance} from 'redux/slices/staking/zkpStakedBalance';
+import {acknowledgedNotificationSelector} from 'redux/slices/ui/acknowledgedNotifications';
+import {getAdvancedStakesRewards} from 'redux/slices/wallet/advancedStakesRewards';
+import {getZkpTokenBalance} from 'redux/slices/wallet/zkpTokenBalance';
 
 import './styles.scss';
 

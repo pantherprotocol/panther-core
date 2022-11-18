@@ -8,12 +8,11 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
-
-import {useAppSelector, useAppDispatch} from '../../../../redux/hooks';
-import {advancedStakesRewardsSelector} from '../../../../redux/slices/advancedStakesRewards';
-import {getPoolV0ExitTime} from '../../../../redux/slices/poolV0';
-import {AdvancedStakeRewards, UTXOStatus} from '../../../../types/staking';
-import AssetsDetailsRow from '../AssetsDetailsRow';
+import AssetsDetailsRow from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsRow';
+import {useAppSelector, useAppDispatch} from 'redux/hooks';
+import {advancedStakesRewardsSelector} from 'redux/slices/wallet/advancedStakesRewards';
+import {getPoolV0ExitTime} from 'redux/slices/wallet/poolV0';
+import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
 
 import './styles.scss';
 
@@ -36,6 +35,9 @@ const AssetsDetailsTable = () => {
 
     const dispatch = useAppDispatch();
     const [gotExitTime, registerExitTimeCall] = useState<boolean>(false);
+    const [selectedRewardId, setSelectedRewardId] = useState<
+        string | undefined
+    >(undefined);
 
     useEffect(() => {
         if (gotExitTime || !chainId || !library) return;
@@ -49,17 +51,20 @@ const AssetsDetailsTable = () => {
                 <TableHead>
                     <TableRow className="staked-zAsset-row">
                         <TableCell>Date:</TableCell>
-                        <TableCell>Type:</TableCell>
                         <TableCell align="right">Amount:</TableCell>
                         <TableCell align="right">Rewards Earned:</TableCell>
-                        <TableCell align="right">APY:</TableCell>
                         <TableCell align="right"></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {rewardsFilteredAndSorted.map(
-                        (rewards: AdvancedStakeRewards, key: number) => (
-                            <AssetsDetailsRow rewards={rewards} key={key} />
+                        (reward: AdvancedStakeRewards) => (
+                            <AssetsDetailsRow
+                                reward={reward}
+                                key={reward.id}
+                                isSelected={reward.id === selectedRewardId}
+                                onSelectReward={setSelectedRewardId}
+                            />
                         ),
                     )}
                 </TableBody>

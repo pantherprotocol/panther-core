@@ -2,14 +2,13 @@ import * as React from 'react';
 
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import {notifyError} from 'components/Common/errors';
+import ExactValueTooltip from 'components/Common/ExactValueTooltip';
 import {BigNumber, utils} from 'ethers';
-
-import {parseTxErrorMessage} from '../../../../src/services/errors';
-import infoIcon from '../../../images/info-icon.svg';
-import refreshIcon from '../../../images/refresh-icon.svg';
-import {formatUSD, getFormattedFractions} from '../../../lib/format';
-import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
-import {getAdvancedStakesRewardsAndUpdateStatus} from '../../../redux/slices/advancedStakesRewards';
+import infoIcon from 'images/info-icon.svg';
+import refreshIcon from 'images/refresh-icon.svg';
+import {formatUSD, getFormattedFractions} from 'lib/format';
+import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -17,15 +16,15 @@ import {
     startWalletAction,
     StartWalletActionPayload,
     WalletSignatureTrigger,
-} from '../../../redux/slices/web3WalletLastAction';
+} from 'redux/slices/ui/web3WalletLastAction';
+import {getAdvancedStakesRewardsAndUpdateStatus} from 'redux/slices/wallet/advancedStakesRewards';
 import {
     getZkpTokenBalance,
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
-} from '../../../redux/slices/zkpTokenBalance';
-import {generateRootKeypairs} from '../../../services/keys';
-import {notifyError} from '../../Common/errors';
-import ExactValueTooltip from '../../Common/ExactValueTooltip';
+} from 'redux/slices/wallet/zkpTokenBalance';
+import {parseTxErrorMessage} from 'services/errors';
+import {generateRootKeypairs} from 'services/keys';
 
 import './styles.scss';
 
@@ -125,12 +124,16 @@ export default function UnstakedBalance() {
                     <Typography component="div" className="token-balance">
                         {whole && fractional ? (
                             <>
-                                <span>${whole}</span>
+                                <span>{whole}</span>
 
                                 <span className="substring">.{fractional}</span>
                             </>
                         ) : (
-                            '0.00'
+                            <>
+                                <span>0</span>
+
+                                <span className="substring">.00</span>
+                            </>
                         )}
                     </Typography>
                 </ExactValueTooltip>

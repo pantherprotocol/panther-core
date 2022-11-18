@@ -107,9 +107,5 @@
                 color: $color-beige;
             }
         }
-        .staking-apr {
-            @extend .remaining-days;
-            margin-left: 13px;
-        }
     }
 }

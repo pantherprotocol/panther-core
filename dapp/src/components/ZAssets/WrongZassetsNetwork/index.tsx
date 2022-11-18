@@ -1,17 +1,19 @@
 import React, {useState} from 'react';
 
 import {Box, Divider, Typography} from '@mui/material';
-
-import warningIcon from '../../../images/warning-icon.svg';
-import PrimaryActionButton from '../../Common/PrimaryActionButton';
-import ZAssetSwitchModal from '../ZAssetSwitchModal';
+import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import ZAssetSwitchModal from 'components/ZAssets/ZAssetSwitchModal';
+import warningIcon from 'images/warning-icon.svg';
 
 import './styles.scss';
 
 export default function WrongZAssetsNetwork() {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     return (
-        <Box className="wrong-network-container">
+        <Box
+            className="wrong-network-container"
+            data-testid="ZAssets_WrongZassetsNetwork_container"
+        >
             <Box className="wrong-network-box"></Box>
             <Box className="content">
                 <ZAssetSwitchModal

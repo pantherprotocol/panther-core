@@ -2,29 +2,33 @@ import React from 'react';
 
 import {Box, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import ClaimedProgress from 'components/ClaimedProgress';
+import StakingAPR from 'components/StakingAPR';
 import {utils} from 'ethers';
 import moment from 'moment';
-
-import ClaimedProgress from '../../components/ClaimedProgress';
-import {formatPercentage} from '../../lib/format';
-import {useAppSelector} from '../../redux/hooks';
-import {termsSelector} from '../../redux/slices/stakeTerms';
+import {useAppSelector} from 'redux/hooks';
+import {termsSelector} from 'redux/slices/staking/stakeTerms';
 import {
     totalClaimedRewardsSelector,
     totalVestedRewardsSelector,
-} from '../../redux/slices/totalsOfAdvancedStakes';
-import {getAdvStakingAPY} from '../../services/rewards';
-import {StakeType} from '../../types/staking';
+} from 'redux/slices/staking/totalsOfAdvancedStakes';
+import {getAdvStakingAPY} from 'services/rewards';
+import {StakeType} from 'types/staking';
 
 import './styles.scss';
 
 function AdvancedStakingRewards() {
+    const context = useWeb3React();
+    const {active} = context;
     const claimed = useAppSelector(totalClaimedRewardsSelector);
     const total = useAppSelector(totalVestedRewardsSelector);
     const advancedStakingAPY = getAdvStakingAPY(new Date().getTime());
 
     return (
-        <Box className="advanced-staking-rewards">
+        <Box
+            className="advanced-staking-rewards"
+            data-testid="advanced-staking-rewards_advanced-staking-rewards_container"
+        >
             <ClaimedProgress
                 claimed={claimed ? Number(utils.formatEther(claimed)) : 0}
                 total={total ? Number(utils.formatEther(total)) : 0}
@@ -33,7 +37,9 @@ function AdvancedStakingRewards() {
             <Box className="info-wrapper">
                 <RemainingDays />
                 {advancedStakingAPY && (
-                    <StakingAPR advancedStakingAPY={advancedStakingAPY} />
+                    <StakingAPR
+                        advancedStakingAPY={active ? advancedStakingAPY : 0}
+                    />
                 )}
             </Box>
         </Box>
@@ -52,49 +58,45 @@ function calcRemainingDays(
         return ['', '?'];
     }
     if (moment(now).isSameOrBefore(allowedSince)) {
-        return ['Opening', now.to(allowedSince)];
+        return ['Remaining', allowedSince.diff(now, 'days') + ' days'];
     }
     if (moment(now).isBetween(allowedSince, allowedTill)) {
-        return ['Closing', now.to(allowedTill)];
+        return ['Remaining', allowedTill.diff(now, 'days') + ' days'];
     }
     if (moment(now).isAfter(allowedTill)) {
-        return ['Staking is closed', ''];
+        return ['Staking is closed', '0 days'];
     }
-    return ['', '?'];
+    return ['', '0 days'];
 }
 
 function RemainingDays() {
     const context = useWeb3React();
     const {chainId} = context;
 
-    const allowedSince = useAppSelector(
+    let allowedSince = useAppSelector(
         termsSelector(chainId!, StakeType.Advanced, 'allowedSince'),
     );
 
-    const allowedTill = useAppSelector(
+    let allowedTill = useAppSelector(
         termsSelector(chainId!, StakeType.Advanced, 'allowedTill'),
     );
+
+    // Falling back to env variables if terms are not loaded
+    allowedSince = allowedSince ?? Number(process.env.ADVANCED_STAKING_T_START);
+    allowedTill = allowedTill ?? Number(process.env.ADVANCED_STAKING_T_END);
 
     const [title, daysRemaining]: [string, string] =
         typeof allowedTill === 'number' && typeof allowedSince === 'number'
             ? calcRemainingDays(allowedSince, allowedTill)
-            : ['', '?'];
+            : ['Connect Wallet', '-'];
 
     return (
-        <Box className="remaining-days">
+        <Box
+            className="remaining-days"
+            data-testid="advanced-staking-rewards_remaining-days_container"
+        >
             <Typography className="text">{title}</Typography>
             <Typography className="value">{daysRemaining}</Typography>
-        </Box>
-    );
-}
-
-function StakingAPR(props: {advancedStakingAPY: number}) {
-    return (
-        <Box className="staking-apr">
-            <Typography className="text">Staking APR</Typography>
-            <Typography className="value">
-                {formatPercentage(props.advancedStakingAPY / 100)}
-            </Typography>
         </Box>
     );
 }

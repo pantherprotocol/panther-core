@@ -1,8 +1,7 @@
 import * as React from 'react';
 
 import {Box} from '@mui/material';
-
-import UnstakeTable from '../UnstakeTable';
+import UnstakeTable from 'components/UnstakeTable';
 
 import UnstakingInfo from './UnstakingInfo';
 

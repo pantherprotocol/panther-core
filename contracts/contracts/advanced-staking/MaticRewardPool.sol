@@ -103,6 +103,11 @@ contract MaticRewardPool is
         uint256 balance = token.balanceOf(address(this));
         if (_timeNow >= endTime) return balance;
 
+        // @dev Next line has a bug (it ignores already released amounts).
+        // The buggy line left unchanged here as it is at:
+        // matic:0x773d49309c4E9fc2e9254E7250F157D99eFe2d75
+        // The PIP-4 deactivated this code:
+        // https://docs.pantherprotocol.io/dao/governance/proposal-4-polygon-fix
         return (balance * (_timeNow - startTime)) / (endTime - startTime);
     }
 

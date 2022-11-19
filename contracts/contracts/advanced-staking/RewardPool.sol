@@ -56,6 +56,13 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
     function vestRewards() external override returns (uint256 amount) {
         // revert if unauthorized or recipient not yet set
         require(msg.sender == recipient, "RP: unauthorized");
+
+        // @dev The next line has a bug that stops the RewardMaster from paying
+        // staking rewards after `endTime` (it should not had been terminated).
+        // The PIP-5 deactivated this code:
+        // https://docs.pantherprotocol.io/dao/governance/proposal-5-mainnet-unstake-fix
+        // The buggy line left unchanged here as it is at:
+        // eth:0xcF463713521Af5cE31AD18F6914f3706493F10e5
         require(timeNow() < endTime, "RP: expired");
 
         amount = _releasableAmount();

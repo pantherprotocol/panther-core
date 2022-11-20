@@ -176,6 +176,8 @@ contract StakeRewardController is
 
         REWARDING_START = rewardingStart;
         uint256 rewardingEnd = rewardingStart + REWARDING_DURATION;
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(rewardingEnd > timeNow(), "SRC: E2");
 
         REWARDING_END = rewardingEnd;
@@ -188,6 +190,8 @@ contract StakeRewardController is
 
     /// @notice If the contract is active (i.e. processes new stakes)
     function isActive() public view returns (bool) {
+        // false positive
+        // slither-disable-next-line timestamp
         return activeSince != 0;
     }
 
@@ -217,6 +221,8 @@ contract StakeRewardController is
         // the Staking contract never sets it in messages (it's a bug)
         uint32 claimedAt = action == UNSTAKE ? safe32TimeNow() : 0;
 
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (stakedAt < activeSince) {
             require(action == UNSTAKE, "SRC: invalid 'old' action");
             _countUnstakeAndPayReward(staker, stakeAmount, stakedAt, claimedAt);
@@ -255,9 +261,13 @@ contract StakeRewardController is
 
             // finally use extrapolation, unless data from the past requested
             uint32 _timeNow = safe32TimeNow();
-            // slither-disable-next-line incorrect-equality
+            // slither-disable-next-line incorrect-equality,timestamp
             bool isForNow = timestamp == 0 || timestamp == _timeNow;
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             bool isForFuture = timestamp > _timeNow;
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             if (isForNow || isForFuture) {
                 uint32 till = isForNow ? _timeNow : timestamp;
                 (scArpt, ) = _computeRewardsAddition(
@@ -309,6 +319,8 @@ contract StakeRewardController is
         }
 
         if (historyEnd != 0) {
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             require(
                 historyEnd >= rewardUpdatedOn && historyEnd <= safe32TimeNow(),
                 "SRC: wrong historyEnd"
@@ -420,6 +432,8 @@ contract StakeRewardController is
         }
 
         uint32 prevActionTime = rewardUpdatedOn;
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (prevActionTime >= actionTime) return newScArpt;
 
         uint256 rewardAdded;
@@ -449,10 +463,16 @@ contract StakeRewardController is
         uint256 fromScArpt,
         uint256 _totalStaked
     ) internal view returns (uint256 newScArpt, uint256 rewardAdded) {
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (fromTime >= REWARDING_END || tillTime <= REWARDING_START)
             return (fromScArpt, 0);
 
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         uint256 from = fromTime >= REWARDING_START ? fromTime : REWARDING_START;
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         uint256 till = tillTime <= REWARDING_END ? tillTime : REWARDING_END;
         uint256 scRewardAdded = (till - from) * sc_REWARD_PER_SECOND;
 
@@ -469,6 +489,8 @@ contract StakeRewardController is
         if (scArpt > 0) return scArpt;
 
         // Stake created within a period this contract has no stake data for ?
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         bool isBlindPeriodStake = stakedAt > prefilledHistoryEnd &&
             stakedAt < activeSince;
         if (isBlindPeriodStake) {

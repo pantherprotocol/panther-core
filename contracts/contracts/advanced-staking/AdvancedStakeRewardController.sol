@@ -206,6 +206,8 @@ contract AdvancedStakeRewardController is
         external
         onlyOwner
     {
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             _newParams.startTime != 0 &&
                 _newParams.endTime > _newParams.startTime &&
@@ -285,6 +287,8 @@ contract AdvancedStakeRewardController is
         RewardParams memory _rewardParams = rewardParams;
 
         require(OWNER == msg.sender, "ARC: unauthorized");
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             (token != ZKP_TOKEN) || (block.timestamp > _rewardParams.endTime),
             "ARC: too early withdrawal"

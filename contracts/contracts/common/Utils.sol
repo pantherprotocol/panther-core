@@ -5,6 +5,8 @@
 pragma solidity ^0.8.0;
 
 abstract contract Utils {
+    // false positive
+    // slither-disable-next-line timestamp
     function safe32(uint256 n) internal pure returns (uint32) {
         require(n < 2**32, "UNSAFE32");
         return uint32(n);

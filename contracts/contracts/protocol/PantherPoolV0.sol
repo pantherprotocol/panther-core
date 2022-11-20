@@ -156,6 +156,8 @@ contract PantherPoolV0 is
 
         uint32 timestamp = safe32TimeNow();
         if (createdAt != 0) {
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             require(createdAt <= timestamp, ERR_TOO_EARLY_CREATED_AT);
             timestamp = createdAt;
         }
@@ -236,7 +238,8 @@ contract PantherPoolV0 is
     /// @param exitCommitment Commitment to the UTXO spending key and the recipient address.
     /// MUST be equal to keccak256(abi.encode(uint256(privSpendingKey), address(recipient)).
     function commitToExit(bytes32 exitCommitment) external {
-        // slither-disable-next-line incorrect-equality
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line incorrect-equality,timestamp
         require(
             exitCommitments[exitCommitment] == uint32(0),
             ERR_EXITCOMMIT_EXISTS
@@ -270,6 +273,8 @@ contract PantherPoolV0 is
         uint256 cacheIndexHint
     ) external nonReentrant {
         // if exitTime == 0 -> `exit` is not accepted since init phase is not finished yet
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             safe32TimeNow() >= exitTime && exitTime != 0,
             ERR_TOO_EARLY_EXIT
@@ -389,9 +394,13 @@ contract PantherPoolV0 is
         bytes32 commitment = keccak256(abi.encode(privSpendingKey, recipient));
 
         uint32 commitmentTime = exitCommitments[commitment];
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(commitmentTime != uint32(0), ERR_EXITCOMMIT_MISSING);
 
         uint256 allowedTime = uint256(commitmentTime) + uint256(exitDelay);
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(timeNow() > allowedTime, ERR_EXITCOMMIT_LOCKED);
 
         // Let's gain some gas back

@@ -174,6 +174,8 @@ contract Staking is
         Stake memory _stake = stakes[msg.sender][stakeID];
 
         require(_stake.claimedAt == 0, "Staking: Stake claimed");
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(_stake.lockedTill < safe32TimeNow(), "Staking: Stake locked");
 
         if (_stake.delegatee != address(0)) {
@@ -359,7 +361,11 @@ contract Staking is
         uint256 _now = timeNow();
 
         if (_terms.allowedTill != 0) {
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             require(_terms.allowedTill > _now, "Staking:E3");
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             require(_terms.allowedTill > _terms.allowedSince, "Staking:E4");
         }
 
@@ -434,10 +440,14 @@ contract Staking is
         );
 
         uint32 _now = safe32TimeNow();
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             _terms.allowedSince == 0 || _now >= _terms.allowedSince,
             "Staking: Not yet allowed"
         );
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             _terms.allowedTill == 0 || _terms.allowedTill > _now,
             "Staking: Not allowed anymore"
@@ -453,6 +463,8 @@ contract Staking is
         uint256 stakeID = stakes[staker].length;
 
         uint32 lockedTill = _terms.lockedTill;
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (lockedTill == 0) {
             uint256 period = _terms.exactLockPeriod == 0
                 ? _terms.minLockPeriod
@@ -534,6 +546,8 @@ contract Staking is
 
     function _takeSnapshot(address _account) internal {
         uint32 curBlockNum = safe32BlockNow();
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (latestSnapshotBlock(_account) < curBlockNum) {
             // make new snapshot as the latest one taken before current block
             snapshots[_account].push(
@@ -623,6 +637,8 @@ contract Staking is
     }
 
     function _sanitizeBlockNum(uint256 blockNum) private view {
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(blockNum <= safe32BlockNow(), "Staking: Too big block number");
     }
 

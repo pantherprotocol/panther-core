@@ -330,7 +330,8 @@ contract RewardMaster is
 
         uint32 blocksPast = _blockNow - lastVestedBlock;
         if (
-            // slither-disable-next-line incorrect-equality
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line incorrect-equality,timestamp
             (blocksPast == 0) ||
             (isMinVestingBlocksApplied && blocksPast < MIN_VESTING_BLOCKS) ||
             _totalShares < MIN_SHARES_REWARDED

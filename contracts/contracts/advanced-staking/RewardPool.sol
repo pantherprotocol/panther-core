@@ -48,6 +48,8 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
     /// @inheritdoc IRewardPool
     function releasableAmount() external view override returns (uint256) {
         if (recipient == address(0)) return 0;
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (timeNow() >= endTime) return 0;
 
         return _releasableAmount();
@@ -64,6 +66,8 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
         // https://docs.pantherprotocol.io/dao/governance/proposal-5-mainnet-unstake-fix
         // The buggy line left unchanged here as it is at:
         // eth:0xcF463713521Af5cE31AD18F6914f3706493F10e5
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(timeNow() < endTime, "RP: expired");
 
         amount = _releasableAmount();
@@ -87,6 +91,8 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
         // once only
         require(recipient == address(0), "RP: initialized");
         // _endTime can't be in the past
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(_endTime > timeNow(), "RP: expired");
         // this contract must be registered with the VestingPools
         require(

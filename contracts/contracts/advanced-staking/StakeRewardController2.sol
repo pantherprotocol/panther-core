@@ -133,6 +133,8 @@ contract StakeRewardController2 is IRewardAdviser {
         _reentrancyStatus = 1;
 
         require(OWNER == msg.sender, "SRC: unauthorized");
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             (token != REWARD_TOKEN) ||
                 (block.timestamp >= ZKP_RESCUE_ALLOWED_SINCE),

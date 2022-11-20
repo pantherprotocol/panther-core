@@ -54,6 +54,8 @@ contract MaticRewardPool is
 
         amount = _releasableAmount();
 
+        // false positive
+        // slither-disable-next-line timestamp
         if (amount != 0) {
             // trusted contract - no reentrancy guard needed
             // slither-disable-next-line unchecked-transfer,reentrancy-events
@@ -72,6 +74,8 @@ contract MaticRewardPool is
         // once only
         require(recipient == address(0), "RP: initialized");
         // _endTime can't be in the past
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(_endTime > timeNow(), "RP: I2");
         require(_endTime > _startTime, "RP: I3");
 
@@ -90,6 +94,8 @@ contract MaticRewardPool is
         uint256 amount
     ) external onlyOwner nonReentrant {
         if (claimedToken == address(token)) {
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             require(timeNow() > endTime, "RP: prohibited");
         }
         _claimErc20(claimedToken, to, amount);
@@ -98,10 +104,14 @@ contract MaticRewardPool is
     function _releasableAmount() internal view returns (uint256) {
         uint256 _timeNow = timeNow();
 
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (startTime > _timeNow) return 0;
 
         // trusted contract - no reentrancy guard needed
         uint256 balance = token.balanceOf(address(this));
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (_timeNow >= endTime) return balance;
 
         // @dev Next line has a bug (it ignores already released amounts).

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.16;
 
 /// @dev Implementation of the ERC721TokenReceiver interface
 abstract contract OnERC721Received {

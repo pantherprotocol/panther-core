@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.16;
 
 string constant ERR_INVALID_TOKEN_TYPE = "VA:E1";
 string constant ERR_ZERO_LOCK_TOKEN_ADDR = "VA:E2";

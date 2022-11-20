@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity 0.8.4;
 
 import "./interfaces/IErc20Min.sol";
 import "./interfaces/IRewardPool.sol";

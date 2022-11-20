@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity ^0.8.4;
 
 /// @dev Interface to call ERC-20 `approve` function
 interface IErc20Approve {

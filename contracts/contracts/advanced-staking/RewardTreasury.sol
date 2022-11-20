@@ -2,7 +2,8 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable var-name-mixedcase
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity 0.8.4;
 
 import "./interfaces/IErc20Min.sol";
 import "./interfaces/IErc20Approve.sol";

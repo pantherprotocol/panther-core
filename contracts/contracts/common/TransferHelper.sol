@@ -2,7 +2,8 @@
 // solhint-disable avoid-low-level-calls
 // solhint-disable no-inline-assembly
 // solhint-disable compiler-version
-pragma solidity >=0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity ^0.8.0;
 
 /// @title TransferHelper library
 /// @dev Helper methods for interacting with ERC20, ERC721, ERC1155 tokens and sending ETH
@@ -23,6 +24,8 @@ library TransferHelper {
     }
 
     /// @dev Approve the `operator` to spend all of ERC720 tokens on behalf of `owner`.
+    // disabled since false positive
+    // slither-disable-next-line dead-code
     function safeSetApprovalForAll(
         address token,
         address operator,
@@ -37,6 +40,8 @@ library TransferHelper {
     }
 
     /// @dev Get the ERC20 balance of `account`
+    // disabled since false positive
+    // slither-disable-next-line dead-code
     function safeBalanceOf(address token, address account)
         internal
         returns (uint256 balance)
@@ -56,6 +61,8 @@ library TransferHelper {
     }
 
     /// @dev Approve the `spender` to spend the `amount` of ERC20 token on behalf of `owner`.
+    // disabled since false positive
+    // slither-disable-next-line dead-code
     function safeApprove(
         address token,
         address to,
@@ -70,6 +77,8 @@ library TransferHelper {
     }
 
     /// @dev Transfer `value` ERC20 tokens from caller to `to`.
+    // disabled since false positive
+    // slither-disable-next-line dead-code
     function safeTransfer(
         address token,
         address to,
@@ -84,6 +93,8 @@ library TransferHelper {
     }
 
     /// @dev Transfer `value` ERC20 tokens on behalf of `from` to `to`.
+    // disabled since false positive
+    // slither-disable-next-line dead-code
     function safeTransferFrom(
         address token,
         address from,
@@ -99,6 +110,8 @@ library TransferHelper {
     }
 
     /// @dev Transfer an ERC721 token with id of `tokenId` on behalf of `from` to `to`.
+    // disabled since false positive
+    // slither-disable-next-line dead-code
     function erc721SafeTransferFrom(
         address token,
         uint256 tokenId,
@@ -114,6 +127,8 @@ library TransferHelper {
     }
 
     /// @dev Transfer `amount` ERC1155 token with id of `tokenId` on behalf of `from` to `to`.
+    // disabled since false positive
+    // slither-disable-next-line dead-code
     function erc1155SafeTransferFrom(
         address token,
         address from,
@@ -131,6 +146,8 @@ library TransferHelper {
     }
 
     /// @dev Transfer `value` Ether from caller to `to`.
+    // disabled since false positive
+    // slither-disable-next-line dead-code
     function safeTransferETH(address to, uint256 value) internal {
         // slither-disable-next-line low-level-calls
         (bool success, ) = to.call{ value: value }(new bytes(0));

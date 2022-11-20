@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+// slither-disable-next-line solc-version
 pragma solidity ^0.8.4;
 
 // Constants

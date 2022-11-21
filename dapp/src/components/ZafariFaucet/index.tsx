@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 
 import {Box, Card, Typography} from '@mui/material';
+import * as Sentry from '@sentry/browser';
 import {useWeb3React} from '@web3-react/core';
 import {notifyError} from 'components/Common/errors';
 import {MessageWithTx} from 'components/Common/MessageWithTx';
@@ -128,6 +129,7 @@ function ZafariFaucet() {
             }
         } catch (err) {
             removeNotification(inProgress);
+            Sentry.captureException(err);
             return notifyError({
                 message: 'Transaction failed',
                 details: parseTxErrorMessage(err),

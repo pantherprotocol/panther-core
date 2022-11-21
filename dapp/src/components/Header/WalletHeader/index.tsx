@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import * as Sentry from '@sentry/browser';
 import {useWeb3React} from '@web3-react/core';
 import ConnectButton from 'components/ConnectButton';
 import {NetworkButton} from 'components/NetworkButton';
@@ -36,6 +37,7 @@ export default function WalletHeader() {
                 try {
                     await activate(injected);
                 } catch (ex) {
+                    Sentry.captureException(ex);
                     console.error(ex);
                 }
             }

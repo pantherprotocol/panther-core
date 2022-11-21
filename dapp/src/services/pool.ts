@@ -1,7 +1,12 @@
 import {
     generateMerkleProof,
+    createTriadMerkleTree,
     TriadMerkleTree,
     triadTreeMerkleProofToPathElements,
+    quadLeafIndexRangeForTreeId,
+    TREE_DEPTH,
+    TREE_ZERO_VALUE,
+    quadLeafIdToTreeIdAndTriadLeafId,
 } from '@panther-core/crypto/lib/other/triad-merkle-tree';
 import {deriveSpendingChildKeypair} from '@panther-core/crypto/lib/panther/keys';
 import {unpackAndDecryptMessageTypeV1} from '@panther-core/crypto/lib/panther/messages';
@@ -16,18 +21,18 @@ import {utils, Contract, BigNumber} from 'ethers';
 import {ContractTransaction} from 'ethers/lib/ethers';
 import {Result} from 'ethers/lib/utils';
 import {formatTime} from 'lib/format';
-import {isDetailedError, DetailedError} from 'types/error';
-import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
-
+import {range} from 'lodash';
 import {
     getPoolContract,
     getSignableContract,
     getTokenContract,
     getZAssetsRegistryContract,
-} from './contracts';
-import {env} from './env';
-import {parseTxErrorMessage} from './errors';
-import {safeFetch} from './http';
+} from 'services/contracts';
+import {parseTxErrorMessage} from 'services/errors';
+import {isDetailedError, DetailedError} from 'types/error';
+import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
+
+import {getCommitments, getMaxLeafId} from './subgraph';
 
 // 452 (225 bytes) and 260 (128 bytes) are the sizes of the UTXO data containing
 // 1 zZKP UTXO, and with and without 1 NFT UTXO, respectfully. First byte is
@@ -37,6 +42,11 @@ import {safeFetch} from './http';
 const ADVANCED_STAKE_UTXO_DATA_SIZES = [452, 260];
 const ADVANCED_STAKE_MESSAGE_TYPE_WITH_NFT = '0x24';
 const ADVANCED_STAKE_MESSAGE_TYPE_NO_NFT = '0x20';
+
+// Chunk size of 4k leaves is specified taking into account that subgraph has
+// limit of 1k triads per query and one triad has 4 leaves, therefore, 4k leaves
+// per query
+const CHUNK_SIZE = 4000;
 
 export async function getExitTime(
     library: any,
@@ -478,7 +488,6 @@ export async function isNullifierSpent(
     privateSpendingKey: PrivateKey,
     leafId: bigint,
 ): Promise<[boolean, string]> {
-    console.time('isNullifierSpent()');
     const nullifier = bigintToBytes32(
         poseidon([
             bigintToBytes32(privateSpendingKey),
@@ -486,24 +495,79 @@ export async function isNullifierSpent(
         ]),
     );
     const isSpent = await poolContract.isSpent(nullifier);
-    console.timeEnd('isNullifierSpent()');
     return [isSpent, nullifier];
+}
+
+// buildMerkleTreeWithLeaf returns the merkle tree where the given leafId is.
+export async function buildMerkleTreeWithLeaf(
+    leafId: bigint,
+    chainId: number,
+): Promise<TriadMerkleTree | Error> {
+    const [treeId] = quadLeafIdToTreeIdAndTriadLeafId(leafId);
+    const leafIndexRange = quadLeafIndexRangeForTreeId(treeId);
+    const latestLeafId = await getMaxLeafId(chainId);
+    if (latestLeafId instanceof Error) {
+        return latestLeafId;
+    }
+
+    const minLeafId = leafIndexRange[0];
+    const maxLeafId =
+        latestLeafId < leafIndexRange[1] ? latestLeafId : leafIndexRange[1];
+
+    const commitments = await fetchCommitmentsFromTheGraph(
+        chainId,
+        minLeafId,
+        maxLeafId,
+    );
+    if (commitments instanceof Error) {
+        return commitments;
+    }
+
+    const tree = createTriadMerkleTree(
+        TREE_DEPTH,
+        commitments,
+        BigInt(TREE_ZERO_VALUE),
+    );
+
+    return tree;
+}
+
+async function fetchCommitmentsFromTheGraph(
+    chainId: number,
+    minLeafId: number,
+    maxLeafId: number,
+): Promise<string[] | Error> {
+    const leafIndexRange = range(minLeafId, maxLeafId, CHUNK_SIZE);
+    const commitments: string[] = [];
+    for await (const startLeafId of Object.values(leafIndexRange)) {
+        let endLeafId = startLeafId + CHUNK_SIZE - 1;
+        endLeafId = maxLeafId < endLeafId ? maxLeafId : endLeafId;
+
+        const commitmentSlice = await getCommitments(
+            chainId,
+            startLeafId,
+            endLeafId,
+        );
+        if (commitmentSlice instanceof Error) {
+            return commitmentSlice;
+        }
+
+        commitments.push(...commitmentSlice);
+    }
+
+    return commitments;
 }
 
 async function generateMerklePath(
     leafId: bigint,
     chainId: number,
 ): Promise<[string[], string, string] | Error> {
-    const treeUri = env[`COMMITMENT_TREE_URL_${chainId}`];
-
-    const treeResponse = await safeFetch(treeUri as string);
-    if (treeResponse instanceof Error) {
-        return treeResponse;
+    const tree = await buildMerkleTreeWithLeaf(leafId, chainId);
+    if (tree instanceof Error) {
+        return tree;
     }
 
     try {
-        const treeJson = await treeResponse.json();
-        const tree = TriadMerkleTree.deserialize(treeJson);
         const [merkleProof] = generateMerkleProof(leafId, tree);
         const pathElements =
             triadTreeMerkleProofToPathElements(merkleProof).map(

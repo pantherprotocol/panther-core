@@ -2,14 +2,12 @@ import * as React from 'react';
 import {ReactElement, useState} from 'react';
 
 import {Typography, Button, Box} from '@mui/material';
-import {useWeb3React} from '@web3-react/core';
 import RedeemRewardsWarningDialog from 'components/ZAssets/PrivateZAssetsTable/RedeemRewardsWarningDialog';
 import rightSideArrow from 'images/right-arrow-icon.svg';
 import {formatTime} from 'lib/format';
 import {useAppSelector} from 'redux/hooks';
 import {showWalletActionInProgressSelector} from 'redux/slices/ui/web3-wallet-last-action';
 import {poolV0ExitTimeSelector} from 'redux/slices/wallet/poolV0';
-import {getCommitmentTreeUrl} from 'services/env';
 
 import {RedeemRewardProperties} from './RedeemReward.interface';
 
@@ -19,17 +17,9 @@ function getButtonContents(
     inProgress: boolean,
     exitTime: number | null,
     afterExitTime: boolean,
-    treeUri: string | undefined,
 ): string | ReactElement {
     if (inProgress) return 'Redeeming';
     if (afterExitTime) {
-        if (!treeUri) {
-            console.error(
-                'No tree URL is provided. Redemption of rewards is not possible.',
-            );
-
-            return 'Redemption opens soon!';
-        }
         return 'Redeem zZKP';
     }
     return (
@@ -49,8 +39,6 @@ function getButtonContents(
 const RedeemRewards = (props: RedeemRewardProperties) => {
     const {reward, isSelected, onSelectReward} = props;
 
-    const context = useWeb3React();
-    const {chainId} = context;
     const exitTime = useAppSelector(poolV0ExitTimeSelector);
 
     const [warningDialogShown, setWarningDialogShown] =
@@ -70,8 +58,7 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
     };
 
     const afterExitTime = exitTime ? exitTime * 1000 < Date.now() : false;
-    const treeUri = getCommitmentTreeUrl(chainId!);
-    const isRedemptionPossible = treeUri && afterExitTime;
+    const isRedemptionPossible = afterExitTime;
 
     return (
         <Box>
@@ -96,18 +83,10 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
                             showExitInProgress,
                             exitTime!,
                             afterExitTime,
-                            treeUri,
                         )}
                     </>
                 ) : (
-                    <>
-                        {getButtonContents(
-                            false,
-                            exitTime!,
-                            afterExitTime,
-                            treeUri,
-                        )}
-                    </>
+                    <>{getButtonContents(false, exitTime!, afterExitTime)}</>
                 )}
             </Button>
             {warningDialogShown && (

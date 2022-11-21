@@ -7,16 +7,20 @@ import LZString from 'lz-string';
 
 import {NewCommitmentEvent} from '../../types/commitments';
 
-import {MerkleProof, TriadMerkleTree, poseidon2or3} from '.';
-
-const LEAF_NODE_SIZE = 3;
+import {
+    MerkleProof,
+    TriadMerkleTree,
+    poseidon2or3,
+    LEAF_NODE_SIZE,
+    TREE_DEPTH,
+} from '.';
 
 // returns a new triad merkle tree constructed of passed 1536! commitments
-export const createTriadMerkleTree = (
+export function createTriadMerkleTree(
     depth: number,
     commitments: string[],
     zeroValue: bigint,
-): TriadMerkleTree => {
+): TriadMerkleTree {
     assert(
         commitments.length <= 2 ** (depth - 1) * 3,
         `Commitments length must be equal or less than ${2 ** (depth - 1) * 3}`,
@@ -27,16 +31,16 @@ export const createTriadMerkleTree = (
         triadMerkleTree.insertBatch(leaves.map(c => BigInt(c)));
     });
     return triadMerkleTree;
-};
+}
 
 // compress string before storing it
-export const compressString = (s: string): string => {
+export function compressString(s: string): string {
     return LZString.compressToUTF16(s);
-};
+}
 
-export const decompressString = (s: string): string | null => {
+export function decompressString(s: string): string | null {
     return LZString.decompressFromUTF16(s);
-};
+}
 
 export function toBytes32(n: number | string | bigint) {
     return ethers.utils.hexZeroPad(
@@ -45,18 +49,25 @@ export function toBytes32(n: number | string | bigint) {
     );
 }
 
-// converts the Quad Leaf ID to Tree ID and Triad Leaf ID
-export const leafIdToTreeIdAndTriadId = (
+// quadLeafIdToTreeIdAndTriadLeafId converts the Quad Leaf ID to Tree ID and
+// Triad Leaf ID
+export function quadLeafIdToTreeIdAndTriadLeafId(
     leafId: BigInt,
-    treeDepth: number,
-): [number, number] => {
+    treeDepth = TREE_DEPTH,
+): [number, number] {
     const nLeafId = Number(leafId);
-    const maxQuadLeafId = 2 ** (treeDepth - 1) * 4;
+    const maxQuadLeafId = quadLeafCountPerTree(treeDepth);
     const treeId = Math.floor(nLeafId / maxQuadLeafId);
     const triadIndex =
         (nLeafId % maxQuadLeafId) - Math.floor((nLeafId % maxQuadLeafId) / 4);
     return [treeId, triadIndex];
-};
+}
+
+// quadLeafCountPerTree returns the quad leaf count per merkle tree with the
+// given depth
+export function quadLeafCountPerTree(treeDepth = TREE_DEPTH): number {
+    return 2 ** (treeDepth + 1);
+}
 
 export function triadTreeMerkleProofToPathIndices({
     indices: input,
@@ -67,6 +78,18 @@ export function triadTreeMerkleProofToPathIndices({
     return [input[0] % 2, input[0] >> 1].concat(
         input.slice(1), // for inner levels, inputs do not need conversion
     );
+}
+
+// quadLeafIndexRangeForTreeId returns the range of the quad leaf indices for
+// the specific treeId
+export function quadLeafIndexRangeForTreeId(
+    treeId: number,
+    treeDepth = TREE_DEPTH,
+): [number, number] {
+    const maxLeafCount = quadLeafCountPerTree(treeDepth);
+    const minLeafIndex = maxLeafCount * treeId;
+    const maxLeafIndex = maxLeafCount * (treeId + 1) - 1;
+    return [minLeafIndex, maxLeafIndex];
 }
 
 export function triadTreeMerkleProofToPathElements({

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // @ts-ignore
 import {BytesLike} from '@ethersproject/bytes/src.ts';
 import {ethers} from 'hardhat';

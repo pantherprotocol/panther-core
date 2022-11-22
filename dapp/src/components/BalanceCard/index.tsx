@@ -9,7 +9,11 @@ import {useAppSelector} from 'redux/hooks';
 import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
 import {zkpStakedBalanceSelector} from 'redux/slices/staking/zkp-staked-balance';
 import {totalSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
-import {Network, supportedNetworks} from 'services/connectors';
+import {
+    isEthereumNetwork,
+    Network,
+    supportedNetworks,
+} from 'services/connectors';
 import {chainHasPoolContract} from 'services/contracts';
 import {StakingRewardTokenID} from 'types/staking';
 
@@ -68,35 +72,39 @@ const BalanceCard = () => {
                     }
                 />
 
-                <AddressBalances
-                    title={'Reward Balance:'}
-                    balance={
-                        chainId && chainHasPoolContract(chainId)
-                            ? zZkpRewardBalance
-                            : constants.Zero
-                    }
-                    rewardsTokenSymbol={'zZKP'}
-                    amountUSD={
-                        chainId && chainHasPoolContract(chainId)
-                            ? zZkpRewardsUSDValue
-                            : constants.Zero
-                    }
-                />
+                {!isEthereumNetwork(chainId!) && (
+                    <AddressBalances
+                        title={'Reward Balance:'}
+                        balance={
+                            chainId && chainHasPoolContract(chainId)
+                                ? zZkpRewardBalance
+                                : constants.Zero
+                        }
+                        rewardsTokenSymbol={'zZKP'}
+                        amountUSD={
+                            chainId && chainHasPoolContract(chainId)
+                                ? zZkpRewardsUSDValue
+                                : constants.Zero
+                        }
+                    />
+                )}
 
-                <AddressBalances
-                    title={'Privacy Reward Points:'}
-                    balance={
-                        chainId && chainHasPoolContract(chainId)
-                            ? prpRewardBalance
-                            : constants.Zero
-                    }
-                    scale={0}
-                    rewardsTokenSymbol={'PRP'}
-                    // TODO:add definition for redeem function
-                    redeem={() => {
-                        console.error('Not implemented');
-                    }}
-                />
+                {!isEthereumNetwork(chainId!) && (
+                    <AddressBalances
+                        title={'Privacy Reward Points:'}
+                        balance={
+                            chainId && chainHasPoolContract(chainId)
+                                ? prpRewardBalance
+                                : constants.Zero
+                        }
+                        scale={0}
+                        rewardsTokenSymbol={'PRP'}
+                        // TODO:add definition for redeem function
+                        redeem={() => {
+                            console.error('Not implemented');
+                        }}
+                    />
+                )}
             </Card>
         </Box>
     );

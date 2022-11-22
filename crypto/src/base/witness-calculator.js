@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+// The code is inspired by applied ZKP
 /* eslint-disable no-undef */
 export const builder = async (code, options = {}) => {
     const wasmModule = await WebAssembly.compile(code);

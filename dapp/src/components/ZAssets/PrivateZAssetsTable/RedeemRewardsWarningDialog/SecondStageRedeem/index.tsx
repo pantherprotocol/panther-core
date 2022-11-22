@@ -18,10 +18,10 @@ import {
     removeNotification,
 } from 'components/Common/notification';
 import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import {formatDuration, getUnixTime, formatDistance} from 'date-fns';
 import {BigNumber} from 'ethers';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {formatCurrency} from 'lib/format';
-import moment from 'moment';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     progressToNewWalletAction,
@@ -56,16 +56,21 @@ export default function SecondStageRedeem(props: {
     const isLockPeriodPassed =
         exitCommitmentTime &&
         exitDelay &&
-        exitCommitmentTime + exitDelay < moment().unix();
+        exitCommitmentTime + exitDelay < getUnixTime(new Date());
 
     const remainingWaitingTimeFormatted =
         exitCommitmentTime &&
         exitDelay &&
-        moment((exitCommitmentTime! + exitDelay!) * 1000).fromNow(true);
-
+        formatDistance(
+            getUnixTime(new Date()) * 1000,
+            (exitCommitmentTime + exitDelay) * 1000,
+            {includeSeconds: true},
+        );
     const delayTimeFormatted =
         exitDelay &&
-        moment(moment.now() + exitDelay * 1000).from(moment.now(), true);
+        formatDuration({
+            seconds: exitDelay,
+        });
 
     const closeModalAndRedeem = () => {
         handleClose();
@@ -183,7 +188,7 @@ export default function SecondStageRedeem(props: {
         exitDelay: number | undefined,
     ): number | undefined {
         const passedTime =
-            exitCommitmentTime && moment().unix() - exitCommitmentTime;
+            exitCommitmentTime && getUnixTime(new Date()) - exitCommitmentTime;
 
         if (passedTime && exitDelay) {
             if (passedTime <= exitDelay) {

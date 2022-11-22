@@ -18,8 +18,8 @@ import {notifyError} from 'components/Common/errors';
 import {MessageWithTx} from 'components/Common/MessageWithTx';
 import {openNotification} from 'components/Common/notification';
 import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import {formatDuration, getUnixTime} from 'date-fns';
 import {CONFIRMATIONS_NUM} from 'lib/constants';
-import moment from 'moment';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     progressToNewWalletAction,
@@ -58,7 +58,9 @@ export default function FirstStageRedeem(props: {
 
     const delayTimeFormatted =
         exitDelay &&
-        moment(moment.now() + exitDelay * 1000).from(moment.now(), true);
+        formatDuration({
+            seconds: exitDelay,
+        });
 
     const toggleConfirmationCheckbox = (
         event: ChangeEvent<HTMLInputElement>,
@@ -135,7 +137,7 @@ export default function FirstStageRedeem(props: {
             chainId,
             account,
             reward.id,
-            moment().unix(),
+            getUnixTime(new Date()),
         ]);
 
         openNotification(

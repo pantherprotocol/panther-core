@@ -11,6 +11,7 @@ import {
     FormGroup,
     Typography,
 } from '@mui/material';
+import * as Sentry from '@sentry/browser';
 import {useWeb3React} from '@web3-react/core';
 import BackButton from 'components/BackButton';
 import {notifyError} from 'components/Common/errors';
@@ -109,6 +110,7 @@ export default function FirstStageRedeem(props: {
             );
         } catch (err) {
             dispatch(registerWalletActionFailure, 'registerCommitToExit');
+            Sentry.captureException(err);
             return openNotification(
                 'Transaction error',
                 parseTxErrorMessage(err),

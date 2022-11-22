@@ -1,5 +1,6 @@
 import React, {useCallback} from 'react';
 
+import * as Sentry from '@sentry/browser';
 import {useWeb3React} from '@web3-react/core';
 import {openNotification} from 'components/Common/notification';
 import {WalletHeaderActionButton} from 'components/Common/WalletHeaderActionButton';
@@ -46,6 +47,7 @@ export const AddTokenButton = () => {
                     }
                 });
         } catch (switchError) {
+            Sentry.captureException(switchError);
             console.error(switchError);
         }
     }, [library, chainId]);

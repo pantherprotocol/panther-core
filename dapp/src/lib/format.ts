@@ -1,5 +1,5 @@
+import {formatDistance, formatDistanceToNowStrict} from 'date-fns';
 import {BigNumber, utils} from 'ethers';
-import moment from 'moment';
 
 import {getLocale} from './i18n';
 import {roundDown} from './numbers';
@@ -28,8 +28,8 @@ export function formatLongTime(date: number | null): string | null {
     return formatTime(date, {style: 'long'});
 }
 
-export function formatTimeSince(date: number | null): string {
-    return moment(date).fromNow();
+export function formatTimeSince(date: number): string {
+    return formatDistance(date, new Date(), {addSuffix: true});
 }
 
 export function secondsToFullDays(sec: number): number {
@@ -115,4 +115,17 @@ export function formatAccountAddress(
     const start = account.substring(2, ADDRESS_SUBSTRING_LENGTH);
     const end = account.substring(account.length - ADDRESS_SUBSTRING_LENGTH);
     return `0x${start}...${end}`;
+}
+
+export function formatRemainingPeriod(end: Date): string {
+    const now = new Date();
+    const periodInMs = end.getTime() - now.getTime();
+    if (periodInMs < 0) return '-';
+
+    const oneDayMs = 60 * 60 * 24 * 1000;
+
+    return formatDistanceToNowStrict(end, {
+        unit: periodInMs > oneDayMs ? 'day' : 'hour',
+        roundingMethod: 'ceil',
+    });
 }

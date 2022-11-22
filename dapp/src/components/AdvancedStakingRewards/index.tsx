@@ -2,18 +2,20 @@ import React from 'react';
 
 import {Box, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import ClaimedProgress from 'components/ClaimedProgress';
 import StakingAPR from 'components/StakingAPR';
+import {isAfter} from 'date-fns';
 import {utils} from 'ethers';
-import moment from 'moment';
-import {useAppSelector} from 'redux/hooks';
-import {termsSelector} from 'redux/slices/staking/stake-terms';
 import {
     totalClaimedRewardsSelector,
     totalVestedRewardsSelector,
 } from 'redux/slices/staking/totals-of-advanced-stakes';
 import {getAdvStakingAPY} from 'services/rewards';
 import {StakeType} from 'types/staking';
+
+import ClaimedProgress from '../../components/ClaimedProgress';
+import {formatRemainingPeriod} from '../../lib/format';
+import {useAppSelector} from '../../redux/hooks';
+import {termsSelector} from '../../redux/slices/staking/stake-terms';
 
 import './styles.scss';
 
@@ -50,21 +52,22 @@ function calcRemainingDays(
     _allowedSince: number,
     _allowedTill: number,
 ): [string, string] {
-    const now = moment();
-    const allowedSince = moment(_allowedSince * 1000);
-    const allowedTill = moment(_allowedTill * 1000);
+    const now = new Date();
+    const allowedSince = new Date(_allowedSince * 1000);
+    const allowedTill = new Date(_allowedTill * 1000);
+    const nowIsBetween = now > allowedSince && now < allowedTill;
 
-    if (moment(allowedSince).isSameOrAfter(allowedTill)) {
+    if (isAfter(allowedSince, allowedTill)) {
         return ['', '?'];
     }
-    if (moment(now).isSameOrBefore(allowedSince)) {
-        return ['Remaining', allowedSince.diff(now, 'days') + ' days'];
+    if (isAfter(allowedSince, now)) {
+        return ['Remaining', formatRemainingPeriod(allowedSince)];
     }
-    if (moment(now).isBetween(allowedSince, allowedTill)) {
-        return ['Remaining', allowedTill.diff(now, 'days') + ' days'];
+    if (nowIsBetween) {
+        return ['Remaining', formatRemainingPeriod(allowedTill)];
     }
-    if (moment(now).isAfter(allowedTill)) {
-        return ['Staking is closed', '0 days'];
+    if (isAfter(now, allowedTill)) {
+        return ['Staking is closed', ''];
     }
     return ['', '0 days'];
 }

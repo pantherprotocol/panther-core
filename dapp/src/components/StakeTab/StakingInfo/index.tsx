@@ -3,9 +3,9 @@ import React, {ReactElement, useCallback} from 'react';
 import {Typography, Card, CardContent} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {SafeMuiLink} from 'components/Common/links';
+import {add, format} from 'date-fns';
 import warningIcon from 'images/warning-icon-triangle.svg';
 import {formatTime, secondsToFullDays} from 'lib/format';
-import moment from 'moment';
 import {useAppSelector} from 'redux/hooks';
 import {
     isStakingOpenSelector,
@@ -53,19 +53,21 @@ export default function StakingInfo() {
 
         if (isAdvancedStakingOpen) {
             if (minLockPeriod) {
-                const unlockDate = moment.now() + Number(minLockPeriod) * 1000;
-
-                subtitle += `will lock your tokens until ${moment(
+                const unlockDate = add(new Date(), {
+                    seconds: Number(minLockPeriod),
+                });
+                subtitle += `will lock your tokens until ${format(
                     unlockDate,
-                ).format('D MMM YYYY')}`;
+                    'dd MMM yyyy',
+                )}`;
             } else {
                 subtitle += 'is now open';
             }
         } else {
             subtitle += 'will open';
             if (allowedSince) {
-                const allowedSinceDate = moment(Number(allowedSince) * 1000);
-                subtitle += ' on ' + allowedSinceDate.format('D MMM YYYY');
+                const allowedSinceDate = new Date(Number(allowedSince) * 1000);
+                subtitle += ' on ' + format(allowedSinceDate, 'dd MMM yyyy');
             } else {
                 subtitle += ' soon!';
             }

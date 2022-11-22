@@ -1,9 +1,12 @@
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
-import {createExtraReducers, LoadingStatus} from 'redux/slices/shared';
-import {RootState} from 'redux/store';
-import * as pool from 'services/pool';
+
+import {MaspChainIds} from '../../../services/connectors';
+import {MASP_CHAIN_ID} from '../../../services/env';
+import * as pool from '../../../services/pool';
+import {RootState} from '../../store';
+import {createExtraReducers, LoadingStatus} from '../shared';
 
 interface PoolV0ExitTimeState {
     value: PoolV0Parameters;
@@ -29,7 +32,11 @@ const getExitTime = createAsyncThunk(
         if (!chainId || !library) {
             return {};
         }
-        const exitTime = await pool.getExitTime(library, chainId);
+
+        const exitTime = await pool.getExitTime(
+            library,
+            MASP_CHAIN_ID as MaspChainIds,
+        );
         const exitDelay = await pool.getExitDelay(library, chainId);
         return {exitTime, exitDelay};
     },

@@ -11,7 +11,6 @@ import {useAppDispatch} from 'redux/hooks';
 import {getAdvancedStakesRewards} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {getPoolV0ExitTime} from 'redux/slices/wallet/poolV0';
 import {chainHasPoolContract} from 'services/contracts';
-import {MASP_CHAIN_ID} from 'services/env';
 
 import './styles.scss';
 
@@ -23,9 +22,7 @@ export default function ZAssets(): React.ReactElement {
 
     useEffect(() => {
         dispatch(getAdvancedStakesRewards, {context});
-        if (chainId === MASP_CHAIN_ID) {
-            dispatch(getPoolV0ExitTime, context);
-        }
+        dispatch(getPoolV0ExitTime, context);
     }, [context, dispatch, chainId]);
 
     return (

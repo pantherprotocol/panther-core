@@ -9,6 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
+import {zAssetTooltip} from 'components/Common/constants';
 import infoIcon from 'images/info-icon.svg';
 import {chainHasPoolContract} from 'services/contracts';
 
@@ -19,10 +20,6 @@ import './styles.scss';
 export default function PrivateZAssetsTable() {
     const context = useWeb3React();
     const {active, chainId} = context;
-
-    const zAssetTooltip = `$zZKP in a MASP. This reward is calculated based on your
-        Stake but created as a transaction in the MASP. You will be able to redeem $zZKP
-        for $ZKP using the Withdraw option at the end of the Advanced Staking period.`;
 
     return (
         <TableContainer

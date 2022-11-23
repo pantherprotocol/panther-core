@@ -3,26 +3,26 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
 import {
     reuseEnvAddress,
+    getContractEnvAddress,
     verifyUserConsentOnProd,
 } from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    const {
-        deployments: {deploy},
-        ethers,
-        getNamedAccounts,
-    } = hre;
+    const {deployments, getNamedAccounts} = hre;
+    const {deploy} = deployments;
     const {deployer} = await getNamedAccounts();
-    await verifyUserConsentOnProd(hre, deployer);
-    if (reuseEnvAddress(hre, 'VAULT_PROXY')) return;
 
-    await deploy('Vault_Proxy', {
-        contract: 'EIP173Proxy',
+    console.log(`Deploying RewardTreasury on ${hre.network.name}...`);
+    await verifyUserConsentOnProd(hre, deployer);
+    if (reuseEnvAddress(hre, 'REWARD_TREASURY')) return;
+
+    const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
+
+    await deploy('RewardTreasury', {
         from: deployer,
         args: [
-            ethers.constants.AddressZero, // implementation will be changed
-            deployer, // owner will be changed
-            [], // data
+            deployer, // owner
+            zkpToken,
         ],
         log: true,
         autoMine: true,
@@ -30,5 +30,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ['vault-proxy', 'protocol'];
+func.tags = ['classic-staking', 'reward-treasury'];
 func.dependencies = ['check-params'];

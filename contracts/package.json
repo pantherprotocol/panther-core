@@ -5,7 +5,6 @@
   "description": "Panther Protocol initial staking contracts",
   "license": "Proprietary",
   "scripts": {
-    "build": "waffle",
     "build:types": "cp -a types ../dapp/src",
     "build:contracts:triad-tree": "./scripts/generateTriadMerkleZeroesContracts.sh",
     "chain": "HARDHAT_NO_MNEMONIC=yes hardhat node",
@@ -43,6 +42,8 @@
     "storage": "HARDHAT_NO_MNEMONIC=yes yarn hardhat storage | grep -v '/node_modules/\\.bin/hardhat storage' > docs/docgen/storage.layout.txt",
     "slither:install": "./scripts/slither_install.sh",
     "slither:check": "./scripts/slither_check.sh",
+    "slither": "yarn slither:install && yarn slither:check",
+    "super-safe-check-before-commit": "rm -rf build artifacts cache types && yarn install && yarn compile && yarn prettier:fix && yarn lint && yarn test && yarn slither",
     "test": "HARDHAT_NO_MNEMONIC=yes hardhat test",
     "test:gas": "REPORT_GAS=yes yarn test",
     "test:ts": "echo '[i] not implemented: yarn pchain:load-snapshot --eval-and-exit \"jest --runInBand --detectOpenHandles --forceExit --verbose --colors\"'",

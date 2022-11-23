@@ -88,12 +88,27 @@ function getCommitmentsQuery(
     `;
 }
 
-// getGraphResponse returns the response from the subgraph for the given query
+// getGraphResponse returns the response from the subgraph for the given query.
+// The subgraph is queried for the given chain ID and the query is retried for
+// each of the subgraph accounts until a valid response is received. If no
+// response is received then an error is thrown.
 export async function getDataFromTheGraph(
     chainId: number,
     query: string,
+    subgraphUrlIndex?: number,
+    retry = 0,
 ): Promise<GraphResponse | Error> {
-    const subgraphEndpoint = getSubgraphUrl(chainId);
+    const subgraphAccountArray = getSubgraphAccounts(chainId);
+    if (subgraphAccountArray == undefined) {
+        return new Error('Subgraph accounts are not yet defined');
+    }
+
+    const urlIndex =
+        subgraphUrlIndex == undefined
+            ? Math.floor(Math.random() * subgraphAccountArray.length) // random index
+            : subgraphUrlIndex;
+
+    const subgraphEndpoint = getSubgraphUrl(chainId, urlIndex);
     if (!subgraphEndpoint) {
         return new Error('No subgraph endpoint configured');
     }
@@ -103,29 +118,51 @@ export async function getDataFromTheGraph(
             query,
         });
 
-        if (data.data.errors?.[0]?.message) {
-            return new Error(data.data.errors[0].message);
-        }
-
-        if (data.status !== 200) {
-            return new Error(`Unexpected response status ${data.status}`);
+        if (data.data.errors?.[0]?.message || data.status !== 200) {
+            throw new Error('Cannot fetch data from the subgraph');
         }
 
         return data.data.data;
     } catch (error) {
-        return new Error(`Error on sending query to subgraph: ${error}`);
+        console.debug(
+            `The subgraph account ${subgraphAccountArray[urlIndex]} failed to respond with the following error: ${error}`,
+        );
+        if (retry < subgraphAccountArray.length - 1) {
+            const newSubgraphUrlIndex =
+                (urlIndex + 1) % subgraphAccountArray.length;
+            console.debug(
+                'Retrying with different subgraph account',
+                subgraphAccountArray[newSubgraphUrlIndex],
+            );
+            return await getDataFromTheGraph(
+                chainId,
+                query,
+                newSubgraphUrlIndex,
+                retry + 1,
+            );
+        }
+
+        return new Error('Error on sending query to all subgraph accounts');
     }
 }
 
-// getSubgraphUrl returns randomly selected subgraph URL for a given chain ID
-export function getSubgraphUrl(chainId: number): string | undefined {
+// getSubgraphUrl returns randomly selected subgraph URL for a given chain ID or
+// specified by the index (i.e. not random)
+export function getSubgraphUrl(
+    chainId: number,
+    index: number,
+): string | undefined {
+    const accountArray = getSubgraphAccounts(chainId);
+    if (!accountArray) return undefined;
+    const selectedAccount = accountArray[index];
+    console.debug('Using subgraph account', selectedAccount);
+    return `https://api.thegraph.com/subgraphs/name/${selectedAccount}`;
+}
+
+function getSubgraphAccounts(chainId: number): string[] | undefined {
     const subgraphAccountStr = env[`SUBGRAPH_ACCOUNTS_${chainId}`];
     if (!subgraphAccountStr) return undefined;
-    const accountArray = subgraphAccountStr.split(',');
-    const randomAccount =
-        accountArray[Math.floor(Math.random() * accountArray.length)];
-    console.debug('Using subgraph random account', randomAccount);
-    return `https://api.thegraph.com/subgraphs/name/${randomAccount}`;
+    return subgraphAccountStr.split(',');
 }
 
 export async function getAdvancedStakingReward(

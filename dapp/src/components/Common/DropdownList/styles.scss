@@ -16,8 +16,6 @@
     width: 201px;
 
     .menu-item {
-        justify-content: space-around !important;
-
         display: flex;
         justify-content: space-between;
         justify-items: flex-start;
@@ -35,6 +33,10 @@
             background: rgba(99, 114, 136, 0.2);
             mix-blend-mode: normal;
             backdrop-filter: blur(40.3826px);
+        }
+
+        a {
+            padding-left: 0;
         }
     }
 }

@@ -16,6 +16,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     process.env.FX_CHILD_POLYGON = '0x8397259c983751DAf40400790063935a11afa28a';
     process.env.FX_CHILD_MUMBAI = '0xCf73231F28B7331BBe3124B907840A94851f9f11';
 
+    process.env.OPENSEA_ERC721_PROXY_REGISTRY_POLYGON =
+        '0x58807baD0B376efc12F5AD86aAc70E78ed67deaE';
+    process.env.OPENSEA_ERC721_PROXY_REGISTRY_MUMBAI =
+        '0xff7Ca10aF37178BdD056628eF42fD7F799fAc77c';
+
     console.log(`Deploying on ${network.name}...`);
 
     const {deployer} = await getNamedAccounts();

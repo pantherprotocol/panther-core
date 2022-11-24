@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {safeParseStringToBN} from 'lib/numbers';
 import {createExtraReducers, LoadingStatus} from 'redux/slices/shared';

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+
 /** Parses the error message from a transaction error
 and returns a human readable error message. It is used to display
 friendly error messages to the user. */

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+
 // This is not available for import:
 //
 //   export {Web3ReactContextInterface} from '@web3-react/core/types';

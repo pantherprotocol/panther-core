@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+
 // Teach the VM how to serialize BigInts, to stop Redux barfing when we
 // dispatch with keys as arguments.
 //

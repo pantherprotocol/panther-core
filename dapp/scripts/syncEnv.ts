@@ -1,5 +1,8 @@
 #!/usr/bin/env ts-node
 
+// SPDX-License-Identifier: BUSL-1.1
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+
 // Script to extract various values from smart contracts:
 //
 // - advanced staking start/end/unlock from Staking terms,

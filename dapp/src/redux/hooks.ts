@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+
 // eslint-disable-next-line import/named
 import {TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux';
 import {deserializeError} from 'serialize-error';

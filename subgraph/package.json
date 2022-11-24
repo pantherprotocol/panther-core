@@ -7,6 +7,7 @@
     "auth": "graph auth --product hosted-service",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/",
+    "publish": "yarn codegen && yarn build && yarn deploy",
     "create-local": "graph create --node http://localhost:8020/",
     "remove-local": "graph remove --node http://localhost:8020/",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001"

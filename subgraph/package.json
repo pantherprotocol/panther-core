@@ -1,6 +1,6 @@
 {
   "name": "@panther-core/subgraph",
-  "license": "UNLICENSED",
+  "license": "BUSL-3.0 Licence by Panther Ventures Limited Gibralta",
   "version": "0.0.1",
   "scripts": {
     "codegen": "graph codegen",

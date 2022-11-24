@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-3.0
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+
 import {NewCommitments} from '../generated/PantherPoolV0/PantherPoolV0';
 import {RewardGenerated} from '../generated/AdvancedStakeRewardController/AdvancedStakeRewardController';
 

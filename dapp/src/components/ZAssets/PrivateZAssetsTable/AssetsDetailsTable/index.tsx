@@ -9,6 +9,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import {useWeb3React} from '@web3-react/core';
+import {prpTooltip} from 'components/Common/constants';
 import AssetsDetailsRow from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsRow';
 import infoIcon from 'images/info-icon.svg';
 import {useAppSelector, useAppDispatch} from 'redux/hooks';
@@ -85,7 +86,7 @@ const AssetsDetailsTable = () => {
                         >
                             <span className="title">Rewards Earned:</span>
                             <Tooltip
-                                title="Rewards Earned Tooltip"
+                                title={prpTooltip}
                                 data-html="true"
                                 placement="top"
                                 className="tooltip-icon"

@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import {screen, waitFor} from '@testing-library/react';
+import {zAssetTooltip} from 'components/Common/constants';
 import {renderComponent} from 'utils/test-utils';
 
 import PrivateZAssetsTable from './index';
@@ -18,10 +19,6 @@ test('should render', async () => {
 });
 
 test('should show correct tooltip', async () => {
-    const zAssetTooltip = `$zZKP in a MASP. This reward is calculated based on your
-        Stake but created as a transaction in the MASP. You will be able to redeem $zZKP
-        for $ZKP using the Withdraw option at the end of the Advanced Staking period.`;
-
     renderComponent(<PrivateZAssetsTable />);
 
     const PrivateZAssetsTableContainer = screen.queryByTestId(

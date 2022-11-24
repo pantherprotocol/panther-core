@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-pragma solidity ^0.8.4;
+pragma solidity 0.8.16;
 
 import { ERC20_TOKEN_TYPE, zASSET_ENABLED, zASSET_UNKNOWN } from "../common/Constants.sol";
 import "./errMsgs/ZAssetsRegistryErrMsgs.sol";
@@ -62,8 +62,9 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
        (e.g. with "alternative" zAssets and re-defining ZAsset._unused)
     */
 
-    uint8 private constant MAX_SCALE = 32;
-    uint8 private constant MIN_SCALE = 0;
+    uint8 private constant MAX_SCALE = 32; // min scale is 0
+    uint8 private constant NO_SCALING = 0;
+    uint256 private constant DEFAULT_VER = 0;
 
     // Mapping from `zAssetRecId` to ZAsset (i.e. params of an zAsset)
     mapping(uint160 => ZAsset) private _registry;
@@ -90,7 +91,7 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
 
     /// @notice Returns ZAsset record for the given record ID
     function getZAsset(uint160 zAssetRecId)
-        public
+        external
         view
         override
         returns (ZAsset memory asset)
@@ -111,7 +112,7 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
     /// @return zAssetRecId ID of the ZAsset record
     /// @return asset ZAsset record for the token
     function getZAssetAndIds(address token, uint256 subId)
-        public
+        external
         view
         override
         returns (
@@ -125,13 +126,17 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
 
         // Gas optimized based on assumptions:
         // - most often, this code is called for the default zAsset of ERC-20
-        // - if `ver` is in [1..31], highly likely, it is an alternative zAsset
+        // - if `ver` is in [1..MAX_SCALE], likely it's an alternative zAsset
         _tokenId = subId;
         if (subId != 0) {
-            // for an "alternative" zAsset, `subId` must be none-zero, ...
+            // Risk of zAssetRecId collision attack (see further) ignored since
+            // `subId` variant space is small (less than MAX_SCALE of ~5 bits).
+            // Therefore `require(asset.token == token)` omitted here.
+
+            // For an "alternative" zAsset, `subId` must be none-zero...
             uint256 ver = uint256(uint160(token)) ^ subId;
-            // ... and `ver` must be in [1..31]
-            if (ver < MAX_SCALE && ver != MIN_SCALE) {
+            // ... and `ver` must be in [1..MAX_SCALE]
+            if (ver < MAX_SCALE && ver != DEFAULT_VER) {
                 // Likely, it's the alternative zAsset w/ `zAssetRecId = subId`
                 asset = _registry[uint160(subId)];
 
@@ -143,7 +148,7 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
                     // as the code registering ZAssets is assumed to ensure it.
                     zAssetId = getZAssetId(token, subId);
                     zAssetRecId = uint160(subId);
-                    _tokenId = 0;
+                    _tokenId = DEFAULT_VER;
                     return (zAssetId, _tokenId, zAssetRecId, asset);
                 }
             }
@@ -159,9 +164,13 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
             return (0, 0, 0, asset);
         }
 
-        // For the default zAsset of an ERC-20 the `subId` must be 0
         require(
-            subId == 0 || asset.tokenType != ERC20_TOKEN_TYPE,
+            // `subId` of an ERC-20 token's default zAsset must be 0
+            (subId == 0 || asset.tokenType != ERC20_TOKEN_TYPE) &&
+                // zAssetReqId collision attack protection:
+                // attacker may vary token id of a fake NFT to make zAssetReqId
+                // (i.e. `token ^ subId`) equal to zAssetReqId of another token
+                asset.token == token,
             ERR_ZERO_SUBID_EXPECTED
         );
         zAssetId = getZAssetId(token, _tokenId);
@@ -228,7 +237,7 @@ contract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {
         // Valid range for ERC-20 is [0..31]
         // Valid range for ERC-721/ERC-1155 is 0
         require(
-            (asset.scale == 0 ||
+            (asset.scale == NO_SCALING ||
                 ((asset.scale < MAX_SCALE) &&
                     (asset.tokenType == ERC20_TOKEN_TYPE))),
             ERR_WRONG_ASSET_SCALE

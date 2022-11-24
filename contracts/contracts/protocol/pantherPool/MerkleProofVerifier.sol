@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.16;
 
 import { PoseidonT3, PoseidonT4 } from "../crypto/Poseidon.sol";
 import "../errMsgs/PantherPoolErrMsgs.sol";
@@ -48,6 +48,8 @@ abstract contract MerkleProofVerifier {
         require(triadIndex < iTRIAD_INDEX_FORBIDDEN, ERR_TRIAD_INDEX_MAX_VALUE);
 
         // [1] - Compute zero level hash
+        // variable will be initialized inside the 'if' bellow
+        // slither-disable-next-line uninitialized-local
         bytes32 nodeHash;
         // NOTE: no else-case needed since this code executed after require at step [0]
         if (triadIndex == iTRIAD_INDEX_LEFT) {

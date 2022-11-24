@@ -14,6 +14,7 @@ contracts/coverage.json
 contracts/coverage/
 contracts/deployments/
 contracts/staging/
+contracts/scripts/slither.patch
 contracts/tenderly.yaml
 contracts/test/advanced-staking/assets/*.ods
 contracts/testing/**/*.cli.js

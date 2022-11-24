@@ -1,5 +1,8 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+// SPDX-License-Identifier: GPL
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+// Implementer name - yondonfu
+// Link to the implementation - https://github.com/yondonfu/sol-baby-jubjub/blob/master/contracts/CurveBabyJubJub.sol
+pragma solidity ^0.8.16;
 import "../../common/Types.sol";
 
 // solhint-disable no-inline-assembly
@@ -12,13 +15,16 @@ library BabyJubJub {
     // D = 168696
     uint256 public constant D = 0x292F8;
     // Prime Q = 21888242871839275222246405745257275088548364400416034343698204186575808495617
+    // slither-disable-next-line too-many-digits
     uint256 public constant Q =
         0x30644E72E131A029B85045B68181585D2833E84879B9709143E1F593F0000001;
 
     // @dev Base point generates the subgroup of points P of Baby Jubjub satisfying l * P = O.
     // That is, it generates the set of points of order l and origin O.
+    // slither-disable-next-line too-many-digits
     uint256 public constant BASE8_X =
         5299619240641551281634865583518297030282874472190772894086521144482721001553;
+    // slither-disable-next-line too-many-digits
     uint256 public constant BASE8_Y =
         16950150798460657717958625567821834550301663161624707787222815936182638968203;
 
@@ -33,8 +39,8 @@ library BabyJubJub {
         view
         returns (G1Point memory)
     {
-        uint256 x3;
-        uint256 y3;
+        uint256 x3 = 0;
+        uint256 y3 = 0;
         if (g1.x == 0 && g1.y == 0) {
             return G1Point(x3, y3);
         }
@@ -88,6 +94,7 @@ library BabyJubJub {
         uint256 _e,
         uint256 _m
     ) internal view returns (uint256 o) {
+        // slither-disable-next-line assembly
         assembly {
             let memPtr := mload(0x40)
             mstore(memPtr, 0x20) // Length of base _b

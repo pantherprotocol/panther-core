@@ -1,0 +1,15 @@
+--- slither/visitors/expression/constants_folding.py	2022-10-31 16:27:22
++++ /usr/local/lib/python3.10/site-packages/slither/visitors/expression/constants_folding.py	2022-11-16 17:37:07
+@@ -61,6 +61,12 @@
+             set_val(expression, left << right)
+         elif expression.type == BinaryOperationType.RIGHT_SHIFT:
+             set_val(expression, left >> right)
++        # VK ***DEBUG start (this and 5 next lines inserted)
++        elif expression.type == BinaryOperationType.AND:
++            set_val(expression, int(left) & int(right))
++        elif expression.type == BinaryOperationType.OR:
++            set_val(expression, int(left) | int(right))
++        # VK ***DEBUG end
+         else:
+             raise NotConstant
+ 

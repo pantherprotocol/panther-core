@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity ^0.8.4;
 
 interface IRewardPool {
     /// @notice Returns token amount that may be released (vested) now

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-pragma solidity ^0.8.4;
+pragma solidity 0.8.16;
 
 import "./errMsgs/PrpGrantorErrMsgs.sol";
 import "../common/ImmutableOwnable.sol";
@@ -28,6 +28,7 @@ import "./interfaces/IPrpGrantor.sol";
 contract PrpGrantor is ImmutableOwnable, IPrpGrantor {
     // The contract is supposed to run behind a proxy DELEGATECALLing it.
     // On upgrades, adjust `__gap` to match changes of the storage layout.
+    // slither-disable-next-line unused-state
     uint256[50] private __gap;
 
     // solhint-disable var-name-mixedcase
@@ -61,6 +62,7 @@ contract PrpGrantor is ImmutableOwnable, IPrpGrantor {
     // (excluding burnt grants amounts)
     uint256 public override totalGrantsRedeemed;
 
+    // slither-disable-next-line similar-names
     constructor(address _owner, address _grantProcessor)
         ImmutableOwnable(_owner)
     {

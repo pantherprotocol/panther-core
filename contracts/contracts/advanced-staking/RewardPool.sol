@@ -1,8 +1,9 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable var-name-mixedcase
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity 0.8.4;
 
 import "./interfaces/IVestingPools.sol";
 import "./interfaces/IRewardPool.sol";
@@ -36,6 +37,7 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
     /// @notice Address to vest tokens to
     address public recipient;
 
+    // slither-disable-next-line similar-names
     constructor(address _vestingPools, address _owner)
         ImmutableOwnable(_owner)
         nonZeroAddress(_vestingPools)
@@ -46,6 +48,8 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
     /// @inheritdoc IRewardPool
     function releasableAmount() external view override returns (uint256) {
         if (recipient == address(0)) return 0;
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (timeNow() >= endTime) return 0;
 
         return _releasableAmount();
@@ -55,12 +59,22 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
     function vestRewards() external override returns (uint256 amount) {
         // revert if unauthorized or recipient not yet set
         require(msg.sender == recipient, "RP: unauthorized");
+
+        // @dev The next line has a bug that stops the RewardMaster from paying
+        // staking rewards after `endTime` (it should not had been terminated).
+        // The PIP-5 deactivated this code:
+        // https://docs.pantherprotocol.io/dao/governance/proposal-5-mainnet-unstake-fix
+        // The buggy line left unchanged here as it is at:
+        // eth:0xcF463713521Af5cE31AD18F6914f3706493F10e5
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(timeNow() < endTime, "RP: expired");
 
         amount = _releasableAmount();
 
         if (amount != 0) {
             // here and after, no reentrancy guard needed for calls to VESTING_POOLS
+            // slither-disable-next-line unused-return,reentrancy-events
             IVestingPools(VESTING_POOLS).releaseTo(poolId, recipient, amount);
             emit Vested(amount);
         }
@@ -77,9 +91,12 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
         // once only
         require(recipient == address(0), "RP: initialized");
         // _endTime can't be in the past
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(_endTime > timeNow(), "RP: expired");
         // this contract must be registered with the VestingPools
         require(
+            // slither-disable-next-line unused-return,reentrancy-events
             IVestingPools(VESTING_POOLS).getWallet(_poolId) == address(this),
             "RP:E7"
         );
@@ -98,10 +115,12 @@ contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
         onlyOwner
         nonZeroAddress(newWallet)
     {
+        // slither-disable-next-line reentrancy-benign
         IVestingPools(VESTING_POOLS).updatePoolWallet(poolId, newWallet);
     }
 
     function _releasableAmount() internal view returns (uint256) {
+        // slither-disable-next-line reentrancy-benign
         return IVestingPools(VESTING_POOLS).releasableAmount(poolId);
     }
 

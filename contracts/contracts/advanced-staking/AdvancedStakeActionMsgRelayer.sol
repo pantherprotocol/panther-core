@@ -1,5 +1,6 @@
-// SPDX-License-Identifier: LGPL-3.0-only
-pragma solidity >=0.8.0;
+// SPDX-License-Identifier: BUSL-3.0
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+pragma solidity ^0.8.16;
 
 import "./actions/AdvancedStakingBridgedDataCoder.sol";
 import "./interfaces/IActionMsgReceiver.sol";
@@ -46,6 +47,7 @@ contract AdvancedStakeActionMsgRelayer is
     /// @param _stakeMsgSender Address of the AdvancedStakeRewardAdviserAndMsgSender on the mainnet/Goerli
     /// @param _fxChild Address of the `FxChild` (Bridge) contract on Polygon/Mumbai
     constructor(
+        // slither-disable-next-line similar-names
         address _rewardMaster,
         address _stakeMsgSender,
         address _fxChild
@@ -87,6 +89,8 @@ contract AdvancedStakeActionMsgRelayer is
         require(_nonce > nonce, "AMR:INVALID_NONCE");
         nonce = _nonce;
 
+        // trusted contract call - no reentrancy guard needed
+        // slither-disable-next-line reentrancy-benign,reentrancy-events
         IActionMsgReceiver(REWARD_MASTER).onAction(action, message);
 
         emit StakeMsgRelayed(_nonce, content);

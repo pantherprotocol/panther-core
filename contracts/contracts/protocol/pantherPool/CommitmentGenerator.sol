@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.16;
 
 import { PoseidonT4 } from "../crypto/Poseidon.sol";
 
@@ -15,7 +15,9 @@ abstract contract CommitmentGenerator {
     /// @param zAssetId 160 bit size - used in circom
     /// @param creationTime 32 bit size - used in circom
     function generateCommitment(
+        // slither-disable-next-line similar-names
         uint256 pubSpendingKeyX,
+        // slither-disable-next-line similar-names
         uint256 pubSpendingKeyY,
         uint64 scaledAmount,
         uint160 zAssetId,

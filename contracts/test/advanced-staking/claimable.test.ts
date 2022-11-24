@@ -38,6 +38,6 @@ describe('Claimable', () => {
                 user.address,
                 ethers.constants.MaxUint256,
             ),
-        ).revertedWith('TransferHelper::safeTransfer: transfer failed');
+        ).revertedWith('TransferHelper: token contract call failed');
     });
 });

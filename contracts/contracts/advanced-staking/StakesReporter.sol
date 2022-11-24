@@ -1,8 +1,9 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable var-name-mixedcase
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity 0.8.4;
 
 interface IArptHistory {
     function getScArptAt(uint32 timestamp)
@@ -69,11 +70,17 @@ contract StakesReporter {
         view
         returns (Stake[] memory, uint256[] memory)
     {
+        // trusted contract call - no reentrancy guard needed
         Stake[] memory stakes = STAKE_REGISTER.accountStakes(_account);
 
         uint256[] memory unclaimedRewards = new uint256[](stakes.length);
 
         for (uint256 i = 0; i < stakes.length; ) {
+            // The next call can't trigger the "calls loop" since it triggers
+            // external calls to a trusted contract only.
+            // Slither's "disable calls-loop detector" directive is inserted in
+            // the external call line rather than here (since otherwise slither
+            // reports false-positive issues).
             unclaimedRewards[i] = getUnclaimedRewards(stakes[i]);
 
             unchecked {
@@ -112,7 +119,10 @@ contract StakesReporter {
         uint256 unclaimedRewards = 0;
 
         if (stake.claimedAt == 0)
+            // note comments to "calls-loop" in `function getStakesInfo`
+            // slither-disable-next-line calls-loop
             unclaimedRewards = getRewards(
+                // trusted contract call - no reentrancy guard needed
                 ARPT_HISTORY.getScArptAt(stake.stakedAt),
                 ARPT_HISTORY.getScArptAt(uint32(0)),
                 stake.amount

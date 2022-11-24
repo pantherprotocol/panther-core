@@ -1,5 +1,7 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: BUSL-3.0
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+// slither-disable-next-line solc-version
+pragma solidity 0.8.4;
 
 library Type {
     /// @dev Voting power integrants
@@ -28,13 +30,15 @@ contract VotingPowerInformer {
     address private constant GLOBAL_ACCOUNT = address(0);
 
     constructor(address _staking) {
+        // deployer is assumed not to call with the zero address
+        // slither-disable-next-line missing-zero-check
         staking = _staking;
     }
 
     /// @notice Returns votes of a voter scaled to even number of tokens
     /// @dev "own" and "delegated" voting power summed up and scaled by 1e-18
     function getVotes(address voter)
-        public
+        external
         view
         nonZeroAddress(voter)
         returns (uint256)
@@ -44,7 +48,7 @@ contract VotingPowerInformer {
 
     /// @notice Returns votes of all voters scaled to even number of tokens
     /// @dev "own" and "delegated" voting power summed up and scaled by 1e-18
-    function getTotalVotes() public view returns (uint256) {
+    function getTotalVotes() external view returns (uint256) {
         return _getPower(GLOBAL_ACCOUNT) / 1e18;
     }
 
@@ -53,7 +57,7 @@ contract VotingPowerInformer {
     /// @dev "own" and "delegated" voting power summed up
     /// (function named so for compatibility with snapshot.org "strategies")
     function balanceOf(address voter)
-        public
+        external
         view
         nonZeroAddress(voter)
         returns (uint256)

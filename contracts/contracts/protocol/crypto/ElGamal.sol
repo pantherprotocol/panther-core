@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+pragma solidity ^0.8.16;
 
 import "./BabyJubJub.sol";
 import "../../common/Types.sol";
 
 contract ElGamalEncryption {
     function add(ElGamalCiphertext memory ct1, ElGamalCiphertext memory ct2)
-        public
+        external
         view
         returns (ElGamalCiphertext memory ct3)
     {

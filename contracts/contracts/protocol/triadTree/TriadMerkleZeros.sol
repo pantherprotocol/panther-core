@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable var-name-mixedcase
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.16;
 
 import { FIELD_SIZE } from "../crypto/SnarkConstants.sol";
 
@@ -43,16 +43,12 @@ abstract contract TriadMerkleZeros {
     // (also defined in scripts/generateTriadMerkleZeroesContracts.sh)
     uint256 internal constant TREE_DEPTH = 15;
 
-    // Number of levels in a tree including both leaf and root levels
-    uint256 internal constant TREE_LEVELS = TREE_DEPTH + 1;
-
     // Number of leaves in a branch with the root on the level 1
+    // slither-disable-next-line unused-state
     uint256 internal constant TRIAD_SIZE = 3;
 
-    // Number of leaves in the fully populated tree
-    uint256 internal constant LEAVES_NUM = (2**(TREE_DEPTH - 1)) * TRIAD_SIZE;
-
     // @dev Leaf zero value (`keccak256("Pantherprotocol")%FIELD_SIZE`)
+    // slither-disable-next-line unused-state
     bytes32 internal constant ZERO_VALUE =
         bytes32(
             uint256(
@@ -61,6 +57,7 @@ abstract contract TriadMerkleZeros {
         );
 
     // Merkle root of a tree that contains zeros only
+    // slither-disable-next-line unused-state
     bytes32 internal constant ZERO_ROOT =
         bytes32(
             uint256(

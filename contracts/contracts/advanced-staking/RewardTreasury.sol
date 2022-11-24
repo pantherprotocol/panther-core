@@ -1,8 +1,9 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable var-name-mixedcase
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity 0.8.4;
 
 import "./interfaces/IErc20Min.sol";
 import "./interfaces/IErc20Approve.sol";
@@ -31,6 +32,7 @@ contract RewardTreasury is ImmutableOwnable, NonReentrant, Claimable {
         onlyOwner
     {
         // call to the trusted contract - no reentrancy guard needed
+        // slither-disable-next-line unused-return
         IErc20Approve(token).approve(spender, amount);
     }
 

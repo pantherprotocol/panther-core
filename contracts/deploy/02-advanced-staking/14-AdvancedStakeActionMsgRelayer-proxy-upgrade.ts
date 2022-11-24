@@ -1,12 +1,12 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
+import {isPolygonOrMumbai} from '../../lib/checkNetwork';
+
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    const {name: network} = hre.network;
     if (
-        !process.env.DEPLOY_BRIDGE ||
-        // Deployment on these networks supported only
-        (network != 'polygon' && network != 'mumbai')
+        // Deployment on Polygon or Mumbai networks supported only
+        !isPolygonOrMumbai(hre)
     ) {
         console.log('Skip relayer proxy upgrade...');
         return;
@@ -60,5 +60,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 export default func;
 
-func.tags = ['msg-relayer-upgrade'];
-func.dependencies = ['msg-relayer-imp'];
+func.tags = ['bridge', 'msg-relayer-upgrade'];
+func.dependencies = ['check-params', 'msg-relayer-imp'];

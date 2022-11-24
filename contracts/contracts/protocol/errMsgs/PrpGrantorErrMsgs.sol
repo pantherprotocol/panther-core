@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.16;
 
 string constant ERR_ZERO_PROCESSOR_ADDR = "GR:E0";
 string constant ERR_ZERO_CURATOR_ADDR = "GR:E1";

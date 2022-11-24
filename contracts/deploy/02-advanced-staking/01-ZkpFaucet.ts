@@ -1,12 +1,22 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
+import {
+    reuseEnvAddress,
+    getContractEnvAddress,
+    verifyUserConsentOnProd,
+} from '../../lib/deploymentHelpers';
+
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
     const {deploy} = deployments;
     const {deployer} = await getNamedAccounts();
 
-    console.log(`Deploying ZKP Faucet on ${hre.network.name}...`);
+    console.log(`Deploying ZkpFaucet on ${hre.network.name}...`);
+    await verifyUserConsentOnProd(hre, deployer);
+    if (reuseEnvAddress(hre, 'ZKP_FAUCET')) return;
+
+    const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
 
     const tokenPrice = '0';
     const maxAmountToPay = '0';
@@ -17,7 +27,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         from: deployer,
         args: [
             deployer,
-            process.env.ZKP_TOKEN_ADDRESS,
+            zkpToken,
             tokenPrice,
             maxAmountToPay,
             cupSize,
@@ -29,4 +39,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 export default func;
 
-func.tags = ['ZkpFaucet'];
+func.tags = ['faucet'];
+func.dependencies = ['check-params'];

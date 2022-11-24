@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+// The code is inspired by applied ZKP
 /*
 Some of the functions are modified version or inspired by this code:
 https://github.com/appliedzkp/maci/blob/master/crypto/ts/index.ts

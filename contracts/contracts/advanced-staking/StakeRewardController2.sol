@@ -1,6 +1,8 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: BUSL-3.0
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity 0.8.4;
 
 import "./interfaces/IRewardAdviser.sol";
 
@@ -28,6 +30,7 @@ interface IEntitled {
  * - shall be authorized as the "RewardAdviser" with the RewardMaster for "classic" stakes
  * - shall hold reward tokens on its balance
  */
+// slither-disable-next-line missing-inheritance
 contract StakeRewardController2 is IRewardAdviser {
     // solhint-disable var-name-mixedcase
 
@@ -44,6 +47,7 @@ contract StakeRewardController2 is IRewardAdviser {
     address public immutable REWARD_MASTER;
 
     // bytes4(keccak256("classic"))
+    // slither-disable-next-line unused-state
     bytes4 private constant STAKE_TYPE = 0x4ab0941a;
     // bytes4(keccak256(abi.encodePacked(bytes4(keccak256("unstake"), STAKE_TYPE)))
     bytes4 private constant UNSTAKE = 0x493bdf45;
@@ -126,9 +130,12 @@ contract StakeRewardController2 is IRewardAdviser {
         uint256 amount
     ) external {
         require(_reentrancyStatus != 1, "SRC: can't be re-entered");
+        // slither-disable-next-line write-after-write
         _reentrancyStatus = 1;
 
         require(OWNER == msg.sender, "SRC: unauthorized");
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             (token != REWARD_TOKEN) ||
                 (block.timestamp >= ZKP_RESCUE_ALLOWED_SINCE),
@@ -136,6 +143,8 @@ contract StakeRewardController2 is IRewardAdviser {
         );
 
         _transferErc20(token, to, amount);
+        // state variable intentionally written after the external call
+        // slither-disable-next-line reentrancy-no-eth
         _reentrancyStatus = 2;
     }
 
@@ -155,6 +164,7 @@ contract StakeRewardController2 is IRewardAdviser {
         unclaimedRewards = _unclaimedRewards - reward;
 
         // trusted contract - reentrancy guard unneeded
+        // slither-disable-next-line reentrancy-benign,reentrancy-events
         _transferErc20(REWARD_TOKEN, staker, reward);
         emit RewardPaid(staker, reward);
     }
@@ -165,12 +175,14 @@ contract StakeRewardController2 is IRewardAdviser {
         returns (address staker)
     {
         uint256 stakerAndAmount;
-        // solhint-disable-next-line no-inline-assembly
+        // solhint-disable no-inline-assembly
+        // slither-disable-next-line assembly
         assembly {
             // the 1st word (32 bytes) contains the `message.length`
             // we need the (entire) 2nd word ..
             stakerAndAmount := mload(add(message, 0x20))
         }
+        // solhint-enable no-inline-assembly
         staker = address(uint160(stakerAndAmount >> 96));
     }
 
@@ -181,6 +193,7 @@ contract StakeRewardController2 is IRewardAdviser {
         returns (uint256 reward)
     {
         // trusted contract - reentrancy guard unneeded
+        // slither-disable-next-line reentrancy-benign
         reward = IEntitled(REWARD_MASTER).entitled(staker);
     }
 
@@ -189,11 +202,13 @@ contract StakeRewardController2 is IRewardAdviser {
         address to,
         uint256 value
     ) internal {
-        // solhint-disable-next-line avoid-low-level-calls
+        // solhint-disable avoid-low-level-calls
+        // slither-disable-next-line low-level-calls
         (bool success, bytes memory data) = token.call(
             // bytes4(keccak256(bytes('transfer(address,uint256)')));
             abi.encodeWithSelector(0xa9059cbb, to, value)
         );
+        // solhint-enable avoid-low-level-calls
         require(
             success && (data.length == 0 || abi.decode(data, (bool))),
             "SRC: transferErc20 failed"

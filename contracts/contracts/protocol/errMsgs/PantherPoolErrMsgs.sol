@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.16;
 
 // CommitmentGenerator contract
 string constant ERR_TOO_LARGE_PUBKEY = "CG:E1";

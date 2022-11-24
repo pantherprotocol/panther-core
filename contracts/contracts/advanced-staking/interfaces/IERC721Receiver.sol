@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (token/ERC721/IERC721Receiver.sol)
-
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity ^0.8.4;
 
 /**
  * @title ERC721 token receiver interface

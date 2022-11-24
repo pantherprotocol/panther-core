@@ -1,6 +1,7 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: BUSL-3.0
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.16;
 
 import { CIPHERTEXT1_WORDS, OUT_RWRD_UTXOs, PUBKEY_WORDS } from "../../common/Constants.sol";
 import { G1Point } from "../../common/Types.sol";
@@ -33,12 +34,14 @@ abstract contract AdvancedStakingDataDecoder {
         uint256[NUM_DATA_SLOTS + 1] memory words;
         // the 1st slot is `data.length`, then slots with values follow
         for (uint256 i = 1; i <= NUM_DATA_SLOTS; ++i) {
-            // solhint-disable-next-line no-inline-assembly
+            // solhint-disable no-inline-assembly
+            // slither-disable-next-line assembly
             assembly {
                 let offset := mul(i, 0x20)
                 let word := mload(add(data, offset))
                 mstore(add(words, offset), word)
             }
+            // solhint-enable no-inline-assembly
         }
         /*
             `bytes memory sample = 0x00010203..1f2021` stored in the memory like this:

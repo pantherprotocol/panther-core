@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable var-name-mixedcase
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.16;
 
 import "./Hasher.sol";
 import "./TriadMerkleZeros.sol";
@@ -166,7 +166,10 @@ contract TriadIncrementalMerkleTrees is
     {
         leftLeafId = _nextLeafId;
 
+        // here the variable is intentionally declared only ...
+        // slither-disable-next-line uninitialized-local
         bytes32[TREE_DEPTH] memory zeros;
+        // ... and initialized in this call
         populateZeros(zeros);
 
         // index of a "current" node (0 for the leftmost node/leaf of a level)
@@ -222,7 +225,6 @@ contract TriadIncrementalMerkleTrees is
     }
 
     /// private functions follow (some of them made `internal` to ease testing)
-
     function _isFullTree(uint256 leftLeafId) internal pure returns (bool) {
         unchecked {
             return
@@ -287,5 +289,6 @@ contract TriadIncrementalMerkleTrees is
 
     // NOTE: The contract is supposed to run behind a proxy DELEGATECALLing it.
     // For compatibility on upgrades, decrease `__gap` if new variables added.
+    // slither-disable-next-line unused-state
     uint256[50] private __gap;
 }

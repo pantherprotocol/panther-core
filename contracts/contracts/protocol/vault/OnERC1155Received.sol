@@ -1,5 +1,6 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: BUSL-3.0
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
+pragma solidity ^0.8.16;
 
 /// @dev Implementation of ERC1155:onERC1155Received interface
 abstract contract OnERC1155Received {

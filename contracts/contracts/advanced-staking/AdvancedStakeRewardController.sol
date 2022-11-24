@@ -1,6 +1,7 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: BUSL-3.0
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-pragma solidity ^0.8.0;
+pragma solidity 0.8.16;
 
 import "./actions/AdvancedStakingDataDecoder.sol";
 import "./actions/Constants.sol";
@@ -118,8 +119,6 @@ contract AdvancedStakeRewardController is
 
     // solhint-enable var-name-mixedcase
 
-    uint8 private _reentrancyStatus;
-
     /// @notice Amounts of $ZKP and NFT allocated for rewards
     Limits public limits;
 
@@ -208,6 +207,8 @@ contract AdvancedStakeRewardController is
         external
         onlyOwner
     {
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             _newParams.startTime != 0 &&
                 _newParams.endTime > _newParams.startTime &&
@@ -238,6 +239,8 @@ contract AdvancedStakeRewardController is
             "ARC: low nft rewards limit"
         );
 
+        // known contract - no reentrancy guard needed
+        // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events
         address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
 
         bool isUpdated = _updateNftRewardsLimitAndAllowance(
@@ -258,6 +261,8 @@ contract AdvancedStakeRewardController is
     /// @dev Anyone may call it.
     function updateZkpRewardsLimit() external {
         Limits memory _limits = limits;
+        // known contract call - no reentrancy guard needed
+        // slither-disable-next-line reentrancy-benign,reentrancy-events
         address vault = IPantherPoolV0(PANTHER_POOL).VAULT();
 
         // Updating the rewards limits
@@ -279,20 +284,18 @@ contract AdvancedStakeRewardController is
         address token,
         address to,
         uint256 amount
-    ) external {
-        require(_reentrancyStatus != 1, "ARC: can't be re-entered");
-        _reentrancyStatus = 1;
-
+    ) external nonReentrant {
         RewardParams memory _rewardParams = rewardParams;
 
         require(OWNER == msg.sender, "ARC: unauthorized");
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             (token != ZKP_TOKEN) || (block.timestamp > _rewardParams.endTime),
             "ARC: too early withdrawal"
         );
 
         _claimErc20(token, to, amount);
-        _reentrancyStatus = 2;
     }
 
     // Implementation of the {IERC721Receiver}. It accepts NFT_TOKEN transfers only.
@@ -364,6 +367,7 @@ contract AdvancedStakeRewardController is
             if (_totals.nftRewards < _limits.nftRewards) {
                 // `_limits.nftRewards > 0` therefore `NFT_TOKEN != address(0)`
                 // trusted contract called - no reentrancy guard needed
+                // slither-disable-next-line reentrancy-benign,reentrancy-no-eth
                 nftTokenId = INftGrantor(NFT_TOKEN).grantOneToken(
                     address(this)
                 );
@@ -397,6 +401,8 @@ contract AdvancedStakeRewardController is
         ];
 
         uint32 createdAt = safe32TimeNow();
+        // known contract call - no reentrancy guard needed
+        // slither-disable-next-line reentrancy-benign,reentrancy-events
         uint256 leftLeafId = IPantherPoolV0(PANTHER_POOL).generateDeposits(
             tokens,
             subIds,
@@ -444,9 +450,12 @@ contract AdvancedStakeRewardController is
         );
 
         // 3153600000 = 365 * 24 * 3600 seconds * 100 percents
+        // slither-disable-next-line too-many-digits
         zkpAmount = (stakeAmount * apy * period) / 3153600000;
         // round to 2nd digits after decimal point: X.YZ{0..0} x 1e18
         unchecked {
+            // rounding (accuracy loss is assumed)
+            // slither-disable-next-line divide-before-multiply
             zkpAmount = (zkpAmount / 1e16) * (1e16);
         }
     }
@@ -483,6 +492,7 @@ contract AdvancedStakeRewardController is
         address vault
     ) private returns (bool isUpdated) {
         // Reentrancy guard unneeded for the trusted contract call
+        // slither-disable-next-line reentrancy-benign,reentrancy-events,reentrancy-no-eth
         uint256 balance = ZKP_TOKEN.safeBalanceOf(address(this));
 
         uint96 newLimit;
@@ -497,6 +507,7 @@ contract AdvancedStakeRewardController is
 
             // Approve the vault to transfer tokens from this contract
             // Reentrancy guard unneeded for the trusted contract call
+            // slither-disable-next-line reentrancy-benign,reentrancy-events,reentrancy-no-eth
             ZKP_TOKEN.safeApprove(vault, uint256(newLimit));
         }
     }
@@ -525,6 +536,7 @@ contract AdvancedStakeRewardController is
             if (isAllowanceToBeUpdated)
                 // Approve the vault to transfer tokens from this contract
                 // Reentrancy guard unneeded for the trusted contract call
+                // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events
                 NFT_TOKEN.safeSetApprovalForAll(vault, true);
         }
     }

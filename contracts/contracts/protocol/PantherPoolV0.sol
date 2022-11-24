@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-pragma solidity ^0.8.4;
+pragma solidity 0.8.16;
 
 import "../common/Constants.sol";
 import "./errMsgs/PantherPoolErrMsgs.sol";
@@ -51,6 +51,7 @@ contract PantherPoolV0 is
 {
     // The contract is supposed to run behind a proxy DELEGATECALLing it.
     // On upgrades, adjust `__gap` to match changes of the storage layout.
+    // slither-disable-next-line shadowing-state unused-state
     uint256[50] private __gap;
 
     // solhint-disable var-name-mixedcase
@@ -69,6 +70,7 @@ contract PantherPoolV0 is
     uint24 public exitDelay;
 
     // (rest of the storage slot) reserved for upgrades
+    // slither-disable-next-line unused-state,constable-states
     uint200 private _reserved;
 
     // solhint-enable var-name-mixedcase
@@ -117,7 +119,7 @@ contract PantherPoolV0 is
     /// @notice Update the exit time and the exit delay
     /// @dev Owner only may calls
     function updateExitTimes(uint32 newExitTime, uint24 newExitDelay)
-        public
+        external
         onlyOwner
     {
         require(
@@ -154,17 +156,28 @@ contract PantherPoolV0 is
 
         uint32 timestamp = safe32TimeNow();
         if (createdAt != 0) {
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             require(createdAt <= timestamp, ERR_TOO_EARLY_CREATED_AT);
             timestamp = createdAt;
         }
 
+        // variables get initialized inside the loop bellow
+        // slither-disable-next-line uninitialized-local
         bytes32[OUT_MAX_UTXOs] memory commitments;
+        // slither-disable-next-line uninitialized-local
         bytes[OUT_MAX_UTXOs] memory perUtxoData;
 
         // Types of UTXO data messages packed into one byte
         uint8 msgTypes = uint8(0);
 
         for (uint256 utxoIndex = 0; utxoIndex < OUT_MAX_UTXOs; utxoIndex++) {
+            // The next call can't trigger the "calls loop" since it triggers
+            // external calls to known contracts, which are trusted to handle
+            // reentrancy risk properly.
+            // Slither's "disable calls-loop detector" directives are inserted
+            // in lines (bellow) with external calls rather than here only (as
+            // otherwise slither reports false-positive issues).
             (uint160 zAssetId, uint64 scaledAmount) = _processDepositedAsset(
                 tokens[utxoIndex],
                 tokenIds[utxoIndex],
@@ -225,6 +238,8 @@ contract PantherPoolV0 is
     /// @param exitCommitment Commitment to the UTXO spending key and the recipient address.
     /// MUST be equal to keccak256(abi.encode(uint256(privSpendingKey), address(recipient)).
     function commitToExit(bytes32 exitCommitment) external {
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line incorrect-equality,timestamp
         require(
             exitCommitments[exitCommitment] == uint32(0),
             ERR_EXITCOMMIT_EXISTS
@@ -258,6 +273,8 @@ contract PantherPoolV0 is
         uint256 cacheIndexHint
     ) external nonReentrant {
         // if exitTime == 0 -> `exit` is not accepted since init phase is not finished yet
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             safe32TimeNow() >= exitTime && exitTime != 0,
             ERR_TOO_EARLY_EXIT
@@ -342,6 +359,9 @@ contract PantherPoolV0 is
         // At this point, a non-zero deposit of a real asset (token) expected
         uint256 _tokenId;
         ZAsset memory asset;
+
+        // Note comments on "calls-loop" in `function generateDeposits`
+        // slither-disable-next-line calls-loop
         (zAssetId, _tokenId, , asset) = IZAssetsRegistry(ASSET_REGISTRY)
             .getZAssetAndIds(token, subId);
         require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);
@@ -354,6 +374,7 @@ contract PantherPoolV0 is
         // (when and if future upgrades implement change claiming)
         if (change > 0) emit Change(token, change);
 
+        // slither-disable-next-line calls-loop
         IVault(VAULT).lockAsset(
             LockData(
                 asset.tokenType,
@@ -373,9 +394,13 @@ contract PantherPoolV0 is
         bytes32 commitment = keccak256(abi.encode(privSpendingKey, recipient));
 
         uint32 commitmentTime = exitCommitments[commitment];
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(commitmentTime != uint32(0), ERR_EXITCOMMIT_MISSING);
 
         uint256 allowedTime = uint256(commitmentTime) + uint256(exitDelay);
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(timeNow() > allowedTime, ERR_EXITCOMMIT_LOCKED);
 
         // Let's gain some gas back

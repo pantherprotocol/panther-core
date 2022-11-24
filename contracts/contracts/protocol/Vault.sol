@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: BUSL-3.0
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-pragma solidity ^0.8.4;
+pragma solidity 0.8.16;
 
 import { ERC20_TOKEN_TYPE, ERC721_TOKEN_TYPE, ERC1155_TOKEN_TYPE } from "../common/Constants.sol";
 import "./errMsgs/VaultErrMsgs.sol";
@@ -15,9 +15,9 @@ import "./vault/OnERC721Received.sol";
  * @title Vault
  * @author Pantherprotocol Contributors
  * @notice Holder of assets (tokens) for `PantherPool` contract
- * @dev the contract is expected to transfer asset from user to
- * itself(Lock) and vice versa(Unlock). it uses
- * TransferHelper library to interact with tokens.
+ * @dev It transfers assets from user to itself (Lock) and vice versa (Unlock).
+ * `PantherPool` is assumed to be the `owner` that is authorized to trigger
+ * locking/unlocking assets.
  */
 contract Vault is
     ImmutableOwnable,
@@ -32,7 +32,9 @@ contract Vault is
         // Proxy-friendly: no storage initialization
     }
 
-    // The caller (i.e. Owner) must guard against reentrancy
+    // The caller (i.e. the owner) is supposed to apply reentrancy guard.
+    // If an adversarial "token", being called by this function, re-enters it
+    // directly, `onlyOwner` will revert as `msg.sender` won't be `owner`.
     function lockAsset(LockData calldata data)
         external
         override
@@ -40,18 +42,23 @@ contract Vault is
         checkLockData(data)
     {
         if (data.tokenType == ERC20_TOKEN_TYPE) {
+            // Owner, who only may call this code, is trusted to protect
+            // against "Arbitrary from in transferFrom" vulnerability
+            // slither-disable-next-line arbitrary-send-erc20,reentrancy-benign,reentrancy-events
             data.token.safeTransferFrom(
                 data.extAccount,
                 address(this),
                 data.extAmount
             );
         } else if (data.tokenType == ERC721_TOKEN_TYPE) {
+            // slither-disable-next-line reentrancy-benign,reentrancy-events
             data.token.erc721SafeTransferFrom(
                 data.tokenId,
                 data.extAccount,
                 address(this)
             );
         } else if (data.tokenType == ERC1155_TOKEN_TYPE) {
+            // slither-disable-next-line reentrancy-benign,reentrancy-events
             data.token.erc1155SafeTransferFrom(
                 data.extAccount,
                 address(this),
@@ -66,7 +73,9 @@ contract Vault is
         emit Locked(data);
     }
 
-    // The caller (i.e. Owner) must guard against reentrancy
+    // The caller (i.e. the owner) is supposed to apply reentrancy guard.
+    // If an adversarial "token", being called by this function, re-enters it
+    // directly, `onlyOwner` will revert as `msg.sender` won't be `owner`.
     function unlockAsset(LockData calldata data)
         external
         override
@@ -74,14 +83,17 @@ contract Vault is
         checkLockData(data)
     {
         if (data.tokenType == ERC20_TOKEN_TYPE) {
+            // slither-disable-next-line reentrancy-benign,reentrancy-events
             data.token.safeTransfer(data.extAccount, data.extAmount);
         } else if (data.tokenType == ERC721_TOKEN_TYPE) {
+            // slither-disable-next-line reentrancy-benign,reentrancy-events
             data.token.erc721SafeTransferFrom(
                 data.tokenId,
                 address(this),
                 data.extAccount
             );
         } else if (data.tokenType == ERC1155_TOKEN_TYPE) {
+            // slither-disable-next-line reentrancy-benign,reentrancy-events
             data.token.erc1155SafeTransferFrom(
                 address(this),
                 data.extAccount,

@@ -1,6 +1,8 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: BUSL-3.0
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity 0.8.4;
 
 import "./actions/StakingMsgProcessor.sol";
 import "./interfaces/IActionMsgReceiver.sol";
@@ -122,6 +124,7 @@ contract Staking is
      * @param data - Arbitrary data for "RewardMaster" (zero, if inapplicable)
      * @return stake ID
      */
+    // slither-disable-next-line external-function
     function stake(
         uint256 amount,
         bytes4 stakeType,
@@ -172,6 +175,8 @@ contract Staking is
         Stake memory _stake = stakes[msg.sender][stakeID];
 
         require(_stake.claimedAt == 0, "Staking: Stake claimed");
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(_stake.lockedTill < safe32TimeNow(), "Staking: Stake locked");
 
         if (_stake.delegatee != address(0)) {
@@ -265,6 +270,7 @@ contract Staking is
     }
 
     /// @inheritdoc IVotingPower
+    // slither-disable-next-line external-function
     function latestGlobalsSnapshotBlock()
         public
         view
@@ -356,7 +362,11 @@ contract Staking is
         uint256 _now = timeNow();
 
         if (_terms.allowedTill != 0) {
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             require(_terms.allowedTill > _now, "Staking:E3");
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             require(_terms.allowedTill > _terms.allowedSince, "Staking:E4");
         }
 
@@ -415,6 +425,7 @@ contract Staking is
         require(_terms.isEnabled, "Staking: Terms unknown or disabled");
 
         require(amount > 0, "Staking: Amount not set");
+        // slither-disable-next-line similar-names
         uint256 _totalStake = amount + uint256(totalStaked);
         require(_totalStake < 2**96, "Staking: Too big amount");
 
@@ -430,16 +441,21 @@ contract Staking is
         );
 
         uint32 _now = safe32TimeNow();
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             _terms.allowedSince == 0 || _now >= _terms.allowedSince,
             "Staking: Not yet allowed"
         );
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(
             _terms.allowedTill == 0 || _terms.allowedTill > _now,
             "Staking: Not allowed anymore"
         );
 
         // known contract - reentrancy guard and `safeTransferFrom` unneeded
+        // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events
         require(
             TOKEN.transferFrom(staker, address(this), amount),
             "Staking: transferFrom failed"
@@ -448,6 +464,8 @@ contract Staking is
         uint256 stakeID = stakes[staker].length;
 
         uint32 lockedTill = _terms.lockedTill;
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (lockedTill == 0) {
             uint256 period = _terms.exactLockPeriod == 0
                 ? _terms.minLockPeriod
@@ -529,6 +547,8 @@ contract Staking is
 
     function _takeSnapshot(address _account) internal {
         uint32 curBlockNum = safe32BlockNow();
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (latestSnapshotBlock(_account) < curBlockNum) {
             // make new snapshot as the latest one taken before current block
             snapshots[_account].push(
@@ -618,6 +638,8 @@ contract Staking is
     }
 
     function _sanitizeBlockNum(uint256 blockNum) private view {
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(blockNum <= safe32BlockNow(), "Staking: Too big block number");
     }
 
@@ -651,12 +673,14 @@ contract Staking is
         bytes4 action = _encodeUnstakeActionType(_stake.stakeType);
         bytes memory message = _packStakingActionMsg(staker, _stake, data);
         // known contract - reentrancy guard unneeded
-        // solhint-disable-next-line no-empty-blocks
+        // solhint-disable no-empty-blocks
+        // slither-disable-next-line reentrancy-benign,reentrancy-events
         try REWARD_MASTER.onAction(action, message) {} catch {
             emit RewardMasterRevert(staker, _stake.id);
             // REWARD_MASTER must be unable to revert forced calls
             require(_isForced, "Staking: REWARD_MASTER reverts");
         }
+        // solhint-enable no-empty-blocks
     }
 
     modifier stakeExist(address staker, uint256 stakeID) {

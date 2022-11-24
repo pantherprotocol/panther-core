@@ -1,6 +1,8 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: BUSL-3.0
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity 0.8.4;
 
 import "./interfaces/IErc20Min.sol";
 import "./interfaces/ITotalStaked.sol";
@@ -175,6 +177,8 @@ contract StakeRewardController is
 
         REWARDING_START = rewardingStart;
         uint256 rewardingEnd = rewardingStart + REWARDING_DURATION;
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         require(rewardingEnd > timeNow(), "SRC: E2");
 
         REWARDING_END = rewardingEnd;
@@ -187,6 +191,8 @@ contract StakeRewardController is
 
     /// @notice If the contract is active (i.e. processes new stakes)
     function isActive() public view returns (bool) {
+        // false positive
+        // slither-disable-next-line timestamp
         return activeSince != 0;
     }
 
@@ -216,6 +222,8 @@ contract StakeRewardController is
         // the Staking contract never sets it in messages (it's a bug)
         uint32 claimedAt = action == UNSTAKE ? safe32TimeNow() : 0;
 
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (stakedAt < activeSince) {
             require(action == UNSTAKE, "SRC: invalid 'old' action");
             _countUnstakeAndPayReward(staker, stakeAmount, stakedAt, claimedAt);
@@ -254,8 +262,13 @@ contract StakeRewardController is
 
             // finally use extrapolation, unless data from the past requested
             uint32 _timeNow = safe32TimeNow();
+            // slither-disable-next-line incorrect-equality,timestamp
             bool isForNow = timestamp == 0 || timestamp == _timeNow;
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             bool isForFuture = timestamp > _timeNow;
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             if (isForNow || isForFuture) {
                 uint32 till = isForNow ? _timeNow : timestamp;
                 (scArpt, ) = _computeRewardsAddition(
@@ -297,12 +310,18 @@ contract StakeRewardController is
             );
             require(amount != 0, "SRC: unexpected zero amount");
 
+            // "Costly operations" triggered by the next line are acceptable.
+            // Slither's "disable costly-loop detector" directives are inserted
+            // in lines (bellow) with such operations rather than here only (as
+            // otherwise slither reports false-positive issues).
             _countNewStake(amount, stakedAt);
 
             lastDate = stakedAt;
         }
 
         if (historyEnd != 0) {
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line timestamp
             require(
                 historyEnd >= rewardUpdatedOn && historyEnd <= safe32TimeNow(),
                 "SRC: wrong historyEnd"
@@ -327,6 +346,7 @@ contract StakeRewardController is
         activeSince = _timeNow;
 
         // Call to a trusted contract - no reentrancy guard needed
+        // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events
         uint256 actualTotalStaked = ITotalStaked(STAKING).totalStaked();
         uint256 savedTotalStaked = uint256(totalStaked);
 
@@ -363,6 +383,8 @@ contract StakeRewardController is
             // if not registered yet for this time (i.e. block)
             scArptHistory[stakedAt] = scArpt != 0 ? scArpt : ZERO_SC_ARPT;
         }
+        // Note comments on "costly-loop" in `function saveHistoricalData`
+        // slither-disable-next-line costly-loop
         totalStaked = safe96(uint256(totalStaked) + uint256(stakeAmount));
     }
 
@@ -381,7 +403,10 @@ contract StakeRewardController is
         totalStaked = safe96(uint256(totalStaked) - uint256(stakeAmount));
 
         if (reward != 0) {
-            // trusted contract - nether reentrancy guard nor safeTransfer required
+            // trusted contract - nether reentrancy guard nor safeTransfer required.
+            // "from" is fixed - "arbitrary from in transferFrom" vulnerability
+            // can't be exploited.
+            // slither-disable-next-line reentrancy-benign,arbitrary-send-erc20
             require(
                 IErc20Min(REWARD_TOKEN).transferFrom(
                     REWARD_TREASURY,
@@ -390,6 +415,7 @@ contract StakeRewardController is
                 ),
                 "SRC: Internal transfer failed"
             );
+            // slither-disable-next-line reentrancy-events
             emit RewardPaid(staker, reward);
         }
     }
@@ -407,6 +433,8 @@ contract StakeRewardController is
         }
 
         uint32 prevActionTime = rewardUpdatedOn;
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (prevActionTime >= actionTime) return newScArpt;
 
         uint256 rewardAdded;
@@ -416,11 +444,15 @@ contract StakeRewardController is
             newScArpt,
             totalStaked
         );
+        // Note comments on "costly-loop" in `function saveHistoricalData`
+        // slither-disable-next-line costly-loop
         scAccumRewardPerToken = newScArpt;
         uint96 _totalRewardAccrued = safe96(
             uint256(totalRewardAccrued) + rewardAdded
         );
+        // slither-disable-next-line costly-loop
         totalRewardAccrued = _totalRewardAccrued;
+        // slither-disable-next-line costly-loop
         rewardUpdatedOn = actionTime;
 
         emit RewardAdded(rewardAdded, _totalRewardAccrued, newScArpt);
@@ -432,10 +464,16 @@ contract StakeRewardController is
         uint256 fromScArpt,
         uint256 _totalStaked
     ) internal view returns (uint256 newScArpt, uint256 rewardAdded) {
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         if (fromTime >= REWARDING_END || tillTime <= REWARDING_START)
             return (fromScArpt, 0);
 
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         uint256 from = fromTime >= REWARDING_START ? fromTime : REWARDING_START;
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         uint256 till = tillTime <= REWARDING_END ? tillTime : REWARDING_END;
         uint256 scRewardAdded = (till - from) * sc_REWARD_PER_SECOND;
 
@@ -452,6 +490,8 @@ contract StakeRewardController is
         if (scArpt > 0) return scArpt;
 
         // Stake created within a period this contract has no stake data for ?
+        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+        // slither-disable-next-line timestamp
         bool isBlindPeriodStake = stakedAt > prefilledHistoryEnd &&
             stakedAt < activeSince;
         if (isBlindPeriodStake) {

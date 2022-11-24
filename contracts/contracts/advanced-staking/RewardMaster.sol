@@ -1,6 +1,8 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: BUSL-3.0
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity 0.8.4;
 
 import "./actions/RewardAdvisersList.sol";
 import "./interfaces/IActionMsgReceiver.sol";
@@ -115,7 +117,9 @@ contract RewardMaster is
     event BalanceAdjusted(uint256 adjustment);
 
     constructor(
+        // slither-disable-next-line similar-names
         address _rewardToken,
+        // slither-disable-next-line similar-names
         address _rewardPool,
         address _owner
     ) ImmutableOwnable(_owner) {
@@ -131,8 +135,10 @@ contract RewardMaster is
 
     /// @notice Returns reward token amount entitled to the given user/account
     // This amount the account would get if shares would be redeemed now
+    // slither-disable-next-line external-function
     function entitled(address account) public view returns (uint256 reward) {
         UserRecord memory rec = records[account];
+        // slither-disable-next-line incorrect-equality
         if (rec.shares == 0) return 0;
 
         // no reentrancy guard needed for the known contract call
@@ -153,6 +159,7 @@ contract RewardMaster is
     function onAction(bytes4 action, bytes memory message) external override {
         IRewardAdviser adviser = _getRewardAdviserOrRevert(msg.sender, action);
         // no reentrancy guard needed for the known contract call
+        // slither-disable-next-line reentrancy-benign,reentrancy-no-eth
         IRewardAdviser.Advice memory advice = adviser.getRewardAdvice(
             action,
             message
@@ -231,6 +238,7 @@ contract RewardMaster is
         // and `sharesToRedeem` does not exceed `rec.shares`
         newShares = uint256(rec.shares) - sharesToRedeem;
 
+        // slither-disable-next-line incorrect-equality
         uint256 offsetRedeemed = newShares == 0
             ? uint256(rec.offset)
             : (uint256(rec.offset) * sharesToRedeem) / uint256(rec.shares);
@@ -295,6 +303,7 @@ contract RewardMaster is
         if (reward != 0) {
             // known contract - nether reentrancy guard nor safeTransfer required
             require(
+                // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events
                 IErc20Min(REWARD_TOKEN).transfer(to, reward),
                 "RM: Internal transfer failed"
             );
@@ -322,6 +331,8 @@ contract RewardMaster is
 
         uint32 blocksPast = _blockNow - lastVestedBlock;
         if (
+            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario
+            // slither-disable-next-line incorrect-equality,timestamp
             (blocksPast == 0) ||
             (isMinVestingBlocksApplied && blocksPast < MIN_VESTING_BLOCKS) ||
             _totalShares < MIN_SHARES_REWARDED
@@ -331,6 +342,7 @@ contract RewardMaster is
         }
 
         // known contracts, no reentrancy guard needed
+        // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events
         uint256 newlyVested = IRewardPool(REWARD_POOL).vestRewards();
         newBalance = IErc20Min(REWARD_TOKEN).balanceOf(address(this));
 

@@ -1,6 +1,8 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: BUSL-3.0
+// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 // solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity ^0.8.4;
 
 import "../interfaces/IStakingTypes.sol";
 
@@ -62,7 +64,8 @@ abstract contract StakingMsgProcessor {
 
         uint256 stakerAndAmount;
         uint256 idAndStamps;
-        // solhint-disable-next-line no-inline-assembly
+        // solhint-disable no-inline-assembly
+        // slither-disable-next-line assembly
         assembly {
             // the 1st word (32 bytes) contains the `message.length`
             // we need the (entire) 2nd word ..
@@ -70,6 +73,7 @@ abstract contract StakingMsgProcessor {
             // .. and (16 bytes of) the 3rd word
             idAndStamps := mload(add(message, 0x40))
         }
+        // solhint-enable no-inline-assembly
 
         staker = address(uint160(stakerAndAmount >> 96));
         amount = uint96(stakerAndAmount & 0xFFFFFFFFFFFFFFFFFFFFFFFF);

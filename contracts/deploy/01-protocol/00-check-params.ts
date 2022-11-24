@@ -15,7 +15,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     if (!isLocal(hre)) {
         if (!process.env.DAO_MULTISIG_ADDRESS)
             throw 'Undefined DAO_MULTISIG_ADDRESS';
-        if (!process.env.POOL_EXIT_TIME) throw 'Undefined POOL_EXIT_TIME';
     } else {
         if (!fulfillLocalAddress(hre, 'ZKP_TOKEN'))
             throw 'Undefined ZKP_TOKEN_LOCALHOST';

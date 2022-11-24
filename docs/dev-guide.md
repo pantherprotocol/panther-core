@@ -5,10 +5,10 @@ staking and rewards.
 
 ## Prerequisites
 
-- Clone `panther-core` from [GitLab](https://gitlab.com/pantherprotocol/panther-core).
+- Clone `panther-core` from [GitHub](https://github.com/pantherprotocol/panther-core).
 
-- Clone `zkp-token` from [GitHub](https://github.com/pantherprotocol/zkp-token)
-  or [GitLab](https://gitlab.com/pantherprotocol/zkp-token).
+- Clone `zkp-token` from [GitHub](https://github.com/pantherprotocol/zkp-token).
+  **N.B.** this will be published soon.
 
 - Run `yarn` in both.
 

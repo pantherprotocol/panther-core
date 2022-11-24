@@ -43,6 +43,6 @@ test('should format APR correctly', async () => {
     const stakingAprValue = await stakingAprValueElement?.innerHTML;
 
     await waitFor(() => {
-        expect(stakingAprValue).toBe('40.00%');
+        expect(stakingAprValue).toBe('40%');
     });
 });

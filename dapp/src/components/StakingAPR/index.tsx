@@ -16,7 +16,9 @@ export default function StakingAPR(props: {advancedStakingAPY: number}) {
                 className="value"
                 data-testid="advanced-staking-rewards_staking-apr_value"
             >
-                {formatPercentage(props.advancedStakingAPY / 100)}
+                {formatPercentage(props.advancedStakingAPY / 100, {
+                    decimals: 0,
+                })}
             </Typography>
         </Box>
     );

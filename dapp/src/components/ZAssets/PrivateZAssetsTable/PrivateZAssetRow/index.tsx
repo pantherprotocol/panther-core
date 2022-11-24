@@ -11,7 +11,7 @@ import {useWeb3React} from '@web3-react/core';
 import Balance from 'components/ZAssets/Balance';
 import AssetsDetails from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsTable';
 import pantherIcon from 'images/zAssets-panther-logo.svg';
-import {formatCurrency} from 'lib/format';
+import {formatCurrency, formatPercentage} from 'lib/format';
 import {calcUSDPrice} from 'lib/token-price';
 import {useAppSelector} from 'redux/hooks';
 import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
@@ -84,7 +84,12 @@ export default function PrivateZAssetRow() {
                     ) : (
                         <span className="content">
                             {active ? (
-                                <>{`${advancedStakingAPY} % APR`}</>
+                                <>
+                                    {`${formatPercentage(
+                                        advancedStakingAPY / 100,
+                                        {decimals: 0},
+                                    )} APR`}
+                                </>
                             ) : (
                                 '0'
                             )}

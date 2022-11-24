@@ -71,7 +71,12 @@ const AssetsDetailsTable = () => {
                         >
                             Amount:
                         </TableCell>
-                        <TableCell className="assets-details-table_header-cell">
+                        <TableCell
+                            className={`assets-details-table_header-cell ${
+                                !rewardsFilteredAndSorted.length &&
+                                'fixed-deposit-date-padding'
+                            }`}
+                        >
                             Deposit Date:
                         </TableCell>
                         <TableCell

@@ -13,6 +13,7 @@ contracts/contracts/common/proxy/
 contracts/coverage.json
 contracts/coverage/
 contracts/deployments/
+contracts/lib/TriadMerkleZeros.sol.template
 contracts/staging/
 contracts/scripts/slither.patch
 contracts/tenderly.yaml
@@ -22,16 +23,19 @@ contracts/testing/**/data
 contracts/typechain/
 contracts/types/
 contracts/typing/
+contracts/LICENSE*
+
 
 crypto/coverage/
 crypto/lib/
+crypto/LICENSE*
 
 dapp/public/preparation/
 dapp/src/types/blake-hash/
 dapp/src/types/circomlibjs/
 dapp/src/types/contracts/
 dapp/src/types/ffjavascript/
-
+dapp/LICENSE*
 
 .env
 .env.*
@@ -51,3 +55,4 @@ package-lock.json
 plantuml.skin
 tmp/
 yarn.lock
+LICENSE

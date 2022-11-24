@@ -14,6 +14,11 @@ This repository contains the heart of the Panther Protocol code:
 It does *not* include the zero knowledge circuits, although these will
 be published in the future.
 
+At the time of writing, the repository contains the code for v0.5 of
+the MASP, which provides both advanced staking and the foundation
+(i.e. a significant part but not the entirety) of the future v1.0
+release.
+
 Development / testing / contributing
 ------------------------------------
 

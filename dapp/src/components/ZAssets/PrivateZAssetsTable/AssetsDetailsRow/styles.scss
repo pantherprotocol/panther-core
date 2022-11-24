@@ -1,6 +1,98 @@
 @import '../../../../variables.scss';
 .zAsset-staking-holder {
+    background: rgba(164, 183, 219, 0.1);
+    backdrop-filter: blur(36px);
+    @media (max-width: $medium-screen-size) {
+        display: flex !important;
+        flex-direction: column;
+        height: 185px;
+        background: $assets-details-table-table-background !important;
+        mix-blend-mode: normal;
+        border-radius: 10px;
+        display: flex;
+        position: relative;
+        padding: 5px 14px 17px;
+        margin-bottom: 22px;
+    }
+
+    @media (max-width: $semi-smaller-screen-size) {
+        height: 185px;
+    }
+
+    &:last-child {
+        @media (max-width: $medium-screen-size) {
+            margin-bottom: 0;
+        }
+    }
+
+    .zAsset-staking-cell {
+        text-align: left;
+        padding-left: 55px;
+        @media (max-width: $medium-screen-size) {
+            padding: 10px 0 5px;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+        }
+
+        &:first-child {
+            text-align: left;
+            padding-left: 25px;
+            @media (max-width: $medium-screen-size) {
+                padding-left: 0;
+            }
+        }
+
+        &:last-child {
+            @media (max-width: $medium-screen-size) {
+                display: block;
+            }
+        }
+
+        &:nth-child(3) {
+            @media (max-width: $medium-screen-size) {
+                padding-left: 0;
+            }
+        }
+
+        &:nth-child(odd) {
+            font-weight: $bold-font-weight;
+            font-size: $normal-font-size;
+
+            @media (max-width: $medium-screen-size) {
+                font-size: $small-font-size;
+            }
+        }
+
+        .cell-title {
+            display: none;
+            @media (max-width: $medium-screen-size) {
+                display: flex;
+                font-size: $small-font-size;
+                font-weight: $light-font-weight;
+                color: $white;
+            }
+        }
+    }
     .staking-date {
-        font-weight: normal !important;
+        font-weight: $light-font-weight !important;
+        font-size: $normal-font-size;
+        padding-left: 80px;
+        @media (max-width: $medium-screen-size) {
+            font-size: $small-font-size;
+            padding-left: 0;
+        }
+    }
+
+    .zassets-staking-redeem-button-holder {
+        text-align: end;
+        padding-right: 8px;
+        @media (max-width: $medium-screen-size) {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 0 14px 17px 14px;
+        }
     }
 }

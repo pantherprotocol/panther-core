@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {Box, Divider, Typography} from '@mui/material';
 import PrimaryActionButton from 'components/Common/PrimaryActionButton';
 import ZAssetSwitchModal from 'components/ZAssets/ZAssetSwitchModal';
-import warningIcon from 'images/warning-icon.svg';
+import warningIcon from 'images/warning-icon-triangle.svg';
 
 import './styles.scss';
 

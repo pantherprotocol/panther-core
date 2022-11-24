@@ -2,21 +2,33 @@
 
 .asset-network {
     display: flex;
-    justify-content: space-between;
-    width: 60%;
     place-items: center;
 
     @media (max-width: $medium-screen-size) {
         width: 100%;
     }
 
+    @media (max-width: $small-screen-size) {
+        font-size: $smaller-font-size;
+        justify-content: space-evenly;
+    }
+
     .network-logo {
         padding: 7px 7px 1px 7px;
         background-color: #232d46;
         border-radius: 8px;
-        margin-right: 5px;
+        margin-right: 20px;
         width: 40px;
         height: 40px;
+        position: relative;
+        @media (max-width: $small-screen-size) {
+            padding: 10px 7px 1px 7px;
+        }
+
+        img {
+            position: absolute;
+            top: 10px;
+        }
     }
 
     .asset-name {

@@ -3,11 +3,14 @@ import {ReactElement, useState} from 'react';
 
 import {Typography, Button, Box} from '@mui/material';
 import RedeemRewardsWarningDialog from 'components/ZAssets/PrivateZAssetsTable/RedeemRewardsWarningDialog';
-import rightSideArrow from 'images/right-arrow-icon.svg';
+import {getUnixTime} from 'date-fns';
 import {formatTime} from 'lib/format';
 import {useAppSelector} from 'redux/hooks';
 import {showWalletActionInProgressSelector} from 'redux/slices/ui/web3-wallet-last-action';
-import {poolV0ExitTimeSelector} from 'redux/slices/wallet/poolV0';
+import {
+    poolV0ExitDelaySelector,
+    poolV0ExitTimeSelector,
+} from 'redux/slices/wallet/poolV0';
 
 import {RedeemRewardProperties} from './RedeemReward.interface';
 
@@ -60,16 +63,23 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
     const afterExitTime = exitTime ? exitTime * 1000 < Date.now() : false;
     const isRedemptionPossible = afterExitTime;
 
+    const exitDelay = useAppSelector(poolV0ExitDelaySelector);
+    const exitCommitmentTime = reward.exitCommitmentTime;
+
+    const isLockPeriodPassed =
+        exitCommitmentTime &&
+        exitDelay &&
+        exitCommitmentTime + exitDelay < getUnixTime(new Date());
+
     return (
         <Box>
             <Button
                 variant="contained"
-                className="redeem-button"
-                endIcon={
-                    !(showExitInProgress && isSelected) ? (
-                        <img src={rightSideArrow} />
-                    ) : null
-                }
+                className={`redeem-button ${
+                    ((exitCommitmentTime && !isLockPeriodPassed) ||
+                        (showExitInProgress && isSelected)) &&
+                    'in-progress'
+                }`}
                 disabled={!isRedemptionPossible || showExitInProgress}
                 onClick={openWarningDialog}
             >

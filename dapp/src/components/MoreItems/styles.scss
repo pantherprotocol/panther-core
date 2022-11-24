@@ -3,13 +3,23 @@
 .sidebar-more-items {
     display: flex;
     justify-content: space-between;
-    width: 56px;
-    height: 50px;
+    width: 52px;
+    height: 52px;
     padding: 8px;
-    margin: 0 15px;
+    margin-left: auto;
+    margin-right: 40px;
     border: 1px solid transparent;
     border-radius: 8px;
-    background: $dropdown-background;
+    background: linear-gradient(
+            180deg,
+            rgba(152, 195, 245, 0.05) 0%,
+            rgba(152, 195, 245, 0) 72%
+        ),
+        rgba(164, 183, 219, 0.1);
+    mix-blend-mode: normal;
+    box-shadow: 0px 2px 6px rgb(0 0 0 / 15%);
+    backdrop-filter: blur(18px);
+    cursor: pointer;
 
     &:hover,
     &:active,
@@ -17,30 +27,26 @@
         border: 1px solid $dropdown-border-color;
     }
 
-    @media (max-width: $medium-screen-size) {
-        width: 36px;
-        height: 30px;
-    }
-
     label {
-        top: 5px;
-        left: 7px;
+        top: 0;
+        left: 0;
         transition: none;
         transform: none;
+        color: $white;
+        cursor: pointer;
 
-        @media (max-width: $medium-screen-size) {
-            top: -4px;
-            left: -1px;
-
-            > svg {
-                width: 20px;
-                height: 20px;
-            }
+        svg {
+            width: 33px;
+            height: 33px;
         }
 
         &:focus {
             top: 10px;
             left: 10px;
         }
+    }
+
+    @media (max-width: $medium-screen-size) {
+        margin-right: 0;
     }
 }

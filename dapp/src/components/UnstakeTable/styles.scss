@@ -3,6 +3,7 @@
 .unstake-table {
     .MuiPaper-root.MuiTableContainer-root {
         box-shadow: none;
+        background: rgba(32, 33, 60, 1);
 
         .MuiTable-root {
             min-width: 400px;
@@ -13,6 +14,20 @@
                     font-size: $small-font-size;
                     color: $color-beige !important;
                     opacity: 1;
+                }
+            }
+
+            tbody {
+                background: $table-background;
+                tr {
+                    td {
+                        &:first-child {
+                            border-radius: 8px 0 0 8px;
+                        }
+                        &:last-child {
+                            border-radius: 0 8px 8px 0;
+                        }
+                    }
                 }
             }
         }

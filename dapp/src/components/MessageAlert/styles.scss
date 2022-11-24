@@ -1,64 +1,43 @@
 @import '../../variables.scss';
 
 .message-alert-container {
+    width: 100%;
     .alert-box {
-        position: relative;
+        width: 100%;
         height: 90px;
-        background: $card-background-darker;
-        opacity: 0.4;
-        backdrop-filter: blur(40.3826px);
-        border-radius: 15px;
-        margin-bottom: 33px;
-        padding: 0 66px 0 66px;
-
-        @media (min-width: 476px) and (max-width: 768px) {
-            height: 100px;
-        }
-
-        @media (min-width: 417px) and (max-width: 475px) {
-            height: 130px;
-        }
-
-        @media (max-width: 416px) {
-            height: 160px;
-        }
-    }
-
-    .content-box {
         display: flex;
+        position: relative;
         flex-direction: row-reverse;
         justify-content: space-between;
         align-items: center;
-        position: absolute;
-        top: 20px;
-        width: 100%;
-        padding: 0 115px 0 60px;
-        @media (min-width: 476px) and (max-width: 768px) {
-            padding: 0 70px 0 22px;
+        padding: 0 70px 0 66px;
+        background: rgba(31, 27, 60, 1);
+        border-radius: 15px;
+        margin-bottom: 33px;
+
+        @media (max-width: $semi-small-screen-size) {
+            height: max-content;
+            padding: 10px 70px 10px 66px;
         }
 
-        @media (max-width: 475px) {
-            padding: 0 49px 0 22px;
+        @media (max-width: $small-screen-size) {
+            padding: 20px 22px 25px 22px;
+            margin-bottom: 24px;
         }
 
         .close-icon {
             width: 14.08px;
             height: 14.08px;
             opacity: 0.2;
-            position: relative;
-            bottom: 3px;
             cursor: pointer;
 
             &:hover {
                 opacity: 1;
             }
 
-            @media (min-width: 417px) and (max-width: 425px) {
-                bottom: 30px;
-            }
-
-            @media (max-width: 416px) {
-                bottom: 42px;
+            @media (max-width: $small-screen-size) {
+                position: absolute;
+                top: 24px;
             }
         }
 
@@ -78,8 +57,8 @@
                 opacity: 0.7;
                 line-height: 33px;
 
-                @media (max-width: 815px) {
-                    line-height: 20px;
+                @media (max-width: $medium-screen-size) {
+                    line-height: normal;
                 }
             }
         }

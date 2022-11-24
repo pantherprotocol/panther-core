@@ -1,49 +1,111 @@
 @import '../../../variables';
 
-.private-zAsset-container {
+.private-zAsset-table_container {
     width: 97% !important;
     margin: 0 auto;
     border: 1px solid rgba(102, 141, 198, 0.4);
     border-radius: 0 0 15px 15px !important;
+    box-shadow: 0px 4px 13px rgba(0, 0, 0, 0.25);
+    padding: 0 20px;
+    background: rgba(18, 20, 47, 1) !important;
 
-    @media (max-width: 768px) {
+    @media (max-width: $medium-screen-size) {
         width: 95% !important;
         margin: 0 auto;
+        padding: 0;
     }
 
-    .MuiTableCell-root.MuiTableCell-head {
-        vertical-align: middle;
-        font-size: $normal-font-size;
-        font-weight: $light-font-weight;
-        color: rgb(215, 176, 171);
-    }
-
-    .MuiTableCell-root.MuiTableCell-body {
-        font-weight: $semi-bold-font-weight;
-        vertical-align: middle;
-        border-radius: 0 !important;
-        background-color: rgba(18, 20, 47, 1);
-    }
-
-    table {
-        min-width: 400px;
-        background-color: rgba(18, 20, 47, 1) !important;
-        padding: 0 20px;
-
-        .main-header-row {
-            th {
-                border-bottom: 1px solid rgba(189, 243, 255, 0.25) !important;
-            }
-        }
-    }
-
-    .tooltip-icon {
-        padding-left: 10px;
+    @media (max-width: $small-screen-size) {
         position: relative;
-        top: 3px;
+        bottom: 5px;
+        overflow-x: unset;
+    }
 
+    .private-zAsset-table_table {
         @media (max-width: $medium-screen-size) {
-            padding-left: 10px;
+            width: 100%;
+            background-color: rgba(7, 10, 31, 1);
+            padding: 0 15px 0 17px;
+            min-width: unset;
+            border-radius: 0 0 15px 15px;
+        }
+        .private-zAsset-table_head {
+            .private-zAsset-table_header-row {
+                @media (max-width: $medium-screen-size) {
+                    padding: 0;
+                }
+
+                .private-zAsset-table_header-cell {
+                    width: 7%;
+                    vertical-align: middle;
+                    font-size: $normal-font-size;
+                    font-weight: $semi-bold-font-weight;
+                    opacity: 1;
+                    border-bottom: 1px solid rgba(189, 243, 255, 0.25) !important;
+                    padding-left: 0;
+
+                    &:nth-child(2) {
+                        width: 100px;
+                        position: relative;
+
+                        span {
+                            position: absolute;
+                            left: 73px;
+                            bottom: 18px;
+                        }
+                    }
+
+                    @media (max-width: $small-screen-size) {
+                        padding: 15px 3px 17px 8px;
+                        line-height: normal;
+                    }
+
+                    @media (max-width: $medium-screen-size) {
+                        &:first-child {
+                            color: $color-beige !important;
+                            font-weight: $light-font-weight;
+                        }
+
+                        &:not(:first-child) {
+                            display: none;
+                        }
+                    }
+
+                    .title {
+                        position: relative;
+                        bottom: 4px;
+                    }
+                    .tooltip-icon {
+                        padding-left: 7px;
+
+                        @media (max-width: $medium-screen-size) {
+                            padding-left: 12px;
+                        }
+                    }
+                }
+
+                .prp-cell {
+                    @media (max-width: $small-screen-size) {
+                        display: flex;
+                        width: min-content;
+                    }
+
+                    .title {
+                        position: relative;
+                        bottom: 2px;
+                    }
+
+                    img {
+                        padding-left: 10px;
+                        position: relative;
+                        top: 2px;
+                    }
+                }
+
+                .wrong-network {
+                    width: 23% !important;
+                }
+            }
         }
     }
 }

@@ -23,8 +23,13 @@ $refresh-button-background: linear-gradient(
 
     @media (max-width: $medium-screen-size) {
         flex-direction: column;
-        padding: 15px 19px 20px 19px;
+        padding: 20px 19px;
         background-color: rgb(32, 33, 60);
+    }
+
+    @media (max-width: $small-screen-size) {
+        z-index: 1000;
+        border-radius: 22px;
     }
 
     .private-zAssets-balance {
@@ -49,6 +54,7 @@ $refresh-button-background: linear-gradient(
 
             @media (max-width: $medium-screen-size) {
                 font-size: $normal-font-size;
+                line-height: normal;
             }
         }
 
@@ -82,7 +88,6 @@ $refresh-button-background: linear-gradient(
             color: $white;
 
             @media (max-width: $medium-screen-size) {
-                font-weight: $light-font-weight;
                 font-size: $normal-font-size;
                 line-height: unset;
                 align-items: baseline;
@@ -105,6 +110,10 @@ $refresh-button-background: linear-gradient(
         align-items: center;
         flex-direction: column;
 
+        @media (max-width: $small-screen-size) {
+            margin-top: 8px;
+        }
+
         .refresh-button {
             margin: 10px 0px;
             width: 250px;
@@ -124,6 +133,11 @@ $refresh-button-background: linear-gradient(
             color: $white;
             font-weight: $light-font-weight;
             font-size: 15px;
+
+            @media (max-width: $tiny-screen-size) {
+                width: 100%;
+                line-height: normal;
+            }
         }
 
         .last-sync {

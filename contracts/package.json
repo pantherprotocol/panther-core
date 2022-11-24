@@ -2,8 +2,8 @@
   "name": "@panther-core/contracts",
   "version": "0.0.1",
   "author": "Panther Protocol Team (see contributors.md)",
-  "description": "Panther Protocol initial staking contracts",
-  "license": "Proprietary",
+  "description": "Panther Protocol smart contracts",
+  "license": "SEE LICENSE IN ./LICENSE",
   "scripts": {
     "build:types": "cp -a types ../dapp/src",
     "build:contracts:triad-tree": "./scripts/generateTriadMerkleZeroesContracts.sh",

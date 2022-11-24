@@ -2,6 +2,7 @@
   "name": "panther-core",
   "description": "Panther Protocol monorepo",
   "version": "1.0.0",
+  "license": "SEE LICENSE IN ./LICENSE",
   "private": true,
   "scripts": {
     "build:contracts": "yarn workspace @panther-core/contracts compile",

@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "main": "lib/index.js",
   "types": "lib/**/*.d.ts",
-  "license": "Proprietary",
+  "license": "SEE LICENSE IN ./LICENSE",
   "browser": {
     "fs": false,
     "path": false,

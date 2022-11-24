@@ -2,7 +2,7 @@
   "name": "@panther-core/dapp",
   "description": "dApp frontend for Panther Protocol Staking",
   "version": "0.1.0",
-  "license": "Proprietary",
+  "license": "SEE LICENSE IN ./LICENSE",
   "homepage": ".",
   "private": true,
   "scripts": {

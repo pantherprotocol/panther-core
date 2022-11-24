@@ -53,10 +53,14 @@ export default function AddressBalances(props: {
                             {whole && fractional ? (
                                 <>
                                     <span>{whole}</span>
-
-                                    <span className="substring">
-                                        .{fractional}
-                                    </span>
+                                    {
+                                        //only PRPs have no scale
+                                        props.scale !== 0 && (
+                                            <span className="substring">
+                                                .{fractional}
+                                            </span>
+                                        )
+                                    }
                                 </>
                             ) : (
                                 '0.00'

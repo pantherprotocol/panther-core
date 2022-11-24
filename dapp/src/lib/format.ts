@@ -39,10 +39,13 @@ export function secondsToFullDays(sec: number): number {
     return Math.floor(sec / 60 / 60 / 24);
 }
 
-export function formatPercentage(percentage: number): string {
+export function formatPercentage(
+    percentage: number,
+    options?: {decimals?: number; scale?: number},
+): string {
     const percentFormat = new Intl.NumberFormat(getLocale(), {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        minimumFractionDigits: options?.decimals ?? 2,
+        maximumFractionDigits: options?.decimals ?? 2,
         // maximumSignificantDigits: 4,
         style: 'percent',
     });

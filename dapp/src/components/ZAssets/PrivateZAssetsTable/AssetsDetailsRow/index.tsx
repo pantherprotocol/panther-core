@@ -17,7 +17,7 @@ import './styles.scss';
 const AssetsDetailsRow = (props: AssetsDetailsRowProperties) => {
     const {reward, isSelected, onSelectReward} = props;
     const balance = formatCurrency(BigNumber.from(reward.zZKP));
-    const prp = formatCurrency(utils.parseEther(reward.PRP));
+    const prp = formatCurrency(utils.parseEther(reward.PRP), {decimals: 0});
 
     return (
         <TableRow className="zAsset-staking-holder">

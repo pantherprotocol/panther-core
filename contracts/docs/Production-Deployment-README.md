@@ -2,7 +2,7 @@
 
 After you have made sure the unit tests pass, you can deploy the contracts on production networks.
 
-To do that, you need to rename the [.env.example](./.env.example) to `.env`. This file contains the contract addresses that are dependencies for the non-deployed contracts.
+To do that, you need to rename the [.env.example](./.env.example) to `.env`. This file contains the contract addresses that are dependencies for the non-deployed contracts. Don't forget to add your private key (or mnemonic) and an Alchemy/Infura api key there.
 
 **Note:** The contract addresses will be shown in your terminal after they are deployed.
 Additionally, you can find the contracts' artifacts under the [deployments](./deployments) folder. They are generated on the fly under the `mainnet` or `polygon` subfolder, depending on the network where they have been deployed. Each artifact contains the contract ABI, address, constructor parameters, deployment blocks, bytecodes, and other valuable information.

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.16;
 
 import { EIP712Base } from "./EIP712Base.sol";
 
@@ -35,6 +35,7 @@ contract NativeMetaTransaction is EIP712Base {
         bytes functionSignature;
     }
 
+    // slither-disable-next-line locked-ether
     function executeMetaTransaction(
         address userAddress,
         bytes memory functionSignature,
@@ -63,10 +64,13 @@ contract NativeMetaTransaction is EIP712Base {
         );
 
         // Append userAddress and relayer address at the end to extract it from calling context
-        // solhint-disable-next-line avoid-low-level-calls
+        // solhint-disable avoid-low-level-calls
+        // slither-disable-next-line low-level-calls
         (bool success, bytes memory returnData) = address(this).call(
             abi.encodePacked(functionSignature, userAddress)
         );
+        // solhint-enable avoid-low-level-calls
+
         require(success, "Function call not successful");
 
         return returnData;

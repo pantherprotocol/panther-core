@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.16;
 
 import { Initializable } from "./Initializable.sol";
 
@@ -53,10 +53,13 @@ contract EIP712Base is Initializable {
     function getChainId() public view returns (uint256) {
         uint256 id;
 
-        // solhint-disable-next-line no-inline-assembly
+        // solhint-disable no-inline-assembly
+        // slither-disable-next-line assembly
         assembly {
             id := chainid()
         }
+        // solhint-enable no-inline-assembly
+
         return id;
     }
 

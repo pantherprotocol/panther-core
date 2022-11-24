@@ -4,9 +4,9 @@ Panther Protocol: core repository
 This repository contains the heart of the Panther Protocol code:
 
 - [`contracts/`](contracts) - smart contracts:
-    - [`staking/`](staking) - contracts for classic and advanced staking
-    - [`protocol/`](protocol) - contracts for the MASP (Multi-Asset Shielded Pool)
-    - [`common/`](protocol) - shared utility contracts
+    - [`staking/`](contracts/staking) - contracts for classic and advanced staking
+    - [`protocol/`](contracts/protocol) - contracts for the MASP (Multi-Asset Shielded Pool)
+    - [`common/`](contracts/common) - shared utility contracts
 - [`crypto/`](crypto) - cryptography code
 - [`dapp/`](dapp) - the frontend web-based dApp interface
 - [`subgraph/`](subgraph) - code for Panther's subgraph on [The Graph](https://thegraph.com/en/)

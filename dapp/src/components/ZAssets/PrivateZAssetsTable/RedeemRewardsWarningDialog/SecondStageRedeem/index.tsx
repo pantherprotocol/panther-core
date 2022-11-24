@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 
 import {
     Box,
@@ -18,7 +18,7 @@ import {
     removeNotification,
 } from 'components/Common/notification';
 import PrimaryActionButton from 'components/Common/PrimaryActionButton';
-import {formatDuration, getUnixTime, formatDistance} from 'date-fns';
+import {getUnixTime, formatDistance} from 'date-fns';
 import {BigNumber} from 'ethers';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {formatCurrency} from 'lib/format';
@@ -47,30 +47,18 @@ export default function SecondStageRedeem(props: {
     const dispatch = useAppDispatch();
     const context = useWeb3React();
     const {account, chainId, library} = context;
-
     const exitDelay = useAppSelector(poolV0ExitDelaySelector);
     const zZKP = formatCurrency(BigNumber.from(reward.zZKP));
 
     const exitCommitmentTime = reward.exitCommitmentTime;
+    const now = getUnixTime(new Date());
+    const [timeToWait, setTimeToWait] = useState<string>('');
+    const [progress, setProgress] = useState(0);
 
     const isLockPeriodPassed =
         exitCommitmentTime &&
         exitDelay &&
         exitCommitmentTime + exitDelay < getUnixTime(new Date());
-
-    const remainingWaitingTimeFormatted =
-        exitCommitmentTime &&
-        exitDelay &&
-        formatDistance(
-            getUnixTime(new Date()) * 1000,
-            (exitCommitmentTime + exitDelay) * 1000,
-            {includeSeconds: true},
-        );
-    const delayTimeFormatted =
-        exitDelay &&
-        formatDuration({
-            seconds: exitDelay,
-        });
 
     const closeModalAndRedeem = () => {
         handleClose();
@@ -183,23 +171,31 @@ export default function SecondStageRedeem(props: {
         );
     }, [dispatch, library, account, chainId, reward]);
 
-    function progressInPercent(
-        exitCommitmentTime: number | undefined,
-        exitDelay: number | undefined,
-    ): number | undefined {
-        const passedTime =
-            exitCommitmentTime && getUnixTime(new Date()) - exitCommitmentTime;
-
-        if (passedTime && exitDelay) {
-            if (passedTime <= exitDelay) {
-                return (passedTime / exitDelay) * 100;
+    useEffect(() => {
+        const timer = setInterval(() => {
+            if (!(exitCommitmentTime && exitDelay)) {
+                return;
             }
 
-            return 100;
-        }
+            setTimeToWait(
+                formatDistance(
+                    now * 1000,
+                    (exitCommitmentTime + exitDelay) * 1000,
+                ),
+            );
 
-        return 0;
-    }
+            setProgress(
+                Math.min(
+                    (getUnixTime(new Date()) - exitCommitmentTime) / exitDelay,
+                    1,
+                ) * 100,
+            );
+        }, 1000);
+
+        return () => {
+            clearInterval(timer);
+        };
+    }, [exitCommitmentTime, exitDelay, now]);
 
     return (
         <Dialog
@@ -233,8 +229,7 @@ export default function SecondStageRedeem(props: {
                             <Typography>
                                 {' '}
                                 You have initiated an early zZKP redemption.
-                                <br /> Please claim your balance after{' '}
-                                {delayTimeFormatted}
+                                <br /> Please claim your balance after 24 hours
                             </Typography>
                         )}
                     </Box>
@@ -249,15 +244,13 @@ export default function SecondStageRedeem(props: {
                                 Your balance is ready to redeem!
                             </span>
                         ) : (
-                            <span className="label-value">
-                                {remainingWaitingTimeFormatted}
-                            </span>
+                            <span className="label-value">{timeToWait}</span>
                         )}
                     </Typography>
                     <LinearProgress
                         className="redemption-progress"
                         variant="determinate"
-                        value={progressInPercent(exitCommitmentTime, exitDelay)}
+                        value={progress}
                     />
                 </Box>
             </Box>
@@ -274,10 +267,7 @@ export default function SecondStageRedeem(props: {
                         {isLockPeriodPassed ? (
                             <Typography>Redeem {zZKP} ZKP</Typography>
                         ) : (
-                            <p>
-                                Claim will be available in{' '}
-                                {remainingWaitingTimeFormatted}
-                            </p>
+                            <p>Claim will be available in {timeToWait}</p>
                         )}
                     </PrimaryActionButton>
                 </Box>

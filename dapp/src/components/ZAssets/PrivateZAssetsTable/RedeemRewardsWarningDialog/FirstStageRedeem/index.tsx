@@ -21,7 +21,7 @@ import {
     removeNotification,
 } from 'components/Common/notification';
 import PrimaryActionButton from 'components/Common/PrimaryActionButton';
-import {formatDuration, getUnixTime} from 'date-fns';
+import {getUnixTime} from 'date-fns';
 import {CONFIRMATIONS_NUM} from 'lib/constants';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
@@ -37,7 +37,6 @@ import {
     updateExitCommitmentTime,
     updateUTXOStatus,
 } from 'redux/slices/wallet/advanced-stakes-rewards';
-import {poolV0ExitDelaySelector} from 'redux/slices/wallet/poolV0';
 import {parseTxErrorMessage} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 import {registerCommitToExit} from 'services/pool';
@@ -57,13 +56,6 @@ export default function FirstStageRedeem(props: {
 
     const walletActionCause = useAppSelector(walletActionCauseSelector);
     const walletActionStatus = useAppSelector(walletActionStatusSelector);
-    const exitDelay = useAppSelector(poolV0ExitDelaySelector);
-
-    const delayTimeFormatted =
-        exitDelay &&
-        formatDuration({
-            seconds: exitDelay,
-        });
 
     const toggleConfirmationCheckbox = (
         event: ChangeEvent<HTMLInputElement>,
@@ -199,9 +191,8 @@ export default function FirstStageRedeem(props: {
                                 calculated and issued only at launch of CoreV1.
                             </Typography>
                             <Typography className="text semi-bold-text">
-                                Early redemption will take {delayTimeFormatted}{' '}
-                                to initiate before you
-                                <br /> are able to redeem your ZKP.
+                                Early redemption will take 24 hours to initiate
+                                before you are able to redeem your ZKP.
                             </Typography>
                             <Typography className="text">
                                 Read more about early zZKP redemption in

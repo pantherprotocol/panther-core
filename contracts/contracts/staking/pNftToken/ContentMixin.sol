@@ -14,7 +14,8 @@ abstract contract ContextMixin {
         if (msg.sender == address(this)) {
             bytes memory array = msg.data;
             uint256 index = msg.data.length;
-            // solhint-disable-next-line no-inline-assembly
+            // solhint-disable no-inline-assembly
+            // slither-disable-next-line assembly
             assembly {
                 // Load the 32 bytes word from memory with the address on the lower 20 bytes, and mask those.
                 sender := and(
@@ -22,6 +23,7 @@ abstract contract ContextMixin {
                     0xffffffffffffffffffffffffffffffffffffffff
                 )
             }
+            // solhint-enable no-inline-assembly
         } else {
             sender = payable(msg.sender);
         }

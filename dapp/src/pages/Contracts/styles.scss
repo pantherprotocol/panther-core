@@ -1,6 +1,10 @@
 @import '../../variables';
 
 .contracts-page-container {
+    .MuiTable-root,
+    .MuiTableContainer-root {
+        background: transparent !important;
+    }
     .table-title {
         color: $white;
         font-size: 24px;
@@ -9,6 +13,13 @@
     .table-head {
         color: $white;
         font-weight: bold;
+    }
+    .MuiTableBody-root .MuiTableRow-root {
+        background: linear-gradient(
+            0deg,
+            rgba(146, 159, 183, 0.35),
+            rgba(146, 159, 183, 0.35)
+        );
     }
 
     .contract-address {

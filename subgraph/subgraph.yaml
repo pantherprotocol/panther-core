@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: AdvancedStakeRewardController
-    network: mumbai
+    network: matic
     source:
-      address: '0xaEf203DB2d26615FeE0Dc045D1112712AA214b2E'
+      address: '0x7d44cf6073340c68ec804260cc20aA84d02Fe46a'
       abi: AdvancedStakeRewardController
-      startBlock: 28495049
+      startBlock: 36054096
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -24,11 +24,11 @@ dataSources:
       file: ./src/handleAdvancedStakingRewards.ts
   - kind: ethereum
     name: PantherPoolV0
-    network: mumbai
+    network: matic
     source:
-      address: '0x15eABaed2474D584E739d390b4BEa4904CEeef9a'
+      address: '0x5b74E9B0Cb61e17e24d676A9666f4843B74a39Dd'
       abi: PantherPoolV0
-      startBlock: 28494976
+      startBlock: 36054096
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5

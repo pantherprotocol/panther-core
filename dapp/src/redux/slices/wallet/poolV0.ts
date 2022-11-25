@@ -31,8 +31,8 @@ const getExitTime = createAsyncThunk(
     async (
         context: Web3ReactContextInterface<Web3Provider>,
     ): Promise<PoolV0Parameters | null> => {
-        const {library, chainId} = context;
-        if (!chainId || !library) {
+        const {library} = context;
+        if (!library) {
             return {};
         }
 
@@ -40,7 +40,10 @@ const getExitTime = createAsyncThunk(
             library,
             MASP_CHAIN_ID as MaspChainIds,
         );
-        const exitDelay = await pool.getExitDelay(library, chainId);
+        const exitDelay = await pool.getExitDelay(
+            library,
+            MASP_CHAIN_ID as MaspChainIds,
+        );
         return {exitTime, exitDelay};
     },
 );
@@ -64,7 +67,7 @@ export const poolV0ExitTimeSelector = (
 export const poolV0ExitDelaySelector = (
     state: RootState,
 ): number | undefined => {
-    return state.wallet.poolV0.value.exitDelay;
+    return state.wallet.poolV0?.value?.exitDelay;
 };
 
 export default poolV0Slice.reducer;

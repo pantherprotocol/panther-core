@@ -1,0 +1,88 @@
+@import '../variables.scss';
+
+.dropdown-list {
+    width: 201px;
+    margin-right: 10px;
+    .MuiButtonBase-root.MuiButton-root {
+        padding: 8px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-evenly;
+        height: 45px;
+        width: 100%;
+        background: rgba(99, 114, 136, 0.2);
+        border-radius: 10px;
+        text-transform: none;
+
+        @media (max-width: $normal-screen-size) {
+            height: 36px;
+            width: 169px;
+            display: none !important;
+            padding: 6px 12px 6px 14px;
+        }
+
+        @media (max-width: $tiny-screen-size) {
+            padding-left: 35px;
+            width: 100%;
+        }
+
+        &.open {
+            outline: 1px solid rgba(102, 141, 198, 0.4);
+        }
+
+        > div {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            color: $white;
+            img {
+                width: 30px;
+                height: auto;
+
+                @media (max-width: $normal-screen-size) {
+                    width: 19px;
+                }
+            }
+            p {
+                font-size: $normal-font-size;
+            }
+        }
+    }
+
+    &-menu {
+        .MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiMenu-paper {
+            margin-top: 10px;
+            background: rgba(198, 209, 231, 0.1);
+            border: 1px solid rgba(102, 141, 198, 0.4);
+            backdrop-filter: blur(71.7913px);
+            border-radius: 10px;
+            width: 201px;
+
+            .menu-item {
+                display: flex;
+                justify-content: space-between;
+                justify-items: flex-start;
+                margin: 11px;
+                border-radius: 10px;
+                background-color: rgba(25, 118, 210, 0.08);
+                color: $white;
+                cursor: pointer;
+                img {
+                    width: 28px;
+                    height: 25px;
+                }
+
+                &:hover {
+                    background: rgba(99, 114, 136, 0.2);
+                    mix-blend-mode: normal;
+                    backdrop-filter: blur(40px);
+                }
+
+                a {
+                    padding-left: 0;
+                }
+            }
+        }
+    }
+}

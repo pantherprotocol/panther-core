@@ -8,7 +8,7 @@ import {fireEvent, screen, waitFor} from '@testing-library/react';
 import maticIcon from 'images/polygon-logo.svg';
 import {renderComponent} from 'utils/test-utils';
 
-import {NetworkButton} from './index';
+import NetworkButton from './index';
 
 const testNetworkName = 'MATIC';
 
@@ -38,8 +38,8 @@ test('should allow user to change network', async () => {
         <NetworkButton networkLogo={maticIcon} networkName={testNetworkName} />,
     );
 
-    const networkButtonSelectLabel = screen.queryByTestId(
-        'network-button_network-button_select-label',
+    const networkButtonSelectLogo = screen.queryByTestId(
+        'network-button_network-button_select-logo',
     );
 
     const networkButtonSelectOption = screen.queryByTestId(
@@ -47,12 +47,11 @@ test('should allow user to change network', async () => {
     );
 
     await waitFor(() => {
-        expect(networkButtonSelectLabel).toBeInTheDocument();
+        expect(networkButtonSelectLogo).toBeInTheDocument();
         expect(networkButtonSelectOption).toBeNull();
     });
 
-    await (networkButtonSelectLabel &&
-        fireEvent.click(networkButtonSelectLabel));
+    await (networkButtonSelectLogo && fireEvent.click(networkButtonSelectLogo));
 
     waitFor(() => {
         networkButtonSelectOption &&

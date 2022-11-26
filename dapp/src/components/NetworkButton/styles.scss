@@ -1,11 +1,1 @@
-@import '../../variables';
-
-.network-button-container {
-    margin-right: 20px;
-    width: 167px !important;
-    padding: 6px 15px 6px 14px !important;
-
-    @media (max-width: $normal-screen-size) {
-        display: none !important;
-    }
-}
+@import '../../styles/dropdown-list.scss';

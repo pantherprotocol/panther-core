@@ -27,22 +27,12 @@
         }
     }
 
-    .links-container {
+    .footer-socials {
         display: flex;
-        flex: 1;
-        justify-content: space-between;
-        .footer-links {
-            display: flex;
-            justify-content: end;
-        }
-
-        .footer-socials {
-            display: flex;
-            justify-content: start;
-        }
-        @media (max-width: $medium-screen-size) {
-            flex-direction: column-reverse !important;
-            align-items: center;
-        }
+        justify-content: start;
+    }
+    @media (max-width: $medium-screen-size) {
+        flex-direction: column-reverse !important;
+        align-items: center;
     }
 }

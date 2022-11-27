@@ -10,17 +10,19 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
 import {useWeb3React} from '@web3-react/core';
+import {zAssetsPageAprTooltip} from 'components/Common/constants';
 import Balance from 'components/ZAssets/Balance';
 import AssetsDetails from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsTable';
+import infoIcon from 'images/info-icon.svg';
 import pantherIcon from 'images/zAssets-panther-logo.svg';
-import {formatCurrency, formatPercentage} from 'lib/format';
+import {formatCurrency} from 'lib/format';
 import {calcUSDPrice} from 'lib/token-price';
 import {useAppSelector} from 'redux/hooks';
 import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
 import {totalSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {chainHasPoolContract} from 'services/contracts';
-import {getAdvStakingAPY} from 'services/rewards';
 import {StakingRewardTokenID} from 'types/staking';
 
 import './styles.scss';
@@ -28,7 +30,6 @@ import './styles.scss';
 export default function PrivateZAssetRow() {
     const {account, chainId, active} = useWeb3React();
     const zkpPrice = useAppSelector(zkpMarketPriceSelector);
-    const advancedStakingAPY = getAdvStakingAPY(new Date().getTime());
     const unclaimedZZKP = useAppSelector(
         totalSelector(chainId, account, StakingRewardTokenID.zZKP),
     );
@@ -85,18 +86,21 @@ export default function PrivateZAssetRow() {
                     {active && chainId && !chainHasPoolContract(chainId) ? (
                         '-'
                     ) : (
-                        <span className="content">
-                            {active ? (
-                                <>
-                                    {`${formatPercentage(
-                                        advancedStakingAPY / 100,
-                                        {decimals: 0},
-                                    )} APR`}
-                                </>
-                            ) : (
-                                '0'
-                            )}
-                        </span>
+                        <>
+                            <span className="content">
+                                {active ? 'X% APR' : '0'}
+                            </span>
+                            <Tooltip
+                                title={zAssetsPageAprTooltip}
+                                data-html="true"
+                                placement="top"
+                                className="tooltip-icon"
+                            >
+                                <IconButton>
+                                    <img src={infoIcon} />
+                                </IconButton>
+                            </Tooltip>
+                        </>
                     )}
                 </TableCell>
             </TableRow>

@@ -14,11 +14,7 @@ import {BigNumber, utils} from 'ethers';
 import attentionIcon from 'images/attention-triangle-icon.svg';
 import infoIcon from 'images/info-icon.svg';
 import refreshIcon from 'images/refresh-icon.svg';
-import {
-    formatCurrency,
-    formatTimeSince,
-    getFormattedFractions,
-} from 'lib/format';
+import {formatTimeSince, getFormattedFractions} from 'lib/format';
 import {fiatPrice} from 'lib/token-price';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
@@ -67,10 +63,6 @@ export default function PrivateBalance() {
     const totalPrice = zkpPrice
         ? fiatPrice(unclaimedZZKP, BigNumber.from(zkpPrice))
         : 0;
-
-    const unclaimedPRP = useAppSelector(
-        totalSelector(chainId, account, StakingRewardTokenID.PRP, true),
-    );
 
     const lastRefresh = useAppSelector(lastRefreshTime);
     const status = useAppSelector(statusSelector);
@@ -212,9 +204,7 @@ export default function PrivateBalance() {
                         )}
                     </Typography>
                     <Typography className="zkp-rewards">
-                        {unclaimedPRP
-                            ? formatCurrency(unclaimedPRP, {scale: 0})
-                            : '-'}{' '}
+                        ? PRP
                         <span className="info">
                             Total Unrealized Privacy Rewards
                         </span>

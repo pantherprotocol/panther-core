@@ -53,6 +53,12 @@
                             left: 73px;
                             bottom: 18px;
                         }
+
+                        .tooltip-icon {
+                            position: relative;
+                            left: 261px;
+                            top: 2px;
+                        }
                     }
 
                     @media (max-width: $small-screen-size) {

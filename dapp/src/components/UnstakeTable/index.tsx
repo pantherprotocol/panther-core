@@ -4,7 +4,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import * as React from 'react';
 
-import {Box} from '@mui/material';
+import {Box, IconButton, Tooltip} from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,12 +13,14 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
+import {expectedPrpBalanceTooltip} from 'components/Common/constants';
 import {MessageWithTx} from 'components/Common/MessageWithTx';
 import {
     removeNotification,
     openNotification,
 } from 'components/Common/notification';
 import {BigNumber, constants} from 'ethers';
+import infoIcon from 'images/info-icon.svg';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {formatTime} from 'lib/format';
 import {useAppDispatch} from 'redux/hooks';
@@ -212,6 +214,20 @@ export default function UnstakeTable() {
                             <TableCell align="left">Description:</TableCell>
                             <TableCell align="left">Amount:</TableCell>
                             <TableCell align="left">Rewards:</TableCell>
+                            <TableCell align="left">
+                                <span>+</span>
+                                <span className="title">Expected:</span>
+                                <Tooltip
+                                    title={expectedPrpBalanceTooltip}
+                                    data-html="true"
+                                    placement="top"
+                                    className="tooltip-icon"
+                                >
+                                    <IconButton>
+                                        <img src={infoIcon} />
+                                    </IconButton>
+                                </Tooltip>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

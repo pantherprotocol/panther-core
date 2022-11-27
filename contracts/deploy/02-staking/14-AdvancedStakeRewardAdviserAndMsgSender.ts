@@ -6,6 +6,7 @@ import {
     reuseEnvAddress,
     getContractAddress,
     getContractEnvAddress,
+    verifyUserConsentOnProd,
 } from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -27,6 +28,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         getNamedAccounts,
     } = hre;
     const {deployer} = await getNamedAccounts();
+
+    await verifyUserConsentOnProd(hre, deployer);
 
     const rewardMaster = await getContractAddress(
         hre,

@@ -5,7 +5,7 @@ import * as React from 'react';
 
 import {Box, Card} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {prpTooltip} from 'components/Common/constants';
+import {expectedPrpBalanceTooltip} from 'components/Common/constants';
 import AccountBalance from 'components/Header/AccountBalance';
 import {constants} from 'ethers';
 import {fiatPrice} from 'lib/token-price';
@@ -91,7 +91,7 @@ const BalanceCard = () => {
 
                 {!isEthereumNetwork(chainId!) && (
                     <AddressBalances
-                        title={'Privacy Reward Points:'}
+                        title={'Expected PRP Balance:'}
                         balance={
                             chainId && chainHasPoolContract(chainId)
                                 ? prpRewardBalance
@@ -103,7 +103,7 @@ const BalanceCard = () => {
                         redeem={() => {
                             console.error('Not implemented');
                         }}
-                        tooltip={prpTooltip}
+                        tooltip={expectedPrpBalanceTooltip}
                     />
                 )}
             </Card>

@@ -49,7 +49,13 @@ export default function AddressBalances(props: {
                     <ExactValueTooltip
                         balance={props.scale !== 0 ? balance : null}
                     >
-                        <Typography className="balance" component="div">
+                        <Typography
+                            className={`balance ${
+                                title === 'Expected PRP Balance:' &&
+                                'expected-prp-balance'
+                            }`}
+                            component="div"
+                        >
                             {whole && fractional ? (
                                 <>
                                     <span>{whole}</span>
@@ -68,7 +74,12 @@ export default function AddressBalances(props: {
                         </Typography>
                     </ExactValueTooltip>
 
-                    <Typography className="zkp-symbol">
+                    <Typography
+                        className={`zkp-symbol ${
+                            title === 'Expected PRP Balance:' &&
+                            'expected-prp-balance'
+                        }`}
+                    >
                         {rewardsTokenSymbol}
                     </Typography>
                 </Box>

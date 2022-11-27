@@ -96,6 +96,10 @@ export const isEthereumNetwork = (chainId: number): boolean => {
     return [1, 4, 5].includes(chainId);
 };
 
+export const isTestNetwork = (chainId: number): boolean => {
+    return [4, 5, 80001].includes(chainId);
+};
+
 export const isConnected = ({
     active,
     account,

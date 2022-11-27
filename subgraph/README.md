@@ -32,7 +32,7 @@ Make sure you are inside the `subgraph` folder.
 
 - Now, you can execute the following command to compile and deploy the subgraph sequentially:
 
-        yarn publish <GITHUB_USERNAME>/<SUBGRAPH NAME>
+        yarn subgraph:publish <GITHUB_USERNAME>/<SUBGRAPH NAME>
 
 If you see the `Build ID` and the subgraph link in your terminal, it means the subgraph is deployed successfully, i.e.,
 

@@ -33,7 +33,7 @@ export default function WrongZAssetsNetwork() {
                         <Typography className="text sub-text">
                             You are currently connected to a network that does
                             not support zAssets. <br />
-                            Switch to Mumbai to view your balance.
+                            Switch to Polygon to view your balance.
                         </Typography>
                     </Box>
                 </Box>

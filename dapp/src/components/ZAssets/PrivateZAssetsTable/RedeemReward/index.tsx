@@ -4,10 +4,9 @@
 import * as React from 'react';
 import {ReactElement, useState} from 'react';
 
-import {Typography, Button, Box} from '@mui/material';
+import {Button, Box} from '@mui/material';
 import RedeemRewardsWarningDialog from 'components/ZAssets/PrivateZAssetsTable/RedeemRewardsWarningDialog';
 import {getUnixTime} from 'date-fns';
-import {formatTime} from 'lib/format';
 import {useAppSelector} from 'redux/hooks';
 import {showWalletActionInProgressSelector} from 'redux/slices/ui/web3-wallet-last-action';
 import {
@@ -19,27 +18,9 @@ import {RedeemRewardProperties} from './RedeemReward.interface';
 
 import './styles.scss';
 
-function getButtonContents(
-    inProgress: boolean,
-    exitTime: number | null,
-    afterExitTime: boolean,
-): string | ReactElement {
+function getButtonContents(inProgress: boolean): string | ReactElement {
     if (inProgress) return 'Redeeming';
-    if (afterExitTime) {
-        return 'Redeem zZKP';
-    }
-    return (
-        <Box>
-            <Typography>Locked Until:</Typography>
-            <Typography>
-                {exitTime
-                    ? formatTime(Number(exitTime) * 1000, {
-                          style: 'short',
-                      })
-                    : '?'}
-            </Typography>
-        </Box>
-    );
+    return 'Redeem zZKP';
 }
 
 const RedeemRewards = (props: RedeemRewardProperties) => {
@@ -80,8 +61,9 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
                 variant="contained"
                 className={`redeem-button ${
                     ((exitCommitmentTime && !isLockPeriodPassed) ||
-                        (showExitInProgress && isSelected)) &&
-                    'in-progress'
+                        (showExitInProgress && isSelected) ||
+                        !isRedemptionPossible) &&
+                    'locked-button'
                 }`}
                 disabled={!isRedemptionPossible || showExitInProgress}
                 onClick={openWarningDialog}
@@ -92,14 +74,10 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
                             className="fa fa-refresh fa-spin"
                             style={{marginRight: '5px'}}
                         />
-                        {getButtonContents(
-                            showExitInProgress,
-                            exitTime!,
-                            afterExitTime,
-                        )}
+                        {getButtonContents(showExitInProgress)}
                     </>
                 ) : (
-                    <>{getButtonContents(false, exitTime!, afterExitTime)}</>
+                    <>{getButtonContents(false)}</>
                 )}
             </Button>
             {warningDialogShown && (

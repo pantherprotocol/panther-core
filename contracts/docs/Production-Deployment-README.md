@@ -2,10 +2,14 @@
 
 After you have made sure the unit tests pass, you can deploy the contracts on production networks.
 
-To do that, you need to rename the [.env.example](./.env.example) to `.env`. This file contains the contract addresses that are dependencies for the non-deployed contracts. Don't forget to add your private key (or mnemonic) and an Alchemy/Infura api key there.
+Make sure you are inside the [`contracts`](../contracts) workspace. Execute the following command in the root directory to change your directory to the `contracts` workspace:
+
+    cd ./contracts
+
+Before executing the deployment scripts, you need to rename the [.env.example](../.env.example) to `.env`. This file contains the contract addresses that are dependencies for the non-deployed contracts. Don't forget to add your private key (or mnemonic) and an [Alchemy](https://www.alchemy.com)/[Infura](https://www.infura.io) api key there. There are `PRIVATE_KEY` (or `MNEMONIC`) and `ALCHEMY_API_KEY`/`INFURA_API_KEY` variables there which must be filled up by you.
 
 **Note:** The contract addresses will be shown in your terminal after they are deployed.
-Additionally, you can find the contracts' artifacts under the [deployments](./deployments) folder. They are generated on the fly under the `mainnet` or `polygon` subfolder, depending on the network where they have been deployed. Each artifact contains the contract ABI, address, constructor parameters, deployment blocks, bytecodes, and other valuable information.
+Additionally, you can find the contracts' artifacts under the [deployments](../deployments) folder. They are generated on the fly under the `mainnet` or `polygon` subfolder, depending on the network where they have been deployed. Each artifact contains the contract ABI, address, constructor parameters, deployment blocks, bytecodes, and other valuable information.
 
 There is a single `yarn` command that sends multiple transactions in sequence to deploy the panther protocol v0.5 contracts plus the `AdvancedStakeRewardController` contract - which handles the rewards of stakers who participate in the [Advanced staking](https://blog.pantherprotocol.io/advanced-staking-is-on-its-way-heres-how-to-prepare-for-it-b14cd01e4cc4) program.
 

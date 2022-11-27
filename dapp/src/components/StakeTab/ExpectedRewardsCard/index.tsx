@@ -6,7 +6,10 @@ import * as React from 'react';
 import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {prpTooltip, zZkpTooltip} from 'components/Common/constants';
+import {
+    expectedPrpBalanceTooltip,
+    zZkpTooltip,
+} from 'components/Common/constants';
 import questionmarkIcon from 'images/questionmark-icon.svg';
 import {formatCurrency} from 'lib/format';
 import {useAppSelector} from 'redux/hooks';
@@ -48,7 +51,7 @@ export function ExpectedRewardsCard() {
                     <Typography className="title">
                         Privacy Reward Points:
                         <Tooltip
-                            title={prpTooltip}
+                            title={expectedPrpBalanceTooltip}
                             data-html="true"
                             placement="top"
                             className="tooltip-icon"

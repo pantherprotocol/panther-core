@@ -6,3 +6,6 @@ export const zAssetTooltip =
 
 export const zZkpTooltip =
     'zZKP rewards generated upon staking in the Multi-Asset Shielded Pool (MASP). Staking is not possible in the case of zero zZKP rewards.';
+
+export const expectedPrpBalanceTooltip =
+    'Privacy rewards will be given as Panther Reward Points (PRPs) in the Multi-Assets Shielded Pool and made available to exchange into $ZKP on the Core V1 launch. Rewards incentivize stronger privacy through depositing and transacting assets in the MASP. There are "realized" rewards (when PRPs have been already given) and "unrealized" ones (PRPs will be given, and become "realized", upon spending a zAsset inside the MASP, in proportion to zAsset amount and time it remained unspent). More on privacy rewards here{link}. Expected realized rewards only (the reward amount is subject to approval by the community) are shown on this tab. Unrealized rewards are shown on the "ZAssets" tab.';

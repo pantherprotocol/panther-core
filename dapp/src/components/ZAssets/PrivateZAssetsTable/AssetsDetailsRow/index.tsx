@@ -7,7 +7,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import RedeemRewards from 'components/ZAssets/PrivateZAssetsTable/RedeemReward';
 import {format} from 'date-fns';
-import {BigNumber, utils} from 'ethers';
+import {BigNumber} from 'ethers';
 import {formatCurrency} from 'lib/format';
 
 import {AssetsDetailsRowProperties} from './AssetsDetailsRow.interface';
@@ -17,7 +17,6 @@ import './styles.scss';
 const AssetsDetailsRow = (props: AssetsDetailsRowProperties) => {
     const {reward, isSelected, onSelectReward} = props;
     const balance = formatCurrency(BigNumber.from(reward.zZKP));
-    const prp = formatCurrency(utils.parseEther(reward.PRP), {decimals: 0});
 
     return (
         <TableRow className="zAsset-staking-holder">
@@ -40,7 +39,7 @@ const AssetsDetailsRow = (props: AssetsDetailsRowProperties) => {
             </TableCell>
             <TableCell className="bold-beige zAsset-staking-cell">
                 <span className="cell-title">Rewards Earned:</span>
-                <span className="cell-content">{prp} PRP</span>
+                <span className="cell-content prp-content">? PRP</span>
             </TableCell>
             <TableCell className="zassets-staking-redeem-button-holder zAsset-staking-cell">
                 <RedeemRewards

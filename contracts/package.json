@@ -16,7 +16,7 @@
     "contracts": "yarn export-jq '.contracts | with_entries(.value = .value.address)'",
     "coverage": "HARDHAT_NO_MNEMONIC=yes hardhat coverage",
     "deploy:bridge:relayer:proxy": "hardhat deploy --tags msg-relayer-proxy",
-    "deploy:bridge:sender": "hardhat deploy --tags msg-msg-sender",
+    "deploy:bridge:sender": "hardhat deploy --tags msg-sender",
     "deploy:bridge:relayer:imp": "hardhat deploy --tags msg-relayer-imp",
     "deploy:bridge:relayer:upgrade": "hardhat deploy --tags msg-relayer-upgrade",
     "deploy:protocol": "hardhat deploy --tags protocol",

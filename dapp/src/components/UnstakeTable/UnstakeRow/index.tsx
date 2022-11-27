@@ -6,9 +6,10 @@ import React from 'react';
 import {TableCell, TableRow, Typography} from '@mui/material';
 import ExactValueTooltip from 'components/Common/ExactValueTooltip';
 import UnstakeButton from 'components/UnstakeTable/UnstakeButton';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 import {formatCurrency, formatTime} from 'lib/format';
 import {WalletActionTrigger} from 'redux/slices/ui/web3-wallet-last-action';
+import {chainHasPoolContract} from 'services/contracts';
 import {isClassic} from 'services/rewards';
 import {CLASSIC_TYPE_HEX, StakeRow} from 'services/staking';
 import {
@@ -19,9 +20,14 @@ import {
 
 import './styles.scss';
 
-function getRewards(row: StakeRow): BigNumber {
+function getRewards(
+    row: StakeRow,
+    rewardName: StakingRewardTokenID,
+): BigNumber {
     return row.stakeType === CLASSIC_TYPE_HEX && isClassic(row.reward)
         ? (row.reward as ClassicStakeRewardBN)
+        : rewardName === StakingRewardTokenID.PRP
+        ? (row.reward as AdvancedStakeRewardsBN)[StakingRewardTokenID.PRP]
         : (row.reward as AdvancedStakeRewardsBN)[StakingRewardTokenID.zZKP];
 }
 const UnstakeRow = (props: {
@@ -35,6 +41,7 @@ const UnstakeRow = (props: {
         <React.Fragment key={row.stakedAt}>
             {row.claimedAt === 0 && (
                 <TableRow
+                    className="unstake-row-holder"
                     sx={{
                         '&:last-child td, &:last-child th': {
                             border: 0,
@@ -67,9 +74,13 @@ const UnstakeRow = (props: {
                         <Typography>ZKP</Typography>
                     </TableCell>
                     <TableCell align="left">
-                        <ExactValueTooltip balance={getRewards(row)}>
+                        <ExactValueTooltip
+                            balance={getRewards(row, StakingRewardTokenID.zZKP)}
+                        >
                             <Typography>
-                                {formatCurrency(getRewards(row))}
+                                {formatCurrency(
+                                    getRewards(row, StakingRewardTokenID.zZKP),
+                                )}
                             </Typography>
                         </ExactValueTooltip>
 
@@ -78,6 +89,23 @@ const UnstakeRow = (props: {
                                 ? 'ZKP'
                                 : 'zZKP'}
                         </Typography>
+                    </TableCell>
+                    <TableCell align="left" className="prp">
+                        <span className="plus">+</span>
+                        <span className="amount-box">
+                            <span className="amount">
+                                {chainId && chainHasPoolContract(chainId)
+                                    ? utils.formatUnits(
+                                          getRewards(
+                                              row,
+                                              StakingRewardTokenID.PRP,
+                                          ),
+                                          0,
+                                      )
+                                    : '0'}
+                            </span>
+                            <span>PRP</span>
+                        </span>
                     </TableCell>
                     <TableCell align="left" className="unstake">
                         <UnstakeButton

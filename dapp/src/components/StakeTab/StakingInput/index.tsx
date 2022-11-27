@@ -2,14 +2,14 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback} from 'react';
 
 import {Box, Input, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {utils} from 'ethers';
 import logo from 'images/panther-logo.svg';
 import {formatCurrency} from 'lib/format';
-import {safeParseUnits} from 'lib/numbers';
+import {roundDown, safeParseUnits} from 'lib/numbers';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     calculateRewards,
@@ -35,7 +35,6 @@ export default function StakingInput(props: StakingInputProps) {
     const context = useWeb3React();
     const {account, chainId} = context;
 
-    const [inputTextLength, setInputTextLength] = useState<number>(0);
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const isStakingOpen = useAppSelector(
         isStakingOpenSelector(chainId, StakeType.Advanced),
@@ -64,9 +63,8 @@ export default function StakingInput(props: StakingInputProps) {
     const inputHandler = useCallback(
         (e: any) => {
             const value = e.target.value;
-            setInputTextLength(value.length);
 
-            const regex = /^\d{0,9}(\.\d{0,18})?$/;
+            const regex = /^\d{0,12}(\.\d{0,3})?$/;
             if (!regex.test(value)) {
                 return;
             }
@@ -74,10 +72,6 @@ export default function StakingInput(props: StakingInputProps) {
         },
         [onChange],
     );
-
-    useEffect(() => {
-        setInputTextLength(props.amountToStake?.length ?? 0);
-    }, [props.amountToStake]);
 
     return (
         <Box className="staking-input-holder">
@@ -113,11 +107,9 @@ export default function StakingInput(props: StakingInputProps) {
                         inputProps={{
                             pattern: '[0-9.]*',
                             inputMode: 'decimal',
-                            maxLength: 28,
+                            maxLength: 16,
                         }}
-                        className={`staking-input ${
-                            Math.floor(inputTextLength / 15) ? 'long-input' : ''
-                        }`}
+                        className={`staking-input`}
                         value={props.amountToStake}
                         onChange={inputHandler}
                         autoComplete="off"
@@ -143,7 +135,9 @@ export default function StakingInput(props: StakingInputProps) {
                     className="staking-input-max"
                     onClick={() => {
                         if (tokenBalance) {
-                            onChange(utils.formatEther(tokenBalance));
+                            onChange(
+                                roundDown(utils.formatEther(tokenBalance), 3),
+                            );
                         }
                     }}
                 >

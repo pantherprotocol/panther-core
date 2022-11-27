@@ -12,3 +12,6 @@ export const expectedPrpBalanceTooltip =
 
 export const unrealizedRewardApr =
     'Rewards will be “released” (i.e. available for exchange into $ZKP or other use) upon spending a zAsset inside the MASP. Rewards will be calculated at the APR that the community will decide on the Core V1 launch.';
+
+export const totalUnrealizedPrivacyRewards =
+    'Privacy rewards will be given as Panther Reward Points (PRPs) in the Multi-Assets Shielded Pool and made available to exchange into $ZKP on the Core V1 launch. Rewards incentivize stronger privacy through depositing and transacting assets in the MASP. There are "realized" rewards (when PRPs have been already given) and "unrealized" ones (PRPs will be given, and become "realized", upon spending a zAsset inside the MASP, in proportion to zAsset amount and time it remained unspent). The APR to accrue privacy rewards is subject to a future decision of the community. More on privacy rewards here{link}. Unrealized rewards only are in this tab. Realized rewards are a part of the "Expected PRP balance" on the "Staking" tab.';

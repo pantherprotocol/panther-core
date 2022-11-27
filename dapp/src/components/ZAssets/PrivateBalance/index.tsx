@@ -6,7 +6,7 @@ import {useCallback, useEffect, useState} from 'react';
 
 import {Box, Button, IconButton, Tooltip, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {prpTooltip} from 'components/Common/constants';
+import {totalUnrealizedPrivacyRewards} from 'components/Common/constants';
 import {notifyError} from 'components/Common/errors';
 import {openNotification} from 'components/Common/notification';
 import SignatureRequestModal from 'components/SignatureRequestModal';
@@ -216,10 +216,10 @@ export default function PrivateBalance() {
                             ? formatCurrency(unclaimedPRP, {scale: 0})
                             : '-'}{' '}
                         <span className="info">
-                            Total Privacy Reward Points (PRP)
+                            Total Unrealized Privacy Rewards
                         </span>
                         <Tooltip
-                            title={prpTooltip}
+                            title={totalUnrealizedPrivacyRewards}
                             data-html="true"
                             placement="top"
                             className="tooltip-icon"

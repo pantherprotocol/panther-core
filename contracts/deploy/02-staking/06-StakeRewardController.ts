@@ -13,7 +13,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deploy} = deployments;
     const {deployer} = await getNamedAccounts();
 
-    console.log(`Deploying StakeRewardController on ${hre.network.name}...`);
     await verifyUserConsentOnProd(hre, deployer);
     if (reuseEnvAddress(hre, 'STAKE_REWARD_CONTROLLER')) return;
 

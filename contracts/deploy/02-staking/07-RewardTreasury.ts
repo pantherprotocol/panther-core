@@ -12,7 +12,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deploy} = deployments;
     const {deployer} = await getNamedAccounts();
 
-    console.log(`Deploying RewardTreasury on ${hre.network.name}...`);
     await verifyUserConsentOnProd(hre, deployer);
     if (reuseEnvAddress(hre, 'REWARD_TREASURY')) return;
 

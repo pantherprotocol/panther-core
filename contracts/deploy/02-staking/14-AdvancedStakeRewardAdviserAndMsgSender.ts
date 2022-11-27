@@ -48,8 +48,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         return;
     }
 
-    console.log('deploying message sender...');
-
     console.log('rewardMaster', rewardMaster);
     console.log('msgRelayerProxy', msgRelayerProxy);
     console.log('fxRoot', fxRoot);

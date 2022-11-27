@@ -25,9 +25,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     } = hre;
     const {deployer} = await getNamedAccounts();
 
-    console.log(
-        `Deploying AdvancedStakeActionMsgRelayer_Proxy on ${hre.network.name}...`,
-    );
     await verifyUserConsentOnProd(hre, deployer);
 
     await deploy('AdvancedStakeActionMsgRelayer_Proxy', {

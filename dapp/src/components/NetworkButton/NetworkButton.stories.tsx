@@ -11,7 +11,7 @@ import 'styles/dropdown-button.scss';
 
 import {NetworkButtonProps} from './NetworkButton.interface';
 
-import {NetworkButton} from './index';
+import NetworkButton from './index';
 
 export default {
     title: 'NetworkButton',

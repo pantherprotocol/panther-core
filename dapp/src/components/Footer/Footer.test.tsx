@@ -19,5 +19,4 @@ test('should render footer', () => {
     expect(footerComponent).toBeInTheDocument();
 
     expect(screen.getByTestId('footer-social-links')).toBeInTheDocument();
-    expect(screen.getByTestId('Terms')).toHaveTextContent('Terms');
 });

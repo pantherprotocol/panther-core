@@ -32,6 +32,10 @@ export default function NavigationMenu() {
             name: 'Governance',
             url: 'https://snapshot.org/#/pantherprotocol.eth',
         },
+        {
+            name: 'Docs',
+            url: 'https://docs.pantherprotocol.io/home/',
+        },
     ];
 
     if (chainId && isTestNetwork(chainId)) {

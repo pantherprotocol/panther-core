@@ -27,10 +27,12 @@ contract PNftToken is ERC721, ContextMixin, NativeMetaTransaction, Ownable {
      */
     Counters.Counter private _nextTokenId;
     address public immutable proxyRegistryAddress;
+    address public minter;
 
     string public contractURI;
     string public baseTokenURI;
 
+    event MinterUpdated(address _minter);
     event TokenUriUpdated(string _tokenURI);
     event ContractUriUpdated(string _contractURI);
 
@@ -67,6 +69,16 @@ contract PNftToken is ERC721, ContextMixin, NativeMetaTransaction, Ownable {
     }
 
     /**
+        @dev Sets the minter address
+        * @param _minter The address that can mint token
+     */
+    function setMinter(address _minter) external onlyOwner {
+        minter = _minter;
+
+        emit MinterUpdated(_minter);
+    }
+
+    /**
         @dev Sets the URI of the contract. it can be called
         * only once by the owner
         * @param _contractURI URI of the contract
@@ -98,9 +110,10 @@ contract PNftToken is ERC721, ContextMixin, NativeMetaTransaction, Ownable {
      */
     function grantOneToken(address _to)
         public
-        onlyOwner
         returns (uint256 currentTokenId)
     {
+        require(msg.sender == minter, "Only minter");
+
         currentTokenId = _nextTokenId.current();
         _nextTokenId.increment();
         _safeMint(_to, currentTokenId);

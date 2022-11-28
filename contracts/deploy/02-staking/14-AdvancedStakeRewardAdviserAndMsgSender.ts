@@ -1,17 +1,18 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
-import {isPolygonOrMumbai} from '../../lib/checkNetwork';
+import {isMainnetOrGoerli} from '../../lib/checkNetwork';
 import {
     reuseEnvAddress,
     getContractAddress,
     getContractEnvAddress,
+    verifyUserConsentOnProd,
 } from '../../lib/deploymentHelpers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     if (
-        // Deployment on Polygon or Mumbai networks supported only
-        !isPolygonOrMumbai(hre)
+        // Deployment on Mainnet or Goerli networks supported only
+        !isMainnetOrGoerli(hre)
     ) {
         console.log(
             'Skip AdvancedStakeRewardAdviserAndMsgSender deployment...',
@@ -28,15 +29,19 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     } = hre;
     const {deployer} = await getNamedAccounts();
 
+    await verifyUserConsentOnProd(hre, deployer);
+
     const rewardMaster = await getContractAddress(
         hre,
         'RewardMaster',
         'REWARD_MASTER',
     );
-    const msgRelayerProxy = getContractEnvAddress(
-        hre,
-        'ADVANCED_STAKE_ACTION_MSG_RELAYER_PROXY',
-    );
+
+    const msgRelayerProxy =
+        hre.network.name === 'mainnet'
+            ? process.env.ADVANCED_STAKE_ACTION_MSG_RELAYER_PROXY_POLYGON
+            : process.env.ADVANCED_STAKE_ACTION_MSG_RELAYER_PROXY_MUMBAI;
+
     const fxRoot = getContractEnvAddress(hre, 'FX_ROOT');
 
     if (!msgRelayerProxy) {
@@ -45,8 +50,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         );
         return;
     }
-
-    console.log('deploying message relayer implementation...');
 
     console.log('rewardMaster', rewardMaster);
     console.log('msgRelayerProxy', msgRelayerProxy);

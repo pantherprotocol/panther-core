@@ -24,9 +24,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         );
         return;
     }
-    console.log(
-        `Deploying AdvancedStakeActionMsgRelayer_Implementation on ${hre.network.name}...`,
-    );
+
     await verifyUserConsentOnProd(hre, deployer);
 
     const rewardMaster = await getContractAddress(
@@ -34,10 +32,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         'RewardMaster',
         'REWARD_MASTER',
     );
-    const msgSender = getContractEnvAddress(
-        hre,
-        'ADVANCED_STAKE_REWARD_ADVISER_AND_MSG_SENDER',
-    );
+
+    const msgSender =
+        hre.network.name === 'polygon'
+            ? process.env.ADVANCED_STAKE_REWARD_ADVISER_AND_MSG_SENDER_MAINNET
+            : process.env.ADVANCED_STAKE_REWARD_ADVISER_AND_MSG_SENDER_GOERLI;
     const fxChild = getContractEnvAddress(hre, 'FX_CHILD');
 
     if (!msgSender) {

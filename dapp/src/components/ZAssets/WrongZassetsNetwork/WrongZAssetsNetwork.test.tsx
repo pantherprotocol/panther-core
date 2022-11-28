@@ -6,9 +6,9 @@ import * as React from 'react';
 import {Box} from '@mui/material';
 import {fireEvent, screen, waitFor} from '@testing-library/react';
 import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import {renderComponent} from 'components/Common/test-utils';
 import {supportedNetworks} from 'services/connectors';
 import {MASP_CHAIN_ID} from 'services/env';
-import {renderComponent} from 'utils/test-utils';
 
 import WrongZAssetsNetwork from './index';
 

@@ -63,7 +63,7 @@ export async function generatePermitSignature(
     signer: JsonRpcSigner,
     amount: BigNumber,
     deadline: number,
-) {
+): Promise<string | Error> {
     const stakingContract = getStakingContract(library, chainId);
     const tokenContract = getTokenContract(library, chainId);
     const nonce = await tokenContract.nonces(account);
@@ -98,6 +98,8 @@ export async function generatePermitSignature(
             permitParams,
             signature,
         );
+
+        return new Error('Failed to verify EIP-712 signature');
     }
 
     return signature;
@@ -185,7 +187,7 @@ export async function advancedStake(
     keys: IKeypair[],
     account: string,
     amount: BigNumber, // assumes already validated as <= tokenBalance
-): Promise<Error | ContractTransaction> {
+): Promise<ContractTransaction | Error> {
     const data = await craftAdvancedStakeData(keys);
     if (data instanceof Error) {
         return data;
@@ -246,9 +248,10 @@ async function initiateStakingTransaction(
     amount: BigNumber,
     stakeType: string,
     data: any = '0x00',
-): Promise<ContractTransaction> {
+): Promise<ContractTransaction | Error> {
     const allowance = await getAllowance(library, chainId, account);
     if (!allowance) {
+        return new Error('Failed to get allowance');
     }
     console.debug(`Got allowance ${allowance} for ${account}`);
     const allowanceSufficient = amount.lte(allowance);
@@ -309,7 +312,7 @@ async function permitAndStake(
     amount: BigNumber,
     stakeType: string,
     data: any,
-): Promise<TransactionResponse> {
+): Promise<TransactionResponse | Error> {
     const now = Math.floor(new Date().getTime() / 1000);
     const deadline = now + 600; // within 10 minutes
 
@@ -321,6 +324,10 @@ async function permitAndStake(
         amount,
         deadline,
     );
+    if (permitSig instanceof Error) {
+        return permitSig;
+    }
+
     const {v, r, s} = fromRpcSig(permitSig);
 
     return await contract.permitAndStake(

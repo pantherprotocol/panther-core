@@ -5,8 +5,8 @@ import * as React from 'react';
 
 import {Box, Typography} from '@mui/material';
 import {screen, waitFor} from '@testing-library/react';
+import {renderComponent} from 'components/Common/test-utils';
 import polygonIcon from 'images/polygon-beige-logo.svg';
-import {renderComponent} from 'utils/test-utils';
 
 import Network from './index';
 

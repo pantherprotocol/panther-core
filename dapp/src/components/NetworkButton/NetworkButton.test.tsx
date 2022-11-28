@@ -5,8 +5,8 @@ import * as React from 'react';
 
 import '@testing-library/jest-dom';
 import {fireEvent, screen, waitFor} from '@testing-library/react';
+import {renderComponent} from 'components/Common/test-utils';
 import maticIcon from 'images/polygon-logo.svg';
-import {renderComponent} from 'utils/test-utils';
 
 import NetworkButton from './index';
 

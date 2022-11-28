@@ -4,8 +4,8 @@
 import * as React from 'react';
 
 import {screen, waitFor} from '@testing-library/react';
+import {renderComponent} from 'components/Common/test-utils';
 import StakingAPR from 'components/StakingAPR';
-import {renderComponent} from 'utils/test-utils';
 
 import AdvancedStakingRewards from './index';
 

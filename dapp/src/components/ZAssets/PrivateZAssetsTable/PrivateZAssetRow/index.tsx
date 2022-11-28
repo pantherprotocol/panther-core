@@ -88,7 +88,7 @@ export default function PrivateZAssetRow() {
                     ) : (
                         <>
                             <span className="content">
-                                {active ? 'X% APR' : '0'}
+                                {active ? 'X%' : '0'}
                             </span>
                             <Tooltip
                                 title={zAssetsPageAprTooltip}

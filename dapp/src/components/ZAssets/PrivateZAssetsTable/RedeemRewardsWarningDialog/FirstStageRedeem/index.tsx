@@ -187,11 +187,12 @@ export default function FirstStageRedeem(props: {
                         <Box>
                             <Typography className="text">
                                 <span className="semi-bold-text">WARNING!</span>{' '}
-                                Using Early Redemption now will forfeit the{' '}
-                                <br /> portion of PRP rewards that is accrued
-                                due to your zZKP
-                                <br /> balance in the pool which will be
-                                calculated and issued only at launch of CoreV1.
+                                Using Early Redemption now will forfeit
+                                “unrealized” PRP rewards to be accrued due to
+                                your zAsset (i.e., zZKP) kept in the Multi-Asset
+                                Shielded Pool. To “realize” (i.e., to receive)
+                                these rewards, you need to keep your zZKP in the
+                                Pool till the CoreV1 launch.
                             </Typography>
                             <Typography className="text semi-bold-text">
                                 Early redemption will take 24 hours to initiate

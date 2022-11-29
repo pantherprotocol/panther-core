@@ -50,6 +50,10 @@
         }
 
         &:nth-child(3) {
+            display: flex;
+            justify-content: center;
+            padding: 18px 0 0 0;
+
             @media (max-width: $medium-screen-size) {
                 padding-left: 0;
             }

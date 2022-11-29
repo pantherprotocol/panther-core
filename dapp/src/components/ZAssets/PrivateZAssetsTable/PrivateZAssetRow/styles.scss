@@ -73,14 +73,17 @@
 
         .content {
             position: absolute;
-            left: 73px;
-            top: 19px;
+            left: 140px;
+            top: 14px;
             color: rgba(174, 174, 174, 1);
+            font-size: $title-font-size;
         }
 
         .tooltip-icon {
             position: relative;
             left: 104px;
+            left: 175px;
+            bottom: 3px;
         }
     }
 

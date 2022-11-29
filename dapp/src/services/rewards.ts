@@ -17,7 +17,7 @@ import {
     getContractAddress,
     getPrpGrantorContract,
 } from './contracts';
-import {MASP_CHAIN_ID} from './env';
+import {MASP_CHAIN_ID, env} from './env';
 import {CLASSIC_TYPE_HEX, ADVANCED_TYPE_HEX} from './staking';
 import {AdvancedStakeRewardsResponse} from './subgraph';
 
@@ -274,4 +274,8 @@ export async function rewardsClaimed(): Promise<
         console.error(msg);
         return msg;
     }
+}
+
+export function getPrpAPY(): string | undefined {
+    return env.APY_PRP;
 }

@@ -17,6 +17,7 @@ const REQUIRED_ENV_VARS: string[] = [
     'ADVANCED_STAKING_APY_END',
     'FAUCET_CHAIN_IDS',
     'FAUCET_BASE_URL',
+    'APY_PRP',
 ];
 
 const REQUIRED_CHAIN_ENV_VAR_PREFIXES: string[] = [
@@ -41,6 +42,7 @@ export const env: EnvVariables = {
     FAUCET_CHAIN_IDS: process.env.FAUCET_CHAIN_IDS,
     TOKEN_SYMBOL: process.env.TOKEN_SYMBOL,
     BLOCKED_COUNTRIES: process.env.BLOCKED_COUNTRIES,
+    APY_PRP: process.env.APY_PRP,
 
     STAKE_REWARD_CONTROLLER_2_CONTRACT_1:
         process.env.STAKE_REWARD_CONTROLLER_2_CONTRACT_1,

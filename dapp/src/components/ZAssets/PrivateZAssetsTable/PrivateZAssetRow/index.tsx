@@ -23,6 +23,7 @@ import {useAppSelector} from 'redux/hooks';
 import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
 import {totalSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {chainHasPoolContract} from 'services/contracts';
+import {getPrpAPY} from 'services/rewards';
 import {StakingRewardTokenID} from 'types/staking';
 
 import './styles.scss';
@@ -88,7 +89,7 @@ export default function PrivateZAssetRow() {
                     ) : (
                         <>
                             <span className="content">
-                                {active ? 'X%' : '0'}
+                                {active ? getPrpAPY() + '%' : '0'}
                             </span>
                             <Tooltip
                                 title={zAssetsPageAprTooltip}

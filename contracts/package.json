@@ -21,7 +21,7 @@
     "deploy:bridge:relayer:upgrade": "hardhat deploy --tags msg-relayer-upgrade",
     "deploy:protocol": "hardhat deploy --tags protocol",
     "deploy:staking:classic": "hardhat deploy --tags classic-staking",
-    "deploy:staking:advanced": "hardhat deploy --tags advanced-staking",
+    "deploy:staking:advanced": "hardhat deploy --tags advanced-staking,protocol",
     "deploy": "hardhat deploy",
     "verify": "hardhat etherscan-verify",
     "deploy:chain": "HARDHAT_NO_MNEMONIC=yes hardhat deploy --network localhost",

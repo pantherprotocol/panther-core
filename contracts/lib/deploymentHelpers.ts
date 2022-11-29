@@ -48,14 +48,29 @@ export function fulfillLocalAddress(
     hre: HardhatRuntimeEnvironment,
     envWithoutNetworkSuffix: string,
 ) {
-    const localAddress =
-        process.env[`${envWithoutNetworkSuffix}_LOCALHOST`] ||
-        process.env[`${envWithoutNetworkSuffix}_PCHAIN`];
-    process.env[`${envWithoutNetworkSuffix}_HARDHAT`];
+    const localNetworks = ['LOCALHOST', 'PCHAIN', 'HARDHAT'];
 
-    process.env[
-        `${envWithoutNetworkSuffix}_${hre.network.name.toUpperCase()}`
-    ] = localAddress;
+    let localAddress = '';
+
+    localNetworks.every(network => {
+        const env = process.env[`${envWithoutNetworkSuffix}_${network}`];
+        if (env) {
+            localAddress = env;
+            return false;
+        }
+
+        return true;
+    });
+
+    if (!localAddress)
+        throw Error(
+            `No address found for ${envWithoutNetworkSuffix} env variable, Consider adding ${envWithoutNetworkSuffix}_LOCALHOST env variable`,
+        );
+
+    if (localNetworks.includes(hre.network.name.toUpperCase()))
+        process.env[
+            `${envWithoutNetworkSuffix}_${hre.network.name.toUpperCase()}`
+        ] = localAddress;
 
     return localAddress;
 }

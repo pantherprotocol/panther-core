@@ -15,6 +15,7 @@ describe('Advanced stakes', () => {
     // "Require statement not part of import statement
     // @typescript-eslint/no-var-requires"
     const {
+        unrealizedPrpReward,
         getAdvStakingAPY,
         zZkpReward,
         prpReward,
@@ -23,7 +24,8 @@ describe('Advanced stakes', () => {
     } = require('../../src/services/rewards'); // eslint-disable-line
 
     const currentTime = new Date('2022-05-17T12:00:00Z'); // 5 days after start
-    const tenDays = 3600 * 24 * 10 * 1000;
+    const oneDay = 3600 * 24 * 1000;
+    const tenDays = oneDay * 10;
     const beforeStart = T_START - tenDays;
     const start = T_START;
     const afterStart = T_START + tenDays;
@@ -130,9 +132,57 @@ describe('Advanced stakes', () => {
     });
 
     describe('PRP rewards', () => {
-        it('should always be 10,000', () => {
-            const reward = prpReward().toString();
-            expect(reward).toBe('2000');
+        describe('Upon stake', () => {
+            it('should always be 2,000', () => {
+                const reward = prpReward().toString();
+                expect(reward).toBe('2000');
+            });
+        });
+
+        describe('Unrealized rewards exact values', () => {
+            it('should be 1000 PRP for 1000 zZKP and 365 days', () => {
+                const zZkp = utils.parseEther('1000');
+                const unrealizedReward = unrealizedPrpReward(
+                    zZkp,
+                    start,
+                    start + 365 * oneDay,
+                );
+
+                expect(unrealizedReward.toString()).toEqual('1000');
+            });
+
+            it('should be 50 PRP for 100 zZKP and 185 days', () => {
+                const zZkp = utils.parseEther('100');
+                const unrealizedReward = unrealizedPrpReward(
+                    zZkp,
+                    start,
+                    start + 185 * oneDay,
+                );
+
+                expect(unrealizedReward.toString()).toEqual('50');
+            });
+
+            it('should be 2 PRP for 1000 zZKP and 1 day', () => {
+                const zZkp = utils.parseEther('1000');
+                const unrealizedReward = unrealizedPrpReward(
+                    zZkp,
+                    start,
+                    start + oneDay,
+                );
+
+                expect(unrealizedReward.toString()).toEqual('2');
+            });
+
+            it('should be 0 PRP for 10 zZKP and 1 day', () => {
+                const zZkp = utils.parseEther('10');
+                const unrealizedReward = unrealizedPrpReward(
+                    zZkp,
+                    start,
+                    start + oneDay,
+                );
+
+                expect(unrealizedReward.toString()).toEqual('0');
+            });
         });
     });
 });

@@ -46,7 +46,7 @@
         }
 
         img {
-            margin-right: 30px;
+            margin-right: 12px;
             width: 57px;
             height: 57px;
             @media (max-width: $medium-screen-size) {
@@ -73,17 +73,16 @@
 
         .content {
             position: absolute;
-            left: 140px;
+            left: 70px;
             top: 14px;
-            color: rgba(174, 174, 174, 1);
-            font-size: $title-font-size;
+            color: $color-beige;
+            font-size: $normal-font-size;
         }
 
         .tooltip-icon {
             position: relative;
             left: 104px;
-            left: 175px;
-            bottom: 3px;
+            bottom: 5px;
         }
     }
 

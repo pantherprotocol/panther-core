@@ -5,8 +5,6 @@
 pragma solidity ^0.8.16;
 import "../../common/Types.sol";
 
-// solhint-disable no-inline-assembly
-
 library BabyJubJub {
     // Curve parameters
     // E: 168700x^2 + y^2 = 1 + 168696x^2y^2
@@ -94,6 +92,7 @@ library BabyJubJub {
         uint256 _e,
         uint256 _m
     ) internal view returns (uint256 o) {
+        // solhint-disable no-inline-assembly
         // slither-disable-next-line assembly
         assembly {
             let memPtr := mload(0x40)
@@ -114,6 +113,7 @@ library BabyJubJub {
                 o := mload(memPtr)
             }
         }
+        // solhint-enable no-inline-assembly
     }
 
     function mulPointEscalar(G1Point memory point, uint256 scalar)

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.16;
 
 import { CIPHERTEXT1_WORDS, OUT_RWRD_UTXOs, PUBKEY_WORDS } from "../../common/Constants.sol";

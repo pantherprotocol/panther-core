@@ -3,17 +3,7 @@
 // slither-disable-next-line solc-version
 pragma solidity 0.8.4;
 
-library Type {
-    /// @dev Voting power integrants
-    struct Power {
-        uint96 own; // voting power that remains after delegating to others
-        uint96 delegated; // voting power delegated by others
-    }
-}
-
-interface IVotingPowerSource {
-    function power(address voter) external view returns (Type.Power memory);
-}
+import "./interfaces/IVotingPowerSource.sol";
 
 /**
  * @title VotingPowerInformer
@@ -103,7 +93,8 @@ contract VotingPowerInformer {
     /// Internal and private functions follow
 
     function _getPower(address voter) internal view returns (uint256) {
-        Type.Power memory power = IVotingPowerSource(staking).power(voter);
+        IVotingPowerSource.Power memory power = IVotingPowerSource(staking)
+            .power(voter);
         return uint256(power.own) + uint256(power.delegated);
     }
 
@@ -112,7 +103,8 @@ contract VotingPowerInformer {
         view
         returns (uint256)
     {
-        Type.Power memory power = IVotingPowerSource(staking).power(voter);
+        IVotingPowerSource.Power memory power = IVotingPowerSource(staking)
+            .power(voter);
         uint256 credits = power.own / 1e18;
         uint256 delegated = power.delegated / 1e18;
         if (delegated != 0) {

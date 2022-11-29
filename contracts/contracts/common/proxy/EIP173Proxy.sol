@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-// solhint-disable no-inline-assembly, avoid-low-level-calls
-pragma solidity ^0.8.0;
+// slither-disable-next-line solc-version
+pragma solidity ^0.8.4;
 
 import "./Proxy.sol";
 
@@ -43,7 +43,7 @@ contract EIP173Proxy is Proxy {
         }
 
         ERC165 implementation;
-        // solhint-disable-next-line security/no-inline-assembly
+        // solhint-disable-next-line no-inline-assembly
         assembly {
             implementation := sload(
                 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc
@@ -86,7 +86,7 @@ contract EIP173Proxy is Proxy {
     // ///////////////////////// INTERNAL //////////////////////////////////////////////////////////////////////
 
     function _owner() internal view returns (address adminAddress) {
-        // solhint-disable-next-line security/no-inline-assembly
+        // solhint-disable-next-line no-inline-assembly
         assembly {
             adminAddress := sload(
                 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103
@@ -96,7 +96,7 @@ contract EIP173Proxy is Proxy {
 
     function _setOwner(address newOwner) internal {
         address previousOwner = _owner();
-        // solhint-disable-next-line security/no-inline-assembly
+        // solhint-disable-next-line no-inline-assembly
         assembly {
             sstore(
                 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103,

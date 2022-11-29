@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-// solhint-disable var-name-mixedcase
 pragma solidity ^0.8.16;
 
 import "./Hasher.sol";
@@ -54,6 +53,8 @@ contract TriadIncrementalMerkleTrees is
 
     // NOTE: No `constructor` (initialization) function needed
 
+    // solhint-disable const-name-snakecase
+
     // Max number of latest roots to cache (must be a power of 2)
     uint256 internal constant CACHED_ROOTS_NUM = 256;
 
@@ -70,6 +71,8 @@ contract TriadIncrementalMerkleTrees is
         TREE_DEPTH - 1 + iTRIAD_SIZE_BITS;
     uint256 private constant CACHE_SIZE_MASK =
         CACHED_ROOTS_NUM * iTRIAD_SIZE - 1;
+
+    // solhint-enable const-name-snakecase
 
     /**
      * @notice Returns the number of leaves inserted in all trees so far

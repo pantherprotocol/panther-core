@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-// solhint-disable var-name-mixedcase
-// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 // slither-disable-next-line solc-version
 pragma solidity 0.8.4;
 
@@ -26,6 +24,7 @@ import "../common/Utils.sol";
  */
 contract RewardPool is ImmutableOwnable, Utils, IRewardPool {
     /// @notice Address of the VestingPools instance
+    // solhint-disable-next-line var-name-mixedcase
     address public immutable VESTING_POOLS;
 
     /// @notice ID of the pool (in the VestingPools) to vest from

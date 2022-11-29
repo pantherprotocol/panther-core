@@ -62,6 +62,8 @@ contract PantherPoolV0 is
     /// @notice Address of the Vault contract
     address public immutable VAULT;
 
+    // solhint-enable var-name-mixedcase
+
     /// @notice (UNIX) Time since when the `exit` calls get enabled
     uint32 public exitTime;
 
@@ -72,8 +74,6 @@ contract PantherPoolV0 is
     // (rest of the storage slot) reserved for upgrades
     // slither-disable-next-line unused-state,constable-states
     uint200 private _reserved;
-
-    // solhint-enable var-name-mixedcase
 
     // @notice Seen (i.e. spent) commitment nullifiers
     // nullifier hash => spent

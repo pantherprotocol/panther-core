@@ -3,8 +3,8 @@
   "plugins": ["prettier"],
   "rules": {
     "code-complexity": ["error", 7],
-    "compiler-version": ["error", "^0.8.0"],
-    "const-name-snakecase": "off",
+    "compiler-version": ["error", "^0.8.4"],
+    "const-name-snakecase": "error",
     "constructor-syntax": "error",
     "func-visibility": ["error", {"ignoreConstructors": true}],
     "max-line-length": ["error", 120],

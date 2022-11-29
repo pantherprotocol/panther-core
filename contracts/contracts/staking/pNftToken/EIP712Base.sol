@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable-next-line max-line-length
+// Source: https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/common/meta-transactions/EIP712Base.sol
 
 pragma solidity ^0.8.16;
 
@@ -6,8 +8,6 @@ import { Initializable } from "./Initializable.sol";
 
 /**
  * @title EIP712Base contract
- * @dev Based on the https://github.com/ProjectOpenSea/opensea-creatures/blob/master/
- * contracts/common/meta-transactions/EIP712Base.sol
  */
 contract EIP712Base is Initializable {
     struct EIP712Domain {

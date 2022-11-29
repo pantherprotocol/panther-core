@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable-next-line max-line-length
+// Source: https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/common/meta-transactions/Initializable.sol
 
 pragma solidity ^0.8.16;
 
 /**
  * @title Initializable contract
- * @dev Based on the https://github.com/ProjectOpenSea/opensea-creatures/blob/master/
- * contracts/common/meta-transactions/Initializable.sol
  */
 contract Initializable {
     bool private inited = false;

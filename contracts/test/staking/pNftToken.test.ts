@@ -22,6 +22,7 @@ describe('PNFT Token', () => {
         const PNftToken = await ethers.getContractFactory('PNftToken');
 
         pNftToken = (await PNftToken.deploy(
+            owner.address,
             proxyRegistryAddress,
             name,
             symbol,
@@ -83,7 +84,7 @@ describe('PNFT Token', () => {
             it('should throw if executed by non-owner', async () => {
                 await expect(
                     pNftToken.connect(minter).setBaseTokenURI(baseContractUri),
-                ).to.be.revertedWith('Ownable: caller is not the owner');
+                ).to.be.revertedWith('ImmOwn: unauthorized');
             });
 
             it('should throw if executed twice', async () => {
@@ -117,7 +118,7 @@ describe('PNFT Token', () => {
             it('should throw if executed by non-owner', async () => {
                 await expect(
                     pNftToken.connect(minter).setBaseTokenURI(baseTokenUri),
-                ).to.be.revertedWith('Ownable: caller is not the owner');
+                ).to.be.revertedWith('ImmOwn: unauthorized');
             });
 
             it('should throw if executed twice', async () => {

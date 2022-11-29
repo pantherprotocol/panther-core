@@ -32,7 +32,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             `Transferring minter of Pnft to ${advancedStakeRewardController}...`,
         );
 
-        const signer = await ethers.getSigner(deployer);
+        const multisig =
+            process.env.DAO_MULTISIG_ADDRESS ||
+            (await getNamedAccounts()).multisig ||
+            deployer;
+
+        const signer = await ethers.getSigner(multisig);
         const tx = await pNft
             .connect(signer)
             .setMinter(advancedStakeRewardController);

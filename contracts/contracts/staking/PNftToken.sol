@@ -4,21 +4,29 @@ pragma solidity 0.8.16;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./pNftToken/NativeMetaTransaction.sol";
 import "./pNftToken/ContentMixin.sol";
+import "../common/ImmutableOwnable.sol";
+import "./interfaces/INftGrantor.sol";
 
 /**
  * @title PNftToken
- * @notice $PNFT token on Polygon
- * @dev This contract is supposed to run on Polygon and grant one
- * token to staker for each stake. the AdvancedStakeRewardController
- * contract is supposed to be the owner of this contract.
+ * @notice NFT token on Polygon (PNFT).
+ * @dev If called by the "minter", it mints and grants one NFT to the address
+ * given. The `AdvancedStakeRewardController` is supposed to be the minter and
+ * call it to reward stakers with $PNFTs.
+ * An immutable "owner" may update the minter and set the metadata (URIs) once.
  * Inspired and borrowed by/from the opensea ERC721Tradable contract.
  * https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/ERC721Tradable.sol
  */
-contract PNftToken is ERC721, ContextMixin, NativeMetaTransaction, Ownable {
+contract PNftToken is
+    ImmutableOwnable,
+    ERC721,
+    ContextMixin,
+    NativeMetaTransaction,
+    INftGrantor
+{
     using Counters for Counters.Counter;
 
     /**
@@ -37,11 +45,12 @@ contract PNftToken is ERC721, ContextMixin, NativeMetaTransaction, Ownable {
     event ContractUriUpdated(string _contractURI);
 
     constructor(
+        address _owner,
         address _proxyRegistryAddress,
         string memory _name,
         string memory _symbol
-    ) ERC721(_name, _symbol) {
-        require(_proxyRegistryAddress != address(0), "Zaro address");
+    ) ERC721(_name, _symbol) ImmutableOwnable(_owner) {
+        require(_proxyRegistryAddress != address(0), "Zero address");
 
         proxyRegistryAddress = _proxyRegistryAddress;
 
@@ -51,8 +60,8 @@ contract PNftToken is ERC721, ContextMixin, NativeMetaTransaction, Ownable {
     }
 
     /**
-        @dev Returns the total tokens minted so far.
-        1 is always subtracted from the Counter since it tracks the next available tokenId.
+     * @dev Returns the total tokens minted so far.
+     *  1 is always subtracted from the Counter since it tracks the next available tokenId.
      */
     function totalSupply() public view returns (uint256) {
         return _nextTokenId.current() - 1;
@@ -69,19 +78,20 @@ contract PNftToken is ERC721, ContextMixin, NativeMetaTransaction, Ownable {
     }
 
     /**
-        @dev Sets the minter address
-        * @param _minter The address that can mint token
+     * @dev Sets the minter address
+     * @param _minter The address that can mint token
      */
     function setMinter(address _minter) external onlyOwner {
+        require(_minter != address(0), "Zero address");
         minter = _minter;
 
         emit MinterUpdated(_minter);
     }
 
     /**
-        @dev Sets the URI of the contract. it can be called
-        * only once by the owner
-        * @param _contractURI URI of the contract
+     * @dev Sets the URI of the contract. it can be called
+     * only once by the owner
+     * @param _contractURI URI of the contract
      */
     function setContractURI(string calldata _contractURI) external onlyOwner {
         require(!(bytes(contractURI).length > 0), "Contract URI is defined");
@@ -92,9 +102,9 @@ contract PNftToken is ERC721, ContextMixin, NativeMetaTransaction, Ownable {
     }
 
     /**
-        @dev Sets the URI of the token. it can be called
-        * only once by the owner
-        * @param _baseTokenURI URI of the token
+     * @dev Sets the URI of the token. it can be called
+     * only once by the owner
+     * @param _baseTokenURI URI of the token
      */
     function setBaseTokenURI(string calldata _baseTokenURI) external onlyOwner {
         require(!(bytes(baseTokenURI).length > 0), "Base URI is defined");
@@ -109,10 +119,11 @@ contract PNftToken is ERC721, ContextMixin, NativeMetaTransaction, Ownable {
      * @param _to address of the future owner of the token
      */
     function grantOneToken(address _to)
-        public
+        external
+        virtual
         returns (uint256 currentTokenId)
     {
-        require(msg.sender == minter, "Only minter");
+        require(_msgSender() == minter, "Only minter");
 
         currentTokenId = _nextTokenId.current();
         _nextTokenId.increment();

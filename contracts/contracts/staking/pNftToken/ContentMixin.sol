@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable-next-line max-line-length
+// Source: https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/common/meta-transactions/ContentMixin.sol
 
 pragma solidity ^0.8.16;
 
 /**
  * @title ContextMixin contract
- * @dev ContextMixin (via Meta-transactions) enables gasless user transactions.
- * This contract is supposed to run on Polygon and grant one
- * Based on the https://github.com/ProjectOpenSea/opensea-creatures/blob/master/
- * contracts/common/meta-transactions/ContentMixin.sol
+ * @dev It supports gasless user transactions
  */
 abstract contract ContextMixin {
     function msgSender() internal view returns (address payable sender) {

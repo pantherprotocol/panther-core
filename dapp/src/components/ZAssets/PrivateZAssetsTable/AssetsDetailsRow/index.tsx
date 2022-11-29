@@ -9,6 +9,7 @@ import RedeemRewards from 'components/ZAssets/PrivateZAssetsTable/RedeemReward';
 import {format} from 'date-fns';
 import {BigNumber} from 'ethers';
 import {formatCurrency} from 'lib/format';
+import {unrealizedPrpReward} from 'services/rewards';
 
 import {AssetsDetailsRowProperties} from './AssetsDetailsRow.interface';
 
@@ -39,7 +40,13 @@ const AssetsDetailsRow = (props: AssetsDetailsRowProperties) => {
             </TableCell>
             <TableCell className="bold-beige zAsset-staking-cell">
                 <span className="cell-title">Rewards Earned:</span>
-                <span className="cell-content prp-content">? PRP</span>
+                <span className="cell-content prp-content">
+                    {unrealizedPrpReward(
+                        BigNumber.from(reward.zZKP),
+                        Number(reward.creationTime) * 1000,
+                    ).toString()}{' '}
+                    PRP
+                </span>
             </TableCell>
             <TableCell className="zassets-staking-redeem-button-holder zAsset-staking-cell">
                 <RedeemRewards

@@ -80,8 +80,7 @@ export default function StakingInfo() {
             <>
                 <p className="staking-info-text-paragraph">
                     You will need to unstake in order for your staked assets to
-                    be liquid again. Rewards are earned automatically.{' '}
-                    <span className="learn-more-link">Learn more.</span>
+                    be liquid again. Rewards are earned automatically.
                 </p>
                 <p>
                     Your staked ZKP will create zZKP as rewards in the

@@ -36,8 +36,7 @@
         }
 
         &:first-child {
-            text-align: left;
-            padding-left: 25px;
+            text-align: center;
             @media (max-width: $medium-screen-size) {
                 padding-left: 0;
             }
@@ -51,8 +50,8 @@
 
         &:nth-child(3) {
             display: flex;
-            justify-content: center;
             padding: 18px 0 0 0;
+            justify-content: center;
 
             @media (max-width: $medium-screen-size) {
                 padding-left: 0;
@@ -77,15 +76,11 @@
                 color: $white;
             }
         }
-
-        .prp-content {
-            color: rgba(174, 174, 174, 1);
-        }
     }
     .staking-date {
         font-weight: $light-font-weight !important;
         font-size: $normal-font-size;
-        padding-left: 70px;
+        padding-left: 99px;
         @media (max-width: $medium-screen-size) {
             font-size: $small-font-size;
             padding-left: 0;

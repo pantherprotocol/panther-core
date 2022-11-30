@@ -4,7 +4,6 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {isProd} from '../../lib/checkNetwork';
 import {
     reuseEnvAddress,
-    getContractEnvAddress,
     verifyUserConsentOnProd,
 } from '../../lib/deploymentHelpers';
 
@@ -24,16 +23,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             (await getNamedAccounts()).multisig;
     else owner = deployer;
 
-    const proxyRegistry = getContractEnvAddress(
-        hre,
-        'OPENSEA_ERC721_PROXY_REGISTRY',
-    );
     const name = 'Panther NFT';
     const symbol = 'PNFT';
 
     await deploy('PNftToken', {
         from: deployer,
-        args: [owner, proxyRegistry, name, symbol],
+        args: [owner, name, symbol],
         log: true,
         autoMine: true,
     });

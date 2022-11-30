@@ -5,7 +5,7 @@ import * as React from 'react';
 
 import {Box, Card} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {expectedPrpBalanceTooltip} from 'components/Common/constants';
+import {expectedPrpBalanceTooltip} from 'components/Common/tooltips';
 import AccountBalance from 'components/Header/AccountBalance';
 import {constants} from 'ethers';
 import {fiatPrice} from 'lib/token-price';

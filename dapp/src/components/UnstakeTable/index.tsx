@@ -13,12 +13,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
-import {expectedPrpBalanceTooltip} from 'components/Common/constants';
 import {MessageWithTx} from 'components/Common/MessageWithTx';
 import {
     removeNotification,
     openNotification,
 } from 'components/Common/notification';
+import {expectedPrpBalanceTooltip} from 'components/Common/tooltips';
 import {BigNumber, constants} from 'ethers';
 import infoIcon from 'images/info-icon.svg';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';

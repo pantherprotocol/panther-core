@@ -4,8 +4,8 @@
 import * as React from 'react';
 
 import {screen, waitFor} from '@testing-library/react';
-import {zAssetTooltip} from 'components/Common/constants';
 import {renderComponent} from 'components/Common/test-utils';
+import {zAssetTooltip} from 'components/Common/tooltips';
 
 import PrivateZAssetsTable from './index';
 

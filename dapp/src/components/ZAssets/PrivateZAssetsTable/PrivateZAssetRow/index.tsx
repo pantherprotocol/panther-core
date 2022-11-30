@@ -89,7 +89,7 @@ export default function PrivateZAssetRow() {
                     ) : (
                         <>
                             <span className="content">
-                                {active ? getPrpAPY() + '%' : '0'}
+                                {active ? getPrpAPY() + '%' : '0%'}
                             </span>
                             <Tooltip
                                 title={zAssetsPageAprTooltip}

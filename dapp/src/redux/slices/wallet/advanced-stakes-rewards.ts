@@ -15,6 +15,7 @@ import {getChangedUTXOsStatuses, UTXOStatusByID} from 'services/pool';
 import {
     PRP_REWARD_PER_STAKE,
     NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD,
+    unrealizedPrpReward,
 } from 'services/rewards';
 import {
     AdvancedStakeRewardsResponse,
@@ -396,6 +397,31 @@ export function totalSelector(
             })
             .map((reward: AdvancedStakeRewards) => {
                 return reward[tid];
+            });
+        return sumBigNumbers(rewardItems);
+    };
+}
+
+export function totalUnrealizedPrpSelector(
+    chainId: number | null | undefined,
+    address: string | null | undefined,
+): (state: RootState) => BigNumber {
+    return (state: RootState): BigNumber => {
+        if (!address) return constants.Zero;
+
+        const rewards = advancedStakesRewardsSelector(chainId, address)(state);
+        if (!rewards) return constants.Zero;
+
+        const rewardItems = Object.values(rewards)
+            // filter of spent statuses always ignores UNDEFINED Status
+            .filter((rewards: AdvancedStakeRewards) => {
+                return UTXOStatus.UNSPENT === rewards.zZkpUTXOStatus;
+            })
+            .map((reward: AdvancedStakeRewards) => {
+                return unrealizedPrpReward(
+                    BigNumber.from(reward.zZKP),
+                    Number(reward.creationTime) * 1000,
+                );
             });
         return sumBigNumbers(rewardItems);
     };

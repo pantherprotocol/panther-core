@@ -12,7 +12,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
-import {unrealizedRewardApr, zAssetTooltip} from 'components/Common/constants';
+import {
+    unrealizedRewardAprTooltip,
+    zAssetTooltip,
+} from 'components/Common/constants';
 import infoIcon from 'images/info-icon.svg';
 import {chainHasPoolContract} from 'services/contracts';
 
@@ -62,7 +65,7 @@ export default function PrivateZAssetsTable() {
                         >
                             <span>Unrealized Reward APR:</span>
                             <Tooltip
-                                title={unrealizedRewardApr}
+                                title={unrealizedRewardAprTooltip}
                                 data-html="true"
                                 placement="top"
                                 className="tooltip-icon"

@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
 import {BigNumber, constants, utils} from 'ethers';
+import {E18} from 'lib/constants';
 import {IStakingTypes} from 'types/contracts/Staking';
 import {
     StakeRewardBN,
@@ -36,7 +37,31 @@ const DAPY_DT = (APY_END - APY_START) / (T_END - T_START);
 // deployment of the version 1.0 of the protocol. MASP doc:
 // https://docs.google.com/document/d/1BTWHstTgNKcapOe0PLQR41vbC0aEDYmbBenfzTq8TVs
 export const PRP_REWARD_PER_STAKE = '2000';
+export const UNREALIZED_PRP_REWARD_PER_ZZKP = 10;
 export const NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD = 2000;
+
+export function calculateRewardBasedOnAPR(
+    amount: BigNumber,
+    apy: number,
+    rewardStart: number,
+    rewardEnd: number,
+): BigNumber {
+    // Fraction of a year that the stake has accumulated rewards
+    const oneYear = 3600 * 24 * 365 * 1000;
+    const timeFracStaked = (rewardEnd - rewardStart) / oneYear;
+
+    // Reward amount as fraction of principal staked (calculated from annual APY
+    // scaled to time staked).
+    const rewardCoef = (apy / 100) * timeFracStaked;
+
+    // Calculate reward, truncating reward fraction to 6 decimals of precision.
+    const rewardCoefE18 = Math.floor(rewardCoef * 1e18);
+    if (rewardCoefE18 < 1) {
+        return constants.Zero;
+    }
+
+    return amount.mul(rewardCoefE18.toString()).div(E18);
+}
 
 export function zZkpReward(
     amount: BigNumber,
@@ -69,27 +94,27 @@ export function zZkpReward(
     }
     const rewardEnd = lockedTill < T_END ? lockedTill : T_END;
     const rewardStart = T_START < timeStaked ? timeStaked : T_START;
+    const apy = getAdvStakingAPY(rewardStart);
 
-    // Fraction of a year that the stake has accumulated rewards
-    const oneYear = 3600 * 24 * 365 * 1000;
-    const timeFracStaked = (rewardEnd - rewardStart) / oneYear;
-
-    // Reward amount as fraction of principal staked (calculated from annual APY
-    // scaled to time staked).
-    const rewardCoef = (getAdvStakingAPY(rewardStart) / 100) * timeFracStaked;
-
-    // Calculate reward, truncating reward fraction to 6 decimals of precision.
-    const rewardCoefE18 = Math.floor(rewardCoef * 1e18);
-    if (rewardCoefE18 < 1) {
-        return constants.Zero;
-    }
-
-    const e18 = BigNumber.from(10).pow(18);
-    return amount.mul(rewardCoefE18.toString()).div(e18);
+    return calculateRewardBasedOnAPR(amount, apy, rewardStart, rewardEnd);
 }
 
 export function prpReward(): BigNumber {
     return BigNumber.from(PRP_REWARD_PER_STAKE);
+}
+
+export function unrealizedPrpReward(
+    zZkpAmount: BigNumber,
+    rewardStart: number,
+    rewardEnd = Date.now(),
+): BigNumber {
+    const apy = getPrpAPY();
+    const prpAmount = zZkpAmount.mul(UNREALIZED_PRP_REWARD_PER_ZZKP).div(E18);
+    return calculateRewardBasedOnAPR(prpAmount, apy, rewardStart, rewardEnd);
+}
+
+export function getPrpAPY(): number {
+    return Number(env.APY_PRP);
 }
 
 export function getAdvStakingAPY(currentTime: number): number {
@@ -274,8 +299,4 @@ export async function rewardsClaimed(): Promise<
         console.error(msg);
         return msg;
     }
-}
-
-export function getPrpAPY(): string | undefined {
-    return env.APY_PRP;
 }

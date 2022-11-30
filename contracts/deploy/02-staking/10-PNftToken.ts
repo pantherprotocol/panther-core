@@ -1,6 +1,7 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
+import {isProd} from '../../lib/checkNetwork';
 import {
     reuseEnvAddress,
     getContractEnvAddress,
@@ -15,10 +16,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await verifyUserConsentOnProd(hre, deployer);
     if (reuseEnvAddress(hre, 'PNFT_TOKEN')) return;
 
-    const multisig =
-        process.env.DAO_MULTISIG_ADDRESS ||
-        (await getNamedAccounts()).multisig ||
-        deployer;
+    let owner: string;
+
+    if (isProd(hre))
+        owner =
+            process.env.DAO_MULTISIG_ADDRESS ||
+            (await getNamedAccounts()).multisig;
+    else owner = deployer;
 
     const proxyRegistry = getContractEnvAddress(
         hre,
@@ -29,7 +33,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     await deploy('PNftToken', {
         from: deployer,
-        args: [multisig, proxyRegistry, name, symbol],
+        args: [owner, proxyRegistry, name, symbol],
         log: true,
         autoMine: true,
     });

@@ -1,6 +1,7 @@
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
+import {isProd} from '../../lib/checkNetwork';
 import {
     verifyUserConsentOnProd,
     getContractAddress,
@@ -9,6 +10,8 @@ import {
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {getNamedAccounts, ethers} = hre;
     const {deployer} = await getNamedAccounts();
+
+    if (isProd(hre)) return;
 
     await verifyUserConsentOnProd(hre, deployer);
 
@@ -32,12 +35,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             `Transferring minter of Pnft to ${advancedStakeRewardController}...`,
         );
 
-        const multisig =
-            process.env.DAO_MULTISIG_ADDRESS ||
-            (await getNamedAccounts()).multisig ||
-            deployer;
+        const signer = await ethers.getSigner(deployer);
 
-        const signer = await ethers.getSigner(multisig);
         const tx = await pNft
             .connect(signer)
             .setMinter(advancedStakeRewardController);

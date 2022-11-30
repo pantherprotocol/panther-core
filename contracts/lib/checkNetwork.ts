@@ -5,6 +5,10 @@ export function isLocal(hre: HardhatRuntimeEnvironment): boolean {
     return !!hre.network.name.match(/^hardhat|pchain|localhost$/);
 }
 
+export function isProd(hre: HardhatRuntimeEnvironment): boolean {
+    return hre.network.name === 'mainnet' || hre.network.name === 'polygon';
+}
+
 export function isMainnetOrGoerli(hre: HardhatRuntimeEnvironment): boolean {
     return hre.network.name === 'mainnet' || hre.network.name === 'goerli';
 }

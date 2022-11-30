@@ -407,7 +407,6 @@ function decodeUTXOData(utxoData: string): [string, string, bigint] | Error {
     // (ignored for now). See documentation for more details:
     // https://docs.google.com/document/d/11oY8TZRPORDP3p5emL09pYKIAQTadNhVPIyZDtMGV8k/
     if (!ADVANCED_STAKE_UTXO_DATA_SIZES.includes(utxoData.length)) {
-        console.log('utxoData.length', utxoData.length);
         const msg = 'Invalid UTXO data length';
         console.error(msg);
         return new Error(msg);

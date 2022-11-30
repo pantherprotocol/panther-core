@@ -80,7 +80,7 @@ export async function isBlockedCountry(): Promise<boolean | Error> {
     }
 
     const {country, country_name, ip} = response;
-    console.log(`Your IP address=${ip} located in ${country_name}`);
+    console.debug(`Your IP address=${ip} located in ${country_name}`);
 
     return BLOCKED_COUNTRIES.includes(country);
 }

@@ -80,7 +80,7 @@ export const changeWallet = async (accountToSwitch: string) => {
             .then()
             .catch((error: any) => {
                 if (error.code === 4001) {
-                    console.log('Please connect to MetaMask.');
+                    console.error('Please connect to MetaMask.');
                 } else {
                     console.error(error);
                     openNotification(

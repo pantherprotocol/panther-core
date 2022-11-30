@@ -10,7 +10,6 @@ describe('PNFT Token', () => {
     let minter: SignerWithAddress;
     let nonMinter: SignerWithAddress;
 
-    const proxyRegistryAddress = '0xeeddeeddeeddeeddeeddeeddeeddeeddeeddeedd'; // random address just for testing
     const name = 'Panther NFT Token';
     const symbol = 'PNFT';
 
@@ -23,7 +22,6 @@ describe('PNFT Token', () => {
 
         pNftToken = (await PNftToken.deploy(
             owner.address,
-            proxyRegistryAddress,
             name,
             symbol,
         )) as PNftToken;

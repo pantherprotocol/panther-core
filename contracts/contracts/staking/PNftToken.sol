@@ -122,6 +122,7 @@ contract PNftToken is
      */
     function setApprovedForAllOperator(address approvee) external onlyOwner {
         // Zero address allowed (meaning "no account is set")
+        // slither-disable-next-line missing-zero-check
         approvedForAll = approvee;
         emit ApprovedForAllUpdated(approvee);
     }

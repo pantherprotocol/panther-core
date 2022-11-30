@@ -1,45 +1,11 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-// solhint-disable var-name-mixedcase
-// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 // slither-disable-next-line solc-version
 pragma solidity 0.8.4;
 
-interface IArptHistory {
-    function getScArptAt(uint32 timestamp)
-        external
-        view
-        returns (uint256 scArpt);
-}
-
-interface IStakeRegister {
-    function stakes(address _account, uint256 _stakeId)
-        external
-        view
-        returns (Stake memory);
-
-    function accountStakes(address _account)
-        external
-        view
-        returns (Stake[] memory);
-}
-
-struct Stake {
-    // index in the `Stake[]` array of `stakes`
-    uint32 id;
-    // defines Terms
-    bytes4 stakeType;
-    // time this stake was created at
-    uint32 stakedAt;
-    // time this stake can be claimed at
-    uint32 lockedTill;
-    // time this stake was claimed at (unclaimed if 0)
-    uint32 claimedAt;
-    // amount of tokens on this stake (assumed to be less 1e27)
-    uint96 amount;
-    // address stake voting power is delegated to
-    address delegatee;
-}
+import "./interfaces/IStakingTypes.sol";
+import "./interfaces/IStakeRegister.sol";
+import "./interfaces/IArptHistory.sol";
 
 /**
  * @title StakesReporter
@@ -47,11 +13,13 @@ struct Stake {
  * it calls the `Staking` contract for getting the stakes
  * and the `StakeRewardController` contract for calculating the rewards.
  * @dev the contract is expected to use the `StakeRewardController.sol`
- * and `Staking.sol` on Polygon as IArptHistory as IStakeRegister
+ * and `Staking.sol` on Polygon as IArptHistory and IStakeRegister
  */
-contract StakesReporter {
+contract StakesReporter is IStakingTypes {
+    // solhint-disable var-name-mixedcase
     IStakeRegister public immutable STAKE_REGISTER;
     IArptHistory public immutable ARPT_HISTORY;
+    // solhint-enable var-name-mixedcase
 
     uint256 private constant SCALE = 1e9;
 

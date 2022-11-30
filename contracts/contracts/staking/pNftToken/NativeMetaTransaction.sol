@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable-next-line max-line-length
+// Source: https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/common/meta-transactions/NativeMetaTransaction.sol
 
 pragma solidity ^0.8.16;
 
@@ -6,9 +8,7 @@ import { EIP712Base } from "./EIP712Base.sol";
 
 /**
  * @title NativeMetaTransaction contract
- * @dev NativeMetaTransaction (via ContextMixin) enables gasless user transactions.
- * Based on the https://github.com/ProjectOpenSea/opensea-creatures/blob/master/
- * contracts/common/meta-transactions/NativeMetaTransaction.sol
+ * @dev It enables gasless user transactions
  */
 contract NativeMetaTransaction is EIP712Base {
     bytes32 private constant META_TRANSACTION_TYPEHASH =

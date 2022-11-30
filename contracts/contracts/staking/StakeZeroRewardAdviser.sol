@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
-// slither-disable-next-line solc-version
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.16;
 
 import "./actions/StakingMsgProcessor.sol";
 import "./interfaces/IRewardAdviser.sol";
@@ -63,10 +61,10 @@ abstract contract StakeZeroRewardAdviser is
             );
     }
 
-    /* solhint-disable no-empty-blocks */
+    // solhint-disable no-empty-blocks
     // slither-disable-next-line dead-code
     function _onRequest(bytes4 action, bytes memory message) internal virtual {
         // Child contracts may re-define it
     }
-    /* solhint-enable no-empty-blocks */
+    // solhint-enable no-empty-blocks
 }

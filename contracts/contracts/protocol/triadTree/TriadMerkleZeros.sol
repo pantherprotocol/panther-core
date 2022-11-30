@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-// solhint-disable var-name-mixedcase
 pragma solidity ^0.8.16;
 
 import { FIELD_SIZE } from "../crypto/SnarkConstants.sol";
@@ -39,16 +38,16 @@ import { FIELD_SIZE } from "../crypto/SnarkConstants.sol";
 
 // @notice The "triad binary tree" populated with zero leaf values
 abstract contract TriadMerkleZeros {
+    // solhint-disable var-name-mixedcase
+
     // @dev Number of levels in a tree excluding the root level
     // (also defined in scripts/generateTriadMerkleZeroesContracts.sh)
     uint256 internal constant TREE_DEPTH = 15;
 
     // Number of leaves in a branch with the root on the level 1
-    // slither-disable-next-line unused-state
     uint256 internal constant TRIAD_SIZE = 3;
 
     // @dev Leaf zero value (`keccak256("Pantherprotocol")%FIELD_SIZE`)
-    // slither-disable-next-line unused-state
     bytes32 internal constant ZERO_VALUE =
         bytes32(
             uint256(
@@ -57,13 +56,14 @@ abstract contract TriadMerkleZeros {
         );
 
     // Merkle root of a tree that contains zeros only
-    // slither-disable-next-line unused-state
     bytes32 internal constant ZERO_ROOT =
         bytes32(
             uint256(
                 0x20fc043586a9fcb416cdf2a3bc8a995f8f815d43f1046a20d1c588cf20482a55
             )
         );
+
+    // solhint-enable var-name-mixedcase
 
     function populateZeros(bytes32[TREE_DEPTH] memory zeros) internal pure {
         zeros[0] = bytes32(

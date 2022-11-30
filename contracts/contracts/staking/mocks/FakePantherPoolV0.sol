@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: BUSL-1.1
-// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 pragma solidity ^0.8.16;
 
 import { CIPHERTEXT1_WORDS, OUT_MAX_UTXOs, PATH_ELEMENTS_NUM } from "../../common/Constants.sol";

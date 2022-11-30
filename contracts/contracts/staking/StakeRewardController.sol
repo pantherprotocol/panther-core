@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
-// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 // slither-disable-next-line solc-version
 pragma solidity 0.8.4;
 
@@ -29,6 +28,8 @@ import "../common/Utils.sol";
  * It acts as a "spender" from the "RewardTreasury", calling `transferFrom` to
  * send "new" rewards to stakers, both under "old" and "new" stakes.
  */
+// IArptHistory could be inherited (but it was not, deployed code left here)
+// slither-disable-next-line missing-inheritance
 contract StakeRewardController is
     ImmutableOwnable,
     StakingMsgProcessor,
@@ -98,6 +99,7 @@ contract StakeRewardController is
     /// @dev Period when rewards are accrued
     uint256 private constant REWARDING_DURATION = 56 days;
     /// @dev Amount of rewards accrued to the reward pool every second (scaled)
+    // solhint-disable-next-line const-name-snakecase
     uint256 private constant sc_REWARD_PER_SECOND =
         (REWARD_AMOUNT * SCALE) / REWARDING_DURATION;
 

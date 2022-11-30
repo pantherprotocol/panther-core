@@ -1,0 +1,22 @@
+[
+  {
+    "elements": [],
+    "description": "solc-0.8.4(in 0378bee7ea2b5b6d6461565f6adb07f6) is not recommended for deployment\n",
+    "markdown": "solc-0.8.4(in 0378bee7ea2b5b6d6461565f6adb07f6) is not recommended for deployment\n",
+    "first_markdown_element": "",
+    "id": "c5c08d30439ae27f1b7917bae92e8e2049f34f96459213d0345ee625df681a18",
+    "check": "solc-version",
+    "impact": "Informational",
+    "confidence": "High"
+  },
+  {
+    "elements": [],
+    "description": "solc-0.8.4(in 0d4abad5002073eb26b4081eed3750b3) is not recommended for deployment\n",
+    "markdown": "solc-0.8.4(in 0d4abad5002073eb26b4081eed3750b3) is not recommended for deployment\n",
+    "first_markdown_element": "",
+    "id": "63571f492f104c7ae1adcf66e207da4b700e4df893094978524c538cb78bcb02",
+    "check": "solc-version",
+    "impact": "Informational",
+    "confidence": "High"
+  }
+]

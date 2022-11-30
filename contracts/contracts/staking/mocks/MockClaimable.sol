@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// solhint-disable-next-line compiler-fixed, compiler-gt-0_8
 // slither-disable-next-line solc-version
 pragma solidity ^0.8.4;
 

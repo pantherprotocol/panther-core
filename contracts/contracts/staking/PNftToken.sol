@@ -12,12 +12,12 @@ import "./interfaces/INftGrantor.sol";
 
 /**
  * @title PNftToken
- * @notice NFT token on Polygon (PNFT).
+ * @notice Panther NFT (PNFT) token on Polygon.
  * @dev If called by the "minter", it mints and grants one NFT to the address
  * given. The `AdvancedStakeRewardController` is supposed to be the minter and
  * call it to reward stakers with $PNFTs.
  * An immutable "owner" may update the minter and set the metadata (URIs) once.
- * Inspired and borrowed by/from the opensea ERC721Tradable contract.
+ * Inspired and borrowed by/from the OpenSea's ERC721Tradable contract.
  * https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/ERC721Tradable.sol
  */
 contract PNftToken is
@@ -34,7 +34,9 @@ contract PNftToken is
      * We track the nextTokenId instead of the currentTokenId to save users on gas costs.
      */
     Counters.Counter private _nextTokenId;
-    address public immutable proxyRegistryAddress;
+
+    /// @notice Operator (or user's Proxy Register) approved for all transactions
+    address public approvedForAll;
     address public minter;
 
     string public contractURI;
@@ -43,17 +45,13 @@ contract PNftToken is
     event MinterUpdated(address _minter);
     event TokenUriUpdated(string _tokenURI);
     event ContractUriUpdated(string _contractURI);
+    event ApprovedForAllUpdated(address approvee);
 
     constructor(
         address _owner,
-        address _proxyRegistryAddress,
         string memory _name,
         string memory _symbol
     ) ERC721(_name, _symbol) ImmutableOwnable(_owner) {
-        require(_proxyRegistryAddress != address(0), "Zero address");
-
-        proxyRegistryAddress = _proxyRegistryAddress;
-
         // nextTokenId is initialized to 1, since starting at 0 leads to higher gas cost for the first minter
         _nextTokenId.increment();
         _initializeEIP712(_name);
@@ -61,7 +59,7 @@ contract PNftToken is
 
     /**
      * @dev Returns the total tokens minted so far.
-     *  1 is always subtracted from the Counter since it tracks the next available tokenId.
+     * 1 is always subtracted from the Counter since it tracks the next available tokenId.
      */
     function totalSupply() public view returns (uint256) {
         return _nextTokenId.current() - 1;
@@ -115,6 +113,20 @@ contract PNftToken is
     }
 
     /**
+     * @dev Sets the address of the "operator" approved for all transactions.
+     * May be set by the owner only.
+     * @param approvee Approved address. It may be a Panther's contract or
+     * OpenSea's ERC721 Proxy Registry, which is at
+     * matic:0x58807baD0B376efc12F5AD86aAc70E78ed67deaE
+     * (mumbai:0xff7Ca10aF37178BdD056628eF42fD7F799fAc77c)
+     */
+    function setApprovedForAllOperator(address approvee) external onlyOwner {
+        // Zero address allowed (meaning "no account is set")
+        approvedForAll = approvee;
+        emit ApprovedForAllUpdated(approvee);
+    }
+
+    /**
      * @dev Mints a token to an address with a tokenURI.
      * @param _to address of the future owner of the token
      */
@@ -131,7 +143,8 @@ contract PNftToken is
     }
 
     /**
-     * Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-less listings.
+     * Override isApprovedForAll to whitelist a Panther authorized account or
+     * user's OpenSea proxy accounts to enable gas-less transactions/listings.
      */
     function isApprovedForAll(address owner, address operator)
         public
@@ -139,14 +152,11 @@ contract PNftToken is
         override
         returns (bool)
     {
-        // if OpenSea's ERC721 Proxy Address is detected, auto-return true
-        // for Polygon mainnet, use 0x58807baD0B376efc12F5AD86aAc70E78ed67deaE
-        // for Polygon's Mumbai testnet, use 0xff7Ca10aF37178BdD056628eF42fD7F799fAc77c
-        if (operator == proxyRegistryAddress) {
-            return true;
-        }
+        if (super.isApprovedForAll(owner, operator)) return true;
 
-        return super.isApprovedForAll(owner, operator);
+        // if "approved for all" operator (proxy registry) is detected, return true
+        address approvee = approvedForAll;
+        return (approvee != address(0)) && (approvee == operator);
     }
 
     /**

@@ -12,7 +12,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import {useWeb3React} from '@web3-react/core';
-import {unrealizedRewardAprTooltip} from 'components/Common/constants';
+import {unrealizedRewardAprTooltip} from 'components/Common/tooltips';
 import AssetsDetailsRow from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsRow';
 import infoIcon from 'images/info-icon.svg';
 import {useAppSelector, useAppDispatch} from 'redux/hooks';

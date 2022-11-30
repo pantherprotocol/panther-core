@@ -101,7 +101,6 @@ export function deriveSpendingChildKeypair(
         randomSecret,
     );
 
-    console.debug('derived spenderChildPubKey:', spendingChildPubKey);
     const isValid = isChildPubKeyValid(
         spendingChildPubKey,
         rootSpendingKeypair,

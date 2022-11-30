@@ -44,14 +44,8 @@ export function generateMerkleProof(
         leafId,
         tree.depth,
     );
-    const root = tree.root ? toBytes32(tree.root) : 'null';
+    console.debug('Generating Merkle proof');
     const proof = tree.genMerklePath(triadLeafIndex);
-    console.debug(
-        `Generating Merkle proof for leafId=${leafId}. Got treeId=${treeId} ` +
-            `triadLeafIndex=${triadLeafIndex} leafHex=${toBytes32(
-                proof.leaf,
-            )} root=${root}`,
-    );
     assert(TriadMerkleTree.verifyMerklePath(proof, poseidon2or3));
     return [proof, treeId];
 }

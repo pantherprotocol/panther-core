@@ -137,17 +137,11 @@ export function unpackMessageTypeV1(
         BigInt('0x' + ephemeralKeyPackedHex),
         PACKED_PUB_KEY_SIZE,
     );
-    console.debug(
-        `packedEphemeralPubKey: ${ephemeralKeyPackedHex} with ${ephemeralKeyPacked.length} bytes`,
-    );
 
     const cipheredTextHex = ciphertextMessageTypeV1.slice(ephemeralKeyWidth);
     const cipheredText = bigIntToUint8Array(
         BigInt('0x' + cipheredTextHex),
         CIPHERTEXT_MSG_TYPE_V1_SIZE,
-    );
-    console.debug(
-        `cipheredText: ${cipheredTextHex} with ${cipheredText.length} bytes`,
     );
 
     return [ephemeralKeyPacked, cipheredText];

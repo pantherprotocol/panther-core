@@ -78,7 +78,7 @@ export default function UnstakingInfo() {
                     variant="subtitle2"
                     className="unstaking-info-title"
                 >
-                    You have staked your tokens
+                    You stake your tokens
                     {minLockPeriod && minLockPeriod > 0
                         ? ` for ${secondsToFullDays(
                               minLockPeriod as number,

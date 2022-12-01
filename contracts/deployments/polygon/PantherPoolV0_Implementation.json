@@ -1,0 +1,904 @@
+{
+  "address": "0xD44bf566E132c6A8E49dD781f606123f9a6866C4",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "assetRegistry",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "vault",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "treeId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "root",
+          "type": "bytes32"
+        }
+      ],
+      "name": "AnchoredRoot",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "treeId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "root",
+          "type": "bytes32"
+        }
+      ],
+      "name": "CachedRoot",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "change",
+          "type": "uint256"
+        }
+      ],
+      "name": "Change",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "ExitCommitment",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newExitTime",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newExitDelay",
+          "type": "uint256"
+        }
+      ],
+      "name": "ExitTimesUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "leftLeafId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "creationTime",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32[3]",
+          "name": "commitments",
+          "type": "bytes32[3]"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "utxoData",
+          "type": "bytes"
+        }
+      ],
+      "name": "NewCommitments",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "nullifier",
+          "type": "bytes32"
+        }
+      ],
+      "name": "Nullifier",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ASSET_REGISTRY",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "OWNER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "VAULT",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "claimEthOrErc20",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "exitCommitment",
+          "type": "bytes32"
+        }
+      ],
+      "name": "commitToExit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "curRoot",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "root",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "cacheIndex",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "curTree",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "subId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "scaledAmount",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint32",
+          "name": "creationTime",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "privSpendingKey",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "leafId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32[16]",
+          "name": "pathElements",
+          "type": "bytes32[16]"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "merkleRoot",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "cacheIndexHint",
+          "type": "uint256"
+        }
+      ],
+      "name": "exit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "exitCommitments",
+      "outputs": [
+        {
+          "internalType": "uint32",
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "exitDelay",
+      "outputs": [
+        {
+          "internalType": "uint24",
+          "name": "",
+          "type": "uint24"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "exitTime",
+      "outputs": [
+        {
+          "internalType": "uint32",
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "finalRoots",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[3]",
+          "name": "tokens",
+          "type": "address[3]"
+        },
+        {
+          "internalType": "uint256[3]",
+          "name": "tokenIds",
+          "type": "uint256[3]"
+        },
+        {
+          "internalType": "uint256[3]",
+          "name": "amounts",
+          "type": "uint256[3]"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "x",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "y",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct G1Point[3]",
+          "name": "pubSpendingKeys",
+          "type": "tuple[3]"
+        },
+        {
+          "internalType": "uint256[2][3]",
+          "name": "secrets",
+          "type": "uint256[2][3]"
+        },
+        {
+          "internalType": "uint32",
+          "name": "createdAt",
+          "type": "uint32"
+        }
+      ],
+      "name": "generateDeposits",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "leftLeafId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "leafId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getLeafIndex",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "leafId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTreeId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "treeId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "root",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "cacheIndexHint",
+          "type": "uint256"
+        }
+      ],
+      "name": "isKnownRoot",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isSpent",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "leavesNum",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint32",
+          "name": "newExitTime",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint24",
+          "name": "newExitDelay",
+          "type": "uint24"
+        }
+      ],
+      "name": "updateExitTimes",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xc56acf71e1b1c1cf1c127c90212c631295424a41b6de363ad6f4520d0f87af28",
+  "receipt": {
+    "to": null,
+    "from": "0xf0886ac6B2E9A2A75C9537EAF1A3aa8398FB10e8",
+    "contractAddress": "0xD44bf566E132c6A8E49dD781f606123f9a6866C4",
+    "transactionIndex": 19,
+    "gasUsed": "2892463",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000008000000000000000000000000000000000000000004000000000000000800000000000000000000100000000000000000000000000000000000000000000000000000000000080000000000000000040000000040000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004000000000000000000001000000000000000000000000000000120000000000000000000000000000000000000000000000002000000000000000000000100000",
+    "blockHash": "0x0ad64643131814cb0244365e2a3d01d3f395beec874686c7557ddcd75bbcaebf",
+    "transactionHash": "0xc56acf71e1b1c1cf1c127c90212c631295424a41b6de363ad6f4520d0f87af28",
+    "logs": [
+      {
+        "transactionIndex": 19,
+        "blockNumber": 36301249,
+        "transactionHash": "0xc56acf71e1b1c1cf1c127c90212c631295424a41b6de363ad6f4520d0f87af28",
+        "address": "0x0000000000000000000000000000000000001010",
+        "topics": [
+          "0x4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0x0000000000000000000000000000000000000000000000000000000000001010",
+          "0x000000000000000000000000f0886ac6b2e9a2a75c9537eaf1a3aa8398fb10e8",
+          "0x0000000000000000000000009ead03f7136fc6b4bdb0780b00a1c14ae5a8b6d0"
+        ],
+        "data": "0x00000000000000000000000000000000000000000000000001989d4a9ed847590000000000000000000000000000000000000000000000001088d03ab9f6de1d000000000000000000000000000000000000000000007d1826755d715bc1917d0000000000000000000000000000000000000000000000000ef032f01b1e96c4000000000000000000000000000000000000000000007d18280dfabbfa99d8d6",
+        "logIndex": 73,
+        "blockHash": "0x0ad64643131814cb0244365e2a3d01d3f395beec874686c7557ddcd75bbcaebf"
+      }
+    ],
+    "blockNumber": 36301249,
+    "cumulativeGasUsed": "5075673",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x208Fb9169BBec5915722e0AfF8B0eeEdaBf8a6f0",
+    "0xb658B085144a0BEd098620BB829b676371B9B48c",
+    "0x5E7Fda6d9f5024C4ad1c780839987aB8c76486c9"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "49300367bcb47864d5852738a8da403e",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.16+commit.07a7930e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"assetRegistry\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"vault\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"treeId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"root\",\"type\":\"bytes32\"}],\"name\":\"AnchoredRoot\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"treeId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"root\",\"type\":\"bytes32\"}],\"name\":\"CachedRoot\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"change\",\"type\":\"uint256\"}],\"name\":\"Change\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"ExitCommitment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newExitTime\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newExitDelay\",\"type\":\"uint256\"}],\"name\":\"ExitTimesUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"leftLeafId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"creationTime\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes32[3]\",\"name\":\"commitments\",\"type\":\"bytes32[3]\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"utxoData\",\"type\":\"bytes\"}],\"name\":\"NewCommitments\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nullifier\",\"type\":\"bytes32\"}],\"name\":\"Nullifier\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ASSET_REGISTRY\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"OWNER\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"VAULT\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"claimEthOrErc20\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"exitCommitment\",\"type\":\"bytes32\"}],\"name\":\"commitToExit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"curRoot\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"root\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"cacheIndex\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"curTree\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"subId\",\"type\":\"uint256\"},{\"internalType\":\"uint64\",\"name\":\"scaledAmount\",\"type\":\"uint64\"},{\"internalType\":\"uint32\",\"name\":\"creationTime\",\"type\":\"uint32\"},{\"internalType\":\"uint256\",\"name\":\"privSpendingKey\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"leafId\",\"type\":\"uint256\"},{\"internalType\":\"bytes32[16]\",\"name\":\"pathElements\",\"type\":\"bytes32[16]\"},{\"internalType\":\"bytes32\",\"name\":\"merkleRoot\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"cacheIndexHint\",\"type\":\"uint256\"}],\"name\":\"exit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"exitCommitments\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"exitDelay\",\"outputs\":[{\"internalType\":\"uint24\",\"name\":\"\",\"type\":\"uint24\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"exitTime\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"finalRoots\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[3]\",\"name\":\"tokens\",\"type\":\"address[3]\"},{\"internalType\":\"uint256[3]\",\"name\":\"tokenIds\",\"type\":\"uint256[3]\"},{\"internalType\":\"uint256[3]\",\"name\":\"amounts\",\"type\":\"uint256[3]\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"x\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"y\",\"type\":\"uint256\"}],\"internalType\":\"struct G1Point[3]\",\"name\":\"pubSpendingKeys\",\"type\":\"tuple[3]\"},{\"internalType\":\"uint256[2][3]\",\"name\":\"secrets\",\"type\":\"uint256[2][3]\"},{\"internalType\":\"uint32\",\"name\":\"createdAt\",\"type\":\"uint32\"}],\"name\":\"generateDeposits\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"leftLeafId\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"leafId\",\"type\":\"uint256\"}],\"name\":\"getLeafIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"leafId\",\"type\":\"uint256\"}],\"name\":\"getTreeId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"treeId\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"root\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"cacheIndexHint\",\"type\":\"uint256\"}],\"name\":\"isKnownRoot\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"isSpent\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"leavesNum\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint32\",\"name\":\"newExitTime\",\"type\":\"uint32\"},{\"internalType\":\"uint24\",\"name\":\"newExitDelay\",\"type\":\"uint24\"}],\"name\":\"updateExitTimes\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Pantherprotocol Contributors\",\"details\":\"It is the \\\"version 0\\\" of the Panther Protocol Multi-Asset Shielded Pool (\\\"MASP\\\"). It locks assets (ERC-20, ERC-721 or ERC-1155 tokens) of a user with the `Vault` smart contract and generates UTXO's in the MASP for the user (i.e. builds merkle trees of UTXO's commitments). This contract does not implement the functionality for spending UTXO's (other than the `exit` described further) and is supposed to be upgraded with the new one. The new contract, the \\\"v.1\\\" of the MASP, is planned to implement spending of UTXO's using zero-knowledge proves. To be upgradable, this contract is assumed to run as an \\\"implementation\\\" for a proxy that DELEGATECALL's the implementation. To protect holders against lost of assets in case this contract is not upgraded, it exposes the `exit` function, through which users may withdraw their locked assets via revealing preimages of commitments.\",\"events\":{\"Change(address,uint256)\":{\"details\":\"A tiny disowned token amount gets locked in the Vault (as a result of imprecise scaling of deposited amounts)\"},\"ExitCommitment(uint256)\":{\"details\":\"New exit commitment registered\"},\"ExitTimesUpdated(uint256,uint256)\":{\"details\":\"Emitted when exit time and/or exit delay updated\"},\"Nullifier(bytes32)\":{\"details\":\"New nullifier has been seen\"}},\"kind\":\"dev\",\"methods\":{\"claimEthOrErc20(address,address,uint256)\":{\"details\":\"The \\\"owner\\\" may call only\"},\"commitToExit(bytes32)\":{\"params\":{\"exitCommitment\":\"Commitment to the UTXO spending key and the recipient address. MUST be equal to keccak256(abi.encode(uint256(privSpendingKey), address(recipient)).\"}},\"constructor\":{\"params\":{\"_owner\":\"Address of the `OWNER` who may call `onlyOwner` methods\",\"assetRegistry\":\"Address of the ZAssetRegistry contract\",\"vault\":\"Address of the Vault contract\"}},\"exit(address,uint256,uint64,uint32,uint256,uint256,bytes32[16],bytes32,uint256)\":{\"details\":\"`cacheIndexHint` needed for the \\\"current\\\" (partially populated) tree only\",\"params\":{\"cacheIndexHint\":\"Index of the `merkleRoot` in the cache of roots, 0 by default\",\"leafId\":\"Id of the leaf with the UTXO commitments in the Merkle Trees\",\"merkleRoot\":\"The root of the Merkle Tree the leaf is a part of\",\"pathElements\":\"Elements of the Merkle proof of inclusion\",\"privSpendingKey\":\"UTXO's Private Spending Key\",\"scaledAmount\":\"Token scaled amount\"}},\"generateDeposits(address[3],uint256[3],uint256[3],(uint256,uint256)[3],uint256[2][3],uint32)\":{\"details\":\"createdAt must be less (or equal) the network time\",\"params\":{\"amounts\":\"Token amounts (unscaled) to be deposited\",\"createdAt\":\"Optional, if 0 the network time used\",\"pubSpendingKeys\":\"Public Spending Key for every UTXO\",\"secrets\":\"Encrypted opening values for every UTXO\",\"tokenIds\":\"For ERC-721 and ERC-1155 - token ID or subId of the token, 0 for ERC-20\",\"tokens\":\"Address of the token contract for every UTXO\"},\"returns\":{\"leftLeafId\":\"The `leafId` of the first UTXO (leaf) in the batch\"}},\"isKnownRoot(uint256,bytes32,uint256)\":{\"params\":{\"cacheIndexHint\":\"Index of the root in the cache, ignored if 0\"}},\"updateExitTimes(uint32,uint24)\":{\"details\":\"Owner only may calls\"}},\"title\":\"PantherPool\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"ASSET_REGISTRY()\":{\"notice\":\"Address of the ZAssetRegistry contract\"},\"OWNER()\":{\"notice\":\"The owner who has privileged rights\"},\"VAULT()\":{\"notice\":\"Address of the Vault contract\"},\"claimEthOrErc20(address,address,uint256)\":{\"notice\":\"Withdraw accidentally sent tokens or ETH from this contract\"},\"commitToExit(bytes32)\":{\"notice\":\"Register future `exit` to protect against front-run and DoS. The `exit` is possible only after `exitDelay` since this function call.\"},\"curRoot()\":{\"notice\":\"Returns the root of the current tree and its index in cache\"},\"curTree()\":{\"notice\":\"Returns `treeId` of the current tree\"},\"exitCommitments(bytes32)\":{\"notice\":\"Unused registered commitments to exit\"},\"exitDelay()\":{\"notice\":\"Period (seconds) since `commitToExit` when `exit` opens\"},\"exitTime()\":{\"notice\":\"(UNIX) Time since when the `exit` calls get enabled\"},\"finalRoots(uint256)\":{\"notice\":\"Roots of fully populated trees\"},\"generateDeposits(address[3],uint256[3],uint256[3],(uint256,uint256)[3],uint256[2][3],uint32)\":{\"notice\":\"Transfer assets from the msg.sender to the VAULT and generate UTXOs in the MASP\"},\"getLeafIndex(uint256)\":{\"notice\":\"Returns `leafIndex` (index in the tree) of the given leaf\"},\"getTreeId(uint256)\":{\"notice\":\"Returns `treeId` of the given leaf's tree\"},\"isKnownRoot(uint256,bytes32,uint256)\":{\"notice\":\"Returns `true` if the given root of the given tree is known\"},\"leavesNum()\":{\"notice\":\"Returns the number of leaves inserted in all trees so far\"},\"updateExitTimes(uint32,uint24)\":{\"notice\":\"Update the exit time and the exit delay\"}},\"notice\":\"Multi-Asset Shielded Pool main contract v0\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/protocol/PantherPoolV0.sol\":\"PantherPoolV0\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":800},\"remappings\":[]},\"sources\":{\"contracts/common/Claimable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\nimport \\\"./TransferHelper.sol\\\";\\n\\n/**\\n * @title Claimable\\n * @notice It withdraws accidentally sent tokens or ETH from this contract.\\n */\\nabstract contract Claimable {\\n    /// @dev Withdraws ERC20 tokens from this contract\\n    /// (take care of reentrancy attack risk mitigation)\\n    function _claimErc20(\\n        address token,\\n        address to,\\n        uint256 amount\\n    ) internal {\\n        // withdraw ERC20\\n        TransferHelper.safeTransfer(token, to, amount);\\n    }\\n\\n    /// @dev Withdraws ERC20 tokens from this contract\\n    /// (take care of reentrancy attack risk mitigation)\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function _claimEthOrErc20(\\n        address token,\\n        address to,\\n        uint256 amount\\n    ) internal {\\n        if (token == address(0)) {\\n            // withdraw ETH\\n            TransferHelper.safeTransferETH(to, amount);\\n        } else {\\n            // withdraw ERC20\\n            TransferHelper.safeTransfer(token, to, amount);\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x3efb90ea556b25a8ed592a90379449176d9babce56ecf8f9348639901cffae1d\",\"license\":\"MIT\"},\"contracts/common/Constants.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n// Constants\\n\\nuint256 constant IN_PRP_UTXOs = 1;\\nuint256 constant IN_UTXOs = 2 + IN_PRP_UTXOs;\\n\\nuint256 constant OUT_PRP_UTXOs = 1;\\nuint256 constant OUT_UTXOs = 2 + OUT_PRP_UTXOs;\\nuint256 constant OUT_MAX_UTXOs = OUT_UTXOs;\\n// Number of UTXOs given as a reward for an \\\"advanced\\\" stake\\nuint256 constant OUT_RWRD_UTXOs = 2;\\n\\n// For overflow protection and circuits optimization\\n// (must be less than the FIELD_SIZE)\\nuint256 constant MAX_EXT_AMOUNT = 2**96;\\nuint256 constant MAX_IN_CIRCUIT_AMOUNT = 2**64;\\nuint256 constant MAX_TIMESTAMP = 2**32;\\nuint256 constant MAX_ZASSET_ID = 2**160;\\n\\n// Token types\\n// (not `enum` to let protocol extensions use bits, if needed)\\nuint8 constant ERC20_TOKEN_TYPE = 0x00;\\nuint8 constant ERC721_TOKEN_TYPE = 0x10;\\nuint8 constant ERC1155_TOKEN_TYPE = 0x11;\\n// defined for every tokenId rather than for all tokens on the contract\\n// (unsupported in the V0 and V1 of the MASP)\\nuint8 constant BY_TOKENID_TOKEN_TYPE = 0xFF;\\n\\n// ZAsset statuses\\n// (not `enum` to let protocol extensions use bits, if needed)\\nuint8 constant zASSET_ENABLED = 0x01;\\nuint8 constant zASSET_DISABLED = 0x02;\\nuint8 constant zASSET_UNKNOWN = 0x00;\\n\\n// UTXO data (opening values - encrypted and public) formats\\nuint8 constant UTXO_DATA_TYPE5 = 0x00; // for zero UTXO (no data to provide)\\nuint8 constant UTXO_DATA_TYPE1 = 0x01; // for UTXO w/ zero tokenId\\nuint8 constant UTXO_DATA_TYPE3 = 0x02; // for UTXO w/ non-zero tokenId\\n\\n// Number of 32-bit words of the CiphertextMsg for UTXO_DATA_TYPE1\\n// (ephemeral key (packed) - 32 bytes, encrypted `random` - 32 bytes)\\nuint256 constant CIPHERTEXT1_WORDS = 2;\\n\\n// Number of 32-bit words in the (uncompressed) spending PubKey\\nuint256 constant PUBKEY_WORDS = 2;\\n// Number of elements in `pathElements`\\nuint256 constant PATH_ELEMENTS_NUM = 16;\\n\",\"keccak256\":\"0x8d696e386e1c6b8c30f1cb244f46f220a8b422d5addedcfe8796e87219eaadd7\",\"license\":\"BUSL-1.1\"},\"contracts/common/ImmutableOwnable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n/// @title Staking\\nabstract contract ImmutableOwnable {\\n    /// @notice The owner who has privileged rights\\n    // solhint-disable-next-line var-name-mixedcase\\n    address public immutable OWNER;\\n\\n    /// @dev Throws if called by any account other than the {OWNER}.\\n    modifier onlyOwner() {\\n        require(OWNER == msg.sender, \\\"ImmOwn: unauthorized\\\");\\n        _;\\n    }\\n\\n    constructor(address _owner) {\\n        require(_owner != address(0), \\\"ImmOwn: zero owner address\\\");\\n        OWNER = _owner;\\n    }\\n}\\n\",\"keccak256\":\"0x50d471ce507ca3796ff407b52d0dffead3b4eb6c0f0afea9350f712f9c5f1416\",\"license\":\"MIT\"},\"contracts/common/NonReentrant.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n/**\\n * @title NonReentrant\\n * @notice It provides reentrancy guard.\\n * The code borrowed from openzeppelin-contracts.\\n * Unlike original, this version requires neither `constructor` no `init` call.\\n */\\nabstract contract NonReentrant {\\n    uint256 private constant _NOT_ENTERED = 1;\\n    uint256 private constant _ENTERED = 2;\\n\\n    uint256 private _reentrancyStatus;\\n\\n    modifier nonReentrant() {\\n        // Being called right after deployment, when _reentrancyStatus is 0 ,\\n        // it does not revert (which is expected behaviour)\\n        require(_reentrancyStatus != _ENTERED, \\\"claimErc20: reentrant call\\\");\\n\\n        // Any calls to nonReentrant after this point will fail\\n        _reentrancyStatus = _ENTERED;\\n\\n        _;\\n\\n        // By storing the original value once again, a refund is triggered (see\\n        // https://eips.ethereum.org/EIPS/eip-2200)\\n        _reentrancyStatus = _NOT_ENTERED;\\n    }\\n}\\n\",\"keccak256\":\"0x5d4d478d079a96f8242f81da40b67e6fb8cf5180ed751b191f128558f7cc9a6d\",\"license\":\"MIT\"},\"contracts/common/TransferHelper.sol\":{\"content\":\"// SPDX-License-Identifier: GPL-3.0-or-later\\n// solhint-disable avoid-low-level-calls\\n// solhint-disable no-inline-assembly\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n/// @title TransferHelper library\\n/// @dev Helper methods for interacting with ERC20, ERC721, ERC1155 tokens and sending ETH\\n/// Based on the Uniswap/solidity-lib/contracts/libraries/TransferHelper.sol\\nlibrary TransferHelper {\\n    /// @dev Throws if the deployed code of the `token` is empty.\\n    // Low-level CALL to a non-existing contract returns `success` of 1 and empty `data`.\\n    // It may be misinterpreted as a successful call to a deployed token contract.\\n    // So, the code calling a token contract must insure the contract code exists.\\n    modifier onlyDeployedToken(address token) {\\n        uint256 codeSize;\\n        // slither-disable-next-line assembly\\n        assembly {\\n            codeSize := extcodesize(token)\\n        }\\n        require(codeSize > 0, \\\"TransferHelper: zero codesize\\\");\\n        _;\\n    }\\n\\n    /// @dev Approve the `operator` to spend all of ERC720 tokens on behalf of `owner`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeSetApprovalForAll(\\n        address token,\\n        address operator,\\n        bool approved\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('setApprovalForAll(address,bool)'));\\n            abi.encodeWithSelector(0xa22cb465, operator, approved)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Get the ERC20 balance of `account`\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeBalanceOf(address token, address account)\\n        internal\\n        returns (uint256 balance)\\n    {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256(bytes('balanceOf(address)')));\\n            abi.encodeWithSelector(0x70a08231, account)\\n        );\\n        require(\\n            // since `data` can't be empty, `onlyDeployedToken` unneeded\\n            success && (data.length != 0),\\n            \\\"TransferHelper: balanceOff call failed\\\"\\n        );\\n\\n        balance = abi.decode(data, (uint256));\\n    }\\n\\n    /// @dev Approve the `spender` to spend the `amount` of ERC20 token on behalf of `owner`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeApprove(\\n        address token,\\n        address to,\\n        uint256 value\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('approve(address,uint256)'));\\n            abi.encodeWithSelector(0x095ea7b3, to, value)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `value` ERC20 tokens from caller to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeTransfer(\\n        address token,\\n        address to,\\n        uint256 value\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('transfer(address,uint256)'));\\n            abi.encodeWithSelector(0xa9059cbb, to, value)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `value` ERC20 tokens on behalf of `from` to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeTransferFrom(\\n        address token,\\n        address from,\\n        address to,\\n        uint256 value\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('transferFrom(address,address,uint256)'));\\n            abi.encodeWithSelector(0x23b872dd, from, to, value)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer an ERC721 token with id of `tokenId` on behalf of `from` to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function erc721SafeTransferFrom(\\n        address token,\\n        uint256 tokenId,\\n        address from,\\n        address to\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('safeTransferFrom(address,address,uint256)'));\\n            abi.encodeWithSelector(0x42842e0e, from, to, tokenId)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `amount` ERC1155 token with id of `tokenId` on behalf of `from` to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function erc1155SafeTransferFrom(\\n        address token,\\n        address from,\\n        address to,\\n        uint256 tokenId,\\n        uint256 amount,\\n        bytes memory _data\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('safeTransferFrom(address,address,uint256,uint256,bytes)'));\\n            abi.encodeWithSelector(0xf242432a, from, to, tokenId, amount, _data)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `value` Ether from caller to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeTransferETH(address to, uint256 value) internal {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, ) = to.call{ value: value }(new bytes(0));\\n        require(success, \\\"TransferHelper: ETH transfer failed\\\");\\n    }\\n\\n    function _requireSuccess(bool success, bytes memory res) private pure {\\n        require(\\n            success && (res.length == 0 || abi.decode(res, (bool))),\\n            \\\"TransferHelper: token contract call failed\\\"\\n        );\\n    }\\n}\\n\",\"keccak256\":\"0xca5a24eae0771696d9bfc96eb4929faa5ab8d1300d3174968653cd22b6348fe4\",\"license\":\"GPL-3.0-or-later\"},\"contracts/common/Types.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\nstruct G1Point {\\n    uint256 x;\\n    uint256 y;\\n}\\n\\n// Encoding of field elements is: X[0] * z + X[1]\\nstruct G2Point {\\n    uint256[2] x;\\n    uint256[2] y;\\n}\\n\\n// Verification key for SNARK\\nstruct VerifyingKey {\\n    G1Point alpha1;\\n    G2Point beta2;\\n    G2Point gamma2;\\n    G2Point delta2;\\n    G1Point[2] ic;\\n}\\n\\nstruct SnarkProof {\\n    G1Point a;\\n    G2Point b;\\n    G1Point c;\\n}\\n\\nstruct PluginData {\\n    address contractAddress;\\n    bytes callData;\\n}\\n\\nstruct ElGamalCiphertext {\\n    G1Point c1;\\n    G1Point c2;\\n}\\n\\n// For MASP V0 and V1\\nstruct ZAsset {\\n    // reserved (for networkId, tokenIdPolicy. etc..)\\n    uint64 _unused;\\n    // 0x00 by default\\n    uint8 version;\\n    // Refer to Constants.sol\\n    uint8 status;\\n    // Refer to Constants.sol\\n    uint8 tokenType;\\n    // 0x00 - no scaling\\n    uint8 scale;\\n    // token contract address\\n    address token;\\n}\\n\\nstruct LockData {\\n    // Refer to Constants.sol\\n    uint8 tokenType;\\n    // Token contract address\\n    address token;\\n    // For ERC-721, ERC-1155 tokens\\n    uint256 tokenId;\\n    // The account to transfer the token from/to (on `lock`/`unlock`)\\n    address extAccount;\\n    // The token amount to transfer to/from the Vault (on `lock`/`unlock`)\\n    uint96 extAmount;\\n}\\n\",\"keccak256\":\"0xf35e4d14f308c3785b2aeae13b3e35054db8791f0e152bd4d174d09bf306393f\",\"license\":\"MIT\"},\"contracts/common/Utils.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\nabstract contract Utils {\\n    // false positive\\n    // slither-disable-next-line timestamp\\n    function safe32(uint256 n) internal pure returns (uint32) {\\n        require(n < 2**32, \\\"UNSAFE32\\\");\\n        return uint32(n);\\n    }\\n\\n    function safe96(uint256 n) internal pure returns (uint96) {\\n        require(n < 2**96, \\\"UNSAFE96\\\");\\n        return uint96(n);\\n    }\\n\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safe128(uint256 n) internal pure returns (uint128) {\\n        require(n < 2**128, \\\"UNSAFE128\\\");\\n        return uint128(n);\\n    }\\n\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safe160(uint256 n) internal pure returns (uint160) {\\n        require(n < 2**160, \\\"UNSAFE160\\\");\\n        return uint160(n);\\n    }\\n\\n    function safe32TimeNow() internal view returns (uint32) {\\n        return safe32(timeNow());\\n    }\\n\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safe32BlockNow() internal view returns (uint32) {\\n        return safe32(blockNow());\\n    }\\n\\n    /// @dev Returns the current block timestamp (added to ease testing)\\n    function timeNow() internal view virtual returns (uint256) {\\n        return block.timestamp;\\n    }\\n\\n    /// @dev Returns the current block number (added to ease testing)\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function blockNow() internal view virtual returns (uint256) {\\n        return block.number;\\n    }\\n\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function revertZeroAddress(address account) internal pure {\\n        require(account != address(0), \\\"UNEXPECTED_ZERO_ADDRESS\\\");\\n    }\\n}\\n\",\"keccak256\":\"0x09fa28f59621b7f53937df57eaf0f348010dc330e049da6036a4505235122006\",\"license\":\"MIT\"},\"contracts/protocol/PantherPoolV0.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity 0.8.16;\\n\\nimport \\\"../common/Constants.sol\\\";\\nimport \\\"./errMsgs/PantherPoolErrMsgs.sol\\\";\\nimport \\\"../common/ImmutableOwnable.sol\\\";\\nimport \\\"../common/NonReentrant.sol\\\";\\nimport \\\"../common/Types.sol\\\";\\nimport \\\"../common/Utils.sol\\\";\\nimport \\\"./interfaces/IPrpGrantor.sol\\\";\\nimport \\\"./interfaces/IVault.sol\\\";\\nimport \\\"./interfaces/IZAssetsRegistry.sol\\\";\\nimport \\\"../common/Claimable.sol\\\";\\nimport \\\"./pantherPool/AmountConvertor.sol\\\";\\nimport \\\"./pantherPool/CommitmentGenerator.sol\\\";\\nimport \\\"./pantherPool/CommitmentsTrees.sol\\\";\\nimport \\\"./pantherPool/MerkleProofVerifier.sol\\\";\\nimport \\\"./pantherPool/NullifierGenerator.sol\\\";\\nimport \\\"./pantherPool/PubKeyGenerator.sol\\\";\\n\\n/**\\n * @title PantherPool\\n * @author Pantherprotocol Contributors\\n * @notice Multi-Asset Shielded Pool main contract v0\\n * @dev It is the \\\"version 0\\\" of the Panther Protocol Multi-Asset Shielded Pool (\\\"MASP\\\").\\n * It locks assets (ERC-20, ERC-721 or ERC-1155 tokens) of a user with the `Vault` smart\\n * contract and generates UTXO's in the MASP for the user (i.e. builds merkle trees of\\n * UTXO's commitments).\\n * This contract does not implement the functionality for spending UTXO's (other than the\\n * `exit` described further) and is supposed to be upgraded with the new one.\\n * The new contract, the \\\"v.1\\\" of the MASP, is planned to implement spending of UTXO's\\n * using zero-knowledge proves.\\n * To be upgradable, this contract is assumed to run as an \\\"implementation\\\" for a proxy\\n * that DELEGATECALL's the implementation.\\n * To protect holders against lost of assets in case this contract is not upgraded, it\\n * exposes the `exit` function, through which users may withdraw their locked assets via\\n * revealing preimages of commitments.\\n */\\ncontract PantherPoolV0 is\\n    ImmutableOwnable,\\n    NonReentrant,\\n    Claimable,\\n    CommitmentsTrees,\\n    AmountConvertor,\\n    CommitmentGenerator,\\n    MerkleProofVerifier,\\n    NullifierGenerator,\\n    PubKeyGenerator,\\n    Utils\\n{\\n    // The contract is supposed to run behind a proxy DELEGATECALLing it.\\n    // On upgrades, adjust `__gap` to match changes of the storage layout.\\n    // slither-disable-next-line shadowing-state unused-state\\n    uint256[50] private __gap;\\n\\n    // solhint-disable var-name-mixedcase\\n\\n    /// @notice Address of the ZAssetRegistry contract\\n    address public immutable ASSET_REGISTRY;\\n\\n    /// @notice Address of the Vault contract\\n    address public immutable VAULT;\\n\\n    // solhint-enable var-name-mixedcase\\n\\n    /// @notice (UNIX) Time since when the `exit` calls get enabled\\n    uint32 public exitTime;\\n\\n    /// @notice Period (seconds) since `commitToExit` when `exit` opens\\n    // Needed to mitigate front-run attacks on `exit`\\n    uint24 public exitDelay;\\n\\n    // (rest of the storage slot) reserved for upgrades\\n    // slither-disable-next-line unused-state,constable-states\\n    uint200 private _reserved;\\n\\n    // @notice Seen (i.e. spent) commitment nullifiers\\n    // nullifier hash => spent\\n    mapping(bytes32 => bool) public isSpent;\\n\\n    /// @notice Unused registered commitments to exit\\n    // hash(privSpendKey, recipient) => commitment timestamp\\n    mapping(bytes32 => uint32) public exitCommitments;\\n\\n    /// @dev Emitted when exit time and/or exit delay updated\\n    event ExitTimesUpdated(uint256 newExitTime, uint256 newExitDelay);\\n\\n    /// @dev New nullifier has been seen\\n    event Nullifier(bytes32 nullifier);\\n\\n    /// @dev A tiny disowned token amount gets locked in the Vault\\n    /// (as a result of imprecise scaling of deposited amounts)\\n    event Change(address indexed token, uint256 change);\\n\\n    /// @dev New exit commitment registered\\n    event ExitCommitment(uint256 timestamp);\\n\\n    /// @param _owner Address of the `OWNER` who may call `onlyOwner` methods\\n    /// @param assetRegistry Address of the ZAssetRegistry contract\\n    /// @param vault Address of the Vault contract\\n    constructor(\\n        address _owner,\\n        address assetRegistry,\\n        address vault\\n    ) ImmutableOwnable(_owner) {\\n        require(TRIAD_SIZE == OUT_UTXOs, \\\"E0\\\");\\n\\n        revertZeroAddress(assetRegistry);\\n        revertZeroAddress(vault);\\n\\n        // As it runs behind the DELEGATECALL'ing proxy, initialization of\\n        // immutable \\\"vars\\\" only is allowed in the constructor\\n\\n        ASSET_REGISTRY = assetRegistry;\\n        VAULT = vault;\\n    }\\n\\n    /// @notice Update the exit time and the exit delay\\n    /// @dev Owner only may calls\\n    function updateExitTimes(uint32 newExitTime, uint24 newExitDelay)\\n        external\\n        onlyOwner\\n    {\\n        require(\\n            newExitTime >= exitTime &&\\n                newExitTime < MAX_TIMESTAMP &&\\n                newExitDelay != 0,\\n            \\\"E1\\\"\\n        );\\n\\n        exitTime = newExitTime;\\n        exitDelay = newExitDelay;\\n\\n        emit ExitTimesUpdated(uint256(newExitTime), uint256(newExitDelay));\\n    }\\n\\n    /// @notice Transfer assets from the msg.sender to the VAULT and generate UTXOs in the MASP\\n    /// @param tokens Address of the token contract for every UTXO\\n    /// @param tokenIds For ERC-721 and ERC-1155 - token ID or subId of the token, 0 for ERC-20\\n    /// @param amounts Token amounts (unscaled) to be deposited\\n    /// @param pubSpendingKeys Public Spending Key for every UTXO\\n    /// @param secrets Encrypted opening values for every UTXO\\n    /// @param createdAt Optional, if 0 the network time used\\n    /// @dev createdAt must be less (or equal) the network time\\n    /// @return leftLeafId The `leafId` of the first UTXO (leaf) in the batch\\n    function generateDeposits(\\n        address[OUT_MAX_UTXOs] calldata tokens,\\n        uint256[OUT_MAX_UTXOs] calldata tokenIds,\\n        uint256[OUT_MAX_UTXOs] calldata amounts,\\n        G1Point[OUT_MAX_UTXOs] calldata pubSpendingKeys,\\n        uint256[CIPHERTEXT1_WORDS][OUT_MAX_UTXOs] calldata secrets,\\n        uint32 createdAt\\n    ) external nonReentrant returns (uint256 leftLeafId) {\\n        require(exitTime > 0, ERR_UNCONFIGURED_EXIT_TIME);\\n\\n        uint32 timestamp = safe32TimeNow();\\n        if (createdAt != 0) {\\n            // Time comparison is acceptable in this case since block time accuracy is enough for this scenario\\n            // slither-disable-next-line timestamp\\n            require(createdAt <= timestamp, ERR_TOO_EARLY_CREATED_AT);\\n            timestamp = createdAt;\\n        }\\n\\n        // variables get initialized inside the loop bellow\\n        // slither-disable-next-line uninitialized-local\\n        bytes32[OUT_MAX_UTXOs] memory commitments;\\n        // slither-disable-next-line uninitialized-local\\n        bytes[OUT_MAX_UTXOs] memory perUtxoData;\\n\\n        // Types of UTXO data messages packed into one byte\\n        uint8 msgTypes = uint8(0);\\n\\n        for (uint256 utxoIndex = 0; utxoIndex < OUT_MAX_UTXOs; utxoIndex++) {\\n            // The next call can't trigger the \\\"calls loop\\\" since it triggers\\n            // external calls to known contracts, which are trusted to handle\\n            // reentrancy risk properly.\\n            // Slither's \\\"disable calls-loop detector\\\" directives are inserted\\n            // in lines (bellow) with external calls rather than here only (as\\n            // otherwise slither reports false-positive issues).\\n            (uint160 zAssetId, uint64 scaledAmount) = _processDepositedAsset(\\n                tokens[utxoIndex],\\n                tokenIds[utxoIndex],\\n                amounts[utxoIndex]\\n            );\\n\\n            if (utxoIndex != 0) msgTypes = msgTypes << 2;\\n\\n            if (scaledAmount == 0) {\\n                // the zero UTXO\\n                // At least the 1st deposited amount shall be non-zero\\n                require(utxoIndex != 0, ERR_ZERO_DEPOSIT);\\n\\n                commitments[utxoIndex] = ZERO_VALUE;\\n                perUtxoData[utxoIndex] = \\\"\\\";\\n                // As UTXO_DATA_TYPE5 is 0, next statement may be skipped\\n                // msgTypes |= UTXO_DATA_TYPE5;\\n            } else {\\n                // non-zero UTXO\\n                commitments[utxoIndex] = generateCommitment(\\n                    pubSpendingKeys[utxoIndex].x,\\n                    pubSpendingKeys[utxoIndex].y,\\n                    scaledAmount,\\n                    zAssetId,\\n                    timestamp\\n                );\\n\\n                uint256 zAssetIdAndAmount = (uint256(zAssetId) << 96) |\\n                    uint256(scaledAmount);\\n\\n                if (tokenIds[utxoIndex] != 0) {\\n                    msgTypes |= UTXO_DATA_TYPE1;\\n                    perUtxoData[utxoIndex] = abi.encodePacked(\\n                        secrets[utxoIndex],\\n                        zAssetIdAndAmount\\n                    );\\n                } else {\\n                    msgTypes |= UTXO_DATA_TYPE3;\\n                    perUtxoData[utxoIndex] = abi.encodePacked(\\n                        secrets[utxoIndex],\\n                        zAssetIdAndAmount,\\n                        tokenIds[utxoIndex]\\n                    );\\n                }\\n            }\\n        }\\n\\n        leftLeafId = addAndEmitCommitments(\\n            commitments,\\n            msgTypes,\\n            perUtxoData,\\n            timestamp\\n        );\\n    }\\n\\n    /// @notice Register future `exit` to protect against front-run and DoS.\\n    /// The `exit` is possible only after `exitDelay` since this function call.\\n    /// @param exitCommitment Commitment to the UTXO spending key and the recipient address.\\n    /// MUST be equal to keccak256(abi.encode(uint256(privSpendingKey), address(recipient)).\\n    function commitToExit(bytes32 exitCommitment) external {\\n        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario\\n        // slither-disable-next-line incorrect-equality,timestamp\\n        require(\\n            exitCommitments[exitCommitment] == uint32(0),\\n            ERR_EXITCOMMIT_EXISTS\\n        );\\n        uint32 timestamp = safe32TimeNow();\\n        exitCommitments[exitCommitment] = timestamp;\\n        emit ExitCommitment(timestamp);\\n    }\\n\\n    /// @notice Spend an UTXO in the MASP and withdraw the asset from the Vault to the msg.sender.\\n    /// This function call must be registered in advance with `commitToExit`.\\n    /// @param token Address of the token contract\\n    /// @param subId '_tokenId'/'_id' for ERC-721/1155, 0 for the \\\"default\\\" zAsset of an ERC-20 token,\\n    // or `subId` for an \\\"alternative\\\" zAsset of an ERC-20 (see ZAssetRegistry.sol for details)\\n    /// @param scaledAmount Token scaled amount\\n    /// @param privSpendingKey UTXO's Private Spending Key\\n    /// @param leafId Id of the leaf with the UTXO commitments in the Merkle Trees\\n    /// @param pathElements Elements of the Merkle proof of inclusion\\n    /// @param merkleRoot The root of the Merkle Tree the leaf is a part of\\n    /// @param cacheIndexHint Index of the `merkleRoot` in the cache of roots, 0 by default\\n    /// @dev `cacheIndexHint` needed for the \\\"current\\\" (partially populated) tree only\\n    function exit(\\n        address token,\\n        uint256 subId,\\n        uint64 scaledAmount,\\n        uint32 creationTime,\\n        uint256 privSpendingKey,\\n        uint256 leafId,\\n        bytes32[TREE_DEPTH + 1] calldata pathElements,\\n        bytes32 merkleRoot,\\n        uint256 cacheIndexHint\\n    ) external nonReentrant {\\n        // if exitTime == 0 -> `exit` is not accepted since init phase is not finished yet\\n        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario\\n        // slither-disable-next-line timestamp\\n        require(\\n            safe32TimeNow() >= exitTime && exitTime != 0,\\n            ERR_TOO_EARLY_EXIT\\n        );\\n        _verifyExitCommitment(privSpendingKey, msg.sender);\\n\\n        {\\n            bytes32 nullifier = generateNullifier(privSpendingKey, leafId);\\n            require(!isSpent[nullifier], ERR_SPENT_NULLIFIER);\\n            isSpent[nullifier] = true;\\n            emit Nullifier(nullifier);\\n        }\\n        require(\\n            isKnownRoot(getTreeId(leafId), merkleRoot, cacheIndexHint),\\n            ERR_UNKNOWN_MERKLE_ROOT\\n        );\\n\\n        ZAsset memory asset;\\n        uint256 _tokenId;\\n        {\\n            bytes32 commitment;\\n            {\\n                uint160 zAssetId;\\n                {\\n                    (zAssetId, _tokenId, , asset) = IZAssetsRegistry(\\n                        ASSET_REGISTRY\\n                    ).getZAssetAndIds(token, subId);\\n                    require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);\\n                }\\n                G1Point memory pubSpendingKey = generatePubSpendingKey(\\n                    privSpendingKey\\n                );\\n                commitment = generateCommitment(\\n                    pubSpendingKey.x,\\n                    pubSpendingKey.y,\\n                    scaledAmount,\\n                    zAssetId,\\n                    creationTime\\n                );\\n            }\\n            verifyMerkleProof(\\n                merkleRoot,\\n                _getTriadIndex(leafId),\\n                _getTriadNodeIndex(leafId),\\n                commitment,\\n                pathElements\\n            );\\n        }\\n\\n        uint96 amount = _unscaleAmount(scaledAmount, asset.scale);\\n        IVault(VAULT).unlockAsset(\\n            LockData(asset.tokenType, token, _tokenId, msg.sender, amount)\\n        );\\n    }\\n\\n    /// @notice Withdraw accidentally sent tokens or ETH from this contract\\n    /// @dev The \\\"owner\\\" may call only\\n    function claimEthOrErc20(\\n        address token,\\n        address to,\\n        uint256 amount\\n    ) external onlyOwner nonReentrant {\\n        _claimEthOrErc20(token, to, amount);\\n    }\\n\\n    /// Internal and private functions follow\\n\\n    // Declared `internal` rather than `private` to ease testing\\n    function _processDepositedAsset(\\n        address token,\\n        uint256 subId,\\n        uint256 amount\\n    ) internal returns (uint160 zAssetId, uint64 scaledAmount) {\\n        // Do nothing if it's the \\\"zero\\\" (or \\\"dummy\\\") deposit\\n        if (amount == 0) {\\n            // Both token and subId must be zeros for the \\\"zero\\\" deposit\\n            require(token == address(0) && subId == 0, ERR_WRONG_DEPOSIT);\\n            return (0, 0);\\n        }\\n        // amount can't be zero here and further\\n\\n        // At this point, a non-zero deposit of a real asset (token) expected\\n        uint256 _tokenId;\\n        ZAsset memory asset;\\n\\n        // Note comments on \\\"calls-loop\\\" in `function generateDeposits`\\n        // slither-disable-next-line calls-loop\\n        (zAssetId, _tokenId, , asset) = IZAssetsRegistry(ASSET_REGISTRY)\\n            .getZAssetAndIds(token, subId);\\n        require(asset.status == zASSET_ENABLED, ERR_WRONG_ASSET);\\n\\n        // Scale amount, if asset.scale provides for it (ERC-20 only)\\n        uint256 change;\\n        (scaledAmount, change) = _scaleAmount(amount, asset.scale);\\n\\n        // The `change` will remain locked in the Vault until it's claimed\\n        // (when and if future upgrades implement change claiming)\\n        if (change > 0) emit Change(token, change);\\n\\n        // slither-disable-next-line calls-loop\\n        IVault(VAULT).lockAsset(\\n            LockData(\\n                asset.tokenType,\\n                asset.token,\\n                _tokenId,\\n                msg.sender,\\n                uint96(amount)\\n            )\\n        );\\n\\n        return (zAssetId, scaledAmount);\\n    }\\n\\n    function _verifyExitCommitment(uint256 privSpendingKey, address recipient)\\n        internal\\n    {\\n        bytes32 commitment = keccak256(abi.encode(privSpendingKey, recipient));\\n\\n        uint32 commitmentTime = exitCommitments[commitment];\\n        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario\\n        // slither-disable-next-line timestamp\\n        require(commitmentTime != uint32(0), ERR_EXITCOMMIT_MISSING);\\n\\n        uint256 allowedTime = uint256(commitmentTime) + uint256(exitDelay);\\n        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario\\n        // slither-disable-next-line timestamp\\n        require(timeNow() > allowedTime, ERR_EXITCOMMIT_LOCKED);\\n\\n        // Let's gain some gas back\\n        exitCommitments[commitment] = uint32(0);\\n        // No extra event emitted as spent UTXO and withdrawal events will fire\\n    }\\n}\\n\",\"keccak256\":\"0xf1d4397cf0de7d3fd98117e887ab17f0e0242355adc18d071a0cc26f36aa1504\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/crypto/BabyJubJub.sol\":{\"content\":\"// SPDX-License-Identifier: GPL\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// Implementer name - yondonfu\\n// Link to the implementation - https://github.com/yondonfu/sol-baby-jubjub/blob/master/contracts/CurveBabyJubJub.sol\\npragma solidity ^0.8.16;\\nimport \\\"../../common/Types.sol\\\";\\n\\nlibrary BabyJubJub {\\n    // Curve parameters\\n    // E: 168700x^2 + y^2 = 1 + 168696x^2y^2\\n    // A = 168700\\n    uint256 public constant A = 0x292FC;\\n    // D = 168696\\n    uint256 public constant D = 0x292F8;\\n    // Prime Q = 21888242871839275222246405745257275088548364400416034343698204186575808495617\\n    // slither-disable-next-line too-many-digits\\n    uint256 public constant Q =\\n        0x30644E72E131A029B85045B68181585D2833E84879B9709143E1F593F0000001;\\n\\n    // @dev Base point generates the subgroup of points P of Baby Jubjub satisfying l * P = O.\\n    // That is, it generates the set of points of order l and origin O.\\n    // slither-disable-next-line too-many-digits\\n    uint256 public constant BASE8_X =\\n        5299619240641551281634865583518297030282874472190772894086521144482721001553;\\n    // slither-disable-next-line too-many-digits\\n    uint256 public constant BASE8_Y =\\n        16950150798460657717958625567821834550301663161624707787222815936182638968203;\\n\\n    /**\\n     * @dev Add 2 points on baby jubjub curve\\n     * Formulae for adding 2 points on a twisted Edwards curve:\\n     * x3 = (x1y2 + y1x2) / (1 + dx1x2y1y2)\\n     * y3 = (y1y2 - ax1x2) / (1 - dx1x2y1y2)\\n     */\\n    function pointAdd(G1Point memory g1, G1Point memory g2)\\n        internal\\n        view\\n        returns (G1Point memory)\\n    {\\n        uint256 x3 = 0;\\n        uint256 y3 = 0;\\n        if (g1.x == 0 && g1.y == 0) {\\n            return G1Point(x3, y3);\\n        }\\n\\n        if (g2.x == 0 && g1.y == 0) {\\n            return G1Point(x3, y3);\\n        }\\n\\n        uint256 x1x2 = mulmod(g1.x, g2.x, Q);\\n        uint256 y1y2 = mulmod(g1.y, g2.y, Q);\\n        uint256 dx1x2y1y2 = mulmod(D, mulmod(x1x2, y1y2, Q), Q);\\n        uint256 x3Num = addmod(mulmod(g1.x, g2.y, Q), mulmod(g1.y, g2.x, Q), Q);\\n        uint256 y3Num = submod(y1y2, mulmod(A, x1x2, Q), Q);\\n\\n        x3 = mulmod(x3Num, inverse(addmod(1, dx1x2y1y2, Q)), Q);\\n        y3 = mulmod(y3Num, inverse(submod(1, dx1x2y1y2, Q)), Q);\\n        return G1Point(x3, y3);\\n    }\\n\\n    /**\\n     * @dev Perform modular subtraction\\n     */\\n    function submod(\\n        uint256 _a,\\n        uint256 _b,\\n        uint256 _mod\\n    ) internal pure returns (uint256) {\\n        uint256 aNN = _a;\\n\\n        if (_a <= _b) {\\n            aNN += _mod;\\n        }\\n\\n        return addmod(aNN - _b, 0, _mod);\\n    }\\n\\n    /**\\n     * @dev Compute modular inverse of a number\\n     */\\n    function inverse(uint256 _a) internal view returns (uint256) {\\n        // We can use Euler's theorem instead of the extended Euclidean algorithm\\n        // Since m = Q and Q is prime we have: a^-1 = a^(m - 2) (mod m)\\n        return expmod(_a, Q - 2, Q);\\n    }\\n\\n    /**\\n     * @dev Helper function to call the bigModExp precompile\\n     */\\n    function expmod(\\n        uint256 _b,\\n        uint256 _e,\\n        uint256 _m\\n    ) internal view returns (uint256 o) {\\n        // solhint-disable no-inline-assembly\\n        // slither-disable-next-line assembly\\n        assembly {\\n            let memPtr := mload(0x40)\\n            mstore(memPtr, 0x20) // Length of base _b\\n            mstore(add(memPtr, 0x20), 0x20) // Length of exponent _e\\n            mstore(add(memPtr, 0x40), 0x20) // Length of modulus _m\\n            mstore(add(memPtr, 0x60), _b) // Base _b\\n            mstore(add(memPtr, 0x80), _e) // Exponent _e\\n            mstore(add(memPtr, 0xa0), _m) // Modulus _m\\n\\n            // The bigModExp precompile is at 0x05\\n            let success := staticcall(gas(), 0x05, memPtr, 0xc0, memPtr, 0x20)\\n            switch success\\n            case 0 {\\n                revert(0x0, 0x0)\\n            }\\n            default {\\n                o := mload(memPtr)\\n            }\\n        }\\n        // solhint-enable no-inline-assembly\\n    }\\n\\n    function mulPointEscalar(G1Point memory point, uint256 scalar)\\n        internal\\n        view\\n        returns (G1Point memory r)\\n    {\\n        r.x = 0;\\n        r.y = 1;\\n\\n        uint256 rem = scalar;\\n        G1Point memory exp = point;\\n\\n        while (rem != uint256(0)) {\\n            if ((rem & 1) == 1) {\\n                r = pointAdd(r, exp);\\n            }\\n            exp = pointAdd(exp, exp);\\n            rem = rem >> 1;\\n        }\\n        r.x = r.x % Q;\\n        r.y = r.y % Q;\\n\\n        return r;\\n    }\\n}\\n\",\"keccak256\":\"0xcce1140b447ad54ea20fae71536986e2a954750a9f5536a5a0621e6a2218323b\",\"license\":\"GPL\"},\"contracts/protocol/crypto/Poseidon.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.16;\\n\\n// This is a stub to keep solc happy; the actual code is generated\\n// using poseidon_gencontract.js from circomlibjs.\\n\\nlibrary PoseidonT3 {\\n    function poseidon(bytes32[2] memory input) external pure returns (bytes32) {\\n        require(input.length == 99, \\\"FAKE\\\"); // always reverts\\n        return 0;\\n    }\\n}\\n\\nlibrary PoseidonT4 {\\n    function poseidon(bytes32[3] memory input) external pure returns (bytes32) {\\n        require(input.length == 99, \\\"FAKE\\\"); // always reverts\\n        return 0;\\n    }\\n}\\n\\nlibrary PoseidonT6 {\\n    function poseidon(bytes32[5] memory input) external pure returns (bytes32) {\\n        require(input.length == 99, \\\"FAKE\\\"); // always reverts\\n        return 0;\\n    }\\n}\\n\",\"keccak256\":\"0xbe9a6a792072ee6c85e463e9ced6d5f34d1226d4467e4609e8d8530867b0696f\",\"license\":\"MIT\"},\"contracts/protocol/crypto/SnarkConstants.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// solhint-disable var-name-mixedcase\\npragma solidity ^0.8.16;\\n\\n// @dev Order of alt_bn128 and the field prime of Baby Jubjub and Poseidon hash\\nuint256 constant FIELD_SIZE = 21888242871839275222246405745257275088548364400416034343698204186575808495617;\\n\\n// @dev Field prime of alt_bn128\\nuint256 constant PRIME_Q = 21888242871839275222246405745257275088696311157297823662689037894645226208583;\\n\",\"keccak256\":\"0x8c43ddbf720c346b9e56de0cd59eda4b345d18a15b9b131ba82b22efc8630098\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/errMsgs/PantherPoolErrMsgs.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\n// CommitmentGenerator contract\\nstring constant ERR_TOO_LARGE_PUBKEY = \\\"CG:E1\\\";\\n\\n// CommitmentsTrees contract\\nstring constant ERR_TOO_LARGE_COMMITMENTS = \\\"CT:E1\\\"; // commitment exceeds maximum scalar field size\\n\\n// MerkleProofVerifier\\nstring constant ERR_MERKLE_PROOF_VERIFICATION_FAILED = \\\"MP:E1\\\";\\nstring constant ERR_TRIAD_INDEX_MIN_VALUE = \\\"MP:E2\\\";\\nstring constant ERR_TRIAD_INDEX_MAX_VALUE = \\\"MP:E3\\\";\\n\\n// TriadIncrementalMerkleTrees contract\\nstring constant ERR_ZERO_ROOT = \\\"TT:E1\\\"; // merkle tree root can not be zero\\n\\n// PantherPool contract\\nstring constant ERR_DEPOSIT_OVER_LIMIT = \\\"PP:E1\\\";\\nstring constant ERR_DEPOSIT_FROM_ZERO_ADDRESS = \\\"PP:E2\\\";\\nstring constant ERR_EXITCOMMIT_EXISTS = \\\"PP:E32\\\";\\nstring constant ERR_EXITCOMMIT_LOCKED = \\\"PP:E33\\\";\\nstring constant ERR_EXITCOMMIT_MISSING = \\\"PP:E34\\\";\\nstring constant ERR_EXPIRED_TX_TIME = \\\"PP:E3\\\";\\nstring constant ERR_INVALID_JOIN_INPUT = \\\"PP:E4\\\";\\nstring constant ERR_INVALID_PROOF = \\\"PP:E5\\\";\\nstring constant ERR_MISMATCHED_ARR_LENGTH = \\\"PP:E6\\\";\\nstring constant ERR_PLUGIN_FAILURE = \\\"PP:E7\\\";\\nstring constant ERR_SPENT_NULLIFIER = \\\"PP:E8\\\";\\nstring constant ERR_TOO_EARLY_CREATED_AT = \\\"PP:E9\\\";\\nstring constant ERR_TOO_EARLY_EXIT = \\\"PP:E30\\\";\\nstring constant ERR_TOO_LARGE_AMOUNT = \\\"PP:E10\\\";\\nstring constant ERR_TOO_LARGE_COMMITMENT = \\\"PP:E11\\\";\\nstring constant ERR_TOO_LARGE_NULLIFIER = \\\"PP:E12\\\";\\nstring constant ERR_TOO_LARGE_LEAFID = \\\"PP:E27\\\";\\nstring constant ERR_TOO_LARGE_PRIVKEY = \\\"PP:E28\\\";\\nstring constant ERR_TOO_LARGE_ROOT = \\\"PP:E13\\\";\\nstring constant ERR_TOO_LARGE_SCALED_AMOUNT = \\\"PP:E26\\\";\\nstring constant ERR_TOO_LARGE_TIME = \\\"PP:E14\\\";\\nstring constant ERR_UNCONFIGURED_EXIT_TIME = \\\"PP:E31\\\";\\nstring constant ERR_UNKNOWN_MERKLE_ROOT = \\\"PP:E16\\\";\\nstring constant ERR_WITHDRAW_OVER_LIMIT = \\\"PP:E17\\\";\\nstring constant ERR_WITHDRAW_TO_ZERO_ADDRESS = \\\"PP:E18\\\";\\nstring constant ERR_WRONG_ASSET = \\\"PP:E19\\\";\\nstring constant ERR_WRONG_DEPOSIT = \\\"PP:E29\\\";\\nstring constant ERR_WRONG_PRP_SUBID = \\\"PP:E25\\\";\\nstring constant ERR_ZERO_DEPOSIT = \\\"PP:E21\\\";\\nstring constant ERR_ZERO_FEE_PAYER = \\\"PP:E22\\\";\\nstring constant ERR_ZERO_TOKEN_EXPECTED = \\\"PP:E23\\\";\\nstring constant ERR_ZERO_TOKEN_UNEXPECTED = \\\"PP:E24\\\";\\n\",\"keccak256\":\"0x2497a5857dfcf46fa9ca4aaccffe0471d5fbeb7a3d0699c74cef46e47e179148\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/interfaces/IPrpGrantor.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\n/**\\n * @title IPrpGrantor\\n * @notice Interface for the `PrpGrantor` contract\\n * @dev Excluding `onlyOwner` functions\\n */\\ninterface IPrpGrantor {\\n    /// @notice Return the address of the \\\"grant processor\\\"\\n    /// @dev This account only is authorized to call `redeemGrant`\\n    function grantProcessor() external view returns (address);\\n\\n    /// @notice Returns the total amount (in PRPs) of grants issued so far\\n    /// (excluding burnt grants)\\n    function totalGrantsIssued() external returns (uint256);\\n\\n    /// @notice Returns the total amount (in PRPs) of grants redeemed so far\\n    function totalGrantsRedeemed() external returns (uint256);\\n\\n    /// @notice Returns the total amount (in PRPs) of unused grants for the given grantee\\n    function getUnusedGrantAmount(address grantee)\\n        external\\n        view\\n        returns (uint256 prpAmount);\\n\\n    /// @notice Returns the PRP amount of the grant specified by a given curator and type\\n    function getGrantAmount(address curator, bytes4 grantType)\\n        external\\n        view\\n        returns (uint256 prpAmount);\\n\\n    /// @notice Increase the amount of \\\"unused\\\" grants for the given grantee, by the amount\\n    /// defined for the given \\\"grant type\\\"\\n    /// @return prpAmount The amount (in PRPs) of the grant\\n    /// @dev An authorized \\\"curator\\\" may call with the enabled (added) \\\"grant type\\\" only\\n    function issueGrant(address grantee, bytes4 grantType)\\n        external\\n        returns (uint256 prpAmount);\\n\\n    /// @notice Increase the amount of \\\"unused\\\" grants for the given grantee, by the amount\\n    /// specified.\\n    /// @dev Only the owner may call.\\n    function issueOwnerGrant(address grantee, uint256 prpAmount) external;\\n\\n    /// @notice Burn unused grants for the msg.sender in the specified PRP amount\\n    function burnGrant(uint256 prpAmount) external;\\n\\n    /// @notice Account for redemption of grants in the given amount for the given grantee\\n    /// @dev Only the account returned by `grantProcessor()` may call\\n    function redeemGrant(address grantee, uint256 prpAmount) external;\\n\\n    /// @notice PRP grant issued\\n    event PrpGrantIssued(\\n        bytes4 indexed grantType,\\n        address grantee,\\n        uint256 prpAmount\\n    );\\n\\n    /// @notice PRP grant redeemed (used)\\n    event PrpGrantRedeemed(address grantee, uint256 prpAmount);\\n\\n    /// @notice PRP grant burnt\\n    event PrpGrantBurnt(address grantee, uint256 prpAmount);\\n\\n    /// @notice New grant type added\\n    event PrpGrantEnabled(address curator, bytes4 grantType, uint256 prpAmount);\\n\\n    /// @notice Existing grant type disabled\\n    event PrpGrantDisabled(address curator, bytes4 grantType);\\n}\\n\",\"keccak256\":\"0xaf3bccc62486eb80c0de3b32998643ace00189e448ee5ff6b10108f05b7dffc2\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/interfaces/IRootsHistory.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\ninterface IRootsHistory {\\n    /// @notice Returns `true` if the given root of the given tree is known\\n    /// @param cacheIndexHint Index of the root in the cache, ignored if 0\\n    function isKnownRoot(\\n        uint256 treeId,\\n        bytes32 root,\\n        uint256 cacheIndexHint\\n    ) external view returns (bool);\\n}\\n\",\"keccak256\":\"0xc7e3f3b015d6427dbe9c55769997f9b2decc0d18e40c7ed7affab1d45a3b8c0a\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/interfaces/IVault.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { LockData } from \\\"../../common/Types.sol\\\";\\n\\ninterface IVault {\\n    function lockAsset(LockData calldata data) external;\\n\\n    function unlockAsset(LockData memory data) external;\\n\\n    event Locked(LockData data);\\n    event Unlocked(LockData data);\\n}\\n\",\"keccak256\":\"0x1f347e5e3084c73a568801fd5e67c96e7881b62c68cc015e64c52410da348366\",\"license\":\"MIT\"},\"contracts/protocol/interfaces/IZAssetsRegistry.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { ZAsset } from \\\"../../common/Types.sol\\\";\\n\\ninterface IZAssetsRegistry {\\n    /// @dev declared as view rather than pure to allow for protocol changes\\n    function getZAssetId(address token, uint256 subId)\\n        external\\n        view\\n        returns (uint160);\\n\\n    function getZAssetAndIds(address token, uint256 subId)\\n        external\\n        view\\n        returns (\\n            uint160 zAssetId,\\n            uint256 _tokenId,\\n            uint160 zAssetRecId,\\n            ZAsset memory asset\\n        );\\n\\n    function getZAsset(uint160 zAssetRecId)\\n        external\\n        view\\n        returns (ZAsset memory asset);\\n\\n    function isZAssetWhitelisted(uint160 zAssetRecId)\\n        external\\n        view\\n        returns (bool);\\n\\n    event AssetAdded(uint160 indexed zAssetRecId, ZAsset asset);\\n    event AssetStatusChanged(\\n        uint160 indexed zAssetRecId,\\n        uint8 newStatus,\\n        uint8 oldStatus\\n    );\\n}\\n\",\"keccak256\":\"0x92b7133aafcee98fc1cf0632ca7a3ca2cff30e94d50df55b4c48d982ed53cf3f\",\"license\":\"MIT\"},\"contracts/protocol/pantherPool/AmountConvertor.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { MAX_EXT_AMOUNT, MAX_IN_CIRCUIT_AMOUNT } from \\\"../../common/Constants.sol\\\";\\nimport { ERR_TOO_LARGE_AMOUNT, ERR_TOO_LARGE_SCALED_AMOUNT } from \\\"../errMsgs/PantherPoolErrMsgs.sol\\\";\\n\\n/**\\n * @title AmountConvertor\\n * @author Pantherprotocol Contributors\\n * @notice Methods for scaling amounts for computations within/outside the\\n * Panther Protocol Multi-Asset Shielded Pool (aka \\\"MASP\\\")\\n */\\nabstract contract AmountConvertor {\\n    // \\\"Scaled amounts\\\" - amounts ZK-circuits of the MASP operate with\\n    // \\\"Unscaled amounts\\\" - amounts token contracts operate with\\n    // Scaling is relevant for fungible tokens only - for ERC-721/ERC-1155\\n    // tokens, scaled and unscaled amounts MUST be equal. For some ERC-20\\n    // tokens, the \\\"scaling factor\\\" MAY be 1:1, i.e. scaled and unscaled\\n    // amounts are equal.\\n\\n    // Conversion from the unscaled amount (aka amount) to the scaled one.\\n    // Returns the scaled amount and the reminder.\\n    function _scaleAmount(uint256 amount, uint8 scale)\\n        internal\\n        pure\\n        returns (uint64 scaledAmount, uint256 change)\\n    {\\n        uint256 _scaledAmount;\\n        if (scale == 0) {\\n            // No scaling and no change for zero `scale`\\n            _scaledAmount = amount;\\n            change = 0;\\n        } else {\\n            unchecked {\\n                uint256 factor = _getScalingFactor(scale);\\n                // divider can't be zero, loss of precision assumed\\n                // slither-disable-next-line divide-before-multiply\\n                _scaledAmount = amount / factor;\\n                // `restoredAmount` can not exceed the `amount`\\n                uint256 restoredAmount = _scaledAmount * factor;\\n                change = amount - restoredAmount;\\n            }\\n        }\\n        scaledAmount = _sanitizeScaledAmount(_scaledAmount);\\n    }\\n\\n    // Conversion from the scaled amount to unscaled one.\\n    // Returns the unscaled amount.\\n    function _unscaleAmount(uint64 scaledAmount, uint8 scale)\\n        internal\\n        pure\\n        returns (uint96)\\n    {\\n        uint256 amount = scale == 0\\n            ? scaledAmount // no scaling\\n            : uint256(scaledAmount) * _getScalingFactor(scale);\\n        return _sanitizeAmount(amount);\\n    }\\n\\n    function _sanitizeAmount(uint256 amount) internal pure returns (uint96) {\\n        require(amount < MAX_EXT_AMOUNT, ERR_TOO_LARGE_AMOUNT);\\n        return uint96(amount);\\n    }\\n\\n    function _sanitizeScaledAmount(uint256 scaledAmount)\\n        internal\\n        pure\\n        returns (uint64)\\n    {\\n        require(\\n            scaledAmount < MAX_IN_CIRCUIT_AMOUNT,\\n            ERR_TOO_LARGE_SCALED_AMOUNT\\n        );\\n        return uint64(scaledAmount);\\n    }\\n\\n    /// Private functions follow\\n\\n    // Note: implementation accepts 0..255 values for nonZeroScale\\n    // It is responsibility of the caller check it is indeed less than 255 since 10^255 overflows uint256\\n    // This overflow check not implemented here since caller will implement it in upper level\\n    function _getScalingFactor(uint8 nonZeroScale)\\n        private\\n        pure\\n        returns (uint256)\\n    {\\n        return 10**nonZeroScale;\\n    }\\n}\\n\",\"keccak256\":\"0xb3c1ea32951c2024472cae3ff3fc740c5dcd37895502115140dd7574107d0148\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/pantherPool/CommitmentGenerator.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { PoseidonT4 } from \\\"../crypto/Poseidon.sol\\\";\\n\\nimport { ERR_TOO_LARGE_PUBKEY } from \\\"../errMsgs/PantherPoolErrMsgs.sol\\\";\\nimport { FIELD_SIZE } from \\\"../crypto/SnarkConstants.sol\\\";\\n\\nabstract contract CommitmentGenerator {\\n    /// Generate UTXOs, these UTXOs will be used later\\n    /// @param pubSpendingKeyX Public Spending Key for every UTXO - 256 bit - used in circom\\n    /// @param pubSpendingKeyY Public Spending Key for every UTXO - 256 bit - used in circom\\n    /// @param scaledAmount 64 bit size - used in circom\\n    /// @param zAssetId 160 bit size - used in circom\\n    /// @param creationTime 32 bit size - used in circom\\n    function generateCommitment(\\n        // slither-disable-next-line similar-names\\n        uint256 pubSpendingKeyX,\\n        // slither-disable-next-line similar-names\\n        uint256 pubSpendingKeyY,\\n        uint64 scaledAmount,\\n        uint160 zAssetId,\\n        uint32 creationTime\\n    ) internal pure returns (bytes32 commitment) {\\n        require(\\n            pubSpendingKeyX <= FIELD_SIZE && pubSpendingKeyY <= FIELD_SIZE,\\n            ERR_TOO_LARGE_PUBKEY\\n        );\\n        // Being 160 bits and less, other input params can't exceed FIELD_SIZE\\n        commitment = PoseidonT4.poseidon(\\n            [\\n                bytes32(pubSpendingKeyX),\\n                bytes32(pubSpendingKeyY),\\n                bytes32(\\n                    (uint256(scaledAmount) << 192) |\\n                        (uint256(zAssetId) << 32) |\\n                        uint256(creationTime)\\n                )\\n            ]\\n        );\\n    }\\n}\\n\",\"keccak256\":\"0x9c0571aac92ecd17b7a9d66081fbd6511812ce6b3b03e2594f95256f7da23b20\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/pantherPool/CommitmentsTrees.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport \\\"../triadTree/TriadIncrementalMerkleTrees.sol\\\";\\nimport { OUT_MAX_UTXOs } from \\\"../../common/Constants.sol\\\";\\nimport { ERR_TOO_LARGE_COMMITMENTS } from \\\"../errMsgs/PantherPoolErrMsgs.sol\\\";\\n\\n/**\\n * @title CommitmentsTrees\\n * @author Pantherprotocol Contributors\\n * @notice Incremental Merkle trees of commitments for the `PantherPool` contract\\n */\\nabstract contract CommitmentsTrees is TriadIncrementalMerkleTrees {\\n    /**\\n     * @dev Emitted on a new batch of Commitments\\n     * @param leftLeafId The `leafId` of the first leaf in the batch\\n     * @dev `leafId = leftLeafId + 1` for the 2nd leaf (`leftLeafId + 2` for the 3rd leaf)\\n     * @param commitments Commitments hashes\\n     * @param utxoData opening values (encrypted and public) for UTXOs\\n     */\\n    event NewCommitments(\\n        uint256 indexed leftLeafId,\\n        uint256 creationTime,\\n        bytes32[OUT_MAX_UTXOs] commitments,\\n        bytes utxoData\\n    );\\n\\n    /**\\n     * @notice Adds commitments to merkle tree(s) and emits events\\n     * @param commitments Commitments (leaves hashes) to be inserted into merkle tree(s)\\n     * @param msgTypes Types (i.e. formats) of the perUtxoData array elements\\n     * @param perUtxoData opening values (encrypted and public) for every UTXO\\n     * @return leftLeafId The `leafId` of the first leaf in the batch\\n     */\\n    function addAndEmitCommitments(\\n        bytes32[OUT_MAX_UTXOs] memory commitments,\\n        uint8 msgTypes,\\n        bytes[OUT_MAX_UTXOs] memory perUtxoData,\\n        uint256 timestamp\\n    ) internal returns (uint256 leftLeafId) {\\n        bytes memory utxoData = abi.encodePacked(msgTypes);\\n\\n        for (uint256 i = 0; i < OUT_MAX_UTXOs; i++) {\\n            require(\\n                uint256(commitments[i]) < FIELD_SIZE,\\n                ERR_TOO_LARGE_COMMITMENTS\\n            );\\n            utxoData = bytes.concat(utxoData, perUtxoData[i]);\\n        }\\n\\n        // Insert hashes into Merkle tree(s)\\n        leftLeafId = insertBatch(commitments);\\n\\n        emit NewCommitments(leftLeafId, timestamp, commitments, utxoData);\\n    }\\n\\n    // NOTE: The contract is supposed to run behind a proxy DELEGATECALLing it.\\n    // For compatibility on upgrades, decrease `__gap` if new variables added.\\n    // slither-disable-next-line unused-state\\n    uint256[50] private __gap;\\n}\\n\",\"keccak256\":\"0xb7f5590889cd519a9b2f58da966f116181cb68b5ccad7fd2a82b354a66ed1a6b\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/pantherPool/MerkleProofVerifier.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { PoseidonT3, PoseidonT4 } from \\\"../crypto/Poseidon.sol\\\";\\nimport \\\"../errMsgs/PantherPoolErrMsgs.sol\\\";\\nimport \\\"../triadTree/TriadIncrementalMerkleTrees.sol\\\";\\n\\nabstract contract MerkleProofVerifier {\\n    // @dev Number of levels in a tree excluding the root level\\n    // (also defined in scripts/generateTriadMerkleZeroesContracts.sh)\\n    uint256 private constant TREE_DEPTH = 15;\\n\\n    //t |bH  bL| Subtree\\n    //--|------|------------\\n    //0 | 0  0 | hash(C,L,R)\\n    //1 | 0  1 | hash(L,C,R)\\n    //2 | 1  0 | hash(L,R,C)\\n    //3 | 1  1 | Not allowed\\n    //--|------|------------\\n    // Current leaf index in triad is (C,L,R)\\n    uint256 private constant iTRIAD_INDEX_LEFT = 0x0;\\n    // Current leaf index in triad is (L,C,R)\\n    uint256 private constant iTRIAD_INDEX_MIDDLE = 0x1;\\n    // Current leaf index in triad is (L,R,C)\\n    uint256 private constant iTRIAD_INDEX_RIGHT = 0x2;\\n    // Forbidden triad value in tria is `11`\\n    uint256 private constant iTRIAD_INDEX_FORBIDDEN = 0x3;\\n\\n    /// @param merkleRoot - verify checked to this hash\\n    /// @param triadIndex - index inside triad = { 0, 1, 2 }\\n    /// @param triadNodeIndex - index of triad hash ( c0,c1,c2 ) in the tree - Triad contract insures its is in range\\n    /// @param leaf - commitment leaf value\\n    /// @param pathElements - TREE_DEPTH + 1 elements - c1,c2 & path-elements\\n    /// @dev Returns true if a `leaf` can be proved to be a part of a Merkle tree\\n    /// @dev defined by `root`. For this, a `proof` must be provided, containing\\n    /// @dev sibling hashes on the branch from the leaf to the root of the tree.\\n    function verifyMerkleProof(\\n        bytes32 merkleRoot,\\n        uint256 triadIndex,\\n        uint256 triadNodeIndex,\\n        bytes32 leaf,\\n        bytes32[TREE_DEPTH + 1] calldata pathElements\\n    ) internal pure {\\n        // [0] - Assumed it is computed by the TriadIncrementalMerkleTrees\\n        //       using modulo operation, so no need to check lower range\\n        //require(iTRIAD_INDEX_LEFT <= triadIndex, ERR_TRIAD_INDEX_MIN_VALUE);\\n        require(triadIndex < iTRIAD_INDEX_FORBIDDEN, ERR_TRIAD_INDEX_MAX_VALUE);\\n\\n        // [1] - Compute zero level hash\\n        // variable will be initialized inside the 'if' bellow\\n        // slither-disable-next-line uninitialized-local\\n        bytes32 nodeHash;\\n        // NOTE: no else-case needed since this code executed after require at step [0]\\n        if (triadIndex == iTRIAD_INDEX_LEFT) {\\n            nodeHash = PoseidonT4.poseidon(\\n                [leaf, pathElements[0], pathElements[1]]\\n            );\\n        } else if (triadIndex == iTRIAD_INDEX_MIDDLE) {\\n            nodeHash = PoseidonT4.poseidon(\\n                [pathElements[0], leaf, pathElements[1]]\\n            );\\n        } else if (triadIndex == iTRIAD_INDEX_RIGHT) {\\n            nodeHash = PoseidonT4.poseidon(\\n                [pathElements[0], pathElements[1], leaf]\\n            );\\n        }\\n\\n        // [2] - Compute root\\n        for (uint256 level = 2; level < pathElements.length; level++) {\\n            bool isLeftNode;\\n            unchecked {\\n                // triadNodeIndex is actually a path to triad-node in merkle-tree\\n                // each LSB bit of this number is left or right path\\n                // it means for example: path = b111 , zero leaf will be from right size of hash\\n                // and path element[2] will be from right side of hash, all other path elements [3,4] will be from\\n                // left side of the next hashes till root.\\n                isLeftNode = ((triadNodeIndex & (0x1 << (level - 2))) == 0);\\n            }\\n            if (isLeftNode) {\\n                // computed node from left side\\n                // Hash(left = nodeHash, right = pathElement)\\n                nodeHash = PoseidonT3.poseidon([nodeHash, pathElements[level]]);\\n            } else {\\n                // computed node from right side\\n                // Hash(left = pathElement, right = nodeHash)\\n                nodeHash = PoseidonT3.poseidon([pathElements[level], nodeHash]);\\n            }\\n        }\\n        // [3] - revert if verification fails\\n        require(merkleRoot == nodeHash, ERR_MERKLE_PROOF_VERIFICATION_FAILED);\\n    }\\n}\\n\",\"keccak256\":\"0x38ed1d2feecb9db11b69c1c4faa79704195296a8d2e77e7c6e9ad9dfd2b3f022\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/pantherPool/NullifierGenerator.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { PoseidonT3 } from \\\"../crypto/Poseidon.sol\\\";\\nimport { FIELD_SIZE } from \\\"../crypto/SnarkConstants.sol\\\";\\nimport { ERR_TOO_LARGE_LEAFID, ERR_TOO_LARGE_PRIVKEY } from \\\"../errMsgs/PantherPoolErrMsgs.sol\\\";\\n\\nabstract contract NullifierGenerator {\\n    function generateNullifier(uint256 privSpendingKey, uint256 leafId)\\n        internal\\n        pure\\n        returns (bytes32 nullifier)\\n    {\\n        require(privSpendingKey < FIELD_SIZE, ERR_TOO_LARGE_PRIVKEY);\\n        require(leafId < FIELD_SIZE, ERR_TOO_LARGE_LEAFID);\\n        nullifier = PoseidonT3.poseidon(\\n            [bytes32(privSpendingKey), bytes32(leafId)]\\n        );\\n    }\\n}\\n\",\"keccak256\":\"0xb7899cc4200efc234f3b5d2e9135817da6778d3c27ef43efa46f06cf3a1d9b38\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/pantherPool/PubKeyGenerator.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { G1Point } from \\\"../../common/Types.sol\\\";\\nimport { ERR_TOO_LARGE_PRIVKEY } from \\\"../errMsgs/PantherPoolErrMsgs.sol\\\";\\nimport { FIELD_SIZE } from \\\"../crypto/SnarkConstants.sol\\\";\\nimport \\\"../crypto/BabyJubJub.sol\\\";\\n\\nabstract contract PubKeyGenerator {\\n    function generatePubSpendingKey(uint256 privKey)\\n        internal\\n        view\\n        returns (G1Point memory pubKey)\\n    {\\n        // [0] - Require\\n        require(privKey < FIELD_SIZE, ERR_TOO_LARGE_PRIVKEY);\\n        // [1] - Generate public key\\n        G1Point memory base8 = G1Point({\\n            x: BabyJubJub.BASE8_X,\\n            y: BabyJubJub.BASE8_Y\\n        });\\n        pubKey = BabyJubJub.mulPointEscalar(base8, privKey);\\n    }\\n}\\n\",\"keccak256\":\"0x18b1b5f0e6f021b9059ebd3b7d27b0adc5b7c00fffc7e4fae78ff22aa48571ca\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/triadTree/Hasher.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { PoseidonT3, PoseidonT4 } from \\\"../crypto/Poseidon.sol\\\";\\n\\n/*\\n * @dev Poseidon hash functions\\n */\\nabstract contract Hasher {\\n    function hash(bytes32 left, bytes32 right) internal pure returns (bytes32) {\\n        bytes32[2] memory input;\\n        input[0] = left;\\n        input[1] = right;\\n        return PoseidonT3.poseidon(input);\\n    }\\n\\n    function hash(\\n        bytes32 left,\\n        bytes32 mid,\\n        bytes32 right\\n    ) internal pure returns (bytes32) {\\n        bytes32[3] memory input;\\n        input[0] = left;\\n        input[1] = mid;\\n        input[2] = right;\\n        return PoseidonT4.poseidon(input);\\n    }\\n}\\n\",\"keccak256\":\"0x22808f3befae9cb6e4d3bc06cb6b9b52590d4de79a3f6e9b4ac02fbe08743f07\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/triadTree/TriadIncrementalMerkleTrees.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport \\\"./Hasher.sol\\\";\\nimport \\\"./TriadMerkleZeros.sol\\\";\\nimport { ERR_ZERO_ROOT } from \\\"../errMsgs/PantherPoolErrMsgs.sol\\\";\\nimport \\\"../interfaces/IRootsHistory.sol\\\";\\n\\n/**\\n * @title TriadIncrementalMerkleTrees\\n * @author Pantherprotocol Contributors\\n * @notice Incremental Merkle trees with batch insertion of 3 leaves at once\\n * @dev Refer to {TriadMerkleZeros} for comments on \\\"triad trees\\\" used\\n * Inspired by MACI project\\n * https://github.com/appliedzkp/maci/blob/master/contracts/sol/IncrementalMerkleTree.sol\\n */\\ncontract TriadIncrementalMerkleTrees is\\n    TriadMerkleZeros,\\n    Hasher,\\n    IRootsHistory\\n{\\n    /**\\n     * @dev {treeId} is a consecutive number of trees, starting from 0.\\n     * @dev {leafId} of a leaf is a \\\"modified\\\" number of leaves inserted in all\\n     * tries before this leaf. It is unique across all trees, starts from 0 for\\n     * the 1st leaf of the 1st tree, and constantly increments like this:\\n     * 0,1,2,  4,5,6,  8,9,10,  12,13,14 ... (i.e. every 4th number is skipped)\\n     * See comments to {TriadMerkleZeros}.\\n     */\\n\\n    // `leafId` of the next leaf to insert\\n    // !!! NEVER access it directly from child contracts: `internal` to ease testing only\\n    uint256 internal _nextLeafId;\\n\\n    // Right-most elements (hashes) in the current tree per level\\n    // level index => hash\\n    mapping(uint256 => bytes32) private _filledSubtrees;\\n\\n    /// @notice Roots of fully populated trees\\n    /// @dev treeId => root\\n    mapping(uint256 => bytes32) public finalRoots;\\n\\n    // Recent roots of trees seen\\n    // cacheIndex => root ^ treeId\\n    mapping(uint256 => uint256) private _cachedRoots;\\n\\n    // @dev Root permanently added to the `finalRoots`\\n    event AnchoredRoot(uint256 indexed treeId, bytes32 root);\\n\\n    // @dev Root temporarily saved in the `_cachedRoots`\\n    event CachedRoot(uint256 indexed treeId, bytes32 root);\\n\\n    // NOTE: No `constructor` (initialization) function needed\\n\\n    // solhint-disable const-name-snakecase\\n\\n    // Max number of latest roots to cache (must be a power of 2)\\n    uint256 internal constant CACHED_ROOTS_NUM = 256;\\n\\n    // Number of leaves in a modified triad used for leaf ID calculation\\n    uint256 private constant iTRIAD_SIZE = 4;\\n    // The number of leaves in a tree used for leaf ID calculation\\n    uint256 private constant iLEAVES_NUM = 2**(TREE_DEPTH - 1) * iTRIAD_SIZE;\\n\\n    // Bitmasks and numbers of bits for \\\"cheaper\\\" arithmetics\\n    uint256 private constant iTRIAD_SIZE_MASK = iTRIAD_SIZE - 1;\\n    uint256 private constant iTRIAD_SIZE_BITS = 2;\\n    uint256 private constant iLEAVES_NUM_MASK = iLEAVES_NUM - 1;\\n    uint256 private constant iLEAVES_NUM_BITS =\\n        TREE_DEPTH - 1 + iTRIAD_SIZE_BITS;\\n    uint256 private constant CACHE_SIZE_MASK =\\n        CACHED_ROOTS_NUM * iTRIAD_SIZE - 1;\\n\\n    // solhint-enable const-name-snakecase\\n\\n    /**\\n     * @notice Returns the number of leaves inserted in all trees so far\\n     */\\n    function leavesNum() external view returns (uint256) {\\n        return _nextLeafId2LeavesNum(_nextLeafId);\\n    }\\n\\n    /**\\n     * @notice Returns `treeId` of the current tree\\n     */\\n    function curTree() external view returns (uint256) {\\n        return getTreeId(_nextLeafId);\\n    }\\n\\n    /**\\n     * @notice Returns `treeId` of the given leaf's tree\\n     */\\n    function getTreeId(uint256 leafId) public pure returns (uint256) {\\n        // equivalent to `leafId / iLEAVES_NUM`\\n        return leafId >> iLEAVES_NUM_BITS;\\n    }\\n\\n    /**\\n     * @notice Returns `leafIndex` (index in the tree) of the given leaf\\n     */\\n    function getLeafIndex(uint256 leafId) public pure returns (uint256) {\\n        unchecked {\\n            // equiv to `leafId % LEAVES_NUM`\\n            uint256 iIndex = leafId & iLEAVES_NUM_MASK; // throws away tree-id bits\\n            uint256 fullTriadsNum = (iIndex + 1) >> iTRIAD_SIZE_BITS; // computes index of triad node in the tree\\n            return iIndex - fullTriadsNum; // start index of first leaf in the triad\\n        }\\n    }\\n\\n    /**\\n     * @notice Returns the root of the current tree and its index in cache\\n     */\\n    function curRoot()\\n        external\\n        view\\n        returns (bytes32 root, uint256 cacheIndex)\\n    {\\n        // Return zero root and index if the current tree is empty\\n        uint256 nextLeafId = _nextLeafId;\\n        if (_isEmptyTree(nextLeafId)) return (ZERO_ROOT, 0);\\n\\n        // Return cached values otherwise\\n        uint256 treeId = getTreeId(nextLeafId);\\n        cacheIndex = _nextLeafId2CacheIndex(nextLeafId);\\n        uint256 v = _cachedRoots[cacheIndex];\\n        root = bytes32(v ^ treeId);\\n    }\\n\\n    /// @inheritdoc IRootsHistory\\n    function isKnownRoot(\\n        uint256 treeId,\\n        bytes32 root,\\n        uint256 cacheIndexHint\\n    ) public view override returns (bool) {\\n        require(root != 0, ERR_ZERO_ROOT);\\n\\n        // if hint provided, use hint\\n        if (cacheIndexHint != 0)\\n            return _isCorrectCachedRoot(treeId, root, cacheIndexHint);\\n\\n        // then, check the history\\n        if (finalRoots[treeId] == root) return true;\\n\\n        // finally, look in cache, starting from the current root\\n        uint256 leafId = _nextLeafId;\\n        unchecked {\\n            uint256 i = CACHED_ROOTS_NUM;\\n            while ((leafId >= iTRIAD_SIZE) && (i != 0)) {\\n                i -= 1;\\n                // Skip the last triad in a tree (i.e. the full tree root)\\n                if (leafId & iLEAVES_NUM_MASK == 0) continue;\\n                uint256 cacheIndex = _nextLeafId2CacheIndex(leafId);\\n                if (_isCorrectCachedRoot(treeId, root, cacheIndex)) return true;\\n                leafId -= iTRIAD_SIZE;\\n            }\\n        }\\n        return false;\\n    }\\n\\n    /**\\n     * @dev Inserts 3 leaves into the current tree, or a new one, if that's full\\n     * @param leaves The 3 leaves to insert (must be less than SNARK_SCALAR_FIELD)\\n     * @return leftLeafId The `leafId` of the first leaf from 3 inserted\\n     */\\n    function insertBatch(bytes32[TRIAD_SIZE] memory leaves)\\n        internal\\n        returns (uint256 leftLeafId)\\n    {\\n        leftLeafId = _nextLeafId;\\n\\n        // here the variable is intentionally declared only ...\\n        // slither-disable-next-line uninitialized-local\\n        bytes32[TREE_DEPTH] memory zeros;\\n        // ... and initialized in this call\\n        populateZeros(zeros);\\n\\n        // index of a \\\"current\\\" node (0 for the leftmost node/leaf of a level)\\n        uint256 nodeIndex;\\n        // hash (value) of a \\\"current\\\" node\\n        bytes32 nodeHash;\\n        // index of a \\\"current\\\" level (0 for leaves, increments toward root)\\n        uint256 level;\\n\\n        // subtree from 3 leaves being inserted on `level = 0`\\n        nodeHash = hash(leaves[0], leaves[1], leaves[2]);\\n        // ... to be placed under this index on `level = 1`\\n        // (equivalent to `(leftLeafId % iLEAVES_NUM) / iTRIAD_SIZE`)\\n        nodeIndex = (leftLeafId & iLEAVES_NUM_MASK) >> iTRIAD_SIZE_BITS;\\n\\n        bytes32 left;\\n        bytes32 right;\\n        for (level = 1; level < TREE_DEPTH; level++) {\\n            // if `nodeIndex` is, say, 25, over the iterations it will be:\\n            // 25, 12, 6, 3, 1, 0, 0 ...\\n\\n            if (nodeIndex % 2 == 0) {\\n                left = nodeHash;\\n                right = zeros[level];\\n                _filledSubtrees[level] = nodeHash;\\n            } else {\\n                // for a new tree, \\\"than\\\" block always run before \\\"else\\\" block\\n                // so `_filledSubtrees[level]` gets updated before its use\\n                left = _filledSubtrees[level];\\n                right = nodeHash;\\n            }\\n\\n            nodeHash = hash(left, right);\\n\\n            // equivalent to `nodeIndex /= 2`\\n            nodeIndex >>= 1;\\n        }\\n\\n        uint256 nextLeafId = leftLeafId + iTRIAD_SIZE;\\n        _nextLeafId = nextLeafId;\\n\\n        uint256 treeId = getTreeId(leftLeafId);\\n        if (_isFullTree(leftLeafId)) {\\n            // Switch to a new tree\\n            // Ignore `_filledSubtrees` old values as they are never re-used\\n            finalRoots[treeId] = nodeHash;\\n            emit AnchoredRoot(treeId, nodeHash);\\n        } else {\\n            uint256 cacheIndex = _nextLeafId2CacheIndex(nextLeafId);\\n            _cachedRoots[cacheIndex] = uint256(nodeHash) ^ treeId;\\n            emit CachedRoot(treeId, nodeHash);\\n        }\\n    }\\n\\n    /// private functions follow (some of them made `internal` to ease testing)\\n    function _isFullTree(uint256 leftLeafId) internal pure returns (bool) {\\n        unchecked {\\n            return\\n                (iLEAVES_NUM - (leftLeafId & iLEAVES_NUM_MASK)) <= iTRIAD_SIZE;\\n        }\\n    }\\n\\n    function _isEmptyTree(uint256 nextLeafId) internal pure returns (bool) {\\n        return (nextLeafId & iLEAVES_NUM_MASK) == 0;\\n    }\\n\\n    function _nextLeafId2LeavesNum(\\n        uint256 nextLeafId // declared as `internal` to facilitate testing\\n    ) internal pure returns (uint256) {\\n        // equiv to `nextLeafId / iTRIAD_SIZE * TRIAD_SIZE + nextLeafId % iTRIAD_SIZE`\\n        unchecked {\\n            return\\n                (nextLeafId >> iTRIAD_SIZE_BITS) *\\n                TRIAD_SIZE +\\n                (nextLeafId & iTRIAD_SIZE_MASK);\\n        }\\n    }\\n\\n    // Returns `triadIndex` index in the triad-node of the given leaf = { 0, 1, 2 }\\n    function _getTriadIndex(uint256 leafId) internal pure returns (uint256) {\\n        return getLeafIndex(leafId) % TRIAD_SIZE;\\n    }\\n\\n    // Returns `triadNodeIndex` index of the triad-node of the given leaf\\n    // This index is the path to this node - used by anyone who needs the path\\n    function _getTriadNodeIndex(uint256 leafId)\\n        internal\\n        pure\\n        returns (uint256)\\n    {\\n        unchecked {\\n            // equiv to `leafId % LEAVES_NUM`\\n            uint256 iIndex = leafId & iLEAVES_NUM_MASK; // throws away tree-id bits\\n            uint256 fullTriadsNum = (iIndex + 1) >> iTRIAD_SIZE_BITS; // computes index of triad node in the tree\\n            return fullTriadsNum;\\n        }\\n    }\\n\\n    // nextLeafId must be even\\n    function _nextLeafId2CacheIndex(uint256 nextLeafId)\\n        private\\n        pure\\n        returns (uint256)\\n    {\\n        // equiv to `nextLeafId % (CACHED_ROOTS_NUM * iTRIAD_SIZE) + 1`\\n        return (nextLeafId & CACHE_SIZE_MASK) | 1;\\n    }\\n\\n    function _isCorrectCachedRoot(\\n        uint256 treeId,\\n        bytes32 root,\\n        uint256 cacheIndex\\n    ) private view returns (bool) {\\n        uint256 v = _cachedRoots[cacheIndex];\\n        return v == (uint256(root) ^ treeId);\\n    }\\n\\n    // NOTE: The contract is supposed to run behind a proxy DELEGATECALLing it.\\n    // For compatibility on upgrades, decrease `__gap` if new variables added.\\n    // slither-disable-next-line unused-state\\n    uint256[50] private __gap;\\n}\\n\",\"keccak256\":\"0xdadfb0b94469d530ae9c108629ba2c1a9b7f3ce02ef717fdaeaae4fcba07c0f4\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/triadTree/TriadMerkleZeros.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { FIELD_SIZE } from \\\"../crypto/SnarkConstants.sol\\\";\\n\\n// Content is autogenerated by `lib/triadMerkleZerosContractGenerator.ts`\\n\\n/**\\n * @dev The \\\"triad binary tree\\\" is a modified Merkle (full) binary tree with:\\n * - every node, from the root upto the level preceding leaves, excluding\\n * that level, has 2 child nodes (i.e. this subtree is a full binary tree);\\n * - every node of the layer preceding leaves has 3 child nodes (3 leaves).\\n * Example:\\n * [4]                                       0\\n *                                           |\\n * [3]                        0--------------------------------1\\n *                            |                                |\\n * [2]                0---------------1                 2--------------3\\n *                    |               |                 |              |\\n * [1]            0-------1       2-------3        4-------5       6-------7\\n *               /|\\\\     /|\\\\     /|\\\\     /|\\\\      /|\\\\     /|\\\\     /|\\\\     /|\\\\\\n * [0] index:   0..2    3..5    6..8    9...11  12..14  15..17  18..20  21..24\\n *\\n *   leaf ID:   0..2    4..6    8..10   12..14  16..18  20..23  24..27  28..30\\n *\\n * - Number in [] is the \\\"level index\\\" that starts from 0 for the leaves level.\\n * - Numbers in node/leaf positions are \\\"node/leaf indices\\\" which starts from 0\\n *   for the leftmost node/leaf of every level.\\n * - Numbers bellow leaves are IDs of leaves.\\n *\\n * Arithmetic operations with multiples of 2 (i.e. shifting) is \\\"cheaper\\\" than\\n * operations with multiples of 3 (both on-chain and in zk-circuits).\\n * Therefore, IDs of leaves (but NOT hashes of nodes) are calculated as if the\\n * tree would have 4 (not 3) leaves in branches, with every 4th leaf skipped.\\n * In other words, there are no leaves with IDs 3, 7, 11, 15, 19...\\n */\\n\\n// @notice The \\\"triad binary tree\\\" populated with zero leaf values\\nabstract contract TriadMerkleZeros {\\n    // solhint-disable var-name-mixedcase\\n\\n    // @dev Number of levels in a tree excluding the root level\\n    // (also defined in scripts/generateTriadMerkleZeroesContracts.sh)\\n    uint256 internal constant TREE_DEPTH = 15;\\n\\n    // Number of leaves in a branch with the root on the level 1\\n    uint256 internal constant TRIAD_SIZE = 3;\\n\\n    // @dev Leaf zero value (`keccak256(\\\"Pantherprotocol\\\")%FIELD_SIZE`)\\n    bytes32 internal constant ZERO_VALUE =\\n        bytes32(\\n            uint256(\\n                0x667764c376602b72ef22218e1673c2cc8546201f9a77807570b3e5de137680d\\n            )\\n        );\\n\\n    // Merkle root of a tree that contains zeros only\\n    bytes32 internal constant ZERO_ROOT =\\n        bytes32(\\n            uint256(\\n                0x20fc043586a9fcb416cdf2a3bc8a995f8f815d43f1046a20d1c588cf20482a55\\n            )\\n        );\\n\\n    // solhint-enable var-name-mixedcase\\n\\n    function populateZeros(bytes32[TREE_DEPTH] memory zeros) internal pure {\\n        zeros[0] = bytes32(\\n            uint256(\\n                0x667764c376602b72ef22218e1673c2cc8546201f9a77807570b3e5de137680d\\n            )\\n        );\\n        zeros[1] = bytes32(\\n            uint256(\\n                0x1be18cd72ac1586de27dd60eba90654bd54383004991951bccb0f6bad02c67f6\\n            )\\n        );\\n        zeros[2] = bytes32(\\n            uint256(\\n                0x7677e6102f0acf343edde864f79ef7652faa5a66d575b8b60bb826a4aa517e6\\n            )\\n        );\\n        zeros[3] = bytes32(\\n            uint256(\\n                0x28a85866ab97bd65cc94b0d1f5c5986481f8a0d65bdd5c1e562659eebb13cf63\\n            )\\n        );\\n        zeros[4] = bytes32(\\n            uint256(\\n                0x87321a66ea3af7780128ea1995d7fc6ec44a96a1b2d85d3021208cede68c15c\\n            )\\n        );\\n        zeros[5] = bytes32(\\n            uint256(\\n                0x233b4e488f0aaf5faef4fc8ea4fefeadb6934eb882bc33b9df782fd1d83b41a0\\n            )\\n        );\\n        zeros[6] = bytes32(\\n            uint256(\\n                0x1a0cefcf0c592da6426717d3718408c61af1d0a9492887f3faecefcba1a0a309\\n            )\\n        );\\n        zeros[7] = bytes32(\\n            uint256(\\n                0x2cdf963150b321923dd07b2b52659aceb529516a537dfebe24106881dd974293\\n            )\\n        );\\n        zeros[8] = bytes32(\\n            uint256(\\n                0x93a186bf9ec2cc874ceab26409d581579e1a431ecb6987d428777ceedfa15c4\\n            )\\n        );\\n        zeros[9] = bytes32(\\n            uint256(\\n                0xcbfc07131ef4197a4b4e60153d43381520ec9ab4c9c3ed34d88883a881a4e07\\n            )\\n        );\\n        zeros[10] = bytes32(\\n            uint256(\\n                0x17b31de43ba4c687cf950ad00dfbe33df40047e79245b50bd1d9f87e622bf2af\\n            )\\n        );\\n        zeros[11] = bytes32(\\n            uint256(\\n                0x2f3328354bceaf5882a8cc88053e0dd0ae594009a4e84e9e75a4fefe8604a602\\n            )\\n        );\\n        zeros[12] = bytes32(\\n            uint256(\\n                0x2b2e8defd4dad2404c6874918925fc1192123f45df0ee3e04b6c16ff22ca1cfd\\n            )\\n        );\\n        zeros[13] = bytes32(\\n            uint256(\\n                0x1cbdc4065aa4137da01d64a090706267d65f425ea5e815673516d29d9aa14d38\\n            )\\n        );\\n        zeros[14] = bytes32(\\n            uint256(\\n                0x13ca69f9fde4ece39e395bb55dd41ed7dd9dfaa26671e26bd9fd6f4f635fc872\\n            )\\n        );\\n    }\\n}\\n\",\"keccak256\":\"0xf068b0c4c8a55c78a9f8f1032cfd7c56475d1be608564a3afd7e7b78454eca0f\",\"license\":\"BUSL-1.1\"}},\"version\":1}",
+  "bytecode": "0x60e06040523480156200001157600080fd5b50604051620035b2380380620035b2833981016040819052620000349162000188565b826001600160a01b038116620000915760405162461bcd60e51b815260206004820152601a60248201527f496d6d4f776e3a207a65726f206f776e6572206164647265737300000000000060448201526064015b60405180910390fd5b6001600160a01b0316608052620000ab60016002620001d2565b600314620000e15760405162461bcd60e51b8152602060048201526002602482015261045360f41b604482015260640162000088565b620000ec8262000110565b620000f78162000110565b6001600160a01b0391821660a0521660c05250620001fa565b6001600160a01b038116620001685760405162461bcd60e51b815260206004820152601760248201527f554e45585045435445445f5a45524f5f41444452455353000000000000000000604482015260640162000088565b50565b80516001600160a01b03811681146200018357600080fd5b919050565b6000806000606084860312156200019e57600080fd5b620001a9846200016b565b9250620001b9602085016200016b565b9150620001c9604085016200016b565b90509250925092565b80820180821115620001f457634e487b7160e01b600052601160045260246000fd5b92915050565b60805160a05160c05161335e6200025460003960008181610232015281816107220152611da901526000818161028f0152818161060a0152611c03015260008181610170015281816109e20152610b32015261335e6000f3fe608060405234801561001057600080fd5b50600436106101515760003560e01c8063514ef8dd116100cd578063adb49c1111610081578063c539926611610066578063c539926614610348578063d6c6be0b1461035b578063e5285dcc1461036e57600080fd5b8063adb49c111461030f578063bbc2af201461032257600080fd5b8063867a9abd116100b2578063867a9abd146102cf57806399db86d8146102e25780639e2916f71461030757600080fd5b8063514ef8dd1461028a57806383e24c88146102b157600080fd5b80632838863011610124578063411557d111610109578063411557d11461022d5780634e7f4fad1461025457806350dc0f5c1461027757600080fd5b806328388630146101e2578063407860f81461020d57600080fd5b806307447f8e14610156578063117803e31461016b5780631e6569fc146101af5780631f9eae6d146101cc575b600080fd5b610169610164366004612c90565b610391565b005b6101927f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b6101b7610853565b604080519283526020830191909152016101a6565b6101d46108c6565b6040519081526020016101a6565b609b546101f990640100000000900462ffffff1681565b60405162ffffff90911681526020016101a6565b6101d461021b366004612d21565b60036020526000908152604090205481565b6101927f000000000000000000000000000000000000000000000000000000000000000081565b610267610262366004612d3a565b6108d8565b60405190151581526020016101a6565b610169610285366004612d66565b6109e0565b6101927f000000000000000000000000000000000000000000000000000000000000000081565b6101d46102bf366004612d21565b61ffff166001810160021c900390565b6101696102dd366004612da5565b610b30565b609b546102f29063ffffffff1681565b60405163ffffffff90911681526020016101a6565b6101d4610c14565b61016961031d366004612d21565b610c2c565b6102f2610330366004612d21565b609d6020526000908152604090205463ffffffff1681565b6101d4610356366004612d21565b610cfa565b6101d4610369366004612e08565b610d1d565b61026761037c366004612d21565b609c6020526000908152604090205460ff1681565b6002600054036103e85760405162461bcd60e51b815260206004820152601a60248201527f636c61696d45726332303a207265656e7472616e742063616c6c00000000000060448201526064015b60405180910390fd5b6002600055609b5463ffffffff166103fe61114f565b63ffffffff16101580156104195750609b5463ffffffff1615155b6040518060400160405280600681526020017f50503a45333000000000000000000000000000000000000000000000000000008152509061046d5760405162461bcd60e51b81526004016103df9190612ed5565b50610478853361115a565b6000610484868661129c565b6000818152609c6020908152604091829020548251808401909352600583527f50503a4538000000000000000000000000000000000000000000000000000000918301919091529192509060ff16156104f05760405162461bcd60e51b81526004016103df9190612ed5565b506000818152609c602052604090819020805460ff19166001179055517fc474ce3f98e456e64643fb51ee2ed4453604400905cfe41e828c72d2e7f529659061053c9083815260200190565b60405180910390a15061055861055185610cfa565b83836108d8565b6040518060400160405280600681526020017f50503a4531360000000000000000000000000000000000000000000000000000815250906105ac5760405162461bcd60e51b81526004016103df9190612ed5565b506040805160c081018252600080825260208201819052818301819052606082018190526080820181905260a0820181905291516331293c6360e01b81526001600160a01b038c81166004830152602482018c9052919291829182917f000000000000000000000000000000000000000000000000000000000000000016906331293c639060440161012060405180830381865afa158015610652573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906106769190612f0f565b6040808201518151808301909252600682526550503a45313960d01b6020830152919850929650929350909160ff1660011490506106c75760405162461bcd60e51b81526004016103df9190612ed5565b5060006106d38a6113d9565b90506106ea816000015182602001518e858f611496565b9250505061070d856106fb89611600565b600161ffff8b160160021c848a611628565b50600061071e8a8460800151611a56565b90507f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316635bd3e6c06040518060a00160405280866060015160ff1681526020018f6001600160a01b03168152602001858152602001336001600160a01b03168152602001846bffffffffffffffffffffffff168152506040518263ffffffff1660e01b815260040161080e9190600060a08201905060ff835116825260208301516001600160a01b0380821660208501526040850151604085015280606086015116606085015250506bffffffffffffffffffffffff608084015116608083015292915050565b600060405180830381600087803b15801561082857600080fd5b505af115801561083c573d6000803e3d6000fd5b505060016000555050505050505050505050505050565b600154600090819061086481611aa3565b1561089457507f20fc043586a9fcb416cdf2a3bc8a995f8f815d43f1046a20d1c588cf20482a5592600092509050565b600061089f82610cfa565b90506108aa82611adc565b6000818152600460205260409020549190911894909350915050565b60006108d3600154610cfa565b905090565b60408051808201909152600581527f54543a453100000000000000000000000000000000000000000000000000000060208201526000908361092d5760405162461bcd60e51b81526004016103df9190612ed5565b50811561094d5750600081815260046020526040902054838318146109d9565b60008481526003602052604090205483900361096b575060016109d9565b6001546101005b6004821015801561098257508015155b156109d2576000190161ffff8216156109725760006109a083611adc565b600081815260046020526040902054909150868818036109c657600193505050506109d9565b60048303925050610972565b5060009150505b9392505050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03163314610a585760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a656400000000000000000000000060448201526064016103df565b609b5463ffffffff90811690831610801590610a7e57506401000000008263ffffffff16105b8015610a8e575062ffffff811615155b610abf5760405162461bcd60e51b8152602060048201526002602482015261453160f01b60448201526064016103df565b609b805462ffffff8316640100000000810266ffffffffffffff1990921663ffffffff8616908117929092179092556040517f2369247a5a2affa0d5b33a70c8ff61d5660e1132fe764715b971fdd1fc68d10e92610b24928252602082015260400190565b60405180910390a15050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03163314610ba85760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a656400000000000000000000000060448201526064016103df565b600260005403610bfa5760405162461bcd60e51b815260206004820152601a60248201527f636c61696d45726332303a207265656e7472616e742063616c6c00000000000060448201526064016103df565b6002600055610c0a838383611b03565b5050600160005550565b60006108d3600154600281901c600390810291160190565b6000818152609d6020908152604091829020548251808401909352600683527f50503a45333200000000000000000000000000000000000000000000000000009183019190915263ffffffff1615610c975760405162461bcd60e51b81526004016103df9190612ed5565b506000610ca261114f565b6000838152609d6020908152604091829020805463ffffffff191663ffffffff851690811790915591519182529192507f41685940dd65dd5fc11832115bda1957c2ed7b4e2982cfac6c3ba41bd1566a3c9101610b24565b60006002610d0a6001600f613018565b610d14919061302b565b9190911c919050565b6000600260005403610d715760405162461bcd60e51b815260206004820152601a60248201527f636c61696d45726332303a207265656e7472616e742063616c6c00000000000060448201526064016103df565b6002600055609b5460408051808201909152600681527f50503a453331000000000000000000000000000000000000000000000000000060208201529063ffffffff16610dd15760405162461bcd60e51b81526004016103df9190612ed5565b506000610ddc61114f565b905063ffffffff831615610e53578063ffffffff168363ffffffff1611156040518060400160405280600581526020017f50503a453900000000000000000000000000000000000000000000000000000081525090610e4e5760405162461bcd60e51b81526004016103df9190612ed5565b508290505b610e5b612bc7565b610e63612be5565b6000805b610e736001600261302b565b81101561112857600080610ed88e8460038110610e9257610e9261303e565b602002016020810190610ea59190613054565b8e8560038110610eb757610eb761303e565b60200201358e8660038110610ece57610ece61303e565b6020020135611b2b565b9150915082600014610eef5760028460ff16901b93505b8067ffffffffffffffff16600003610fbc5760408051808201909152600681527f50503a4532310000000000000000000000000000000000000000000000000000602082015283610f535760405162461bcd60e51b81526004016103df9190612ed5565b507f0667764c376602b72ef22218e1673c2cc8546201f9a77807570b3e5de137680d868460038110610f8757610f8761303e565b60200201818152505060405180602001604052806000815250858460038110610fb257610fb261303e565b6020020152611113565b610ff88b8460038110610fd157610fd161303e565b60400201358c8560038110610fe857610fe861303e565b604002016020013583858b611496565b86846003811061100a5761100a61303e565b60200201526bffffffffffffffffffffffff19606083901b1667ffffffffffffffff8216178d84600381106110415761104161303e565b6020020135156110a4576001851794508a84600381106110635761106361303e565b6040020181604051602001611079929190613071565b60405160208183030381529060405286856003811061109a5761109a61303e565b6020020152611111565b6002851794508a84600381106110bc576110bc61303e565b60400201818f86600381106110d3576110d361303e565b60200201356040516020016110ea93929190613086565b60405160208183030381529060405286856003811061110b5761110b61303e565b60200201525b505b50508080611120906130a0565b915050610e67565b5061113b8382848763ffffffff16611e13565b60016000559b9a5050505050505050505050565b60006108d342611f8a565b600082826040516020016111819291909182526001600160a01b0316602082015260400190565b60408051601f1981840301815282825280516020918201206000818152609d835283902054848401909352600684527f50503a453334000000000000000000000000000000000000000000000000000091840191909152925063ffffffff1690816111ff5760405162461bcd60e51b81526004016103df9190612ed5565b50609b5460009061122390640100000000900462ffffff1663ffffffff841661302b565b90508042116040518060400160405280600681526020017f50503a45333300000000000000000000000000000000000000000000000000008152509061127c5760405162461bcd60e51b81526004016103df9190612ed5565b5050506000908152609d60205260409020805463ffffffff191690555050565b60006000805160206133328339815191528310604051806040016040528060068152602001650a0a0748a64760d31b815250906112ec5760405162461bcd60e51b81526004016103df9190612ed5565b5060408051808201909152600681527f50503a45323700000000000000000000000000000000000000000000000000006020820152600080516020613332833981519152831061134f5760405162461bcd60e51b81526004016103df9190612ed5565b5060408051808201825284815260208101849052905163014cf2b360e51b815273A944DFafE9bcb0094A471E58206079c43ce0043D9163299e56609161139891906004016130b9565b602060405180830381865af41580156113b5573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906109d991906130ea565b60408051808201909152600080825260208201526040805180820190915260068152650a0a0748a64760d31b602082015260008051602061333283398151915283106114385760405162461bcd60e51b81526004016103df9190612ed5565b50604080518082019091527f0bb77a6ad63e739b4eacb2e09d6277c12ab8d8010534e0b62893f3f6bb95705181527f25797203f7a0b24925572e1cd16bf9edfce0051fb9e133774b3c257a872d7d8b60208201526109d98184611fe4565b600060008051602061333283398151915286111580156114c457506000805160206133328339815191528511155b6040518060400160405280600581526020017f43473a4531000000000000000000000000000000000000000000000000000000815250906115185760405162461bcd60e51b81526004016103df9190612ed5565b5060408051606081018252878152602080820188905263ffffffff85169086901b77ffffffffffffffffffffffffffffffffffffffff000000001660c088901b7fffffffffffffffff000000000000000000000000000000000000000000000000161717818301529051635a53025d60e01b815273f0FfB73D51d001024F6301a19c8A56488e9d211091635a53025d916115b59190600401613103565b602060405180830381865af41580156115d2573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906115f691906130ea565b9695505050505050565b600060036116188361ffff166001810160021c900390565b6116229190613141565b92915050565b60408051808201909152600581527f4d503a453300000000000000000000000000000000000000000000000000000060208201526003851061167d5760405162461bcd60e51b81526004016103df9190612ed5565b5060008461174c5773f0FfB73D51d001024F6301a19c8A56488e9d2110635a53025d6040518060600160405280868152602001856000601081106116c3576116c361303e565b60200201358152602001856001601081106116e0576116e061303e565b60200201358152506040518263ffffffff1660e01b81526004016117049190613103565b602060405180830381865af4158015611721573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061174591906130ea565b905061187a565b600185036117af5773f0FfB73D51d001024F6301a19c8A56488e9d2110635a53025d60405180606001604052808560006010811061178c5761178c61303e565b60200201358152602001868152602001856001601081106116e0576116e061303e565b6002850361187a5773f0FfB73D51d001024F6301a19c8A56488e9d2110635a53025d6040518060600160405280856000601081106117ef576117ef61303e565b602002013581526020018560016010811061180c5761180c61303e565b60200201358152602001868152506040518263ffffffff1660e01b81526004016118369190613103565b602060405180830381865af4158015611853573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061187791906130ea565b90505b60025b60108110156119f857600160011982011b85161580156119405773A944DFafE9bcb0094A471E58206079c43ce0043D63299e566060405180604001604052808681526020018786601081106118d4576118d461303e565b60200201358152506040518263ffffffff1660e01b81526004016118f891906130b9565b602060405180830381865af4158015611915573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061193991906130ea565b92506119e5565b73A944DFafE9bcb0094A471E58206079c43ce0043D63299e566060405180604001604052808786601081106119775761197761303e565b60200201358152602001868152506040518263ffffffff1660e01b81526004016119a191906130b9565b602060405180830381865af41580156119be573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906119e291906130ea565b92505b50806119f0816130a0565b91505061187d565b5060408051808201909152600581527f4d503a45310000000000000000000000000000000000000000000000000000006020820152868214611a4d5760405162461bcd60e51b81526004016103df9190612ed5565b50505050505050565b60008060ff831615611a8457611a6b8361207a565b611a7f9067ffffffffffffffff8616613163565b611a90565b8367ffffffffffffffff165b9050611a9b81612087565b949350505050565b600060016004611ab482600f613018565b611abf906002613266565b611ac99190613163565b611ad39190613018565b90911615919050565b60006001611aed6004610100613163565b611af79190613018565b82166001179050919050565b6001600160a01b038316611b2057611b1b82826120f4565b505050565b611b1b8383836121bd565b60008082600003611bac576001600160a01b038516158015611b4b575083155b6040518060400160405280600681526020017f50503a453239000000000000000000000000000000000000000000000000000081525090611b9f5760405162461bcd60e51b81526004016103df9190612ed5565b5060008091509150611e0b565b6040805160c081018252600080825260208201819052918101829052606081018290526080810182905260a081018290526040516331293c6360e01b81526001600160a01b038881166004830152602482018890527f000000000000000000000000000000000000000000000000000000000000000016906331293c639060440161012060405180830381865afa158015611c4b573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190611c6f9190612f0f565b6040808201518151808301909252600682526550503a45313960d01b60208301529498509295509350909160ff166001149050611cbf5760405162461bcd60e51b81526004016103df9190612ed5565b506000611cd08683608001516122cf565b90945090508015611d1f57876001600160a01b03167f05b5d46649ab2015d3a08705cbaa391e094d9594c393ce89d3afffe960744da182604051611d1691815260200190565b60405180910390a25b6040805160a0808201835260608581015160ff9081168452918601516001600160a01b0390811660208501908152848601898152339386019384526bffffffffffffffffffffffff8d8116608088019081529751631d106e8960e21b81529651909516600487015290518216602486015251604485015290518116606484015292511660848201527f000000000000000000000000000000000000000000000000000000000000000090911690637441ba249060a401600060405180830381600087803b158015611def57600080fd5b505af1158015611e03573d6000803e3d6000fd5b505050505050505b935093915050565b6040805160f885901b7fff00000000000000000000000000000000000000000000000000000000000000166020820152815160018183030181526021909101909152600090815b611e666001600261302b565b811015611f3957600080516020613332833981519152878260038110611e8e57611e8e61303e565b602002015160001c106040518060400160405280600581526020017f43543a453100000000000000000000000000000000000000000000000000000081525090611eeb5760405162461bcd60e51b81526004016103df9190612ed5565b5081858260038110611eff57611eff61303e565b6020020151604051602001611f15929190613272565b60405160208183030381529060405291508080611f31906130a0565b915050611e5a565b50611f4386612324565b9150817f724bdd8d0d4293d630d4223512262f7f1bd9e7bb88cadfef6de67ff0b0f1d8b4848884604051611f79939291906132a1565b60405180910390a250949350505050565b60006401000000008210611fe05760405162461bcd60e51b815260206004820152600860248201527f554e53414645333200000000000000000000000000000000000000000000000060448201526064016103df565b5090565b60408051808201909152600081526001602082015281835b8115612032578160011660010361201a576120178382612747565b92505b6120248182612747565b9050600182901c9150611ffc565b825161204d9060008051602061333283398151915290613141565b8352602083015161206d9060008051602061333283398151915290613141565b6020840152505092915050565b600061162282600a6132e4565b60006c0100000000000000000000000082106040518060400160405280600681526020017f50503a4531300000000000000000000000000000000000000000000000000000815250906120ed5760405162461bcd60e51b81526004016103df9190612ed5565b5090919050565b604080516000808252602082019092526001600160a01b03841690839060405161211e91906132f3565b60006040518083038185875af1925050503d806000811461215b576040519150601f19603f3d011682016040523d82523d6000602084013e612160565b606091505b5050905080611b1b5760405162461bcd60e51b815260206004820152602360248201527f5472616e7366657248656c7065723a20455448207472616e73666572206661696044820152621b195960ea1b60648201526084016103df565b82803b8061220d5760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a6500000060448201526064016103df565b604080516001600160a01b038681166024830152604480830187905283518084039091018152606490920183526020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1663a9059cbb60e01b179052915160009283929089169161227e91906132f3565b6000604051808303816000865af19150503d80600081146122bb576040519150601f19603f3d011682016040523d82523d6000602084013e6122c0565b606091505b5091509150611a4d82826128f6565b60008060008360ff166000036122ea57506000905083612311565b60006122f58561207a565b90508086816123065761230661312b565b049081028603925090505b61231a81612991565b9250509250929050565b60015461232f612c0c565b7f0667764c376602b72ef22218e1673c2cc8546201f9a77807570b3e5de137680d81527f1be18cd72ac1586de27dd60eba90654bd54383004991951bccb0f6bad02c67f660208201527f07677e6102f0acf343edde864f79ef7652faa5a66d575b8b60bb826a4aa517e660408201527f28a85866ab97bd65cc94b0d1f5c5986481f8a0d65bdd5c1e562659eebb13cf6360608201527f087321a66ea3af7780128ea1995d7fc6ec44a96a1b2d85d3021208cede68c15c60808201527f233b4e488f0aaf5faef4fc8ea4fefeadb6934eb882bc33b9df782fd1d83b41a060a08201527f1a0cefcf0c592da6426717d3718408c61af1d0a9492887f3faecefcba1a0a30960c08201527f2cdf963150b321923dd07b2b52659aceb529516a537dfebe24106881dd97429360e08201527f093a186bf9ec2cc874ceab26409d581579e1a431ecb6987d428777ceedfa15c46101008201527f0cbfc07131ef4197a4b4e60153d43381520ec9ab4c9c3ed34d88883a881a4e076101208201527f17b31de43ba4c687cf950ad00dfbe33df40047e79245b50bd1d9f87e622bf2af6101408201527f2f3328354bceaf5882a8cc88053e0dd0ae594009a4e84e9e75a4fefe8604a6026101608201527f2b2e8defd4dad2404c6874918925fc1192123f45df0ee3e04b6c16ff22ca1cfd6101808201527f1cbdc4065aa4137da01d64a090706267d65f425ea5e815673516d29d9aa14d386101a08201527f13ca69f9fde4ece39e395bb55dd41ed7dd9dfaa26671e26bd9fd6f4f635fc8726101c08201528251602084015160408501516000928392839261258b9291906129f3565b915060026001600461259e82600f613018565b6125a9906002613266565b6125b39190613163565b6125bd9190613018565b8616901c9250600080600192505b600f831015612657576125df600286613141565b60000361261f578391508583600f81106125fb576125fb61303e565b60200201519050836002600085815260200190815260200160002081905550612632565b5050600081815260026020526040902054825b61263c8282612a8e565b60019590951c9493508261264f816130a0565b9350506125cb565b600061266460048961302b565b60018190559050600061267689610cfa565b9050600461ffff8a166201000003116126db57600081815260036020526040908190208790555181907f7cd9c9cf009b511548bb15f2d648fc3ee3e6e880d24f043861b274dca5a55435906126ce9089815260200190565b60405180910390a261273a565b60006126e683611adc565b6000818152600460205260409081902089851890555190915082907f46b4356c55762628b29b60a689ae18c610a9cd9774ca704e7a567aa41bb7cebf90612730908a815260200190565b60405180910390a2505b5050505050505050919050565b60408051808201909152600080825260208201528251600090819015801561277157506020850151155b1561278f576040805180820190915291825260208201529050611622565b83511580156127a057506020850151155b156127be576040805180820190915291825260208201529050611622565b600060008051602061333283398151915285518751099050600060008051602061333283398151915286602001518860200151099050600060008051602061333283398151915280838509620292f8099050600060008051602061333283398151915280895160208c01510960008051602061333283398151915260208b01518c510908905060006128738460008051602061333283398151915287620292fc09600080516020613332833981519152612b1a565b905060008051602061333283398151915261289f60008051602061333283398151915285600108612b55565b830996506000805160206133328339815191526128d46128cf600186600080516020613332833981519152612b1a565b612b55565b8209604080518082019091529788526020880152509498975050505050505050565b81801561291b57508051158061291b57508080602001905181019061291b919061330f565b61298d5760405162461bcd60e51b815260206004820152602a60248201527f5472616e7366657248656c7065723a20746f6b656e20636f6e7472616374206360448201527f616c6c206661696c65640000000000000000000000000000000000000000000060648201526084016103df565b5050565b60006801000000000000000082106040518060400160405280600681526020017f50503a4532360000000000000000000000000000000000000000000000000000815250906120ed5760405162461bcd60e51b81526004016103df9190612ed5565b60006129fd612bc7565b84815260208101849052604080820184905251635a53025d60e01b815273f0FfB73D51d001024F6301a19c8A56488e9d211090635a53025d90612a44908490600401613103565b602060405180830381865af4158015612a61573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190612a8591906130ea565b95945050505050565b6000612a98612c2b565b8381526020810183905260405163014cf2b360e51b815273A944DFafE9bcb0094A471E58206079c43ce0043D9063299e566090612ad99084906004016130b9565b602060405180830381865af4158015612af6573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190611a9b91906130ea565b600083838111612b3157612b2e838261302b565b90505b8280612b3f57612b3f61312b565b6000612b4b8684613018565b0895945050505050565b600061162282612b746002600080516020613332833981519152613018565b600080516020613332833981519152600060405160208152602080820152602060408201528460608201528360808201528260a082015260208160c08360055afa80801561015157505051949350505050565b60405180606001604052806003906020820280368337509192915050565b60405180606001604052806003905b6060815260200190600190039081612bf45790505090565b604051806101e00160405280600f906020820280368337509192915050565b60405180604001604052806002906020820280368337509192915050565b6001600160a01b0381168114612c5e57600080fd5b50565b67ffffffffffffffff81168114612c5e57600080fd5b803563ffffffff81168114612c8b57600080fd5b919050565b60008060008060008060008060006103008a8c031215612caf57600080fd5b8935612cba81612c49565b985060208a0135975060408a0135612cd181612c61565b9650612cdf60608b01612c77565b955060808a0135945060a08a013593506102c08a018b811115612d0157600080fd5b60c08b01935080359250506102e08a013590509295985092959850929598565b600060208284031215612d3357600080fd5b5035919050565b600080600060608486031215612d4f57600080fd5b505081359360208301359350604090920135919050565b60008060408385031215612d7957600080fd5b612d8283612c77565b9150602083013562ffffff81168114612d9a57600080fd5b809150509250929050565b600080600060608486031215612dba57600080fd5b8335612dc581612c49565b92506020840135612dd581612c49565b929592945050506040919091013590565b806060810183101561162257600080fd5b8060c0810183101561162257600080fd5b6000806000806000806102c08789031215612e2257600080fd5b612e2c8888612de6565b9550612e3b8860608901612de6565b9450612e4a8860c08901612de6565b9350612e5a886101208901612df7565b9250612e6a886101e08901612df7565b9150612e796102a08801612c77565b90509295509295509295565b60005b83811015612ea0578181015183820152602001612e88565b50506000910152565b60008151808452612ec1816020860160208601612e85565b601f01601f19169290920160200192915050565b6020815260006109d96020830184612ea9565b8051612c8b81612c61565b805160ff81168114612c8b57600080fd5b8051612c8b81612c49565b600080600080848603610120811215612f2757600080fd5b8551612f3281612c49565b602087015160408801519196509450612f4a81612c49565b925060c0605f1982011215612f5e57600080fd5b5060405160c0810181811067ffffffffffffffff82111715612f9057634e487b7160e01b600052604160045260246000fd5b604052612f9f60608701612ee8565b8152612fad60808701612ef3565b6020820152612fbe60a08701612ef3565b6040820152612fcf60c08701612ef3565b6060820152612fe060e08701612ef3565b6080820152612ff26101008701612f04565b60a0820152939692955090935050565b634e487b7160e01b600052601160045260246000fd5b8181038181111561162257611622613002565b8082018082111561162257611622613002565b634e487b7160e01b600052603260045260246000fd5b60006020828403121561306657600080fd5b81356109d981612c49565b60408382376040810191909152606001919050565b604084823760408101929092526060820152608001919050565b6000600182016130b2576130b2613002565b5060010190565b60408101818360005b60028110156130e15781518352602092830192909101906001016130c2565b50505092915050565b6000602082840312156130fc57600080fd5b5051919050565b60608101818360005b60038110156130e157815183526020928301929091019060010161310c565b634e487b7160e01b600052601260045260246000fd5b60008261315e57634e487b7160e01b600052601260045260246000fd5b500690565b600081600019048311821515161561317d5761317d613002565b500290565b600181815b808511156131bd5781600019048211156131a3576131a3613002565b808516156131b057918102915b93841c9390800290613187565b509250929050565b6000826131d457506001611622565b816131e157506000611622565b81600181146131f757600281146132015761321d565b6001915050611622565b60ff84111561321257613212613002565b50506001821b611622565b5060208310610133831016604e8410600b8410161715613240575081810a611622565b61324a8383613182565b806000190482111561325e5761325e613002565b029392505050565b60006109d983836131c5565b60008351613284818460208801612e85565b835190830190613298818360208801612e85565b01949350505050565b838152600060208083018560005b60038110156132cc578151835291830191908301906001016132af565b5050505060a06080830152612a8560a0830184612ea9565b60006109d960ff8416836131c5565b60008251613305818460208701612e85565b9190910192915050565b60006020828403121561332157600080fd5b815180151581146109d957600080fdfe30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001a164736f6c6343000810000a",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101515760003560e01c8063514ef8dd116100cd578063adb49c1111610081578063c539926611610066578063c539926614610348578063d6c6be0b1461035b578063e5285dcc1461036e57600080fd5b8063adb49c111461030f578063bbc2af201461032257600080fd5b8063867a9abd116100b2578063867a9abd146102cf57806399db86d8146102e25780639e2916f71461030757600080fd5b8063514ef8dd1461028a57806383e24c88146102b157600080fd5b80632838863011610124578063411557d111610109578063411557d11461022d5780634e7f4fad1461025457806350dc0f5c1461027757600080fd5b806328388630146101e2578063407860f81461020d57600080fd5b806307447f8e14610156578063117803e31461016b5780631e6569fc146101af5780631f9eae6d146101cc575b600080fd5b610169610164366004612c90565b610391565b005b6101927f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b6101b7610853565b604080519283526020830191909152016101a6565b6101d46108c6565b6040519081526020016101a6565b609b546101f990640100000000900462ffffff1681565b60405162ffffff90911681526020016101a6565b6101d461021b366004612d21565b60036020526000908152604090205481565b6101927f000000000000000000000000000000000000000000000000000000000000000081565b610267610262366004612d3a565b6108d8565b60405190151581526020016101a6565b610169610285366004612d66565b6109e0565b6101927f000000000000000000000000000000000000000000000000000000000000000081565b6101d46102bf366004612d21565b61ffff166001810160021c900390565b6101696102dd366004612da5565b610b30565b609b546102f29063ffffffff1681565b60405163ffffffff90911681526020016101a6565b6101d4610c14565b61016961031d366004612d21565b610c2c565b6102f2610330366004612d21565b609d6020526000908152604090205463ffffffff1681565b6101d4610356366004612d21565b610cfa565b6101d4610369366004612e08565b610d1d565b61026761037c366004612d21565b609c6020526000908152604090205460ff1681565b6002600054036103e85760405162461bcd60e51b815260206004820152601a60248201527f636c61696d45726332303a207265656e7472616e742063616c6c00000000000060448201526064015b60405180910390fd5b6002600055609b5463ffffffff166103fe61114f565b63ffffffff16101580156104195750609b5463ffffffff1615155b6040518060400160405280600681526020017f50503a45333000000000000000000000000000000000000000000000000000008152509061046d5760405162461bcd60e51b81526004016103df9190612ed5565b50610478853361115a565b6000610484868661129c565b6000818152609c6020908152604091829020548251808401909352600583527f50503a4538000000000000000000000000000000000000000000000000000000918301919091529192509060ff16156104f05760405162461bcd60e51b81526004016103df9190612ed5565b506000818152609c602052604090819020805460ff19166001179055517fc474ce3f98e456e64643fb51ee2ed4453604400905cfe41e828c72d2e7f529659061053c9083815260200190565b60405180910390a15061055861055185610cfa565b83836108d8565b6040518060400160405280600681526020017f50503a4531360000000000000000000000000000000000000000000000000000815250906105ac5760405162461bcd60e51b81526004016103df9190612ed5565b506040805160c081018252600080825260208201819052818301819052606082018190526080820181905260a0820181905291516331293c6360e01b81526001600160a01b038c81166004830152602482018c9052919291829182917f000000000000000000000000000000000000000000000000000000000000000016906331293c639060440161012060405180830381865afa158015610652573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906106769190612f0f565b6040808201518151808301909252600682526550503a45313960d01b6020830152919850929650929350909160ff1660011490506106c75760405162461bcd60e51b81526004016103df9190612ed5565b5060006106d38a6113d9565b90506106ea816000015182602001518e858f611496565b9250505061070d856106fb89611600565b600161ffff8b160160021c848a611628565b50600061071e8a8460800151611a56565b90507f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316635bd3e6c06040518060a00160405280866060015160ff1681526020018f6001600160a01b03168152602001858152602001336001600160a01b03168152602001846bffffffffffffffffffffffff168152506040518263ffffffff1660e01b815260040161080e9190600060a08201905060ff835116825260208301516001600160a01b0380821660208501526040850151604085015280606086015116606085015250506bffffffffffffffffffffffff608084015116608083015292915050565b600060405180830381600087803b15801561082857600080fd5b505af115801561083c573d6000803e3d6000fd5b505060016000555050505050505050505050505050565b600154600090819061086481611aa3565b1561089457507f20fc043586a9fcb416cdf2a3bc8a995f8f815d43f1046a20d1c588cf20482a5592600092509050565b600061089f82610cfa565b90506108aa82611adc565b6000818152600460205260409020549190911894909350915050565b60006108d3600154610cfa565b905090565b60408051808201909152600581527f54543a453100000000000000000000000000000000000000000000000000000060208201526000908361092d5760405162461bcd60e51b81526004016103df9190612ed5565b50811561094d5750600081815260046020526040902054838318146109d9565b60008481526003602052604090205483900361096b575060016109d9565b6001546101005b6004821015801561098257508015155b156109d2576000190161ffff8216156109725760006109a083611adc565b600081815260046020526040902054909150868818036109c657600193505050506109d9565b60048303925050610972565b5060009150505b9392505050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03163314610a585760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a656400000000000000000000000060448201526064016103df565b609b5463ffffffff90811690831610801590610a7e57506401000000008263ffffffff16105b8015610a8e575062ffffff811615155b610abf5760405162461bcd60e51b8152602060048201526002602482015261453160f01b60448201526064016103df565b609b805462ffffff8316640100000000810266ffffffffffffff1990921663ffffffff8616908117929092179092556040517f2369247a5a2affa0d5b33a70c8ff61d5660e1132fe764715b971fdd1fc68d10e92610b24928252602082015260400190565b60405180910390a15050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03163314610ba85760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a656400000000000000000000000060448201526064016103df565b600260005403610bfa5760405162461bcd60e51b815260206004820152601a60248201527f636c61696d45726332303a207265656e7472616e742063616c6c00000000000060448201526064016103df565b6002600055610c0a838383611b03565b5050600160005550565b60006108d3600154600281901c600390810291160190565b6000818152609d6020908152604091829020548251808401909352600683527f50503a45333200000000000000000000000000000000000000000000000000009183019190915263ffffffff1615610c975760405162461bcd60e51b81526004016103df9190612ed5565b506000610ca261114f565b6000838152609d6020908152604091829020805463ffffffff191663ffffffff851690811790915591519182529192507f41685940dd65dd5fc11832115bda1957c2ed7b4e2982cfac6c3ba41bd1566a3c9101610b24565b60006002610d0a6001600f613018565b610d14919061302b565b9190911c919050565b6000600260005403610d715760405162461bcd60e51b815260206004820152601a60248201527f636c61696d45726332303a207265656e7472616e742063616c6c00000000000060448201526064016103df565b6002600055609b5460408051808201909152600681527f50503a453331000000000000000000000000000000000000000000000000000060208201529063ffffffff16610dd15760405162461bcd60e51b81526004016103df9190612ed5565b506000610ddc61114f565b905063ffffffff831615610e53578063ffffffff168363ffffffff1611156040518060400160405280600581526020017f50503a453900000000000000000000000000000000000000000000000000000081525090610e4e5760405162461bcd60e51b81526004016103df9190612ed5565b508290505b610e5b612bc7565b610e63612be5565b6000805b610e736001600261302b565b81101561112857600080610ed88e8460038110610e9257610e9261303e565b602002016020810190610ea59190613054565b8e8560038110610eb757610eb761303e565b60200201358e8660038110610ece57610ece61303e565b6020020135611b2b565b9150915082600014610eef5760028460ff16901b93505b8067ffffffffffffffff16600003610fbc5760408051808201909152600681527f50503a4532310000000000000000000000000000000000000000000000000000602082015283610f535760405162461bcd60e51b81526004016103df9190612ed5565b507f0667764c376602b72ef22218e1673c2cc8546201f9a77807570b3e5de137680d868460038110610f8757610f8761303e565b60200201818152505060405180602001604052806000815250858460038110610fb257610fb261303e565b6020020152611113565b610ff88b8460038110610fd157610fd161303e565b60400201358c8560038110610fe857610fe861303e565b604002016020013583858b611496565b86846003811061100a5761100a61303e565b60200201526bffffffffffffffffffffffff19606083901b1667ffffffffffffffff8216178d84600381106110415761104161303e565b6020020135156110a4576001851794508a84600381106110635761106361303e565b6040020181604051602001611079929190613071565b60405160208183030381529060405286856003811061109a5761109a61303e565b6020020152611111565b6002851794508a84600381106110bc576110bc61303e565b60400201818f86600381106110d3576110d361303e565b60200201356040516020016110ea93929190613086565b60405160208183030381529060405286856003811061110b5761110b61303e565b60200201525b505b50508080611120906130a0565b915050610e67565b5061113b8382848763ffffffff16611e13565b60016000559b9a5050505050505050505050565b60006108d342611f8a565b600082826040516020016111819291909182526001600160a01b0316602082015260400190565b60408051601f1981840301815282825280516020918201206000818152609d835283902054848401909352600684527f50503a453334000000000000000000000000000000000000000000000000000091840191909152925063ffffffff1690816111ff5760405162461bcd60e51b81526004016103df9190612ed5565b50609b5460009061122390640100000000900462ffffff1663ffffffff841661302b565b90508042116040518060400160405280600681526020017f50503a45333300000000000000000000000000000000000000000000000000008152509061127c5760405162461bcd60e51b81526004016103df9190612ed5565b5050506000908152609d60205260409020805463ffffffff191690555050565b60006000805160206133328339815191528310604051806040016040528060068152602001650a0a0748a64760d31b815250906112ec5760405162461bcd60e51b81526004016103df9190612ed5565b5060408051808201909152600681527f50503a45323700000000000000000000000000000000000000000000000000006020820152600080516020613332833981519152831061134f5760405162461bcd60e51b81526004016103df9190612ed5565b5060408051808201825284815260208101849052905163014cf2b360e51b815273__$3d381aec2d571db697c779e211a438fb21$__9163299e56609161139891906004016130b9565b602060405180830381865af41580156113b5573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906109d991906130ea565b60408051808201909152600080825260208201526040805180820190915260068152650a0a0748a64760d31b602082015260008051602061333283398151915283106114385760405162461bcd60e51b81526004016103df9190612ed5565b50604080518082019091527f0bb77a6ad63e739b4eacb2e09d6277c12ab8d8010534e0b62893f3f6bb95705181527f25797203f7a0b24925572e1cd16bf9edfce0051fb9e133774b3c257a872d7d8b60208201526109d98184611fe4565b600060008051602061333283398151915286111580156114c457506000805160206133328339815191528511155b6040518060400160405280600581526020017f43473a4531000000000000000000000000000000000000000000000000000000815250906115185760405162461bcd60e51b81526004016103df9190612ed5565b5060408051606081018252878152602080820188905263ffffffff85169086901b77ffffffffffffffffffffffffffffffffffffffff000000001660c088901b7fffffffffffffffff000000000000000000000000000000000000000000000000161717818301529051635a53025d60e01b815273__$a786a838ef97de7d2113fa91ed3c799076$__91635a53025d916115b59190600401613103565b602060405180830381865af41580156115d2573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906115f691906130ea565b9695505050505050565b600060036116188361ffff166001810160021c900390565b6116229190613141565b92915050565b60408051808201909152600581527f4d503a453300000000000000000000000000000000000000000000000000000060208201526003851061167d5760405162461bcd60e51b81526004016103df9190612ed5565b5060008461174c5773__$a786a838ef97de7d2113fa91ed3c799076$__635a53025d6040518060600160405280868152602001856000601081106116c3576116c361303e565b60200201358152602001856001601081106116e0576116e061303e565b60200201358152506040518263ffffffff1660e01b81526004016117049190613103565b602060405180830381865af4158015611721573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061174591906130ea565b905061187a565b600185036117af5773__$a786a838ef97de7d2113fa91ed3c799076$__635a53025d60405180606001604052808560006010811061178c5761178c61303e565b60200201358152602001868152602001856001601081106116e0576116e061303e565b6002850361187a5773__$a786a838ef97de7d2113fa91ed3c799076$__635a53025d6040518060600160405280856000601081106117ef576117ef61303e565b602002013581526020018560016010811061180c5761180c61303e565b60200201358152602001868152506040518263ffffffff1660e01b81526004016118369190613103565b602060405180830381865af4158015611853573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061187791906130ea565b90505b60025b60108110156119f857600160011982011b85161580156119405773__$3d381aec2d571db697c779e211a438fb21$__63299e566060405180604001604052808681526020018786601081106118d4576118d461303e565b60200201358152506040518263ffffffff1660e01b81526004016118f891906130b9565b602060405180830381865af4158015611915573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061193991906130ea565b92506119e5565b73__$3d381aec2d571db697c779e211a438fb21$__63299e566060405180604001604052808786601081106119775761197761303e565b60200201358152602001868152506040518263ffffffff1660e01b81526004016119a191906130b9565b602060405180830381865af41580156119be573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906119e291906130ea565b92505b50806119f0816130a0565b91505061187d565b5060408051808201909152600581527f4d503a45310000000000000000000000000000000000000000000000000000006020820152868214611a4d5760405162461bcd60e51b81526004016103df9190612ed5565b50505050505050565b60008060ff831615611a8457611a6b8361207a565b611a7f9067ffffffffffffffff8616613163565b611a90565b8367ffffffffffffffff165b9050611a9b81612087565b949350505050565b600060016004611ab482600f613018565b611abf906002613266565b611ac99190613163565b611ad39190613018565b90911615919050565b60006001611aed6004610100613163565b611af79190613018565b82166001179050919050565b6001600160a01b038316611b2057611b1b82826120f4565b505050565b611b1b8383836121bd565b60008082600003611bac576001600160a01b038516158015611b4b575083155b6040518060400160405280600681526020017f50503a453239000000000000000000000000000000000000000000000000000081525090611b9f5760405162461bcd60e51b81526004016103df9190612ed5565b5060008091509150611e0b565b6040805160c081018252600080825260208201819052918101829052606081018290526080810182905260a081018290526040516331293c6360e01b81526001600160a01b038881166004830152602482018890527f000000000000000000000000000000000000000000000000000000000000000016906331293c639060440161012060405180830381865afa158015611c4b573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190611c6f9190612f0f565b6040808201518151808301909252600682526550503a45313960d01b60208301529498509295509350909160ff166001149050611cbf5760405162461bcd60e51b81526004016103df9190612ed5565b506000611cd08683608001516122cf565b90945090508015611d1f57876001600160a01b03167f05b5d46649ab2015d3a08705cbaa391e094d9594c393ce89d3afffe960744da182604051611d1691815260200190565b60405180910390a25b6040805160a0808201835260608581015160ff9081168452918601516001600160a01b0390811660208501908152848601898152339386019384526bffffffffffffffffffffffff8d8116608088019081529751631d106e8960e21b81529651909516600487015290518216602486015251604485015290518116606484015292511660848201527f000000000000000000000000000000000000000000000000000000000000000090911690637441ba249060a401600060405180830381600087803b158015611def57600080fd5b505af1158015611e03573d6000803e3d6000fd5b505050505050505b935093915050565b6040805160f885901b7fff00000000000000000000000000000000000000000000000000000000000000166020820152815160018183030181526021909101909152600090815b611e666001600261302b565b811015611f3957600080516020613332833981519152878260038110611e8e57611e8e61303e565b602002015160001c106040518060400160405280600581526020017f43543a453100000000000000000000000000000000000000000000000000000081525090611eeb5760405162461bcd60e51b81526004016103df9190612ed5565b5081858260038110611eff57611eff61303e565b6020020151604051602001611f15929190613272565b60405160208183030381529060405291508080611f31906130a0565b915050611e5a565b50611f4386612324565b9150817f724bdd8d0d4293d630d4223512262f7f1bd9e7bb88cadfef6de67ff0b0f1d8b4848884604051611f79939291906132a1565b60405180910390a250949350505050565b60006401000000008210611fe05760405162461bcd60e51b815260206004820152600860248201527f554e53414645333200000000000000000000000000000000000000000000000060448201526064016103df565b5090565b60408051808201909152600081526001602082015281835b8115612032578160011660010361201a576120178382612747565b92505b6120248182612747565b9050600182901c9150611ffc565b825161204d9060008051602061333283398151915290613141565b8352602083015161206d9060008051602061333283398151915290613141565b6020840152505092915050565b600061162282600a6132e4565b60006c0100000000000000000000000082106040518060400160405280600681526020017f50503a4531300000000000000000000000000000000000000000000000000000815250906120ed5760405162461bcd60e51b81526004016103df9190612ed5565b5090919050565b604080516000808252602082019092526001600160a01b03841690839060405161211e91906132f3565b60006040518083038185875af1925050503d806000811461215b576040519150601f19603f3d011682016040523d82523d6000602084013e612160565b606091505b5050905080611b1b5760405162461bcd60e51b815260206004820152602360248201527f5472616e7366657248656c7065723a20455448207472616e73666572206661696044820152621b195960ea1b60648201526084016103df565b82803b8061220d5760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a6500000060448201526064016103df565b604080516001600160a01b038681166024830152604480830187905283518084039091018152606490920183526020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1663a9059cbb60e01b179052915160009283929089169161227e91906132f3565b6000604051808303816000865af19150503d80600081146122bb576040519150601f19603f3d011682016040523d82523d6000602084013e6122c0565b606091505b5091509150611a4d82826128f6565b60008060008360ff166000036122ea57506000905083612311565b60006122f58561207a565b90508086816123065761230661312b565b049081028603925090505b61231a81612991565b9250509250929050565b60015461232f612c0c565b7f0667764c376602b72ef22218e1673c2cc8546201f9a77807570b3e5de137680d81527f1be18cd72ac1586de27dd60eba90654bd54383004991951bccb0f6bad02c67f660208201527f07677e6102f0acf343edde864f79ef7652faa5a66d575b8b60bb826a4aa517e660408201527f28a85866ab97bd65cc94b0d1f5c5986481f8a0d65bdd5c1e562659eebb13cf6360608201527f087321a66ea3af7780128ea1995d7fc6ec44a96a1b2d85d3021208cede68c15c60808201527f233b4e488f0aaf5faef4fc8ea4fefeadb6934eb882bc33b9df782fd1d83b41a060a08201527f1a0cefcf0c592da6426717d3718408c61af1d0a9492887f3faecefcba1a0a30960c08201527f2cdf963150b321923dd07b2b52659aceb529516a537dfebe24106881dd97429360e08201527f093a186bf9ec2cc874ceab26409d581579e1a431ecb6987d428777ceedfa15c46101008201527f0cbfc07131ef4197a4b4e60153d43381520ec9ab4c9c3ed34d88883a881a4e076101208201527f17b31de43ba4c687cf950ad00dfbe33df40047e79245b50bd1d9f87e622bf2af6101408201527f2f3328354bceaf5882a8cc88053e0dd0ae594009a4e84e9e75a4fefe8604a6026101608201527f2b2e8defd4dad2404c6874918925fc1192123f45df0ee3e04b6c16ff22ca1cfd6101808201527f1cbdc4065aa4137da01d64a090706267d65f425ea5e815673516d29d9aa14d386101a08201527f13ca69f9fde4ece39e395bb55dd41ed7dd9dfaa26671e26bd9fd6f4f635fc8726101c08201528251602084015160408501516000928392839261258b9291906129f3565b915060026001600461259e82600f613018565b6125a9906002613266565b6125b39190613163565b6125bd9190613018565b8616901c9250600080600192505b600f831015612657576125df600286613141565b60000361261f578391508583600f81106125fb576125fb61303e565b60200201519050836002600085815260200190815260200160002081905550612632565b5050600081815260026020526040902054825b61263c8282612a8e565b60019590951c9493508261264f816130a0565b9350506125cb565b600061266460048961302b565b60018190559050600061267689610cfa565b9050600461ffff8a166201000003116126db57600081815260036020526040908190208790555181907f7cd9c9cf009b511548bb15f2d648fc3ee3e6e880d24f043861b274dca5a55435906126ce9089815260200190565b60405180910390a261273a565b60006126e683611adc565b6000818152600460205260409081902089851890555190915082907f46b4356c55762628b29b60a689ae18c610a9cd9774ca704e7a567aa41bb7cebf90612730908a815260200190565b60405180910390a2505b5050505050505050919050565b60408051808201909152600080825260208201528251600090819015801561277157506020850151155b1561278f576040805180820190915291825260208201529050611622565b83511580156127a057506020850151155b156127be576040805180820190915291825260208201529050611622565b600060008051602061333283398151915285518751099050600060008051602061333283398151915286602001518860200151099050600060008051602061333283398151915280838509620292f8099050600060008051602061333283398151915280895160208c01510960008051602061333283398151915260208b01518c510908905060006128738460008051602061333283398151915287620292fc09600080516020613332833981519152612b1a565b905060008051602061333283398151915261289f60008051602061333283398151915285600108612b55565b830996506000805160206133328339815191526128d46128cf600186600080516020613332833981519152612b1a565b612b55565b8209604080518082019091529788526020880152509498975050505050505050565b81801561291b57508051158061291b57508080602001905181019061291b919061330f565b61298d5760405162461bcd60e51b815260206004820152602a60248201527f5472616e7366657248656c7065723a20746f6b656e20636f6e7472616374206360448201527f616c6c206661696c65640000000000000000000000000000000000000000000060648201526084016103df565b5050565b60006801000000000000000082106040518060400160405280600681526020017f50503a4532360000000000000000000000000000000000000000000000000000815250906120ed5760405162461bcd60e51b81526004016103df9190612ed5565b60006129fd612bc7565b84815260208101849052604080820184905251635a53025d60e01b815273__$a786a838ef97de7d2113fa91ed3c799076$__90635a53025d90612a44908490600401613103565b602060405180830381865af4158015612a61573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190612a8591906130ea565b95945050505050565b6000612a98612c2b565b8381526020810183905260405163014cf2b360e51b815273__$3d381aec2d571db697c779e211a438fb21$__9063299e566090612ad99084906004016130b9565b602060405180830381865af4158015612af6573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190611a9b91906130ea565b600083838111612b3157612b2e838261302b565b90505b8280612b3f57612b3f61312b565b6000612b4b8684613018565b0895945050505050565b600061162282612b746002600080516020613332833981519152613018565b600080516020613332833981519152600060405160208152602080820152602060408201528460608201528360808201528260a082015260208160c08360055afa80801561015157505051949350505050565b60405180606001604052806003906020820280368337509192915050565b60405180606001604052806003905b6060815260200190600190039081612bf45790505090565b604051806101e00160405280600f906020820280368337509192915050565b60405180604001604052806002906020820280368337509192915050565b6001600160a01b0381168114612c5e57600080fd5b50565b67ffffffffffffffff81168114612c5e57600080fd5b803563ffffffff81168114612c8b57600080fd5b919050565b60008060008060008060008060006103008a8c031215612caf57600080fd5b8935612cba81612c49565b985060208a0135975060408a0135612cd181612c61565b9650612cdf60608b01612c77565b955060808a0135945060a08a013593506102c08a018b811115612d0157600080fd5b60c08b01935080359250506102e08a013590509295985092959850929598565b600060208284031215612d3357600080fd5b5035919050565b600080600060608486031215612d4f57600080fd5b505081359360208301359350604090920135919050565b60008060408385031215612d7957600080fd5b612d8283612c77565b9150602083013562ffffff81168114612d9a57600080fd5b809150509250929050565b600080600060608486031215612dba57600080fd5b8335612dc581612c49565b92506020840135612dd581612c49565b929592945050506040919091013590565b806060810183101561162257600080fd5b8060c0810183101561162257600080fd5b6000806000806000806102c08789031215612e2257600080fd5b612e2c8888612de6565b9550612e3b8860608901612de6565b9450612e4a8860c08901612de6565b9350612e5a886101208901612df7565b9250612e6a886101e08901612df7565b9150612e796102a08801612c77565b90509295509295509295565b60005b83811015612ea0578181015183820152602001612e88565b50506000910152565b60008151808452612ec1816020860160208601612e85565b601f01601f19169290920160200192915050565b6020815260006109d96020830184612ea9565b8051612c8b81612c61565b805160ff81168114612c8b57600080fd5b8051612c8b81612c49565b600080600080848603610120811215612f2757600080fd5b8551612f3281612c49565b602087015160408801519196509450612f4a81612c49565b925060c0605f1982011215612f5e57600080fd5b5060405160c0810181811067ffffffffffffffff82111715612f9057634e487b7160e01b600052604160045260246000fd5b604052612f9f60608701612ee8565b8152612fad60808701612ef3565b6020820152612fbe60a08701612ef3565b6040820152612fcf60c08701612ef3565b6060820152612fe060e08701612ef3565b6080820152612ff26101008701612f04565b60a0820152939692955090935050565b634e487b7160e01b600052601160045260246000fd5b8181038181111561162257611622613002565b8082018082111561162257611622613002565b634e487b7160e01b600052603260045260246000fd5b60006020828403121561306657600080fd5b81356109d981612c49565b60408382376040810191909152606001919050565b604084823760408101929092526060820152608001919050565b6000600182016130b2576130b2613002565b5060010190565b60408101818360005b60028110156130e15781518352602092830192909101906001016130c2565b50505092915050565b6000602082840312156130fc57600080fd5b5051919050565b60608101818360005b60038110156130e157815183526020928301929091019060010161310c565b634e487b7160e01b600052601260045260246000fd5b60008261315e57634e487b7160e01b600052601260045260246000fd5b500690565b600081600019048311821515161561317d5761317d613002565b500290565b600181815b808511156131bd5781600019048211156131a3576131a3613002565b808516156131b057918102915b93841c9390800290613187565b509250929050565b6000826131d457506001611622565b816131e157506000611622565b81600181146131f757600281146132015761321d565b6001915050611622565b60ff84111561321257613212613002565b50506001821b611622565b5060208310610133831016604e8410600b8410161715613240575081810a611622565b61324a8383613182565b806000190482111561325e5761325e613002565b029392505050565b60006109d983836131c5565b60008351613284818460208801612e85565b835190830190613298818360208801612e85565b01949350505050565b838152600060208083018560005b60038110156132cc578151835291830191908301906001016132af565b5050505060a06080830152612a8560a0830184612ea9565b60006109d960ff8416836131c5565b60008251613305818460208701612e85565b9190910192915050565b60006020828403121561332157600080fd5b815180151581146109d957600080fdfe30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001a164736f6c6343000810000a",
+  "libraries": {
+    "PoseidonT3": "0xA944DFafE9bcb0094A471E58206079c43ce0043D",
+    "PoseidonT4": "0xf0FfB73D51d001024F6301a19c8A56488e9d2110"
+  },
+  "devdoc": {
+    "author": "Pantherprotocol Contributors",
+    "details": "It is the \"version 0\" of the Panther Protocol Multi-Asset Shielded Pool (\"MASP\"). It locks assets (ERC-20, ERC-721 or ERC-1155 tokens) of a user with the `Vault` smart contract and generates UTXO's in the MASP for the user (i.e. builds merkle trees of UTXO's commitments). This contract does not implement the functionality for spending UTXO's (other than the `exit` described further) and is supposed to be upgraded with the new one. The new contract, the \"v.1\" of the MASP, is planned to implement spending of UTXO's using zero-knowledge proves. To be upgradable, this contract is assumed to run as an \"implementation\" for a proxy that DELEGATECALL's the implementation. To protect holders against lost of assets in case this contract is not upgraded, it exposes the `exit` function, through which users may withdraw their locked assets via revealing preimages of commitments.",
+    "events": {
+      "Change(address,uint256)": {
+        "details": "A tiny disowned token amount gets locked in the Vault (as a result of imprecise scaling of deposited amounts)"
+      },
+      "ExitCommitment(uint256)": {
+        "details": "New exit commitment registered"
+      },
+      "ExitTimesUpdated(uint256,uint256)": {
+        "details": "Emitted when exit time and/or exit delay updated"
+      },
+      "Nullifier(bytes32)": {
+        "details": "New nullifier has been seen"
+      }
+    },
+    "kind": "dev",
+    "methods": {
+      "claimEthOrErc20(address,address,uint256)": {
+        "details": "The \"owner\" may call only"
+      },
+      "commitToExit(bytes32)": {
+        "params": {
+          "exitCommitment": "Commitment to the UTXO spending key and the recipient address. MUST be equal to keccak256(abi.encode(uint256(privSpendingKey), address(recipient))."
+        }
+      },
+      "constructor": {
+        "params": {
+          "_owner": "Address of the `OWNER` who may call `onlyOwner` methods",
+          "assetRegistry": "Address of the ZAssetRegistry contract",
+          "vault": "Address of the Vault contract"
+        }
+      },
+      "exit(address,uint256,uint64,uint32,uint256,uint256,bytes32[16],bytes32,uint256)": {
+        "details": "`cacheIndexHint` needed for the \"current\" (partially populated) tree only",
+        "params": {
+          "cacheIndexHint": "Index of the `merkleRoot` in the cache of roots, 0 by default",
+          "leafId": "Id of the leaf with the UTXO commitments in the Merkle Trees",
+          "merkleRoot": "The root of the Merkle Tree the leaf is a part of",
+          "pathElements": "Elements of the Merkle proof of inclusion",
+          "privSpendingKey": "UTXO's Private Spending Key",
+          "scaledAmount": "Token scaled amount"
+        }
+      },
+      "generateDeposits(address[3],uint256[3],uint256[3],(uint256,uint256)[3],uint256[2][3],uint32)": {
+        "details": "createdAt must be less (or equal) the network time",
+        "params": {
+          "amounts": "Token amounts (unscaled) to be deposited",
+          "createdAt": "Optional, if 0 the network time used",
+          "pubSpendingKeys": "Public Spending Key for every UTXO",
+          "secrets": "Encrypted opening values for every UTXO",
+          "tokenIds": "For ERC-721 and ERC-1155 - token ID or subId of the token, 0 for ERC-20",
+          "tokens": "Address of the token contract for every UTXO"
+        },
+        "returns": {
+          "leftLeafId": "The `leafId` of the first UTXO (leaf) in the batch"
+        }
+      },
+      "isKnownRoot(uint256,bytes32,uint256)": {
+        "params": {
+          "cacheIndexHint": "Index of the root in the cache, ignored if 0"
+        }
+      },
+      "updateExitTimes(uint32,uint24)": {
+        "details": "Owner only may calls"
+      }
+    },
+    "title": "PantherPool",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "ASSET_REGISTRY()": {
+        "notice": "Address of the ZAssetRegistry contract"
+      },
+      "OWNER()": {
+        "notice": "The owner who has privileged rights"
+      },
+      "VAULT()": {
+        "notice": "Address of the Vault contract"
+      },
+      "claimEthOrErc20(address,address,uint256)": {
+        "notice": "Withdraw accidentally sent tokens or ETH from this contract"
+      },
+      "commitToExit(bytes32)": {
+        "notice": "Register future `exit` to protect against front-run and DoS. The `exit` is possible only after `exitDelay` since this function call."
+      },
+      "curRoot()": {
+        "notice": "Returns the root of the current tree and its index in cache"
+      },
+      "curTree()": {
+        "notice": "Returns `treeId` of the current tree"
+      },
+      "exitCommitments(bytes32)": {
+        "notice": "Unused registered commitments to exit"
+      },
+      "exitDelay()": {
+        "notice": "Period (seconds) since `commitToExit` when `exit` opens"
+      },
+      "exitTime()": {
+        "notice": "(UNIX) Time since when the `exit` calls get enabled"
+      },
+      "finalRoots(uint256)": {
+        "notice": "Roots of fully populated trees"
+      },
+      "generateDeposits(address[3],uint256[3],uint256[3],(uint256,uint256)[3],uint256[2][3],uint32)": {
+        "notice": "Transfer assets from the msg.sender to the VAULT and generate UTXOs in the MASP"
+      },
+      "getLeafIndex(uint256)": {
+        "notice": "Returns `leafIndex` (index in the tree) of the given leaf"
+      },
+      "getTreeId(uint256)": {
+        "notice": "Returns `treeId` of the given leaf's tree"
+      },
+      "isKnownRoot(uint256,bytes32,uint256)": {
+        "notice": "Returns `true` if the given root of the given tree is known"
+      },
+      "leavesNum()": {
+        "notice": "Returns the number of leaves inserted in all trees so far"
+      },
+      "updateExitTimes(uint32,uint24)": {
+        "notice": "Update the exit time and the exit delay"
+      }
+    },
+    "notice": "Multi-Asset Shielded Pool main contract v0",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 3560,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "_reentrancyStatus",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 8912,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "_nextLeafId",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 8916,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "_filledSubtrees",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_uint256,t_bytes32)"
+      },
+      {
+        "astId": 8921,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "finalRoots",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_uint256,t_bytes32)"
+      },
+      {
+        "astId": 8925,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "_cachedRoots",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_uint256,t_uint256)"
+      },
+      {
+        "astId": 9501,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "__gap",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_array(t_uint256)50_storage"
+      },
+      {
+        "astId": 8544,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "__gap",
+        "offset": 0,
+        "slot": "55",
+        "type": "t_array(t_uint256)50_storage"
+      },
+      {
+        "astId": 4185,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "__gap",
+        "offset": 0,
+        "slot": "105",
+        "type": "t_array(t_uint256)50_storage"
+      },
+      {
+        "astId": 4194,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "exitTime",
+        "offset": 0,
+        "slot": "155",
+        "type": "t_uint32"
+      },
+      {
+        "astId": 4197,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "exitDelay",
+        "offset": 4,
+        "slot": "155",
+        "type": "t_uint24"
+      },
+      {
+        "astId": 4199,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "_reserved",
+        "offset": 7,
+        "slot": "155",
+        "type": "t_uint200"
+      },
+      {
+        "astId": 4203,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "isSpent",
+        "offset": 0,
+        "slot": "156",
+        "type": "t_mapping(t_bytes32,t_bool)"
+      },
+      {
+        "astId": 4208,
+        "contract": "contracts/protocol/PantherPoolV0.sol:PantherPoolV0",
+        "label": "exitCommitments",
+        "offset": 0,
+        "slot": "157",
+        "type": "t_mapping(t_bytes32,t_uint32)"
+      }
+    ],
+    "types": {
+      "t_array(t_uint256)50_storage": {
+        "base": "t_uint256",
+        "encoding": "inplace",
+        "label": "uint256[50]",
+        "numberOfBytes": "1600"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_mapping(t_bytes32,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_uint32)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => uint32)",
+        "numberOfBytes": "32",
+        "value": "t_uint32"
+      },
+      "t_mapping(t_uint256,t_bytes32)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => bytes32)",
+        "numberOfBytes": "32",
+        "value": "t_bytes32"
+      },
+      "t_mapping(t_uint256,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_uint200": {
+        "encoding": "inplace",
+        "label": "uint200",
+        "numberOfBytes": "25"
+      },
+      "t_uint24": {
+        "encoding": "inplace",
+        "label": "uint24",
+        "numberOfBytes": "3"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint32": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      }
+    }
+  }
+}

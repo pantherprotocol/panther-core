@@ -1,0 +1,520 @@
+{
+  "address": "0x3F432d43E33B5CE9E10beE80f474394174f0E41D",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint160",
+          "name": "zAssetRecId",
+          "type": "uint160"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint64",
+              "name": "_unused",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint8",
+              "name": "version",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "tokenType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "scale",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct ZAsset",
+          "name": "asset",
+          "type": "tuple"
+        }
+      ],
+      "name": "AssetAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint160",
+          "name": "zAssetRecId",
+          "type": "uint160"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "newStatus",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "oldStatus",
+          "type": "uint8"
+        }
+      ],
+      "name": "AssetStatusChanged",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "OWNER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint64",
+              "name": "_unused",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint8",
+              "name": "version",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "tokenType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "scale",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct ZAsset",
+          "name": "asset",
+          "type": "tuple"
+        }
+      ],
+      "name": "addZAsset",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint160",
+          "name": "zAssetRecId",
+          "type": "uint160"
+        },
+        {
+          "internalType": "uint8",
+          "name": "newStatus",
+          "type": "uint8"
+        }
+      ],
+      "name": "changeZAssetStatus",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint160",
+          "name": "zAssetRecId",
+          "type": "uint160"
+        }
+      ],
+      "name": "getZAsset",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint64",
+              "name": "_unused",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint8",
+              "name": "version",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "tokenType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "scale",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct ZAsset",
+          "name": "asset",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "subId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getZAssetAndIds",
+      "outputs": [
+        {
+          "internalType": "uint160",
+          "name": "zAssetId",
+          "type": "uint160"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint160",
+          "name": "zAssetRecId",
+          "type": "uint160"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint64",
+              "name": "_unused",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint8",
+              "name": "version",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "tokenType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "scale",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct ZAsset",
+          "name": "asset",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "subId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getZAssetId",
+      "outputs": [
+        {
+          "internalType": "uint160",
+          "name": "",
+          "type": "uint160"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint160",
+          "name": "zAssetRecId",
+          "type": "uint160"
+        }
+      ],
+      "name": "isZAssetWhitelisted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xe923a199d2359b1a50967ed2d6703f4741373873c8626ca0848524708bdd4360",
+  "receipt": {
+    "to": null,
+    "from": "0xf0886ac6B2E9A2A75C9537EAF1A3aa8398FB10e8",
+    "contractAddress": "0x3F432d43E33B5CE9E10beE80f474394174f0E41D",
+    "transactionIndex": 34,
+    "gasUsed": "831381",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000008000000000000000000000000000000000000000004000000000000000800000000000000000000100000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000800000000000000000000000000000000000000000000000004000000000000000000001800000000000000000000000000000100000000000000000000000000000000000000000000000002000000000000000000000100002",
+    "blockHash": "0xfc2fa3a91a109b7913b6dc40e4269623630d16ba8cb2044cde295f9d1f23e545",
+    "transactionHash": "0xe923a199d2359b1a50967ed2d6703f4741373873c8626ca0848524708bdd4360",
+    "logs": [
+      {
+        "transactionIndex": 34,
+        "blockNumber": 36301241,
+        "transactionHash": "0xe923a199d2359b1a50967ed2d6703f4741373873c8626ca0848524708bdd4360",
+        "address": "0x0000000000000000000000000000000000001010",
+        "topics": [
+          "0x4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0x0000000000000000000000000000000000000000000000000000000000001010",
+          "0x000000000000000000000000f0886ac6b2e9a2a75c9537eaf1a3aa8398fb10e8",
+          "0x00000000000000000000000046a3a41bd932244dd08186e4c19f1a7e48cbcdf4"
+        ],
+        "data": "0x00000000000000000000000000000000000000000000000000755ce06d5e5be9000000000000000000000000000000000000000000000000113f3d084d1c05a4000000000000000000000000000000000000000000003f8df72fe359845d2bcf00000000000000000000000000000000000000000000000010c9e027dfbda9bb000000000000000000000000000000000000000000003f8df7a54039f1bb87b8",
+        "logIndex": 119,
+        "blockHash": "0xfc2fa3a91a109b7913b6dc40e4269623630d16ba8cb2044cde295f9d1f23e545"
+      }
+    ],
+    "blockNumber": 36301241,
+    "cumulativeGasUsed": "5359916",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x208Fb9169BBec5915722e0AfF8B0eeEdaBf8a6f0"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "49300367bcb47864d5852738a8da403e",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.16+commit.07a7930e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint160\",\"name\":\"zAssetRecId\",\"type\":\"uint160\"},{\"components\":[{\"internalType\":\"uint64\",\"name\":\"_unused\",\"type\":\"uint64\"},{\"internalType\":\"uint8\",\"name\":\"version\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"tokenType\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"scale\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"indexed\":false,\"internalType\":\"struct ZAsset\",\"name\":\"asset\",\"type\":\"tuple\"}],\"name\":\"AssetAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint160\",\"name\":\"zAssetRecId\",\"type\":\"uint160\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"newStatus\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"oldStatus\",\"type\":\"uint8\"}],\"name\":\"AssetStatusChanged\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"OWNER\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint64\",\"name\":\"_unused\",\"type\":\"uint64\"},{\"internalType\":\"uint8\",\"name\":\"version\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"tokenType\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"scale\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"internalType\":\"struct ZAsset\",\"name\":\"asset\",\"type\":\"tuple\"}],\"name\":\"addZAsset\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint160\",\"name\":\"zAssetRecId\",\"type\":\"uint160\"},{\"internalType\":\"uint8\",\"name\":\"newStatus\",\"type\":\"uint8\"}],\"name\":\"changeZAssetStatus\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint160\",\"name\":\"zAssetRecId\",\"type\":\"uint160\"}],\"name\":\"getZAsset\",\"outputs\":[{\"components\":[{\"internalType\":\"uint64\",\"name\":\"_unused\",\"type\":\"uint64\"},{\"internalType\":\"uint8\",\"name\":\"version\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"tokenType\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"scale\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"internalType\":\"struct ZAsset\",\"name\":\"asset\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"subId\",\"type\":\"uint256\"}],\"name\":\"getZAssetAndIds\",\"outputs\":[{\"internalType\":\"uint160\",\"name\":\"zAssetId\",\"type\":\"uint160\"},{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint160\",\"name\":\"zAssetRecId\",\"type\":\"uint160\"},{\"components\":[{\"internalType\":\"uint64\",\"name\":\"_unused\",\"type\":\"uint64\"},{\"internalType\":\"uint8\",\"name\":\"version\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"tokenType\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"scale\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"internalType\":\"struct ZAsset\",\"name\":\"asset\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"subId\",\"type\":\"uint256\"}],\"name\":\"getZAssetId\",\"outputs\":[{\"internalType\":\"uint160\",\"name\":\"\",\"type\":\"uint160\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint160\",\"name\":\"zAssetRecId\",\"type\":\"uint160\"}],\"name\":\"isZAssetWhitelisted\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Pantherprotocol Contributors\",\"kind\":\"dev\",\"methods\":{\"addZAsset((uint64,uint8,uint8,uint8,uint8,address))\":{\"details\":\"The \\\"owner\\\" may call only\",\"params\":{\"asset\":\"Params of the asset (including its `ZAsset.status`)\"}},\"changeZAssetStatus(uint160,uint8)\":{\"details\":\"The \\\"owner\\\" may call only\",\"params\":{\"newStatus\":\"Status to be set\",\"zAssetRecId\":\"ID of the ZAsset record\"}},\"getZAssetAndIds(address,uint256)\":{\"returns\":{\"_tokenId\":\"ERC-721/1155 _tokenId/_id, if it's an NFT, or 0 for ERC-20\",\"asset\":\"ZAsset record for the token\",\"zAssetId\":\"zAssetId\",\"zAssetRecId\":\"ID of the ZAsset record\"}},\"getZAssetId(address,uint256)\":{\"details\":\"declared as view rather than pure to allow for protocol changes\"}},\"title\":\"ZAssetsRegistry\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"OWNER()\":{\"notice\":\"The owner who has privileged rights\"},\"addZAsset((uint64,uint8,uint8,uint8,uint8,address))\":{\"notice\":\"Register with the MASP a new asset with given params\"},\"changeZAssetStatus(uint160,uint8)\":{\"notice\":\"Updates the status of the existing asset\"},\"getZAsset(uint160)\":{\"notice\":\"Returns ZAsset record for the given record ID\"}},\"notice\":\"Registry and whitelist of assets (tokens) supported by the Panther Protocol Multi-Asset Shielded Pool (aka \\\"MASP\\\")\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/protocol/ZAssetsRegistry.sol\":\"ZAssetsRegistry\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":800},\"remappings\":[]},\"sources\":{\"contracts/common/Constants.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n// Constants\\n\\nuint256 constant IN_PRP_UTXOs = 1;\\nuint256 constant IN_UTXOs = 2 + IN_PRP_UTXOs;\\n\\nuint256 constant OUT_PRP_UTXOs = 1;\\nuint256 constant OUT_UTXOs = 2 + OUT_PRP_UTXOs;\\nuint256 constant OUT_MAX_UTXOs = OUT_UTXOs;\\n// Number of UTXOs given as a reward for an \\\"advanced\\\" stake\\nuint256 constant OUT_RWRD_UTXOs = 2;\\n\\n// For overflow protection and circuits optimization\\n// (must be less than the FIELD_SIZE)\\nuint256 constant MAX_EXT_AMOUNT = 2**96;\\nuint256 constant MAX_IN_CIRCUIT_AMOUNT = 2**64;\\nuint256 constant MAX_TIMESTAMP = 2**32;\\nuint256 constant MAX_ZASSET_ID = 2**160;\\n\\n// Token types\\n// (not `enum` to let protocol extensions use bits, if needed)\\nuint8 constant ERC20_TOKEN_TYPE = 0x00;\\nuint8 constant ERC721_TOKEN_TYPE = 0x10;\\nuint8 constant ERC1155_TOKEN_TYPE = 0x11;\\n// defined for every tokenId rather than for all tokens on the contract\\n// (unsupported in the V0 and V1 of the MASP)\\nuint8 constant BY_TOKENID_TOKEN_TYPE = 0xFF;\\n\\n// ZAsset statuses\\n// (not `enum` to let protocol extensions use bits, if needed)\\nuint8 constant zASSET_ENABLED = 0x01;\\nuint8 constant zASSET_DISABLED = 0x02;\\nuint8 constant zASSET_UNKNOWN = 0x00;\\n\\n// UTXO data (opening values - encrypted and public) formats\\nuint8 constant UTXO_DATA_TYPE5 = 0x00; // for zero UTXO (no data to provide)\\nuint8 constant UTXO_DATA_TYPE1 = 0x01; // for UTXO w/ zero tokenId\\nuint8 constant UTXO_DATA_TYPE3 = 0x02; // for UTXO w/ non-zero tokenId\\n\\n// Number of 32-bit words of the CiphertextMsg for UTXO_DATA_TYPE1\\n// (ephemeral key (packed) - 32 bytes, encrypted `random` - 32 bytes)\\nuint256 constant CIPHERTEXT1_WORDS = 2;\\n\\n// Number of 32-bit words in the (uncompressed) spending PubKey\\nuint256 constant PUBKEY_WORDS = 2;\\n// Number of elements in `pathElements`\\nuint256 constant PATH_ELEMENTS_NUM = 16;\\n\",\"keccak256\":\"0x8d696e386e1c6b8c30f1cb244f46f220a8b422d5addedcfe8796e87219eaadd7\",\"license\":\"BUSL-1.1\"},\"contracts/common/ImmutableOwnable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n/// @title Staking\\nabstract contract ImmutableOwnable {\\n    /// @notice The owner who has privileged rights\\n    // solhint-disable-next-line var-name-mixedcase\\n    address public immutable OWNER;\\n\\n    /// @dev Throws if called by any account other than the {OWNER}.\\n    modifier onlyOwner() {\\n        require(OWNER == msg.sender, \\\"ImmOwn: unauthorized\\\");\\n        _;\\n    }\\n\\n    constructor(address _owner) {\\n        require(_owner != address(0), \\\"ImmOwn: zero owner address\\\");\\n        OWNER = _owner;\\n    }\\n}\\n\",\"keccak256\":\"0x50d471ce507ca3796ff407b52d0dffead3b4eb6c0f0afea9350f712f9c5f1416\",\"license\":\"MIT\"},\"contracts/common/Types.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\nstruct G1Point {\\n    uint256 x;\\n    uint256 y;\\n}\\n\\n// Encoding of field elements is: X[0] * z + X[1]\\nstruct G2Point {\\n    uint256[2] x;\\n    uint256[2] y;\\n}\\n\\n// Verification key for SNARK\\nstruct VerifyingKey {\\n    G1Point alpha1;\\n    G2Point beta2;\\n    G2Point gamma2;\\n    G2Point delta2;\\n    G1Point[2] ic;\\n}\\n\\nstruct SnarkProof {\\n    G1Point a;\\n    G2Point b;\\n    G1Point c;\\n}\\n\\nstruct PluginData {\\n    address contractAddress;\\n    bytes callData;\\n}\\n\\nstruct ElGamalCiphertext {\\n    G1Point c1;\\n    G1Point c2;\\n}\\n\\n// For MASP V0 and V1\\nstruct ZAsset {\\n    // reserved (for networkId, tokenIdPolicy. etc..)\\n    uint64 _unused;\\n    // 0x00 by default\\n    uint8 version;\\n    // Refer to Constants.sol\\n    uint8 status;\\n    // Refer to Constants.sol\\n    uint8 tokenType;\\n    // 0x00 - no scaling\\n    uint8 scale;\\n    // token contract address\\n    address token;\\n}\\n\\nstruct LockData {\\n    // Refer to Constants.sol\\n    uint8 tokenType;\\n    // Token contract address\\n    address token;\\n    // For ERC-721, ERC-1155 tokens\\n    uint256 tokenId;\\n    // The account to transfer the token from/to (on `lock`/`unlock`)\\n    address extAccount;\\n    // The token amount to transfer to/from the Vault (on `lock`/`unlock`)\\n    uint96 extAmount;\\n}\\n\",\"keccak256\":\"0xf35e4d14f308c3785b2aeae13b3e35054db8791f0e152bd4d174d09bf306393f\",\"license\":\"MIT\"},\"contracts/protocol/ZAssetsRegistry.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity 0.8.16;\\n\\nimport { ERC20_TOKEN_TYPE, zASSET_ENABLED, zASSET_UNKNOWN } from \\\"../common/Constants.sol\\\";\\nimport \\\"./errMsgs/ZAssetsRegistryErrMsgs.sol\\\";\\nimport \\\"../common/ImmutableOwnable.sol\\\";\\nimport { ZAsset } from \\\"../common/Types.sol\\\";\\nimport \\\"./interfaces/IZAssetsRegistry.sol\\\";\\n\\n/**\\n * @title ZAssetsRegistry\\n * @author Pantherprotocol Contributors\\n * @notice Registry and whitelist of assets (tokens) supported by the Panther\\n * Protocol Multi-Asset Shielded Pool (aka \\\"MASP\\\")\\n */\\ncontract ZAssetsRegistry is ImmutableOwnable, IZAssetsRegistry {\\n    /**\\n    \\\"zAsset\\\" - abstraction of a token for representation in the MASP.\\n    ZK-circuits \\\"treat\\\" each zAsset as a unique (independent) token.\\n    `zAssetId` - ID of a zAsset.\\n    Circuits \\\"know\\\" a token by its zAssetID rather than the token addresses or\\n    its _tokenId/_id.\\n    Each distinguishable token supported by the MASP must be represented by its\\n    \\\"own\\\" zAsset. zAsset must never  \\\"represent\\\" two (or more) different tokens.\\n    An ERC-721/ERC-1155 token, with its unique _tokenId/_id, must \\\"have\\\" its own\\n    zAsset, different from zAssets of other tokens on the same contract.\\n    An ERC-20 token should be represented by at least one zAsset (further\\n    referred to as the \\\"default\\\" zAsset). A few other zAssets (aka \\\"alternative\\\"\\n    zAssets) may exist for the same ERC-20 token, with each zAsset having a\\n    different \\\"scaling factor\\\" (`ZAsset.scale`).\\n\\n    `ZAsset` - a record on the Registry with parameters of zAsset(s).\\n    `zAssetRecId` - ID of a ZAsset record.\\n    Not every zAsset has its \\\"own\\\" ZAsset record, but each ZAsset keeps params\\n    of at least one zAsset. It groups all zAssets, which share the same token\\n    contract and the \\\"scaling factor\\\".\\n    There is just one ZAsset record for all zAssets representing tokens on an\\n    ERC-721/1155 contract. Thus, for any such supported contract there must be\\n    EXACTLY one ZAsset record on the Registry.\\n    Every zAsset representing an ERC-20 token must have its own ZAsset record.\\n    So, the Registry must have at LEAST one ZAsset (for the default zAsset) for\\n    an ERC-20 contract. However, other ZAsset records (for alternative zAssets)\\n    may exist for the same ERC-20 token.\\n\\n    `subId` - additional ID which, coupled with the token contract address, let\\n    deterministically compute `zAssetId` and `zAssetRecId`.\\n\\n    This code is written with the following specs in mind:\\n    - If at least one token on an ERC-721/ERC-1155 contract is whitelisted, any\\n      token on the contract is implicitly whitelisted w/o further configuration\\n    - Registry must have one ZAsset record only for all tokens of an ERC-721/\\n      ERC-1155 contract\\n    - ZAsset record of any zAsset, w/ exception of extremely rare cases, should\\n      be obtained with just a single SLOAD\\n    - Backward compatible upgrades should be able to implement ..\\n    -- .. separate whitelists of zAssets allowed for deposits and withdrawals\\n       (e.g. via extension of ZAsset.status)\\n    -- .. blacklist for some tokens on a whitelisted ERC-721/ERC-1155 contract\\n       (e.g. by extending ZAsset.tokenType and introducing a blacklist)\\n    -- .. limits per a zAsset for max allowed amounts of deposits/withdrawals\\n       (e.g. with \\\"alternative\\\" zAssets and re-defining ZAsset._unused)\\n    */\\n\\n    uint8 private constant MAX_SCALE = 32; // min scale is 0\\n    uint8 private constant NO_SCALING = 0;\\n    uint256 private constant DEFAULT_VER = 0;\\n\\n    // Mapping from `zAssetRecId` to ZAsset (i.e. params of an zAsset)\\n    mapping(uint160 => ZAsset) private _registry;\\n\\n    // solhint-disable-next-line no-empty-blocks\\n    constructor(address _owner) ImmutableOwnable(_owner) {\\n        // Proxy-friendly: no storage initialization\\n    }\\n\\n    function getZAssetId(address token, uint256 subId)\\n        public\\n        pure\\n        override\\n        returns (uint160)\\n    {\\n        // Being uint160, it is surely less then the FIELD_SIZE\\n        return\\n            uint160(\\n                uint256(\\n                    keccak256(abi.encode(uint256(uint160(token)), subId))\\n                ) >> 96\\n            );\\n    }\\n\\n    /// @notice Returns ZAsset record for the given record ID\\n    function getZAsset(uint160 zAssetRecId)\\n        external\\n        view\\n        override\\n        returns (ZAsset memory asset)\\n    {\\n        asset = _registry[zAssetRecId];\\n    }\\n\\n    /// @notice Returns zAsset IDs and ZAsset record for the given token\\n    /// @param token Address of the token contract\\n    /// @param subId Extra ID to identify zAsset (0 by default)\\n    /// @dev For ERC-721/ERC-1155 token, `subId` is the _tokenId/_id. For  the\\n    // \\\"default\\\" zAsset of an ERC-20 token it is 0. For an \\\"alternative\\\" zAsset\\n    // it is the `defaultZAssetRecId XOR ver`, where `defaultZAssetRecId` is the\\n    // `zAssetRecId` of the default zAsset for this token, and `ver` is a unique\\n    // int in the range [1..31].\\n    /// @return zAssetId\\n    /// @return _tokenId ERC-721/1155 _tokenId/_id, if it's an NFT, or 0 for ERC-20\\n    /// @return zAssetRecId ID of the ZAsset record\\n    /// @return asset ZAsset record for the token\\n    function getZAssetAndIds(address token, uint256 subId)\\n        external\\n        view\\n        override\\n        returns (\\n            uint160 zAssetId,\\n            uint256 _tokenId,\\n            uint160 zAssetRecId,\\n            ZAsset memory asset\\n        )\\n    {\\n        require(token != address(0), ERR_ZERO_TOKEN_ADDRESS);\\n\\n        // Gas optimized based on assumptions:\\n        // - most often, this code is called for the default zAsset of ERC-20\\n        // - if `ver` is in [1..MAX_SCALE], likely it's an alternative zAsset\\n        _tokenId = subId;\\n        if (subId != 0) {\\n            // Risk of zAssetRecId collision attack (see further) ignored since\\n            // `subId` variant space is small (less than MAX_SCALE of ~5 bits).\\n            // Therefore `require(asset.token == token)` omitted here.\\n\\n            // For an \\\"alternative\\\" zAsset, `subId` must be none-zero...\\n            uint256 ver = uint256(uint160(token)) ^ subId;\\n            // ... and `ver` must be in [1..MAX_SCALE]\\n            if (ver < MAX_SCALE && ver != DEFAULT_VER) {\\n                // Likely, it's the alternative zAsset w/ `zAssetRecId = subId`\\n                asset = _registry[uint160(subId)];\\n\\n                if (asset.version == uint8(ver)) {\\n                    // Surely, it's the alternative zAsset of the ERC-20 token\\n                    // as `.version` must be 0 for NFTs and default zAssets.\\n                    // As `.version != 0`, `.status` can't be zASSET_UNKNOWN.\\n                    // Check `asset.tokenType == ERC20_TOKEN_TYPE` is skipped\\n                    // as the code registering ZAssets is assumed to ensure it.\\n                    zAssetId = getZAssetId(token, subId);\\n                    zAssetRecId = uint160(subId);\\n                    _tokenId = DEFAULT_VER;\\n                    return (zAssetId, _tokenId, zAssetRecId, asset);\\n                }\\n            }\\n        }\\n        // The zAsset can't be an alternative zAsset of an ERC-20 token here.\\n        // It's either an NFT (`subId` is _tokenId), or the default zAsset of\\n        // an ERC-20 token (`subId` is 0). In both cases `asset.version == 0`.\\n\\n        zAssetRecId = uint160(token); // same as `uint160(token) ^ 0`\\n        asset = _registry[zAssetRecId];\\n        if (asset.status == zASSET_UNKNOWN) {\\n            // Unknown token - return zero IDs, and empty ZAsset\\n            return (0, 0, 0, asset);\\n        }\\n\\n        require(\\n            // `subId` of an ERC-20 token's default zAsset must be 0\\n            (subId == 0 || asset.tokenType != ERC20_TOKEN_TYPE) &&\\n                // zAssetReqId collision attack protection:\\n                // attacker may vary token id of a fake NFT to make zAssetReqId\\n                // (i.e. `token ^ subId`) equal to zAssetReqId of another token\\n                asset.token == token,\\n            ERR_ZERO_SUBID_EXPECTED\\n        );\\n        zAssetId = getZAssetId(token, _tokenId);\\n        return (zAssetId, _tokenId, zAssetRecId, asset);\\n    }\\n\\n    function isZAssetWhitelisted(uint160 zAssetRecId)\\n        external\\n        view\\n        override\\n        returns (bool)\\n    {\\n        ZAsset memory asset = _registry[zAssetRecId];\\n        return asset.status == zASSET_ENABLED;\\n    }\\n\\n    /// @notice Register with the MASP a new asset with given params\\n    /// @param asset Params of the asset (including its `ZAsset.status`)\\n    /// @dev The \\\"owner\\\" may call only\\n    function addZAsset(ZAsset memory asset) external onlyOwner {\\n        require(asset.token != address(0), ERR_ZERO_TOKEN_ADDRESS);\\n        require(asset.status != zASSET_UNKNOWN, ERR_WRONG_ASSET_STATUS);\\n        require(\\n            // ERC-20 zAsset only may be \\\"alternative\\\" ones\\n            asset.version == 0 ||\\n                (asset.tokenType == ERC20_TOKEN_TYPE &&\\n                    asset.version < MAX_SCALE),\\n            ERR_WRONG_ASSET_VER\\n        );\\n        _checkScaleIsInRange(asset);\\n\\n        // note, `x ^ 0 == x`\\n        uint160 zAssetRecId = uint160(asset.token) ^ uint160(asset.version);\\n\\n        ZAsset memory existingAsset = _registry[zAssetRecId];\\n        require(\\n            existingAsset.status == zASSET_UNKNOWN,\\n            ERR_ASSET_ALREADY_REGISTERED\\n        );\\n        _registry[zAssetRecId] = asset;\\n        emit AssetAdded(zAssetRecId, asset);\\n    }\\n\\n    /// @notice Updates the status of the existing asset\\n    /// @param zAssetRecId ID of the ZAsset record\\n    /// @param newStatus Status to be set\\n    /// @dev The \\\"owner\\\" may call only\\n    function changeZAssetStatus(uint160 zAssetRecId, uint8 newStatus)\\n        external\\n        onlyOwner\\n    {\\n        require(_registry[zAssetRecId].token != address(0), ERR_UNKNOWN_ASSET);\\n        uint8 oldStatus = _registry[zAssetRecId].status;\\n        // New status value restrictions relaxed to allow for protocol updates.\\n        require(\\n            newStatus != zASSET_UNKNOWN && oldStatus != newStatus,\\n            ERR_WRONG_ASSET_STATUS\\n        );\\n        _registry[zAssetRecId].status = newStatus;\\n        emit AssetStatusChanged(zAssetRecId, newStatus, oldStatus);\\n    }\\n\\n    function _checkScaleIsInRange(ZAsset memory asset) private pure {\\n        // Valid range for ERC-20 is [0..31]\\n        // Valid range for ERC-721/ERC-1155 is 0\\n        require(\\n            (asset.scale == NO_SCALING ||\\n                ((asset.scale < MAX_SCALE) &&\\n                    (asset.tokenType == ERC20_TOKEN_TYPE))),\\n            ERR_WRONG_ASSET_SCALE\\n        );\\n    }\\n}\\n\",\"keccak256\":\"0x8e4d3fbfbc4da6770f5017f4191d0f23b29c304bee506cd384c15e07baa2ba81\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/errMsgs/ZAssetsRegistryErrMsgs.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nstring constant ERR_ASSET_ALREADY_REGISTERED = \\\"AR:E1\\\";\\nstring constant ERR_UNKNOWN_ASSET = \\\"AR:E2\\\";\\nstring constant ERR_WRONG_ASSET_STATUS = \\\"AR:E3\\\";\\nstring constant ERR_WRONG_ASSET_SCALE = \\\"AR:E4\\\";\\nstring constant ERR_WRONG_ASSET_VER = \\\"AR:E5\\\";\\nstring constant ERR_ZERO_SUBID_EXPECTED = \\\"AR:E6\\\";\\nstring constant ERR_ZERO_TOKEN_ADDRESS = \\\"AR:E7\\\";\\n\",\"keccak256\":\"0x1fbaad1b5ccf0e28b37b949503e461b331d7ef52ca9de7f6c5abed1be920daf7\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/interfaces/IZAssetsRegistry.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { ZAsset } from \\\"../../common/Types.sol\\\";\\n\\ninterface IZAssetsRegistry {\\n    /// @dev declared as view rather than pure to allow for protocol changes\\n    function getZAssetId(address token, uint256 subId)\\n        external\\n        view\\n        returns (uint160);\\n\\n    function getZAssetAndIds(address token, uint256 subId)\\n        external\\n        view\\n        returns (\\n            uint160 zAssetId,\\n            uint256 _tokenId,\\n            uint160 zAssetRecId,\\n            ZAsset memory asset\\n        );\\n\\n    function getZAsset(uint160 zAssetRecId)\\n        external\\n        view\\n        returns (ZAsset memory asset);\\n\\n    function isZAssetWhitelisted(uint160 zAssetRecId)\\n        external\\n        view\\n        returns (bool);\\n\\n    event AssetAdded(uint160 indexed zAssetRecId, ZAsset asset);\\n    event AssetStatusChanged(\\n        uint160 indexed zAssetRecId,\\n        uint8 newStatus,\\n        uint8 oldStatus\\n    );\\n}\\n\",\"keccak256\":\"0x92b7133aafcee98fc1cf0632ca7a3ca2cff30e94d50df55b4c48d982ed53cf3f\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60a060405234801561001057600080fd5b50604051610f03380380610f0383398101604081905261002f9161009c565b806001600160a01b03811661008a5760405162461bcd60e51b815260206004820152601a60248201527f496d6d4f776e3a207a65726f206f776e65722061646472657373000000000000604482015260640160405180910390fd5b6001600160a01b0316608052506100cc565b6000602082840312156100ae57600080fd5b81516001600160a01b03811681146100c557600080fd5b9392505050565b608051610e0f6100f460003960008181609c015281816102a001526106210152610e0f6000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c806331293c631161005b57806331293c63146100ee578063dc921d2614610111578063f49a7db4146101b9578063faa86eb71461028b57600080fd5b80630fa4758314610082578063117803e3146100975780632a381547146100db575b600080fd5b610095610090366004610b96565b61029e565b005b6100be7f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b6100956100e9366004610c43565b61061f565b6101016100fc366004610c78565b6107fc565b6040516100d29493929190610ca4565b6101a961011f366004610d2e565b6001600160a01b0390811660009081526020818152604091829020825160c081018452905467ffffffffffffffff8116825260ff600160401b8204811693830193909352600160481b81048316938201849052600160501b810483166060830152600160581b81049092166080820152600160601b90910490921660a09092019190915260011490565b60405190151581526020016100d2565b61027e6101c7366004610d2e565b6040805160c081018252600080825260208201819052918101829052606081018290526080810182905260a0810191909152506001600160a01b0390811660009081526020818152604091829020825160c081018452905467ffffffffffffffff8116825260ff600160401b8204811693830193909352600160481b8104831693820193909352600160501b830482166060820152600160581b83049091166080820152600160601b90910490911660a082015290565b6040516100d29190610d52565b6100be610299366004610c78565b610a7a565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461031b5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a656400000000000000000000000060448201526064015b60405180910390fd5b60a081015160408051808201909152600581526441523a453760d81b6020820152906001600160a01b03166103635760405162461bcd60e51b81526004016103129190610db4565b506040808201518151808301909252600582526441523a453360d81b602083015260ff166103a45760405162461bcd60e51b81526004016103129190610db4565b50602081015160ff1615806103cf5750606081015160ff161580156103cf575060208181015160ff16105b6040518060400160405280600581526020017f41523a4535000000000000000000000000000000000000000000000000000000815250906104235760405162461bcd60e51b81526004016103129190610db4565b5061042d81610abf565b60208181015160a08084015160ff928316186001600160a01b038181166000908152808652604090819020815160c081018352905467ffffffffffffffff81168252600160401b8104871682890152600160481b81048716828401819052600160501b820488166060840152600160581b82049097166080830152600160601b9004909216938201939093528251808401909352600583527f41523a45310000000000000000000000000000000000000000000000000000009483019490945292911561050d5760405162461bcd60e51b81526004016103129190610db4565b506001600160a01b03808316600081815260208181526040918290208751815492890151848a015160608b015160808c015160a08d0151909916600160601b026bffffffffffffffffffffffff60ff9a8b16600160581b02166affffffffffffffffffffff928b16600160501b026aff0000000000000000000019948c16600160481b02949094166affff000000000000000000199b909516600160401b0268ffffffffffffffffff1990981667ffffffffffffffff909616959095179690961798909816919091171795909516949094171790925590517f6d53e023dd2f7860d7fda3a15015fe6f1a32ba33dc829849438795dbd8920eaa90610612908690610d52565b60405180910390a2505050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146106975760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a65640000000000000000000000006044820152606401610312565b6001600160a01b0382811660009081526020818152604091829020548251808401909352600583527f41523a4532000000000000000000000000000000000000000000000000000000918301919091529091600160601b9091041661070f5760405162461bcd60e51b81526004016103129190610db4565b506001600160a01b03821660009081526020819052604090205460ff600160481b90910481169082161580159061074c57508160ff168160ff1614155b6040518060400160405280600581526020016441523a453360d81b815250906107885760405162461bcd60e51b81526004016103129190610db4565b506001600160a01b03831660008181526020818152604091829020805469ff0000000000000000001916600160481b60ff8881169182029290921790925583519182528516918101919091527f23616cab3d900e747e5ed9a2ae74d5bf24047e5798e2eb16fa71d752d3a443469101610612565b6040805160c081018252600080825260208201819052918101829052606081018290526080810182905260a081018290528190819060408051808201909152600581526441523a453760d81b60208201526001600160a01b0387166108745760405162461bcd60e51b81526004016103129190610db4565b508492508215610942576001600160a01b038616851860208110801561089957508015155b15610940576001600160a01b0380871660009081526020818152604091829020825160c081018452905467ffffffffffffffff8116825260ff600160401b82048116938301849052600160481b8204811694830194909452600160501b810484166060830152600160581b810484166080830152600160601b900490931660a084015291935082169003610940576109318787610a7a565b94508592506000935050610a71565b505b50506001600160a01b0380851660009081526020818152604091829020825160c081018452905467ffffffffffffffff8116825260ff600160401b8204811693830193909352600160481b81048316938201849052600160501b810483166060830152600160581b81049092166080820152600160601b90910490921660a08301528591906109db576000806000935093509350610a71565b8415806109ee5750606081015160ff1615155b8015610a0f5750856001600160a01b03168160a001516001600160a01b0316145b6040518060400160405280600581526020017f41523a453600000000000000000000000000000000000000000000000000000081525090610a635760405162461bcd60e51b81526004016103129190610db4565b50610a6e8684610a7a565b93505b92959194509250565b604080516001600160a01b038416602082015290810182905260009060609081016040516020818303038152906040528051906020012060001c901c90505b92915050565b608081015160ff161580610aed5750602060ff16816080015160ff16108015610aed5750606081015160ff16155b6040518060400160405280600581526020017f41523a453400000000000000000000000000000000000000000000000000000081525090610b415760405162461bcd60e51b81526004016103129190610db4565b5050565b803567ffffffffffffffff81168114610b5d57600080fd5b919050565b803560ff81168114610b5d57600080fd5b6001600160a01b0381168114610b8857600080fd5b50565b8035610b5d81610b73565b600060c08284031215610ba857600080fd5b60405160c0810181811067ffffffffffffffff82111715610bd957634e487b7160e01b600052604160045260246000fd5b604052610be583610b45565b8152610bf360208401610b62565b6020820152610c0460408401610b62565b6040820152610c1560608401610b62565b6060820152610c2660808401610b62565b6080820152610c3760a08401610b8b565b60a08201529392505050565b60008060408385031215610c5657600080fd5b8235610c6181610b73565b9150610c6f60208401610b62565b90509250929050565b60008060408385031215610c8b57600080fd5b8235610c9681610b73565b946020939093013593505050565b6001600160a01b03858116825260208201859052831660408201526101208101610d25606083018467ffffffffffffffff815116825260ff602082015116602083015260ff604082015116604083015260ff606082015116606083015260ff60808201511660808301526001600160a01b0360a08201511660a08301525050565b95945050505050565b600060208284031215610d4057600080fd5b8135610d4b81610b73565b9392505050565b60c08101610ab9828467ffffffffffffffff815116825260ff602082015116602083015260ff604082015116604083015260ff606082015116606083015260ff60808201511660808301526001600160a01b0360a08201511660a08301525050565b600060208083528351808285015260005b81811015610de157858101830151858201604001528201610dc5565b506000604082860101526040601f19601f830116850101925050509291505056fea164736f6c6343000810000a",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061007d5760003560e01c806331293c631161005b57806331293c63146100ee578063dc921d2614610111578063f49a7db4146101b9578063faa86eb71461028b57600080fd5b80630fa4758314610082578063117803e3146100975780632a381547146100db575b600080fd5b610095610090366004610b96565b61029e565b005b6100be7f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b6100956100e9366004610c43565b61061f565b6101016100fc366004610c78565b6107fc565b6040516100d29493929190610ca4565b6101a961011f366004610d2e565b6001600160a01b0390811660009081526020818152604091829020825160c081018452905467ffffffffffffffff8116825260ff600160401b8204811693830193909352600160481b81048316938201849052600160501b810483166060830152600160581b81049092166080820152600160601b90910490921660a09092019190915260011490565b60405190151581526020016100d2565b61027e6101c7366004610d2e565b6040805160c081018252600080825260208201819052918101829052606081018290526080810182905260a0810191909152506001600160a01b0390811660009081526020818152604091829020825160c081018452905467ffffffffffffffff8116825260ff600160401b8204811693830193909352600160481b8104831693820193909352600160501b830482166060820152600160581b83049091166080820152600160601b90910490911660a082015290565b6040516100d29190610d52565b6100be610299366004610c78565b610a7a565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461031b5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a656400000000000000000000000060448201526064015b60405180910390fd5b60a081015160408051808201909152600581526441523a453760d81b6020820152906001600160a01b03166103635760405162461bcd60e51b81526004016103129190610db4565b506040808201518151808301909252600582526441523a453360d81b602083015260ff166103a45760405162461bcd60e51b81526004016103129190610db4565b50602081015160ff1615806103cf5750606081015160ff161580156103cf575060208181015160ff16105b6040518060400160405280600581526020017f41523a4535000000000000000000000000000000000000000000000000000000815250906104235760405162461bcd60e51b81526004016103129190610db4565b5061042d81610abf565b60208181015160a08084015160ff928316186001600160a01b038181166000908152808652604090819020815160c081018352905467ffffffffffffffff81168252600160401b8104871682890152600160481b81048716828401819052600160501b820488166060840152600160581b82049097166080830152600160601b9004909216938201939093528251808401909352600583527f41523a45310000000000000000000000000000000000000000000000000000009483019490945292911561050d5760405162461bcd60e51b81526004016103129190610db4565b506001600160a01b03808316600081815260208181526040918290208751815492890151848a015160608b015160808c015160a08d0151909916600160601b026bffffffffffffffffffffffff60ff9a8b16600160581b02166affffffffffffffffffffff928b16600160501b026aff0000000000000000000019948c16600160481b02949094166affff000000000000000000199b909516600160401b0268ffffffffffffffffff1990981667ffffffffffffffff909616959095179690961798909816919091171795909516949094171790925590517f6d53e023dd2f7860d7fda3a15015fe6f1a32ba33dc829849438795dbd8920eaa90610612908690610d52565b60405180910390a2505050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146106975760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a65640000000000000000000000006044820152606401610312565b6001600160a01b0382811660009081526020818152604091829020548251808401909352600583527f41523a4532000000000000000000000000000000000000000000000000000000918301919091529091600160601b9091041661070f5760405162461bcd60e51b81526004016103129190610db4565b506001600160a01b03821660009081526020819052604090205460ff600160481b90910481169082161580159061074c57508160ff168160ff1614155b6040518060400160405280600581526020016441523a453360d81b815250906107885760405162461bcd60e51b81526004016103129190610db4565b506001600160a01b03831660008181526020818152604091829020805469ff0000000000000000001916600160481b60ff8881169182029290921790925583519182528516918101919091527f23616cab3d900e747e5ed9a2ae74d5bf24047e5798e2eb16fa71d752d3a443469101610612565b6040805160c081018252600080825260208201819052918101829052606081018290526080810182905260a081018290528190819060408051808201909152600581526441523a453760d81b60208201526001600160a01b0387166108745760405162461bcd60e51b81526004016103129190610db4565b508492508215610942576001600160a01b038616851860208110801561089957508015155b15610940576001600160a01b0380871660009081526020818152604091829020825160c081018452905467ffffffffffffffff8116825260ff600160401b82048116938301849052600160481b8204811694830194909452600160501b810484166060830152600160581b810484166080830152600160601b900490931660a084015291935082169003610940576109318787610a7a565b94508592506000935050610a71565b505b50506001600160a01b0380851660009081526020818152604091829020825160c081018452905467ffffffffffffffff8116825260ff600160401b8204811693830193909352600160481b81048316938201849052600160501b810483166060830152600160581b81049092166080820152600160601b90910490921660a08301528591906109db576000806000935093509350610a71565b8415806109ee5750606081015160ff1615155b8015610a0f5750856001600160a01b03168160a001516001600160a01b0316145b6040518060400160405280600581526020017f41523a453600000000000000000000000000000000000000000000000000000081525090610a635760405162461bcd60e51b81526004016103129190610db4565b50610a6e8684610a7a565b93505b92959194509250565b604080516001600160a01b038416602082015290810182905260009060609081016040516020818303038152906040528051906020012060001c901c90505b92915050565b608081015160ff161580610aed5750602060ff16816080015160ff16108015610aed5750606081015160ff16155b6040518060400160405280600581526020017f41523a453400000000000000000000000000000000000000000000000000000081525090610b415760405162461bcd60e51b81526004016103129190610db4565b5050565b803567ffffffffffffffff81168114610b5d57600080fd5b919050565b803560ff81168114610b5d57600080fd5b6001600160a01b0381168114610b8857600080fd5b50565b8035610b5d81610b73565b600060c08284031215610ba857600080fd5b60405160c0810181811067ffffffffffffffff82111715610bd957634e487b7160e01b600052604160045260246000fd5b604052610be583610b45565b8152610bf360208401610b62565b6020820152610c0460408401610b62565b6040820152610c1560608401610b62565b6060820152610c2660808401610b62565b6080820152610c3760a08401610b8b565b60a08201529392505050565b60008060408385031215610c5657600080fd5b8235610c6181610b73565b9150610c6f60208401610b62565b90509250929050565b60008060408385031215610c8b57600080fd5b8235610c9681610b73565b946020939093013593505050565b6001600160a01b03858116825260208201859052831660408201526101208101610d25606083018467ffffffffffffffff815116825260ff602082015116602083015260ff604082015116604083015260ff606082015116606083015260ff60808201511660808301526001600160a01b0360a08201511660a08301525050565b95945050505050565b600060208284031215610d4057600080fd5b8135610d4b81610b73565b9392505050565b60c08101610ab9828467ffffffffffffffff815116825260ff602082015116602083015260ff604082015116604083015260ff606082015116606083015260ff60808201511660808301526001600160a01b0360a08201511660a08301525050565b600060208083528351808285015260005b81811015610de157858101830151858201604001528201610dc5565b506000604082860101526040601f19601f830116850101925050509291505056fea164736f6c6343000810000a",
+  "devdoc": {
+    "author": "Pantherprotocol Contributors",
+    "kind": "dev",
+    "methods": {
+      "addZAsset((uint64,uint8,uint8,uint8,uint8,address))": {
+        "details": "The \"owner\" may call only",
+        "params": {
+          "asset": "Params of the asset (including its `ZAsset.status`)"
+        }
+      },
+      "changeZAssetStatus(uint160,uint8)": {
+        "details": "The \"owner\" may call only",
+        "params": {
+          "newStatus": "Status to be set",
+          "zAssetRecId": "ID of the ZAsset record"
+        }
+      },
+      "getZAssetAndIds(address,uint256)": {
+        "returns": {
+          "_tokenId": "ERC-721/1155 _tokenId/_id, if it's an NFT, or 0 for ERC-20",
+          "asset": "ZAsset record for the token",
+          "zAssetId": "zAssetId",
+          "zAssetRecId": "ID of the ZAsset record"
+        }
+      },
+      "getZAssetId(address,uint256)": {
+        "details": "declared as view rather than pure to allow for protocol changes"
+      }
+    },
+    "title": "ZAssetsRegistry",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "OWNER()": {
+        "notice": "The owner who has privileged rights"
+      },
+      "addZAsset((uint64,uint8,uint8,uint8,uint8,address))": {
+        "notice": "Register with the MASP a new asset with given params"
+      },
+      "changeZAssetStatus(uint160,uint8)": {
+        "notice": "Updates the status of the existing asset"
+      },
+      "getZAsset(uint160)": {
+        "notice": "Returns ZAsset record for the given record ID"
+      }
+    },
+    "notice": "Registry and whitelist of assets (tokens) supported by the Panther Protocol Multi-Asset Shielded Pool (aka \"MASP\")",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 5713,
+        "contract": "contracts/protocol/ZAssetsRegistry.sol:ZAssetsRegistry",
+        "label": "_registry",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_uint160,t_struct(ZAsset)3982_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_uint160,t_struct(ZAsset)3982_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint160",
+        "label": "mapping(uint160 => struct ZAsset)",
+        "numberOfBytes": "32",
+        "value": "t_struct(ZAsset)3982_storage"
+      },
+      "t_struct(ZAsset)3982_storage": {
+        "encoding": "inplace",
+        "label": "struct ZAsset",
+        "members": [
+          {
+            "astId": 3971,
+            "contract": "contracts/protocol/ZAssetsRegistry.sol:ZAssetsRegistry",
+            "label": "_unused",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 3973,
+            "contract": "contracts/protocol/ZAssetsRegistry.sol:ZAssetsRegistry",
+            "label": "version",
+            "offset": 8,
+            "slot": "0",
+            "type": "t_uint8"
+          },
+          {
+            "astId": 3975,
+            "contract": "contracts/protocol/ZAssetsRegistry.sol:ZAssetsRegistry",
+            "label": "status",
+            "offset": 9,
+            "slot": "0",
+            "type": "t_uint8"
+          },
+          {
+            "astId": 3977,
+            "contract": "contracts/protocol/ZAssetsRegistry.sol:ZAssetsRegistry",
+            "label": "tokenType",
+            "offset": 10,
+            "slot": "0",
+            "type": "t_uint8"
+          },
+          {
+            "astId": 3979,
+            "contract": "contracts/protocol/ZAssetsRegistry.sol:ZAssetsRegistry",
+            "label": "scale",
+            "offset": 11,
+            "slot": "0",
+            "type": "t_uint8"
+          },
+          {
+            "astId": 3981,
+            "contract": "contracts/protocol/ZAssetsRegistry.sol:ZAssetsRegistry",
+            "label": "token",
+            "offset": 12,
+            "slot": "0",
+            "type": "t_address"
+          }
+        ],
+        "numberOfBytes": "32"
+      },
+      "t_uint160": {
+        "encoding": "inplace",
+        "label": "uint160",
+        "numberOfBytes": "20"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      },
+      "t_uint8": {
+        "encoding": "inplace",
+        "label": "uint8",
+        "numberOfBytes": "1"
+      }
+    }
+  }
+}

@@ -3,13 +3,14 @@
 
 import React, {useCallback} from 'react';
 
+import {DECIMALS} from 'constants/numbers';
+
 import * as Sentry from '@sentry/browser';
 import {useWeb3React} from '@web3-react/core';
 import {openNotification} from 'components/Common/notification';
 import {WalletHeaderActionButton} from 'components/Common/WalletHeaderActionButton';
 import metamaskIcon from 'images/meta-mask-icon.svg';
 import logo from 'images/panther-logo.svg';
-import {DECIMALS} from 'lib/constants';
 import {getTokenContract} from 'services/contracts';
 
 export const AddTokenButton = () => {

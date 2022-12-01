@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
+import {E18} from 'constants/numbers';
+
 import {BigNumber, constants, utils} from 'ethers';
-import {E18} from 'lib/constants';
 import {IStakingTypes} from 'types/contracts/Staking';
 import {
     StakeRewardBN,

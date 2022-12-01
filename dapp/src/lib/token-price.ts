@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
+import {E18} from 'constants/numbers';
+
 import {BigNumber} from 'ethers';
 
-import {E18} from './constants';
 import {formatUSD} from './format';
 
 export function fiatPrice(

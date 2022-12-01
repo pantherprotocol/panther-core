@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
+import {E18} from 'constants/numbers';
+import {oneYearInMs} from 'constants/time';
+
 import {BigNumber, constants, utils} from 'ethers';
-import {E18} from 'lib/constants';
 import {IStakingTypes} from 'types/contracts/Staking';
 import {
     StakeRewardBN,
@@ -47,8 +49,7 @@ export function calculateRewardBasedOnAPR(
     rewardEnd: number,
 ): BigNumber {
     // Fraction of a year that the stake has accumulated rewards
-    const oneYear = 3600 * 24 * 365 * 1000;
-    const timeFracStaked = (rewardEnd - rewardStart) / oneYear;
+    const timeFracStaked = (rewardEnd - rewardStart) / oneYearInMs;
 
     // Reward amount as fraction of principal staked (calculated from annual APY
     // scaled to time staked).

@@ -3,6 +3,8 @@
 
 import React, {useCallback, useEffect, useState} from 'react';
 
+import {CONFIRMATIONS_NUM} from 'constants/contract-confirmations';
+
 import {Box, Card, Typography} from '@mui/material';
 import * as Sentry from '@sentry/browser';
 import {useWeb3React} from '@web3-react/core';
@@ -18,7 +20,6 @@ import SwitchNetworkButton from 'components/SwitchNetworkButton';
 import {ContractTransaction} from 'ethers/lib/ethers';
 import goerliIcon from 'images/goerli-logo.svg';
 import polygonIcon from 'images/polygon-logo.svg';
-import {CONFIRMATIONS_NUM} from 'lib/constants';
 import {formatAccountAddress, formatCurrency} from 'lib/format';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {getChainBalance} from 'redux/slices/wallet/chain-balance';

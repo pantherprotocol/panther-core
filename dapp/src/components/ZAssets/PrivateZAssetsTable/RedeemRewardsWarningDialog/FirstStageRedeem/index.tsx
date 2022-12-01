@@ -3,6 +3,8 @@
 
 import React, {useState, ChangeEvent} from 'react';
 
+import {CONFIRMATIONS_NUM} from 'constants/contract-confirmations';
+
 import {
     Box,
     Checkbox,
@@ -25,7 +27,6 @@ import {
 } from 'components/Common/notification';
 import PrimaryActionButton from 'components/Common/PrimaryActionButton';
 import {getUnixTime} from 'date-fns';
-import {CONFIRMATIONS_NUM} from 'lib/constants';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     progressToNewWalletAction,

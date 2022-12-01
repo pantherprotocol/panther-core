@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
 // FIXME: duplicated with contracts/lib/events.ts
-import type {ContractReceipt, ContractTransaction} from 'ethers';
+import {CONFIRMATIONS_NUM} from 'constants/contract-confirmations';
 
-import {CONFIRMATIONS_NUM} from './constants';
+import type {ContractReceipt, ContractTransaction} from 'ethers';
 
 // Finds first event with a given name from the transaction receipt
 export async function getEventFromReceipt(

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
+import {oneDayInMs} from 'constants/time';
+
 import {describe, expect} from '@jest/globals';
 import {constants, utils} from 'ethers';
 import mockConsole from 'jest-mock-console';
@@ -24,8 +26,7 @@ describe('Advanced stakes', () => {
     } = require('../../src/services/rewards'); // eslint-disable-line
 
     const currentTime = new Date('2022-05-17T12:00:00Z'); // 5 days after start
-    const oneDay = 3600 * 24 * 1000;
-    const tenDays = oneDay * 10;
+    const tenDays = oneDayInMs * 10;
     const beforeStart = T_START - tenDays;
     const start = T_START;
     const afterStart = T_START + tenDays;
@@ -145,7 +146,7 @@ describe('Advanced stakes', () => {
                 const unrealizedReward = unrealizedPrpReward(
                     zZkp,
                     start,
-                    start + 365 * oneDay,
+                    start + 365 * oneDayInMs,
                 );
 
                 expect(unrealizedReward.toString()).toEqual('1000');
@@ -156,7 +157,7 @@ describe('Advanced stakes', () => {
                 const unrealizedReward = unrealizedPrpReward(
                     zZkp,
                     start,
-                    start + 185 * oneDay,
+                    start + 185 * oneDayInMs,
                 );
 
                 expect(unrealizedReward.toString()).toEqual('50');
@@ -167,7 +168,7 @@ describe('Advanced stakes', () => {
                 const unrealizedReward = unrealizedPrpReward(
                     zZkp,
                     start,
-                    start + oneDay,
+                    start + oneDayInMs,
                 );
 
                 expect(unrealizedReward.toString()).toEqual('2');
@@ -178,7 +179,7 @@ describe('Advanced stakes', () => {
                 const unrealizedReward = unrealizedPrpReward(
                     zZkp,
                     start,
-                    start + oneDay,
+                    start + oneDayInMs,
                 );
 
                 expect(unrealizedReward.toString()).toEqual('0');

@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {BigNumber} from 'ethers';
 import {safeParseStringToBN} from 'lib/numbers';
 import {createExtraReducers, LoadingStatus} from 'redux/slices/shared';
 import {RootState} from 'redux/store';
@@ -72,10 +73,20 @@ export const totalClaimedRewardsSelector = (state: RootState) => {
         : null;
 };
 
-export const totalVestedRewardsSelector = (state: RootState) => {
+export const totalVestedRewardsSelector = (
+    state: RootState,
+): BigNumber | null => {
     return safeParseStringToBN(
         state.staking.totalsOfAdvancedStakes.value?.vestedRewards,
     );
+};
+
+export const totalLeftRewardsSelector = (
+    state: RootState,
+): BigNumber | null => {
+    const claimed = totalClaimedRewardsSelector(state);
+    const vested = totalVestedRewardsSelector(state);
+    return claimed && vested ? vested.sub(claimed) : null;
 };
 
 export default stakedBalanceSlice.reducer;

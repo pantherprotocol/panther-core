@@ -45,7 +45,6 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
     };
 
     const afterExitTime = exitTime ? exitTime * 1000 < Date.now() : false;
-    const isRedemptionPossible = afterExitTime;
 
     const exitDelay = useAppSelector(poolV0ExitDelaySelector);
     const exitCommitmentTime = reward.exitCommitmentTime;
@@ -55,17 +54,19 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
         exitDelay &&
         exitCommitmentTime + exitDelay < getUnixTime(new Date());
 
+    const inExitCommitmentPeriod = exitCommitmentTime && !isLockPeriodPassed;
+    const selectedInProgress = showExitInProgress && isSelected;
+    const isRedemptionPossible =
+        inExitCommitmentPeriod || selectedInProgress || !afterExitTime;
+
     return (
         <Box>
             <Button
                 variant="contained"
                 className={`redeem-button ${
-                    ((exitCommitmentTime && !isLockPeriodPassed) ||
-                        (showExitInProgress && isSelected) ||
-                        !isRedemptionPossible) &&
-                    'locked-button'
+                    isRedemptionPossible && 'locked-button'
                 }`}
-                disabled={!isRedemptionPossible || showExitInProgress}
+                disabled={!afterExitTime || showExitInProgress}
                 onClick={openWarningDialog}
             >
                 {showExitInProgress && isSelected ? (

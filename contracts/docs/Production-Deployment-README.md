@@ -47,3 +47,45 @@ Since the advanced staking will also be available on the Ethereum Mainnet, we ha
 ```
 
 Congratulation! You have deployed all the contracts needed for Panther Protocol v0.5
+
+## Provide Contracts' Artifacts
+
+After you deployed the contracts, you need to push the artifacts to Git. These artifacts can be found under the [`deployments/mainnet`](../deployments/mainnet) and [`deployments/polygon`](../deployments/polygon) directories.
+
+Here is the name of the artifacts that are expected to be pushed:
+
+- Mainnet artifact:
+
+  - AdvancedStakeRewardAdviserAndMsgSender
+
+- Polygon artifacts:
+  - AdvancedStakeActionMsgRelayer_Implementation
+  - AdvancedStakeActionMsgRelayer_Proxy
+  - AdvancedStakeRewardController
+  - PantherPoolV0_Implementation
+  - PantherPoolV0_Proxy
+  - PNftToken
+  - PoseidonT3
+  - PoseidonT4
+  - Vault_Implementation
+  - Vault_Proxy
+  - ZAssetsRegistry_Implementation
+  - ZAssetsRegistry_Proxy
+
+Let's push these artifacts to the Git. Make sure you are inside the [`contracts`](../contracts) workspace and execute below commands:
+
+Create a new branch and switch to it:
+
+    git checkout -b production-artifacts-v0.5
+
+Add the artifacts to your Git stage:
+
+    git add ./deployments/mainnet ./deployments/polygon  -f
+
+Commit the staged files:
+
+    git commit -m 'add the production artifacts of panther v0.5'
+
+push the files to Git
+
+    git push origin production-artifacts-v0.5

@@ -6,9 +6,9 @@ dataSources:
     name: AdvancedStakeRewardController
     network: matic
     source:
-      address: '0x7d44cf6073340c68ec804260cc20aA84d02Fe46a'
+      address: '0x33562a952550b43580f9ffF3e5a7B3bA375190B6'
       abi: AdvancedStakeRewardController
-      startBlock: 36054096
+      startBlock: 36301274
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -26,9 +26,9 @@ dataSources:
     name: PantherPoolV0
     network: matic
     source:
-      address: '0x5b74E9B0Cb61e17e24d676A9666f4843B74a39Dd'
+      address: '0x9a423671e9Cde99Ae88853B701f98ca9e136877B'
       abi: PantherPoolV0
-      startBlock: 36054096
+      startBlock: 36301252
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5

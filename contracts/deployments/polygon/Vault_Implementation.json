@@ -1,0 +1,324 @@
+{
+  "address": "0xd33B839Cd4f75b860dBF1662C25cfD1dC78B07Ba",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "tokenType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "extAccount",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "extAmount",
+              "type": "uint96"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct LockData",
+          "name": "data",
+          "type": "tuple"
+        }
+      ],
+      "name": "Locked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "tokenType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "extAccount",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "extAmount",
+              "type": "uint96"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct LockData",
+          "name": "data",
+          "type": "tuple"
+        }
+      ],
+      "name": "Unlocked",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "OWNER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "tokenType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "extAccount",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "extAmount",
+              "type": "uint96"
+            }
+          ],
+          "internalType": "struct LockData",
+          "name": "data",
+          "type": "tuple"
+        }
+      ],
+      "name": "lockAsset",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "onERC1155Received",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "onERC721Received",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "tokenType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "extAccount",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "extAmount",
+              "type": "uint96"
+            }
+          ],
+          "internalType": "struct LockData",
+          "name": "data",
+          "type": "tuple"
+        }
+      ],
+      "name": "unlockAsset",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x5a4f581e28864b526e86afe3a17fad5a83b9223c79a3ecafe21b8885c511b8ea",
+  "receipt": {
+    "to": null,
+    "from": "0xf0886ac6B2E9A2A75C9537EAF1A3aa8398FB10e8",
+    "contractAddress": "0xd33B839Cd4f75b860dBF1662C25cfD1dC78B07Ba",
+    "transactionIndex": 53,
+    "gasUsed": "901598",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000008000000000000000000000000000000000000000004000000000000000800000000000000000000100000000000000000000000000000000000000000000000000000000000080000000000000000040000000040000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004000000000000000000001000000000000000000000000000000120000000000000000000000000000000000000000000000002000000000000000000000100000",
+    "blockHash": "0xacff4363732dec4443e439a094c274b3372ac48317eeff2f30ccf078ca0067bf",
+    "transactionHash": "0x5a4f581e28864b526e86afe3a17fad5a83b9223c79a3ecafe21b8885c511b8ea",
+    "logs": [
+      {
+        "transactionIndex": 53,
+        "blockNumber": 36301257,
+        "transactionHash": "0x5a4f581e28864b526e86afe3a17fad5a83b9223c79a3ecafe21b8885c511b8ea",
+        "address": "0x0000000000000000000000000000000000001010",
+        "topics": [
+          "0x4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0x0000000000000000000000000000000000000000000000000000000000001010",
+          "0x000000000000000000000000f0886ac6b2e9a2a75c9537eaf1a3aa8398fb10e8",
+          "0x0000000000000000000000009ead03f7136fc6b4bdb0780b00a1c14ae5a8b6d0"
+        ],
+        "data": "0x000000000000000000000000000000000000000000000000007ea1416e2c790c0000000000000000000000000000000000000000000000000ea9f56af50b59a2000000000000000000000000000000000000000000007d189c78a79de3c3c9b00000000000000000000000000000000000000000000000000e2b542986dee096000000000000000000000000000000000000000000007d189cf748df51f042bc",
+        "logIndex": 168,
+        "blockHash": "0xacff4363732dec4443e439a094c274b3372ac48317eeff2f30ccf078ca0067bf"
+      }
+    ],
+    "blockNumber": 36301257,
+    "cumulativeGasUsed": "7163935",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x9a423671e9Cde99Ae88853B701f98ca9e136877B"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "49300367bcb47864d5852738a8da403e",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.16+commit.07a7930e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint8\",\"name\":\"tokenType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"extAccount\",\"type\":\"address\"},{\"internalType\":\"uint96\",\"name\":\"extAmount\",\"type\":\"uint96\"}],\"indexed\":false,\"internalType\":\"struct LockData\",\"name\":\"data\",\"type\":\"tuple\"}],\"name\":\"Locked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint8\",\"name\":\"tokenType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"extAccount\",\"type\":\"address\"},{\"internalType\":\"uint96\",\"name\":\"extAmount\",\"type\":\"uint96\"}],\"indexed\":false,\"internalType\":\"struct LockData\",\"name\":\"data\",\"type\":\"tuple\"}],\"name\":\"Unlocked\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"OWNER\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint8\",\"name\":\"tokenType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"extAccount\",\"type\":\"address\"},{\"internalType\":\"uint96\",\"name\":\"extAmount\",\"type\":\"uint96\"}],\"internalType\":\"struct LockData\",\"name\":\"data\",\"type\":\"tuple\"}],\"name\":\"lockAsset\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"onERC1155Received\",\"outputs\":[{\"internalType\":\"bytes4\",\"name\":\"\",\"type\":\"bytes4\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"onERC721Received\",\"outputs\":[{\"internalType\":\"bytes4\",\"name\":\"\",\"type\":\"bytes4\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint8\",\"name\":\"tokenType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"extAccount\",\"type\":\"address\"},{\"internalType\":\"uint96\",\"name\":\"extAmount\",\"type\":\"uint96\"}],\"internalType\":\"struct LockData\",\"name\":\"data\",\"type\":\"tuple\"}],\"name\":\"unlockAsset\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Pantherprotocol Contributors\",\"details\":\"It transfers assets from user to itself (Lock) and vice versa (Unlock). `PantherPool` is assumed to be the `owner` that is authorized to trigger locking/unlocking assets.\",\"kind\":\"dev\",\"methods\":{},\"title\":\"Vault\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"OWNER()\":{\"notice\":\"The owner who has privileged rights\"}},\"notice\":\"Holder of assets (tokens) for `PantherPool` contract\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/protocol/Vault.sol\":\"Vault\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":800},\"remappings\":[]},\"sources\":{\"contracts/common/Constants.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n// Constants\\n\\nuint256 constant IN_PRP_UTXOs = 1;\\nuint256 constant IN_UTXOs = 2 + IN_PRP_UTXOs;\\n\\nuint256 constant OUT_PRP_UTXOs = 1;\\nuint256 constant OUT_UTXOs = 2 + OUT_PRP_UTXOs;\\nuint256 constant OUT_MAX_UTXOs = OUT_UTXOs;\\n// Number of UTXOs given as a reward for an \\\"advanced\\\" stake\\nuint256 constant OUT_RWRD_UTXOs = 2;\\n\\n// For overflow protection and circuits optimization\\n// (must be less than the FIELD_SIZE)\\nuint256 constant MAX_EXT_AMOUNT = 2**96;\\nuint256 constant MAX_IN_CIRCUIT_AMOUNT = 2**64;\\nuint256 constant MAX_TIMESTAMP = 2**32;\\nuint256 constant MAX_ZASSET_ID = 2**160;\\n\\n// Token types\\n// (not `enum` to let protocol extensions use bits, if needed)\\nuint8 constant ERC20_TOKEN_TYPE = 0x00;\\nuint8 constant ERC721_TOKEN_TYPE = 0x10;\\nuint8 constant ERC1155_TOKEN_TYPE = 0x11;\\n// defined for every tokenId rather than for all tokens on the contract\\n// (unsupported in the V0 and V1 of the MASP)\\nuint8 constant BY_TOKENID_TOKEN_TYPE = 0xFF;\\n\\n// ZAsset statuses\\n// (not `enum` to let protocol extensions use bits, if needed)\\nuint8 constant zASSET_ENABLED = 0x01;\\nuint8 constant zASSET_DISABLED = 0x02;\\nuint8 constant zASSET_UNKNOWN = 0x00;\\n\\n// UTXO data (opening values - encrypted and public) formats\\nuint8 constant UTXO_DATA_TYPE5 = 0x00; // for zero UTXO (no data to provide)\\nuint8 constant UTXO_DATA_TYPE1 = 0x01; // for UTXO w/ zero tokenId\\nuint8 constant UTXO_DATA_TYPE3 = 0x02; // for UTXO w/ non-zero tokenId\\n\\n// Number of 32-bit words of the CiphertextMsg for UTXO_DATA_TYPE1\\n// (ephemeral key (packed) - 32 bytes, encrypted `random` - 32 bytes)\\nuint256 constant CIPHERTEXT1_WORDS = 2;\\n\\n// Number of 32-bit words in the (uncompressed) spending PubKey\\nuint256 constant PUBKEY_WORDS = 2;\\n// Number of elements in `pathElements`\\nuint256 constant PATH_ELEMENTS_NUM = 16;\\n\",\"keccak256\":\"0x8d696e386e1c6b8c30f1cb244f46f220a8b422d5addedcfe8796e87219eaadd7\",\"license\":\"BUSL-1.1\"},\"contracts/common/ImmutableOwnable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n/// @title Staking\\nabstract contract ImmutableOwnable {\\n    /// @notice The owner who has privileged rights\\n    // solhint-disable-next-line var-name-mixedcase\\n    address public immutable OWNER;\\n\\n    /// @dev Throws if called by any account other than the {OWNER}.\\n    modifier onlyOwner() {\\n        require(OWNER == msg.sender, \\\"ImmOwn: unauthorized\\\");\\n        _;\\n    }\\n\\n    constructor(address _owner) {\\n        require(_owner != address(0), \\\"ImmOwn: zero owner address\\\");\\n        OWNER = _owner;\\n    }\\n}\\n\",\"keccak256\":\"0x50d471ce507ca3796ff407b52d0dffead3b4eb6c0f0afea9350f712f9c5f1416\",\"license\":\"MIT\"},\"contracts/common/TransferHelper.sol\":{\"content\":\"// SPDX-License-Identifier: GPL-3.0-or-later\\n// solhint-disable avoid-low-level-calls\\n// solhint-disable no-inline-assembly\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n/// @title TransferHelper library\\n/// @dev Helper methods for interacting with ERC20, ERC721, ERC1155 tokens and sending ETH\\n/// Based on the Uniswap/solidity-lib/contracts/libraries/TransferHelper.sol\\nlibrary TransferHelper {\\n    /// @dev Throws if the deployed code of the `token` is empty.\\n    // Low-level CALL to a non-existing contract returns `success` of 1 and empty `data`.\\n    // It may be misinterpreted as a successful call to a deployed token contract.\\n    // So, the code calling a token contract must insure the contract code exists.\\n    modifier onlyDeployedToken(address token) {\\n        uint256 codeSize;\\n        // slither-disable-next-line assembly\\n        assembly {\\n            codeSize := extcodesize(token)\\n        }\\n        require(codeSize > 0, \\\"TransferHelper: zero codesize\\\");\\n        _;\\n    }\\n\\n    /// @dev Approve the `operator` to spend all of ERC720 tokens on behalf of `owner`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeSetApprovalForAll(\\n        address token,\\n        address operator,\\n        bool approved\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('setApprovalForAll(address,bool)'));\\n            abi.encodeWithSelector(0xa22cb465, operator, approved)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Get the ERC20 balance of `account`\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeBalanceOf(address token, address account)\\n        internal\\n        returns (uint256 balance)\\n    {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256(bytes('balanceOf(address)')));\\n            abi.encodeWithSelector(0x70a08231, account)\\n        );\\n        require(\\n            // since `data` can't be empty, `onlyDeployedToken` unneeded\\n            success && (data.length != 0),\\n            \\\"TransferHelper: balanceOff call failed\\\"\\n        );\\n\\n        balance = abi.decode(data, (uint256));\\n    }\\n\\n    /// @dev Approve the `spender` to spend the `amount` of ERC20 token on behalf of `owner`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeApprove(\\n        address token,\\n        address to,\\n        uint256 value\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('approve(address,uint256)'));\\n            abi.encodeWithSelector(0x095ea7b3, to, value)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `value` ERC20 tokens from caller to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeTransfer(\\n        address token,\\n        address to,\\n        uint256 value\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('transfer(address,uint256)'));\\n            abi.encodeWithSelector(0xa9059cbb, to, value)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `value` ERC20 tokens on behalf of `from` to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeTransferFrom(\\n        address token,\\n        address from,\\n        address to,\\n        uint256 value\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('transferFrom(address,address,uint256)'));\\n            abi.encodeWithSelector(0x23b872dd, from, to, value)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer an ERC721 token with id of `tokenId` on behalf of `from` to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function erc721SafeTransferFrom(\\n        address token,\\n        uint256 tokenId,\\n        address from,\\n        address to\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('safeTransferFrom(address,address,uint256)'));\\n            abi.encodeWithSelector(0x42842e0e, from, to, tokenId)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `amount` ERC1155 token with id of `tokenId` on behalf of `from` to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function erc1155SafeTransferFrom(\\n        address token,\\n        address from,\\n        address to,\\n        uint256 tokenId,\\n        uint256 amount,\\n        bytes memory _data\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('safeTransferFrom(address,address,uint256,uint256,bytes)'));\\n            abi.encodeWithSelector(0xf242432a, from, to, tokenId, amount, _data)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `value` Ether from caller to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeTransferETH(address to, uint256 value) internal {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, ) = to.call{ value: value }(new bytes(0));\\n        require(success, \\\"TransferHelper: ETH transfer failed\\\");\\n    }\\n\\n    function _requireSuccess(bool success, bytes memory res) private pure {\\n        require(\\n            success && (res.length == 0 || abi.decode(res, (bool))),\\n            \\\"TransferHelper: token contract call failed\\\"\\n        );\\n    }\\n}\\n\",\"keccak256\":\"0xca5a24eae0771696d9bfc96eb4929faa5ab8d1300d3174968653cd22b6348fe4\",\"license\":\"GPL-3.0-or-later\"},\"contracts/common/Types.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\nstruct G1Point {\\n    uint256 x;\\n    uint256 y;\\n}\\n\\n// Encoding of field elements is: X[0] * z + X[1]\\nstruct G2Point {\\n    uint256[2] x;\\n    uint256[2] y;\\n}\\n\\n// Verification key for SNARK\\nstruct VerifyingKey {\\n    G1Point alpha1;\\n    G2Point beta2;\\n    G2Point gamma2;\\n    G2Point delta2;\\n    G1Point[2] ic;\\n}\\n\\nstruct SnarkProof {\\n    G1Point a;\\n    G2Point b;\\n    G1Point c;\\n}\\n\\nstruct PluginData {\\n    address contractAddress;\\n    bytes callData;\\n}\\n\\nstruct ElGamalCiphertext {\\n    G1Point c1;\\n    G1Point c2;\\n}\\n\\n// For MASP V0 and V1\\nstruct ZAsset {\\n    // reserved (for networkId, tokenIdPolicy. etc..)\\n    uint64 _unused;\\n    // 0x00 by default\\n    uint8 version;\\n    // Refer to Constants.sol\\n    uint8 status;\\n    // Refer to Constants.sol\\n    uint8 tokenType;\\n    // 0x00 - no scaling\\n    uint8 scale;\\n    // token contract address\\n    address token;\\n}\\n\\nstruct LockData {\\n    // Refer to Constants.sol\\n    uint8 tokenType;\\n    // Token contract address\\n    address token;\\n    // For ERC-721, ERC-1155 tokens\\n    uint256 tokenId;\\n    // The account to transfer the token from/to (on `lock`/`unlock`)\\n    address extAccount;\\n    // The token amount to transfer to/from the Vault (on `lock`/`unlock`)\\n    uint96 extAmount;\\n}\\n\",\"keccak256\":\"0xf35e4d14f308c3785b2aeae13b3e35054db8791f0e152bd4d174d09bf306393f\",\"license\":\"MIT\"},\"contracts/protocol/Vault.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity 0.8.16;\\n\\nimport { ERC20_TOKEN_TYPE, ERC721_TOKEN_TYPE, ERC1155_TOKEN_TYPE } from \\\"../common/Constants.sol\\\";\\nimport \\\"./errMsgs/VaultErrMsgs.sol\\\";\\nimport \\\"../common/ImmutableOwnable.sol\\\";\\nimport \\\"../common/TransferHelper.sol\\\";\\nimport { LockData } from \\\"../common/Types.sol\\\";\\nimport \\\"./interfaces/IVault.sol\\\";\\nimport \\\"./vault/OnERC1155Received.sol\\\";\\nimport \\\"./vault/OnERC721Received.sol\\\";\\n\\n/**\\n * @title Vault\\n * @author Pantherprotocol Contributors\\n * @notice Holder of assets (tokens) for `PantherPool` contract\\n * @dev It transfers assets from user to itself (Lock) and vice versa (Unlock).\\n * `PantherPool` is assumed to be the `owner` that is authorized to trigger\\n * locking/unlocking assets.\\n */\\ncontract Vault is\\n    ImmutableOwnable,\\n    OnERC721Received,\\n    OnERC1155Received,\\n    IVault\\n{\\n    using TransferHelper for address;\\n\\n    // solhint-disable-next-line no-empty-blocks\\n    constructor(address _owner) ImmutableOwnable(_owner) {\\n        // Proxy-friendly: no storage initialization\\n    }\\n\\n    // The caller (i.e. the owner) is supposed to apply reentrancy guard.\\n    // If an adversarial \\\"token\\\", being called by this function, re-enters it\\n    // directly, `onlyOwner` will revert as `msg.sender` won't be `owner`.\\n    function lockAsset(LockData calldata data)\\n        external\\n        override\\n        onlyOwner\\n        checkLockData(data)\\n    {\\n        if (data.tokenType == ERC20_TOKEN_TYPE) {\\n            // Owner, who only may call this code, is trusted to protect\\n            // against \\\"Arbitrary from in transferFrom\\\" vulnerability\\n            // slither-disable-next-line arbitrary-send-erc20,reentrancy-benign,reentrancy-events\\n            data.token.safeTransferFrom(\\n                data.extAccount,\\n                address(this),\\n                data.extAmount\\n            );\\n        } else if (data.tokenType == ERC721_TOKEN_TYPE) {\\n            // slither-disable-next-line reentrancy-benign,reentrancy-events\\n            data.token.erc721SafeTransferFrom(\\n                data.tokenId,\\n                data.extAccount,\\n                address(this)\\n            );\\n        } else if (data.tokenType == ERC1155_TOKEN_TYPE) {\\n            // slither-disable-next-line reentrancy-benign,reentrancy-events\\n            data.token.erc1155SafeTransferFrom(\\n                data.extAccount,\\n                address(this),\\n                data.tokenId,\\n                uint256(data.extAmount),\\n                new bytes(0)\\n            );\\n        } else {\\n            revert(ERR_INVALID_TOKEN_TYPE);\\n        }\\n\\n        emit Locked(data);\\n    }\\n\\n    // The caller (i.e. the owner) is supposed to apply reentrancy guard.\\n    // If an adversarial \\\"token\\\", being called by this function, re-enters it\\n    // directly, `onlyOwner` will revert as `msg.sender` won't be `owner`.\\n    function unlockAsset(LockData calldata data)\\n        external\\n        override\\n        onlyOwner\\n        checkLockData(data)\\n    {\\n        if (data.tokenType == ERC20_TOKEN_TYPE) {\\n            // slither-disable-next-line reentrancy-benign,reentrancy-events\\n            data.token.safeTransfer(data.extAccount, data.extAmount);\\n        } else if (data.tokenType == ERC721_TOKEN_TYPE) {\\n            // slither-disable-next-line reentrancy-benign,reentrancy-events\\n            data.token.erc721SafeTransferFrom(\\n                data.tokenId,\\n                address(this),\\n                data.extAccount\\n            );\\n        } else if (data.tokenType == ERC1155_TOKEN_TYPE) {\\n            // slither-disable-next-line reentrancy-benign,reentrancy-events\\n            data.token.erc1155SafeTransferFrom(\\n                address(this),\\n                data.extAccount,\\n                data.tokenId,\\n                data.extAmount,\\n                new bytes(0)\\n            );\\n        } else {\\n            revert(ERR_INVALID_TOKEN_TYPE);\\n        }\\n\\n        emit Unlocked(data);\\n    }\\n\\n    modifier checkLockData(LockData calldata data) {\\n        require(data.token != address(0), ERR_ZERO_LOCK_TOKEN_ADDR);\\n        require(data.extAccount != address(0), ERR_ZERO_EXT_ACCOUNT_ADDR);\\n        require(data.extAmount > 0, ERR_ZERO_EXT_AMOUNT);\\n        _;\\n    }\\n}\\n\",\"keccak256\":\"0xa231c8ef46d5a1bc8bf09fd495cf780ccafc434d89b44c21441fe8e5bc51ab2f\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/errMsgs/VaultErrMsgs.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nstring constant ERR_INVALID_TOKEN_TYPE = \\\"VA:E1\\\";\\nstring constant ERR_ZERO_LOCK_TOKEN_ADDR = \\\"VA:E2\\\";\\nstring constant ERR_ZERO_EXT_ACCOUNT_ADDR = \\\"VA:E3\\\";\\nstring constant ERR_ZERO_EXT_AMOUNT = \\\"VA:E4\\\";\\n\",\"keccak256\":\"0x35acf825485f1d68833e2f2047f40c76d2447fd0a8d5df901c4a8f78d34924b3\",\"license\":\"BUSL-1.1\"},\"contracts/protocol/interfaces/IVault.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { LockData } from \\\"../../common/Types.sol\\\";\\n\\ninterface IVault {\\n    function lockAsset(LockData calldata data) external;\\n\\n    function unlockAsset(LockData memory data) external;\\n\\n    event Locked(LockData data);\\n    event Unlocked(LockData data);\\n}\\n\",\"keccak256\":\"0x1f347e5e3084c73a568801fd5e67c96e7881b62c68cc015e64c52410da348366\",\"license\":\"MIT\"},\"contracts/protocol/vault/OnERC1155Received.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\n/// @dev Implementation of ERC1155:onERC1155Received interface\\nabstract contract OnERC1155Received {\\n    // It accepts all tokens\\n    function onERC1155Received(\\n        address, /* operator */\\n        address, /* from */\\n        uint256, /* id */\\n        uint256, /* value */\\n        bytes calldata /* data */\\n    ) external pure virtual returns (bytes4) {\\n        // bytes4(keccak256(\\\"onERC1155Received(address,address,uint256,uint256,bytes)\\\"))\\n        return 0xf23a6e61;\\n    }\\n}\\n\",\"keccak256\":\"0x85c18ccef6eb1e231a6c2cf7f48fc65a480a594939adfe6f05489c4daaf8f146\",\"license\":\"MIT\"},\"contracts/protocol/vault/OnERC721Received.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\n/// @dev Implementation of the ERC721TokenReceiver interface\\nabstract contract OnERC721Received {\\n    // It accepts all tokens\\n    function onERC721Received(\\n        address, // operator\\n        address, // from\\n        uint256, // tokenId\\n        bytes memory // data\\n    ) external virtual returns (bytes4) {\\n        // bytes4(keccak256(\\\"onERC721Received(address,address,uint256,bytes)\\\"))\\n        return 0x150b7a02;\\n    }\\n}\\n\",\"keccak256\":\"0x66fd309d54b5f49fe249654968fc208b69bc379f44c1309032418dabc8f3cb71\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60a060405234801561001057600080fd5b5060405161104538038061104583398101604081905261002f9161009c565b806001600160a01b03811661008a5760405162461bcd60e51b815260206004820152601a60248201527f496d6d4f776e3a207a65726f206f776e65722061646472657373000000000000604482015260640160405180910390fd5b6001600160a01b0316608052506100cc565b6000602082840312156100ae57600080fd5b81516001600160a01b03811681146100c557600080fd5b9392505050565b608051610f516100f46000396000818160710152818161014901526104a40152610f516000f3fe608060405234801561001057600080fd5b50600436106100675760003560e01c80635bd3e6c0116100505780635bd3e6c0146100ff5780637441ba2414610114578063f23a6e611461012757600080fd5b8063117803e31461006c578063150b7a02146100b0575b600080fd5b6100937f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b6100ce6100be366004610bcf565b630a85bd0160e11b949350505050565b6040517fffffffff0000000000000000000000000000000000000000000000000000000090911681526020016100a7565b61011261010d366004610cab565b610147565b005b610112610122366004610cab565b6104a2565b6100ce610135366004610cc3565b63f23a6e6160e01b9695505050505050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146101c45760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a656400000000000000000000000060448201526064015b60405180910390fd5b8060006101d76040830160208401610d69565b6001600160a01b03161415604051806040016040528060058152602001642b209d229960d91b8152509061021e5760405162461bcd60e51b81526004016101bb9190610ddb565b5060006102316080830160608401610d69565b6001600160a01b031614156040518060400160405280600581526020016456413a453360d81b815250906102785760405162461bcd60e51b81526004016101bb9190610ddb565b50600061028b60a0830160808401610e0a565b6bffffffffffffffffffffffff16116040518060400160405280600581526020016415904e914d60da1b815250906102d65760405162461bcd60e51b81526004016101bb9190610ddb565b5060006102e66020840184610e36565b60ff16036103445761033f6103016080840160608501610d69565b61031160a0850160808601610e0a565b6bffffffffffffffffffffffff1661032f6040860160208701610d69565b6001600160a01b0316919061074b565b610467565b60106103536020840184610e36565b60ff16036103955761033f6040830135306103746080860160608701610d69565b6103846040870160208801610d69565b6001600160a01b0316929190610851565b60116103a46020840184610e36565b60ff160361041c5761033f306103c06080850160608601610d69565b60408501356103d560a0870160808801610e0a565b604080516000808252602082019092526bffffffffffffffffffffffff929092169190506104096040890160208a01610d69565b6001600160a01b03169493929190610969565b604080518082018252600581527f56413a45310000000000000000000000000000000000000000000000000000006020820152905162461bcd60e51b81526101bb9190600401610ddb565b7f2437c8e0ff3ebf9cffe6210e0d3eeeba5191660e089a6cc3c9b146acf69bb0e9826040516104969190610e51565b60405180910390a15050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461051a5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a656400000000000000000000000060448201526064016101bb565b80600061052d6040830160208401610d69565b6001600160a01b03161415604051806040016040528060058152602001642b209d229960d91b815250906105745760405162461bcd60e51b81526004016101bb9190610ddb565b5060006105876080830160608401610d69565b6001600160a01b031614156040518060400160405280600581526020016456413a453360d81b815250906105ce5760405162461bcd60e51b81526004016101bb9190610ddb565b5060006105e160a0830160808401610e0a565b6bffffffffffffffffffffffff16116040518060400160405280600581526020016415904e914d60da1b8152509061062c5760405162461bcd60e51b81526004016101bb9190610ddb565b50600061063c6020840184610e36565b60ff160361069c576106976106576080840160608501610d69565b3061066860a0860160808701610e0a565b6bffffffffffffffffffffffff166106866040870160208801610d69565b6001600160a01b0316929190610a7a565b61071c565b60106106ab6020840184610e36565b60ff16036106dc5761069760408301356106cb6080850160608601610d69565b306103846040870160208801610d69565b60116106eb6020840184610e36565b60ff160361041c576106976107066080840160608501610d69565b3060408501356103d560a0870160808801610e0a565b7f19437e3e1b685db6090b1c6e20adf08b5e54b6ad91e1422dfe7fe4345abbd048826040516104969190610e51565b82803b8061079b5760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a6500000060448201526064016101bb565b604080516001600160a01b038681166024830152604480830187905283518084039091018152606490920183526020820180516001600160e01b031663a9059cbb60e01b17905291516000928392908916916107f79190610ec3565b6000604051808303816000865af19150503d8060008114610834576040519150601f19603f3d011682016040523d82523d6000602084013e610839565b606091505b50915091506108488282610b02565b50505050505050565b83803b806108a15760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a6500000060448201526064016101bb565b6040516001600160a01b03858116602483015284811660448301526064820187905260009182918916906342842e0e906084015b6040516020818303038152906040529060e01b6020820180516001600160e01b03838183161783525050505060405161090e9190610ec3565b6000604051808303816000865af19150503d806000811461094b576040519150601f19603f3d011682016040523d82523d6000602084013e610950565b606091505b509150915061095f8282610b02565b5050505050505050565b85803b806109b95760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a6500000060448201526064016101bb565b600080896001600160a01b031663f242432a8a8a8a8a8a6040516024016109e4959493929190610edf565b6040516020818303038152906040529060e01b6020820180516001600160e01b038381831617835250505050604051610a1d9190610ec3565b6000604051808303816000865af19150503d8060008114610a5a576040519150601f19603f3d011682016040523d82523d6000602084013e610a5f565b606091505b5091509150610a6e8282610b02565b50505050505050505050565b83803b80610aca5760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a6500000060448201526064016101bb565b6040516001600160a01b03868116602483015285811660448301526064820185905260009182918916906323b872dd906084016108d5565b818015610b27575080511580610b27575080806020019051810190610b279190610f22565b610b995760405162461bcd60e51b815260206004820152602a60248201527f5472616e7366657248656c7065723a20746f6b656e20636f6e7472616374206360448201527f616c6c206661696c65640000000000000000000000000000000000000000000060648201526084016101bb565b5050565b80356001600160a01b0381168114610bb457600080fd5b919050565b634e487b7160e01b600052604160045260246000fd5b60008060008060808587031215610be557600080fd5b610bee85610b9d565b9350610bfc60208601610b9d565b925060408501359150606085013567ffffffffffffffff80821115610c2057600080fd5b818701915087601f830112610c3457600080fd5b813581811115610c4657610c46610bb9565b604051601f8201601f19908116603f01168101908382118183101715610c6e57610c6e610bb9565b816040528281528a6020848701011115610c8757600080fd5b82602086016020830137600060208483010152809550505050505092959194509250565b600060a08284031215610cbd57600080fd5b50919050565b60008060008060008060a08789031215610cdc57600080fd5b610ce587610b9d565b9550610cf360208801610b9d565b94506040870135935060608701359250608087013567ffffffffffffffff80821115610d1e57600080fd5b818901915089601f830112610d3257600080fd5b813581811115610d4157600080fd5b8a6020828501011115610d5357600080fd5b6020830194508093505050509295509295509295565b600060208284031215610d7b57600080fd5b610d8482610b9d565b9392505050565b60005b83811015610da6578181015183820152602001610d8e565b50506000910152565b60008151808452610dc7816020860160208601610d8b565b601f01601f19169290920160200192915050565b602081526000610d846020830184610daf565b80356bffffffffffffffffffffffff81168114610bb457600080fd5b600060208284031215610e1c57600080fd5b610d8482610dee565b803560ff81168114610bb457600080fd5b600060208284031215610e4857600080fd5b610d8482610e25565b60a0810160ff610e6084610e25565b168252610e6f60208401610b9d565b6001600160a01b0380821660208501526040850135604085015280610e9660608701610b9d565b16606085015250506bffffffffffffffffffffffff610eb760808501610dee565b16608083015292915050565b60008251610ed5818460208701610d8b565b9190910192915050565b60006001600160a01b03808816835280871660208401525084604083015283606083015260a06080830152610f1760a0830184610daf565b979650505050505050565b600060208284031215610f3457600080fd5b81518015158114610d8457600080fdfea164736f6c6343000810000a",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100675760003560e01c80635bd3e6c0116100505780635bd3e6c0146100ff5780637441ba2414610114578063f23a6e611461012757600080fd5b8063117803e31461006c578063150b7a02146100b0575b600080fd5b6100937f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b6100ce6100be366004610bcf565b630a85bd0160e11b949350505050565b6040517fffffffff0000000000000000000000000000000000000000000000000000000090911681526020016100a7565b61011261010d366004610cab565b610147565b005b610112610122366004610cab565b6104a2565b6100ce610135366004610cc3565b63f23a6e6160e01b9695505050505050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146101c45760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a656400000000000000000000000060448201526064015b60405180910390fd5b8060006101d76040830160208401610d69565b6001600160a01b03161415604051806040016040528060058152602001642b209d229960d91b8152509061021e5760405162461bcd60e51b81526004016101bb9190610ddb565b5060006102316080830160608401610d69565b6001600160a01b031614156040518060400160405280600581526020016456413a453360d81b815250906102785760405162461bcd60e51b81526004016101bb9190610ddb565b50600061028b60a0830160808401610e0a565b6bffffffffffffffffffffffff16116040518060400160405280600581526020016415904e914d60da1b815250906102d65760405162461bcd60e51b81526004016101bb9190610ddb565b5060006102e66020840184610e36565b60ff16036103445761033f6103016080840160608501610d69565b61031160a0850160808601610e0a565b6bffffffffffffffffffffffff1661032f6040860160208701610d69565b6001600160a01b0316919061074b565b610467565b60106103536020840184610e36565b60ff16036103955761033f6040830135306103746080860160608701610d69565b6103846040870160208801610d69565b6001600160a01b0316929190610851565b60116103a46020840184610e36565b60ff160361041c5761033f306103c06080850160608601610d69565b60408501356103d560a0870160808801610e0a565b604080516000808252602082019092526bffffffffffffffffffffffff929092169190506104096040890160208a01610d69565b6001600160a01b03169493929190610969565b604080518082018252600581527f56413a45310000000000000000000000000000000000000000000000000000006020820152905162461bcd60e51b81526101bb9190600401610ddb565b7f2437c8e0ff3ebf9cffe6210e0d3eeeba5191660e089a6cc3c9b146acf69bb0e9826040516104969190610e51565b60405180910390a15050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461051a5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a656400000000000000000000000060448201526064016101bb565b80600061052d6040830160208401610d69565b6001600160a01b03161415604051806040016040528060058152602001642b209d229960d91b815250906105745760405162461bcd60e51b81526004016101bb9190610ddb565b5060006105876080830160608401610d69565b6001600160a01b031614156040518060400160405280600581526020016456413a453360d81b815250906105ce5760405162461bcd60e51b81526004016101bb9190610ddb565b5060006105e160a0830160808401610e0a565b6bffffffffffffffffffffffff16116040518060400160405280600581526020016415904e914d60da1b8152509061062c5760405162461bcd60e51b81526004016101bb9190610ddb565b50600061063c6020840184610e36565b60ff160361069c576106976106576080840160608501610d69565b3061066860a0860160808701610e0a565b6bffffffffffffffffffffffff166106866040870160208801610d69565b6001600160a01b0316929190610a7a565b61071c565b60106106ab6020840184610e36565b60ff16036106dc5761069760408301356106cb6080850160608601610d69565b306103846040870160208801610d69565b60116106eb6020840184610e36565b60ff160361041c576106976107066080840160608501610d69565b3060408501356103d560a0870160808801610e0a565b7f19437e3e1b685db6090b1c6e20adf08b5e54b6ad91e1422dfe7fe4345abbd048826040516104969190610e51565b82803b8061079b5760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a6500000060448201526064016101bb565b604080516001600160a01b038681166024830152604480830187905283518084039091018152606490920183526020820180516001600160e01b031663a9059cbb60e01b17905291516000928392908916916107f79190610ec3565b6000604051808303816000865af19150503d8060008114610834576040519150601f19603f3d011682016040523d82523d6000602084013e610839565b606091505b50915091506108488282610b02565b50505050505050565b83803b806108a15760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a6500000060448201526064016101bb565b6040516001600160a01b03858116602483015284811660448301526064820187905260009182918916906342842e0e906084015b6040516020818303038152906040529060e01b6020820180516001600160e01b03838183161783525050505060405161090e9190610ec3565b6000604051808303816000865af19150503d806000811461094b576040519150601f19603f3d011682016040523d82523d6000602084013e610950565b606091505b509150915061095f8282610b02565b5050505050505050565b85803b806109b95760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a6500000060448201526064016101bb565b600080896001600160a01b031663f242432a8a8a8a8a8a6040516024016109e4959493929190610edf565b6040516020818303038152906040529060e01b6020820180516001600160e01b038381831617835250505050604051610a1d9190610ec3565b6000604051808303816000865af19150503d8060008114610a5a576040519150601f19603f3d011682016040523d82523d6000602084013e610a5f565b606091505b5091509150610a6e8282610b02565b50505050505050505050565b83803b80610aca5760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a6500000060448201526064016101bb565b6040516001600160a01b03868116602483015285811660448301526064820185905260009182918916906323b872dd906084016108d5565b818015610b27575080511580610b27575080806020019051810190610b279190610f22565b610b995760405162461bcd60e51b815260206004820152602a60248201527f5472616e7366657248656c7065723a20746f6b656e20636f6e7472616374206360448201527f616c6c206661696c65640000000000000000000000000000000000000000000060648201526084016101bb565b5050565b80356001600160a01b0381168114610bb457600080fd5b919050565b634e487b7160e01b600052604160045260246000fd5b60008060008060808587031215610be557600080fd5b610bee85610b9d565b9350610bfc60208601610b9d565b925060408501359150606085013567ffffffffffffffff80821115610c2057600080fd5b818701915087601f830112610c3457600080fd5b813581811115610c4657610c46610bb9565b604051601f8201601f19908116603f01168101908382118183101715610c6e57610c6e610bb9565b816040528281528a6020848701011115610c8757600080fd5b82602086016020830137600060208483010152809550505050505092959194509250565b600060a08284031215610cbd57600080fd5b50919050565b60008060008060008060a08789031215610cdc57600080fd5b610ce587610b9d565b9550610cf360208801610b9d565b94506040870135935060608701359250608087013567ffffffffffffffff80821115610d1e57600080fd5b818901915089601f830112610d3257600080fd5b813581811115610d4157600080fd5b8a6020828501011115610d5357600080fd5b6020830194508093505050509295509295509295565b600060208284031215610d7b57600080fd5b610d8482610b9d565b9392505050565b60005b83811015610da6578181015183820152602001610d8e565b50506000910152565b60008151808452610dc7816020860160208601610d8b565b601f01601f19169290920160200192915050565b602081526000610d846020830184610daf565b80356bffffffffffffffffffffffff81168114610bb457600080fd5b600060208284031215610e1c57600080fd5b610d8482610dee565b803560ff81168114610bb457600080fd5b600060208284031215610e4857600080fd5b610d8482610e25565b60a0810160ff610e6084610e25565b168252610e6f60208401610b9d565b6001600160a01b0380821660208501526040850135604085015280610e9660608701610b9d565b16606085015250506bffffffffffffffffffffffff610eb760808501610dee565b16608083015292915050565b60008251610ed5818460208701610d8b565b9190910192915050565b60006001600160a01b03808816835280871660208401525084604083015283606083015260a06080830152610f1760a0830184610daf565b979650505050505050565b600060208284031215610f3457600080fd5b81518015158114610d8457600080fdfea164736f6c6343000810000a",
+  "devdoc": {
+    "author": "Pantherprotocol Contributors",
+    "details": "It transfers assets from user to itself (Lock) and vice versa (Unlock). `PantherPool` is assumed to be the `owner` that is authorized to trigger locking/unlocking assets.",
+    "kind": "dev",
+    "methods": {},
+    "title": "Vault",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "OWNER()": {
+        "notice": "The owner who has privileged rights"
+      }
+    },
+    "notice": "Holder of assets (tokens) for `PantherPool` contract",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}

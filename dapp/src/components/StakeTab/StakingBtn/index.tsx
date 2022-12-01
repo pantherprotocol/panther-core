@@ -19,7 +19,10 @@ import {safeParseUnits} from 'lib/numbers';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {calculatedRewardsSelector} from 'redux/slices/staking/advanced-stake-predicted-rewards';
 import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/total-unclaimed-classic-rewards';
-import {getTotalsOfAdvancedStakes} from 'redux/slices/staking/totals-of-advanced-stakes';
+import {
+    getTotalsOfAdvancedStakes,
+    totalLeftRewardsSelector,
+} from 'redux/slices/staking/totals-of-advanced-stakes';
 import {getZkpStakedBalance} from 'redux/slices/staking/zkp-staked-balance';
 import {
     startWalletAction,
@@ -46,14 +49,21 @@ const getButtonText = (
     amount: string | null,
     amountBN: BigNumber | null,
     minStake: number | null,
+    maxZZkpReward: BigNumber | null,
     tokenBalance: BigNumber | null,
     zZkpBN: BigNumber | null | undefined,
 ): [string, boolean] => {
     if (minStake === null) {
         return ["Couldn't get minimum stake", false];
     }
+    if (maxZZkpReward === null) {
+        return ["Couldn't get max zZKP reward", false];
+    }
     if (!tokenBalance) {
         return ["Couldn't get token balance", false];
+    }
+    if (!zZkpBN) {
+        return ["Couldn't get zZKP reward estimate", false];
     }
     if (!amount || !amountBN) {
         return ['Enter amount of ZKP to stake above', false];
@@ -69,7 +79,7 @@ const getButtonText = (
     }
 
     if (amountBN.gte(utils.parseEther(minStake.toString()))) {
-        if (!zZkpBN || zZkpBN.lt(utils.parseEther('0.01'))) {
+        if (zZkpBN.lt(utils.parseEther('0.01'))) {
             console.debug(
                 `Insufficient zZKP rewards to stake: ${utils.formatEther(
                     zZkpBN!,
@@ -77,6 +87,19 @@ const getButtonText = (
             );
 
             return ['Insufficient zZKP rewards to stake', false];
+        }
+
+        if (zZkpBN.gt(maxZZkpReward)) {
+            console.debug(
+                'The reward cannot be greater than available in the pool',
+            );
+
+            return [
+                `The reward cannot be greater than available in the pool: ${utils.formatEther(
+                    maxZZkpReward,
+                )} zZKP`,
+                false,
+            ];
         }
 
         console.debug(
@@ -108,20 +131,17 @@ const StakingBtn = (props: {
     const {account, library, chainId} = context;
     const dispatch = useAppDispatch();
 
-    const {
-        amountToStake,
-
-        minStake,
-        tokenBalance,
-    } = props;
+    const {amountToStake, minStake, tokenBalance} = props;
 
     const rewards = useAppSelector(calculatedRewardsSelector);
     const zZkpBN = rewards?.[StakingRewardTokenID.zZKP];
+    const maxZZkpReward = useAppSelector(totalLeftRewardsSelector);
 
     const [buttonText, ready] = getButtonText(
         amountToStake,
         amountToStakeBN,
         minStake,
+        maxZZkpReward,
         tokenBalance,
         zZkpBN,
     );

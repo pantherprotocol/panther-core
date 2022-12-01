@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
+import {oneDayInMs} from 'constants/time';
+
 import {formatDistance, formatDistanceToNowStrict} from 'date-fns';
 import {BigNumber, utils} from 'ethers';
 
@@ -128,10 +130,8 @@ export function formatRemainingPeriod(end: Date): string {
     const periodInMs = end.getTime() - now.getTime();
     if (periodInMs < 0) return '-';
 
-    const oneDayMs = 60 * 60 * 24 * 1000;
-
     return formatDistanceToNowStrict(end, {
-        unit: periodInMs > oneDayMs ? 'day' : 'hour',
+        unit: periodInMs > oneDayInMs ? 'day' : 'hour',
         roundingMethod: 'ceil',
     });
 }

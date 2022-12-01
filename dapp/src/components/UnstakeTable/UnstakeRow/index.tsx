@@ -6,7 +6,7 @@ import React from 'react';
 import {TableCell, TableRow, Typography} from '@mui/material';
 import ExactValueTooltip from 'components/Common/ExactValueTooltip';
 import UnstakeButton from 'components/UnstakeTable/UnstakeButton';
-import {BigNumber, utils} from 'ethers';
+import {BigNumber, constants, utils} from 'ethers';
 import {formatCurrency, formatTime} from 'lib/format';
 import {WalletActionTrigger} from 'redux/slices/ui/web3-wallet-last-action';
 import {chainHasPoolContract} from 'services/contracts';
@@ -96,10 +96,12 @@ const UnstakeRow = (props: {
                             <span className="amount">
                                 {chainId && chainHasPoolContract(chainId)
                                     ? utils.formatUnits(
-                                          getRewards(
-                                              row,
-                                              StakingRewardTokenID.PRP,
-                                          ),
+                                          row.stakeType === CLASSIC_TYPE_HEX
+                                              ? constants.Zero
+                                              : getRewards(
+                                                    row,
+                                                    StakingRewardTokenID.PRP,
+                                                ),
                                           0,
                                       )
                                     : '0'}

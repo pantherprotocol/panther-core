@@ -7,6 +7,7 @@ import {
     getContractEnvAddress,
     verifyUserConsentOnProd,
 } from '../../lib/deploymentHelpers';
+import {isProd} from '../../lib/checkNetwork';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
@@ -15,7 +16,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     await verifyUserConsentOnProd(hre, deployer);
     if (reuseEnvAddress(hre, 'ADVANCED_STAKE_REWARD_CONTROLLER')) return;
-
+    let owner: string;
+    if (isProd(hre))
+        owner =
+            process.env.DAO_MULTISIG_ADDRESS ||
+            (await getNamedAccounts()).multisig;
+    else owner = deployer;
     const zkpToken = getContractEnvAddress(hre, 'ZKP_TOKEN');
     const pNftToken = await getContractAddress(hre, 'PNftToken', 'PNFT_TOKEN');
     const rewardMaster = await getContractAddress(
@@ -31,7 +37,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     await deploy('AdvancedStakeRewardController', {
         from: deployer,
-        args: [deployer, rewardMaster, pantherPool, zkpToken, pNftToken],
+        args: [owner, rewardMaster, pantherPool, zkpToken, pNftToken],
         log: true,
         autoMine: true,
     });

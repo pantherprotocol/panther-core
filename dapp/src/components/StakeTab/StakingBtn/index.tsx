@@ -16,6 +16,7 @@ import {BigNumber, utils} from 'ethers';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {formatCurrency} from 'lib/format';
 import {safeParseUnits} from 'lib/numbers';
+import {sleep} from 'lib/time';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {calculatedRewardsSelector} from 'redux/slices/staking/advanced-stake-predicted-rewards';
 import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/total-unclaimed-classic-rewards';
@@ -279,15 +280,18 @@ const StakingBtn = (props: {
                 withRetry: true,
             });
 
-            dispatch(
-                registerWalletActionSuccess,
-                'getAdvancedStakesRewardsAndUpdateStatus',
-            );
             dispatch(getTotalsOfAdvancedStakes, context);
             dispatch(getZkpStakedBalance, context);
             dispatch(getZkpTokenBalance, context);
             dispatch(getTotalUnclaimedClassicRewards, context);
             dispatch(getChainBalance, context);
+            // sleeping for 10 seconds to give nonce to propagate to all nodes
+            // before staking the next time
+            await sleep(10000);
+            dispatch(
+                registerWalletActionSuccess,
+                'getAdvancedStakesRewardsAndUpdateStatus',
+            );
         },
         [library, account, chainId, context, dispatch, tokenBalance],
     );

@@ -44,3 +44,7 @@ Go to `https://thegraph.com/explorer/subgraph/<GITHUB_USERNAME>/<SUBGRAPH NAME>`
 Do not forget to compare the deployment ID that you have seen in your terminal (i.e., `QmfD72g6naqX1B3JgAzEzf1n9yjmqzEGWdtmGEUm9u2vGm`) with the deployment ID that you see in the browser.
 
 For more detailed information, please checkout the [thegraph](https://thegraph.com/docs/en/deploying/deploying-a-subgraph-to-hosted/) deployment documents
+
+cryptoefelle https://thegraph.com/explorer/subgraph/cryptoefelle/panther
+ID QmZPs5CFi5vpZW73DmwF5VMzt5CYvFX7vD9Ez9gkZteuRd
+

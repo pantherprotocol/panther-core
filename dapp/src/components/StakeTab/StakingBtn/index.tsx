@@ -18,7 +18,11 @@ import {formatCurrency} from 'lib/format';
 import {safeParseUnits} from 'lib/numbers';
 import {sleep} from 'lib/time';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
-import {calculatedRewardsSelector} from 'redux/slices/staking/advanced-stake-predicted-rewards';
+import {
+    calculatedRewardsSelector,
+    resetRewards,
+} from 'redux/slices/staking/advanced-stake-predicted-rewards';
+import {resetStakeAmount} from 'redux/slices/staking/stake-amount';
 import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/total-unclaimed-classic-rewards';
 import {
     getTotalsOfAdvancedStakes,
@@ -63,12 +67,13 @@ const getButtonText = (
     if (!tokenBalance) {
         return ["Couldn't get token balance", false];
     }
-    if (!zZkpBN) {
-        return ["Couldn't get zZKP reward estimate", false];
-    }
     if (!amount || !amountBN) {
         return ['Enter amount of ZKP to stake above', false];
     }
+    if (!zZkpBN) {
+        return ["Couldn't get zZKP reward estimate", false];
+    }
+
     if (amountBN.gt(tokenBalance)) {
         console.debug(
             'Insufficient ZKP balance:',
@@ -285,6 +290,8 @@ const StakingBtn = (props: {
             dispatch(getZkpTokenBalance, context);
             dispatch(getTotalUnclaimedClassicRewards, context);
             dispatch(getChainBalance, context);
+            dispatch(resetStakeAmount);
+            dispatch(resetRewards);
             // sleeping for 10 seconds to give nonce to propagate to all nodes
             // before staking the next time
             await sleep(10000);

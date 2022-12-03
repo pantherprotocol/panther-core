@@ -8,7 +8,10 @@ import {Button, Box} from '@mui/material';
 import RedeemRewardsWarningDialog from 'components/ZAssets/PrivateZAssetsTable/RedeemRewardsWarningDialog';
 import {getUnixTime} from 'date-fns';
 import {useAppSelector} from 'redux/hooks';
-import {showWalletActionInProgressSelector} from 'redux/slices/ui/web3-wallet-last-action';
+import {
+    showWalletActionInProgressSelector,
+    walletActionStatusSelector,
+} from 'redux/slices/ui/web3-wallet-last-action';
 import {
     poolV0ExitDelaySelector,
     poolV0ExitTimeSelector,
@@ -35,6 +38,10 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
         showWalletActionInProgressSelector('exit'),
     );
 
+    const walletActionStatus = useAppSelector(walletActionStatusSelector);
+
+    const anotherActionInProgress = walletActionStatus === 'in progress';
+
     const openWarningDialog = () => {
         onSelectReward(reward.id);
         setWarningDialogShown(true);
@@ -57,7 +64,10 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
     const inExitCommitmentPeriod = exitCommitmentTime && !isLockPeriodPassed;
     const selectedInProgress = showExitInProgress && isSelected;
     const isRedemptionPossible =
-        inExitCommitmentPeriod || selectedInProgress || !afterExitTime;
+        inExitCommitmentPeriod ||
+        selectedInProgress ||
+        !afterExitTime ||
+        anotherActionInProgress;
 
     return (
         <Box>
@@ -66,7 +76,11 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
                 className={`redeem-button ${
                     isRedemptionPossible && 'locked-button'
                 }`}
-                disabled={!afterExitTime || showExitInProgress}
+                disabled={
+                    !afterExitTime ||
+                    showExitInProgress ||
+                    anotherActionInProgress
+                }
                 onClick={openWarningDialog}
             >
                 {showExitInProgress && isSelected ? (

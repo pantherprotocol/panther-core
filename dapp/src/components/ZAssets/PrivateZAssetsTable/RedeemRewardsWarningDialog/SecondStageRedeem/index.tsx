@@ -57,11 +57,8 @@ export default function SecondStageRedeem(props: {
     const now = getUnixTime(new Date());
     const [timeToWait, setTimeToWait] = useState<string>('');
     const [progress, setProgress] = useState(0);
-
-    const isLockPeriodPassed =
-        exitCommitmentTime &&
-        exitDelay &&
-        exitCommitmentTime + exitDelay < getUnixTime(new Date());
+    const [isLockPeriodPassed, setIsLockPeriodPassed] =
+        useState<boolean>(false);
 
     const closeModalAndRedeem = () => {
         handleClose();
@@ -193,6 +190,13 @@ export default function SecondStageRedeem(props: {
                     1,
                 ) * 100,
             );
+            const isLockPeriodPassed = !!(
+                exitCommitmentTime &&
+                exitDelay &&
+                exitCommitmentTime + exitDelay < getUnixTime(new Date())
+            );
+
+            setIsLockPeriodPassed(isLockPeriodPassed);
         }, 1000);
 
         return () => {
@@ -263,9 +267,8 @@ export default function SecondStageRedeem(props: {
                     <PrimaryActionButton
                         onClick={closeModalAndRedeem}
                         disabled={!isLockPeriodPassed}
-                        styles={`redeem-modal-button ${
-                            !isLockPeriodPassed && 'disabled'
-                        }`}
+                        styles={`redeem-modal-button 
+                        ${!isLockPeriodPassed && 'disabled'}`}
                     >
                         {isLockPeriodPassed ? (
                             <Typography>Redeem {zZKP} ZKP</Typography>

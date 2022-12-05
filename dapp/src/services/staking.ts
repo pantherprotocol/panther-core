@@ -495,7 +495,7 @@ async function calculateRewardsWithReporter(
         totalStaked,
         stakes[0].map((stake: IStakingTypes.StakeStructOutput, i: number) => {
             return {
-                ...stake,
+                ...formatStakeWithoutReward(stake),
                 reward: calculateRewardsForStake(
                     stake,
                     rewardsBalance,
@@ -531,9 +531,9 @@ async function calculateRewardsWithoutReporter(
 
     return [
         totalStaked,
-        stakes.map(stake => {
+        stakes.map((stake: IStakingTypes.StakeStructOutput) => {
             return {
-                ...stake,
+                ...formatStakeWithoutReward(stake),
                 reward: calculateRewardsForStake(
                     stake,
                     rewardsBalance,
@@ -623,4 +623,17 @@ export async function getStakingTermsFromContract(
     const stakingContract = getStakingContract(library, chainId);
     const stakingTypeHex = utils.id(stakeType).slice(0, 10);
     return await stakingContract.terms(stakingTypeHex);
+}
+
+function formatStakeWithoutReward(
+    stake: IStakingTypes.StakeStructOutput,
+): Omit<StakeRow, 'reward'> {
+    return {
+        id: stake.id,
+        stakeType: stake.stakeType,
+        stakedAt: stake.stakedAt,
+        amount: stake.amount,
+        lockedTill: stake.lockedTill,
+        claimedAt: stake.claimedAt,
+    };
 }

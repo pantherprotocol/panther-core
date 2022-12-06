@@ -8,6 +8,7 @@ import storage from 'redux-persist/lib/storage';
 import acknowledgedNotificationsReducer from './acknowledged-notifications';
 import blurReducer from './blur';
 import isWalletConnectedReducer from './is-wallet-connected';
+import isWalletUpdatingReducer from './is-wallet-updating';
 import Web3WalletLastActionReducer from './web3-wallet-last-action';
 
 const uiPersistConfig = {
@@ -17,6 +18,7 @@ const uiPersistConfig = {
 };
 
 const reducer = combineReducers({
+    isWalletUpdating: isWalletUpdatingReducer,
     blur: blurReducer,
     Web3WalletLastAction: Web3WalletLastActionReducer,
     isWalletConnected: isWalletConnectedReducer,

@@ -3,15 +3,22 @@
 
 import * as React from 'react';
 
-import {Box, IconButton, Tooltip, Typography} from '@mui/material';
+import {
+    Box,
+    CircularProgress,
+    IconButton,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {notifyError} from 'components/Common/errors';
 import ExactValueTooltip from 'components/Common/ExactValueTooltip';
+import {balanceUpdatingTooltip} from 'components/Common/tooltips';
 import {BigNumber, utils} from 'ethers';
-import infoIcon from 'images/info-icon.svg';
 import refreshIcon from 'images/refresh-icon.svg';
 import {formatUSD, getFormattedFractions} from 'lib/format';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
+import {isWalletUpdatingSelector} from 'redux/slices/ui/is-wallet-updating';
 import {
     progressToNewWalletAction,
     registerWalletActionFailure,
@@ -32,11 +39,11 @@ import {generateRootKeypairs} from 'services/keys';
 import './styles.scss';
 
 export default function UnstakedBalance() {
-    const [loading, setLoading] = React.useState<boolean>(false);
     const context = useWeb3React();
     const dispatch = useAppDispatch();
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const tokenMarketPrice = useAppSelector(zkpUnstakedUSDMarketPriceSelector);
+    const isWalletUpdating = useAppSelector(isWalletUpdatingSelector);
 
     const RefreshTokenBalanceAndRewards = React.useCallback(
         async (trigger: WalletSignatureTrigger) => {
@@ -72,15 +79,11 @@ export default function UnstakedBalance() {
                 },
             });
 
-            setLoading(true);
-
             await dispatch(getAdvancedStakesRewardsAndUpdateStatus, {
                 context,
                 keys,
                 withRetry: false,
             });
-
-            setLoading(false);
 
             dispatch(
                 registerWalletActionSuccess,
@@ -98,24 +101,19 @@ export default function UnstakedBalance() {
         <Box className="total-balance">
             <Box className="title-box">
                 <Typography className="title">Available ZKP Balance</Typography>
-                {false && (
-                    <Tooltip
-                        title="This is the amount of ZKP you have available for staking."
-                        placement="top"
-                    >
-                        <IconButton>
-                            <img src={infoIcon} />
-                        </IconButton>
-                    </Tooltip>
-                )}
                 <IconButton
                     className="refresh-button"
                     onClick={() =>
                         RefreshTokenBalanceAndRewards('manual refresh')
                     }
                 >
-                    {loading ? (
-                        <i className="fa fa-refresh fa-spin spin-icon" />
+                    {isWalletUpdating ? (
+                        <Tooltip title={balanceUpdatingTooltip} placement="top">
+                            <CircularProgress
+                                color="inherit"
+                                className="spin-icon"
+                            />
+                        </Tooltip>
                     ) : (
                         <img src={refreshIcon} />
                     )}

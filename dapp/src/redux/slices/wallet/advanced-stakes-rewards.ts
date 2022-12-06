@@ -10,6 +10,7 @@ import {poseidon} from 'circomlibjs';
 import {BigNumber, constants} from 'ethers';
 import {sleep} from 'lib/time';
 import {LoadingStatus} from 'redux/slices/shared';
+import {setWalletUpdating} from 'redux/slices/ui/is-wallet-updating';
 import {RootState} from 'redux/store';
 import {getChangedUTXOsStatuses, UTXOStatusByID} from 'services/pool';
 import {
@@ -125,9 +126,11 @@ export const getAdvancedStakesRewardsAndUpdateStatus = createAsyncThunk(
         },
         {dispatch},
     ) => {
+        dispatch(setWalletUpdating(true));
         await dispatch(getAdvancedStakesRewards(payload));
 
         if (!payload.keys) {
+            dispatch(setWalletUpdating(false));
             console.error(
                 'Cannot refresh the advanced staking rewards. No keys provided',
             );
@@ -140,6 +143,7 @@ export const getAdvancedStakesRewardsAndUpdateStatus = createAsyncThunk(
                 keys: payload.keys,
             }),
         );
+        dispatch(setWalletUpdating(false));
     },
 );
 

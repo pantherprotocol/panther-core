@@ -18,3 +18,6 @@ export const totalUnrealizedPrivacyRewardsTooltip =
 
 export const zAssetsPageAprTooltip =
     "Privacy rewards APR is subject to the community's decision on the Core V1 launch.";
+
+export const balanceUpdatingTooltip =
+    'Balance update pending. Balances may take a few minutes to update.';

@@ -18,8 +18,9 @@
         }
 
         .spin-icon {
-            font-size: $header-font-size;
             color: $white;
+            width: 15px !important;
+            height: 15px !important;
         }
 
         .refresh-button {

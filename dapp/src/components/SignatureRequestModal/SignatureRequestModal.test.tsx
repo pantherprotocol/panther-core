@@ -10,6 +10,10 @@ import {BrowserRouter as Router} from 'react-router-dom';
 
 import SignatureRequestModal from './index';
 
+beforeAll(() => {
+    global.fetch = global.mockGeoLocationRes();
+});
+
 test('should render', () => {
     renderComponent(<SignatureRequestModal />);
 

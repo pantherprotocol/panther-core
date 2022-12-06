@@ -9,13 +9,19 @@ import {BrowserRouter as Router} from 'react-router-dom';
 
 import {MainPageWrapper} from './index';
 
-test('should render the MainPageWrapper with its child element', () => {
+beforeAll(() => {
+    global.fetch = global.mockGeoLocationRes();
+});
+
+test('should render the MainPageWrapper with its child element', async () => {
     const mainPageWrapper = screen.queryByTestId(
         'main-page-wrapper_main-page-wrapper_container',
     );
+
     const mainPageWrapperChild = screen.queryByTestId(
         'main-page-wrapper_main-page-wrapper_child',
     );
+
     renderComponent(
         <Router>
             <MainPageWrapper>{mainPageWrapperChild}</MainPageWrapper>
@@ -25,5 +31,6 @@ test('should render the MainPageWrapper with its child element', () => {
     waitFor(() => {
         expect(mainPageWrapperChild).toBeInTheDocument();
         expect(mainPageWrapper).toContainElement(mainPageWrapperChild);
+        expect(global.fetch).not.toBeCalled();
     });
 });

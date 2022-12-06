@@ -4,7 +4,14 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
 
-import {Box, Button, IconButton, Tooltip, Typography} from '@mui/material';
+import {
+    Box,
+    Button,
+    CircularProgress,
+    IconButton,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {notifyError} from 'components/Common/errors';
 import {openNotification} from 'components/Common/notification';
@@ -255,9 +262,9 @@ export default function PrivateBalance() {
                         }
                     >
                         {loading && (
-                            <i
-                                className="fa fa-refresh fa-spin"
-                                style={{marginRight: '5px'}}
+                            <CircularProgress
+                                color="inherit"
+                                className="spin-icon"
                             />
                         )}
                         {loading && <span>Scanning Panther wallet</span>}

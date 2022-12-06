@@ -144,6 +144,12 @@ $refresh-button-background: linear-gradient(
             }
         }
 
+        .spin-icon {
+            width: 15px !important;
+            height: 15px !important;
+            margin-right: 10px;
+        }
+
         .last-sync {
             font-weight: $normal-font-weight;
             font-size: $smaller-font-size;

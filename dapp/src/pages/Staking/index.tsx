@@ -3,8 +3,6 @@
 
 import React, {useEffect} from 'react';
 
-import {Container} from '@mui/material';
-import Grid from '@mui/material/Grid';
 import {Box} from '@mui/system';
 import {useWeb3React} from '@web3-react/core';
 import AdvancedStakingRewards from 'components/AdvancedStakingRewards';
@@ -45,32 +43,13 @@ const Staking = (): React.ReactElement => {
             {!firstVisit ? (
                 <Welcome />
             ) : (
-                <Container className="staking-container">
-                    <Grid container>
-                        <Grid item md={1} xs={12} />
-                        <Grid item container spacing={2} md={10} xs={12}>
-                            <Grid item xs={12} md={5}>
-                                <Box width={'100%'}>
-                                    <BalanceCard />
-                                </Box>
-                            </Grid>
-                            <Grid
-                                item
-                                xs={12}
-                                md={7}
-                                className="apy-staking-right-panel"
-                            >
-                                <Box width={'100%'}>
-                                    <AdvancedStakingRewards />
-                                    <StakingUnstakingCard />
-                                </Box>
-
-                                <Grid item xs={12} md={3}></Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item md={1} xs={12} />
-                    </Grid>
-                </Container>
+                <Box className="staking-container">
+                    <BalanceCard />
+                    <Box className="apy-staking-right-panel">
+                        <AdvancedStakingRewards />
+                        <StakingUnstakingCard />
+                    </Box>
+                </Box>
             )}
         </MainPageWrapper>
     );

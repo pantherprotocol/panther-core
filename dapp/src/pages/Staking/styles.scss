@@ -1,5 +1,18 @@
-@media (min-width: 1200px) {
-    .staking-container {
-        max-width: 1600px !important;
+@import '../../variables.scss';
+
+.staking-container {
+    padding: 0 !important;
+    display: flex;
+    margin: 0 auto;
+    justify-content: space-between;
+    @media (min-width: $large-screen-size) {
+        max-width: 1035px !important;
+    }
+
+    .apy-staking-right-panel {
+        padding-left: 0 !important;
+        @media (min-width: $large-screen-size) {
+            max-width: 612px;
+        }
     }
 }

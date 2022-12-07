@@ -13,6 +13,13 @@
     line-height: normal;
     width: 184px;
     height: 39px;
+    @media (max-width: $semi-large-screen-size) {
+        width: 150px;
+    }
+
+    @media (max-width: $medium-screen-size) {
+        width: 100%;
+    }
 
     &:hover {
         background: $second-blue;

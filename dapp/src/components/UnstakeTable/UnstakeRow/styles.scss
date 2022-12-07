@@ -10,6 +10,20 @@
     backdrop-filter: blur(35px);
     border-radius: 10px;
     padding: 10px 15px 15px 26px;
+    @media (max-width: $semi-large-screen-size) {
+        padding: 10px 15px 15px 10px;
+        height: auto;
+    }
+
+    @media (max-width: $medium-screen-size) {
+        flex-direction: column;
+        height: 214px;
+        padding: 15px 20px 20px;
+    }
+
+    @media (max-width: $tiny-screen-size) {
+        height: 240px;
+    }
 
     &:first-child {
         margin-top: 15px;
@@ -19,6 +33,10 @@
         width: 50%;
         text-align: left;
         padding-top: 5px;
+        @media (max-width: $medium-screen-size) {
+            width: 100%;
+            padding-top: 0;
+        }
         .balance {
             display: flex;
             width: 100%;
@@ -26,6 +44,11 @@
             left: 40px;
             bottom: 3px;
             align-items: baseline;
+            @media (max-width: $medium-screen-size) {
+                position: static;
+                justify-content: center;
+                margin-bottom: 5px;
+            }
 
             .whole {
                 font-size: $bigger-font-size - 1;
@@ -48,21 +71,65 @@
 
     .info-wrapper {
         width: 50%;
+        @media (max-width: $medium-screen-size) {
+            width: 100%;
+            padding: 15px 8px 26px;
+        }
         .info {
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: $light-font-weight;
+            &:last-child {
+                justify-content: left;
 
+                .title {
+                    position: relative;
+                    bottom: 8px;
+                    &.unstakable {
+                        bottom: unset;
+                        @media (max-width: $medium-screen-size) {
+                            bottom: 8px;
+                        }
+                    }
+                }
+
+                .value {
+                    bottom: 12px;
+
+                    @media (max-width: $large-screen-size) {
+                        bottom: 13px;
+                    }
+
+                    @media (max-width: $semi-large-screen-size) {
+                        bottom: 30px;
+                    }
+
+                    @media (max-width: $medium-screen-size) {
+                        margin-left: auto;
+                        margin-bottom: 15px;
+                    }
+
+                    &.unstakable {
+                        bottom: unset;
+                    }
+                }
+            }
             .title {
                 font-size: $small-font-size + 1;
                 opacity: 0.5;
             }
 
             .tooltip-icon {
-                position: absolute;
-                right: 165px;
-                bottom: 26px;
+                width: fit-content;
+                padding: 0 8px 16px;
+
+                &.unstakable {
+                    padding: 0 8px 0;
+                    @media (max-width: $medium-screen-size) {
+                        padding: 0 8px 16px;
+                    }
+                }
             }
 
             .value {
@@ -72,11 +139,34 @@
                 align-items: baseline;
                 position: absolute;
                 left: 390px;
+                line-height: normal;
+
+                @media (max-width: $large-screen-size) {
+                    left: 415px;
+                    min-width: 120px;
+                }
+
+                @media (max-width: $normal-screen-size) {
+                    left: 376px;
+                }
+
+                @media (max-width: $semi-large-screen-size) {
+                    left: 317px;
+                    min-width: unset;
+                }
+
+                @media (max-width: $semi-medium-screen-size) {
+                    position: static;
+                }
 
                 .symbol {
                     font-size: $small-font-size;
                     margin-left: 5px;
                 }
+            }
+
+            &.unstakable {
+                margin-top: 6px;
             }
         }
     }

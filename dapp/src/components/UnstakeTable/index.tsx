@@ -11,9 +11,7 @@ import {
     removeNotification,
     openNotification,
 } from 'components/Common/notification';
-import {expectedPrpBalanceTooltip} from 'components/Common/tooltips';
 import {BigNumber} from 'ethers';
-import infoIcon from 'images/info-icon.svg';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {useAppDispatch} from 'redux/hooks';
 import {getStakes, useStakes} from 'redux/slices/staking/stakes';
@@ -158,7 +156,7 @@ export default function UnstakeTable() {
             className="unstake-table"
             data-testid="unstake-table_unstake-table_container"
         >
-            {stakedData.map(row => (
+            {stakes.map((row: StakeRow) => (
                 <UnstakeRow
                     key={row.stakedAt}
                     row={row}

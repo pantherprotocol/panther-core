@@ -10,9 +10,12 @@
     }
 
     .apy-staking-right-panel {
-        padding-left: 0 !important;
-        @media (min-width: $large-screen-size) {
+        @media (min-width: ($large-screen-size + 1)) {
             max-width: 612px;
+        }
+
+        @media (max-width: $large-screen-size) {
+            margin: 0 16px;
         }
     }
 }

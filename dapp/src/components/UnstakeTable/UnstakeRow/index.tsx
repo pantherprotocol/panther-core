@@ -9,6 +9,7 @@ import {expectedPrpBalanceTooltip} from 'components/Common/tooltips';
 import UnstakeButton from 'components/UnstakeTable/UnstakeButton';
 import {format} from 'date-fns';
 import {BigNumber, constants, utils} from 'ethers';
+import useScreenSize from 'hooks/screen';
 import infoIcon from 'images/info-icon.svg';
 import {formatCurrency, formatTime, getFormattedFractions} from 'lib/format';
 import {WalletActionTrigger} from 'redux/slices/ui/web3-wallet-last-action';
@@ -40,6 +41,8 @@ const UnstakeRow = (props: {
 }) => {
     const {row, chainId, unstakeById} = props;
 
+    const {isSmall, isMobile, isMedium} = useScreenSize();
+
     const [whole, fractional] = row.amount
         ? getFormattedFractions(utils.formatEther(row.amount))
         : [];
@@ -51,30 +54,22 @@ const UnstakeRow = (props: {
                     <Box className="balance-wrapper">
                         <Box className="balance">
                             <ExactValueTooltip balance={row.amount}>
-                                <Typography>
-                                    {whole && fractional ? (
-                                        <>
-                                            <span className="whole">
-                                                {whole}
-                                            </span>
+                                <Typography component={'span'}>
+                                    <>
+                                        <span className="whole">
+                                            {whole || 0}
+                                        </span>
 
-                                            <span className="substring">
-                                                .{fractional}
-                                            </span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span>0</span>
-
-                                            <span className="substring">
-                                                .00
-                                            </span>
-                                        </>
-                                    )}
+                                        <span className="substring">
+                                            .{fractional || '00'}
+                                        </span>
+                                    </>
                                 </Typography>
                             </ExactValueTooltip>
 
-                            <Typography className="symbol">ZKP</Typography>
+                            <Typography className="symbol" component={'span'}>
+                                ZKP
+                            </Typography>
                         </Box>
                         <UnstakeButton
                             row={row}
@@ -83,26 +78,51 @@ const UnstakeRow = (props: {
                         />
                     </Box>
                     <Box className="info-wrapper">
-                        <Box className="info">
-                            <span className="title">Date:</span>
-                            <Typography className="value">
-                                {format(
-                                    new Date(row.stakedAt * 1000),
-                                    'MMM dd, yyyy',
-                                )}
+                        <Box
+                            className={`info ${
+                                row.unstakable ? 'unstakable' : ''
+                            }`}
+                        >
+                            <span className="title">Stake Date:</span>
+                            <Typography className="value" component={'span'}>
+                                {isMedium && !isMobile
+                                    ? format(
+                                          new Date(row.stakedAt * 1000),
+                                          'M/d/yyyy',
+                                      )
+                                    : format(
+                                          new Date(row.stakedAt * 1000),
+                                          'MMM dd, yyyy',
+                                      )}
                             </Typography>
                         </Box>
-                        <Box className="info">
-                            <span className="title">Unlock Date:</span>
-                            <Typography className="value">
-                                {formatTime(row.lockedTill * 1000, {
-                                    style: 'short',
-                                })}
-                            </Typography>
-                        </Box>
-                        <Box className="info">
+                        {!row.unstakable && (
+                            <Box className="info">
+                                <span className="title">
+                                    {isSmall ? 'Unlock:' : 'Unlock Date:'}
+                                </span>
+                                <Typography
+                                    className="value"
+                                    component={'span'}
+                                >
+                                    {isMedium && !isMobile
+                                        ? format(
+                                              new Date(row.lockedTill * 1000),
+                                              'M/d/yyyy',
+                                          )
+                                        : formatTime(row.lockedTill * 1000, {
+                                              style: 'short',
+                                          })}
+                                </Typography>
+                            </Box>
+                        )}
+                        <Box
+                            className={`info ${
+                                row.unstakable ? 'unstakable' : ''
+                            }`}
+                        >
                             <span className="title">Earned:</span>
-                            <Typography className="value">
+                            <Typography className="value" component={'span'}>
                                 <ExactValueTooltip
                                     balance={getRewards(
                                         row,
@@ -118,27 +138,47 @@ const UnstakeRow = (props: {
                                         )}
                                     </Typography>
                                 </ExactValueTooltip>
-                                <Typography className="symbol">
+                                <Typography
+                                    className="symbol"
+                                    component={'span'}
+                                >
                                     {row.stakeType === CLASSIC_TYPE_HEX
                                         ? 'ZKP'
                                         : 'zZKP'}
                                 </Typography>
                             </Typography>
                         </Box>
-                        <Box className="info">
-                            <span className="title">Expected:</span>
+                        <Box
+                            className={`info ${
+                                row.unstakable ? 'unstakable' : ''
+                            }`}
+                        >
+                            <span
+                                className={`title ${
+                                    row.unstakable ? 'unstakable' : ''
+                                }`}
+                            >
+                                Expected:
+                            </span>
                             <Tooltip
                                 title={expectedPrpBalanceTooltip}
                                 data-html="true"
                                 placement="top"
-                                className="tooltip-icon"
+                                className={`tooltip-icon ${
+                                    row.unstakable ? 'unstakable' : ''
+                                }`}
                             >
                                 <IconButton>
                                     <img src={infoIcon} />
                                 </IconButton>
                             </Tooltip>
 
-                            <Typography className="value">
+                            <Typography
+                                component={'span'}
+                                className={`value ${
+                                    row.unstakable ? 'unstakable' : ''
+                                }`}
+                            >
                                 {chainId && chainHasPoolContract(chainId)
                                     ? utils.formatUnits(
                                           row.stakeType === CLASSIC_TYPE_HEX
@@ -151,7 +191,12 @@ const UnstakeRow = (props: {
                                       )
                                     : '0'}
 
-                                <Typography className="symbol">PRP</Typography>
+                                <Typography
+                                    className="symbol"
+                                    component={'span'}
+                                >
+                                    PRP
+                                </Typography>
                             </Typography>
                         </Box>
                     </Box>

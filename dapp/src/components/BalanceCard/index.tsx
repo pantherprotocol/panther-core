@@ -5,7 +5,6 @@ import * as React from 'react';
 
 import {Box, Card} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {expectedPrpBalanceTooltip} from 'components/Common/tooltips';
 import AccountBalance from 'components/Header/AccountBalance';
 import {constants} from 'ethers';
 import {fiatPrice} from 'lib/token-price';
@@ -23,6 +22,7 @@ import {StakingRewardTokenID} from 'types/staking';
 
 import AddressBalances from './AddressBalances';
 import AddressWithSetting from './AddressWithSetting';
+import ExpectedPrpBalance from './ExpectedPrpBalance';
 import UnstakedBalance from './UnstakedBalance';
 
 import './styles.scss';
@@ -90,20 +90,15 @@ const BalanceCard = () => {
                 )}
 
                 {!isEthereumNetwork(chainId!) && (
-                    <AddressBalances
-                        title={'Expected PRP Balance:'}
+                    <ExpectedPrpBalance
                         balance={
                             chainId && chainHasPoolContract(chainId)
                                 ? prpRewardBalance
                                 : constants.Zero
                         }
-                        scale={0}
-                        rewardsTokenSymbol={'PRP'}
-                        // TODO:add definition for redeem function
                         redeem={() => {
                             console.error('Not implemented');
                         }}
-                        tooltip={expectedPrpBalanceTooltip}
                     />
                 )}
             </Card>

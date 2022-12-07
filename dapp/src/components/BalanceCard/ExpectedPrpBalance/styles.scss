@@ -1,0 +1,33 @@
+@import '../../../variables';
+
+.expected-prp-balance {
+    padding: 10px 15px 0;
+
+    .title-box {
+        display: flex;
+        align-items: center;
+
+        .title {
+            opacity: 0.5;
+        }
+    }
+
+    .balance-box {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        opacity: 0.5;
+        line-height: 42px;
+
+        .balance {
+            font-weight: $semi-bold-font-weight;
+            font-size: $title-font-size;
+        }
+
+        .prp-symbol {
+            font-weight: $bold-font-weight;
+            font-size: $big-font-size;
+            padding-left: 5px;
+        }
+    }
+}

@@ -3,11 +3,14 @@
 
 import React from 'react';
 
-import {TableCell, TableRow, Typography} from '@mui/material';
+import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import ExactValueTooltip from 'components/Common/ExactValueTooltip';
+import {expectedPrpBalanceTooltip} from 'components/Common/tooltips';
 import UnstakeButton from 'components/UnstakeTable/UnstakeButton';
+import {format} from 'date-fns';
 import {BigNumber, constants, utils} from 'ethers';
-import {formatCurrency, formatTime} from 'lib/format';
+import infoIcon from 'images/info-icon.svg';
+import {formatCurrency, formatTime, getFormattedFractions} from 'lib/format';
 import {WalletActionTrigger} from 'redux/slices/ui/web3-wallet-last-action';
 import {chainHasPoolContract} from 'services/contracts';
 import {isClassic} from 'services/rewards';
@@ -37,63 +40,105 @@ const UnstakeRow = (props: {
 }) => {
     const {row, chainId, unstakeById} = props;
 
+    const [whole, fractional] = row.amount
+        ? getFormattedFractions(utils.formatEther(row.amount))
+        : [];
+
     return (
         <React.Fragment key={row.stakedAt}>
             {row.claimedAt === 0 && (
-                <TableRow
-                    className="unstake-row-holder"
-                    sx={{
-                        '&:last-child td, &:last-child th': {
-                            border: 0,
-                        },
-                    }}
-                >
-                    <TableCell
-                        align="center"
-                        className="unstake-row-description"
-                    >
-                        <Typography className="title">
-                            {row.stakeType === CLASSIC_TYPE_HEX
-                                ? 'Classic Staking'
-                                : 'Advanced Staking'}
-                        </Typography>
-                        <Typography className="date">
-                            {formatTime(row.stakedAt * 1000)}
-                        </Typography>
-                    </TableCell>
+                <Box className="unstake-row-holder">
+                    <Box className="balance-wrapper">
+                        <Box className="balance">
+                            <ExactValueTooltip balance={row.amount}>
+                                <Typography>
+                                    {whole && fractional ? (
+                                        <>
+                                            <span className="whole">
+                                                {whole}
+                                            </span>
 
-                    <TableCell align="left">
-                        <ExactValueTooltip balance={row.amount}>
-                            <Typography>
-                                {formatCurrency(row.amount, {
-                                    decimals: 2,
-                                })}{' '}
-                            </Typography>
-                        </ExactValueTooltip>
+                                            <span className="substring">
+                                                .{fractional}
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>0</span>
 
-                        <Typography>ZKP</Typography>
-                    </TableCell>
-                    <TableCell align="left">
-                        <ExactValueTooltip
-                            balance={getRewards(row, StakingRewardTokenID.zZKP)}
-                        >
-                            <Typography>
-                                {formatCurrency(
-                                    getRewards(row, StakingRewardTokenID.zZKP),
+                                            <span className="substring">
+                                                .00
+                                            </span>
+                                        </>
+                                    )}
+                                </Typography>
+                            </ExactValueTooltip>
+
+                            <Typography className="symbol">ZKP</Typography>
+                        </Box>
+                        <UnstakeButton
+                            row={row}
+                            chainId={chainId}
+                            unstakeById={unstakeById}
+                        />
+                    </Box>
+                    <Box className="info-wrapper">
+                        <Box className="info">
+                            <span className="title">Date:</span>
+                            <Typography className="value">
+                                {format(
+                                    new Date(row.stakedAt * 1000),
+                                    'MMM dd, yyyy',
                                 )}
                             </Typography>
-                        </ExactValueTooltip>
+                        </Box>
+                        <Box className="info">
+                            <span className="title">Unlock Date:</span>
+                            <Typography className="value">
+                                {formatTime(row.lockedTill * 1000, {
+                                    style: 'short',
+                                })}
+                            </Typography>
+                        </Box>
+                        <Box className="info">
+                            <span className="title">Earned:</span>
+                            <Typography className="value">
+                                <ExactValueTooltip
+                                    balance={getRewards(
+                                        row,
+                                        StakingRewardTokenID.zZKP,
+                                    )}
+                                >
+                                    <Typography>
+                                        {formatCurrency(
+                                            getRewards(
+                                                row,
+                                                StakingRewardTokenID.zZKP,
+                                            ),
+                                        )}
+                                    </Typography>
+                                </ExactValueTooltip>
+                                <Typography className="symbol">
+                                    {row.stakeType === CLASSIC_TYPE_HEX
+                                        ? 'ZKP'
+                                        : 'zZKP'}
+                                </Typography>
+                            </Typography>
+                        </Box>
+                        <Box className="info">
+                            <span className="title">Expected:</span>
+                            <Tooltip
+                                title={expectedPrpBalanceTooltip}
+                                data-html="true"
+                                placement="top"
+                                className="tooltip-icon"
+                            >
+                                <IconButton>
+                                    <img src={infoIcon} />
+                                </IconButton>
+                            </Tooltip>
 
-                        <Typography>
-                            {row.stakeType === CLASSIC_TYPE_HEX
-                                ? 'ZKP'
-                                : 'zZKP'}
-                        </Typography>
-                    </TableCell>
-                    <TableCell align="left" className="prp">
-                        <span className="plus">+</span>
-                        <span className="amount-box">
-                            <span className="amount">
+                            <Typography className="value">
                                 {chainId && chainHasPoolContract(chainId)
                                     ? utils.formatUnits(
                                           row.stakeType === CLASSIC_TYPE_HEX
@@ -105,18 +150,12 @@ const UnstakeRow = (props: {
                                           0,
                                       )
                                     : '0'}
-                            </span>
-                            <span>PRP</span>
-                        </span>
-                    </TableCell>
-                    <TableCell align="left" className="unstake">
-                        <UnstakeButton
-                            row={row}
-                            chainId={chainId}
-                            unstakeById={unstakeById}
-                        />
-                    </TableCell>
-                </TableRow>
+
+                                <Typography className="symbol">PRP</Typography>
+                            </Typography>
+                        </Box>
+                    </Box>
+                </Box>
             )}
         </React.Fragment>
     );

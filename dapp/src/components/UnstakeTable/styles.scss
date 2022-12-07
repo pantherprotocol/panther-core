@@ -1,54 +1,5 @@
 @import '../../variables';
 
 .unstake-table {
-    .MuiPaper-root.MuiTableContainer-root {
-        box-shadow: none;
-        background: rgba(32, 33, 60, 1);
-
-        .MuiTable-root {
-            min-width: 400px;
-
-            thead {
-                th {
-                    font-weight: $normal-font-weight;
-                    font-size: $small-font-size;
-                    color: $color-beige !important;
-                    opacity: 1;
-
-                    .tooltip-icon {
-                        padding-left: 0;
-                    }
-
-                    &:last-child {
-                        width: 100px;
-
-                        position: relative;
-                        top: 0;
-                        color: #9e9e9e !important;
-                        display: flex;
-                        align-items: center;
-
-                        .title {
-                            padding-left: 10px;
-                            padding-right: 3px;
-                        }
-                    }
-                }
-            }
-
-            tbody {
-                background: $table-background;
-                tr {
-                    td {
-                        &:first-child {
-                            border-radius: 8px 0 0 8px;
-                        }
-                        &:last-child {
-                            border-radius: 0 8px 8px 0;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    width: 100%;
 }

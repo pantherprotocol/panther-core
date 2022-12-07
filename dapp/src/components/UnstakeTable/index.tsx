@@ -4,14 +4,7 @@
 import {useCallback, useEffect} from 'react';
 import * as React from 'react';
 
-import {Box, IconButton, Tooltip} from '@mui/material';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import {Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {MessageWithTx} from 'components/Common/MessageWithTx';
 import {
@@ -165,45 +158,14 @@ export default function UnstakeTable() {
             className="unstake-table"
             data-testid="unstake-table_unstake-table_container"
         >
-            <TableContainer component={Paper}>
-                <Table
-                    size="small"
-                    sx={{minWidth: 400}}
-                    aria-label="unstaking table"
-                >
-                    <TableHead className="table-head">
-                        <TableRow>
-                            <TableCell align="left">Description:</TableCell>
-                            <TableCell align="left">Amount:</TableCell>
-                            <TableCell align="left">Rewards:</TableCell>
-                            <TableCell align="left">
-                                <span>+</span>
-                                <span className="title">Expected:</span>
-                                <Tooltip
-                                    title={expectedPrpBalanceTooltip}
-                                    data-html="true"
-                                    placement="top"
-                                    className="tooltip-icon"
-                                >
-                                    <IconButton>
-                                        <img src={infoIcon} />
-                                    </IconButton>
-                                </Tooltip>
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {stakes.map((row: StakeRow) => (
-                            <UnstakeRow
-                                key={row.stakedAt}
-                                row={row}
-                                unstakeById={unstakeById}
-                                chainId={chainId}
-                            />
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            {stakedData.map(row => (
+                <UnstakeRow
+                    key={row.stakedAt}
+                    row={row}
+                    unstakeById={unstakeById}
+                    chainId={chainId}
+                />
+            ))}
         </Box>
     );
 }

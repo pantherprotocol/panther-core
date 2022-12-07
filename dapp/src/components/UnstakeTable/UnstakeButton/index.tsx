@@ -3,8 +3,7 @@
 
 import React from 'react';
 
-import {Box, Button, Typography} from '@mui/material';
-import {formatTime} from 'lib/format';
+import {Button} from '@mui/material';
 import {useAppSelector} from 'redux/hooks';
 import {
     walletActionCauseSelector,
@@ -41,14 +40,7 @@ const UnstakeButton = (props: {
                 unstakeById(row.id, 'unstake');
             }}
         >
-            {row.unstakable ? (
-                'Unstake'
-            ) : (
-                <Box>
-                    <Typography>Locked Until:</Typography>
-                    <Typography>{formatTime(row.lockedTill * 1000)}</Typography>
-                </Box>
-            )}
+            Unstake
         </Button>
     );
 };

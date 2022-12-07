@@ -1,0 +1,13 @@
+@import '../../../variables';
+
+.styled-balance {
+    .balance {
+        font-weight: $bold-font-weight;
+        font-size: $large-font-size;
+        line-height: 48px;
+        .substring {
+            margin-right: 3px;
+            font-size: $big-font-size;
+        }
+    }
+}

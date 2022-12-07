@@ -3,15 +3,14 @@
 
 import * as React from 'react';
 
-import {DECIMALS} from 'constants/numbers';
-
 import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ExactValueTooltip from 'components/Common/ExactValueTooltip';
-import {BigNumber, utils} from 'ethers';
+import StyledBalance from 'components/Common/StyledBalance';
+import {BigNumber} from 'ethers';
 import infoIcon from 'images/info-icon.svg';
-import {formatUSD, getFormattedFractions} from 'lib/format';
+import {formatUSD} from 'lib/format';
 
 import './styles.scss';
 
@@ -25,11 +24,6 @@ export default function AddressBalances(props: {
     tooltip?: string;
 }) {
     const {title, tooltip, amountUSD, balance, rewardsTokenSymbol} = props;
-    const [whole, fractional] = balance
-        ? getFormattedFractions(
-              utils.formatUnits(balance, props.scale ?? DECIMALS),
-          )
-        : [];
     return (
         <Box className="address-balance">
             <Box className="title-box">
@@ -57,21 +51,7 @@ export default function AddressBalances(props: {
                             }`}
                             component="div"
                         >
-                            {whole && fractional ? (
-                                <>
-                                    <span>{whole}</span>
-                                    {
-                                        //only PRPs have no scale
-                                        props.scale !== 0 && (
-                                            <span className="substring">
-                                                .{fractional}
-                                            </span>
-                                        )
-                                    }
-                                </>
-                            ) : (
-                                '0.00'
-                            )}
+                            <StyledBalance balance={balance} />
                         </Typography>
                     </ExactValueTooltip>
 

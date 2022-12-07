@@ -13,10 +13,11 @@ import {
 import {useWeb3React} from '@web3-react/core';
 import {notifyError} from 'components/Common/errors';
 import ExactValueTooltip from 'components/Common/ExactValueTooltip';
+import StyledBalance from 'components/Common/StyledBalance';
 import {balanceUpdatingTooltip} from 'components/Common/tooltips';
-import {BigNumber, utils} from 'ethers';
+import {BigNumber} from 'ethers';
 import refreshIcon from 'images/refresh-icon.svg';
-import {formatUSD, getFormattedFractions} from 'lib/format';
+import {formatUSD} from 'lib/format';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {isWalletUpdatingSelector} from 'redux/slices/ui/is-wallet-updating';
 import {
@@ -93,10 +94,6 @@ export default function UnstakedBalance() {
         [context, dispatch],
     );
 
-    const [whole, fractional] = tokenBalance
-        ? getFormattedFractions(utils.formatEther(tokenBalance))
-        : [];
-
     return (
         <Box className="total-balance">
             <Box className="title-box">
@@ -122,21 +119,7 @@ export default function UnstakedBalance() {
 
             <Box className="amount-box">
                 <ExactValueTooltip balance={tokenBalance}>
-                    <Typography component="div" className="token-balance">
-                        {whole && fractional ? (
-                            <>
-                                <span>{whole}</span>
-
-                                <span className="substring">.{fractional}</span>
-                            </>
-                        ) : (
-                            <>
-                                <span>0</span>
-
-                                <span className="substring">.00</span>
-                            </>
-                        )}
-                    </Typography>
+                    <StyledBalance balance={tokenBalance} />
                 </ExactValueTooltip>
 
                 <Typography className="zkp-symbol main-symbol">ZKP</Typography>

@@ -34,16 +34,6 @@
         display: flex;
         align-items: center;
 
-        .token-balance {
-            font-weight: $bold-font-weight;
-            font-size: $large-font-size;
-            line-height: 48px;
-            .substring {
-                margin-right: 3px;
-                font-size: $big-font-size;
-            }
-        }
-
         .token-market-price {
             font-size: $normal-font-size;
             opacity: 0.8;

@@ -23,6 +23,7 @@ import {
     resetRewards,
 } from 'redux/slices/staking/advanced-stake-predicted-rewards';
 import {resetStakeAmount} from 'redux/slices/staking/stake-amount';
+import {getStakes} from 'redux/slices/staking/stakes';
 import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/total-unclaimed-classic-rewards';
 import {
     getTotalsOfAdvancedStakes,
@@ -285,6 +286,11 @@ const StakingBtn = (props: {
                 withRetry: true,
             });
 
+            dispatch(
+                registerWalletActionSuccess,
+                'getAdvancedStakesRewardsAndUpdateStatus',
+            );
+            dispatch(getStakes, context);
             dispatch(getTotalsOfAdvancedStakes, context);
             dispatch(getZkpStakedBalance, context);
             dispatch(getZkpTokenBalance, context);

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect} from 'react';
 import * as React from 'react';
 
 import {Box, IconButton, Tooltip} from '@mui/material';
@@ -19,11 +19,11 @@ import {
     openNotification,
 } from 'components/Common/notification';
 import {expectedPrpBalanceTooltip} from 'components/Common/tooltips';
-import {BigNumber, constants} from 'ethers';
+import {BigNumber} from 'ethers';
 import infoIcon from 'images/info-icon.svg';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
-import {formatTime} from 'lib/format';
 import {useAppDispatch} from 'redux/hooks';
+import {getStakes, useStakes} from 'redux/slices/staking/stakes';
 import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/total-unclaimed-classic-rewards';
 import {getTotalsOfAdvancedStakes} from 'redux/slices/staking/totals-of-advanced-stakes';
 import {getZkpStakedBalance} from 'redux/slices/staking/zkp-staked-balance';
@@ -37,7 +37,7 @@ import {
 import {getChainBalance} from 'redux/slices/wallet/chain-balance';
 import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
 import {parseTxErrorMessage} from 'services/errors';
-import {unstake, getStakesAndRewards} from 'services/staking';
+import {StakeRow, unstake} from 'services/staking';
 
 import UnstakeRow from './UnstakeRow';
 
@@ -116,41 +116,7 @@ export default function UnstakeTable() {
     const context = useWeb3React();
     const {library, chainId, account} = context;
     const dispatch = useAppDispatch();
-    const [stakedData, setStakedData] = useState<any[]>([]);
-
-    const fetchStakedData = useCallback(async () => {
-        if (!library || !chainId || !account) {
-            return;
-        }
-        const [totalStaked, stakeRows] = await getStakesAndRewards(
-            library,
-            chainId,
-            account,
-        );
-        if (!stakeRows) {
-            setStakedData([]);
-            return;
-        }
-
-        if (totalStaked.gt(constants.Zero)) {
-            const block = await library.getBlock();
-            console.debug(
-                'Current block',
-                block.number,
-                'is at',
-                block.timestamp,
-                formatTime(block.timestamp * 1000),
-            );
-
-            stakeRows.forEach(row => {
-                row.unstakable = block.timestamp > row.lockedTill;
-            });
-
-            setStakedData(stakeRows);
-        } else {
-            setStakedData([]);
-        }
-    }, [library, chainId, account]);
+    const {stakes} = useStakes();
 
     const unstakeById = useCallback(
         async (id, trigger: WalletActionTrigger) => {
@@ -184,19 +150,15 @@ export default function UnstakeTable() {
             dispatch(getTotalUnclaimedClassicRewards, context);
             dispatch(getZkpTokenBalance, context);
             dispatch(getChainBalance, context);
-
-            fetchStakedData();
+            dispatch(getStakes, context);
         },
-        [library, chainId, account, context, dispatch, fetchStakedData],
+        [library, chainId, account, context, dispatch],
     );
 
     useEffect(() => {
-        if (!library || !account) {
-            return;
-        }
-
-        fetchStakedData();
-    }, [account, library, fetchStakedData]);
+        dispatch(getStakes, context);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [library, chainId, account]);
 
     return (
         <Box
@@ -231,7 +193,7 @@ export default function UnstakeTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {stakedData.map(row => (
+                        {stakes.map((row: StakeRow) => (
                             <UnstakeRow
                                 key={row.stakedAt}
                                 row={row}

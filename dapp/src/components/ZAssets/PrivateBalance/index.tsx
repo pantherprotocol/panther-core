@@ -227,7 +227,14 @@ export default function PrivateBalance() {
                             Total Unrealized Privacy Rewards
                         </span>
                         <Tooltip
-                            title={totalUnrealizedPrivacyRewardsTooltip}
+                            title={
+                                <span
+                                    className="tooltip-style"
+                                    dangerouslySetInnerHTML={{
+                                        __html: totalUnrealizedPrivacyRewardsTooltip,
+                                    }}
+                                />
+                            }
                             data-html="true"
                             placement="top"
                             className="tooltip-icon"

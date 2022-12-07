@@ -23,7 +23,14 @@ const ExpectedPrpBalance = (props: {
             <Typography className="title">Expected PRP Balance:</Typography>
             <Tooltip
                 className="tooltip-styling"
-                title={expectedPrpBalanceTooltip}
+                title={
+                    <span
+                        className="tooltip-style"
+                        dangerouslySetInnerHTML={{
+                            __html: expectedPrpBalanceTooltip,
+                        }}
+                    />
+                }
                 placement="top"
             >
                 <IconButton>

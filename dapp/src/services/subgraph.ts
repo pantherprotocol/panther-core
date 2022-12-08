@@ -159,11 +159,11 @@ export function getSubgraphUrl(
     if (!accountArray) return undefined;
     const selectedAccount = accountArray[index];
     console.debug('Using subgraph account', selectedAccount);
-    return `https://api.thegraph.com/subgraphs/name/${selectedAccount}`;
+    return `https://api.thegraph.com/subgraphs/id/${selectedAccount}`;
 }
 
 function getSubgraphAccounts(chainId: number): string[] | undefined {
-    const subgraphAccountStr = env[`SUBGRAPH_ACCOUNTS_${chainId}`];
+    const subgraphAccountStr = env[`SUBGRAPH_IDS_${chainId}`];
     if (!subgraphAccountStr) return undefined;
     return subgraphAccountStr.split(',');
 }

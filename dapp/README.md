@@ -14,4 +14,4 @@ This is the repository for the Panther Protocol dApp. The dApp is a web applicat
 
 
 # App deployed to:
-https://ipfs.io/ipfs/QmamWLgcfyD96kSASxSNB5E7FTGUxRPPfimrKHLeQrccyF
+https://ipfs.io/ipfs/QmdY85wrH2Z5LcQTiVZCR2LmsZoR8SCZ5MdYrd9ha3FNDi

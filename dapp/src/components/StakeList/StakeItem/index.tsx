@@ -6,7 +6,7 @@ import React from 'react';
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import ExactValueTooltip from 'components/Common/ExactValueTooltip';
 import {expectedPrpBalanceTooltip} from 'components/Common/tooltips';
-import UnstakeButton from 'components/UnstakeTable/UnstakeButton';
+import UnstakeButton from 'components/StakeList/UnstakeButton';
 import {format} from 'date-fns';
 import {BigNumber, constants, utils} from 'ethers';
 import useScreenSize from 'hooks/screen';
@@ -34,7 +34,7 @@ function getRewards(
         ? (row.reward as AdvancedStakeRewardsBN)[StakingRewardTokenID.PRP]
         : (row.reward as AdvancedStakeRewardsBN)[StakingRewardTokenID.zZKP];
 }
-const UnstakeRow = (props: {
+const StakeItem = (props: {
     row: StakeRow;
     chainId: number | undefined;
     unstakeById: (id: any, trigger: WalletActionTrigger) => Promise<void>;
@@ -50,7 +50,7 @@ const UnstakeRow = (props: {
     return (
         <React.Fragment key={row.stakedAt}>
             {row.claimedAt === 0 && (
-                <Box className="unstake-row-holder">
+                <Box className="stake-item-holder">
                     <Box className="balance-wrapper">
                         <Box className="balance">
                             <ExactValueTooltip balance={row.amount}>
@@ -206,4 +206,4 @@ const UnstakeRow = (props: {
     );
 };
 
-export default UnstakeRow;
+export default StakeItem;

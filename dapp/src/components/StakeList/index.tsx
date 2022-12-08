@@ -30,7 +30,7 @@ import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
 import {parseTxErrorMessage} from 'services/errors';
 import {StakeRow, unstake} from 'services/staking';
 
-import UnstakeRow from './UnstakeRow';
+import UnstakeRow from './StakeItem';
 
 import './styles.scss';
 
@@ -103,7 +103,7 @@ async function unstakeWithNotification(
     );
 }
 
-export default function UnstakeTable() {
+export default function StakeList() {
     const context = useWeb3React();
     const {library, chainId, account} = context;
     const dispatch = useAppDispatch();
@@ -153,8 +153,8 @@ export default function UnstakeTable() {
 
     return (
         <Box
-            className="unstake-table"
-            data-testid="unstake-table_unstake-table_container"
+            className="stake-list"
+            data-testid="stake-list_stake-list_container"
         >
             {stakes.map((row: StakeRow) => (
                 <UnstakeRow

@@ -4,7 +4,7 @@
 import * as React from 'react';
 
 import {Box} from '@mui/material';
-import UnstakeTable from 'components/UnstakeTable';
+import StakeList from 'components/StakeList';
 
 import UnstakingInfo from './UnstakingInfo';
 
@@ -17,7 +17,7 @@ export default function UnstakingTab() {
             data-testid="unstake-tab_unstaking-tab_container"
         >
             <UnstakingInfo />
-            <UnstakeTable />
+            <StakeList />
         </Box>
     );
 }

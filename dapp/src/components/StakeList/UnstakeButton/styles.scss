@@ -1,13 +1,13 @@
 @import '../../../variables';
 
 .unstake-button {
-    color: $input-border !important;
+    color: $white !important;
     font-size: $normal-font-size !important;
     font-weight: $light-font-weight !important;
     mix-blend-mode: normal;
     border-radius: 10px !important;
     backdrop-filter: blur(36px);
-    background: rgba(72, 76, 103, 1) !important;
+    background: $btn-blue !important;
     padding: 0 0 1px !important;
     text-transform: none !important;
     line-height: normal;
@@ -26,6 +26,8 @@
     }
 
     &.locked {
+        color: $input-border !important;
+        background: rgba(72, 76, 103, 1) !important;
         opacity: 0.3;
     }
 }

@@ -161,7 +161,14 @@ const StakeItem = (props: {
                                 Expected:
                             </span>
                             <Tooltip
-                                title={expectedPrpBalanceTooltip}
+                                title={
+                                    <span
+                                        className="tooltip-style"
+                                        dangerouslySetInnerHTML={{
+                                            __html: expectedPrpBalanceTooltip,
+                                        }}
+                                    />
+                                }
                                 data-html="true"
                                 placement="top"
                                 className={`tooltip-icon ${

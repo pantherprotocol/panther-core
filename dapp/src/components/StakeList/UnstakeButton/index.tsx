@@ -3,8 +3,7 @@
 
 import React from 'react';
 
-import {Box, Button, Typography} from '@mui/material';
-import {formatTime} from 'lib/format';
+import {Button} from '@mui/material';
 import {useAppSelector} from 'redux/hooks';
 import {
     walletActionCauseSelector,
@@ -34,21 +33,14 @@ const UnstakeButton = (props: {
 
     return (
         <Button
-            data-testid="unstake-table_unstake-button_container"
+            data-testid="stake-list_stake-button_container"
             className={`unstake-button ${!row.unstakable ? 'locked' : ''}`}
             disabled={disabled}
             onClick={() => {
                 unstakeById(row.id, 'unstake');
             }}
         >
-            {row.unstakable ? (
-                'Unstake'
-            ) : (
-                <Box>
-                    <Typography>Locked Until:</Typography>
-                    <Typography>{formatTime(row.lockedTill * 1000)}</Typography>
-                </Box>
-            )}
+            Unstake
         </Button>
     );
 };

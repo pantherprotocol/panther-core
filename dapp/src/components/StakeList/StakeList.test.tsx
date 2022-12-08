@@ -6,19 +6,17 @@ import * as React from 'react';
 import {screen, waitFor} from '@testing-library/react';
 import {renderComponent} from 'components/Common/test-utils';
 
-import UnstakeTable from './index';
+import StakeList from './index';
 
 test('should render with its child components', () => {
-    renderComponent(<UnstakeTable />);
-    const unstakeTable = screen.queryByTestId(
-        'unstake-table_unstake-table_container',
-    );
+    renderComponent(<StakeList />);
+    const stakeList = screen.queryByTestId('stake-list_stake-list_container');
     const unstakeButton = screen.queryByTestId(
-        'unstake-table_unstake-button_container',
+        'stake-list_stake-button_container',
     );
 
     waitFor(() => {
-        expect(unstakeTable).toBeInTheDocument();
+        expect(stakeList).toBeInTheDocument();
         expect(unstakeButton).toBeInTheDocument();
     });
 

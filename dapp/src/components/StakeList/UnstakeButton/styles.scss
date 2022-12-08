@@ -1,0 +1,31 @@
+@import '../../../variables';
+
+.unstake-button {
+    color: $input-border !important;
+    font-size: $normal-font-size !important;
+    font-weight: $light-font-weight !important;
+    mix-blend-mode: normal;
+    border-radius: 10px !important;
+    backdrop-filter: blur(36px);
+    background: rgba(72, 76, 103, 1) !important;
+    padding: 0 0 1px !important;
+    text-transform: none !important;
+    line-height: normal;
+    width: 184px;
+    height: 39px;
+    @media (max-width: $semi-large-screen-size) {
+        width: 150px;
+    }
+
+    @media (max-width: $medium-screen-size) {
+        width: 100%;
+    }
+
+    &:hover {
+        background: $second-blue;
+    }
+
+    &.locked {
+        opacity: 0.3;
+    }
+}

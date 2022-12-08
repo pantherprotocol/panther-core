@@ -3,11 +3,15 @@
 
 import {useEffect, useState} from 'react';
 
-const MEDIUM_SCREEN_SIZE = 768;
+const SMALL_SCREEN_SIZE = 363;
+const MOBILE_SCREEN_SIZE = 768;
+const MEDIUM_SCREEN_SIZE = 867;
 const NORMAL_SCREEN_SIZE = 1000;
 
 interface Screen {
+    isSmall: boolean;
     isMobile: boolean;
+    isMedium: boolean;
     isNormal: boolean;
     screenSize: number;
 }
@@ -34,7 +38,9 @@ export default function useScreenSize(): Screen {
 
     return {
         screenSize,
-        isMobile: screenSize < MEDIUM_SCREEN_SIZE,
+        isSmall: screenSize < SMALL_SCREEN_SIZE,
+        isMobile: screenSize < MOBILE_SCREEN_SIZE,
+        isMedium: screenSize < MEDIUM_SCREEN_SIZE,
         isNormal: screenSize < NORMAL_SCREEN_SIZE,
     };
 }

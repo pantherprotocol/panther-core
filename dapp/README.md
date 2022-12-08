@@ -11,3 +11,7 @@ This is the repository for the Panther Protocol dApp. The dApp is a web applicat
 3.  Once you have the IPFS daemon running and environmental variables are set, you can publish the dApp by running the following command:
 
          yarn deploy:ipfs
+
+
+# App deployed to:
+https://ipfs.io/ipfs/QmamWLgcfyD96kSASxSNB5E7FTGUxRPPfimrKHLeQrccyF

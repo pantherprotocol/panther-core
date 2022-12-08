@@ -147,6 +147,15 @@ a {
         color: $white;
     }
 }
+.tooltip-style {
+    a {
+        text-decoration: underline;
+        font-size: inherit;
+        cursor: pointer;
+        padding-left: 2px;
+        color: inherit;
+    }
+}
 
 .App-link {
     color: $link-color;

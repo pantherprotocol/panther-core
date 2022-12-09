@@ -16,7 +16,7 @@ import NavigationLink from './NavigationLink';
 
 import './styles.scss';
 
-type MenuLink = {
+export type MenuLink = {
     name: string;
     url: string;
 };

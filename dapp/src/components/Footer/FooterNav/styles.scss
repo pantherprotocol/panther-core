@@ -1,0 +1,19 @@
+@import '../../../variables.scss';
+
+.footer-nav-links {
+    display: none;
+
+    @media (max-width: $medium-screen-size) {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 0px;
+        gap: 40px;
+    }
+
+    a {
+        padding-left: 0px;
+        color: $white;
+    }
+}

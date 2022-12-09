@@ -15,17 +15,14 @@ import {
 import {useWeb3React} from '@web3-react/core';
 import {notifyError} from 'components/Common/errors';
 import {openNotification} from 'components/Common/notification';
+import StyledBalance from 'components/Common/StyledBalance';
 import {totalUnrealizedPrivacyRewardsTooltip} from 'components/Common/tooltips';
 import SignatureRequestModal from 'components/SignatureRequestModal';
-import {BigNumber, utils} from 'ethers';
+import {BigNumber} from 'ethers';
 import attentionIcon from 'images/attention-triangle-icon.svg';
 import infoIcon from 'images/info-icon.svg';
 import refreshIcon from 'images/refresh-icon.svg';
-import {
-    formatCurrency,
-    formatTimeSince,
-    getFormattedFractions,
-} from 'lib/format';
+import {formatCurrency, formatTimeSince} from 'lib/format';
 import {fiatPrice} from 'lib/token-price';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
@@ -190,10 +187,6 @@ export default function PrivateBalance() {
         showWalletActionInProgressSelector('signMessage'),
     );
 
-    const [whole, fractional] = totalPrice
-        ? getFormattedFractions(utils.formatEther(totalPrice))
-        : [];
-
     return (
         <>
             {showWalletSignatureInProgress && <SignatureRequestModal />}
@@ -205,19 +198,7 @@ export default function PrivateBalance() {
                     <Typography className="title">
                         Total Private zAsset Balance
                     </Typography>
-                    <Typography className="amount">
-                        {whole && fractional ? (
-                            <>
-                                <span>${whole}</span>
-                                <span className="substring">.{fractional}</span>
-                            </>
-                        ) : (
-                            <>
-                                <span>0</span>
-                                <span className="substring">.00</span>
-                            </>
-                        )}
-                    </Typography>
+                    <StyledBalance balance={totalPrice} styles="amount" />
                     <Typography className="zkp-rewards">
                         {formatCurrency(totalUnrealizedPrp, {
                             scale: 0,

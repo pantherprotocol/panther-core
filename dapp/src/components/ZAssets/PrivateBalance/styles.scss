@@ -59,22 +59,21 @@ $refresh-button-background: linear-gradient(
         }
 
         .amount {
-            padding: 10px 0;
-            font-style: normal;
-            font-weight: $bold-font-weight;
-            font-size: $huge-font-size;
-            line-height: 19px;
             display: flex;
             align-items: center;
-            color: $white;
             place-items: baseline;
+            color: $white;
+            font-weight: $bold-font-weight;
+            .whole {
+                font-size: $huge-font-size - 1;
 
-            @media (max-width: $medium-screen-size) {
-                font-size: 34px;
+                @media (max-width: $medium-screen-size) {
+                    font-size: 34px;
+                }
             }
 
             .substring {
-                font-size: 25px;
+                font-size: $bigger-font-size;
             }
         }
 

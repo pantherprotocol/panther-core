@@ -32,7 +32,17 @@
 
     .amount-box {
         display: flex;
-        align-items: center;
+        align-items: baseline;
+        .splitted-balance {
+            font-weight: $bold-font-weight;
+            .whole {
+                font-size: 34px;
+            }
+
+            .substring {
+                font-size: $bigger-font-size - 1;
+            }
+        }
 
         .token-market-price {
             font-size: $normal-font-size;

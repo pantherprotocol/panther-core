@@ -12,7 +12,11 @@ ClickUp: #u7hu <!-- replace ClickUp ID here -->
 
 <!-- Add any relevant info -->
 
-## How to test the fix
+## How I tested the fix
+
+<!-- Add any relevant info -->
+
+## How the reviewer should test the fix
 
 <!-- Add any relevant info -->
 

@@ -23,8 +23,6 @@ import {termsSelector} from '../../redux/slices/staking/stake-terms';
 import './styles.scss';
 
 function AdvancedStakingRewards() {
-    const context = useWeb3React();
-    const {active} = context;
     const claimed = useAppSelector(totalClaimedRewardsSelector);
     const total = useAppSelector(totalVestedRewardsSelector);
     const advancedStakingAPY = getAdvStakingAPY(new Date().getTime());
@@ -42,9 +40,7 @@ function AdvancedStakingRewards() {
             <Box className="info-wrapper">
                 <RemainingDays />
                 {advancedStakingAPY && (
-                    <StakingAPR
-                        advancedStakingAPY={active ? advancedStakingAPY : 0}
-                    />
+                    <StakingAPR advancedStakingAPY={advancedStakingAPY} />
                 )}
             </Box>
         </Box>

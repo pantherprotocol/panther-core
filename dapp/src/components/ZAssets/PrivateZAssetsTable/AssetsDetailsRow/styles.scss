@@ -1,7 +1,6 @@
 @import '../../../../variables.scss';
 .zAsset-staking-holder {
     background: rgba(164, 183, 219, 0.1);
-    backdrop-filter: blur(36px);
     @media (max-width: $medium-screen-size) {
         display: flex !important;
         flex-direction: column;

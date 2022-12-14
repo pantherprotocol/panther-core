@@ -55,15 +55,11 @@ const StakeItem = (props: {
                         <Box className="balance">
                             <ExactValueTooltip balance={row.amount}>
                                 <Typography component={'span'}>
-                                    <>
-                                        <span className="whole">
-                                            {whole || 0}
-                                        </span>
+                                    <span className="whole">{whole || 0}</span>
 
-                                        <span className="substring">
-                                            .{fractional || '00'}
-                                        </span>
-                                    </>
+                                    <span className="substring">
+                                        .{fractional || '00'}
+                                    </span>
                                 </Typography>
                             </ExactValueTooltip>
 
@@ -159,26 +155,26 @@ const StakeItem = (props: {
                                 }`}
                             >
                                 Expected:
+                                <Tooltip
+                                    title={
+                                        <span
+                                            className="tooltip-style"
+                                            dangerouslySetInnerHTML={{
+                                                __html: expectedPrpBalanceTooltip,
+                                            }}
+                                        />
+                                    }
+                                    data-html="true"
+                                    placement="top"
+                                    className={`tooltip-icon ${
+                                        row.unstakable ? 'unstakable' : ''
+                                    }`}
+                                >
+                                    <IconButton>
+                                        <img src={infoIcon} />
+                                    </IconButton>
+                                </Tooltip>
                             </span>
-                            <Tooltip
-                                title={
-                                    <span
-                                        className="tooltip-style"
-                                        dangerouslySetInnerHTML={{
-                                            __html: expectedPrpBalanceTooltip,
-                                        }}
-                                    />
-                                }
-                                data-html="true"
-                                placement="top"
-                                className={`tooltip-icon ${
-                                    row.unstakable ? 'unstakable' : ''
-                                }`}
-                            >
-                                <IconButton>
-                                    <img src={infoIcon} />
-                                </IconButton>
-                            </Tooltip>
 
                             <Typography
                                 component={'span'}

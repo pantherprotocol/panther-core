@@ -13,7 +13,6 @@ import useScreenSize from 'hooks/screen';
 import infoIcon from 'images/info-icon.svg';
 import {formatCurrency, formatTime, getFormattedFractions} from 'lib/format';
 import {WalletActionTrigger} from 'redux/slices/ui/web3-wallet-last-action';
-import {chainHasPoolContract} from 'services/contracts';
 import {isClassic} from 'services/rewards';
 import {CLASSIC_TYPE_HEX, StakeRow} from 'services/staking';
 import {
@@ -186,17 +185,15 @@ const StakeItem = (props: {
                                     row.unstakable ? 'unstakable' : ''
                                 }`}
                             >
-                                {chainId && chainHasPoolContract(chainId)
-                                    ? utils.formatUnits(
-                                          row.stakeType === CLASSIC_TYPE_HEX
-                                              ? constants.Zero
-                                              : getRewards(
-                                                    row,
-                                                    StakingRewardTokenID.PRP,
-                                                ),
-                                          0,
-                                      )
-                                    : '0'}
+                                {utils.formatUnits(
+                                    row.stakeType === CLASSIC_TYPE_HEX
+                                        ? constants.Zero
+                                        : getRewards(
+                                              row,
+                                              StakingRewardTokenID.PRP,
+                                          ),
+                                    0,
+                                )}
 
                                 <Typography
                                     className="symbol"

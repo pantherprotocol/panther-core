@@ -51,7 +51,14 @@ export function ExpectedRewardsCard() {
                     <Typography className="title">
                         Privacy Reward Points:
                         <Tooltip
-                            title={expectedPrpBalanceTooltip}
+                            title={
+                                <span
+                                    className="tooltip-style"
+                                    dangerouslySetInnerHTML={{
+                                        __html: expectedPrpBalanceTooltip,
+                                    }}
+                                />
+                            }
                             data-html="true"
                             placement="top"
                             className="tooltip-icon"

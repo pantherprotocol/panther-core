@@ -26,13 +26,12 @@ import './styles.scss';
 
 function getRewards(
     row: StakeRow,
-    rewardName: StakingRewardTokenID,
+    rewardName: StakingRewardTokenID.zZKP | StakingRewardTokenID.PRP,
 ): BigNumber {
-    return row.stakeType === CLASSIC_TYPE_HEX && isClassic(row.reward)
-        ? (row.reward as ClassicStakeRewardBN)
-        : rewardName === StakingRewardTokenID.PRP
-        ? (row.reward as AdvancedStakeRewardsBN)[StakingRewardTokenID.PRP]
-        : (row.reward as AdvancedStakeRewardsBN)[StakingRewardTokenID.zZKP];
+    if (row.stakeType === CLASSIC_TYPE_HEX && isClassic(row.reward))
+        return row.reward as ClassicStakeRewardBN;
+
+    return (row.reward as AdvancedStakeRewardsBN)[rewardName];
 }
 const StakeItem = (props: {
     row: StakeRow;

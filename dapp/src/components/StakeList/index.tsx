@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
-import {useCallback, useEffect} from 'react';
-import * as React from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
+
+import {MAX_PAGE_LIMIT, UNSTAKE_ROWS_PER_PAGE} from 'constants/pagination';
 
 import {Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
@@ -11,6 +12,7 @@ import {
     removeNotification,
     openNotification,
 } from 'components/Common/notification';
+import Pagination from 'components/Common/Pagination';
 import {BigNumber} from 'ethers';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {useAppDispatch} from 'redux/hooks';
@@ -109,6 +111,46 @@ export default function StakeList() {
     const dispatch = useAppDispatch();
     const {stakes} = useStakes();
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [maxPageLimit, setMaxPageLimit] = useState(MAX_PAGE_LIMIT);
+    const [minPageLimit, setMinPageLimit] = useState(0);
+
+    const indexOfLastStake = currentPage * UNSTAKE_ROWS_PER_PAGE;
+    const indexOfFirstStake = indexOfLastStake - UNSTAKE_ROWS_PER_PAGE;
+    const filteredStakes = stakes.filter(stake => stake.claimedAt == 0);
+    const paginatedStakes = filteredStakes.slice(
+        indexOfFirstStake,
+        indexOfLastStake,
+    );
+
+    const totalPages = Math.ceil(stakes.length / UNSTAKE_ROWS_PER_PAGE);
+
+    const onPageChange = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const onPrevClick = () => {
+        if (currentPage - 1 <= minPageLimit) {
+            setMaxPageLimit(maxPageLimit - 1);
+            setMinPageLimit(minPageLimit - 1);
+        }
+        setCurrentPage(prev => prev - 1);
+    };
+
+    const onNextClick = () => {
+        if (currentPage + 1 > maxPageLimit) {
+            setMaxPageLimit(maxPageLimit + 1);
+            setMinPageLimit(minPageLimit + 1);
+        }
+        setCurrentPage(prev => prev + 1);
+    };
+
+    const onLastClick = (total: number) => {
+        onPageChange(total);
+        setMaxPageLimit(total);
+        setMinPageLimit(total - MAX_PAGE_LIMIT);
+    };
+
     const unstakeById = useCallback(
         async (id, trigger: WalletActionTrigger) => {
             if (!library || !chainId || !account) {
@@ -156,7 +198,7 @@ export default function StakeList() {
             className="stake-list"
             data-testid="stake-list_stake-list_container"
         >
-            {stakes.map((row: StakeRow) => (
+            {paginatedStakes.map((row: StakeRow) => (
                 <UnstakeRow
                     key={row.stakedAt}
                     row={row}
@@ -164,6 +206,19 @@ export default function StakeList() {
                     chainId={chainId}
                 />
             ))}
+            {filteredStakes.length !== 0 &&
+                filteredStakes.length > UNSTAKE_ROWS_PER_PAGE && (
+                    <Pagination
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        maxPageLimit={maxPageLimit}
+                        minPageLimit={minPageLimit}
+                        onPrevClick={onPrevClick}
+                        onNextClick={onNextClick}
+                        onLastClick={onLastClick}
+                        onPageChange={onPageChange}
+                    />
+                )}
         </Box>
     );
 }

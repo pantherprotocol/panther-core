@@ -1,0 +1,50 @@
+@import '../../../variables.scss';
+
+.pagination-container {
+    width: 100%;
+
+    .page-numbers {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        margin-top: 35px;
+        margin-bottom: 0;
+        padding: 0;
+
+        .page-number {
+            font-weight: $light-font-weight;
+            font-size: $normal-font-size;
+            opacity: 0.2;
+            cursor: pointer;
+            &.active {
+                font-weight: $semi-bold-font-weight;
+                font-size: $normal-font-size;
+                opacity: unset;
+            }
+
+            &.hidden {
+                display: none;
+            }
+        }
+
+        li {
+            padding: 10px;
+            .paginator-button {
+                font-weight: $bold-font-weight;
+                font-size: $normal-font-size;
+                cursor: pointer;
+                &:hover {
+                    cursor: pointer;
+                }
+
+                &.disabled {
+                    opacity: 0.2;
+                }
+            }
+        }
+
+        .ellipses {
+            opacity: 0.2;
+        }
+    }
+}

@@ -10,7 +10,7 @@ const Pagination = (props: PaginationInterface) => {
         maxPageLimit,
         minPageLimit,
         onNextClick,
-        onPageChange,
+        setCurrentPage,
         onPrevClick,
         onLastClick,
         totalPages,
@@ -23,25 +23,13 @@ const Pagination = (props: PaginationInterface) => {
         pages.push(i);
     }
 
-    const handlePrevClick = () => {
-        onPrevClick();
-    };
-
-    const handleNextClick = () => {
-        onNextClick();
-    };
-
-    const handlePageClick = (e: any) => {
-        onPageChange(Number(e.target.id));
-    };
-
     const pageNumbers = pages.map(page => {
         if (page <= maxPageLimit && page > minPageLimit) {
             return (
                 <li
                     key={page}
                     id={page.toString()}
-                    onClick={handlePageClick}
+                    onClick={() => setCurrentPage(Number(page.toString()))}
                     className={`page-number ${
                         currentPage === page ? 'active' : ''
                     }`}
@@ -65,7 +53,7 @@ const Pagination = (props: PaginationInterface) => {
                 <li>
                     <span
                         onClick={() =>
-                            currentPage === pages[0] ? null : handlePrevClick()
+                            currentPage === pages[0] ? null : onPrevClick()
                         }
                         className={`paginator-button ${
                             currentPage === pages[0] && 'disabled'
@@ -91,7 +79,7 @@ const Pagination = (props: PaginationInterface) => {
                         onClick={() =>
                             currentPage === pages[pages.length - 1]
                                 ? null
-                                : handleNextClick()
+                                : onNextClick()
                         }
                         className={`paginator-button ${
                             currentPage === pages[pages.length - 1] &&

@@ -1,13 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 
-import {
-    MAX_PAGE_LIMIT,
-    MAX_PAGE_LIMIT_MOBILE,
-    UNSTAKE_ROWS_PER_PAGE,
-} from 'constants/pagination';
+import {UNSTAKE_ROWS_PER_PAGE} from 'constants/pagination';
 
 import {Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
@@ -18,7 +14,7 @@ import {
 } from 'components/Common/notification';
 import Pagination from 'components/Common/Pagination';
 import {BigNumber} from 'ethers';
-import useScreenSize from 'hooks/screen';
+import usePagination from 'hooks/pagination';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {useAppDispatch} from 'redux/hooks';
 import {getStakes, useStakes} from 'redux/slices/staking/stakes';
@@ -115,48 +111,22 @@ export default function StakeList() {
     const {library, chainId, account} = context;
     const dispatch = useAppDispatch();
     const {stakes} = useStakes();
-    const {isSmall} = useScreenSize();
-    const responsiveLimit = isSmall ? MAX_PAGE_LIMIT_MOBILE : MAX_PAGE_LIMIT;
-
-    const [currentPage, setCurrentPage] = useState(1);
-    const [maxPageLimit, setMaxPageLimit] = useState(responsiveLimit);
-    const [minPageLimit, setMinPageLimit] = useState(0);
-
-    const indexOfLastStake = currentPage * UNSTAKE_ROWS_PER_PAGE;
-    const indexOfFirstStake = indexOfLastStake - UNSTAKE_ROWS_PER_PAGE;
     const filteredStakes = stakes.filter(stake => stake.claimedAt == 0);
-    const paginatedStakes = filteredStakes.slice(
-        indexOfFirstStake,
-        indexOfLastStake,
-    );
 
-    const totalPages = Math.ceil(stakes.length / UNSTAKE_ROWS_PER_PAGE);
-
-    const onPageChange = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
-
-    const onPrevClick = () => {
-        if (currentPage - 1 <= minPageLimit) {
-            setMaxPageLimit(maxPageLimit - 1);
-            setMinPageLimit(minPageLimit - 1);
-        }
-        setCurrentPage(prev => prev - 1);
-    };
-
-    const onNextClick = () => {
-        if (currentPage + 1 > maxPageLimit) {
-            setMaxPageLimit(maxPageLimit + 1);
-            setMinPageLimit(minPageLimit + 1);
-        }
-        setCurrentPage(prev => prev + 1);
-    };
-
-    const onLastClick = (total: number) => {
-        onPageChange(total);
-        setMaxPageLimit(total);
-        setMinPageLimit(total - responsiveLimit);
-    };
+    const {
+        paginatedData,
+        onLastClick,
+        currentPage,
+        setCurrentPage,
+        totalPages,
+        onNextClick,
+        onPrevClick,
+        maxPageLimit,
+        minPageLimit,
+    } = usePagination({
+        data: filteredStakes,
+        itemsPerPage: UNSTAKE_ROWS_PER_PAGE,
+    });
 
     const unstakeById = useCallback(
         async (id, trigger: WalletActionTrigger) => {
@@ -205,7 +175,7 @@ export default function StakeList() {
             className="stake-list"
             data-testid="stake-list_stake-list_container"
         >
-            {paginatedStakes.map((row: StakeRow) => (
+            {paginatedData().map((row: StakeRow) => (
                 <UnstakeRow
                     key={row.stakedAt}
                     row={row}
@@ -223,7 +193,7 @@ export default function StakeList() {
                         onPrevClick={onPrevClick}
                         onNextClick={onNextClick}
                         onLastClick={onLastClick}
-                        onPageChange={onPageChange}
+                        setCurrentPage={setCurrentPage}
                     />
                 )}
         </Box>

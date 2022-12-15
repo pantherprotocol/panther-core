@@ -7,5 +7,5 @@ export interface PaginationInterface {
     onPrevClick: () => void;
     onNextClick: () => void;
     onLastClick: (num: number) => void;
-    onPageChange: (pageNumber: number) => void;
+    setCurrentPage: (pageNumber: number) => void;
 }

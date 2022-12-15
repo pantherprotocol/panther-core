@@ -4,11 +4,7 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 
-import {
-    MAX_PAGE_LIMIT,
-    MAX_PAGE_LIMIT_MOBILE,
-    ZASSETS_ROWS_PER_PAGE,
-} from 'constants/pagination';
+import {ZASSETS_ROWS_PER_PAGE} from 'constants/pagination';
 
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
@@ -21,7 +17,7 @@ import {useWeb3React} from '@web3-react/core';
 import Pagination from 'components/Common/Pagination';
 import {unrealizedRewardAprTooltip} from 'components/Common/tooltips';
 import AssetsDetailsRow from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsRow';
-import useScreenSize from 'hooks/screen';
+import usePagination from 'hooks/pagination';
 import infoIcon from 'images/info-icon.svg';
 import {useAppSelector, useAppDispatch} from 'redux/hooks';
 import {advancedStakesRewardsSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
@@ -34,12 +30,6 @@ import './styles.scss';
 const AssetsDetailsTable = () => {
     const context = useWeb3React();
     const {active, account, chainId, library} = context;
-    const {isSmall} = useScreenSize();
-    const responsiveLimit = isSmall ? MAX_PAGE_LIMIT_MOBILE : MAX_PAGE_LIMIT;
-
-    const [currentPage, setCurrentPage] = useState(1);
-    const [maxPageLimit, setMaxPageLimit] = useState(responsiveLimit);
-    const [minPageLimit, setMinPageLimit] = useState(0);
 
     const advancedStakesRewards = useAppSelector(
         advancedStakesRewardsSelector(chainId, account),
@@ -67,42 +57,20 @@ const AssetsDetailsTable = () => {
         registerExitTimeCall(true);
     }, [context, chainId, library, dispatch, gotExitTime]);
 
-    const indexOfLastAsset = currentPage * ZASSETS_ROWS_PER_PAGE;
-    const indexOfFirstAsset = indexOfLastAsset - ZASSETS_ROWS_PER_PAGE;
-    const paginatedAssets = rewardsFilteredAndSorted.slice(
-        indexOfFirstAsset,
-        indexOfLastAsset,
-    );
-
-    const totalPages = Math.ceil(
-        rewardsFilteredAndSorted.length / ZASSETS_ROWS_PER_PAGE,
-    );
-
-    const onPageChange = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
-
-    const onPrevClick = () => {
-        if (currentPage - 1 <= minPageLimit) {
-            setMaxPageLimit(maxPageLimit - 1);
-            setMinPageLimit(minPageLimit - 1);
-        }
-        setCurrentPage(prev => prev - 1);
-    };
-
-    const onNextClick = () => {
-        if (currentPage + 1 > maxPageLimit) {
-            setMaxPageLimit(maxPageLimit + 1);
-            setMinPageLimit(minPageLimit + 1);
-        }
-        setCurrentPage(prev => prev + 1);
-    };
-
-    const onLastClick = (total: number) => {
-        onPageChange(total);
-        setMaxPageLimit(total);
-        setMinPageLimit(total - responsiveLimit);
-    };
+    const {
+        paginatedData,
+        onLastClick,
+        currentPage,
+        setCurrentPage,
+        totalPages,
+        onNextClick,
+        onPrevClick,
+        maxPageLimit,
+        minPageLimit,
+    } = usePagination({
+        data: rewardsFilteredAndSorted,
+        itemsPerPage: ZASSETS_ROWS_PER_PAGE,
+    });
 
     return (
         <Box className="assets-details-table_container">
@@ -151,7 +119,7 @@ const AssetsDetailsTable = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody className="assets-details-table_body">
-                    {paginatedAssets.map((reward: AdvancedStakeRewards) => (
+                    {paginatedData()?.map((reward: AdvancedStakeRewards) => (
                         <AssetsDetailsRow
                             reward={reward}
                             key={reward.id}
@@ -170,7 +138,7 @@ const AssetsDetailsTable = () => {
                             onPrevClick={onPrevClick}
                             onNextClick={onNextClick}
                             onLastClick={onLastClick}
-                            onPageChange={onPageChange}
+                            setCurrentPage={setCurrentPage}
                             classes="zassets-pagination"
                         />
                     )}

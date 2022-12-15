@@ -3,25 +3,17 @@
 
 import React from 'react';
 
+import {footerLinks, MenuLink} from 'constants/routes';
+
 import {Box} from '@mui/system';
-import {MenuLink} from 'components/Header/NavigationMenu';
 import NavigationLink from 'components/Header/NavigationMenu/NavigationLink';
 
 import './styles.scss';
 
-const links: MenuLink[] = [
-    {name: 'Staking', url: '/'},
-    {name: 'zAssets', url: '/zAssets'},
-    {
-        name: 'Governance',
-        url: 'https://snapshot.org/#/pantherprotocol.eth',
-    },
-];
-
 const FooterNav = () => {
     return (
         <Box className="footer-nav-links">
-            {links.map(link => (
+            {footerLinks.map((link: MenuLink) => (
                 <NavigationLink key={link.name} to={link.url}>
                     {link.name}
                 </NavigationLink>

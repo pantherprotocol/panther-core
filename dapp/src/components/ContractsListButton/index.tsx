@@ -3,12 +3,14 @@
 
 import React from 'react';
 
+import {Routes} from 'constants/routes';
+
 import {WalletHeaderActionButton} from 'components/Common/WalletHeaderActionButton';
 import {Link} from 'react-router-dom';
 
 export const ContractsListButton = () => {
     return (
-        <Link to="/contracts" data-testid="contract-list-button_wrapper">
+        <Link to={Routes.Contracts} data-testid="contract-list-button_wrapper">
             <WalletHeaderActionButton text="Contracts List" />
         </Link>
     );

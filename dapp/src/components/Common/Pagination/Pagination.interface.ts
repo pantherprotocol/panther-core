@@ -3,6 +3,7 @@ export interface PaginationInterface {
     currentPage: number;
     maxPageLimit: number;
     minPageLimit: number;
+    styles?: string;
     onPrevClick: () => void;
     onNextClick: () => void;
     onLastClick: (num: number) => void;

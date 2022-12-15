@@ -29,6 +29,9 @@
 
         li {
             padding: 10px;
+            @media (max-width: $tiny-screen-size) {
+                padding: 5px;
+            }
             .paginator-button {
                 font-weight: $bold-font-weight;
                 font-size: $normal-font-size;

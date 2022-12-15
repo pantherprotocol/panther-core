@@ -14,7 +14,7 @@ const Pagination = (props: PaginationInterface) => {
         onPrevClick,
         onLastClick,
         totalPages,
-        styles,
+        classes,
     } = props;
     const total = totalPages;
 
@@ -60,7 +60,7 @@ const Pagination = (props: PaginationInterface) => {
     }
 
     return (
-        <div className={`pagination-container ${styles ?? ''}`}>
+        <div className={`pagination-container ${classes ?? ''}`}>
             <ul className="page-numbers">
                 <li>
                     <span

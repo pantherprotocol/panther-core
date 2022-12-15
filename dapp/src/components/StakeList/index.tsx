@@ -3,7 +3,11 @@
 
 import React, {useCallback, useEffect, useState} from 'react';
 
-import {MAX_PAGE_LIMIT, UNSTAKE_ROWS_PER_PAGE} from 'constants/pagination';
+import {
+    MAX_PAGE_LIMIT,
+    MAX_PAGE_LIMIT_MOBILE,
+    UNSTAKE_ROWS_PER_PAGE,
+} from 'constants/pagination';
 
 import {Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
@@ -14,6 +18,7 @@ import {
 } from 'components/Common/notification';
 import Pagination from 'components/Common/Pagination';
 import {BigNumber} from 'ethers';
+import useScreenSize from 'hooks/screen';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {useAppDispatch} from 'redux/hooks';
 import {getStakes, useStakes} from 'redux/slices/staking/stakes';
@@ -110,9 +115,11 @@ export default function StakeList() {
     const {library, chainId, account} = context;
     const dispatch = useAppDispatch();
     const {stakes} = useStakes();
+    const {isSmall} = useScreenSize();
+    const responsiveLimit = isSmall ? MAX_PAGE_LIMIT_MOBILE : MAX_PAGE_LIMIT;
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [maxPageLimit, setMaxPageLimit] = useState(MAX_PAGE_LIMIT);
+    const [maxPageLimit, setMaxPageLimit] = useState(responsiveLimit);
     const [minPageLimit, setMinPageLimit] = useState(0);
 
     const indexOfLastStake = currentPage * UNSTAKE_ROWS_PER_PAGE;
@@ -148,7 +155,7 @@ export default function StakeList() {
     const onLastClick = (total: number) => {
         onPageChange(total);
         setMaxPageLimit(total);
-        setMinPageLimit(total - MAX_PAGE_LIMIT);
+        setMinPageLimit(total - responsiveLimit);
     };
 
     const unstakeById = useCallback(

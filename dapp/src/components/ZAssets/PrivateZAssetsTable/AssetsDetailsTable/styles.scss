@@ -58,8 +58,17 @@
         }
 
         .zassets-pagination {
-            position: relative;
-            left: 300px;
+            position: absolute;
+            @media (max-width: $medium-screen-size) {
+                position: static;
+            }
+            .page-numbers {
+                margin-top: 30px;
+
+                @media (max-width: $tiny-screen-size) {
+                    justify-content: flex-start;
+                }
+            }
         }
     }
 }

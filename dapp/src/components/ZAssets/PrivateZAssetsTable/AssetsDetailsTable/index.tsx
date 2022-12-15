@@ -4,7 +4,11 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 
-import {MAX_PAGE_LIMIT, ZASSETS_ROWS_PER_PAGE} from 'constants/pagination';
+import {
+    MAX_PAGE_LIMIT,
+    MAX_PAGE_LIMIT_MOBILE,
+    ZASSETS_ROWS_PER_PAGE,
+} from 'constants/pagination';
 
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
@@ -17,6 +21,7 @@ import {useWeb3React} from '@web3-react/core';
 import Pagination from 'components/Common/Pagination';
 import {unrealizedRewardAprTooltip} from 'components/Common/tooltips';
 import AssetsDetailsRow from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsRow';
+import useScreenSize from 'hooks/screen';
 import infoIcon from 'images/info-icon.svg';
 import {useAppSelector, useAppDispatch} from 'redux/hooks';
 import {advancedStakesRewardsSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
@@ -29,9 +34,11 @@ import './styles.scss';
 const AssetsDetailsTable = () => {
     const context = useWeb3React();
     const {active, account, chainId, library} = context;
+    const {isSmall} = useScreenSize();
+    const responsiveLimit = isSmall ? MAX_PAGE_LIMIT_MOBILE : MAX_PAGE_LIMIT;
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [maxPageLimit, setMaxPageLimit] = useState(MAX_PAGE_LIMIT);
+    const [maxPageLimit, setMaxPageLimit] = useState(responsiveLimit);
     const [minPageLimit, setMinPageLimit] = useState(0);
 
     const advancedStakesRewards = useAppSelector(
@@ -94,7 +101,7 @@ const AssetsDetailsTable = () => {
     const onLastClick = (total: number) => {
         onPageChange(total);
         setMaxPageLimit(total);
-        setMinPageLimit(total - MAX_PAGE_LIMIT);
+        setMinPageLimit(total - responsiveLimit);
     };
 
     return (
@@ -164,7 +171,7 @@ const AssetsDetailsTable = () => {
                             onNextClick={onNextClick}
                             onLastClick={onLastClick}
                             onPageChange={onPageChange}
-                            styles="zassets-pagination"
+                            classes="zassets-pagination"
                         />
                     )}
             </Table>

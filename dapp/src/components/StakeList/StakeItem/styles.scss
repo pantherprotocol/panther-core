@@ -2,14 +2,12 @@
 
 .stake-item-holder {
     width: 100%;
-    height: 110px;
     display: flex;
     margin-bottom: 15px;
     background: rgba(36, 41, 68, 1);
-    mix-blend-mode: normal;
-    backdrop-filter: blur(35px);
     border-radius: 10px;
-    padding: 10px 15px 15px 26px;
+    padding: 15px 15px 15px 26px;
+
     @media (max-width: $semi-large-screen-size) {
         padding: 10px 15px 15px 10px;
         height: auto;
@@ -17,12 +15,7 @@
 
     @media (max-width: $medium-screen-size) {
         flex-direction: column;
-        height: 214px;
         padding: 15px 20px 20px;
-    }
-
-    @media (max-width: $tiny-screen-size) {
-        height: 240px;
     }
 
     &:first-child {
@@ -73,63 +66,25 @@
         width: 50%;
         @media (max-width: $medium-screen-size) {
             width: 100%;
-            padding: 15px 8px 26px;
+            padding: 15px 8px 0px;
         }
         .info {
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: $light-font-weight;
-            &:last-child {
-                justify-content: left;
 
-                .title {
-                    position: relative;
-                    bottom: 8px;
-                    &.unstakable {
-                        bottom: unset;
-                        @media (max-width: $medium-screen-size) {
-                            bottom: 8px;
-                        }
-                    }
-                }
-
-                .value {
-                    bottom: 12px;
-
-                    @media (max-width: $large-screen-size) {
-                        bottom: 13px;
-                    }
-
-                    @media (max-width: $semi-large-screen-size) {
-                        bottom: 30px;
-                    }
-
-                    @media (max-width: $medium-screen-size) {
-                        margin-left: auto;
-                        margin-bottom: 15px;
-                    }
-
-                    &.unstakable {
-                        bottom: unset;
-                    }
-                }
-            }
             .title {
                 font-size: $small-font-size + 1;
                 opacity: 0.5;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .tooltip-icon {
                 width: fit-content;
-                padding: 0 8px 16px;
-
-                &.unstakable {
-                    padding: 0 8px 0;
-                    @media (max-width: $medium-screen-size) {
-                        padding: 0 8px 16px;
-                    }
-                }
+                padding: 0px 8px;
             }
 
             .value {
@@ -137,26 +92,12 @@
                 color: $white;
                 display: flex;
                 align-items: baseline;
-                position: absolute;
-                left: 390px;
+                justify-self: left;
                 line-height: normal;
+                padding-right: 11px;
 
-                @media (max-width: $large-screen-size) {
-                    left: 415px;
-                    min-width: 120px;
-                }
-
-                @media (max-width: $normal-screen-size) {
-                    left: 376px;
-                }
-
-                @media (max-width: $semi-large-screen-size) {
-                    left: 317px;
-                    min-width: unset;
-                }
-
-                @media (max-width: $semi-medium-screen-size) {
-                    position: static;
+                @media (max-width: $medium-screen-size) {
+                    padding-right: 0px;
                 }
 
                 .symbol {

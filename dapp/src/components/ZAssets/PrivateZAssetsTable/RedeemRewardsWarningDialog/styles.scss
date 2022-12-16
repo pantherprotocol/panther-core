@@ -29,7 +29,6 @@
         .modal-dialog-content-holder {
             width: 100%;
             background: $card-background-darker;
-            backdrop-filter: blur(40px);
             border-radius: 14px;
             padding: 20px 35px 25px;
             margin-bottom: 33px;
@@ -75,7 +74,6 @@
                     margin: 13px 0;
                     padding: 0 3px;
                     background: $card-background-darker;
-                    backdrop-filter: blur(60px);
                     border-radius: 20px;
 
                     span {

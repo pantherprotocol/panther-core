@@ -7,6 +7,7 @@ import {Box} from '@mui/material';
 
 import logo from '../../images/panther-logo.svg';
 
+import FooterNav from './FooterNav';
 import Socials from './Socials';
 
 import './styles.scss';
@@ -19,6 +20,7 @@ const Footer = () => {
                 <span>Panther</span>
             </Box>
             <Box className="links-container">
+                <FooterNav />
                 <Box className="footer-socials">
                     <Socials />
                 </Box>

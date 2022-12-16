@@ -3,6 +3,8 @@
 
 import React from 'react';
 
+import {Routes} from 'constants/routes';
+
 import {Container, Typography} from '@mui/material';
 import {MainPageWrapper} from 'components/MainPageWrapper';
 import {Link} from 'react-router-dom';
@@ -18,7 +20,7 @@ const NotFoundPage = () => {
                     Oops! Sorry, it looks like this Panther got a bit lost.
                 </Typography>
                 <Typography>
-                    <Link to="/">Return to the home page</Link>
+                    <Link to={Routes.Staking}> Return to the home page</Link>
                 </Typography>
             </Container>
         </MainPageWrapper>

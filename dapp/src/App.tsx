@@ -3,6 +3,8 @@
 
 import React, {useCallback, useEffect} from 'react';
 
+import {Routes} from 'constants/routes';
+
 import {createTheme} from '@mui/material';
 import {ThemeProvider} from '@mui/material/styles';
 import 'lib/bigint-serialize';
@@ -88,25 +90,25 @@ function App() {
                 return [
                     <Route
                         key="staking"
-                        path={'/'}
+                        path={Routes.Staking}
                         exact={true}
                         component={Staking}
                     />,
                     <Route
                         key="zassets"
-                        path={'/zAssets'}
+                        path={Routes.ZAssets}
                         exact={true}
                         component={ZAssets}
                     />,
                     <Route
                         key="faucet"
-                        path={'/faucet'}
+                        path={Routes.Faucet}
                         exact={true}
                         component={Faucet}
                     />,
                     <Route
                         key="contracts"
-                        path={'/contracts'}
+                        path={Routes.Contracts}
                         exact={true}
                         component={ContractsPage}
                     />,

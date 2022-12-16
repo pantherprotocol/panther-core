@@ -7,7 +7,8 @@
     padding: 20px 34px;
 
     @media (max-width: $medium-screen-size) {
-        padding: 20px 0 20px 15px;
+        padding: 0 0 20px 15px;
+        justify-content: center;
     }
 
     a {

@@ -231,7 +231,11 @@ export const refreshUTXOsStatuses = createAsyncThunk(
                 keys,
             );
         } catch (err) {
-            throw new Error(`Failed to get changed UTXOs statuses: ${err}`);
+            throw new Error(
+                `Failed to get changed UTXOs statuses: ${err} ${
+                    err instanceof Error ? err.stack : ''
+                }`,
+            );
         }
 
         return [chainId, account, statusesNeedUpdate];

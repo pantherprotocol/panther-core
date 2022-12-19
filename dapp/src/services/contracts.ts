@@ -3,6 +3,7 @@
 
 import {JsonRpcSigner} from '@ethersproject/providers';
 import {Contract, ethers} from 'ethers';
+import {Provider, Contract as MultiCallContract} from 'ethers-multicall';
 import {AdvancedStakeRewardController} from 'types/contracts/AdvancedStakeRewardController';
 import {RewardMaster} from 'types/contracts/RewardMaster';
 import {StakeRewardController2} from 'types/contracts/StakeRewardController2';
@@ -113,9 +114,16 @@ export function getContract(
     library: any,
     chainId: number,
     address?: string,
-): Contract {
+    isMultiCall = false,
+): Contract | MultiCallContract {
     // FIXME: add cache
     const abi = getContractABI(contractName, chainId);
+
+    if (isMultiCall)
+        return new MultiCallContract(
+            address ?? getContractAddress(contractName, chainId),
+            abi,
+        );
     return new Contract(
         address ?? getContractAddress(contractName, chainId),
         abi,
@@ -123,8 +131,32 @@ export function getContract(
     );
 }
 
+type MultiCallContractWithProvider = [MultiCallContract, Provider];
+
+export function getMultiCallContract(
+    contractName: ContractName,
+    library: any,
+    chainId: number,
+    address?: string,
+): MultiCallContractWithProvider {
+    const contract = getContract(
+        contractName,
+        library,
+        chainId,
+        address,
+        true, // isMultiCall
+    ) as MultiCallContract;
+    const provider = new Provider(library, chainId);
+
+    return [contract, provider];
+}
+
 export function getTokenContract(library: any, chainId: number): Contract {
-    return getContract(ContractName.STAKING_TOKEN, library, chainId);
+    return getContract(
+        ContractName.STAKING_TOKEN,
+        library,
+        chainId,
+    ) as Contract;
 }
 
 export function getStakingContract(library: any, chainId: number): Staking {
@@ -132,11 +164,18 @@ export function getStakingContract(library: any, chainId: number): Staking {
 }
 
 export function getFaucetContract(library: any, chainId: number): Contract {
-    return getContract(ContractName.FAUCET, library, chainId);
+    return getContract(ContractName.FAUCET, library, chainId) as Contract;
 }
 
 export function getPoolContract(library: any, chainId: number): Contract {
-    return getContract(ContractName.POOL_V0, library, chainId);
+    return getContract(ContractName.POOL_V0, library, chainId) as Contract;
+}
+
+export function getMultiCallPoolContract(
+    library: any,
+    chainId: number,
+): MultiCallContractWithProvider {
+    return getMultiCallContract(ContractName.POOL_V0, library, chainId);
 }
 
 export function getPrpGrantorContract(chainId: MaspChainIds): Contract {
@@ -153,7 +192,11 @@ export function getZAssetsRegistryContract(
     library: any,
     chainId: number,
 ): Contract {
-    return getContract(ContractName.Z_ASSETS_REGISTRY, library, chainId);
+    return getContract(
+        ContractName.Z_ASSETS_REGISTRY,
+        library,
+        chainId,
+    ) as Contract;
 }
 
 export function getStakesReporterContract(

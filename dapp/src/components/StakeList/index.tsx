@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
-import {useCallback, useEffect} from 'react';
-import * as React from 'react';
+import React, {useCallback, useEffect} from 'react';
+
+import {UNSTAKE_ROWS_PER_PAGE} from 'constants/pagination';
 
 import {Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
@@ -11,7 +12,9 @@ import {
     removeNotification,
     openNotification,
 } from 'components/Common/notification';
+import Pagination from 'components/Common/Pagination';
 import {BigNumber} from 'ethers';
+import usePagination from 'hooks/pagination';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {useAppDispatch} from 'redux/hooks';
 import {getStakes, useStakes} from 'redux/slices/staking/stakes';
@@ -108,6 +111,22 @@ export default function StakeList() {
     const {library, chainId, account} = context;
     const dispatch = useAppDispatch();
     const {stakes} = useStakes();
+    const filteredStakes = stakes.filter(stake => stake.claimedAt == 0);
+
+    const {
+        paginatedData,
+        onLastClick,
+        currentPage,
+        setCurrentPage,
+        totalPages,
+        onNextClick,
+        onPrevClick,
+        maxPageLimit,
+        minPageLimit,
+    } = usePagination({
+        data: filteredStakes,
+        itemsPerPage: UNSTAKE_ROWS_PER_PAGE,
+    });
 
     const unstakeById = useCallback(
         async (id, trigger: WalletActionTrigger) => {
@@ -156,7 +175,7 @@ export default function StakeList() {
             className="stake-list"
             data-testid="stake-list_stake-list_container"
         >
-            {stakes.map((row: StakeRow) => (
+            {paginatedData().map((row: StakeRow) => (
                 <UnstakeRow
                     key={row.stakedAt}
                     row={row}
@@ -164,6 +183,19 @@ export default function StakeList() {
                     chainId={chainId}
                 />
             ))}
+            {filteredStakes.length !== 0 &&
+                filteredStakes.length > UNSTAKE_ROWS_PER_PAGE && (
+                    <Pagination
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        maxPageLimit={maxPageLimit}
+                        minPageLimit={minPageLimit}
+                        onPrevClick={onPrevClick}
+                        onNextClick={onNextClick}
+                        onLastClick={onLastClick}
+                        setCurrentPage={setCurrentPage}
+                    />
+                )}
         </Box>
     );
 }

@@ -56,5 +56,19 @@
         .wrong-network {
             display: none;
         }
+
+        .zassets-pagination {
+            position: absolute;
+            @media (max-width: $medium-screen-size) {
+                position: static;
+            }
+            .page-numbers {
+                margin-top: 30px;
+
+                @media (max-width: $tiny-screen-size) {
+                    justify-content: flex-start;
+                }
+            }
+        }
     }
 }

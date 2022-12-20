@@ -4,6 +4,8 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 
+import {ZASSETS_ROWS_PER_PAGE} from 'constants/pagination';
+
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,8 +14,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import {useWeb3React} from '@web3-react/core';
+import Pagination from 'components/Common/Pagination';
 import {unrealizedRewardAprTooltip} from 'components/Common/tooltips';
 import AssetsDetailsRow from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsRow';
+import usePagination from 'hooks/pagination';
 import infoIcon from 'images/info-icon.svg';
 import {useAppSelector, useAppDispatch} from 'redux/hooks';
 import {advancedStakesRewardsSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
@@ -52,6 +56,21 @@ const AssetsDetailsTable = () => {
         dispatch(getPoolV0ExitTime, context);
         registerExitTimeCall(true);
     }, [context, chainId, library, dispatch, gotExitTime]);
+
+    const {
+        paginatedData,
+        onLastClick,
+        currentPage,
+        setCurrentPage,
+        totalPages,
+        onNextClick,
+        onPrevClick,
+        maxPageLimit,
+        minPageLimit,
+    } = usePagination({
+        data: rewardsFilteredAndSorted,
+        itemsPerPage: ZASSETS_ROWS_PER_PAGE,
+    });
 
     return (
         <Box className="assets-details-table_container">
@@ -100,17 +119,29 @@ const AssetsDetailsTable = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody className="assets-details-table_body">
-                    {rewardsFilteredAndSorted.map(
-                        (reward: AdvancedStakeRewards) => (
-                            <AssetsDetailsRow
-                                reward={reward}
-                                key={reward.id}
-                                isSelected={reward.id === selectedRewardId}
-                                onSelectReward={setSelectedRewardId}
-                            />
-                        ),
-                    )}
+                    {paginatedData()?.map((reward: AdvancedStakeRewards) => (
+                        <AssetsDetailsRow
+                            reward={reward}
+                            key={reward.id}
+                            isSelected={reward.id === selectedRewardId}
+                            onSelectReward={setSelectedRewardId}
+                        />
+                    ))}
                 </TableBody>
+                {rewardsFilteredAndSorted.length !== 0 &&
+                    rewardsFilteredAndSorted.length > ZASSETS_ROWS_PER_PAGE && (
+                        <Pagination
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            maxPageLimit={maxPageLimit}
+                            minPageLimit={minPageLimit}
+                            onPrevClick={onPrevClick}
+                            onNextClick={onNextClick}
+                            onLastClick={onLastClick}
+                            setCurrentPage={setCurrentPage}
+                            classes="zassets-pagination"
+                        />
+                    )}
             </Table>
         </Box>
     );

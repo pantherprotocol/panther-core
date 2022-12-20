@@ -93,10 +93,14 @@ export function zZkpReward(
         );
         return constants.Zero;
     }
-    const rewardEnd = lockedTill < T_END ? lockedTill : T_END;
-    const rewardStart = T_START < timeStaked ? timeStaked : T_START;
-    const apy = getAdvStakingAPY(rewardStart);
 
+    const rewardStart = T_START < timeStaked ? timeStaked : T_START;
+    // calculateRewardBasedOnAPR calculation assumes that lockedTill is less
+    // than rewardEnd parameter specified in AdvancedStakeRewardController. For
+    // details, see comparisons of lockedTill and _rewardParams.endTime in
+    // _computeZkpReward() of AdvancedStakeRewardController.
+    const rewardEnd = lockedTill;
+    const apy = getAdvStakingAPY(rewardStart);
     return calculateRewardBasedOnAPR(amount, apy, rewardStart, rewardEnd);
 }
 

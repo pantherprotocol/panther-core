@@ -103,21 +103,6 @@ describe('Advanced stakes', () => {
             );
         });
 
-        it('should return max rewards if time is before start', () => {
-            const stake = utils.parseEther('1000');
-            const reward = zZkpReward(stake, beforeStart, T_END);
-            expect(utils.formatEther(reward).toString()).toEqual(
-                '93.97260273972602',
-            );
-            expect(console.warn).toHaveBeenCalledWith(
-                '1000.0 ZKP was staked at 1651492800000 ' +
-                    '(Mon May 02 2022 12:00:00 GMT+0000 (Coordinated Universal Time)), ' +
-                    'before the start of the rewards 1652356800000 ' +
-                    '(Thu May 12 2022 12:00:00 GMT+0000 (Coordinated Universal Time)); ' +
-                    'treating as if staked at the starting time.',
-            );
-        });
-
         it('should return 0 if time is after end', () => {
             const stake = utils.parseEther('1000');
             const reward = zZkpReward(stake, afterEnd, T_END);

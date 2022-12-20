@@ -73,7 +73,8 @@ function getCommitmentsQuery(
     endLeafId: number,
     limit = 1000,
 ): string {
-    if (endLeafId - startLeafId > limit) {
+    // triads of the quad tree contain 4 leaves
+    if ((endLeafId - startLeafId) / 4 > limit) {
         throw new Error(
             `The difference between the start and end leaf IDs must be less than ${limit}`,
         );

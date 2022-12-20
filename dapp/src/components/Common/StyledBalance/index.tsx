@@ -10,13 +10,13 @@ type BalanceProps = {
     styles?: string;
 };
 const StyledBalance = (props: BalanceProps) => {
-    const {balance, styles} = props;
+    const {balance, styles = ''} = props;
 
     const [whole, fractional] = balance
         ? getFormattedFractions(utils.formatEther(balance))
         : [];
     return (
-        <div className={`styled-balance ${styles ?? ''}`}>
+        <div className={`styled-balance ${styles}`}>
             <span className="whole">{whole ?? 0}</span>
             <span className="substring">.{fractional}</span>
         </div>

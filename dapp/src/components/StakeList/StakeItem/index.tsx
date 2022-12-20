@@ -5,13 +5,14 @@ import React from 'react';
 
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import ExactValueTooltip from 'components/Common/ExactValueTooltip';
+import StyledBalance from 'components/Common/StyledBalance';
 import {expectedPrpBalanceTooltip} from 'components/Common/tooltips';
 import UnstakeButton from 'components/StakeList/UnstakeButton';
 import {format} from 'date-fns';
 import {BigNumber, constants, utils} from 'ethers';
 import useScreenSize from 'hooks/screen';
 import infoIcon from 'images/info-icon.svg';
-import {formatCurrency, formatTime, getFormattedFractions} from 'lib/format';
+import {formatCurrency, formatTime} from 'lib/format';
 import {WalletActionTrigger} from 'redux/slices/ui/web3-wallet-last-action';
 import {isClassic} from 'services/rewards';
 import {CLASSIC_TYPE_HEX, StakeRow} from 'services/staking';
@@ -41,10 +42,6 @@ const StakeItem = (props: {
 
     const {isSmall, isMobile, isMedium} = useScreenSize();
 
-    const [whole, fractional] = row.amount
-        ? getFormattedFractions(utils.formatEther(row.amount))
-        : [];
-
     return (
         <React.Fragment key={row.stakedAt}>
             {row.claimedAt === 0 && (
@@ -53,11 +50,10 @@ const StakeItem = (props: {
                         <Box className="balance">
                             <ExactValueTooltip balance={row.amount}>
                                 <Typography component={'span'}>
-                                    <span className="whole">{whole || 0}</span>
-
-                                    <span className="substring">
-                                        .{fractional || '00'}
-                                    </span>
+                                    <StyledBalance
+                                        balance={row.amount}
+                                        styles="splitted-balance"
+                                    />
                                 </Typography>
                             </ExactValueTooltip>
 

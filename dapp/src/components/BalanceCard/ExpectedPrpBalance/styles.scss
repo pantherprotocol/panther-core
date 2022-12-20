@@ -25,8 +25,7 @@
         }
 
         .prp-symbol {
-            font-weight: $bold-font-weight;
-            font-size: $big-font-size;
+            @extend .balance;
             padding-left: 5px;
         }
     }

@@ -43,15 +43,17 @@
                 margin-bottom: 5px;
             }
 
-            .whole {
-                font-size: $bigger-font-size - 1;
-                font-weight: $semi-bold-font-weight;
-            }
+            .splitted-balance {
+                .whole {
+                    font-size: $bigger-font-size - 1;
+                    font-weight: $semi-bold-font-weight;
+                }
 
-            .substring {
-                font-size: $smaller-font-size;
-                font-weight: $semi-bold-font-weight;
-                margin-right: 8px;
+                .substring {
+                    font-size: $smaller-font-size;
+                    font-weight: $semi-bold-font-weight;
+                    margin-right: 8px;
+                }
             }
 
             .symbol {

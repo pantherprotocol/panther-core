@@ -21,20 +21,6 @@
             display: flex;
             justify-content: center;
             align-items: baseline;
-
-            .balance {
-                font-weight: $semi-bold-font-weight;
-                font-size: $title-font-size;
-                line-height: 42px;
-                .substring {
-                    margin-right: 3px;
-                    font-size: $normal-font-size;
-                }
-            }
-
-            .expected-prp-balance {
-                opacity: 0.5;
-            }
         }
 
         .token-balance {

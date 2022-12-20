@@ -119,7 +119,10 @@ export default function UnstakedBalance() {
 
             <Box className="amount-box">
                 <ExactValueTooltip balance={tokenBalance}>
-                    <StyledBalance balance={tokenBalance} />
+                    <StyledBalance
+                        balance={tokenBalance}
+                        styles="splitted-balance"
+                    />
                 </ExactValueTooltip>
 
                 <Typography className="zkp-symbol main-symbol">ZKP</Typography>

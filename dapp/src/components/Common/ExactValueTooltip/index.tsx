@@ -19,7 +19,7 @@ const ExactValueTooltip = (props: {
 }) => {
     return (
         <Tooltip title={exactValueTooltip(props.balance)} placement="top">
-            {props.children}
+            <div>{props.children}</div>
         </Tooltip>
     );
 };

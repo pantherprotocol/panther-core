@@ -21,11 +21,13 @@ import {
 } from '@panther-core/crypto/lib/utils/bigint-conversions';
 import poseidon from 'circomlibjs/src/poseidon';
 import {utils, Contract, BigNumber} from 'ethers';
+import {Provider, Contract as MultiCallContract} from 'ethers-multicall';
 import {ContractTransaction} from 'ethers/lib/ethers';
 import {Result} from 'ethers/lib/utils';
 import {formatTime} from 'lib/format';
 import {range} from 'lodash';
 import {
+    getMultiCallPoolContract,
     getPoolContract,
     getSignableContract,
     getTokenContract,
@@ -104,29 +106,23 @@ export async function registerCommitToExit(
     );
 
     const [rootSpendingKeypair, rootReadingKeypair] = keys;
-    const {
-        status,
-        error,
-        cannotDecode,
-        isChildKeyInvalid,
-        childSpendingKeypair,
-        nullifier,
-    } = await unpackUTXOAndDeriveKeys(
-        contract,
+    const result = await unpackUTXOAndDeriveKeys(
         rootSpendingKeypair,
         rootReadingKeypair.privateKey,
-        leafId,
         utxoData,
     );
-    const possibleError = checkUnpackingErrors(
-        error,
-        isChildKeyInvalid,
-        cannotDecode,
-        childSpendingKeypair,
-    );
-    if (isDetailedError(possibleError)) {
-        return [possibleError, status];
+
+    if (result instanceof UnpackUTXOError) {
+        const error = getUnpackingErrors(result);
+        return [error, UTXOStatus.UNDEFINED];
     }
+
+    const {childSpendingKeypair} = result;
+    const [status, nullifier] = await getRewardStatus(
+        contract,
+        childSpendingKeypair,
+        leafId,
+    );
 
     if (status === UTXOStatus.SPENT) {
         const detailedError = {
@@ -194,22 +190,25 @@ export async function exit(
 
     const [rootSpendingKeypair, rootReadingKeypair] = keys;
 
-    const {
-        status,
-        error,
-        cannotDecode,
-        isChildKeyInvalid,
-        childSpendingKeypair,
-        zAssetId,
-        amounts,
-        nullifier,
-    } = await unpackUTXOAndDeriveKeys(
-        contract,
+    const unpackResult = await unpackUTXOAndDeriveKeys(
         rootSpendingKeypair,
         rootReadingKeypair.privateKey,
-        leafId,
         utxoData,
     );
+
+    if (unpackResult instanceof UnpackUTXOError) {
+        const error = getUnpackingErrors(unpackResult);
+
+        return [UTXOStatus.UNDEFINED, error];
+    }
+
+    const {childSpendingKeypair, zAssetId, amounts} = unpackResult;
+    const [status, nullifier] = await getRewardStatus(
+        contract,
+        childSpendingKeypair,
+        leafId,
+    );
+
     if (!zAssetId) {
         return [
             UTXOStatus.UNDEFINED,
@@ -218,15 +217,6 @@ export async function exit(
                 details: 'No zAssetId returned',
             } as DetailedError,
         ];
-    }
-    const possibleError = checkUnpackingErrors(
-        error,
-        isChildKeyInvalid,
-        cannotDecode,
-        childSpendingKeypair,
-    );
-    if (isDetailedError(possibleError)) {
-        return [UTXOStatus.UNDEFINED, possibleError];
     }
 
     if (status === UTXOStatus.SPENT) {
@@ -300,61 +290,78 @@ export async function getChangedUTXOsStatuses(
     advancedRewards: AdvancedStakeRewards[],
     keys: IKeypair[],
 ): Promise<UTXOStatusByID[]> {
-    const {contract} = getSignableContract(
-        library,
-        chainId,
-        account,
-        getPoolContract,
-    );
-
     const [rootSpendingKeypair, rootReadingKeypair] = keys;
-
     const statusesNeedUpdate: UTXOStatusByID[] = [];
-    for await (const reward of advancedRewards) {
-        if (reward.zZkpUTXOStatus === UTXOStatus.SPENT) {
-            continue;
-        }
+    const validUTXOData: Array<ValidUTXOData & {rewardId: string}> = [];
 
-        const {status} = await unpackUTXOAndDeriveKeys(
-            contract,
+    advancedRewards.forEach((reward: AdvancedStakeRewards) => {
+        if (reward.zZkpUTXOStatus === UTXOStatus.SPENT) return;
+
+        const unpackedUTXOAndKeys = unpackUTXOAndDeriveKeys(
             rootSpendingKeypair,
             rootReadingKeypair.privateKey,
-            BigInt(reward.id),
             reward.utxoData,
         );
 
-        if (status !== reward.zZkpUTXOStatus) {
+        if (unpackedUTXOAndKeys instanceof UnpackUTXOError)
+            return statusesNeedUpdate.push([reward.id, UTXOStatus.UNDEFINED]);
+
+        validUTXOData.push({
+            ...unpackedUTXOAndKeys,
+            rewardId: reward.id,
+        });
+    });
+
+    const [contract, provider] = getMultiCallPoolContract(library, chainId);
+
+    const rewardsStatusesMap = await getRewardsStatuses(
+        contract,
+        provider,
+        validUTXOData,
+    );
+
+    advancedRewards.forEach((reward: AdvancedStakeRewards) => {
+        const status = rewardsStatusesMap.get(reward.id);
+        if (status && reward.zZkpUTXOStatus !== status) {
             statusesNeedUpdate.push([reward.id, status]);
         }
-    }
+    });
 
     return statusesNeedUpdate;
 }
 
-async function unpackUTXOAndDeriveKeys(
-    contract: Contract,
+type ValidUTXOData = {
+    childSpendingKeypair: IKeypair;
+    ciphertextMsg: string;
+    zAssetId: string;
+    amounts: bigint;
+};
+
+export enum UnpackUTXOErrorType {
+    DecodeErr,
+    InvalidRandomSecret,
+    InvalidChildKey,
+}
+
+export class UnpackUTXOError extends Error {
+    errType: UnpackUTXOErrorType;
+    constructor(message: string, errType: UnpackUTXOErrorType) {
+        super(message);
+        this.errType = errType;
+    }
+}
+
+function unpackUTXOAndDeriveKeys(
     rootSpendingKeypair: IKeypair,
     rootReadingPrivateKey: PrivateKey,
-    leafId: bigint,
     utxoData: string,
-): Promise<{
-    status: UTXOStatus;
-    error?: Error;
-    isChildKeyInvalid?: boolean;
-    cannotDecode?: boolean;
-    childSpendingKeypair?: IKeypair;
-    ciphertextMsg?: string;
-    zAssetId?: string;
-    amounts?: bigint;
-    nullifier?: string;
-}> {
+): ValidUTXOData | UnpackUTXOError {
     const decoded = decodeUTXOData(utxoData);
     if (decoded instanceof Error) {
-        return {
-            status: UTXOStatus.UNDEFINED,
-            error: decoded,
-            cannotDecode: true,
-        };
+        return new UnpackUTXOError(
+            decoded.message,
+            UnpackUTXOErrorType.DecodeErr,
+        );
     }
     const [ciphertextMsg, zAssetId, amounts] = decoded;
 
@@ -363,23 +370,35 @@ async function unpackUTXOAndDeriveKeys(
         rootReadingPrivateKey,
     );
     if (!randomSecret) {
-        return {
-            status: UTXOStatus.UNDEFINED,
-            error: new Error(`Failed to decrypt random secret ${randomSecret}`),
-        };
+        return new UnpackUTXOError(
+            `Failed to decrypt random secret ${randomSecret}`,
+            UnpackUTXOErrorType.InvalidRandomSecret,
+        );
     }
     const [childSpendingKeypair, isChildKeyValid] = deriveSpendingChildKeypair(
         rootSpendingKeypair,
         randomSecret,
     );
     if (!isChildKeyValid) {
-        return {
-            status: UTXOStatus.UNDEFINED,
-            error: new Error('Invalid spending public key'),
-            isChildKeyInvalid: !isChildKeyValid,
-        };
+        return new UnpackUTXOError(
+            'Invalid spending public key',
+            UnpackUTXOErrorType.InvalidChildKey,
+        );
     }
 
+    return {
+        childSpendingKeypair,
+        ciphertextMsg,
+        zAssetId,
+        amounts,
+    };
+}
+
+async function getRewardStatus(
+    contract: Contract,
+    childSpendingKeypair: IKeypair,
+    leafId: bigint,
+): Promise<[UTXOStatus, string]> {
     const [isSpent, nullifier] = await isNullifierSpent(
         contract,
         childSpendingKeypair.privateKey,
@@ -388,14 +407,7 @@ async function unpackUTXOAndDeriveKeys(
 
     const status = isSpent ? UTXOStatus.SPENT : UTXOStatus.UNSPENT;
 
-    return {
-        status,
-        childSpendingKeypair,
-        ciphertextMsg,
-        zAssetId,
-        amounts,
-        nullifier,
-    };
+    return [status, nullifier];
 }
 
 function decodeUTXOData(utxoData: string): [string, string, bigint] | Error {
@@ -456,33 +468,24 @@ function decodeWithNFT(utxoData: string) {
     );
 }
 
-function checkUnpackingErrors(
-    error?: Error,
-    isChildKeyInvalid?: boolean,
-    cannotDecode?: boolean,
-    childSpendingKeypair?: IKeypair,
-): DetailedError | null {
-    if (cannotDecode && error) {
+function getUnpackingErrors(error: UnpackUTXOError): DetailedError {
+    if (error.errType === UnpackUTXOErrorType.DecodeErr) {
         return {
             message: 'Redemption error',
             details: `Cannot decode zAsset secret message: ${error.message}`,
             triggerError: error,
-        } as DetailedError;
+        };
     }
 
-    if (isChildKeyInvalid || !childSpendingKeypair) {
-        const msg = error?.message;
+    const msg = error.message;
 
-        return {
-            message: `Cannot derive the key to spend zAsset. ${
-                msg ? `: ${msg}` : ''
-            }`,
+    return {
+        message: `Cannot derive the key to spend zAsset. ${
+            msg ? `: ${msg}` : ''
+        }`,
 
-            details: msg ? `: ${msg}` : '',
-        } as DetailedError;
-    }
-
-    return null;
+        details: msg ? `: ${msg}` : '',
+    };
 }
 
 export async function isNullifierSpent(
@@ -498,6 +501,37 @@ export async function isNullifierSpent(
     );
     const isSpent = await poolContract.isSpent(nullifier);
     return [isSpent, nullifier];
+}
+
+type RewardsStatusMap = Map<string, UTXOStatus>;
+
+export async function getRewardsStatuses(
+    contract: MultiCallContract,
+    provider: Provider,
+    unpackedUTXOWithKeys: Array<ValidUTXOData & {rewardId: string}>,
+): Promise<RewardsStatusMap> {
+    const rewardIds: Array<string> = [];
+    const contractCalls = unpackedUTXOWithKeys.map(
+        ({childSpendingKeypair, rewardId}) => {
+            const nullifier = bigintToBytes32(
+                poseidon([
+                    bigintToBytes32(childSpendingKeypair.privateKey),
+                    bigintToBytes32(BigInt(rewardId)),
+                ]),
+            );
+            rewardIds.push(rewardId);
+            return contract.isSpent(nullifier);
+        },
+    );
+
+    const response = await provider.all<boolean[]>(contractCalls);
+    const statusesMap: RewardsStatusMap = new Map();
+    rewardIds.forEach((rewardId: string, idx: number) => {
+        const status = response[idx] ? UTXOStatus.SPENT : UTXOStatus.UNSPENT;
+        statusesMap.set(rewardId, status);
+    });
+
+    return statusesMap;
 }
 
 // buildMerkleTreeWithLeaf returns the merkle tree where the given leafId is.

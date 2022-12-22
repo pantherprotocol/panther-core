@@ -128,21 +128,21 @@ const AssetsDetailsTable = () => {
                         />
                     ))}
                 </TableBody>
-                {rewardsFilteredAndSorted.length !== 0 &&
-                    rewardsFilteredAndSorted.length > ZASSETS_ROWS_PER_PAGE && (
-                        <Pagination
-                            totalPages={totalPages}
-                            currentPage={currentPage}
-                            maxPageLimit={maxPageLimit}
-                            minPageLimit={minPageLimit}
-                            onPrevClick={onPrevClick}
-                            onNextClick={onNextClick}
-                            onLastClick={onLastClick}
-                            setCurrentPage={setCurrentPage}
-                            classes="zassets-pagination"
-                        />
-                    )}
             </Table>
+            {rewardsFilteredAndSorted.length !== 0 &&
+                rewardsFilteredAndSorted.length > ZASSETS_ROWS_PER_PAGE && (
+                    <Pagination
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        maxPageLimit={maxPageLimit}
+                        minPageLimit={minPageLimit}
+                        onPrevClick={onPrevClick}
+                        onNextClick={onNextClick}
+                        onLastClick={onLastClick}
+                        setCurrentPage={setCurrentPage}
+                        classes="zassets-pagination"
+                    />
+                )}
         </Box>
     );
 };

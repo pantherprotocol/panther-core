@@ -14,11 +14,11 @@ import {
 } from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {notifyError} from 'components/Common/errors';
-import {openNotification} from 'components/Common/notification';
 import StyledBalance from 'components/Common/StyledBalance';
 import {totalUnrealizedPrivacyRewardsTooltip} from 'components/Common/tooltips';
 import SignatureRequestModal from 'components/SignatureRequestModal';
 import {BigNumber} from 'ethers';
+import {useStatusError} from 'hooks/status-error';
 import attentionIcon from 'images/attention-triangle-icon.svg';
 import infoIcon from 'images/info-icon.svg';
 import refreshIcon from 'images/refresh-icon.svg';
@@ -44,6 +44,7 @@ import {
     totalSelector,
     refreshUTXOsStatuses,
     totalUnrealizedPrpSelector,
+    resetAdvancedStakesRewardsStatus,
 } from 'redux/slices/wallet/advanced-stakes-rewards';
 import {chainHasPoolContract} from 'services/contracts';
 import {parseTxErrorMessage} from 'services/errors';
@@ -118,20 +119,17 @@ export default function PrivateBalance() {
             });
 
             dispatch(refreshUTXOsStatuses, {context, keys});
-
-            if (status === 'failed') {
-                openNotification(
-                    'Failed to refresh UTXOs',
-                    `Cannot  refresh UTXOs`,
-                    'danger',
-                    60000,
-                );
-            }
-
             dispatch(registerWalletActionSuccess, 'refreshUTXOsStatuses');
             setFirstUTXOScan('complete');
         },
-        [account, context, dispatch, library, status],
+        [account, context, dispatch, library],
+    );
+
+    useStatusError(
+        'Failed to refresh UTXOs',
+        'Cannot refresh UTXOs',
+        statusSelector,
+        resetAdvancedStakesRewardsStatus,
     );
 
     const refreshIfUndefinedUTXOs = useCallback(async () => {

@@ -143,6 +143,7 @@ export const getAdvancedStakesRewardsAndUpdateStatus = createAsyncThunk(
                 keys: payload.keys,
             }),
         );
+
         dispatch(setWalletUpdating(false));
     },
 );
@@ -290,6 +291,9 @@ export const advancedStakesRewardsSlice = createSlice({
     reducers: {
         reset: state => {
             state.value = initialState.value;
+            state.status = initialState.status;
+        },
+        resetStatus: state => {
             state.status = initialState.status;
         },
         updateUTXOStatus: (state, action) => {
@@ -470,6 +474,7 @@ export function statusSelector(state: RootState): LoadingStatus {
 
 export const {
     reset: resetAdvancedStakesRewards,
+    resetStatus: resetAdvancedStakesRewardsStatus,
     updateUTXOStatus,
     updateExitCommitmentTime,
 } = advancedStakesRewardsSlice.actions;

@@ -16,6 +16,7 @@ import ExactValueTooltip from 'components/Common/ExactValueTooltip';
 import StyledBalance from 'components/Common/StyledBalance';
 import {balanceUpdatingTooltip} from 'components/Common/tooltips';
 import {BigNumber} from 'ethers';
+import {useStatusError} from 'hooks/status-error';
 import refreshIcon from 'images/refresh-icon.svg';
 import {formatUSD} from 'lib/format';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
@@ -28,7 +29,11 @@ import {
     StartWalletActionPayload,
     WalletSignatureTrigger,
 } from 'redux/slices/ui/web3-wallet-last-action';
-import {getAdvancedStakesRewardsAndUpdateStatus} from 'redux/slices/wallet/advanced-stakes-rewards';
+import {
+    getAdvancedStakesRewardsAndUpdateStatus,
+    resetAdvancedStakesRewardsStatus,
+    statusSelector,
+} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {
     getZkpTokenBalance,
     zkpTokenBalanceSelector,
@@ -92,6 +97,13 @@ export default function UnstakedBalance() {
             );
         },
         [context, dispatch],
+    );
+
+    useStatusError(
+        'Failed to refresh wallet balance',
+        'Cannot refresh UTXOs',
+        statusSelector,
+        resetAdvancedStakesRewardsStatus,
     );
 
     return (

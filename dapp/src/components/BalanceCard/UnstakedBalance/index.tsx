@@ -34,6 +34,7 @@ import {
     resetAdvancedStakesRewardsStatus,
     statusSelector,
 } from 'redux/slices/wallet/advanced-stakes-rewards';
+import {getChainBalance} from 'redux/slices/wallet/chain-balance';
 import {
     getZkpTokenBalance,
     zkpTokenBalanceSelector,
@@ -90,6 +91,8 @@ export default function UnstakedBalance() {
                 keys,
                 withRetry: false,
             });
+
+            await dispatch(getChainBalance, context);
 
             dispatch(
                 registerWalletActionSuccess,

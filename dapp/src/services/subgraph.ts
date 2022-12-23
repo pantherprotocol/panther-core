@@ -35,14 +35,14 @@ export type AdvancedStakeRewardsResponse = {
     prpAmount: string;
 };
 
-function getAdvancedStakingRewardQuery(staker: string): string {
+function getAdvancedStakingRewardQuery(staker: string, limit = 1000): string {
     return `
     query{
         staker(id:"${staker.toLowerCase()}") {
             id
             lastUpdatedTime
             lastBlockNumber
-            advancedStakingRewards {
+            advancedStakingRewards(first: ${limit}) {
                 id
                 creationTime
                 commitments

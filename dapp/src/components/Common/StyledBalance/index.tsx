@@ -18,7 +18,7 @@ const StyledBalance = (props: BalanceProps) => {
     return (
         <div className={`styled-balance ${styles}`}>
             <span className="whole">{whole ?? 0}</span>
-            <span className="substring">.{fractional}</span>
+            <span className="substring">.{fractional ?? '00'}</span>
         </div>
     );
 };

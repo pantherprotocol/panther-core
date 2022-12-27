@@ -15,10 +15,10 @@ import {notifyError} from 'components/Common/errors';
 import ExactValueTooltip from 'components/Common/ExactValueTooltip';
 import StyledBalance from 'components/Common/StyledBalance';
 import {balanceUpdatingTooltip} from 'components/Common/tooltips';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 import {useStatusError} from 'hooks/status-error';
 import refreshIcon from 'images/refresh-icon.svg';
-import {formatUSD} from 'lib/format';
+import {formatUSD, getFormattedFractions} from 'lib/format';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {isWalletUpdatingSelector} from 'redux/slices/ui/is-wallet-updating';
 import {
@@ -108,7 +108,9 @@ export default function UnstakedBalance() {
         statusSelector,
         resetAdvancedStakesRewardsStatus,
     );
-
+    const [wholePart, fractionalPart] = tokenBalance
+        ? getFormattedFractions(utils.formatEther(tokenBalance))
+        : [];
     return (
         <Box className="total-balance">
             <Box className="title-box">
@@ -135,7 +137,8 @@ export default function UnstakedBalance() {
             <Box className="amount-box">
                 <ExactValueTooltip balance={tokenBalance}>
                     <StyledBalance
-                        balance={tokenBalance}
+                        wholePart={wholePart}
+                        fractionalPart={fractionalPart}
                         styles="splitted-balance"
                     />
                 </ExactValueTooltip>

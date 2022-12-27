@@ -8,9 +8,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ExactValueTooltip from 'components/Common/ExactValueTooltip';
 import StyledBalance from 'components/Common/StyledBalance';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 import infoIcon from 'images/info-icon.svg';
-import {formatUSD} from 'lib/format';
+import {formatUSD, getFormattedFractions} from 'lib/format';
 
 import './styles.scss';
 
@@ -24,6 +24,9 @@ export default function AddressBalances(props: {
     tooltip?: string;
 }) {
     const {title, tooltip, amountUSD, balance, rewardsTokenSymbol} = props;
+    const [wholePart, fractionalPart] = balance
+        ? getFormattedFractions(utils.formatEther(balance))
+        : [];
     return (
         <Box className="address-balance">
             <Box className="title-box">
@@ -45,7 +48,10 @@ export default function AddressBalances(props: {
                         balance={props.scale !== 0 ? balance : null}
                     >
                         <Typography component="div">
-                            <StyledBalance balance={balance} />
+                            <StyledBalance
+                                wholePart={wholePart}
+                                fractionalPart={fractionalPart}
+                            />
                         </Typography>
                     </ExactValueTooltip>
 

@@ -21,6 +21,7 @@ import {
     getPrpGrantorContract,
 } from './contracts';
 import {MASP_CHAIN_ID, env} from './env';
+import {MultiError} from './errors';
 import {CLASSIC_TYPE_HEX, ADVANCED_TYPE_HEX} from './staking';
 import {AdvancedStakeRewardsResponse} from './subgraph';
 
@@ -136,7 +137,7 @@ export function getAdvStakingAPY(currentTime: number): number {
         currentAPY < Math.min(APY_START, APY_END) ||
         currentAPY > Math.max(APY_START, APY_END)
     ) {
-        throw new Error(
+        throw new MultiError(
             `Calculated APY ${currentAPY} is not in the range of [${Math.min(
                 APY_START,
                 APY_END,
@@ -164,7 +165,7 @@ export function calculateRewardsForStake(
         case ADVANCED_TYPE_HEX:
             return calculateRewardsForAdvancedStake(stake, rewardsFromSubgraph);
         default:
-            throw new Error('Cannot estimate rewards: unknown stake type');
+            throw new MultiError('Cannot estimate rewards: unknown stake type');
     }
 }
 
@@ -179,13 +180,13 @@ export function calculateRewardsForClassicStake(
     }
 
     if (!rewardsBalance) {
-        throw new Error(
+        throw new MultiError(
             'Cannot estimate rewards: rewardsBalance should be defined',
         );
     }
 
     if (!totalStaked) {
-        throw new Error(
+        throw new MultiError(
             'Cannot estimate rewards: totalStaked should be defined',
         );
     }
@@ -274,14 +275,14 @@ export async function rewardsVested(): Promise<
           zkpRewards: BigNumber;
           nftRewards: number;
       }
-    | Error
+    | MultiError
 > {
     try {
         const maspChainId = MASP_CHAIN_ID as MaspChainIds;
         const contract = getAdvancedStakeRewardControllerContract(maspChainId);
         return contract.limits();
     } catch (error) {
-        const msg = new Error(`Failed to get vested rewards. ${error}`);
+        const msg = new MultiError(`Failed to get vested rewards. ${error}`);
         console.error(msg);
         return msg;
     }
@@ -293,14 +294,14 @@ export async function rewardsClaimed(): Promise<
           nftRewards: number;
           scZkpStaked: number;
       }
-    | Error
+    | MultiError
 > {
     try {
         const maspChainId = MASP_CHAIN_ID as MaspChainIds;
         const contract = getAdvancedStakeRewardControllerContract(maspChainId);
         return await contract.totals();
     } catch (error) {
-        const msg = new Error(`Failed to get claimed rewards. ${error}`);
+        const msg = new MultiError(`Failed to get claimed rewards. ${error}`);
         console.error(msg);
         return msg;
     }

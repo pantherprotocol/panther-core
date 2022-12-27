@@ -5,6 +5,7 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {safeParseUnits} from 'lib/numbers';
 import {RootState} from 'redux/store';
+import {MultiError} from 'services/errors';
 
 interface StakeAmountState {
     value: string;
@@ -20,7 +21,7 @@ export const stakeAmountSlice = createSlice({
     reducers: {
         set: (state, action: PayloadAction<string>): void => {
             if (!safeParseUnits(action.payload))
-                throw new Error(
+                throw new MultiError(
                     `The value ${action.payload} isn't parsiable as Bignumber`,
                 );
 

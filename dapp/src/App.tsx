@@ -20,6 +20,7 @@ import {HashRouter as Router, Switch} from 'react-router-dom';
 import {useAppDispatch} from 'redux/hooks';
 import {getZKPTokenMarketPrice} from 'redux/slices/marketPrices/zkp-market-price';
 import {getMissingEnvVars, env} from 'services/env';
+import {MultiError} from 'services/errors';
 import {isBlockedCountry} from 'services/geo-location';
 
 import './styles.scss';
@@ -42,7 +43,7 @@ function App() {
 
     const checkIfBlocked = useCallback(async () => {
         const response = await isBlockedCountry();
-        if (response instanceof Error) {
+        if (response instanceof MultiError) {
             console.error(`Failed to get geo-location data :  ${response}`);
         }
         console.log(

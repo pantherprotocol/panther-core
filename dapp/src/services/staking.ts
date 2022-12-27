@@ -37,6 +37,8 @@ import {
 import type {IStakingTypes, Staking} from 'types/contracts/Staking';
 import {StakeRewardBN, StakeTypes} from 'types/staking';
 
+import {MultiError} from './errors';
+
 const CoinGeckoClient = new CoinGecko();
 
 export const CLASSIC_TYPE_HEX = utils.id('classic').slice(0, 10);
@@ -63,7 +65,7 @@ export async function generatePermitSignature(
     signer: JsonRpcSigner,
     amount: BigNumber,
     deadline: number,
-): Promise<string | Error> {
+): Promise<string | MultiError> {
     const stakingContract = getStakingContract(library, chainId);
     const tokenContract = getTokenContract(library, chainId);
     const nonce = await tokenContract.nonces(account);
@@ -99,7 +101,7 @@ export async function generatePermitSignature(
             signature,
         );
 
-        return new Error('Failed to verify EIP-712 signature');
+        return new MultiError('Failed to verify EIP-712 signature');
     }
 
     return signature;
@@ -109,7 +111,7 @@ export async function generatePermitSignature(
 // stake() function in Staking.sol smart contract with 'advanced' stake type.
 async function craftAdvancedStakeData(
     keys: IKeypair[],
-): Promise<string | Error> {
+): Promise<string | MultiError> {
     /*
     returned value is hex string in the following format:
     const advStakeData: string =
@@ -150,7 +152,7 @@ async function craftAdvancedStakeData(
         if (!isValid) {
             const msg = `publicSpendingKey ${spendingChildPublicKey} is not valid.`;
             console.error(msg, {publicSpendingKey: spendingChildPublicKey});
-            return new Error(msg);
+            return new MultiError(msg);
         }
         console.debug('publicSpendingKey:', spendingChildPublicKey);
 
@@ -175,7 +177,7 @@ async function craftAdvancedStakeData(
     if (advStakeData.length % 2 !== 0) {
         const msg = `Advanced stake data has odd length of ${advStakeData.length}`;
         console.error(msg, {advStakeData, publicSpendingKeys, secretMsgs});
-        return new Error(msg);
+        return new MultiError(msg);
     }
 
     return advStakeData;
@@ -187,9 +189,9 @@ export async function advancedStake(
     keys: IKeypair[],
     account: string,
     amount: BigNumber, // assumes already validated as <= tokenBalance
-): Promise<ContractTransaction | Error> {
+): Promise<ContractTransaction | MultiError> {
     const data = await craftAdvancedStakeData(keys);
-    if (data instanceof Error) {
+    if (data instanceof MultiError) {
         return data;
     }
     console.debug(`advanced stake data: ${data}`);
@@ -211,7 +213,7 @@ export async function craftStakingTransaction(
     amount: BigNumber, // assumes already validated as <= tokenBalance
     stakeType: string,
     data: string,
-): Promise<Error | ContractTransaction> {
+): Promise<ContractTransaction | MultiError> {
     const {signer, contract} = getSignableContract(
         library,
         chainId,
@@ -235,7 +237,7 @@ export async function craftStakingTransaction(
             data,
         );
     } catch (err) {
-        return err as Error;
+        return new MultiError(err);
     }
 }
 
@@ -248,10 +250,10 @@ async function initiateStakingTransaction(
     amount: BigNumber,
     stakeType: string,
     data: any = '0x00',
-): Promise<ContractTransaction | Error> {
+): Promise<ContractTransaction | MultiError> {
     const allowance = await getAllowance(library, chainId, account);
     if (!allowance) {
-        return new Error('Failed to get allowance');
+        return new MultiError('Failed to get allowance');
     }
     console.debug(`Got allowance ${allowance} for ${account}`);
     const allowanceSufficient = amount.lte(allowance);
@@ -312,7 +314,7 @@ async function permitAndStake(
     amount: BigNumber,
     stakeType: string,
     data: any,
-): Promise<TransactionResponse | Error> {
+): Promise<TransactionResponse | MultiError> {
     const now = Math.floor(new Date().getTime() / 1000);
     const deadline = now + 600; // within 10 minutes
 
@@ -324,7 +326,7 @@ async function permitAndStake(
         amount,
         deadline,
     );
-    if (permitSig instanceof Error) {
+    if (permitSig instanceof MultiError) {
         return permitSig;
     }
 
@@ -352,7 +354,7 @@ export async function unstake(
     stakeID: BigNumber,
     data?: string,
     isForced = false,
-): Promise<[ContractTransaction, Error | null]> {
+): Promise<[ContractTransaction, MultiError | null]> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -366,7 +368,7 @@ export async function unstake(
             gasLimit: 350_000,
         });
     } catch (e: any) {
-        return [tx, e as Error];
+        return [tx, new MultiError(e)];
     }
     return [tx, null];
 }
@@ -519,7 +521,7 @@ async function calculateRewardsWithoutReporter(
 
     const subgraphResponse = await getAdvancedStakingReward(chainId, account);
     let rewardsFromSubgraph: AdvancedStakeRewardsResponse[] = [];
-    if (subgraphResponse instanceof Error) {
+    if (subgraphResponse instanceof MultiError) {
         // Fallback to the approximate math calculation of the rewards
         console.warn(
             'Cannot fetch the rewards from the subgraph. ' +

@@ -4,6 +4,7 @@
 import axios from 'axios';
 
 import {env} from './env';
+import {MultiError} from './errors';
 
 type GraphResponse = AdvancedStakesGraphResponse | CommitmentsGraphResponse;
 
@@ -75,7 +76,7 @@ function getCommitmentsQuery(
 ): string {
     // triads of the quad tree contain 4 leaves
     if ((endLeafId - startLeafId) / 4 > limit) {
-        throw new Error(
+        throw new MultiError(
             `The difference between the start and end leaf IDs must be less than ${limit}`,
         );
     }
@@ -101,10 +102,10 @@ export async function getDataFromTheGraph(
     query: string,
     subgraphUrlIndex?: number,
     retry = 0,
-): Promise<GraphResponse | Error> {
+): Promise<GraphResponse | MultiError> {
     const subgraphAccountArray = getSubgraphAccounts(chainId);
     if (subgraphAccountArray == undefined) {
-        return new Error('Subgraph accounts are not yet defined');
+        return new MultiError('Subgraph accounts are not yet defined');
     }
 
     const urlIndex =
@@ -114,7 +115,7 @@ export async function getDataFromTheGraph(
 
     const subgraphEndpoint = getSubgraphUrl(chainId, urlIndex);
     if (!subgraphEndpoint) {
-        return new Error('No subgraph endpoint configured');
+        return new MultiError('No subgraph endpoint configured');
     }
 
     try {
@@ -123,7 +124,7 @@ export async function getDataFromTheGraph(
         });
 
         if (data.data.errors?.[0]?.message || data.status !== 200) {
-            throw new Error('Cannot fetch data from the subgraph');
+            throw new MultiError('Cannot fetch data from the subgraph');
         }
 
         return data.data.data;
@@ -146,7 +147,9 @@ export async function getDataFromTheGraph(
             );
         }
 
-        return new Error('Error on sending query to all subgraph accounts');
+        return new MultiError(
+            'Error on sending query to all subgraph accounts',
+        );
     }
 }
 
@@ -176,18 +179,20 @@ export function chainHasSubgraphAccounts(chainId: number): boolean {
 export async function getAdvancedStakingReward(
     chainId: number,
     address: string,
-): Promise<AdvancedStakesGraphResponse | Error> {
+): Promise<AdvancedStakesGraphResponse | MultiError> {
     const query = getAdvancedStakingRewardQuery(address);
     return (await getDataFromTheGraph(chainId, query)) as
         | AdvancedStakesGraphResponse
-        | Error;
+        | MultiError;
 }
 
-export async function getMaxLeafId(chainId: number): Promise<number | Error> {
+export async function getMaxLeafId(
+    chainId: number,
+): Promise<number | MultiError> {
     const query = getMaxLeafIdQuery();
     const response = await getDataFromTheGraph(chainId, query);
 
-    if (response instanceof Error) {
+    if (response instanceof MultiError) {
         return response;
     }
 
@@ -199,11 +204,11 @@ export async function getCommitments(
     chainId: number,
     startLeafId: number,
     endLeafId: number,
-): Promise<string[] | Error> {
+): Promise<string[] | MultiError> {
     const query = getCommitmentsQuery(startLeafId, endLeafId);
     const response = await getDataFromTheGraph(chainId, query);
 
-    if (response instanceof Error) {
+    if (response instanceof MultiError) {
         return response;
     }
 

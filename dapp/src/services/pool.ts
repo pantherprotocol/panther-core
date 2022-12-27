@@ -33,8 +33,8 @@ import {
     getTokenContract,
     getZAssetsRegistryContract,
 } from 'services/contracts';
-import {parseTxErrorMessage} from 'services/errors';
-import {isDetailedError, DetailedError} from 'types/error';
+import {MultiError} from 'services/errors';
+import {DetailedError} from 'types/error';
 import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
 
 import {getCommitments, getMaxLeafId} from './subgraph';
@@ -97,7 +97,7 @@ export async function registerCommitToExit(
     utxoData: string,
     leafId: bigint,
     keys: IKeypair[],
-): Promise<[ContractTransaction | DetailedError | null, UTXOStatus]> {
+): Promise<[ContractTransaction | MultiError | null, UTXOStatus]> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -125,12 +125,13 @@ export async function registerCommitToExit(
     );
 
     if (status === UTXOStatus.SPENT) {
-        const detailedError = {
-            message: 'zAsset is already spent.',
-            details: 'Spent nullifier: ' + nullifier,
-        } as DetailedError;
-
-        return [detailedError, status];
+        return [
+            new MultiError<DetailedError>({
+                errorLabel: 'zAsset is already spent.',
+                message: 'Spent nullifier: ' + nullifier,
+            }),
+            status,
+        ];
     }
 
     const commitmentHash = getExitCommitment(
@@ -145,22 +146,18 @@ export async function registerCommitToExit(
 export async function poolContractCommitToExit(
     poolContract: Contract,
     commitmentHash: string,
-): Promise<ContractTransaction | DetailedError | null> {
+): Promise<ContractTransaction | MultiError | null> {
     try {
         return await poolContract.commitToExit(commitmentHash);
     } catch (err) {
-        const parsedError = parseTxErrorMessage(err);
-        if (parsedError === 'execution reverted: PP:E32') {
+        const error = new MultiError(err);
+        if (error.message === 'execution reverted: PP:E32') {
             // special case for "already registered commitment".
             // This could happen when the cache of the browser is cleared
             return null;
         }
 
-        return {
-            message: 'Transaction error',
-            details: parsedError,
-            triggerError: err as Error,
-        } as DetailedError;
+        return error.addErrorLabel('Transaction error');
     }
 }
 
@@ -180,7 +177,7 @@ export async function exit(
     creationTime: number,
     commitments: string[],
     keys: IKeypair[],
-): Promise<[UTXOStatus, DetailedError | ContractTransaction]> {
+): Promise<[UTXOStatus, MultiError | ContractTransaction]> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -212,20 +209,20 @@ export async function exit(
     if (!zAssetId) {
         return [
             UTXOStatus.UNDEFINED,
-            {
-                message: 'zAssetId is not exist.',
-                details: 'No zAssetId returned',
-            } as DetailedError,
+            new MultiError<DetailedError>({
+                errorLabel: 'zAssetId is not exist.',
+                message: 'No zAssetId returned',
+            }),
         ];
     }
 
     if (status === UTXOStatus.SPENT) {
         return [
             UTXOStatus.SPENT,
-            {
-                message: 'zAsset is already spent.',
-                details: 'Spent nullifier: ' + nullifier,
-            } as DetailedError,
+            new MultiError<DetailedError>({
+                errorLabel: 'zAsset is already spent.',
+                message: 'Spent nullifier: ' + nullifier,
+            }),
         ];
     }
 
@@ -239,7 +236,7 @@ export async function exit(
         tokenContractAddress,
         tokenId,
     );
-    if (isDetailedError(isRegistered)) {
+    if (isRegistered instanceof MultiError) {
         return [UTXOStatus.UNDEFINED, isRegistered];
     }
 
@@ -250,12 +247,12 @@ export async function exit(
         creationTime,
         commitments[0],
     );
-    if (isDetailedError(zZkpCommitment)) {
+    if (zZkpCommitment instanceof MultiError) {
         return [UTXOStatus.UNSPENT, zZkpCommitment];
     }
 
     const path = await getMerklePath(leafId, chainId, zZkpCommitment);
-    if (isDetailedError(path)) {
+    if (path instanceof MultiError) {
         return [UTXOStatus.UNSPENT, path];
     }
     const [pathElements, merkleTreeRoot] = path;
@@ -272,7 +269,7 @@ export async function exit(
         merkleTreeRoot!,
         BigInt(0), // cacheIndexHint
     );
-    if (isDetailedError(result)) {
+    if (result instanceof MultiError) {
         return [UTXOStatus.UNSPENT, result];
     }
 
@@ -357,7 +354,7 @@ function unpackUTXOAndDeriveKeys(
     utxoData: string,
 ): ValidUTXOData | UnpackUTXOError {
     const decoded = decodeUTXOData(utxoData);
-    if (decoded instanceof Error) {
+    if (decoded instanceof MultiError) {
         return new UnpackUTXOError(
             decoded.message,
             UnpackUTXOErrorType.DecodeErr,
@@ -410,7 +407,9 @@ async function getRewardStatus(
     return [status, nullifier];
 }
 
-function decodeUTXOData(utxoData: string): [string, string, bigint] | Error {
+function decodeUTXOData(
+    utxoData: string,
+): [string, string, bigint] | MultiError {
     // 452 (225 bytes) and 260 (128) are the size of the UTXO data containing 1
     // zZKP UTXO, with and without NFT UTXO generated during advanced stake.
     // First byte is reserved for the msg version number. Next 96 bytes after
@@ -421,7 +420,7 @@ function decodeUTXOData(utxoData: string): [string, string, bigint] | Error {
     if (!ADVANCED_STAKE_UTXO_DATA_SIZES.includes(utxoData.length)) {
         const msg = 'Invalid UTXO data length';
         console.error(msg);
-        return new Error(msg);
+        return new MultiError(msg);
     }
 
     let decoded: Result;
@@ -432,7 +431,7 @@ function decodeUTXOData(utxoData: string): [string, string, bigint] | Error {
     } else {
         const msg = 'Invalid UTXO data or message type';
         console.error(msg);
-        return new Error(msg);
+        return new MultiError(msg);
     }
 
     const secrets = decoded[0];
@@ -468,24 +467,23 @@ function decodeWithNFT(utxoData: string) {
     );
 }
 
-function getUnpackingErrors(error: UnpackUTXOError): DetailedError {
+function getUnpackingErrors(error: UnpackUTXOError): MultiError<DetailedError> {
     if (error.errType === UnpackUTXOErrorType.DecodeErr) {
-        return {
-            message: 'Redemption error',
-            details: `Cannot decode zAsset secret message: ${error.message}`,
+        return new MultiError<DetailedError>({
+            errorLabel: 'Redemption error',
+            message: `Cannot decode zAsset secret message: ${error.message}`,
             triggerError: error,
-        };
+        });
     }
 
     const msg = error.message;
 
-    return {
-        message: `Cannot derive the key to spend zAsset. ${
+    return new MultiError<DetailedError>({
+        errorLabel: `Cannot derive the key to spend zAsset. ${
             msg ? `: ${msg}` : ''
         }`,
-
-        details: msg ? `: ${msg}` : '',
-    };
+        message: msg ? `: ${msg}` : '',
+    });
 }
 
 export async function isNullifierSpent(
@@ -538,11 +536,11 @@ export async function getRewardsStatuses(
 export async function buildMerkleTreeWithLeaf(
     leafId: bigint,
     chainId: number,
-): Promise<TriadMerkleTree | Error> {
+): Promise<TriadMerkleTree | MultiError> {
     const [treeId] = quadLeafIdToTreeIdAndTriadLeafId(leafId);
     const leafIndexRange = quadLeafIndexRangeForTreeId(treeId);
     const latestLeafId = await getMaxLeafId(chainId);
-    if (latestLeafId instanceof Error) {
+    if (latestLeafId instanceof MultiError) {
         return latestLeafId;
     }
 
@@ -555,7 +553,7 @@ export async function buildMerkleTreeWithLeaf(
         minLeafId,
         maxLeafId,
     );
-    if (commitments instanceof Error) {
+    if (commitments instanceof MultiError) {
         return commitments;
     }
 
@@ -572,7 +570,7 @@ async function fetchCommitmentsFromTheGraph(
     chainId: number,
     minLeafId: number,
     maxLeafId: number,
-): Promise<string[] | Error> {
+): Promise<string[] | MultiError> {
     const leafIndexRange = range(minLeafId, maxLeafId, CHUNK_SIZE);
     const commitments: string[] = [];
     for await (const startLeafId of Object.values(leafIndexRange)) {
@@ -584,7 +582,7 @@ async function fetchCommitmentsFromTheGraph(
             startLeafId,
             endLeafId,
         );
-        if (commitmentSlice instanceof Error) {
+        if (commitmentSlice instanceof MultiError) {
             return commitmentSlice;
         }
 
@@ -597,9 +595,9 @@ async function fetchCommitmentsFromTheGraph(
 async function generateMerklePath(
     leafId: bigint,
     chainId: number,
-): Promise<[string[], string, string] | Error> {
+): Promise<[string[], string, string] | MultiError> {
     const tree = await buildMerkleTreeWithLeaf(leafId, chainId);
-    if (tree instanceof Error) {
+    if (tree instanceof MultiError) {
         return tree;
     }
 
@@ -616,7 +614,7 @@ async function generateMerklePath(
             bigintToBytes32(merkleProof.root),
         ];
     } catch (error) {
-        return error as Error;
+        return new MultiError(error);
     }
 }
 
@@ -631,7 +629,7 @@ async function poolContractExit(
     pathElements: string[], // bytes32[16]
     merkleRoot: string,
     cacheIndexHint: bigint,
-): Promise<ContractTransaction | DetailedError> {
+): Promise<ContractTransaction | MultiError> {
     let tx: any;
 
     try {
@@ -648,11 +646,7 @@ async function poolContractExit(
         );
         return tx;
     } catch (err) {
-        return {
-            message: 'Transaction error',
-            details: parseTxErrorMessage(err),
-            triggerError: err as Error,
-        } as DetailedError;
+        return new MultiError(err).addErrorLabel('Transaction error');
     }
 }
 
@@ -662,7 +656,7 @@ async function isZAssetsRegistered(
     zAssetId: string,
     tokenContractAddress: string,
     tokenId: bigint,
-): Promise<DetailedError | boolean> {
+): Promise<MultiError<DetailedError> | boolean> {
     const zAssetsRegistry = getZAssetsRegistryContract(library, chainId);
     const zAssetBN = await zAssetsRegistry.getZAssetId(
         tokenContractAddress,
@@ -670,10 +664,10 @@ async function isZAssetsRegistered(
     );
 
     if (zAssetBN.toHexString() !== zAssetId) {
-        return {
-            message: 'zAsset is not registered.',
-            details: 'Expected: ' + bigintToBytes32 + ', got: ' + zAssetId,
-        } as DetailedError;
+        return new MultiError<DetailedError>({
+            errorLabel: 'zAsset is not registered.',
+            message: 'Expected: ' + bigintToBytes32 + ', got: ' + zAssetId,
+        });
     }
     return true;
 }
@@ -684,7 +678,7 @@ function getZzkpCommitment(
     zAssetId: string | undefined,
     creationTime: number,
     zZkpCommitment: string,
-): string | DetailedError {
+): string | MultiError<DetailedError> {
     const commitmentHex = bigintToBytes32(
         poseidon([
             bigintToBytes32(childSpendingKeypair!.publicKey[0]),
@@ -700,10 +694,10 @@ function getZzkpCommitment(
     );
 
     if (commitmentHex !== zZkpCommitment) {
-        return {
-            message: 'Invalid zAsset commitment.',
-            details: 'Expected: ' + zZkpCommitment + ', got: ' + commitmentHex,
-        } as DetailedError;
+        return new MultiError<DetailedError>({
+            errorLabel: 'Invalid zAsset commitment.',
+            message: 'Expected: ' + zZkpCommitment + ', got: ' + commitmentHex,
+        });
     }
     return commitmentHex;
 }
@@ -712,24 +706,24 @@ async function getMerklePath(
     leafId: bigint,
     chainId: number,
     zZkpCommitment: string,
-): Promise<DetailedError | [string[], string]> {
+): Promise<MultiError<DetailedError> | [string[], string]> {
     const path = await generateMerklePath(leafId, chainId);
-    if (path instanceof Error) {
-        return {
-            message: 'Cannot generate Merkle proof of valid zAsset',
-            details: path.message,
+    if (path instanceof MultiError) {
+        return new MultiError<DetailedError>({
+            errorLabel: 'Cannot generate Merkle proof of valid zAsset',
+            message: path.message,
             triggerError: path,
-        } as DetailedError;
+        });
     }
     const [pathElements, proofLeafHex, merkleTreeRoot] = path;
 
     if (proofLeafHex !== zZkpCommitment) {
         // This error also shoots when the tree is outdated
 
-        return {
-            message: "zAsset didn't match shielded pool entry.",
-            details: 'Expected: ' + proofLeafHex + ', got: ' + zZkpCommitment,
-        } as DetailedError;
+        return new MultiError<DetailedError>({
+            errorLabel: "zAsset didn't match shielded pool entry.",
+            message: 'Expected: ' + proofLeafHex + ', got: ' + zZkpCommitment,
+        });
     }
     return [pathElements, merkleTreeRoot];
 }

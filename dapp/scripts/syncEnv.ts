@@ -33,6 +33,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 import {ethers} from 'ethers';
+import {MultiError} from 'services/errors';
 import yargs from 'yargs/yargs';
 
 import {info, success, warn, die} from '../src/lib/log';
@@ -79,11 +80,11 @@ function getAppId(): string {
 async function safeContractGetterCall(
     contract: ethers.Contract,
     getter: string,
-): Promise<string | Error> {
+): Promise<string | MultiError> {
     try {
         return await contract[getter]();
     } catch (err: any) {
-        return err;
+        return new MultiError(err);
     }
 }
 
@@ -91,11 +92,11 @@ async function getExitTime(provider: ethers.providers.JsonRpcProvider) {
     const pool = getPoolContract(provider, CHAIN_ID);
 
     let response = await safeContractGetterCall(pool, 'exitTime');
-    if (response instanceof Error) {
+    if (response instanceof MultiError) {
         warn('Failed to call exitTime(); falling back to EXIT_TIME() ...');
         response = await safeContractGetterCall(pool, 'EXIT_TIME');
     }
-    if (response instanceof Error) {
+    if (response instanceof MultiError) {
         console.error('Failed to call EXIT_TIME:');
         console.error(response);
         process.exit(1);

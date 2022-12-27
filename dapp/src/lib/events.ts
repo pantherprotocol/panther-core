@@ -4,24 +4,27 @@
 // FIXME: duplicated with contracts/lib/events.ts
 import {CONFIRMATIONS_NUM} from 'constants/contract-confirmations';
 
-import type {ContractReceipt, ContractTransaction} from 'ethers';
+import type {ContractReceipt, ContractTransaction, Event} from 'ethers';
+import {MultiError} from 'services/errors';
 
 // Finds first event with a given name from the transaction receipt
 export async function getEventFromReceipt(
     receipt: ContractReceipt,
     eventName: string,
-): Promise<any> {
+): Promise<Event | MultiError> {
     if (!receipt) {
-        return new Error('Failed to get transaction receipt.');
+        return new MultiError('Failed to get transaction receipt.');
     }
 
     if (!receipt.events) {
-        return new Error('Failed to get transaction events.');
+        return new MultiError('Failed to get transaction events.');
     }
 
     const event = receipt.events.find(({event}) => event === eventName);
     if (!event) {
-        return new Error(`No ${eventName} event found for this transaction.`);
+        return new MultiError(
+            `No ${eventName} event found for this transaction.`,
+        );
     }
 
     console.debug(`${eventName} event: ${JSON.stringify(event)}`);
@@ -32,12 +35,12 @@ export async function getEventFromReceipt(
 export async function awaitConfirmationAndRetrieveEvent(
     transaction: ContractTransaction,
     eventName: string,
-): Promise<any | Error> {
+): Promise<Event | MultiError> {
     let receipt;
     try {
         receipt = await transaction.wait(CONFIRMATIONS_NUM);
     } catch (err) {
-        return new Error(`Transaction rejected!`);
+        return new MultiError(`Transaction rejected!`);
     }
     return await getEventFromReceipt(receipt, eventName);
 }

@@ -52,7 +52,13 @@ const AssetsDetailsTable = () => {
     >(undefined);
 
     useEffect(() => {
-        if (gotExitTime || !chainId || !library) return;
+        if (
+            gotExitTime ||
+            !chainId ||
+            !library ||
+            !chainHasPoolContract(chainId)
+        )
+            return;
         dispatch(getPoolV0ExitTime, context);
         registerExitTimeCall(true);
     }, [context, chainId, library, dispatch, gotExitTime]);

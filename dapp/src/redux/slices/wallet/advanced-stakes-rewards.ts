@@ -12,6 +12,7 @@ import {sleep} from 'lib/time';
 import {LoadingStatus} from 'redux/slices/shared';
 import {setWalletUpdating} from 'redux/slices/ui/is-wallet-updating';
 import {RootState} from 'redux/store';
+import {chainHasPoolContract} from 'services/contracts';
 import {getChangedUTXOsStatuses, UTXOStatusByID} from 'services/pool';
 import {
     PRP_REWARD_PER_STAKE,
@@ -137,12 +138,15 @@ export const getAdvancedStakesRewardsAndUpdateStatus = createAsyncThunk(
             return;
         }
 
-        await dispatch(
-            refreshUTXOsStatuses({
-                context: payload.context,
-                keys: payload.keys,
-            }),
-        );
+        const chainId = payload.context.chainId;
+        if (chainId && chainHasPoolContract(chainId)) {
+            await dispatch(
+                refreshUTXOsStatuses({
+                    context: payload.context,
+                    keys: payload.keys,
+                }),
+            );
+        }
 
         dispatch(setWalletUpdating(false));
     },

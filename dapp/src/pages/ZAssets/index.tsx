@@ -25,6 +25,7 @@ export default function ZAssets(): React.ReactElement {
 
     useEffect(() => {
         dispatch(getAdvancedStakesRewards, {context});
+        if (!chainId || !chainHasPoolContract(chainId)) return;
         dispatch(getPoolV0ExitTime, context);
     }, [context, dispatch, chainId]);
 

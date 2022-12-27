@@ -106,6 +106,7 @@ export default function PrivateBalance() {
             const keys = await generateRootKeypairs(signer);
             if (keys instanceof MultiError) {
                 dispatch(registerWalletActionFailure, 'signMessage');
+                if (keys.isUserRejectedError) return;
                 notifyError({
                     errorLabel: 'Failed to refresh zAssets',
                     message: `Cannot sign a message: ${keys.message}`,

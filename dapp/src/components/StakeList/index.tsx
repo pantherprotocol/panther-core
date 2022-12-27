@@ -53,6 +53,7 @@ async function unstakeWithNotification(
         false,
     );
 
+    if (err && err.isUserRejectedError) return err;
     if (err) {
         openNotification(
             'Transaction error',
@@ -153,8 +154,8 @@ export default function StakeList() {
                 dispatch(registerWalletActionFailure, 'signMessage');
                 return;
             }
-            dispatch(registerWalletActionSuccess, 'signMessage');
 
+            dispatch(registerWalletActionSuccess, 'signMessage');
             dispatch(getTotalsOfAdvancedStakes, context);
             dispatch(getZkpStakedBalance, context);
             dispatch(getTotalUnclaimedClassicRewards, context);

@@ -27,6 +27,7 @@ import {
 } from 'components/common/notification';
 import PrimaryActionButton from 'components/common/PrimaryActionButton';
 import {getUnixTime} from 'date-fns';
+import {ContractTransaction} from 'ethers/lib/ethers';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
     progressToNewWalletAction,
@@ -81,6 +82,7 @@ export default function FirstStageRedeem(props: {
         const keys = await generateRootKeypairs(signer);
         if (keys instanceof MultiError) {
             dispatch(registerWalletActionFailure, 'signMessage');
+            if (keys.isUserRejectedError) return;
             return notifyError({
                 errorLabel: 'Panther wallet error',
                 message: `Failed to generate Panther wallet secrets from signature: ${keys.message}`,
@@ -97,7 +99,7 @@ export default function FirstStageRedeem(props: {
         });
         handleClose();
 
-        let tx;
+        let tx: ContractTransaction | MultiError | null;
         let status: UTXOStatus;
         try {
             [tx, status] = await registerCommitToExit(
@@ -121,6 +123,7 @@ export default function FirstStageRedeem(props: {
         if (tx instanceof MultiError) {
             dispatch(updateUTXOStatus, [chainId, account, reward.id, status]);
             dispatch(registerWalletActionFailure, 'registerCommitToExit');
+            if (tx.isUserRejectedError) return;
             return notifyError(tx);
         }
 

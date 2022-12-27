@@ -12,7 +12,7 @@ import {format} from 'date-fns';
 import {BigNumber, constants, utils} from 'ethers';
 import useScreenSize from 'hooks/screen';
 import infoIcon from 'images/info-icon.svg';
-import {formatCurrency, formatTime} from 'lib/format';
+import {formatCurrency, formatTime, getFormattedFractions} from 'lib/format';
 import {WalletActionTrigger} from 'redux/slices/ui/web3-wallet-last-action';
 import {isClassic} from 'services/rewards';
 import {CLASSIC_TYPE_HEX, StakeRow} from 'services/staking';
@@ -41,7 +41,9 @@ const StakeItem = (props: {
     const {row, chainId, unstakeById} = props;
 
     const {isSmall, isMobile, isMedium} = useScreenSize();
-
+    const [wholePart, fractionalPart] = row.amount
+        ? getFormattedFractions(utils.formatEther(row.amount))
+        : [];
     return (
         <React.Fragment key={row.stakedAt}>
             {row.claimedAt === 0 && (
@@ -51,7 +53,8 @@ const StakeItem = (props: {
                             <ExactValueTooltip balance={row.amount}>
                                 <Typography component={'span'}>
                                     <StyledBalance
-                                        balance={row.amount}
+                                        wholePart={wholePart}
+                                        fractionalPart={fractionalPart}
                                         styles="splitted-balance"
                                     />
                                 </Typography>

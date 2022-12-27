@@ -17,12 +17,16 @@ import {notifyError} from 'components/Common/errors';
 import StyledBalance from 'components/Common/StyledBalance';
 import {totalUnrealizedPrivacyRewardsTooltip} from 'components/Common/tooltips';
 import SignatureRequestModal from 'components/SignatureRequestModal';
-import {BigNumber} from 'ethers';
+import {BigNumber, utils} from 'ethers';
 import {useStatusError} from 'hooks/status-error';
 import attentionIcon from 'images/attention-triangle-icon.svg';
 import infoIcon from 'images/info-icon.svg';
 import refreshIcon from 'images/refresh-icon.svg';
-import {formatCurrency, formatTimeSince} from 'lib/format';
+import {
+    formatCurrency,
+    formatTimeSince,
+    getFormattedFractions,
+} from 'lib/format';
 import {fiatPrice} from 'lib/token-price';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
@@ -184,6 +188,9 @@ export default function PrivateBalance() {
     const showWalletSignatureInProgress = useAppSelector(
         showWalletActionInProgressSelector('signMessage'),
     );
+    const [wholePart, fractionalPart] = totalPrice
+        ? getFormattedFractions(utils.formatEther(totalPrice))
+        : [];
 
     return (
         <>
@@ -196,14 +203,18 @@ export default function PrivateBalance() {
                     <Typography className="title">
                         Total Private zAsset Balance
                     </Typography>
-                    <StyledBalance balance={totalPrice} styles="amount" />
+                    <StyledBalance
+                        wholePart={`$${wholePart}`}
+                        fractionalPart={`${fractionalPart} USD`}
+                        styles="amount"
+                    />
                     <Typography className="zkp-rewards">
                         {formatCurrency(totalUnrealizedPrp, {
                             scale: 0,
                             decimals: 0,
                         })}{' '}
                         <span className="info">
-                            Total Unrealized Privacy Rewards
+                            Total Unrealized Privacy Rewards (PRP)
                         </span>
                         <Tooltip
                             title={

@@ -43,4 +43,14 @@ If you see the `Build ID` and the subgraph link in your terminal, it means the s
 Go to `https://thegraph.com/explorer/subgraph/<GITHUB_USERNAME>/<SUBGRAPH NAME>` to see your subgraph.
 Do not forget to compare the deployment ID that you have seen in your terminal (i.e., `QmfD72g6naqX1B3JgAzEzf1n9yjmqzEGWdtmGEUm9u2vGm`) with the deployment ID that you see in the browser.
 
-For more detailed information, please checkout the [thegraph](https://thegraph.com/docs/en/deploying/deploying-a-subgraph-to-hosted/) deployment documents
+For more detailed information, please checkout the [thegraph](https://thegraph.com/docs/en/deploying/deploying-a-subgraph-to-hosted/) deployment documents.
+
+### Existing deployments
+
+For advanced staking v0.5:
+
+- toxicehc deployed subgraph ID `QmTi7Z7YoUpzYqwGytPuKYu2FuYPEhtPTsXti5dRxn8wHR`
+  at: https://thegraph.com/hosted-service/subgraph/toxicehc/panther
+
+- cryptoefelle deployed subgraph ID `QmZPs5CFi5vpZW73DmwF5VMzt5CYvFX7vD9Ez9gkZteuRd`
+  at: https://thegraph.com/explorer/subgraph/cryptoefelle/panther

@@ -1,0 +1,706 @@
+{
+  "address": "0x8f15a43961c27C74CB4F55234A78802401614de3",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "rewardMaster",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "pantherPool",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "zkpToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "nftToken",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "staker",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "firstLeafId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "zkp",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "nft",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardGenerated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint96",
+              "name": "zkpRewards",
+              "type": "uint96"
+            },
+            {
+              "internalType": "uint24",
+              "name": "nftRewards",
+              "type": "uint24"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct AdvancedStakeRewardController.Limits",
+          "name": "newLimits",
+          "type": "tuple"
+        }
+      ],
+      "name": "RewardLimitUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint32",
+              "name": "startTime",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "endTime",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint8",
+              "name": "startZkpApy",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "endZkpApy",
+              "type": "uint8"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct AdvancedStakeRewardController.RewardParams",
+          "name": "newRewardParams",
+          "type": "tuple"
+        }
+      ],
+      "name": "RewardParamsUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "OWNER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PANTHER_POOL",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "REWARD_MASTER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "START_BLOCK",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "action",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "bytes",
+          "name": "message",
+          "type": "bytes"
+        }
+      ],
+      "name": "getRewardAdvice",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "createSharesFor",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "sharesToCreate",
+              "type": "uint96"
+            },
+            {
+              "internalType": "address",
+              "name": "redeemSharesFrom",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "sharesToRedeem",
+              "type": "uint96"
+            },
+            {
+              "internalType": "address",
+              "name": "sendRewardTo",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IRewardAdviser.Advice",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "time",
+          "type": "uint256"
+        }
+      ],
+      "name": "getZkpApyAt",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "limits",
+      "outputs": [
+        {
+          "internalType": "uint96",
+          "name": "zkpRewards",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint24",
+          "name": "nftRewards",
+          "type": "uint24"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "onERC721Received",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "rescueErc20",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "rewardParams",
+      "outputs": [
+        {
+          "internalType": "uint32",
+          "name": "startTime",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint32",
+          "name": "endTime",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint8",
+          "name": "startZkpApy",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint8",
+          "name": "endZkpApy",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_desiredNftRewardsLimit",
+          "type": "uint256"
+        }
+      ],
+      "name": "setNftRewardLimit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totals",
+      "outputs": [
+        {
+          "internalType": "uint96",
+          "name": "zkpRewards",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint24",
+          "name": "nftRewards",
+          "type": "uint24"
+        },
+        {
+          "internalType": "uint40",
+          "name": "scZkpStaked",
+          "type": "uint40"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint32",
+              "name": "startTime",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "endTime",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint8",
+              "name": "startZkpApy",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "endZkpApy",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct AdvancedStakeRewardController.RewardParams",
+          "name": "_newParams",
+          "type": "tuple"
+        }
+      ],
+      "name": "updateRewardParams",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "updateZkpRewardsLimit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x31957cef3172d9bdd14faf633cf6b92b5a8af45faa6404401f1a0fe824f2ec70",
+  "receipt": {
+    "to": null,
+    "from": "0xf0886ac6B2E9A2A75C9537EAF1A3aa8398FB10e8",
+    "contractAddress": "0x8f15a43961c27C74CB4F55234A78802401614de3",
+    "transactionIndex": 48,
+    "gasUsed": "2128901",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000008000000000000000000000000000000000000000004000000000000000800000000000000000000100000000000000000000000000000000000000000000000000000000000080000000000100000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004000000000000000000001000000000000000000000000000000100000000000000000000000000000100000000000000000002000000000200000000000100000",
+    "blockHash": "0x1d508254e41c27629b3c909fce8833358f3a8346e1f364f1f6edf26546ad6b12",
+    "transactionHash": "0x31957cef3172d9bdd14faf633cf6b92b5a8af45faa6404401f1a0fe824f2ec70",
+    "logs": [
+      {
+        "transactionIndex": 48,
+        "blockNumber": 36337906,
+        "transactionHash": "0x31957cef3172d9bdd14faf633cf6b92b5a8af45faa6404401f1a0fe824f2ec70",
+        "address": "0x0000000000000000000000000000000000001010",
+        "topics": [
+          "0x4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0x0000000000000000000000000000000000000000000000000000000000001010",
+          "0x000000000000000000000000f0886ac6b2e9a2a75c9537eaf1a3aa8398fb10e8",
+          "0x000000000000000000000000b9ede6f94d192073d8eaf85f8db677133d483249"
+        ],
+        "data": "0x00000000000000000000000000000000000000000000000001137fd53e8545330000000000000000000000000000000000000000000000000b696bddf4cdc280000000000000000000000000000000000000000000000061b29ef27f19b2ee940000000000000000000000000000000000000000000000000a55ec08b6487d4d000000000000000000000000000000000000000000000061b3b27254583833c7",
+        "logIndex": 189,
+        "blockHash": "0x1d508254e41c27629b3c909fce8833358f3a8346e1f364f1f6edf26546ad6b12"
+      }
+    ],
+    "blockNumber": 36337906,
+    "cumulativeGasUsed": "9121668",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x208Fb9169BBec5915722e0AfF8B0eeEdaBf8a6f0",
+    "0x09220DD0c342Ee92C333FAa6879984D63B4dff03",
+    "0x9a423671e9Cde99Ae88853B701f98ca9e136877B",
+    "0x9A06Db14D639796B25A6ceC6A1bf614fd98815EC",
+    "0xE5da4955cBC480Eb9Bf9534def229F9D8339eE6d"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "49300367bcb47864d5852738a8da403e",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.16+commit.07a7930e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"rewardMaster\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pantherPool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"zkpToken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"nftToken\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"firstLeafId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"zkp\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"nft\",\"type\":\"uint256\"}],\"name\":\"RewardGenerated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint96\",\"name\":\"zkpRewards\",\"type\":\"uint96\"},{\"internalType\":\"uint24\",\"name\":\"nftRewards\",\"type\":\"uint24\"}],\"indexed\":false,\"internalType\":\"struct AdvancedStakeRewardController.Limits\",\"name\":\"newLimits\",\"type\":\"tuple\"}],\"name\":\"RewardLimitUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"startTime\",\"type\":\"uint32\"},{\"internalType\":\"uint32\",\"name\":\"endTime\",\"type\":\"uint32\"},{\"internalType\":\"uint8\",\"name\":\"startZkpApy\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"endZkpApy\",\"type\":\"uint8\"}],\"indexed\":false,\"internalType\":\"struct AdvancedStakeRewardController.RewardParams\",\"name\":\"newRewardParams\",\"type\":\"tuple\"}],\"name\":\"RewardParamsUpdated\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"OWNER\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"PANTHER_POOL\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"REWARD_MASTER\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"START_BLOCK\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"action\",\"type\":\"bytes4\"},{\"internalType\":\"bytes\",\"name\":\"message\",\"type\":\"bytes\"}],\"name\":\"getRewardAdvice\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"createSharesFor\",\"type\":\"address\"},{\"internalType\":\"uint96\",\"name\":\"sharesToCreate\",\"type\":\"uint96\"},{\"internalType\":\"address\",\"name\":\"redeemSharesFrom\",\"type\":\"address\"},{\"internalType\":\"uint96\",\"name\":\"sharesToRedeem\",\"type\":\"uint96\"},{\"internalType\":\"address\",\"name\":\"sendRewardTo\",\"type\":\"address\"}],\"internalType\":\"struct IRewardAdviser.Advice\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"}],\"name\":\"getZkpApyAt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"limits\",\"outputs\":[{\"internalType\":\"uint96\",\"name\":\"zkpRewards\",\"type\":\"uint96\"},{\"internalType\":\"uint24\",\"name\":\"nftRewards\",\"type\":\"uint24\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"onERC721Received\",\"outputs\":[{\"internalType\":\"bytes4\",\"name\":\"\",\"type\":\"bytes4\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"rescueErc20\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"rewardParams\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"startTime\",\"type\":\"uint32\"},{\"internalType\":\"uint32\",\"name\":\"endTime\",\"type\":\"uint32\"},{\"internalType\":\"uint8\",\"name\":\"startZkpApy\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"endZkpApy\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_desiredNftRewardsLimit\",\"type\":\"uint256\"}],\"name\":\"setNftRewardLimit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totals\",\"outputs\":[{\"internalType\":\"uint96\",\"name\":\"zkpRewards\",\"type\":\"uint96\"},{\"internalType\":\"uint24\",\"name\":\"nftRewards\",\"type\":\"uint24\"},{\"internalType\":\"uint40\",\"name\":\"scZkpStaked\",\"type\":\"uint40\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"startTime\",\"type\":\"uint32\"},{\"internalType\":\"uint32\",\"name\":\"endTime\",\"type\":\"uint32\"},{\"internalType\":\"uint8\",\"name\":\"startZkpApy\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"endZkpApy\",\"type\":\"uint8\"}],\"internalType\":\"struct AdvancedStakeRewardController.RewardParams\",\"name\":\"_newParams\",\"type\":\"tuple\"}],\"name\":\"updateRewardParams\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"updateZkpRewardsLimit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This contract is supposed to run on the Polygon. Unless otherwise mentioned, other smart contracts are supposed to run on the Polygon also. As the \\\"Reward Adviser\\\" on the \\\"advanced\\\" stakes, every time a new stake is being created, it receives the `getRewardAdvice` call from the `RewardMaster` contract with the `STAKE` action type and the stake data (the `message`) being the call parameters. On the `getRewardAdvice` call received, this contract: - computes the amounts of the $ZKP reward and the optional NFT reward - if the `NFT_TOKEN` is non-zero address, it calls `grantOneToken` on the NFT_TOKEN, and gets the `tokenId` of the minted NFT token - calls `generateDeposits` of the PantherPoolV0, providing amounts/parameters of $ZKP, and   optional NFT as \\\"deposits\\\", as well as \\\"spending pubKeys\\\" and \\\"secrets\\\" (explained below) - returns the \\\"zero reward advice\\\" (with zero `sharesToCreate`) to the RewardMaster. On the \\\"zero\\\" advice, the RewardMaster skips creating \\\"treasure shares\\\" for the staker. This way rewarding gets orchestrated by this contract rather than the RewardMaster. Being called `generateDeposits`, the PantherPoolV0: - requests the `Vault` to take (`transferFrom`) the $ZKP and NFT tokens from this contract - generates \\\"UTXOs\\\" with the \\\"spending pubKeys\\\" and \\\"secrets\\\" provided (see bellow). Creating a new stake (i.e. calling the `stake`), the staker generates and provides the \\\"pubKeys\\\" and \\\"secrets\\\" to the Staking. Both the Staking on the mainnet and the Staking on the Polygon encodes them into the STAKE message and passes to the RewardMaster, which passes the message to this contract with the `getRewardAdvice` call. So this contracts get pubKeys and secrets needed for the `generateDeposits`. For stakes on the Polygon, when all contracts (i.e. Staking, RewardMaster and this contract) run on the same network, the RewardMaster on the Polygon calls this contract directly. For stakes made on the mainnet, where the Staking and the RewardMaster run, but this contract is on the Polygon, the RewardMaster on the mainnet sends the STAKE message to the RewardMaster on the Polygon via the PoS bridge and mediator contracts. The RewardMaster on the Polygon handles a bridged STAKE message (calling the `getRewardAdvice`) as if the message had been sent by the Staking on the Polygon. As a prerequisite: - this contract shall: -- be authorized as the \\\"RewardAdviser\\\" with the RewardMaster on the Polygon for advanced stakes -- be authorized as \\\"Minter\\\" (aka \\\"grantor\\\") with the NFT_TOKEN contract -- hold enough $ZKP to reward stakers - the Vault contract shall be approved to transfer $ZKPs and the NFT tokens from this contract - the $ZKP and the NFT tokens shall be registered as zAssets on the PantherPoolV0.\",\"events\":{\"RewardGenerated(address,uint256,uint256,uint256)\":{\"details\":\"Emitted when the reward for a stake is generated\"},\"RewardLimitUpdated((uint96,uint24))\":{\"details\":\"Emitted when new amounts are allocated to reward stakers\"},\"RewardParamsUpdated((uint32,uint32,uint8,uint8))\":{\"details\":\"Emitted when rewarding params updated\"}},\"kind\":\"dev\",\"methods\":{\"getRewardAdvice(bytes4,bytes)\":{\"details\":\"To be called by the {RewardMaster} contract on \\\"advanced\\\" `STAKE` and `UNSTAKE` actions. The caller is trusted to never call w/ the STAKE acton: - twice for the same stake - after the rewarded period has ended\"},\"rescueErc20(address,address,uint256)\":{\"details\":\"May be only called by the {OWNER}\"},\"setNftRewardLimit(uint256)\":{\"details\":\"Only owner may call it.\"},\"updateZkpRewardsLimit()\":{\"details\":\"Anyone may call it.\"}},\"title\":\"AdvancedStakeRewardController\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"OWNER()\":{\"notice\":\"The owner who has privileged rights\"},\"PANTHER_POOL()\":{\"notice\":\"PantherPoolV0 contract instance\"},\"REWARD_MASTER()\":{\"notice\":\"RewardMaster contract instance\"},\"START_BLOCK()\":{\"notice\":\"Block when this contract is deployed\"},\"getZkpApyAt(uint256)\":{\"notice\":\"Return the APY for the $ZKP reward at a given time\"},\"limits()\":{\"notice\":\"Amounts of $ZKP and NFT allocated for rewards\"},\"rescueErc20(address,address,uint256)\":{\"notice\":\"Withdraws unclaimed rewards or accidentally sent token from this contract\"},\"rewardParams()\":{\"notice\":\"Reward parameters (start and end point for time and APY)\"},\"setNftRewardLimit(uint256)\":{\"notice\":\"Allocate NFT rewards and approve the Vault to transfer them\"},\"totals()\":{\"notice\":\"Total amounts of $ZKP and NFT rewarded so far\"},\"updateZkpRewardsLimit()\":{\"notice\":\"Allocate for rewards the entire $ZKP balance this contract has and approve the Vault to transfer $ZKP from this contract.\"}},\"notice\":\"It generates UTXOs in the MASP as rewards to stakers for the \\\"Advanced Staking\\\"\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/staking/AdvancedStakeRewardController.sol\":\"AdvancedStakeRewardController\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":800},\"remappings\":[]},\"sources\":{\"contracts/common/Claimable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\nimport \\\"./TransferHelper.sol\\\";\\n\\n/**\\n * @title Claimable\\n * @notice It withdraws accidentally sent tokens or ETH from this contract.\\n */\\nabstract contract Claimable {\\n    /// @dev Withdraws ERC20 tokens from this contract\\n    /// (take care of reentrancy attack risk mitigation)\\n    function _claimErc20(\\n        address token,\\n        address to,\\n        uint256 amount\\n    ) internal {\\n        // withdraw ERC20\\n        TransferHelper.safeTransfer(token, to, amount);\\n    }\\n\\n    /// @dev Withdraws ERC20 tokens from this contract\\n    /// (take care of reentrancy attack risk mitigation)\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function _claimEthOrErc20(\\n        address token,\\n        address to,\\n        uint256 amount\\n    ) internal {\\n        if (token == address(0)) {\\n            // withdraw ETH\\n            TransferHelper.safeTransferETH(to, amount);\\n        } else {\\n            // withdraw ERC20\\n            TransferHelper.safeTransfer(token, to, amount);\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x3efb90ea556b25a8ed592a90379449176d9babce56ecf8f9348639901cffae1d\",\"license\":\"MIT\"},\"contracts/common/Constants.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n// Constants\\n\\nuint256 constant IN_PRP_UTXOs = 1;\\nuint256 constant IN_UTXOs = 2 + IN_PRP_UTXOs;\\n\\nuint256 constant OUT_PRP_UTXOs = 1;\\nuint256 constant OUT_UTXOs = 2 + OUT_PRP_UTXOs;\\nuint256 constant OUT_MAX_UTXOs = OUT_UTXOs;\\n// Number of UTXOs given as a reward for an \\\"advanced\\\" stake\\nuint256 constant OUT_RWRD_UTXOs = 2;\\n\\n// For overflow protection and circuits optimization\\n// (must be less than the FIELD_SIZE)\\nuint256 constant MAX_EXT_AMOUNT = 2**96;\\nuint256 constant MAX_IN_CIRCUIT_AMOUNT = 2**64;\\nuint256 constant MAX_TIMESTAMP = 2**32;\\nuint256 constant MAX_ZASSET_ID = 2**160;\\n\\n// Token types\\n// (not `enum` to let protocol extensions use bits, if needed)\\nuint8 constant ERC20_TOKEN_TYPE = 0x00;\\nuint8 constant ERC721_TOKEN_TYPE = 0x10;\\nuint8 constant ERC1155_TOKEN_TYPE = 0x11;\\n// defined for every tokenId rather than for all tokens on the contract\\n// (unsupported in the V0 and V1 of the MASP)\\nuint8 constant BY_TOKENID_TOKEN_TYPE = 0xFF;\\n\\n// ZAsset statuses\\n// (not `enum` to let protocol extensions use bits, if needed)\\nuint8 constant zASSET_ENABLED = 0x01;\\nuint8 constant zASSET_DISABLED = 0x02;\\nuint8 constant zASSET_UNKNOWN = 0x00;\\n\\n// UTXO data (opening values - encrypted and public) formats\\nuint8 constant UTXO_DATA_TYPE5 = 0x00; // for zero UTXO (no data to provide)\\nuint8 constant UTXO_DATA_TYPE1 = 0x01; // for UTXO w/ zero tokenId\\nuint8 constant UTXO_DATA_TYPE3 = 0x02; // for UTXO w/ non-zero tokenId\\n\\n// Number of 32-bit words of the CiphertextMsg for UTXO_DATA_TYPE1\\n// (ephemeral key (packed) - 32 bytes, encrypted `random` - 32 bytes)\\nuint256 constant CIPHERTEXT1_WORDS = 2;\\n\\n// Number of 32-bit words in the (uncompressed) spending PubKey\\nuint256 constant PUBKEY_WORDS = 2;\\n// Number of elements in `pathElements`\\nuint256 constant PATH_ELEMENTS_NUM = 16;\\n\",\"keccak256\":\"0x8d696e386e1c6b8c30f1cb244f46f220a8b422d5addedcfe8796e87219eaadd7\",\"license\":\"BUSL-1.1\"},\"contracts/common/ImmutableOwnable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n/// @title Staking\\nabstract contract ImmutableOwnable {\\n    /// @notice The owner who has privileged rights\\n    // solhint-disable-next-line var-name-mixedcase\\n    address public immutable OWNER;\\n\\n    /// @dev Throws if called by any account other than the {OWNER}.\\n    modifier onlyOwner() {\\n        require(OWNER == msg.sender, \\\"ImmOwn: unauthorized\\\");\\n        _;\\n    }\\n\\n    constructor(address _owner) {\\n        require(_owner != address(0), \\\"ImmOwn: zero owner address\\\");\\n        OWNER = _owner;\\n    }\\n}\\n\",\"keccak256\":\"0x50d471ce507ca3796ff407b52d0dffead3b4eb6c0f0afea9350f712f9c5f1416\",\"license\":\"MIT\"},\"contracts/common/NonReentrant.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n/**\\n * @title NonReentrant\\n * @notice It provides reentrancy guard.\\n * The code borrowed from openzeppelin-contracts.\\n * Unlike original, this version requires neither `constructor` no `init` call.\\n */\\nabstract contract NonReentrant {\\n    uint256 private constant _NOT_ENTERED = 1;\\n    uint256 private constant _ENTERED = 2;\\n\\n    uint256 private _reentrancyStatus;\\n\\n    modifier nonReentrant() {\\n        // Being called right after deployment, when _reentrancyStatus is 0 ,\\n        // it does not revert (which is expected behaviour)\\n        require(_reentrancyStatus != _ENTERED, \\\"claimErc20: reentrant call\\\");\\n\\n        // Any calls to nonReentrant after this point will fail\\n        _reentrancyStatus = _ENTERED;\\n\\n        _;\\n\\n        // By storing the original value once again, a refund is triggered (see\\n        // https://eips.ethereum.org/EIPS/eip-2200)\\n        _reentrancyStatus = _NOT_ENTERED;\\n    }\\n}\\n\",\"keccak256\":\"0x5d4d478d079a96f8242f81da40b67e6fb8cf5180ed751b191f128558f7cc9a6d\",\"license\":\"MIT\"},\"contracts/common/TransferHelper.sol\":{\"content\":\"// SPDX-License-Identifier: GPL-3.0-or-later\\n// solhint-disable avoid-low-level-calls\\n// solhint-disable no-inline-assembly\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n/// @title TransferHelper library\\n/// @dev Helper methods for interacting with ERC20, ERC721, ERC1155 tokens and sending ETH\\n/// Based on the Uniswap/solidity-lib/contracts/libraries/TransferHelper.sol\\nlibrary TransferHelper {\\n    /// @dev Throws if the deployed code of the `token` is empty.\\n    // Low-level CALL to a non-existing contract returns `success` of 1 and empty `data`.\\n    // It may be misinterpreted as a successful call to a deployed token contract.\\n    // So, the code calling a token contract must insure the contract code exists.\\n    modifier onlyDeployedToken(address token) {\\n        uint256 codeSize;\\n        // slither-disable-next-line assembly\\n        assembly {\\n            codeSize := extcodesize(token)\\n        }\\n        require(codeSize > 0, \\\"TransferHelper: zero codesize\\\");\\n        _;\\n    }\\n\\n    /// @dev Approve the `operator` to spend all of ERC720 tokens on behalf of `owner`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeSetApprovalForAll(\\n        address token,\\n        address operator,\\n        bool approved\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('setApprovalForAll(address,bool)'));\\n            abi.encodeWithSelector(0xa22cb465, operator, approved)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Get the ERC20 balance of `account`\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeBalanceOf(address token, address account)\\n        internal\\n        returns (uint256 balance)\\n    {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256(bytes('balanceOf(address)')));\\n            abi.encodeWithSelector(0x70a08231, account)\\n        );\\n        require(\\n            // since `data` can't be empty, `onlyDeployedToken` unneeded\\n            success && (data.length != 0),\\n            \\\"TransferHelper: balanceOff call failed\\\"\\n        );\\n\\n        balance = abi.decode(data, (uint256));\\n    }\\n\\n    /// @dev Approve the `spender` to spend the `amount` of ERC20 token on behalf of `owner`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeApprove(\\n        address token,\\n        address to,\\n        uint256 value\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('approve(address,uint256)'));\\n            abi.encodeWithSelector(0x095ea7b3, to, value)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `value` ERC20 tokens from caller to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeTransfer(\\n        address token,\\n        address to,\\n        uint256 value\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('transfer(address,uint256)'));\\n            abi.encodeWithSelector(0xa9059cbb, to, value)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `value` ERC20 tokens on behalf of `from` to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeTransferFrom(\\n        address token,\\n        address from,\\n        address to,\\n        uint256 value\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('transferFrom(address,address,uint256)'));\\n            abi.encodeWithSelector(0x23b872dd, from, to, value)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer an ERC721 token with id of `tokenId` on behalf of `from` to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function erc721SafeTransferFrom(\\n        address token,\\n        uint256 tokenId,\\n        address from,\\n        address to\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('safeTransferFrom(address,address,uint256)'));\\n            abi.encodeWithSelector(0x42842e0e, from, to, tokenId)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `amount` ERC1155 token with id of `tokenId` on behalf of `from` to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function erc1155SafeTransferFrom(\\n        address token,\\n        address from,\\n        address to,\\n        uint256 tokenId,\\n        uint256 amount,\\n        bytes memory _data\\n    ) internal onlyDeployedToken(token) {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, bytes memory data) = token.call(\\n            // bytes4(keccak256('safeTransferFrom(address,address,uint256,uint256,bytes)'));\\n            abi.encodeWithSelector(0xf242432a, from, to, tokenId, amount, _data)\\n        );\\n        _requireSuccess(success, data);\\n    }\\n\\n    /// @dev Transfer `value` Ether from caller to `to`.\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safeTransferETH(address to, uint256 value) internal {\\n        // slither-disable-next-line low-level-calls\\n        (bool success, ) = to.call{ value: value }(new bytes(0));\\n        require(success, \\\"TransferHelper: ETH transfer failed\\\");\\n    }\\n\\n    function _requireSuccess(bool success, bytes memory res) private pure {\\n        require(\\n            success && (res.length == 0 || abi.decode(res, (bool))),\\n            \\\"TransferHelper: token contract call failed\\\"\\n        );\\n    }\\n}\\n\",\"keccak256\":\"0xca5a24eae0771696d9bfc96eb4929faa5ab8d1300d3174968653cd22b6348fe4\",\"license\":\"GPL-3.0-or-later\"},\"contracts/common/Types.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\nstruct G1Point {\\n    uint256 x;\\n    uint256 y;\\n}\\n\\n// Encoding of field elements is: X[0] * z + X[1]\\nstruct G2Point {\\n    uint256[2] x;\\n    uint256[2] y;\\n}\\n\\n// Verification key for SNARK\\nstruct VerifyingKey {\\n    G1Point alpha1;\\n    G2Point beta2;\\n    G2Point gamma2;\\n    G2Point delta2;\\n    G1Point[2] ic;\\n}\\n\\nstruct SnarkProof {\\n    G1Point a;\\n    G2Point b;\\n    G1Point c;\\n}\\n\\nstruct PluginData {\\n    address contractAddress;\\n    bytes callData;\\n}\\n\\nstruct ElGamalCiphertext {\\n    G1Point c1;\\n    G1Point c2;\\n}\\n\\n// For MASP V0 and V1\\nstruct ZAsset {\\n    // reserved (for networkId, tokenIdPolicy. etc..)\\n    uint64 _unused;\\n    // 0x00 by default\\n    uint8 version;\\n    // Refer to Constants.sol\\n    uint8 status;\\n    // Refer to Constants.sol\\n    uint8 tokenType;\\n    // 0x00 - no scaling\\n    uint8 scale;\\n    // token contract address\\n    address token;\\n}\\n\\nstruct LockData {\\n    // Refer to Constants.sol\\n    uint8 tokenType;\\n    // Token contract address\\n    address token;\\n    // For ERC-721, ERC-1155 tokens\\n    uint256 tokenId;\\n    // The account to transfer the token from/to (on `lock`/`unlock`)\\n    address extAccount;\\n    // The token amount to transfer to/from the Vault (on `lock`/`unlock`)\\n    uint96 extAmount;\\n}\\n\",\"keccak256\":\"0xf35e4d14f308c3785b2aeae13b3e35054db8791f0e152bd4d174d09bf306393f\",\"license\":\"MIT\"},\"contracts/common/Utils.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\nabstract contract Utils {\\n    // false positive\\n    // slither-disable-next-line timestamp\\n    function safe32(uint256 n) internal pure returns (uint32) {\\n        require(n < 2**32, \\\"UNSAFE32\\\");\\n        return uint32(n);\\n    }\\n\\n    function safe96(uint256 n) internal pure returns (uint96) {\\n        require(n < 2**96, \\\"UNSAFE96\\\");\\n        return uint96(n);\\n    }\\n\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safe128(uint256 n) internal pure returns (uint128) {\\n        require(n < 2**128, \\\"UNSAFE128\\\");\\n        return uint128(n);\\n    }\\n\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safe160(uint256 n) internal pure returns (uint160) {\\n        require(n < 2**160, \\\"UNSAFE160\\\");\\n        return uint160(n);\\n    }\\n\\n    function safe32TimeNow() internal view returns (uint32) {\\n        return safe32(timeNow());\\n    }\\n\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function safe32BlockNow() internal view returns (uint32) {\\n        return safe32(blockNow());\\n    }\\n\\n    /// @dev Returns the current block timestamp (added to ease testing)\\n    function timeNow() internal view virtual returns (uint256) {\\n        return block.timestamp;\\n    }\\n\\n    /// @dev Returns the current block number (added to ease testing)\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function blockNow() internal view virtual returns (uint256) {\\n        return block.number;\\n    }\\n\\n    // disabled since false positive\\n    // slither-disable-next-line dead-code\\n    function revertZeroAddress(address account) internal pure {\\n        require(account != address(0), \\\"UNEXPECTED_ZERO_ADDRESS\\\");\\n    }\\n}\\n\",\"keccak256\":\"0x09fa28f59621b7f53937df57eaf0f348010dc330e049da6036a4505235122006\",\"license\":\"MIT\"},\"contracts/staking/AdvancedStakeRewardController.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity 0.8.16;\\n\\nimport \\\"./actions/AdvancedStakingDataDecoder.sol\\\";\\nimport \\\"./actions/Constants.sol\\\";\\nimport \\\"./actions/StakingMsgProcessor.sol\\\";\\nimport \\\"./interfaces/IERC721Receiver.sol\\\";\\nimport \\\"./interfaces/INftGrantor.sol\\\";\\nimport \\\"./interfaces/IPantherPoolV0.sol\\\";\\nimport \\\"./interfaces/IRewardAdviser.sol\\\";\\nimport \\\"../common/Claimable.sol\\\";\\nimport \\\"../common/ImmutableOwnable.sol\\\";\\nimport \\\"../common/NonReentrant.sol\\\";\\nimport \\\"../common/Utils.sol\\\";\\nimport \\\"../common/TransferHelper.sol\\\";\\n\\n/**\\n * @title AdvancedStakeRewardController\\n * @notice It generates UTXOs in the MASP as rewards to stakers for the \\\"Advanced Staking\\\"\\n * @dev This contract is supposed to run on the Polygon. Unless otherwise mentioned, other smart\\n * contracts are supposed to run on the Polygon also.\\n * As the \\\"Reward Adviser\\\" on the \\\"advanced\\\" stakes, every time a new stake is being created, it\\n * receives the `getRewardAdvice` call from the `RewardMaster` contract with the `STAKE` action\\n * type and the stake data (the `message`) being the call parameters.\\n * On the `getRewardAdvice` call received, this contract:\\n * - computes the amounts of the $ZKP reward and the optional NFT reward\\n * - if the `NFT_TOKEN` is non-zero address, it calls `grantOneToken` on the NFT_TOKEN, and gets\\n * the `tokenId` of the minted NFT token\\n * - calls `generateDeposits` of the PantherPoolV0, providing amounts/parameters of $ZKP, and\\n *   optional NFT as \\\"deposits\\\", as well as \\\"spending pubKeys\\\" and \\\"secrets\\\" (explained below)\\n * - returns the \\\"zero reward advice\\\" (with zero `sharesToCreate`) to the RewardMaster.\\n *\\n * On the \\\"zero\\\" advice, the RewardMaster skips creating \\\"treasure shares\\\" for the staker. This way\\n * rewarding gets orchestrated by this contract rather than the RewardMaster.\\n *\\n * Being called `generateDeposits`, the PantherPoolV0:\\n * - requests the `Vault` to take (`transferFrom`) the $ZKP and NFT tokens from this contract\\n * - generates \\\"UTXOs\\\" with the \\\"spending pubKeys\\\" and \\\"secrets\\\" provided (see bellow).\\n *\\n * Creating a new stake (i.e. calling the `stake`), the staker generates and provides the \\\"pubKeys\\\"\\n * and \\\"secrets\\\" to the Staking. Both the Staking on the mainnet and the Staking on the Polygon\\n * encodes them into the STAKE message and passes to the RewardMaster, which passes the message to\\n * this contract with the `getRewardAdvice` call. So this contracts get pubKeys and secrets needed\\n * for the `generateDeposits`.\\n * For stakes on the Polygon, when all contracts (i.e. Staking, RewardMaster and this contract) run\\n * on the same network, the RewardMaster on the Polygon calls this contract directly.\\n * For stakes made on the mainnet, where the Staking and the RewardMaster run, but this contract is\\n * on the Polygon, the RewardMaster on the mainnet sends the STAKE message to the RewardMaster on\\n * the Polygon via the PoS bridge and mediator contracts. The RewardMaster on the Polygon handles a\\n * bridged STAKE message (calling the `getRewardAdvice`) as if the message had been sent by the\\n * Staking on the Polygon.\\n *\\n * As a prerequisite:\\n * - this contract shall:\\n * -- be authorized as the \\\"RewardAdviser\\\" with the RewardMaster on the Polygon for advanced stakes\\n * -- be authorized as \\\"Minter\\\" (aka \\\"grantor\\\") with the NFT_TOKEN contract\\n * -- hold enough $ZKP to reward stakers\\n * - the Vault contract shall be approved to transfer $ZKPs and the NFT tokens from this contract\\n * - the $ZKP and the NFT tokens shall be registered as zAssets on the PantherPoolV0.\\n */\\ncontract AdvancedStakeRewardController is\\n    ImmutableOwnable,\\n    NonReentrant,\\n    StakingMsgProcessor,\\n    AdvancedStakingDataDecoder,\\n    Utils,\\n    Claimable,\\n    IERC721Receiver,\\n    IRewardAdviser\\n{\\n    using TransferHelper for address;\\n\\n    /// @dev Total amount of $ZKP and NFTs (ever) rewarded and staked\\n    struct Totals {\\n        uint96 zkpRewards;\\n        uint24 nftRewards;\\n        // Accumulated amount of $ZKP (ever) staked, scaled (divided) by 1e15\\n        uint40 scZkpStaked;\\n    }\\n\\n    /// @dev Maximum amounts of $ZKPs and NFTs which may be rewarded\\n    struct Limits {\\n        uint96 zkpRewards;\\n        uint24 nftRewards;\\n    }\\n\\n    /// @dev Reward Timestamps and APYs\\n    struct RewardParams {\\n        /// @param (UNIX) Time when $ZKP rewards start to accrue\\n        uint32 startTime;\\n        /// @param (UNIX) Time when $ZKP rewards accruals end\\n        uint32 endTime;\\n        /// @param $ZKP reward APY at startTime (APY declines from this value)\\n        uint8 startZkpApy;\\n        /// @param $ZKP reward APY at endTime (APY declines to this value)\\n        uint8 endZkpApy;\\n    }\\n\\n    // solhint-disable var-name-mixedcase\\n    // These three constants used to align with IPantherPool::generateDeposits API\\n    uint256 private constant ZERO_AMOUNT = 0;\\n    uint256 private constant ZERO_TOKEN_ID = 0;\\n    address private constant ZERO_TOKEN = address(0);\\n\\n    /// @notice RewardMaster contract instance\\n    address public immutable REWARD_MASTER;\\n    /// @notice PantherPoolV0 contract instance\\n    address public immutable PANTHER_POOL;\\n\\n    // Address of the $ZKP token contract\\n    address private immutable ZKP_TOKEN;\\n    // Address of the NFT token contract\\n    address private immutable NFT_TOKEN;\\n\\n    /// @notice Block when this contract is deployed\\n    uint256 public immutable START_BLOCK;\\n\\n    // solhint-enable var-name-mixedcase\\n\\n    /// @notice Amounts of $ZKP and NFT allocated for rewards\\n    Limits public limits;\\n\\n    /// @notice Total amounts of $ZKP and NFT rewarded so far\\n    Totals public totals;\\n\\n    /// @notice Reward parameters (start and end point for time and APY)\\n    RewardParams public rewardParams;\\n\\n    /// @dev Emitted when new amounts are allocated to reward stakers\\n    event RewardLimitUpdated(Limits newLimits);\\n\\n    /// @dev Emitted when rewarding params updated\\n    event RewardParamsUpdated(RewardParams newRewardParams);\\n\\n    /// @dev Emitted when the reward for a stake is generated\\n    event RewardGenerated(\\n        address indexed staker,\\n        uint256 firstLeafId,\\n        uint256 zkp,\\n        uint256 nft\\n    );\\n\\n    constructor(\\n        address _owner,\\n        address rewardMaster,\\n        address pantherPool,\\n        address zkpToken,\\n        address nftToken\\n    ) ImmutableOwnable(_owner) {\\n        require(\\n            // nftToken may be zero address\\n            rewardMaster != address(0) &&\\n                pantherPool != address(0) &&\\n                zkpToken != address(0),\\n            \\\"ARC:E1\\\"\\n        );\\n\\n        REWARD_MASTER = rewardMaster;\\n        PANTHER_POOL = pantherPool;\\n\\n        ZKP_TOKEN = zkpToken;\\n        NFT_TOKEN = nftToken;\\n\\n        START_BLOCK = block.number;\\n    }\\n\\n    /// @dev To be called by the {RewardMaster} contract on \\\"advanced\\\" `STAKE` and `UNSTAKE` actions.\\n    /// The caller is trusted to never call w/ the STAKE acton:\\n    /// - twice for the same stake\\n    /// - after the rewarded period has ended\\n    function getRewardAdvice(bytes4 action, bytes memory message)\\n        external\\n        override\\n        returns (Advice memory)\\n    {\\n        require(msg.sender == REWARD_MASTER, \\\"ARC: unauthorized\\\");\\n\\n        if (action == ADVANCED_STAKE) {\\n            _generateRewards(message);\\n        } else {\\n            require(action == ADVANCED_UNSTAKE, \\\"ARC: unsupported action\\\");\\n        }\\n\\n        // Return \\\"zero\\\" advice\\n        return\\n            Advice(\\n                address(0), // createSharesFor\\n                0, // sharesToCreate\\n                address(0), // redeemSharesFrom\\n                0, // sharesToRedeem\\n                address(0) // sendRewardTo\\n            );\\n    }\\n\\n    /// @notice Return the APY for the $ZKP reward at a given time\\n    function getZkpApyAt(uint256 time) external view returns (uint256) {\\n        RewardParams memory _rewardParams = rewardParams;\\n        if (time < _rewardParams.startTime || time > _rewardParams.endTime)\\n            return 0;\\n\\n        return _getZkpApyWithinRewardedPeriod(_rewardParams, time);\\n    }\\n\\n    function updateRewardParams(RewardParams memory _newParams)\\n        external\\n        onlyOwner\\n    {\\n        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario\\n        // slither-disable-next-line timestamp\\n        require(\\n            _newParams.startTime != 0 &&\\n                _newParams.endTime > _newParams.startTime &&\\n                _newParams.endTime > timeNow(),\\n            \\\"ARC: invalid time\\\"\\n        );\\n        require(\\n            _newParams.startZkpApy >= _newParams.endZkpApy,\\n            \\\"ARC: invalid APY\\\"\\n        );\\n\\n        rewardParams = _newParams;\\n        emit RewardParamsUpdated(_newParams);\\n    }\\n\\n    /// @notice Allocate NFT rewards and approve the Vault to transfer them\\n    /// @dev Only owner may call it.\\n    function setNftRewardLimit(uint256 _desiredNftRewardsLimit)\\n        external\\n        onlyOwner\\n    {\\n        if (NFT_TOKEN == address(0)) return;\\n\\n        Limits memory _limits = limits;\\n\\n        require(\\n            _desiredNftRewardsLimit > totals.nftRewards,\\n            \\\"ARC: low nft rewards limit\\\"\\n        );\\n\\n        // known contract - no reentrancy guard needed\\n        // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events\\n        address vault = IPantherPoolV0(PANTHER_POOL).VAULT();\\n\\n        bool isUpdated = _updateNftRewardsLimitAndAllowance(\\n            _desiredNftRewardsLimit,\\n            _limits,\\n            totals,\\n            vault\\n        );\\n\\n        if (isUpdated) {\\n            limits = _limits;\\n            emit RewardLimitUpdated(_limits);\\n        }\\n    }\\n\\n    /// @notice Allocate for rewards the entire $ZKP balance\\n    /// this contract has and approve the Vault to transfer $ZKP from this contract.\\n    /// @dev Anyone may call it.\\n    function updateZkpRewardsLimit() external {\\n        Limits memory _limits = limits;\\n        // known contract call - no reentrancy guard needed\\n        // slither-disable-next-line reentrancy-benign,reentrancy-events\\n        address vault = IPantherPoolV0(PANTHER_POOL).VAULT();\\n\\n        // Updating the rewards limits\\n        bool isUpdated = _updateZkpRewardsLimitAndAllowance(\\n            _limits,\\n            totals,\\n            vault\\n        );\\n\\n        if (isUpdated) {\\n            limits = _limits;\\n            emit RewardLimitUpdated(_limits);\\n        }\\n    }\\n\\n    /// @notice Withdraws unclaimed rewards or accidentally sent token from this contract\\n    /// @dev May be only called by the {OWNER}\\n    function rescueErc20(\\n        address token,\\n        address to,\\n        uint256 amount\\n    ) external nonReentrant {\\n        RewardParams memory _rewardParams = rewardParams;\\n\\n        require(OWNER == msg.sender, \\\"ARC: unauthorized\\\");\\n        // Time comparison is acceptable in this case since block time accuracy is enough for this scenario\\n        // slither-disable-next-line timestamp\\n        require(\\n            (token != ZKP_TOKEN) || (block.timestamp > _rewardParams.endTime),\\n            \\\"ARC: too early withdrawal\\\"\\n        );\\n\\n        _claimErc20(token, to, amount);\\n    }\\n\\n    // Implementation of the {IERC721Receiver}. It accepts NFT_TOKEN transfers only.\\n    function onERC721Received(\\n        address,\\n        address,\\n        uint256,\\n        bytes memory\\n    ) external view override returns (bytes4) {\\n        return\\n            msg.sender == NFT_TOKEN\\n                ? this.onERC721Received.selector // accepted\\n                : bytes4(0); // rejected\\n    }\\n\\n    // Private functions follow\\n    // Some of them declared `internal` rather than `private` to ease testing\\n\\n    function _generateRewards(bytes memory message) internal {\\n        // (stakeId and claimedAt are irrelevant)\\n        (\\n            address staker,\\n            uint96 stakeAmount,\\n            ,\\n            uint32 stakedAt,\\n            uint32 lockedTill,\\n            ,\\n            bytes memory data\\n        ) = _unpackStakingActionMsg(message);\\n\\n        require(stakeAmount != 0, \\\"ARC: unexpected zero stakeAmount\\\");\\n        require(lockedTill > stakedAt, \\\"ARC: unexpected lockedTill\\\");\\n\\n        uint256 zkpAmount = 0;\\n        uint256 nftAmount = 0;\\n        uint256 nftTokenId = 0;\\n        {\\n            Totals memory _totals = totals;\\n            Limits memory _limits = limits;\\n            RewardParams memory _rewardParams = rewardParams;\\n\\n            // Compute amount of the $ZKP reward  and check the limit\\n            {\\n                zkpAmount = _computeZkpReward(\\n                    stakeAmount,\\n                    lockedTill,\\n                    stakedAt,\\n                    _rewardParams\\n                );\\n\\n                if (zkpAmount > 0) {\\n                    uint256 newTotalZkpReward = uint256(_totals.zkpRewards) +\\n                        zkpAmount;\\n                    require(\\n                        _limits.zkpRewards >= newTotalZkpReward,\\n                        \\\"ARC: too less rewards available\\\"\\n                    );\\n                    // Can't exceed uint96 here due to the `require` above\\n                    _totals.zkpRewards = uint96(newTotalZkpReward);\\n                }\\n                // update scSkpStaked in any case when stakeAmount > 0 which already been required\\n                uint256 newScZkpStaked = uint256(_totals.scZkpStaked) +\\n                    uint256(stakeAmount) /\\n                    1e15;\\n                // Overflow risk ignored as $ZKP max total supply is 1e9 tokens\\n                _totals.scZkpStaked = uint40(newScZkpStaked);\\n            }\\n\\n            if (_totals.nftRewards < _limits.nftRewards) {\\n                // `_limits.nftRewards > 0` therefore `NFT_TOKEN != address(0)`\\n                // trusted contract called - no reentrancy guard needed\\n                // slither-disable-next-line reentrancy-benign,reentrancy-no-eth\\n                nftTokenId = INftGrantor(NFT_TOKEN).grantOneToken(\\n                    address(this)\\n                );\\n\\n                nftAmount = 1;\\n                _totals.nftRewards += 1;\\n            }\\n\\n            totals = _totals;\\n        }\\n\\n        // Extract public spending keys and \\\"secrets\\\"\\n        (\\n            G1Point[OUT_RWRD_UTXOs] memory pubSpendingKeys,\\n            uint256[CIPHERTEXT1_WORDS][OUT_RWRD_UTXOs] memory secrets\\n        ) = unpackStakingData(data);\\n\\n        // Finally, generate deposits (i.e. UTXOs in the MASP)\\n        address[OUT_MAX_UTXOs] memory tokens = [\\n            // PantherPool reverts if non-zero address provided for zero amount\\n            zkpAmount == 0 ? address(0) : ZKP_TOKEN,\\n            nftAmount == 0 ? address(0) : NFT_TOKEN,\\n            ZERO_TOKEN\\n        ];\\n\\n        uint256[OUT_MAX_UTXOs] memory subIds = [0, nftTokenId, ZERO_TOKEN_ID];\\n        uint256[OUT_MAX_UTXOs] memory extAmounts = [\\n            zkpAmount,\\n            nftAmount,\\n            ZERO_AMOUNT\\n        ];\\n\\n        uint32 createdAt = safe32TimeNow();\\n        // known contract call - no reentrancy guard needed\\n        // slither-disable-next-line reentrancy-benign,reentrancy-events\\n        uint256 leftLeafId = IPantherPoolV0(PANTHER_POOL).generateDeposits(\\n            tokens,\\n            subIds,\\n            extAmounts,\\n            [\\n                pubSpendingKeys[0],\\n                pubSpendingKeys[1],\\n                pubSpendingKeys[1] // dummy public key - reused\\n            ],\\n            [\\n                secrets[0],\\n                secrets[1],\\n                secrets[1] // dummy secret - reused\\n            ],\\n            createdAt\\n        );\\n\\n        emit RewardGenerated(staker, leftLeafId, zkpAmount, nftAmount);\\n    }\\n\\n    // The calling code is assumed to ensure `lockedTill > stakedAt`\\n    function _computeZkpReward(\\n        uint256 stakeAmount,\\n        uint256 lockedTill,\\n        uint256 stakedAt,\\n        RewardParams memory _rewardParams\\n    ) internal pure returns (uint256 zkpAmount) {\\n        // No rewarding after `endTime`\\n        if (stakedAt >= _rewardParams.endTime) return 0;\\n        // No rewarding before `startTime`\\n        if (lockedTill <= _rewardParams.startTime) return 0;\\n\\n        uint256 rewardedSince = _rewardParams.startTime > stakedAt\\n            ? _rewardParams.startTime\\n            : stakedAt;\\n\\n        uint256 rewardedTill = lockedTill > _rewardParams.endTime\\n            ? _rewardParams.endTime\\n            : lockedTill;\\n\\n        uint256 period = rewardedTill - rewardedSince;\\n        uint256 apy = _getZkpApyWithinRewardedPeriod(\\n            _rewardParams,\\n            rewardedSince\\n        );\\n\\n        // 3153600000 = 365 * 24 * 3600 seconds * 100 percents\\n        // slither-disable-next-line too-many-digits\\n        zkpAmount = (stakeAmount * apy * period) / 3153600000;\\n        // round to 2nd digits after decimal point: X.YZ{0..0} x 1e18\\n        unchecked {\\n            // rounding (accuracy loss is assumed)\\n            // slither-disable-next-line divide-before-multiply\\n            zkpAmount = (zkpAmount / 1e16) * (1e16);\\n        }\\n    }\\n\\n    // The calling code is assumed to ensure that\\n    // `startTime < time < endTime` and `startZkpApy >= endZkpApy`\\n    function _getZkpApyWithinRewardedPeriod(\\n        RewardParams memory _rewardParams,\\n        uint256 time\\n    ) private pure returns (uint256 apy) {\\n        unchecked {\\n            uint256 fullDrop = uint256(\\n                _rewardParams.startZkpApy - _rewardParams.endZkpApy\\n            );\\n            apy = uint256(_rewardParams.startZkpApy);\\n\\n            if (fullDrop > 0) {\\n                uint256 dropDuration = time - _rewardParams.startTime;\\n                uint256 fullDuration = uint256(\\n                    _rewardParams.endTime - _rewardParams.startTime\\n                );\\n                uint256 apyDrop = (fullDrop * dropDuration) / fullDuration;\\n\\n                apy -= apyDrop;\\n            }\\n        }\\n    }\\n\\n    // Allocate for rewards the entire $ZKP balance this contract holds,\\n    // and update allowance for the VAULT to spend for $ZKP from the balance\\n    function _updateZkpRewardsLimitAndAllowance(\\n        Limits memory _limits,\\n        Totals memory _totals,\\n        address vault\\n    ) private returns (bool isUpdated) {\\n        // Reentrancy guard unneeded for the trusted contract call\\n        // slither-disable-next-line reentrancy-benign,reentrancy-events,reentrancy-no-eth\\n        uint256 balance = ZKP_TOKEN.safeBalanceOf(address(this));\\n\\n        uint96 newLimit;\\n        (isUpdated, newLimit) = _getUpdatedLimit(\\n            balance,\\n            _limits.zkpRewards,\\n            _totals.zkpRewards\\n        );\\n\\n        if (isUpdated) {\\n            _limits.zkpRewards = newLimit;\\n\\n            // Approve the vault to transfer tokens from this contract\\n            // Reentrancy guard unneeded for the trusted contract call\\n            // slither-disable-next-line reentrancy-benign,reentrancy-events,reentrancy-no-eth\\n            ZKP_TOKEN.safeApprove(vault, uint256(newLimit));\\n        }\\n    }\\n\\n    // Allocate for rewards the entire NFT amount this contract can mint,\\n    // and update allowance for the VAULT to spend that NFT\\n    function _updateNftRewardsLimitAndAllowance(\\n        uint256 _desiredNftRewardsLimit,\\n        Limits memory _limits,\\n        Totals memory _totals,\\n        address vault\\n    ) private returns (bool isUpdated) {\\n        uint96 newLimit;\\n        (isUpdated, newLimit) = _getUpdatedLimit(\\n            _desiredNftRewardsLimit,\\n            _limits.nftRewards,\\n            _totals.nftRewards\\n        );\\n\\n        if (isUpdated) {\\n            bool isAllowanceToBeUpdated = _limits.nftRewards == 0;\\n\\n            // Overflow is unrealistic and therefore ignored\\n            _limits.nftRewards = uint24(newLimit);\\n\\n            if (isAllowanceToBeUpdated)\\n                // Approve the vault to transfer tokens from this contract\\n                // Reentrancy guard unneeded for the trusted contract call\\n                // slither-disable-next-line reentrancy-benign,reentrancy-no-eth,reentrancy-events\\n                NFT_TOKEN.safeSetApprovalForAll(vault, true);\\n        }\\n    }\\n\\n    // Calculates and returns the updated reward limit\\n    function _getUpdatedLimit(\\n        uint256 available,\\n        uint96 currentLimit,\\n        uint96 usedLimit\\n    ) internal pure returns (bool isUpdated, uint96 limit) {\\n        uint256 unusedLimit = uint256(currentLimit) - uint256(usedLimit);\\n\\n        if (available == unusedLimit) return (false, currentLimit);\\n\\n        isUpdated = true;\\n        // underflow is impossible due to `if` checks\\n        unchecked {\\n            if (available > unusedLimit) {\\n                // new tokens for rewarding have been provided\\n                uint256 newAllocation = available - unusedLimit;\\n                limit = safe96(newAllocation + currentLimit);\\n            } else {\\n                // gracefully handle this unexpected situation\\n                uint96 shortage = safe96(unusedLimit - available);\\n                limit = currentLimit > shortage ? currentLimit - shortage : 0;\\n            }\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x118c5e2adb361fd9522d9aac55cc7ab78f3b55a0b571210830c8af86224d28f8\",\"license\":\"BUSL-1.1\"},\"contracts/staking/actions/AdvancedStakingDataDecoder.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\npragma solidity ^0.8.16;\\n\\nimport { CIPHERTEXT1_WORDS, OUT_RWRD_UTXOs, PUBKEY_WORDS } from \\\"../../common/Constants.sol\\\";\\nimport { G1Point } from \\\"../../common/Types.sol\\\";\\n\\n/***\\n * @title AdvancedStakingDataDecoder\\n * @dev It decodes (unpack) `bytes data` of the 'STAKED' message for \\\"advanced staking\\\"\\n */\\nabstract contract AdvancedStakingDataDecoder {\\n    // in bytes\\n    uint256 private constant DATA_LENGTH =\\n        OUT_RWRD_UTXOs * (PUBKEY_WORDS + CIPHERTEXT1_WORDS) * 32;\\n    // in 32-byte memory slots\\n    uint256 private constant NUM_DATA_SLOTS =\\n        (DATA_LENGTH / 32) + ((DATA_LENGTH % 32) & 1);\\n\\n    // For efficiency we use \\\"packed\\\" (rather than \\\"ABI\\\") encoding.\\n    // It results in shorter data, but requires custom unpack function.\\n    function unpackStakingData(bytes memory data)\\n        internal\\n        pure\\n        returns (\\n            G1Point[OUT_RWRD_UTXOs] memory pubSpendingKeys,\\n            uint256[CIPHERTEXT1_WORDS][OUT_RWRD_UTXOs] memory secrets\\n        )\\n    {\\n        require(data.length == DATA_LENGTH, \\\"SMP: unexpected msg length\\\");\\n\\n        // Let's read bytes as uint256 values\\n        uint256[NUM_DATA_SLOTS + 1] memory words;\\n        // the 1st slot is `data.length`, then slots with values follow\\n        for (uint256 i = 1; i <= NUM_DATA_SLOTS; ++i) {\\n            // solhint-disable no-inline-assembly\\n            // slither-disable-next-line assembly\\n            assembly {\\n                let offset := mul(i, 0x20)\\n                let word := mload(add(data, offset))\\n                mstore(add(words, offset), word)\\n            }\\n            // solhint-enable no-inline-assembly\\n        }\\n        /*\\n            `bytes memory sample = 0x00010203..1f2021` stored in the memory like this:\\n            slot #0: 0x22 - length (34 bytes)\\n            slot #1: 0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f\\n            slot #2: 0x2021000000000000000000000000000000000000000000000000000000000000\\n\\n            If `OUT_RWRD_UTXOs == 2` and `CIPHERTEXT1_WORDS == 2`,\\n            `bytes memory data` expected to be:\\n            concatenate( // each element is 32-byte long\\n                pubSpendingKeys[0].x, pubSpendingKeys[0].y,\\n                pubSpendingKeys[1].x, pubSpendingKeys[1].y,\\n                (secrets[0])[0], (secrets[0])[1],\\n                (secrets[1])[0], (secrets[1])[1]\\n            )\\n        */\\n        for (uint256 i = 0; i < OUT_RWRD_UTXOs; i++) {\\n            pubSpendingKeys[i].x = words[i * PUBKEY_WORDS + 1];\\n            pubSpendingKeys[i].y = words[i * PUBKEY_WORDS + 2];\\n            for (uint256 k = 0; k < CIPHERTEXT1_WORDS; k++) {\\n                secrets[i][k] = words[\\n                    PUBKEY_WORDS *\\n                        OUT_RWRD_UTXOs +\\n                        CIPHERTEXT1_WORDS *\\n                        i +\\n                        k +\\n                        1\\n                ];\\n            }\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x148481410a9bc55f953598b2196b34848cb303d97fcf93710a406e07ad1ed5cb\",\"license\":\"BUSL-1.1\"},\"contracts/staking/actions/Constants.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n// solhint-disable var-name-mixedcase\\n\\n// The \\\"stake type\\\" for the \\\"classic staking\\\"\\n// bytes4(keccak256(\\\"classic\\\"))\\nbytes4 constant CLASSIC_STAKE_TYPE = 0x4ab0941a;\\n\\n// STAKE \\\"action type\\\" for the \\\"classic staking\\\"\\n// bytes4(keccak256(abi.encodePacked(bytes4(keccak256(\\\"stake\\\"), CLASSIC_STAKE_TYPE)))\\nbytes4 constant CLASSIC_STAKE = 0x1e4d02b5;\\n\\n// UNSTAKE \\\"action type\\\" for the \\\"classic staking\\\"\\n// bytes4(keccak256(abi.encodePacked(bytes4(keccak256(\\\"unstake\\\"), CLASSIC_STAKE_TYPE)))\\nbytes4 constant CLASSIC_UNSTAKE = 0x493bdf45;\\n\\n// The \\\"stake type\\\" for the \\\"advance staking\\\"\\n// bytes4(keccak256(\\\"advanced\\\"))\\nbytes4 constant ADVANCED_STAKE_TYPE = 0x7ec13a06;\\n\\n// STAKE \\\"action type\\\" for the \\\"advanced staking\\\"\\n// bytes4(keccak256(abi.encodePacked(bytes4(keccak256(\\\"stake\\\"), ADVANCED_STAKE_TYPE)))\\nbytes4 constant ADVANCED_STAKE = 0xcc995ce8;\\n\\n// UNSTAKE \\\"action type\\\" for the \\\"advanced staking\\\"\\n// bytes4(keccak256(abi.encodePacked(bytes4(keccak256(\\\"unstake\\\"), ADVANCED_STAKE_TYPE)))\\nbytes4 constant ADVANCED_UNSTAKE = 0xb8372e55;\\n\\n// PRP grant type for the \\\"advanced\\\" stake\\n// bytes4(keccak256(\\\"forAdvancedStakeGrant\\\"))\\nbytes4 constant FOR_ADVANCED_STAKE_GRANT = 0x31a180d4;\\n\\n// solhint-enable var-name-mixedcase\\n\",\"keccak256\":\"0x6e1924b6ced763e3ab37b12b203e80bc61f48e241191b64222a2c23e88381454\",\"license\":\"BUSL-1.1\"},\"contracts/staking/actions/StakingMsgProcessor.sol\":{\"content\":\"// SPDX-License-Identifier: BUSL-1.1\\n// SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\nimport \\\"../interfaces/IStakingTypes.sol\\\";\\n\\nabstract contract StakingMsgProcessor {\\n    bytes4 internal constant STAKE_ACTION = bytes4(keccak256(\\\"stake\\\"));\\n    bytes4 internal constant UNSTAKE_ACTION = bytes4(keccak256(\\\"unstake\\\"));\\n\\n    function _encodeStakeActionType(bytes4 stakeType)\\n        internal\\n        pure\\n        returns (bytes4)\\n    {\\n        return bytes4(keccak256(abi.encodePacked(STAKE_ACTION, stakeType)));\\n    }\\n\\n    function _encodeUnstakeActionType(bytes4 stakeType)\\n        internal\\n        pure\\n        returns (bytes4)\\n    {\\n        return bytes4(keccak256(abi.encodePacked(UNSTAKE_ACTION, stakeType)));\\n    }\\n\\n    function _packStakingActionMsg(\\n        address staker,\\n        IStakingTypes.Stake memory stake,\\n        bytes calldata data\\n    ) internal pure returns (bytes memory) {\\n        return\\n            abi.encodePacked(\\n                staker, // address\\n                stake.amount, // uint96\\n                stake.id, // uint32\\n                stake.stakedAt, // uint32\\n                stake.lockedTill, // uint32\\n                stake.claimedAt, // uint32\\n                data // bytes\\n            );\\n    }\\n\\n    // For efficiency we use \\\"packed\\\" (rather than \\\"ABI\\\") encoding.\\n    // It results in shorter data, but requires custom unpack function.\\n    function _unpackStakingActionMsg(bytes memory message)\\n        internal\\n        pure\\n        returns (\\n            address staker,\\n            uint96 amount,\\n            uint32 id,\\n            uint32 stakedAt,\\n            uint32 lockedTill,\\n            uint32 claimedAt,\\n            bytes memory data\\n        )\\n    {\\n        // staker, amount, id and 3 timestamps occupy exactly 48 bytes\\n        // (`data` may be of zero length)\\n        require(message.length >= 48, \\\"SMP: unexpected msg length\\\");\\n\\n        uint256 stakerAndAmount;\\n        uint256 idAndStamps;\\n        // solhint-disable no-inline-assembly\\n        // slither-disable-next-line assembly\\n        assembly {\\n            // the 1st word (32 bytes) contains the `message.length`\\n            // we need the (entire) 2nd word ..\\n            stakerAndAmount := mload(add(message, 0x20))\\n            // .. and (16 bytes of) the 3rd word\\n            idAndStamps := mload(add(message, 0x40))\\n        }\\n        // solhint-enable no-inline-assembly\\n\\n        staker = address(uint160(stakerAndAmount >> 96));\\n        amount = uint96(stakerAndAmount & 0xFFFFFFFFFFFFFFFFFFFFFFFF);\\n\\n        id = uint32((idAndStamps >> 224) & 0xFFFFFFFF);\\n        stakedAt = uint32((idAndStamps >> 192) & 0xFFFFFFFF);\\n        lockedTill = uint32((idAndStamps >> 160) & 0xFFFFFFFF);\\n        claimedAt = uint32((idAndStamps >> 128) & 0xFFFFFFFF);\\n\\n        uint256 dataLength = message.length - 48;\\n        data = new bytes(dataLength);\\n        for (uint256 i = 0; i < dataLength; i++) {\\n            data[i] = message[i + 48];\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0xd9fe3c267628e291e2c99c56beb9acb1a07d5f4e4b48c16848e22f25ef2d8613\",\"license\":\"BUSL-1.1\"},\"contracts/staking/interfaces/IERC721Receiver.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (token/ERC721/IERC721Receiver.sol)\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\n/**\\n * @title ERC721 token receiver interface\\n * @dev Interface for any contract that wants to support safeTransfers\\n * from ERC721 asset contracts.\\n */\\ninterface IERC721Receiver {\\n    /**\\n     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}\\n     * by `operator` from `from`, this function is called.\\n     *\\n     * It must return its Solidity selector to confirm the token transfer.\\n     * If any other value is returned or the interface is not implemented by the recipient,\\n     * the transfer will be reverted.\\n     *\\n     * The selector can be obtained in Solidity with `IERC721.onERC721Received.selector`.\\n     */\\n    function onERC721Received(\\n        address operator,\\n        address from,\\n        uint256 tokenId,\\n        bytes calldata data\\n    ) external returns (bytes4);\\n}\\n\",\"keccak256\":\"0x0ed310b506b62d5c3f14cb0340abf6f4fa9abb0d73e7d5c73636a267dfcb1672\",\"license\":\"MIT\"},\"contracts/staking/interfaces/INftGrantor.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.16;\\n\\ninterface INftGrantor {\\n    function grantOneToken(address to) external returns (uint256 tokenId);\\n}\\n\",\"keccak256\":\"0x8b9dfdc2e8e8e92a3c4c6f89d8e3b96a3b101e486a6368eba264983857bcecf1\",\"license\":\"MIT\"},\"contracts/staking/interfaces/IPantherPoolV0.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.16;\\n\\nimport { G1Point } from \\\"../../common/Types.sol\\\";\\nimport { CIPHERTEXT1_WORDS, OUT_MAX_UTXOs, PATH_ELEMENTS_NUM } from \\\"../../common/Constants.sol\\\";\\n\\n/**\\n * @notice (Truncated) Interface of the PantherPoolV0\\n * @dev Only those functions and events included which the `AdvancedStakeRewardController` contract uses\\n */\\ninterface IPantherPoolV0 {\\n    /**\\n     * @notice Transfer assets from the msg.sender to the VAULT and generate UTXOs in the MASP\\n     * @param tokens Address of the token contract for every UTXO\\n     * @dev For PRP granted the address ot this contract (proxy) is supposed to be used\\n     * @param tokenIds For ERC-721 and ERC-1155 - token ID or subId of the token, 0 for ERC-20\\n     * @param extAmounts Token amounts (external) to be deposited\\n     * @param pubSpendingKeys Public Spending Key for every UTXO\\n     * @param secrets Encrypted opening values for every UTXO\\n     * @param  createdAt Optional, if 0 network time used\\n     * @dev createdAt must be less (or equal) the network time\\n     * @return leftLeafId The `leafId` of the first UTXO (leaf) in the batch\\n     */\\n    function generateDeposits(\\n        address[OUT_MAX_UTXOs] calldata tokens,\\n        uint256[OUT_MAX_UTXOs] calldata tokenIds,\\n        uint256[OUT_MAX_UTXOs] calldata extAmounts,\\n        G1Point[OUT_MAX_UTXOs] calldata pubSpendingKeys,\\n        uint256[CIPHERTEXT1_WORDS][OUT_MAX_UTXOs] calldata secrets,\\n        uint32 createdAt\\n    ) external returns (uint256 leftLeafId);\\n\\n    function exit(\\n        address token,\\n        uint256 tokenId,\\n        uint256 amount,\\n        uint32 creationTime,\\n        uint256 privSpendingKey,\\n        uint256 leafId,\\n        bytes32[PATH_ELEMENTS_NUM] calldata pathElements,\\n        bytes32 merkleRoot,\\n        uint256 cacheIndexHint\\n    ) external;\\n\\n    /**\\n     * @return Address of the Vault\\n     */\\n    // solhint-disable-next-line func-name-mixedcase\\n    function VAULT() external view returns (address);\\n\\n    /**\\n     * @dev Emitted on a new batch of Commitments\\n     * @param leftLeafId The `leafId` of the first leaf in the batch\\n     * @dev `leafId = leftLeafId + 1` for the 2nd leaf (`leftLeafId + 2` for the 3rd leaf)\\n     * @param commitments Commitments hashes\\n     * @param utxoData opening values (encrypted and public) for UTXOs\\n     */\\n    event NewCommitments(\\n        uint256 indexed leftLeafId,\\n        uint256 creationTime,\\n        bytes32[OUT_MAX_UTXOs] commitments,\\n        bytes utxoData\\n    );\\n\\n    /**\\n     * Nullifier is seen (i.e. UTXO is spent)\\n     */\\n    event Nullifier(bytes32 nullifier);\\n}\\n\",\"keccak256\":\"0xf2b38f22fe3c00334cba82b58182ccd1de7b6d616c77fd8832731dc1930c73cf\",\"license\":\"MIT\"},\"contracts/staking/interfaces/IRewardAdviser.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\ninterface IRewardAdviser {\\n    struct Advice {\\n        // advice on new \\\"shares\\\" (in the reward pool) to create\\n        address createSharesFor;\\n        uint96 sharesToCreate;\\n        // advice on \\\"shares\\\" to redeem\\n        address redeemSharesFrom;\\n        uint96 sharesToRedeem;\\n        // advice on address the reward against redeemed shares to send to\\n        address sendRewardTo;\\n    }\\n\\n    function getRewardAdvice(bytes4 action, bytes memory message)\\n        external\\n        returns (Advice memory);\\n}\\n\",\"keccak256\":\"0x65ef20b8d3f43082eaf92f78847c668c06cc9a2a804c78b3395a5ef85cbc0738\",\"license\":\"MIT\"},\"contracts/staking/interfaces/IStakingTypes.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// slither-disable-next-line solc-version\\npragma solidity ^0.8.4;\\n\\ninterface IStakingTypes {\\n    // Stake type terms\\n    struct Terms {\\n        // if stakes of this kind allowed\\n        bool isEnabled;\\n        // if messages on stakes to be sent to the {RewardMaster}\\n        bool isRewarded;\\n        // limit on the minimum amount staked, no limit if zero\\n        uint32 minAmountScaled;\\n        // limit on the maximum amount staked, no limit if zero\\n        uint32 maxAmountScaled;\\n        // Stakes not accepted before this time, has no effect if zero\\n        uint32 allowedSince;\\n        // Stakes not accepted after this time, has no effect if zero\\n        uint32 allowedTill;\\n        // One (at least) of the following three params must be non-zero\\n        // if non-zero, overrides both `exactLockPeriod` and `minLockPeriod`\\n        uint32 lockedTill;\\n        // ignored if non-zero `lockedTill` defined, overrides `minLockPeriod`\\n        uint32 exactLockPeriod;\\n        // has effect only if both `lockedTill` and `exactLockPeriod` are zero\\n        uint32 minLockPeriod;\\n    }\\n\\n    struct Stake {\\n        // index in the `Stake[]` array of `stakes`\\n        uint32 id;\\n        // defines Terms\\n        bytes4 stakeType;\\n        // time this stake was created at\\n        uint32 stakedAt;\\n        // time this stake can be claimed at\\n        uint32 lockedTill;\\n        // time this stake was claimed at (unclaimed if 0)\\n        uint32 claimedAt;\\n        // amount of tokens on this stake (assumed to be less 1e27)\\n        uint96 amount;\\n        // address stake voting power is delegated to\\n        address delegatee;\\n    }\\n}\\n\",\"keccak256\":\"0x9b830a7bc52d07d1206274887bb992d160a29fdea68e6ae385b63f94a0733e84\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x6101406040523480156200001257600080fd5b50604051620027f1380380620027f183398101604081905262000035916200014c565b846001600160a01b038116620000925760405162461bcd60e51b815260206004820152601a60248201527f496d6d4f776e3a207a65726f206f776e6572206164647265737300000000000060448201526064015b60405180910390fd5b6001600160a01b03908116608052841615801590620000b957506001600160a01b03831615155b8015620000ce57506001600160a01b03821615155b620001055760405162461bcd60e51b81526020600482015260066024820152654152433a453160d01b604482015260640162000089565b6001600160a01b0393841660a05291831660c052821660e0521661010052504361012052620001bc565b80516001600160a01b03811681146200014757600080fd5b919050565b600080600080600060a086880312156200016557600080fd5b62000170866200012f565b945062000180602087016200012f565b935062000190604087016200012f565b9250620001a0606087016200012f565b9150620001b0608087016200012f565b90509295509295909350565b60805160a05160c05160e05161010051610120516125846200026d60003960006101790152600081816103c0015281816107d101528181610ef3015281816111b7015261132b01526000818161051c01528181610e0f01528181610e7201526112ee01526000818161027d015281816106080152818161088501526113a80152600081816101ae0152610c4c01526000818160f4015281816104a40152818161075901526109e701526125846000f3fe608060405234801561001057600080fd5b50600436106100ea5760003560e01c80638f3e52de1161008c578063bfa6946011610066578063bfa69460146102ba578063c038a38e146102cd578063e9cb03241461032d578063f3d17c69146103a057600080fd5b80638f3e52de14610278578063a1759a8c1461029f578063b4f708f7146102a757600080fd5b806339b3e826116100c857806339b3e82614610174578063576eadd2146101a957806376346914146101d0578063860aefcf1461023457600080fd5b8063117803e3146100ef578063150b7a0214610133578063243feb991461015f575b600080fd5b6101167f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b610146610141366004612121565b6103b3565b6040516001600160e01b0319909116815260200161012a565b61017261016d36600461218d565b610400565b005b61019b7f000000000000000000000000000000000000000000000000000000000000000081565b60405190815260200161012a565b6101167f000000000000000000000000000000000000000000000000000000000000000081565b6003546102039063ffffffff8082169164010000000081049091169060ff600160401b8204811691600160481b90041684565b6040805163ffffffff958616815294909316602085015260ff9182169284019290925216606082015260800161012a565b600154610255906001600160601b03811690600160601b900462ffffff1682565b604080516001600160601b03909316835262ffffff90911660208301520161012a565b6101167f000000000000000000000000000000000000000000000000000000000000000081565b6101726105c6565b6101726102b53660046121ce565b610757565b6101726102c8366004612211565b6109e5565b6002546102fd906001600160601b03811690600160601b810462ffffff1690600160781b900464ffffffffff1683565b604080516001600160601b03909416845262ffffff909216602084015264ffffffffff169082015260600161012a565b61034061033b36600461228e565b610c16565b60405161012a9190600060a0820190506001600160a01b0380845116835260208401516001600160601b03808216602086015282604087015116604086015280606087015116606086015250508060808501511660808401525092915050565b61019b6103ae3660046121ce565b610d72565b6000336001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016146103ec5760006103f5565b630a85bd0160e11b5b90505b949350505050565b6002600054036104575760405162461bcd60e51b815260206004820152601a60248201527f636c61696d45726332303a207265656e7472616e742063616c6c00000000000060448201526064015b60405180910390fd5b60026000556040805160808101825260035463ffffffff8082168352640100000000820416602083015260ff600160401b8204811693830193909352600160481b900490911660608201527f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461051a5760405162461bcd60e51b815260206004820152601160248201527f4152433a20756e617574686f72697a6564000000000000000000000000000000604482015260640161044e565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316846001600160a01b03161415806105645750806020015163ffffffff1642115b6105b05760405162461bcd60e51b815260206004820152601960248201527f4152433a20746f6f206561726c79207769746864726177616c00000000000000604482015260640161044e565b6105bb848484610df4565b505060016000555050565b6040805180820182526001546001600160601b0381168252600160601b900462ffffff16602080830191909152825163411557d160e01b8152925191926000927f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03169263411557d192600480820193918290030181865afa158015610657573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061067b91906122eb565b604080516060810182526002546001600160601b0381168252600160601b810462ffffff166020830152600160781b900464ffffffffff16918101919091529091506000906106cc90849084610dff565b9050801561075257825160018054602080870180516001600160601b039095166effffffffffffffffffffffffffffff199093168317600160601b62ffffff9687160217909355604080519283529251909316928101929092527f0b50da2ab337665ba56e9cc037d805d65f41d15953d735381441003a1a0d500a910160405180910390a15b505050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146107cf5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a6564000000000000000000000000604482015260640161044e565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316156109e257604080518082019091526001546001600160601b038116825262ffffff600160601b9182900481166020840152600254919091041682116108815760405162461bcd60e51b815260206004820152601a60248201527f4152433a206c6f77206e66742072657761726473206c696d6974000000000000604482015260640161044e565b60007f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663411557d16040518163ffffffff1660e01b8152600401602060405180830381865afa1580156108e1573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061090591906122eb565b604080516060810182526002546001600160601b0381168252600160601b810462ffffff166020830152600160781b900464ffffffffff1691810191909152909150600090610958908590859085610ea3565b905080156109de57825160018054602080870180516001600160601b039095166effffffffffffffffffffffffffffff199093168317600160601b62ffffff9687160217909355604080519283529251909316928101929092527f0b50da2ab337665ba56e9cc037d805d65f41d15953d735381441003a1a0d500a910160405180910390a15b5050505b50565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03163314610a5d5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a6564000000000000000000000000604482015260640161044e565b805163ffffffff1615801590610a865750806000015163ffffffff16816020015163ffffffff16115b8015610a9b575042816020015163ffffffff16115b610ae75760405162461bcd60e51b815260206004820152601160248201527f4152433a20696e76616c69642074696d65000000000000000000000000000000604482015260640161044e565b806060015160ff16816040015160ff161015610b455760405162461bcd60e51b815260206004820152601060248201527f4152433a20696e76616c69642041505900000000000000000000000000000000604482015260640161044e565b80516003805460208085018051604080880180516060808b01805163ffffffff9b8c1667ffffffffffffffff19909a168a17640100000000978d16979097029690961769ffff00000000000000001916600160401b60ff9485160269ff000000000000000000191617600160481b9684169690960295909517909855825196875293519097169385019390935294518116918301919091529251909216908201527f1422c9ddb7dd31ce62409d32ff46ef3c14ce83c1f5e080dd9e42b82713587e969060800160405180910390a150565b6040805160a081018252600080825260208201819052918101829052606081018290526080810191909152336001600160a01b037f00000000000000000000000000000000000000000000000000000000000000001614610cb95760405162461bcd60e51b815260206004820152601160248201527f4152433a20756e617574686f72697a6564000000000000000000000000000000604482015260640161044e565b63066cd46360e31b6001600160e01b0319841601610cdf57610cda82610f26565b610d3f565b6001600160e01b0319831663b8372e5560e01b14610d3f5760405162461bcd60e51b815260206004820152601760248201527f4152433a20756e737570706f7274656420616374696f6e000000000000000000604482015260640161044e565b506040805160a0810182526000808252602082018190529181018290526060810182905260808101919091525b92915050565b6040805160808101825260035463ffffffff8082168084526401000000008304909116602084015260ff600160401b8304811694840194909452600160481b9091049092166060820152600091831080610dd55750806020015163ffffffff1683115b15610de35750600092915050565b610ded818461152f565b9392505050565b610752838383611582565b600080610e356001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016306116a6565b90506000610e4c828760000151876000015161180b565b90935090508215610e9a576001600160601b038116808752610e9a906001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000169086906118a7565b50509392505050565b600080610ec386866020015162ffffff16866020015162ffffff1661180b565b90925090508115610f1d5760208501805162ffffff83811690925216158015610f1b57610f1b6001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016856001611927565b505b50949350505050565b6000806000806000610f37866119a8565b965050955095505094509450836001600160601b0316600003610f9c5760405162461bcd60e51b815260206004820181905260248201527f4152433a20756e6578706563746564207a65726f207374616b65416d6f756e74604482015260640161044e565b8263ffffffff168263ffffffff1611610ff75760405162461bcd60e51b815260206004820152601a60248201527f4152433a20756e6578706563746564206c6f636b656454696c6c000000000000604482015260640161044e565b60408051606080820183526002546001600160601b038082168452600160601b80830462ffffff908116602080880191909152600160781b90940464ffffffffff1686880152865180880188526001548085168252929092041681840152855160808101875260035463ffffffff80821683526401000000008204811695830195909552600160401b810460ff90811698830198909852600160481b90049096169386019390935260009485948594909390926110be91908c16908a8116908c1684611b35565b9550851561114a5782516000906110df9088906001600160601b031661231e565b90508083600001516001600160601b0316101561113e5760405162461bcd60e51b815260206004820152601f60248201527f4152433a20746f6f206c657373207265776172647320617661696c61626c6500604482015260640161044e565b6001600160601b031683525b600061116666038d7ea4c680006001600160601b038d16612347565b846040015164ffffffffff1661117c919061231e565b64ffffffffff166040850152506020808301519084015162ffffff9182169116101561124e5760405163d17c93bf60e01b81523060048201527f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03169063d17c93bf906024016020604051808303816000875af1158015611208573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061122c919061235b565b9350600194506001836020018181516112459190612374565b62ffffff169052505b5050805160028054602084015160409094015164ffffffffff16600160781b027fffffffffffffffffffffffff0000000000ffffffffffffffffffffffffffffff62ffffff909516600160601b026effffffffffffffffffffffffffffff199092166001600160601b039094169390931717929092161790556000806112d386611c0b565b915091506000604051806060016040528087600014611312577f0000000000000000000000000000000000000000000000000000000000000000611315565b60005b6001600160a01b03168152602001861561134f577f0000000000000000000000000000000000000000000000000000000000000000611352565b60005b6001600160a01b031681526000602091820181905260408051606080820183528382528185018a9052818301849052825190810183528b81529384018a90529083018290529293506113a2611e6c565b905060007f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663d6c6be0b86868660405180606001604052808d6000600281106113f6576113f6612390565b602002015181526020018d60016002811061141357611413612390565b602002015181526020018d60016002811061143057611430612390565b60209081029190910151909152604080516060810182528e5181528e8301805193820193909352915182820152516001600160e01b031960e088901b1681526114829594939291908a9060040161241b565b6020604051808303816000875af11580156114a1573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906114c5919061235b565b90508e6001600160a01b03167f6390fe4035d9526b215a5fffd9c45ebdd9833557acffe1b44ea0274e39669f2f828c8c604051611515939291909283526020830191909152604082015260600190565b60405180910390a250505050505050505050505050505050565b6060820151604083015160ff8082169290910316801561157b578351602085015163ffffffff808316860392909103166000818484028161157257611572612331565b04909403935050505b5092915050565b82803b806115d25760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a65000000604482015260640161044e565b6040516001600160a01b03858116602483015260448201859052600091829188169063a9059cbb906064015b6040516020818303038152906040529060e01b6020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff838183161783525050505060405161164c91906124c7565b6000604051808303816000865af19150503d8060008114611689576040519150601f19603f3d011682016040523d82523d6000602084013e61168e565b606091505b509150915061169d8282611e7c565b50505050505050565b6000806000846001600160a01b03166370a08231856040516024016116da91906001600160a01b0391909116815260200190565b6040516020818303038152906040529060e01b6020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff838183161783525050505060405161172891906124c7565b6000604051808303816000865af19150503d8060008114611765576040519150601f19603f3d011682016040523d82523d6000602084013e61176a565b606091505b509150915081801561177c5750805115155b6117ee5760405162461bcd60e51b815260206004820152602660248201527f5472616e7366657248656c7065723a2062616c616e63654f66662063616c6c2060448201527f6661696c65640000000000000000000000000000000000000000000000000000606482015260840161044e565b80806020019051810190611802919061235b565b95945050505050565b600080806118256001600160601b038086169087166124f6565b905080860361183b57600085925092505061189f565b60019250808611156118665780860361185e6001600160601b0387168201611f17565b92505061189d565b6000611873878303611f17565b9050806001600160601b0316866001600160601b031611611895576000611899565b8086035b9250505b505b935093915050565b82803b806118f75760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a65000000604482015260640161044e565b6040516001600160a01b03858116602483015260448201859052600091829188169063095ea7b3906064016115fe565b82803b806119775760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a65000000604482015260640161044e565b6040516001600160a01b0385811660248301528415156044830152600091829188169063a22cb465906064016115fe565b6000806000806000806060603088511015611a055760405162461bcd60e51b815260206004820152601a60248201527f534d503a20756e6578706563746564206d7367206c656e677468000000000000604482015260640161044e565b602088015160408901518951606083901c99506001600160601b038316985060e082901c975063ffffffff60c083901c8116975060a083901c81169650608083901c169450600090611a59906030906124f6565b90508067ffffffffffffffff811115611a7457611a7461207e565b6040519080825280601f01601f191660200182016040528015611a9e576020820181803683370190505b50935060005b81811015611b26578b611ab882603061231e565b81518110611ac857611ac8612390565b602001015160f81c60f81b858281518110611ae557611ae5612390565b60200101907effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1916908160001a90535080611b1e81612509565b915050611aa4565b50505050919395979092949650565b6000816020015163ffffffff168310611b50575060006103f8565b815163ffffffff168411611b66575060006103f8565b600083836000015163ffffffff1611611b7f5783611b88565b825163ffffffff165b90506000836020015163ffffffff168611611ba35785611baf565b836020015163ffffffff165b90506000611bbd83836124f6565b90506000611bcb868561152f565b905063bbf81e0082611bdd838c612522565b611be79190612522565b611bf19190612347565b662386f26fc1000090819004029998505050505050505050565b611c13611fc6565b611c1b611fff565b611c2660028061231e565b611c31906002612522565b611c3c906020612522565b835114611c8b5760405162461bcd60e51b815260206004820152601a60248201527f534d503a20756e6578706563746564206d7367206c656e677468000000000000604482015260640161044e565b611c9361202c565b60015b6020611ca360028061231e565b611cae906002612522565b611cb9906020612522565b611cc39190612541565b6001166020611cd360028061231e565b611cde906002612522565b611ce9906020612522565b611cf39190612347565b611cfd919061231e565b8111611d1f57602081028581015190830152611d1881612509565b9050611c96565b5060005b6002811015611e655781611d38600283612522565b611d4390600161231e565b60098110611d5357611d53612390565b6020020151848260028110611d6a57611d6a612390565b60200201515281611d7c600283612522565b611d8790600261231e565b60098110611d9757611d97612390565b6020020151848260028110611dae57611dae612390565b6020020151602001818152505060005b6002811015611e52578281611dd4846002612522565b611ddf600280612522565b611de9919061231e565b611df3919061231e565b611dfe90600161231e565b60098110611e0e57611e0e612390565b6020020151848360028110611e2557611e25612390565b60200201518260028110611e3b57611e3b612390565b602002015280611e4a81612509565b915050611dbe565b5080611e5d81612509565b915050611d23565b5050915091565b6000611e7742611f70565b905090565b818015611ea1575080511580611ea1575080806020019051810190611ea19190612555565b611f135760405162461bcd60e51b815260206004820152602a60248201527f5472616e7366657248656c7065723a20746f6b656e20636f6e7472616374206360448201527f616c6c206661696c656400000000000000000000000000000000000000000000606482015260840161044e565b5050565b6000600160601b8210611f6c5760405162461bcd60e51b815260206004820152600860248201527f554e534146453936000000000000000000000000000000000000000000000000604482015260640161044e565b5090565b60006401000000008210611f6c5760405162461bcd60e51b815260206004820152600860248201527f554e534146453332000000000000000000000000000000000000000000000000604482015260640161044e565b60405180604001604052806002905b6040805180820190915260008082526020820152815260200190600190039081611fd55790505090565b60405180604001604052806002905b61201661204b565b81526020019060019003908161200e5790505090565b6040518061012001604052806009906020820280368337509192915050565b60405180604001604052806002906020820280368337509192915050565b6001600160a01b03811681146109e257600080fd5b634e487b7160e01b600052604160045260246000fd5b600082601f8301126120a557600080fd5b813567ffffffffffffffff808211156120c0576120c061207e565b604051601f8301601f19908116603f011681019082821181831017156120e8576120e861207e565b8160405283815286602085880101111561210157600080fd5b836020870160208301376000602085830101528094505050505092915050565b6000806000806080858703121561213757600080fd5b843561214281612069565b9350602085013561215281612069565b925060408501359150606085013567ffffffffffffffff81111561217557600080fd5b61218187828801612094565b91505092959194509250565b6000806000606084860312156121a257600080fd5b83356121ad81612069565b925060208401356121bd81612069565b929592945050506040919091013590565b6000602082840312156121e057600080fd5b5035919050565b803563ffffffff811681146121fb57600080fd5b919050565b803560ff811681146121fb57600080fd5b60006080828403121561222357600080fd5b6040516080810181811067ffffffffffffffff821117156122465761224661207e565b604052612252836121e7565b8152612260602084016121e7565b602082015261227160408401612200565b604082015261228260608401612200565b60608201529392505050565b600080604083850312156122a157600080fd5b82356001600160e01b0319811681146122b957600080fd5b9150602083013567ffffffffffffffff8111156122d557600080fd5b6122e185828601612094565b9150509250929050565b6000602082840312156122fd57600080fd5b8151610ded81612069565b634e487b7160e01b600052601160045260246000fd5b80820180821115610d6c57610d6c612308565b634e487b7160e01b600052601260045260246000fd5b60008261235657612356612331565b500490565b60006020828403121561236d57600080fd5b5051919050565b62ffffff81811683821601908082111561157b5761157b612308565b634e487b7160e01b600052603260045260246000fd5b8060005b60038110156109de5781518452602093840193909101906001016123aa565b806000805b600381101561241457825185835b60028110156123fb5782518252602092830192909101906001016123dc565b50505060409490940193602092909201916001016123ce565b5050505050565b6102c08101818860005b600381101561244d5781516001600160a01b0316835260209283019290910190600101612425565b50505061245d60608301886123a6565b61246a60c08301876123a6565b61012082018560005b600381101561249e578151805184526020908101518185015260409093019290910190600101612473565b5050506124af6101e08301856123c9565b63ffffffff83166102a0830152979650505050505050565b6000825160005b818110156124e857602081860181015185830152016124ce565b506000920191825250919050565b81810381811115610d6c57610d6c612308565b60006001820161251b5761251b612308565b5060010190565b600081600019048311821515161561253c5761253c612308565b500290565b60008261255057612550612331565b500690565b60006020828403121561256757600080fd5b81518015158114610ded57600080fdfea164736f6c6343000810000a",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100ea5760003560e01c80638f3e52de1161008c578063bfa6946011610066578063bfa69460146102ba578063c038a38e146102cd578063e9cb03241461032d578063f3d17c69146103a057600080fd5b80638f3e52de14610278578063a1759a8c1461029f578063b4f708f7146102a757600080fd5b806339b3e826116100c857806339b3e82614610174578063576eadd2146101a957806376346914146101d0578063860aefcf1461023457600080fd5b8063117803e3146100ef578063150b7a0214610133578063243feb991461015f575b600080fd5b6101167f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020015b60405180910390f35b610146610141366004612121565b6103b3565b6040516001600160e01b0319909116815260200161012a565b61017261016d36600461218d565b610400565b005b61019b7f000000000000000000000000000000000000000000000000000000000000000081565b60405190815260200161012a565b6101167f000000000000000000000000000000000000000000000000000000000000000081565b6003546102039063ffffffff8082169164010000000081049091169060ff600160401b8204811691600160481b90041684565b6040805163ffffffff958616815294909316602085015260ff9182169284019290925216606082015260800161012a565b600154610255906001600160601b03811690600160601b900462ffffff1682565b604080516001600160601b03909316835262ffffff90911660208301520161012a565b6101167f000000000000000000000000000000000000000000000000000000000000000081565b6101726105c6565b6101726102b53660046121ce565b610757565b6101726102c8366004612211565b6109e5565b6002546102fd906001600160601b03811690600160601b810462ffffff1690600160781b900464ffffffffff1683565b604080516001600160601b03909416845262ffffff909216602084015264ffffffffff169082015260600161012a565b61034061033b36600461228e565b610c16565b60405161012a9190600060a0820190506001600160a01b0380845116835260208401516001600160601b03808216602086015282604087015116604086015280606087015116606086015250508060808501511660808401525092915050565b61019b6103ae3660046121ce565b610d72565b6000336001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016146103ec5760006103f5565b630a85bd0160e11b5b90505b949350505050565b6002600054036104575760405162461bcd60e51b815260206004820152601a60248201527f636c61696d45726332303a207265656e7472616e742063616c6c00000000000060448201526064015b60405180910390fd5b60026000556040805160808101825260035463ffffffff8082168352640100000000820416602083015260ff600160401b8204811693830193909352600160481b900490911660608201527f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316331461051a5760405162461bcd60e51b815260206004820152601160248201527f4152433a20756e617574686f72697a6564000000000000000000000000000000604482015260640161044e565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316846001600160a01b03161415806105645750806020015163ffffffff1642115b6105b05760405162461bcd60e51b815260206004820152601960248201527f4152433a20746f6f206561726c79207769746864726177616c00000000000000604482015260640161044e565b6105bb848484610df4565b505060016000555050565b6040805180820182526001546001600160601b0381168252600160601b900462ffffff16602080830191909152825163411557d160e01b8152925191926000927f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03169263411557d192600480820193918290030181865afa158015610657573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061067b91906122eb565b604080516060810182526002546001600160601b0381168252600160601b810462ffffff166020830152600160781b900464ffffffffff16918101919091529091506000906106cc90849084610dff565b9050801561075257825160018054602080870180516001600160601b039095166effffffffffffffffffffffffffffff199093168317600160601b62ffffff9687160217909355604080519283529251909316928101929092527f0b50da2ab337665ba56e9cc037d805d65f41d15953d735381441003a1a0d500a910160405180910390a15b505050565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031633146107cf5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a6564000000000000000000000000604482015260640161044e565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316156109e257604080518082019091526001546001600160601b038116825262ffffff600160601b9182900481166020840152600254919091041682116108815760405162461bcd60e51b815260206004820152601a60248201527f4152433a206c6f77206e66742072657761726473206c696d6974000000000000604482015260640161044e565b60007f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663411557d16040518163ffffffff1660e01b8152600401602060405180830381865afa1580156108e1573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061090591906122eb565b604080516060810182526002546001600160601b0381168252600160601b810462ffffff166020830152600160781b900464ffffffffff1691810191909152909150600090610958908590859085610ea3565b905080156109de57825160018054602080870180516001600160601b039095166effffffffffffffffffffffffffffff199093168317600160601b62ffffff9687160217909355604080519283529251909316928101929092527f0b50da2ab337665ba56e9cc037d805d65f41d15953d735381441003a1a0d500a910160405180910390a15b5050505b50565b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03163314610a5d5760405162461bcd60e51b815260206004820152601460248201527f496d6d4f776e3a20756e617574686f72697a6564000000000000000000000000604482015260640161044e565b805163ffffffff1615801590610a865750806000015163ffffffff16816020015163ffffffff16115b8015610a9b575042816020015163ffffffff16115b610ae75760405162461bcd60e51b815260206004820152601160248201527f4152433a20696e76616c69642074696d65000000000000000000000000000000604482015260640161044e565b806060015160ff16816040015160ff161015610b455760405162461bcd60e51b815260206004820152601060248201527f4152433a20696e76616c69642041505900000000000000000000000000000000604482015260640161044e565b80516003805460208085018051604080880180516060808b01805163ffffffff9b8c1667ffffffffffffffff19909a168a17640100000000978d16979097029690961769ffff00000000000000001916600160401b60ff9485160269ff000000000000000000191617600160481b9684169690960295909517909855825196875293519097169385019390935294518116918301919091529251909216908201527f1422c9ddb7dd31ce62409d32ff46ef3c14ce83c1f5e080dd9e42b82713587e969060800160405180910390a150565b6040805160a081018252600080825260208201819052918101829052606081018290526080810191909152336001600160a01b037f00000000000000000000000000000000000000000000000000000000000000001614610cb95760405162461bcd60e51b815260206004820152601160248201527f4152433a20756e617574686f72697a6564000000000000000000000000000000604482015260640161044e565b63066cd46360e31b6001600160e01b0319841601610cdf57610cda82610f26565b610d3f565b6001600160e01b0319831663b8372e5560e01b14610d3f5760405162461bcd60e51b815260206004820152601760248201527f4152433a20756e737570706f7274656420616374696f6e000000000000000000604482015260640161044e565b506040805160a0810182526000808252602082018190529181018290526060810182905260808101919091525b92915050565b6040805160808101825260035463ffffffff8082168084526401000000008304909116602084015260ff600160401b8304811694840194909452600160481b9091049092166060820152600091831080610dd55750806020015163ffffffff1683115b15610de35750600092915050565b610ded818461152f565b9392505050565b610752838383611582565b600080610e356001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016306116a6565b90506000610e4c828760000151876000015161180b565b90935090508215610e9a576001600160601b038116808752610e9a906001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000169086906118a7565b50509392505050565b600080610ec386866020015162ffffff16866020015162ffffff1661180b565b90925090508115610f1d5760208501805162ffffff83811690925216158015610f1b57610f1b6001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016856001611927565b505b50949350505050565b6000806000806000610f37866119a8565b965050955095505094509450836001600160601b0316600003610f9c5760405162461bcd60e51b815260206004820181905260248201527f4152433a20756e6578706563746564207a65726f207374616b65416d6f756e74604482015260640161044e565b8263ffffffff168263ffffffff1611610ff75760405162461bcd60e51b815260206004820152601a60248201527f4152433a20756e6578706563746564206c6f636b656454696c6c000000000000604482015260640161044e565b60408051606080820183526002546001600160601b038082168452600160601b80830462ffffff908116602080880191909152600160781b90940464ffffffffff1686880152865180880188526001548085168252929092041681840152855160808101875260035463ffffffff80821683526401000000008204811695830195909552600160401b810460ff90811698830198909852600160481b90049096169386019390935260009485948594909390926110be91908c16908a8116908c1684611b35565b9550851561114a5782516000906110df9088906001600160601b031661231e565b90508083600001516001600160601b0316101561113e5760405162461bcd60e51b815260206004820152601f60248201527f4152433a20746f6f206c657373207265776172647320617661696c61626c6500604482015260640161044e565b6001600160601b031683525b600061116666038d7ea4c680006001600160601b038d16612347565b846040015164ffffffffff1661117c919061231e565b64ffffffffff166040850152506020808301519084015162ffffff9182169116101561124e5760405163d17c93bf60e01b81523060048201527f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03169063d17c93bf906024016020604051808303816000875af1158015611208573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061122c919061235b565b9350600194506001836020018181516112459190612374565b62ffffff169052505b5050805160028054602084015160409094015164ffffffffff16600160781b027fffffffffffffffffffffffff0000000000ffffffffffffffffffffffffffffff62ffffff909516600160601b026effffffffffffffffffffffffffffff199092166001600160601b039094169390931717929092161790556000806112d386611c0b565b915091506000604051806060016040528087600014611312577f0000000000000000000000000000000000000000000000000000000000000000611315565b60005b6001600160a01b03168152602001861561134f577f0000000000000000000000000000000000000000000000000000000000000000611352565b60005b6001600160a01b031681526000602091820181905260408051606080820183528382528185018a9052818301849052825190810183528b81529384018a90529083018290529293506113a2611e6c565b905060007f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663d6c6be0b86868660405180606001604052808d6000600281106113f6576113f6612390565b602002015181526020018d60016002811061141357611413612390565b602002015181526020018d60016002811061143057611430612390565b60209081029190910151909152604080516060810182528e5181528e8301805193820193909352915182820152516001600160e01b031960e088901b1681526114829594939291908a9060040161241b565b6020604051808303816000875af11580156114a1573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906114c5919061235b565b90508e6001600160a01b03167f6390fe4035d9526b215a5fffd9c45ebdd9833557acffe1b44ea0274e39669f2f828c8c604051611515939291909283526020830191909152604082015260600190565b60405180910390a250505050505050505050505050505050565b6060820151604083015160ff8082169290910316801561157b578351602085015163ffffffff808316860392909103166000818484028161157257611572612331565b04909403935050505b5092915050565b82803b806115d25760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a65000000604482015260640161044e565b6040516001600160a01b03858116602483015260448201859052600091829188169063a9059cbb906064015b6040516020818303038152906040529060e01b6020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff838183161783525050505060405161164c91906124c7565b6000604051808303816000865af19150503d8060008114611689576040519150601f19603f3d011682016040523d82523d6000602084013e61168e565b606091505b509150915061169d8282611e7c565b50505050505050565b6000806000846001600160a01b03166370a08231856040516024016116da91906001600160a01b0391909116815260200190565b6040516020818303038152906040529060e01b6020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff838183161783525050505060405161172891906124c7565b6000604051808303816000865af19150503d8060008114611765576040519150601f19603f3d011682016040523d82523d6000602084013e61176a565b606091505b509150915081801561177c5750805115155b6117ee5760405162461bcd60e51b815260206004820152602660248201527f5472616e7366657248656c7065723a2062616c616e63654f66662063616c6c2060448201527f6661696c65640000000000000000000000000000000000000000000000000000606482015260840161044e565b80806020019051810190611802919061235b565b95945050505050565b600080806118256001600160601b038086169087166124f6565b905080860361183b57600085925092505061189f565b60019250808611156118665780860361185e6001600160601b0387168201611f17565b92505061189d565b6000611873878303611f17565b9050806001600160601b0316866001600160601b031611611895576000611899565b8086035b9250505b505b935093915050565b82803b806118f75760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a65000000604482015260640161044e565b6040516001600160a01b03858116602483015260448201859052600091829188169063095ea7b3906064016115fe565b82803b806119775760405162461bcd60e51b815260206004820152601d60248201527f5472616e7366657248656c7065723a207a65726f20636f646573697a65000000604482015260640161044e565b6040516001600160a01b0385811660248301528415156044830152600091829188169063a22cb465906064016115fe565b6000806000806000806060603088511015611a055760405162461bcd60e51b815260206004820152601a60248201527f534d503a20756e6578706563746564206d7367206c656e677468000000000000604482015260640161044e565b602088015160408901518951606083901c99506001600160601b038316985060e082901c975063ffffffff60c083901c8116975060a083901c81169650608083901c169450600090611a59906030906124f6565b90508067ffffffffffffffff811115611a7457611a7461207e565b6040519080825280601f01601f191660200182016040528015611a9e576020820181803683370190505b50935060005b81811015611b26578b611ab882603061231e565b81518110611ac857611ac8612390565b602001015160f81c60f81b858281518110611ae557611ae5612390565b60200101907effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1916908160001a90535080611b1e81612509565b915050611aa4565b50505050919395979092949650565b6000816020015163ffffffff168310611b50575060006103f8565b815163ffffffff168411611b66575060006103f8565b600083836000015163ffffffff1611611b7f5783611b88565b825163ffffffff165b90506000836020015163ffffffff168611611ba35785611baf565b836020015163ffffffff165b90506000611bbd83836124f6565b90506000611bcb868561152f565b905063bbf81e0082611bdd838c612522565b611be79190612522565b611bf19190612347565b662386f26fc1000090819004029998505050505050505050565b611c13611fc6565b611c1b611fff565b611c2660028061231e565b611c31906002612522565b611c3c906020612522565b835114611c8b5760405162461bcd60e51b815260206004820152601a60248201527f534d503a20756e6578706563746564206d7367206c656e677468000000000000604482015260640161044e565b611c9361202c565b60015b6020611ca360028061231e565b611cae906002612522565b611cb9906020612522565b611cc39190612541565b6001166020611cd360028061231e565b611cde906002612522565b611ce9906020612522565b611cf39190612347565b611cfd919061231e565b8111611d1f57602081028581015190830152611d1881612509565b9050611c96565b5060005b6002811015611e655781611d38600283612522565b611d4390600161231e565b60098110611d5357611d53612390565b6020020151848260028110611d6a57611d6a612390565b60200201515281611d7c600283612522565b611d8790600261231e565b60098110611d9757611d97612390565b6020020151848260028110611dae57611dae612390565b6020020151602001818152505060005b6002811015611e52578281611dd4846002612522565b611ddf600280612522565b611de9919061231e565b611df3919061231e565b611dfe90600161231e565b60098110611e0e57611e0e612390565b6020020151848360028110611e2557611e25612390565b60200201518260028110611e3b57611e3b612390565b602002015280611e4a81612509565b915050611dbe565b5080611e5d81612509565b915050611d23565b5050915091565b6000611e7742611f70565b905090565b818015611ea1575080511580611ea1575080806020019051810190611ea19190612555565b611f135760405162461bcd60e51b815260206004820152602a60248201527f5472616e7366657248656c7065723a20746f6b656e20636f6e7472616374206360448201527f616c6c206661696c656400000000000000000000000000000000000000000000606482015260840161044e565b5050565b6000600160601b8210611f6c5760405162461bcd60e51b815260206004820152600860248201527f554e534146453936000000000000000000000000000000000000000000000000604482015260640161044e565b5090565b60006401000000008210611f6c5760405162461bcd60e51b815260206004820152600860248201527f554e534146453332000000000000000000000000000000000000000000000000604482015260640161044e565b60405180604001604052806002905b6040805180820190915260008082526020820152815260200190600190039081611fd55790505090565b60405180604001604052806002905b61201661204b565b81526020019060019003908161200e5790505090565b6040518061012001604052806009906020820280368337509192915050565b60405180604001604052806002906020820280368337509192915050565b6001600160a01b03811681146109e257600080fd5b634e487b7160e01b600052604160045260246000fd5b600082601f8301126120a557600080fd5b813567ffffffffffffffff808211156120c0576120c061207e565b604051601f8301601f19908116603f011681019082821181831017156120e8576120e861207e565b8160405283815286602085880101111561210157600080fd5b836020870160208301376000602085830101528094505050505092915050565b6000806000806080858703121561213757600080fd5b843561214281612069565b9350602085013561215281612069565b925060408501359150606085013567ffffffffffffffff81111561217557600080fd5b61218187828801612094565b91505092959194509250565b6000806000606084860312156121a257600080fd5b83356121ad81612069565b925060208401356121bd81612069565b929592945050506040919091013590565b6000602082840312156121e057600080fd5b5035919050565b803563ffffffff811681146121fb57600080fd5b919050565b803560ff811681146121fb57600080fd5b60006080828403121561222357600080fd5b6040516080810181811067ffffffffffffffff821117156122465761224661207e565b604052612252836121e7565b8152612260602084016121e7565b602082015261227160408401612200565b604082015261228260608401612200565b60608201529392505050565b600080604083850312156122a157600080fd5b82356001600160e01b0319811681146122b957600080fd5b9150602083013567ffffffffffffffff8111156122d557600080fd5b6122e185828601612094565b9150509250929050565b6000602082840312156122fd57600080fd5b8151610ded81612069565b634e487b7160e01b600052601160045260246000fd5b80820180821115610d6c57610d6c612308565b634e487b7160e01b600052601260045260246000fd5b60008261235657612356612331565b500490565b60006020828403121561236d57600080fd5b5051919050565b62ffffff81811683821601908082111561157b5761157b612308565b634e487b7160e01b600052603260045260246000fd5b8060005b60038110156109de5781518452602093840193909101906001016123aa565b806000805b600381101561241457825185835b60028110156123fb5782518252602092830192909101906001016123dc565b50505060409490940193602092909201916001016123ce565b5050505050565b6102c08101818860005b600381101561244d5781516001600160a01b0316835260209283019290910190600101612425565b50505061245d60608301886123a6565b61246a60c08301876123a6565b61012082018560005b600381101561249e578151805184526020908101518185015260409093019290910190600101612473565b5050506124af6101e08301856123c9565b63ffffffff83166102a0830152979650505050505050565b6000825160005b818110156124e857602081860181015185830152016124ce565b506000920191825250919050565b81810381811115610d6c57610d6c612308565b60006001820161251b5761251b612308565b5060010190565b600081600019048311821515161561253c5761253c612308565b500290565b60008261255057612550612331565b500690565b60006020828403121561256757600080fd5b81518015158114610ded57600080fdfea164736f6c6343000810000a",
+  "devdoc": {
+    "details": "This contract is supposed to run on the Polygon. Unless otherwise mentioned, other smart contracts are supposed to run on the Polygon also. As the \"Reward Adviser\" on the \"advanced\" stakes, every time a new stake is being created, it receives the `getRewardAdvice` call from the `RewardMaster` contract with the `STAKE` action type and the stake data (the `message`) being the call parameters. On the `getRewardAdvice` call received, this contract: - computes the amounts of the $ZKP reward and the optional NFT reward - if the `NFT_TOKEN` is non-zero address, it calls `grantOneToken` on the NFT_TOKEN, and gets the `tokenId` of the minted NFT token - calls `generateDeposits` of the PantherPoolV0, providing amounts/parameters of $ZKP, and   optional NFT as \"deposits\", as well as \"spending pubKeys\" and \"secrets\" (explained below) - returns the \"zero reward advice\" (with zero `sharesToCreate`) to the RewardMaster. On the \"zero\" advice, the RewardMaster skips creating \"treasure shares\" for the staker. This way rewarding gets orchestrated by this contract rather than the RewardMaster. Being called `generateDeposits`, the PantherPoolV0: - requests the `Vault` to take (`transferFrom`) the $ZKP and NFT tokens from this contract - generates \"UTXOs\" with the \"spending pubKeys\" and \"secrets\" provided (see bellow). Creating a new stake (i.e. calling the `stake`), the staker generates and provides the \"pubKeys\" and \"secrets\" to the Staking. Both the Staking on the mainnet and the Staking on the Polygon encodes them into the STAKE message and passes to the RewardMaster, which passes the message to this contract with the `getRewardAdvice` call. So this contracts get pubKeys and secrets needed for the `generateDeposits`. For stakes on the Polygon, when all contracts (i.e. Staking, RewardMaster and this contract) run on the same network, the RewardMaster on the Polygon calls this contract directly. For stakes made on the mainnet, where the Staking and the RewardMaster run, but this contract is on the Polygon, the RewardMaster on the mainnet sends the STAKE message to the RewardMaster on the Polygon via the PoS bridge and mediator contracts. The RewardMaster on the Polygon handles a bridged STAKE message (calling the `getRewardAdvice`) as if the message had been sent by the Staking on the Polygon. As a prerequisite: - this contract shall: -- be authorized as the \"RewardAdviser\" with the RewardMaster on the Polygon for advanced stakes -- be authorized as \"Minter\" (aka \"grantor\") with the NFT_TOKEN contract -- hold enough $ZKP to reward stakers - the Vault contract shall be approved to transfer $ZKPs and the NFT tokens from this contract - the $ZKP and the NFT tokens shall be registered as zAssets on the PantherPoolV0.",
+    "events": {
+      "RewardGenerated(address,uint256,uint256,uint256)": {
+        "details": "Emitted when the reward for a stake is generated"
+      },
+      "RewardLimitUpdated((uint96,uint24))": {
+        "details": "Emitted when new amounts are allocated to reward stakers"
+      },
+      "RewardParamsUpdated((uint32,uint32,uint8,uint8))": {
+        "details": "Emitted when rewarding params updated"
+      }
+    },
+    "kind": "dev",
+    "methods": {
+      "getRewardAdvice(bytes4,bytes)": {
+        "details": "To be called by the {RewardMaster} contract on \"advanced\" `STAKE` and `UNSTAKE` actions. The caller is trusted to never call w/ the STAKE acton: - twice for the same stake - after the rewarded period has ended"
+      },
+      "rescueErc20(address,address,uint256)": {
+        "details": "May be only called by the {OWNER}"
+      },
+      "setNftRewardLimit(uint256)": {
+        "details": "Only owner may call it."
+      },
+      "updateZkpRewardsLimit()": {
+        "details": "Anyone may call it."
+      }
+    },
+    "title": "AdvancedStakeRewardController",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "OWNER()": {
+        "notice": "The owner who has privileged rights"
+      },
+      "PANTHER_POOL()": {
+        "notice": "PantherPoolV0 contract instance"
+      },
+      "REWARD_MASTER()": {
+        "notice": "RewardMaster contract instance"
+      },
+      "START_BLOCK()": {
+        "notice": "Block when this contract is deployed"
+      },
+      "getZkpApyAt(uint256)": {
+        "notice": "Return the APY for the $ZKP reward at a given time"
+      },
+      "limits()": {
+        "notice": "Amounts of $ZKP and NFT allocated for rewards"
+      },
+      "rescueErc20(address,address,uint256)": {
+        "notice": "Withdraws unclaimed rewards or accidentally sent token from this contract"
+      },
+      "rewardParams()": {
+        "notice": "Reward parameters (start and end point for time and APY)"
+      },
+      "setNftRewardLimit(uint256)": {
+        "notice": "Allocate NFT rewards and approve the Vault to transfer them"
+      },
+      "totals()": {
+        "notice": "Total amounts of $ZKP and NFT rewarded so far"
+      },
+      "updateZkpRewardsLimit()": {
+        "notice": "Allocate for rewards the entire $ZKP balance this contract has and approve the Vault to transfer $ZKP from this contract."
+      }
+    },
+    "notice": "It generates UTXOs in the MASP as rewards to stakers for the \"Advanced Staking\"",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 3560,
+        "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+        "label": "_reentrancyStatus",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 10118,
+        "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+        "label": "limits",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_struct(Limits)10076_storage"
+      },
+      {
+        "astId": 10122,
+        "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+        "label": "totals",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_struct(Totals)10071_storage"
+      },
+      {
+        "astId": 10126,
+        "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+        "label": "rewardParams",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_struct(RewardParams)10089_storage"
+      }
+    ],
+    "types": {
+      "t_struct(Limits)10076_storage": {
+        "encoding": "inplace",
+        "label": "struct AdvancedStakeRewardController.Limits",
+        "members": [
+          {
+            "astId": 10073,
+            "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+            "label": "zkpRewards",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint96"
+          },
+          {
+            "astId": 10075,
+            "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+            "label": "nftRewards",
+            "offset": 12,
+            "slot": "0",
+            "type": "t_uint24"
+          }
+        ],
+        "numberOfBytes": "32"
+      },
+      "t_struct(RewardParams)10089_storage": {
+        "encoding": "inplace",
+        "label": "struct AdvancedStakeRewardController.RewardParams",
+        "members": [
+          {
+            "astId": 10079,
+            "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+            "label": "startTime",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 10082,
+            "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+            "label": "endTime",
+            "offset": 4,
+            "slot": "0",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 10085,
+            "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+            "label": "startZkpApy",
+            "offset": 8,
+            "slot": "0",
+            "type": "t_uint8"
+          },
+          {
+            "astId": 10088,
+            "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+            "label": "endZkpApy",
+            "offset": 9,
+            "slot": "0",
+            "type": "t_uint8"
+          }
+        ],
+        "numberOfBytes": "32"
+      },
+      "t_struct(Totals)10071_storage": {
+        "encoding": "inplace",
+        "label": "struct AdvancedStakeRewardController.Totals",
+        "members": [
+          {
+            "astId": 10066,
+            "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+            "label": "zkpRewards",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint96"
+          },
+          {
+            "astId": 10068,
+            "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+            "label": "nftRewards",
+            "offset": 12,
+            "slot": "0",
+            "type": "t_uint24"
+          },
+          {
+            "astId": 10070,
+            "contract": "contracts/staking/AdvancedStakeRewardController.sol:AdvancedStakeRewardController",
+            "label": "scZkpStaked",
+            "offset": 15,
+            "slot": "0",
+            "type": "t_uint40"
+          }
+        ],
+        "numberOfBytes": "32"
+      },
+      "t_uint24": {
+        "encoding": "inplace",
+        "label": "uint24",
+        "numberOfBytes": "3"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint32": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      },
+      "t_uint40": {
+        "encoding": "inplace",
+        "label": "uint40",
+        "numberOfBytes": "5"
+      },
+      "t_uint8": {
+        "encoding": "inplace",
+        "label": "uint8",
+        "numberOfBytes": "1"
+      },
+      "t_uint96": {
+        "encoding": "inplace",
+        "label": "uint96",
+        "numberOfBytes": "12"
+      }
+    }
+  }
+}

@@ -78,7 +78,7 @@ export default function UnstakingInfo() {
                     variant="subtitle2"
                     className="unstaking-info-title"
                 >
-                    You stake your tokens
+                    Your tokens are staked for
                     {minLockPeriod && minLockPeriod > 0
                         ? ` for ${secondsToFullDays(
                               minLockPeriod as number,
@@ -87,14 +87,14 @@ export default function UnstakingInfo() {
                 </Typography>
                 <Typography className="unstaking-info-text">
                     <span>
-                        Advanced Staking locks $ZKP
+                        Advanced Staking locks ZKP
                         {minLockPeriod && minLockPeriod > 0
                             ? ` for ${secondsToFullDays(
                                   minLockPeriod as number,
                               )} days before you can withdraw`
                             : ' until the fixed date defined for each stake'}
-                        . The rewards are created as zZKP and PRP which can be
-                        seen on the{' '}
+                        . The rewards are created as zZKP and PRPs balance on
+                        the zAssets page.{' '}
                     </span>
                     <Link
                         className="unstaking-info-link"

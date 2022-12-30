@@ -45,7 +45,14 @@ export default function PrivateZAssetsTable() {
                         >
                             <span className="title">Private zAssets:</span>
                             <Tooltip
-                                title={zAssetTooltip}
+                                title={
+                                    <span
+                                        className="tooltip-style"
+                                        dangerouslySetInnerHTML={{
+                                            __html: zAssetTooltip,
+                                        }}
+                                    />
+                                }
                                 data-html="true"
                                 placement="top"
                                 className="tooltip-icon"

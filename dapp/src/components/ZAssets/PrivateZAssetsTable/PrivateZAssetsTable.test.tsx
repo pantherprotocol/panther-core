@@ -5,7 +5,6 @@ import * as React from 'react';
 
 import {screen, waitFor} from '@testing-library/react';
 import {renderComponent} from 'components/Common/test-utils';
-import {zAssetTooltip} from 'components/Common/tooltips';
 
 import PrivateZAssetsTable from './index';
 
@@ -35,12 +34,5 @@ test('should show correct tooltip', async () => {
     await waitFor(() => {
         expect(PrivateZAssetsTableContainer).toBeInTheDocument();
         expect(PrivateZAssetsTableZassetTooltip).toBeInTheDocument();
-    });
-
-    await waitFor(() => {
-        expect(PrivateZAssetsTableZassetTooltip).toHaveAttribute(
-            'aria-label',
-            zAssetTooltip,
-        );
     });
 });

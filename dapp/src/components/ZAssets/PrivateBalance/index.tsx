@@ -15,7 +15,10 @@ import {
 import {useWeb3React} from '@web3-react/core';
 import {notifyError} from 'components/Common/errors';
 import StyledBalance from 'components/Common/StyledBalance';
-import {totalUnrealizedPrivacyRewardsTooltip} from 'components/Common/tooltips';
+import {
+    privateBalanceLastSync,
+    totalUnrealizedPrivacyRewardsTooltip,
+} from 'components/Common/tooltips';
 import SignatureRequestModal from 'components/SignatureRequestModal';
 import {BigNumber, utils} from 'ethers';
 import {useStatusError} from 'hooks/status-error';
@@ -172,17 +175,8 @@ export default function PrivateBalance() {
 
     const toolTip = (
         <div>
-            <p>Shows when the last refresh was done.</p>
-            <p>
-                Some of your assets may not be shown if they were not updated
-                recently. You can refresh your assets by clicking the refresh
-                button above.
-            </p>
-            <p>
-                A signature request is required each time in order to generate
-                the root keys to your Panther wallet. These are highly security
-                sensitive, so they are not stored on disk.
-            </p>
+            <p>Shows when you last refreshed this page.</p>
+            <p>{privateBalanceLastSync}</p>
         </div>
     );
     const showWalletSignatureInProgress = useAppSelector(
@@ -214,7 +208,7 @@ export default function PrivateBalance() {
                             decimals: 0,
                         })}{' '}
                         <span className="info">
-                            Total Unrealized Privacy Rewards (PRP)
+                            Total Unrealized Privacy Reward Points
                         </span>
                         <Tooltip
                             title={

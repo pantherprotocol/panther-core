@@ -28,7 +28,7 @@ export const totalUnrealizedPrivacyRewardsTooltip =
     );
 
 export const zAssetsPageAprTooltip =
-    'The displayed Privacy Rewards’ APR is not definitive and will be decided via a DAO vote before v1’s launch. More details here.';
+    'The displayed Privacy Rewards’ APR is not definitive and will be decided via a DAO vote before v1’s launch.';
 
 export const balanceUpdatingTooltip =
     'Balance update pending. Balances may take a few minutes to update.';

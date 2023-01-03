@@ -4,7 +4,7 @@
 import React, {useCallback} from 'react';
 
 import {useWeb3React} from '@web3-react/core';
-import {WalletHeaderActionButton} from 'components/Common/WalletHeaderActionButton';
+import {WalletHeaderActionButton} from 'components/common/WalletHeaderActionButton';
 import {useAppDispatch} from 'redux/hooks';
 import {resetUnclaimedClassicRewards} from 'redux/slices/staking/total-unclaimed-classic-rewards';
 import {resetZkpStakedBalance} from 'redux/slices/staking/zkp-staked-balance';

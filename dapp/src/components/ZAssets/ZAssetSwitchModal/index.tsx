@@ -12,7 +12,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import PrimaryActionButton from 'components/common/PrimaryActionButton';
 import networkLogo from 'images/polygon-white-logo.svg';
 import xIcon from 'images/x-icon.svg';
 import {useAppDispatch} from 'redux/hooks';

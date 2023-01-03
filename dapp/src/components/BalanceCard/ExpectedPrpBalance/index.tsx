@@ -6,7 +6,7 @@ import * as React from 'react';
 import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {expectedPrpBalanceTooltip} from 'components/Common/tooltips';
+import {expectedPrpBalanceTooltip} from 'components/common/tooltips';
 import {BigNumber} from 'ethers';
 import infoIcon from 'images/info-icon.svg';
 import {formatCurrency} from 'lib/format';

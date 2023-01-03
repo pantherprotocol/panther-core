@@ -5,8 +5,8 @@ import React, {useCallback} from 'react';
 
 import {useWeb3React} from '@web3-react/core';
 import {NoEthereumProviderError} from '@web3-react/injected-connector';
-import {safeOpenMetamask} from 'components/Common/links';
-import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import {safeOpenMetamask} from 'components/common/links';
+import PrimaryActionButton from 'components/common/PrimaryActionButton';
 import {useOnConnect} from 'hooks/web3';
 import {useAppDispatch} from 'redux/hooks';
 import {setConnected} from 'redux/slices/ui/is-wallet-connected';

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
-import {openNotification} from 'components/Common/notification';
+import {openNotification} from 'components/common/notification';
 import {utils} from 'ethers';
 import {supportedNetworks} from 'services/connectors';
 

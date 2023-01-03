@@ -7,12 +7,12 @@ import {UNSTAKE_ROWS_PER_PAGE} from 'constants/pagination';
 
 import {Box} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {MessageWithTx} from 'components/Common/MessageWithTx';
+import {MessageWithTx} from 'components/common/MessageWithTx';
 import {
     removeNotification,
     openNotification,
-} from 'components/Common/notification';
-import Pagination from 'components/Common/Pagination';
+} from 'components/common/notification';
+import Pagination from 'components/common/Pagination';
 import {BigNumber} from 'ethers';
 import usePagination from 'hooks/pagination';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';

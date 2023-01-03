@@ -19,13 +19,13 @@ import {
 import * as Sentry from '@sentry/browser';
 import {useWeb3React} from '@web3-react/core';
 import BackButton from 'components/BackButton';
-import {notifyError} from 'components/Common/errors';
-import {MessageWithTx} from 'components/Common/MessageWithTx';
+import {notifyError} from 'components/common/errors';
+import {MessageWithTx} from 'components/common/MessageWithTx';
 import {
     openNotification,
     removeNotification,
-} from 'components/Common/notification';
-import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+} from 'components/common/notification';
+import PrimaryActionButton from 'components/common/PrimaryActionButton';
 import {getUnixTime} from 'date-fns';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {

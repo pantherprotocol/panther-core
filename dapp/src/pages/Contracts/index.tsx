@@ -15,7 +15,7 @@ import {
     Typography,
 } from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {addressLink, SafeLink} from 'components/Common/links';
+import {addressLink, SafeLink} from 'components/common/links';
 import {MainPageWrapper} from 'components/MainPageWrapper';
 import {supportedNetworks} from 'services/connectors';
 import {

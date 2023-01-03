@@ -9,7 +9,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import MenuIcon from '@mui/icons-material/Menu';
 import Box from '@mui/material/Box';
 import {useWeb3React} from '@web3-react/core';
-import {SafeLink} from 'components/Common/links';
+import {SafeLink} from 'components/common/links';
 import logo from 'images/panther-logo.svg';
 import {isTestNetwork} from 'services/connectors';
 

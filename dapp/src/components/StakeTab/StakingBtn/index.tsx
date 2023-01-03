@@ -6,12 +6,12 @@ import * as React from 'react';
 
 import {Box, Button} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {notifyError} from 'components/Common/errors';
-import {MessageWithTx} from 'components/Common/MessageWithTx';
+import {notifyError} from 'components/common/errors';
+import {MessageWithTx} from 'components/common/MessageWithTx';
 import {
     openNotification,
     removeNotification,
-} from 'components/Common/notification';
+} from 'components/common/notification';
 import {BigNumber, utils} from 'ethers';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {formatCurrency} from 'lib/format';

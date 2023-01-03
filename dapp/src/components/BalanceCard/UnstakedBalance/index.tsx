@@ -11,10 +11,10 @@ import {
     Typography,
 } from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {notifyError} from 'components/Common/errors';
-import ExactValueTooltip from 'components/Common/ExactValueTooltip';
-import StyledBalance from 'components/Common/StyledBalance';
-import {balanceUpdatingTooltip} from 'components/Common/tooltips';
+import {notifyError} from 'components/common/errors';
+import ExactValueTooltip from 'components/common/ExactValueTooltip';
+import StyledBalance from 'components/common/StyledBalance';
+import {balanceUpdatingTooltip} from 'components/common/tooltips';
 import {BigNumber, utils} from 'ethers';
 import {useStatusError} from 'hooks/status-error';
 import refreshIcon from 'images/refresh-icon.svg';

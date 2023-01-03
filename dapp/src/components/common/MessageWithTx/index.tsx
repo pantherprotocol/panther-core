@@ -4,7 +4,7 @@
 import React, {ReactElement} from 'react';
 
 import {Typography} from '@mui/material';
-import {linkTextToTx} from 'components/Common/links';
+import {linkTextToTx} from 'components/common/links';
 import {formatAccountAddress} from 'lib/format';
 
 import {MessageWithTxProps} from './MessageWithTxProps.interface';

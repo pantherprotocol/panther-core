@@ -8,13 +8,13 @@ import {CONFIRMATIONS_NUM} from 'constants/contract-confirmations';
 import {Box, Card, Typography} from '@mui/material';
 import * as Sentry from '@sentry/browser';
 import {useWeb3React} from '@web3-react/core';
-import {notifyError} from 'components/Common/errors';
-import {MessageWithTx} from 'components/Common/MessageWithTx';
+import {notifyError} from 'components/common/errors';
+import {MessageWithTx} from 'components/common/MessageWithTx';
 import {
     openNotification,
     removeNotification,
-} from 'components/Common/notification';
-import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+} from 'components/common/notification';
+import PrimaryActionButton from 'components/common/PrimaryActionButton';
 import ConnectButton from 'components/ConnectButton';
 import SwitchNetworkButton from 'components/SwitchNetworkButton';
 import {ContractTransaction} from 'ethers/lib/ethers';

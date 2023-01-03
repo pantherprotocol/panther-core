@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import {
     expectedPrpBalanceTooltip,
     zZkpTooltip,
-} from 'components/Common/tooltips';
+} from 'components/common/tooltips';
 import questionmarkIcon from 'images/questionmark-icon.svg';
 import {formatCurrency} from 'lib/format';
 import {useAppSelector} from 'redux/hooks';

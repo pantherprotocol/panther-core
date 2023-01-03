@@ -4,7 +4,7 @@
 import React, {useState} from 'react';
 
 import {Box, Divider, Typography} from '@mui/material';
-import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import PrimaryActionButton from 'components/common/PrimaryActionButton';
 import ZAssetSwitchModal from 'components/ZAssets/ZAssetSwitchModal';
 import warningIcon from 'images/warning-icon-triangle.svg';
 

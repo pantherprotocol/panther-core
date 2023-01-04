@@ -161,6 +161,14 @@ $refresh-button-background: linear-gradient(
             span {
                 padding-right: 10px;
             }
+
+            .tooltip-icon {
+                cursor: pointer;
+            }
         }
     }
+}
+
+.tooltip-main-text {
+    margin-bottom: 0;
 }

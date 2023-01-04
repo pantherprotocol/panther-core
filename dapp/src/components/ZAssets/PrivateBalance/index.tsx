@@ -174,10 +174,10 @@ export default function PrivateBalance() {
     }, [refreshIfUndefinedUTXOs]);
 
     const toolTip = (
-        <div>
-            <p>Shows when you last refreshed this page.</p>
-            <p>{privateBalanceLastSync}</p>
-        </div>
+        <>
+            <span>Shows when you last refreshed this page.</span>
+            <p className="tooltip-main-text">{privateBalanceLastSync}</p>
+        </>
     );
     const showWalletSignatureInProgress = useAppSelector(
         showWalletActionInProgressSelector('signMessage'),
@@ -270,6 +270,7 @@ export default function PrivateBalance() {
                             title={toolTip}
                             data-html="true"
                             placement="top"
+                            className="tooltip-icon"
                         >
                             <img src={infoIcon} />
                         </Tooltip>

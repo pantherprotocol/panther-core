@@ -5,7 +5,7 @@ import React, {ReactElement, useCallback} from 'react';
 
 import {Typography, Card, CardContent} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {SafeMuiLink} from 'components/Common/links';
+import {SafeMuiLink} from 'components/common/links';
 import {add, format} from 'date-fns';
 import warningIcon from 'images/warning-icon-triangle.svg';
 import {formatTime, secondsToFullDays} from 'lib/format';

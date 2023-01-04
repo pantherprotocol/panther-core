@@ -8,7 +8,7 @@ import {Box, Typography} from '@mui/material';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import {networkLogo} from 'components/Common/NetworkLogo';
+import {networkLogo} from 'components/common/NetworkLogo';
 import {NetworkButtonProps} from 'components/NetworkButton/NetworkButton.interface';
 import {supportedNetworks} from 'services/connectors';
 import {CHAIN_IDS} from 'services/env';

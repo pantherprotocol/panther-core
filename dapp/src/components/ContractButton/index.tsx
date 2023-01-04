@@ -4,8 +4,8 @@
 import React, {useCallback} from 'react';
 
 import {useWeb3React} from '@web3-react/core';
-import {addressLink, safeWindowOpen} from 'components/Common/links';
-import {WalletHeaderActionButton} from 'components/Common/WalletHeaderActionButton';
+import {addressLink, safeWindowOpen} from 'components/common/links';
+import {WalletHeaderActionButton} from 'components/common/WalletHeaderActionButton';
 import etherscanIcon from 'images/etherscan-icon.svg';
 import {ContractName, getContractAddress} from 'services/contracts';
 

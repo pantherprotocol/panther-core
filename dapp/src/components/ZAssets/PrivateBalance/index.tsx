@@ -13,12 +13,12 @@ import {
     Typography,
 } from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
-import {notifyError} from 'components/Common/errors';
-import StyledBalance from 'components/Common/StyledBalance';
+import {notifyError} from 'components/common/errors';
+import StyledBalance from 'components/common/StyledBalance';
 import {
     privateBalanceLastSync,
     totalUnrealizedPrivacyRewardsTooltip,
-} from 'components/Common/tooltips';
+} from 'components/common/tooltips';
 import SignatureRequestModal from 'components/SignatureRequestModal';
 import {BigNumber, utils} from 'ethers';
 import {useStatusError} from 'hooks/status-error';

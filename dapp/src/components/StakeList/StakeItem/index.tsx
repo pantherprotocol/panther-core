@@ -4,9 +4,9 @@
 import React from 'react';
 
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
-import ExactValueTooltip from 'components/Common/ExactValueTooltip';
-import StyledBalance from 'components/Common/StyledBalance';
-import {expectedPrpBalanceTooltip} from 'components/Common/tooltips';
+import ExactValueTooltip from 'components/common/ExactValueTooltip';
+import StyledBalance from 'components/common/StyledBalance';
+import {expectedPrpBalanceTooltip} from 'components/common/tooltips';
 import UnstakeButton from 'components/StakeList/UnstakeButton';
 import {format} from 'date-fns';
 import {BigNumber, constants, utils} from 'ethers';

@@ -3,7 +3,7 @@
 
 import React from 'react';
 
-import {SafeLink} from 'components/Common/links';
+import {SafeLink} from 'components/common/links';
 import useScreenSize from 'hooks/screen';
 import discordGray from 'images/discord-icon-gray.svg';
 import discord from 'images/discord-icon.png';

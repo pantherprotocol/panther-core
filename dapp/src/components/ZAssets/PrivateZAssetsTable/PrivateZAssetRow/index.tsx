@@ -12,7 +12,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import {useWeb3React} from '@web3-react/core';
-import {zAssetsPageAprTooltip} from 'components/Common/tooltips';
+import {zAssetsPageAprTooltip} from 'components/common/tooltips';
 import Balance from 'components/ZAssets/Balance';
 import AssetsDetails from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsTable';
 import infoIcon from 'images/info-icon.svg';

@@ -15,7 +15,7 @@ import {useWeb3React} from '@web3-react/core';
 import {
     unrealizedRewardAprTooltip,
     zAssetTooltip,
-} from 'components/Common/tooltips';
+} from 'components/common/tooltips';
 import infoIcon from 'images/info-icon.svg';
 import {chainHasPoolContract} from 'services/contracts';
 

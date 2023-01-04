@@ -6,7 +6,7 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {useWeb3React} from '@web3-react/core';
-import {networkLogo} from 'components/Common/NetworkLogo';
+import {networkLogo} from 'components/common/NetworkLogo';
 import useScreenSize from 'hooks/screen';
 import {formatAccountAddress} from 'lib/format';
 import Jazzicon, {jsNumberForAddress} from 'react-jazzicon';

@@ -4,7 +4,7 @@
 import * as React from 'react';
 
 import {fireEvent, screen, waitFor} from '@testing-library/react';
-import {renderComponent} from 'components/Common/test-utils';
+import {renderComponent} from 'components/common/test-utils';
 
 import ContinueButton from './index';
 

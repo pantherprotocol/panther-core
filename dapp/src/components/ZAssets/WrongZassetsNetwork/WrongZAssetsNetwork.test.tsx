@@ -5,8 +5,8 @@ import * as React from 'react';
 
 import {Box} from '@mui/material';
 import {fireEvent, screen, waitFor} from '@testing-library/react';
-import PrimaryActionButton from 'components/Common/PrimaryActionButton';
-import {renderComponent} from 'components/Common/test-utils';
+import PrimaryActionButton from 'components/common/PrimaryActionButton';
+import {renderComponent} from 'components/common/test-utils';
 import {supportedNetworks} from 'services/connectors';
 import {MASP_CHAIN_ID} from 'services/env';
 

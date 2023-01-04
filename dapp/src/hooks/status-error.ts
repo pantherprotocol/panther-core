@@ -4,7 +4,7 @@
 import {useEffect, useState} from 'react';
 
 import type {ActionCreator} from '@reduxjs/toolkit';
-import {openNotification} from 'components/Common/notification';
+import {openNotification} from 'components/common/notification';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {LoadingStatus} from 'redux/slices/shared';
 import {RootState} from 'redux/store';

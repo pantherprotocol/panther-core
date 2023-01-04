@@ -3,7 +3,7 @@
 
 import React from 'react';
 
-import PrimaryActionButton from 'components/Common/PrimaryActionButton';
+import PrimaryActionButton from 'components/common/PrimaryActionButton';
 
 const ContinueButton = (props: {onClick: any}) => {
     return (

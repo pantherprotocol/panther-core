@@ -6,7 +6,7 @@ import * as React from 'react';
 import {Box, Grid, Typography} from '@mui/material';
 import {fireEvent, screen, waitFor} from '@testing-library/react';
 import {Web3ReactProvider} from '@web3-react/core';
-import {renderComponent} from 'components/Common/test-utils';
+import {renderComponent} from 'components/common/test-utils';
 import ContinueButton from 'components/ContinueButton';
 import {getLibrary} from 'services/provider';
 

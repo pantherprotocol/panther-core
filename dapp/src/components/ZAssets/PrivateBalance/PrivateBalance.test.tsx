@@ -5,7 +5,7 @@ import * as React from 'react';
 
 import {Box, Typography} from '@mui/material';
 import {screen, waitFor} from '@testing-library/react';
-import {renderComponent} from 'components/Common/test-utils';
+import {renderComponent} from 'components/common/test-utils';
 import {formatCurrency} from 'lib/format';
 import {safeParseUnits} from 'lib/numbers';
 import {fiatPrice} from 'lib/token-price';

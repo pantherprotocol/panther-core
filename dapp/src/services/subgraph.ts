@@ -169,6 +169,10 @@ function getSubgraphAccounts(chainId: number): string[] | undefined {
     return subgraphAccountStr.split(',');
 }
 
+export function chainHasSubgraphAccounts(chainId: number): boolean {
+    return !!env[`SUBGRAPH_IDS_${chainId}`];
+}
+
 export async function getAdvancedStakingReward(
     chainId: number,
     address: string,

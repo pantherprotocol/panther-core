@@ -21,6 +21,7 @@ import {
 } from 'services/rewards';
 import {
     AdvancedStakeRewardsResponse,
+    chainHasSubgraphAccounts,
     getAdvancedStakingReward,
 } from 'services/subgraph';
 import {
@@ -75,8 +76,8 @@ export const getAdvancedStakesRewards = createAsyncThunk(
     ): Promise<[number, string, AdvancedStakeRewardsById] | undefined> => {
         const {account, chainId} = payload.context;
         if (!account || !chainId) return;
-        const state = getState() as RootState;
 
+        const state = getState() as RootState;
         const currentAdvancedRewards = advancedStakesRewardsSelector(
             chainId,
             account,
@@ -260,6 +261,9 @@ async function getRewardsFromGraphWithRetry(
     retry = 0,
     delay = INITIAL_RETRY_DELAY,
 ): Promise<AdvancedStakeRewardsById | Error> {
+    if (!chainHasSubgraphAccounts(chainId))
+        return new Error('Subgraph accounts are not yet defined');
+
     if (retry > MAX_RETRIES) {
         return new Error(
             'Cannot fetch the rewards from the subgraph. Max retries reached',

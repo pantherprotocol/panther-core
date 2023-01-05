@@ -34,7 +34,9 @@ import {
     StartWalletActionPayload,
 } from 'redux/slices/ui/web3-wallet-last-action';
 import {updateUTXOStatus} from 'redux/slices/wallet/advanced-stakes-rewards';
+import {getChainBalance} from 'redux/slices/wallet/chain-balance';
 import {poolV0ExitDelaySelector} from 'redux/slices/wallet/poolV0';
+import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
 import {parseTxErrorMessage} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 import {exit} from 'services/pool';
@@ -157,6 +159,8 @@ export default function SecondStageRedeem(props: {
             reward.id,
             UTXOStatus.SPENT,
         ]);
+        dispatch(getZkpTokenBalance, context);
+        dispatch(getChainBalance, context);
 
         openNotification(
             'Withdrawal completed successfully',
@@ -169,7 +173,7 @@ export default function SecondStageRedeem(props: {
             'info',
             10000,
         );
-    }, [dispatch, library, account, chainId, reward]);
+    }, [dispatch, library, account, chainId, reward, context]);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -267,8 +271,9 @@ export default function SecondStageRedeem(props: {
                     <PrimaryActionButton
                         onClick={closeModalAndRedeem}
                         disabled={!isLockPeriodPassed}
-                        styles={`redeem-modal-button 
-                        ${!isLockPeriodPassed && 'disabled'}`}
+                        styles={`redeem-modal-button ${
+                            !isLockPeriodPassed && 'disabled'
+                        }`}
                     >
                         {isLockPeriodPassed ? (
                             <Typography>Redeem {zZKP} ZKP</Typography>

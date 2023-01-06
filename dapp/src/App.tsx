@@ -3,6 +3,7 @@
 
 import React, {useCallback, useEffect} from 'react';
 
+import {warningMessage} from 'constants/dev-tool-warning';
 import {Routes} from 'constants/routes';
 
 import {createTheme} from '@mui/material';
@@ -30,6 +31,10 @@ const theme = createTheme({
         fontWeightRegular: 400,
     },
 });
+
+// Warning users from pasting malicious code in the console
+console.log('%cStop!', 'color: red; font-size: 40px;');
+console.log(`%c${warningMessage}`, 'line-height: 1.2; font-size: 16.5px;');
 
 function App() {
     const missing = getMissingEnvVars();

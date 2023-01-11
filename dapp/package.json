@@ -62,7 +62,6 @@
     "chai-http": "^4.3.0",
     "circomlibjs": "^0.0.8",
     "date-fns": "^2.29.3",
-    "dayjs": "^1.11.7",
     "dotenv-webpack": "^7.0.3",
     "easy-peasy": "^5.0.3",
     "ethers": "^5.5.1",

@@ -45,6 +45,25 @@ const babelConfig = process.env.BABEL_UWC
       ]
     : [];
 
+const defaultOptimization = {
+    splitChunks: {
+        cacheGroups: {
+            // Move reactjs packages into its own file `vendor-react.js`
+            reactVendor: {
+                test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/,
+                name: 'vendor-react',
+                chunks: 'all',
+            },
+            // Move the `circomlibjs` package into its own file `circomlib.js` -> Will be cached
+            circomlibjs: {
+                test: /[\\/]node_modules[\\/]circomlibjs[\\/]/,
+                name: 'circomlib',
+                chunks: 'all',
+            },
+        },
+    },
+};
+
 module.exports = {
     entry: ['babel-polyfill', path.resolve(__dirname, './src/index.tsx')],
     ...(process.env.NODE_ENV === 'production'
@@ -73,9 +92,9 @@ module.exports = {
         },
     },
     output: {
-        path: path.join(__dirname, './build'),
         // filename: 'build-[contenthash].js',
-        filename: 'bundle.js',
+        filename: '[name].js',
+        path: path.join(__dirname, './build'),
     },
     target: 'web',
     module: {
@@ -218,6 +237,7 @@ module.exports = {
             ? {
                   minimize: true,
                   minimizer: [new TerserPlugin()],
+                  ...defaultOptimization,
               }
-            : {},
+            : defaultOptimization,
 };

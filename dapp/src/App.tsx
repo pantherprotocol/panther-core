@@ -122,8 +122,8 @@ function App() {
             <div className="App">
                 <Router>
                     <Switch>
-                        {...buildRouting()},
-                        <Route component={NotFoundPage} />,
+                        {...buildRouting()}
+                        <Route component={NotFoundPage} />
                     </Switch>
                 </Router>
             </div>

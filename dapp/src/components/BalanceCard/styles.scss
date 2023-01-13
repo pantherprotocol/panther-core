@@ -21,6 +21,7 @@
 
         @media (max-width: $large-screen-size) {
             margin: 0 16px;
+            min-width: 300px;
         }
 
         @media (max-width: $normal-screen-size) {

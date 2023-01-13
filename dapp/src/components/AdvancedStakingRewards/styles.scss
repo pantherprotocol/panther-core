@@ -9,6 +9,10 @@
     margin-bottom: 24px;
     padding: 20px 21px 20px 28px;
 
+    @media (max-width: $semi-large-screen-size) {
+        padding-left: 10px;
+    }
+
     @media (max-width: $medium-screen-size) {
         flex-direction: column;
         padding: 18px 13px 25px;
@@ -85,6 +89,10 @@
             padding: 10px 0;
             opacity: 0.9;
             backdrop-filter: blur(20px);
+            @media (max-width: $semi-large-screen-size) {
+                width: 140px;
+            }
+
             @media (max-width: $medium-screen-size) {
                 height: 85px;
                 width: 50%;

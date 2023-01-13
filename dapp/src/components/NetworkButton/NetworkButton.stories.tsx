@@ -7,6 +7,7 @@ import React from 'react';
 import {Meta, Story} from '@storybook/react';
 import {Provider} from 'react-redux';
 import {store} from 'redux/store';
+import {NetworkSymbol} from 'services/connectors';
 import 'styles/dropdown-button.scss';
 
 import {NetworkButtonProps} from './NetworkButton.interface';
@@ -27,13 +28,13 @@ const Template: Story<NetworkButtonProps> = args => (
 export const Default = Template.bind({});
 
 Default.args = {
-    networkLogo: 'ETH',
+    networkSymbol: NetworkSymbol.ETH,
     networkName: 'Ethereum',
 };
 
 export const Mumbai = Template.bind({});
 
 Mumbai.args = {
-    networkLogo: 'MATIC',
+    networkSymbol: NetworkSymbol.ETH,
     networkName: 'Mumbai',
 };

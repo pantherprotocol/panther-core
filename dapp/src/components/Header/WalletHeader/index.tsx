@@ -77,7 +77,7 @@ export default function WalletHeader() {
                     {network && (
                         <NetworkButton
                             networkName={network.name}
-                            networkLogo={network.logo}
+                            networkSymbol={network.symbol}
                         />
                     )}
                     <WalletButton />

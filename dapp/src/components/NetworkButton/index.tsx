@@ -39,7 +39,7 @@ export default function NetworkButton(props: NetworkButtonProps) {
             >
                 <Box>
                     <img
-                        src={networkLogo(props.networkLogo)}
+                        src={networkLogo(props.networkSymbol)}
                         alt="Network logo"
                         data-testid="network-button_network-button_select-logo"
                     />
@@ -72,7 +72,7 @@ export default function NetworkButton(props: NetworkButtonProps) {
                             }}
                         >
                             <img
-                                src={networkLogo(requiredNetwork.logo)}
+                                src={networkLogo(requiredNetwork.symbol)}
                                 alt="Network logo"
                             />
                             <Typography data-testid="network-button_network-button_select-option">

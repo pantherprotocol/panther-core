@@ -6,7 +6,7 @@ import * as React from 'react';
 import '@testing-library/jest-dom';
 import {fireEvent, screen, waitFor} from '@testing-library/react';
 import {renderComponent} from 'components/common/test-utils';
-import maticIcon from 'images/polygon-logo.svg';
+import {NetworkSymbol} from 'services/connectors';
 
 import NetworkButton from './index';
 
@@ -14,7 +14,10 @@ const testNetworkName = 'MATIC';
 
 test('should render', () => {
     renderComponent(
-        <NetworkButton networkLogo={maticIcon} networkName={testNetworkName} />,
+        <NetworkButton
+            networkSymbol={NetworkSymbol.MATIC}
+            networkName={testNetworkName}
+        />,
     );
     const networkButtonComponent = screen.queryByTestId(
         'network-button_network-button_container',
@@ -35,7 +38,10 @@ test('should render', () => {
 
 test('should allow user to change network', async () => {
     renderComponent(
-        <NetworkButton networkLogo={maticIcon} networkName={testNetworkName} />,
+        <NetworkButton
+            networkSymbol={NetworkSymbol.MATIC}
+            networkName={testNetworkName}
+        />,
     );
 
     const networkButtonSelectLogo = screen.queryByTestId(

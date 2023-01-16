@@ -5,7 +5,7 @@
     display: flex;
 
     @media (max-width: $normal-screen-size) {
-        width: 50%;
+        width: 100%;
         align-items: flex-start;
     }
 
@@ -23,6 +23,7 @@
             @media (max-width: $normal-screen-size) {
                 width: 42px;
                 height: 42px;
+                margin-right: 10px;
             }
         }
 
@@ -33,21 +34,18 @@
         }
     }
 
-    .burger-menu {
-        display: none;
-        @media (max-width: $normal-screen-size) {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100px;
-            height: 36px;
-            padding: 5px 12px;
-            background: $navigation-background;
-            mix-blend-mode: normal;
-            border: 1px solid $grey-btn-border;
-            border-radius: 8px;
-            margin-left: 40px;
-        }
+    @mixin burger-menu-mixin {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100px;
+        height: 36px;
+        padding: 5px 12px;
+        background: $navigation-background;
+        mix-blend-mode: normal;
+        border: 1px solid $grey-btn-border;
+        border-radius: 8px;
+        margin-left: 40px;
 
         span {
             font-size: $smaller-font-size;
@@ -60,11 +58,8 @@
         }
     }
 
-    .navigation-link_container {
+    @mixin navigation-link_container-mixin {
         display: flex;
-        @media (max-width: $normal-screen-size) {
-            display: none;
-        }
         .nav-item {
             display: flex;
             justify-content: center;
@@ -100,6 +95,36 @@
             color: $white;
             cursor: pointer;
             padding: 5px 15px;
+        }
+    }
+
+    .burger-menu {
+        display: none;
+        @media (max-width: $normal-screen-size) {
+            @include burger-menu-mixin;
+        }
+    }
+
+    .disconnected {
+        display: none;
+        @media (max-width: $semi-small-screen-size) {
+            @include burger-menu-mixin;
+        }
+    }
+
+    .navigation-link_container {
+        @include navigation-link_container-mixin;
+
+        @media (max-width: $normal-screen-size) {
+            display: none;
+        }
+    }
+
+    .hidden-nav-links {
+        @include navigation-link_container-mixin;
+
+        @media (max-width: $semi-small-screen-size) {
+            display: none;
         }
     }
 

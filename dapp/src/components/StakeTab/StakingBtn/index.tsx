@@ -15,7 +15,7 @@ import {
 import {BigNumber, utils} from 'ethers';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {formatCurrency} from 'lib/format';
-import {safeParseUnits} from 'lib/numbers';
+import {safeParseUnits, countNumberOfDecimals} from 'lib/numbers';
 import {sleep} from 'lib/time';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
@@ -115,12 +115,20 @@ const getButtonText = (
             amountBN.eq(tokenBalance) ? '==' : '<=',
             utils.formatEther(tokenBalance),
         );
+
+        const numOfDecimals = countNumberOfDecimals(amountBN);
         // We display amount rather than stringifying amountBN, because we want
         // to make sure we display the same amount which is visible in the
         // staking amount field, and this is not guaranteed to be the same
         // due to rounding discrepancies, e.g. if Max button is clicked.
         return [
-            `STAKE ${amountBN ? formatCurrency(amountBN) : '0.00'} ZKP`,
+            `STAKE ${
+                amountBN
+                    ? formatCurrency(amountBN, {
+                          decimals: numOfDecimals === 3 ? 3 : 2,
+                      })
+                    : '0.00'
+            } ZKP`,
             true,
         ];
     }

@@ -38,3 +38,18 @@ export function safeParseStringToBN(
 ): BigNumber | null {
     return value ? BigNumber.from(value) : null;
 }
+
+/**
+ *  Counts number of decimal places inserted for passed number
+ * @param {BigNumber} numberForCheck - number to be used for checking of decimal places
+ */
+export function countNumberOfDecimals(numberForCheck: BigNumber): number {
+    const num = Number(utils.formatUnits(numberForCheck, 18));
+    const strNumber = num.toString();
+
+    if (strNumber.includes('.')) {
+        return strNumber.split('.')[1].length;
+    }
+
+    return 0;
+}

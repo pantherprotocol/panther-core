@@ -45,6 +45,7 @@ $dropdown-border-color: rgba(102, 141, 198, 0.4);
 $warning-box: rgb(0 0 0 / 38%);
 $header-box-shadow: rgba(0, 0, 0, 0.1);
 $footer-link-color: #9eabc5;
+$main-bg-color: #03051b;
 
 $color-beige: #ffdfbd;
 $third-blue: linear-gradient(0deg, #2b63eb, #2b63eb);
@@ -69,6 +70,7 @@ $dropdown-background: linear-gradient(
     rgba(75, 86, 107, 0.3),
     rgba(75, 86, 107, 0.3)
 );
+$main-bg-gradient: linear-gradient(90deg, #38cffe 2.86%, #a926d7 97.63%);
 
 $warning-box-background: linear-gradient(216deg, #0000007a, transparent);
 $toggle-button-group-color: linear-gradient(0deg, #3f4a5f, #3f4a5f);

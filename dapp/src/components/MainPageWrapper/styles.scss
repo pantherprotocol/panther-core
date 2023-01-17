@@ -10,6 +10,25 @@
     padding-bottom: 5px;
     min-height: 100vh;
     box-shadow: 1px 1px rgba(5, 6, 31, 1) inset;
+    background-color: $main-bg-color;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        position: absolute;
+        content: '';
+        top: -52%;
+        left: 0%;
+        width: 120%;
+        height: 44%;
+        filter: blur(350px);
+        background: $main-bg-gradient;
+        transform: rotate(5deg);
+    }
+
+    & .inner-wrapper {
+        backdrop-filter: blur(36px);
+    }
 
     &.isBlur {
         flex-grow: 1;

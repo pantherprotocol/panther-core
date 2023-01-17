@@ -175,3 +175,8 @@ export function getMissingEnvVars(): string[] {
         .filter(varName => !env[varName])
         .sort();
 }
+
+export function isStaging() {
+    const NODE_ENV = process.env.NODE_ENV as string;
+    return NODE_ENV === 'staging';
+}

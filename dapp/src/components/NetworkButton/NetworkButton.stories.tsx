@@ -8,7 +8,6 @@ import {Meta, Story} from '@storybook/react';
 import {Provider} from 'react-redux';
 import {store} from 'redux/store';
 import {NetworkSymbol} from 'services/connectors';
-import 'styles/dropdown-button.scss';
 
 import {NetworkButtonProps} from './NetworkButton.interface';
 

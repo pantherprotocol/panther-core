@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
 import * as React from 'react';
-import {useCallback} from 'react';
+import {useCallback, useEffect} from 'react';
 
 import {Box, Input, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
@@ -44,6 +44,11 @@ export default function StakingInput(props: StakingInputProps) {
     );
     const disabled = !account || !isStakingOpen;
 
+    const clearStakedValue = useCallback(() => {
+        dispatch(resetStakeAmount);
+        dispatch(resetRewards);
+    }, [dispatch]);
+
     const onChange = useCallback(
         (amount: string) => {
             if (tokenBalance && Number(tokenBalance)) {
@@ -54,11 +59,14 @@ export default function StakingInput(props: StakingInputProps) {
                     return;
                 }
             }
-            dispatch(resetStakeAmount);
-            dispatch(resetRewards);
+            clearStakedValue();
         },
-        [tokenBalance, dispatch, minLockPeriod],
+        [tokenBalance, dispatch, minLockPeriod, clearStakedValue],
     );
+
+    useEffect(() => {
+        clearStakedValue();
+    }, [account, clearStakedValue]);
 
     const inputHandler = useCallback(
         (e: any) => {

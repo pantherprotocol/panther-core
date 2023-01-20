@@ -18,7 +18,7 @@ import NavigationLink from './NavigationLink';
 import './styles.scss';
 
 export default function NavigationMenu() {
-    const {chainId} = useWeb3React();
+    const {active, chainId} = useWeb3React();
     const [openMenu, setOpenMenu] = useState(false);
     const links = getHeaderLinks({
         includeFaucet: !!chainId && isTestNetwork(chainId),
@@ -31,7 +31,10 @@ export default function NavigationMenu() {
                     <img src={logo} alt="Logo" />
                 </SafeLink>
             </Box>
-            <Box className="burger-menu" onClick={() => setOpenMenu(!openMenu)}>
+            <Box
+                className={`${active ? 'burger-menu' : 'disconnected'}`}
+                onClick={() => setOpenMenu(!openMenu)}
+            >
                 <span>Menu</span>
                 {openMenu ? (
                     <KeyboardArrowDownIcon className="menu-icon" />
@@ -40,9 +43,9 @@ export default function NavigationMenu() {
                 )}
             </Box>
             <Box
-                className={`navigation-link_container ${
-                    openMenu && 'expanded'
-                }`}
+                className={`${
+                    active ? 'navigation-link_container' : 'hidden-nav-links'
+                } ${openMenu && 'expanded'}`}
             >
                 {links.map((link: MenuLink) => (
                     <NavigationLink key={link.name} to={link.url}>

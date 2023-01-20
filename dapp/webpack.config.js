@@ -214,6 +214,7 @@ module.exports = {
         ? {
               minimize: true,
               minimizer: [new TerserPlugin()],
+              ...defaultOptimization,
           }
-        : {},
+        : defaultOptimization,
 };

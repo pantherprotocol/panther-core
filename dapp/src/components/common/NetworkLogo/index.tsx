@@ -3,16 +3,13 @@
 
 import ethIcon from 'images/eth-logo.svg';
 import maticIcon from 'images/polygon-logo.svg';
+import {NetworkSymbol} from 'services/connectors';
 
-export function networkLogo(logoName: string): string {
-    if (logoName === 'MATIC') {
-        return maticIcon;
-    }
+const networkLogoMap = new Map<NetworkSymbol, string>([
+    [NetworkSymbol.ETH, ethIcon],
+    [NetworkSymbol.MATIC, maticIcon],
+]);
 
-    if (logoName === 'ETH') {
-        return ethIcon;
-    }
-
-    // fallback to default Ethereum logo
-    return ethIcon;
+export function networkLogo(networkSymbol: NetworkSymbol): string {
+    return networkLogoMap.get(networkSymbol) || ethIcon;
 }

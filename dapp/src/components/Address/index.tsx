@@ -35,7 +35,7 @@ const Address = () => {
                     ) : (
                         network && (
                             <img
-                                src={networkLogo(network.logo)}
+                                src={networkLogo(network.symbol)}
                                 alt="panter logo"
                             />
                         )

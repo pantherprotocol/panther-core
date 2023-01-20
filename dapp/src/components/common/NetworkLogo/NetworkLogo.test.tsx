@@ -5,14 +5,15 @@ import * as React from 'react';
 
 import {screen, waitFor} from '@testing-library/react';
 import {renderComponent} from 'components/common/test-utils';
+import {NetworkSymbol} from 'services/connectors';
 
 import {networkLogo} from './index';
 
 test('should render img element correctly', async () => {
-    const testLogoName = 'MATIC';
     const testAltText = 'testAltText';
-
-    renderComponent(<img src={networkLogo(testLogoName)} alt={testAltText} />);
+    renderComponent(
+        <img src={networkLogo(NetworkSymbol.MATIC)} alt={testAltText} />,
+    );
 
     const networkLogoIMG = screen.getByAltText(testAltText);
 

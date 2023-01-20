@@ -10,13 +10,17 @@ import {Web3ReactContextInterface} from 'types/web3';
 
 import {CHAIN_IDS, FAUCET_CHAIN_IDS} from './env';
 
+export enum NetworkSymbol {
+    ETH = 'ETH',
+    MATIC = 'MATIC',
+}
+
 export interface Network {
     name: string;
     rpcURL: string;
-    symbol: string;
+    symbol: NetworkSymbol;
     decimals: number;
     explorerURLs: Array<string>;
-    logo: string;
 }
 
 // MASP chain ID could be only on Polygon or Hardhat networks
@@ -26,52 +30,46 @@ export const supportedNetworks: Record<number, Network> = {
     1: {
         name: 'Ethereum',
         rpcURL: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-        symbol: 'ETH',
+        symbol: NetworkSymbol.ETH,
         decimals: 18,
         explorerURLs: ['https://etherscan.io/'],
-        logo: 'ETH',
     },
     4: {
         name: 'Rinkeby',
         rpcURL: 'https://rinkey.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-        symbol: 'ETH',
+        symbol: NetworkSymbol.ETH,
         decimals: 18,
         explorerURLs: ['https://rinkeby.etherscan.io/'],
-        logo: 'ETH',
     },
     5: {
         name: 'Goerli',
         rpcURL: 'https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-        symbol: 'ETH',
+        symbol: NetworkSymbol.ETH,
         decimals: 18,
         explorerURLs: ['https://goerli.etherscan.io/'],
-        logo: 'ETH',
     },
     137: {
         name: 'Polygon',
         rpcURL: 'https://polygon-rpc.com/',
-        symbol: 'MATIC',
+        symbol: NetworkSymbol.MATIC,
         decimals: 18,
         explorerURLs: ['https://polygonscan.com/'],
-        logo: 'MATIC',
     },
     80001: {
         name: 'Mumbai',
         rpcURL: 'https://matic-mumbai.chainstacklabs.com',
         // This one doesn't work any more? See https://chainlist.org/
         // rpcURL: 'https://rpc-mumbai.maticvigil.com',
-        symbol: 'MATIC',
+        symbol: NetworkSymbol.MATIC,
         decimals: 18,
         explorerURLs: ['https://mumbai.polygonscan.com/'],
-        logo: 'MATIC',
     },
     31337: {
         name: 'Hardhat',
         rpcURL: 'http://127.0.0.1:8545/',
-        symbol: 'ETH',
+        symbol: NetworkSymbol.ETH,
         decimals: 18,
         explorerURLs: ['https://tryethernal.com/'],
-        logo: 'ETH',
     },
 };
 

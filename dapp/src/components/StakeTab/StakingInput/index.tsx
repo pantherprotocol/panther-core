@@ -66,7 +66,8 @@ export default function StakingInput(props: StakingInputProps) {
 
     useEffect(() => {
         clearStakedValue();
-    }, [account, clearStakedValue]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [account]);
 
     const inputHandler = useCallback(
         (e: any) => {

@@ -79,45 +79,49 @@ function App() {
         );
     }
 
-    function buildRouting(): React.ReactElement[] {
+    function buildRouting(): React.ReactNode {
         switch (env.APP_MODE) {
             case 'faucet':
-                return [
-                    <Route
-                        key="faucet"
-                        path={'/'}
-                        exact={true}
-                        component={Faucet}
-                    />,
-                ];
+                return (
+                    <>
+                        <Route
+                            key="faucet"
+                            path={'/'}
+                            exact={true}
+                            component={Faucet}
+                        />
+                    </>
+                );
 
             default:
-                return [
-                    <Route
-                        key="staking"
-                        path={Routes.Staking}
-                        exact={true}
-                        component={Staking}
-                    />,
-                    <Route
-                        key="zassets"
-                        path={Routes.ZAssets}
-                        exact={true}
-                        component={ZAssets}
-                    />,
-                    <Route
-                        key="faucet"
-                        path={Routes.Faucet}
-                        exact={true}
-                        component={Faucet}
-                    />,
-                    <Route
-                        key="contracts"
-                        path={Routes.Contracts}
-                        exact={true}
-                        component={ContractsPage}
-                    />,
-                ];
+                return (
+                    <>
+                        <Route
+                            key="staking"
+                            path={Routes.Staking}
+                            exact={true}
+                            component={Staking}
+                        />
+                        <Route
+                            key="zassets"
+                            path={Routes.ZAssets}
+                            exact={true}
+                            component={ZAssets}
+                        />
+                        <Route
+                            key="faucet"
+                            path={Routes.Faucet}
+                            exact={true}
+                            component={Faucet}
+                        />
+                        <Route
+                            key="contracts"
+                            path={Routes.Contracts}
+                            exact={true}
+                            component={ContractsPage}
+                        />
+                    </>
+                );
         }
     }
 
@@ -127,7 +131,7 @@ function App() {
             <div className="App">
                 <Router>
                     <Switch>
-                        {...buildRouting()}
+                        {buildRouting()}
                         <Route component={NotFoundPage} />
                     </Switch>
                 </Router>

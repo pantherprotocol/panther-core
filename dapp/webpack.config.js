@@ -11,39 +11,22 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const TerserPlugin = require('terser-webpack-plugin');
 
-// Set BABEL_UWC to get easy access to use-what-changed React hook debugging.
-// When enabled, this allows monitoring of when React hooks change simply by
-// putting a comment line:
-//
-//     // uwc-debug
-//
-// in front of any hooks you want to debug, as per the instructions:
-//
-//     https://github.com/simbathesailor/use-what-changed#usage-with-babel-plugin-recommended
-//
-// However it's not enabled by default because for some reason this config
-// breaks source maps, meaning that debugging in the browser results in having
-// to wade through annoyingly transpiled Javascript, which makes it a lot harder
-// to debug.
-const babelConfig = process.env.BABEL_UWC
-    ? [
-          {
-              loader: 'babel-loader',
-              options: {
-                  presets: ['@babel/preset-env'],
-                  plugins: [
-                      '@babel/plugin-proposal-object-rest-spread',
-                      [
-                          '@simbathesailor/babel-plugin-use-what-changed',
-                          {
-                              active: process.env.NODE_ENV !== 'production', // boolean
-                          },
-                      ],
-                  ],
-              },
-          },
-      ]
-    : [];
+const babelOptions = {
+    presets: [
+        '@babel/preset-env',
+        '@babel/preset-react',
+        '@babel/preset-typescript',
+    ],
+    plugins: [
+        '@babel/plugin-proposal-object-rest-spread',
+        [
+            '@simbathesailor/babel-plugin-use-what-changed',
+            {
+                active: process.env.NODE_ENV !== 'production', // boolean
+            },
+        ],
+    ],
+};
 
 const defaultOptimization = {
     splitChunks: {
@@ -103,12 +86,9 @@ module.exports = {
                 test: /\.ts|\.tsx?$/,
                 use: [
                     {
-                        loader: 'ts-loader',
-                        options: {
-                            transpileOnly: true,
-                        },
+                        loader: 'babel-loader',
+                        options: babelOptions,
                     },
-                    ...babelConfig,
                 ],
                 include: [
                     path.resolve(__dirname, './src'),

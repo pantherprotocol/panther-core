@@ -7,6 +7,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 const REQUIRED_ENV_VARS: string[] = [
+    'TARGET_ENV',
     'APP_MODE',
     'CHAIN_IDS',
     'MASP_CHAIN_ID',
@@ -35,6 +36,7 @@ interface EnvVariables {
 }
 
 export const env: EnvVariables = {
+    TARGET_ENV: process.env.TARGET_ENV,
     APP_MODE: process.env.APP_MODE,
     FAUCET_BASE_URL: process.env.FAUCET_BASE_URL,
     CHAIN_IDS: process.env.CHAIN_IDS,
@@ -176,7 +178,6 @@ export function getMissingEnvVars(): string[] {
         .sort();
 }
 
-export function isStaging() {
-    const NODE_ENV = process.env.NODE_ENV as string;
-    return NODE_ENV === 'staging';
+export function isStaging(): boolean {
+    return env.TARGET_ENV === 'staging';
 }

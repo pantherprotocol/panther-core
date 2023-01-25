@@ -8,7 +8,8 @@
     "build:contracts": "yarn workspace @panther-core/contracts compile",
     "build:crypto": "yarn workspace @panther-core/crypto build",
     "build:graph": "yarn workspace @panther-core/subgraph codegen && yarn workspace @panther-core/subgraph build",
-    "build:dapp": "yarn workspace @panther-core/dapp build",
+    "build:dapp:staging": "yarn workspace @panther-core/dapp build:staging",
+    "build:dapp:production": "yarn workspace @panther-core/dapp build:prod",
     "build:types": "yarn build:crypto && HARDHAT_NO_MNEMONIC=yes yarn build:contracts && yarn workspace @panther-core/contracts build:types && yarn workspace @panther-core/dapp build:types",
     "chain": "yarn workspace @panther-core/contracts chain",
     "circuits:compile": "yarn workspace @panther-core/circuits compile",
@@ -29,7 +30,7 @@
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "prettier:list-different": "yarn prettier --list-different .",
-    "test": "yarn test:contracts && yarn test:dapp",
+    "test": "yarn test:contracts && yarn test:crypto && yarn test:dapp",
     "test:contracts": "TS_NODE_TRANSPILE_ONLY=1 yarn workspace @panther-core/contracts test",
     "test:dapp": "yarn workspace @panther-core/dapp test",
     "test:crypto": "yarn workspace @panther-core/crypto test"

@@ -233,7 +233,7 @@ export default function FirstStageRedeem(props: {
             </Box>
 
             <DialogActions>
-                <Box className={`redeem-action-holder`}>
+                <Box className="redeem-action-holder">
                     <PrimaryActionButton
                         onClick={registerExitCommitment}
                         disabled={

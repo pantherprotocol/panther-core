@@ -40,11 +40,11 @@ const ExpectedPrpBalance = (props: {
         </Box>
 
         <Box className="balance-box">
-            <Typography className={`balance`}>
+            <Typography className="balance">
                 {formatCurrency(props.balance, {decimals: 0, scale: 0})}
             </Typography>
 
-            <Typography className={`prp-symbol`}>PRP</Typography>
+            <Typography className="prp-symbol">PRP</Typography>
         </Box>
     </Box>
 );

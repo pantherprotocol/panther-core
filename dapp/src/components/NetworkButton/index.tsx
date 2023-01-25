@@ -8,6 +8,7 @@ import {Box, Typography} from '@mui/material';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import {classnames} from 'components/common/classnames';
 import {networkLogo} from 'components/common/NetworkLogo';
 import {NetworkButtonProps} from 'components/NetworkButton/NetworkButton.interface';
 import {supportedNetworks} from 'services/connectors';
@@ -30,7 +31,7 @@ export default function NetworkButton(props: NetworkButtonProps) {
         <div className="dropdown-list wallet-button">
             <Button
                 id="network-list-button"
-                className={`dropdown-list-button ${open ? 'open' : ''}`}
+                className={classnames('dropdown-list-button', {open})}
                 aria-controls={open ? 'network-list' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}

@@ -9,6 +9,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import MenuIcon from '@mui/icons-material/Menu';
 import Box from '@mui/material/Box';
 import {useWeb3React} from '@web3-react/core';
+import {classnames} from 'components/common/classnames';
 import {SafeLink} from 'components/common/links';
 import logo from 'images/panther-logo.svg';
 import {isTestNetwork} from 'services/connectors';
@@ -32,7 +33,10 @@ export default function NavigationMenu() {
                 </SafeLink>
             </Box>
             <Box
-                className={`${active ? 'burger-menu' : 'disconnected'}`}
+                className={classnames({
+                    'burger-menu': active,
+                    disconnected: !active,
+                })}
                 onClick={() => setOpenMenu(!openMenu)}
             >
                 <span>Menu</span>
@@ -43,9 +47,11 @@ export default function NavigationMenu() {
                 )}
             </Box>
             <Box
-                className={`${
-                    active ? 'navigation-link_container' : 'hidden-nav-links'
-                } ${openMenu && 'expanded'}`}
+                className={classnames({
+                    expanded: openMenu,
+                    'navigation-link_container': active,
+                    'hidden-nav-links': !active,
+                })}
             >
                 {links.map((link: MenuLink) => (
                     <NavigationLink key={link.name} to={link.url}>

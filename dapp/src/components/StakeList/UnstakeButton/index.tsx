@@ -4,6 +4,7 @@
 import React from 'react';
 
 import {Button} from '@mui/material';
+import {classnames} from 'components/common/classnames';
 import {useAppSelector} from 'redux/hooks';
 import {
     walletActionCauseSelector,
@@ -34,7 +35,7 @@ const UnstakeButton = (props: {
     return (
         <Button
             data-testid="stake-list_stake-button_container"
-            className={`unstake-button ${!row.unstakable ? 'locked' : ''}`}
+            className={classnames('unstake-button', {locked: !row.unstakable})}
             disabled={disabled}
             onClick={() => {
                 unstakeById(row.id, 'unstake');

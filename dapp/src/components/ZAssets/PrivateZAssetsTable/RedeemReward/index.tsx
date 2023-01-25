@@ -5,6 +5,7 @@ import * as React from 'react';
 import {ReactElement, useState} from 'react';
 
 import {Button, Box} from '@mui/material';
+import {classnames} from 'components/common/classnames';
 import RedeemRewardsWarningDialog from 'components/ZAssets/PrivateZAssetsTable/RedeemRewardsWarningDialog';
 import {getUnixTime} from 'date-fns';
 import {useAppSelector} from 'redux/hooks';
@@ -73,9 +74,9 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
         <Box>
             <Button
                 variant="contained"
-                className={`redeem-button ${
-                    isRedemptionPossible && 'locked-button'
-                }`}
+                className={classnames('redeem-button', {
+                    'locked-button': isRedemptionPossible,
+                })}
                 disabled={
                     !afterExitTime ||
                     showExitInProgress ||

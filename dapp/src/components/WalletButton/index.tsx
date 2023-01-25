@@ -10,6 +10,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Address from 'components/Address';
 import {AddTokenButton} from 'components/AddTokenButton';
+import {classnames} from 'components/common/classnames';
 import ContractButton from 'components/ContractButton';
 import {ContractsListButton} from 'components/ContractsListButton';
 import {LogoutButton} from 'components/LogoutButton';
@@ -30,7 +31,7 @@ export default function WalletButton() {
         <div className="dropdown-list">
             <Button
                 id="wallet-list-button"
-                className={`dropdown-list-button ${open ? 'open' : ''}`}
+                className={classnames('dropdown-list-button', {open})}
                 aria-controls={open ? 'wallet-list' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}

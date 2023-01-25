@@ -6,6 +6,7 @@ import * as React from 'react';
 
 import {Box, Button} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import {classnames} from 'components/common/classnames';
 import {notifyError} from 'components/common/errors';
 import {MessageWithTx} from 'components/common/MessageWithTx';
 import {
@@ -318,7 +319,7 @@ const StakingBtn = (props: {
     );
 
     return (
-        <Box className={`buttons-holder ${activeClass}`}>
+        <Box className={classnames('buttons-holder', activeClass)}>
             <Button
                 className="staking-button"
                 onClick={() => {

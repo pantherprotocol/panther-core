@@ -1,5 +1,7 @@
 import React from 'react';
 
+import {classnames} from '../classnames';
+
 import './styles.scss';
 
 type BalanceProps = {
@@ -11,7 +13,7 @@ const StyledBalance = (props: BalanceProps) => {
     const {wholePart = '0', fractionalPart = '00', styles = ''} = props;
 
     return (
-        <div className={`styled-balance ${styles}`}>
+        <div className={classnames('styled-balance', styles)}>
             <span className="whole">{wholePart}</span>
             <span className="substring">.{fractionalPart}</span>
         </div>

@@ -6,6 +6,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import {Box} from '@mui/system';
 import BlockedUser from 'components/BlockedUser';
+import {classnames} from 'components/common/classnames';
 import Footer from 'components/Footer';
 import Header from 'components/Header';
 import {useAppSelector} from 'redux/hooks';
@@ -56,7 +57,7 @@ export const MainPageWrapper = (props: {
     return (
         <Box
             data-testid="main-page-wrapper_main-page-wrapper_container"
-            className={`main-page ${isBlur && 'isBlur'}`}
+            className={classnames('main-page', {isBlur})}
         >
             <Box
                 className="inner-wrapper"

@@ -6,6 +6,7 @@ import {useCallback, useEffect} from 'react';
 
 import {Box, Input, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
+import {classnames} from 'components/common/classnames';
 import {utils} from 'ethers';
 import logo from 'images/panther-logo.svg';
 import {formatCurrency} from 'lib/format';
@@ -118,7 +119,7 @@ export default function StakingInput(props: StakingInputProps) {
                             inputMode: 'decimal',
                             maxLength: 16,
                         }}
-                        className={`staking-input`}
+                        className="staking-input"
                         value={props.amountToStake}
                         onChange={inputHandler}
                         autoComplete="off"
@@ -131,9 +132,9 @@ export default function StakingInput(props: StakingInputProps) {
                     <Typography
                         variant="caption"
                         component="span"
-                        className={`staking-input-token-name ${
-                            props.amountToStake && ' invisible-token-name'
-                        }`}
+                        className={classnames('staking-input-token-name', {
+                            'invisible-token-name': !!props.amountToStake,
+                        })}
                     >
                         ZKP
                     </Typography>

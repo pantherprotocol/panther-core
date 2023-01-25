@@ -5,6 +5,8 @@ import React from 'react';
 
 import {Button} from '@mui/material';
 
+import {classnames} from '../classnames';
+
 import {PrimaryActionButtonProps} from './PrimaryActionButton.interface';
 
 import './styles.scss';
@@ -17,7 +19,7 @@ const PrimaryActionButton = (props: PrimaryActionButtonProps) => {
         >
             <Button
                 disabled={props.disabled ?? false}
-                className={`primary-action-button ${props.styles ?? ''}`}
+                className={classnames('primary-action-button', props.styles)}
                 onClick={props.onClick ?? null}
                 data-testid={props.dataTestid}
             >

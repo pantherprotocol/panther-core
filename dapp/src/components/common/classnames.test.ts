@@ -28,4 +28,9 @@ describe('classnames()', () => {
         const className = classnames({foo: true, bar: true});
         expect(className).toEqual('foo bar');
     });
+
+    it('classnames("foo", undefined) => "foo"', () => {
+        const className = classnames('foo', undefined);
+        expect(className).toEqual('foo');
+    });
 });

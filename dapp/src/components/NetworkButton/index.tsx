@@ -27,7 +27,7 @@ export default function NetworkButton(props: NetworkButtonProps) {
     };
 
     return (
-        <div className="dropdown-list">
+        <div className="dropdown-list wallet-button">
             <Button
                 id="network-list-button"
                 className={`dropdown-list-button ${open ? 'open' : ''}`}
@@ -42,6 +42,7 @@ export default function NetworkButton(props: NetworkButtonProps) {
                         src={networkLogo(props.networkSymbol)}
                         alt="Network logo"
                         data-testid="network-button_network-button_select-logo"
+                        className="address-logo"
                     />
                     <Typography className="network-name">
                         {props.networkName}

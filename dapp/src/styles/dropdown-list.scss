@@ -4,7 +4,7 @@
     width: 201px;
     margin-right: 10px;
     .MuiButtonBase-root.MuiButton-root {
-        padding: 8px;
+        padding: 8px 19px 8px 13px;
         display: flex;
         align-items: flex-start;
         justify-content: space-evenly;
@@ -43,6 +43,11 @@
                 @media (max-width: $normal-screen-size) {
                     width: 19px;
                 }
+            }
+
+            .address-logo {
+                width: 28px;
+                height: 25px;
             }
             p {
                 font-size: $normal-font-size;
@@ -84,5 +89,14 @@
                 }
             }
         }
+    }
+}
+
+.wallet-button {
+    width: 176px;
+    margin-right: 20px;
+
+    .MuiButtonBase-root.MuiButton-root {
+        padding: 10px 10px 10px 13px;
     }
 }

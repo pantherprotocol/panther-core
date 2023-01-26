@@ -8,7 +8,6 @@ import {Box} from '@mui/system';
 import BlockedUser from 'components/BlockedUser';
 import Footer from 'components/Footer';
 import Header from 'components/Header';
-import background from 'images/background-v0.5.png';
 import {useAppSelector} from 'redux/hooks';
 import {blurSelector} from 'redux/slices/ui/blur';
 import {isBlockedCountry} from 'services/geo-location';
@@ -37,24 +36,23 @@ export const MainPageWrapper = (props: {
         <Box
             data-testid="main-page-wrapper_main-page-wrapper_container"
             className={`main-page ${isBlur && 'isBlur'}`}
-            sx={{
-                backgroundImage: `url(${background})`,
-            }}
         >
-            <CssBaseline />
-            {blockedUser ? (
-                <BlockedUser />
-            ) : (
-                <Box data-testid="main-page-wrapper_main-page-wrapper_child">
-                    <Box className="header-container">
-                        <Header />
+            <Box className="inner-wrapper">
+                <CssBaseline />
+                {blockedUser ? (
+                    <BlockedUser />
+                ) : (
+                    <Box data-testid="main-page-wrapper_main-page-wrapper_child">
+                        <Box className="header-container">
+                            <Header />
+                        </Box>
+                        <Box className="body-container">{props.children}</Box>
+                        <Box className="footer-container">
+                            <Footer />
+                        </Box>
                     </Box>
-                    <Box className="body-container">{props.children}</Box>
-                    <Box className="footer-container">
-                        <Footer />
-                    </Box>
-                </Box>
-            )}
+                )}
+            </Box>
         </Box>
     );
 };

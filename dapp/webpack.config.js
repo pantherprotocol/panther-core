@@ -1,7 +1,6 @@
 /* eslint-disable */
 const path = require('path');
 const webpack = require('webpack');
-
 const SentryCliPlugin = require('@sentry/webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
@@ -11,6 +10,10 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const TerserPlugin = require('terser-webpack-plugin');
 
+const targetEnv = process.env.TARGET_ENV;
+const isProd = targetEnv === 'production';
+const isStaging = targetEnv === 'staging';
+const isProdOrStaging = isProd || isStaging;
 const babelOptions = {
     presets: [
         '@babel/preset-env',
@@ -49,7 +52,7 @@ const defaultOptimization = {
 
 module.exports = {
     entry: ['babel-polyfill', path.resolve(__dirname, './src/index.tsx')],
-    ...(process.env.NODE_ENV === 'production'
+    ...(isProdOrStaging
         ? {}
         : {
               devtool: 'source-map', // 'eval-cheap-source-map'
@@ -193,11 +196,7 @@ module.exports = {
         new webpack.ProvidePlugin({
             Buffer: ['buffer', 'Buffer'],
         }),
-        // only production or staging env
-        ...(process.env.NODE_ENV === 'production' ||
-        // TODO: we need to enable this plugin only for the production when we make v0.5 release
-        // @ts-ignore
-        process.env.NODE_ENV === 'staging'
+        ...(process.env.TARGET_ENV === 'production'
             ? [
                   new SentryCliPlugin({
                       include: '.',
@@ -211,13 +210,10 @@ module.exports = {
               ]
             : []),
     ],
-    optimization:
-        process.env.NODE_ENV === 'production' ||
-        process.env.NODE_ENV === 'staging'
-            ? {
-                  minimize: true,
-                  minimizer: [new TerserPlugin()],
-                  ...defaultOptimization,
-              }
-            : defaultOptimization,
+    optimization: isProdOrStaging
+        ? {
+              minimize: true,
+              minimizer: [new TerserPlugin()],
+          }
+        : {},
 };

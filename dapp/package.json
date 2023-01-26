@@ -8,9 +8,10 @@
   "scripts": {
     "start": "webpack-cli serve --mode=development --env development --hot",
     "start:prod": "webpack-cli serve --mode=production --env production --hot",
-    "build": "yarn check-types && webpack --mode=development --env development --progress --profile --json stats.json",
+    "build:dev": "TARGET_ENV=development yarn check-types && webpack --mode=development --env development --progress --profile --json stats.json",
+    "build:staging": "TARGET_ENV=staging yarn check-types && webpack --mode=production --env production --progress",
+    "build:prod": "TARGET_ENV=production yarn check-types && webpack --mode=production --env production --progress --profile --json stats.json",
     "build:types": "./scripts/gen-types.sh",
-    "build:prod": "yarn check-types && webpack --mode=production --env production --progress --profile --json stats.json",
     "stats": "webpack-bundle-analyzer stats.json build",
     "stats:dev": "yarn build && webpack-bundle-analyzer stats.json build",
     "stats:prod": "yarn build:prod && webpack-bundle-analyzer stats.json build",

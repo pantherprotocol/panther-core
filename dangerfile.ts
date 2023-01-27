@@ -53,6 +53,13 @@ if (commits.length > 5) {
     );
 }
 
+const modifiedFilesCount =
+    danger.git.modified_files.length + danger.git.created_files.length;
+if (modifiedFilesCount > 20) {
+    warn(
+        'There are more than 20 files changed in this merge request. Consider splitting into several MRs. This will make the review process much easier',
+    );
+}
 
 for (const commit of commits) {
     if (!commit.message.includes('Issue-URL')) {

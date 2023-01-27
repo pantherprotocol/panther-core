@@ -7,8 +7,17 @@ import {rules} from './commitlint.config';
 const mr = danger.gitlab.mr;
 const method = mr.title.includes('Draft') ? warn : fail;
 
-const modifiedMD = danger.git.modified_files.join('<br />- ');
-message('Changed Files in this PR:<br />- ' + modifiedMD);
+function markdonifyFiles(files: string[], mark: string): string {
+    if (files.length === 0) {
+        return '';
+    }
+    return `<br />- ${mark} ` + files.join(`<br /> - ${mark} `);
+}
+
+const editedMD = markdonifyFiles(danger.git.modified_files, 'MMM');
+const createdMD = markdonifyFiles(danger.git.created_files, '+++');
+const deletedMD = markdonifyFiles(danger.git.deleted_files, '---');
+message('Changed files in this PR:' + editedMD + createdMD + deletedMD);
 
 if (!mr.assignee) {
     warn(
@@ -43,6 +52,7 @@ if (commits.length > 5) {
         'There are more than 5 commits in this merge request. Consider splitting into several MRs. This will make the review process much easier',
     );
 }
+
 
 for (const commit of commits) {
     if (!commit.message.includes('Issue-URL')) {

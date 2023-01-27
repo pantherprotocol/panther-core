@@ -87,7 +87,10 @@ function fileIsTest(fileName: string): boolean {
     );
 }
 
-if (danger.git.created_files.some(fileIsTest)) {
+if (
+    danger.git.created_files.some(fileIsTest) ||
+    danger.git.modified_files.some(fileIsTest)
+) {
     message(`We love tests! Thanks for adding some, ${mr.author.name}!`);
 } else {
     warn(`No tests were added. Consider adding some`);

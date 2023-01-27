@@ -76,22 +76,42 @@ export function setupAxios(gitLabAccessToken: string) {
     axios.defaults.baseURL = 'https://gitlab.com/api/v4';
 }
 
-function buildCommentBody(ipfsCid: string) {
+function makeCommentBody(ipfsCid: string, builds: Build[]): string {
     return [
-        `#### Your latest IPFS build can be accessed from [here](https://ipfs.io/ipfs/${ipfsCid}/) 🔥`,
-        `<details><summary>IPFS CID</summary> \n\n\n **IPFS CID:** *${ipfsCid}* </details>`,
+        `#### Your latest IPFS build can be accessed from [here](${makeIpfsUrl(
+            ipfsCid,
+        )}) 🔥`,
+        `<details>`,
+        `<summary>Previous Builds</summary>`,
+        builds
+            .map(build =>
+                [
+                    '-',
+                    build.commitShaShort,
+                    `(${build.createdAt.toUTCString()})`,
+                    ':',
+                    `[${build.ipfsCid}](${makeIpfsUrl(build.ipfsCid)})`,
+                ].join(' '),
+            )
+            .join('\n'),
+        `</details>`,
         // A flag to mark the ipfs comment. Will not be visible.
         `[](${ipfsCommentFlag})`,
-    ].join('\n');
+        `[  ](${serializeBuilds(builds)})`,
+    ].join('\n\n');
 }
 
-async function makeGitLabComment(mergeReqId: number, ipfsCid: string) {
+async function makeGitLabComment(
+    mergeReqId: string,
+    ipfsCid: string,
+    build: Build,
+): Promise<void> {
     await axios.post(
         `/projects/${PC_PROJECT_ID}/merge_requests/${mergeReqId}/notes`,
         null,
         {
             params: {
-                body: buildCommentBody(ipfsCid),
+                body: makeCommentBody(ipfsCid, [build]),
             },
         },
     );
@@ -103,7 +123,7 @@ type Comment = {
 };
 
 async function getPreviousIpfsComment(
-    mergeReqId: number,
+    mergeReqId: string,
 ): Promise<Comment | null> {
     const {data} = await axios.get<Comment[]>(
         `/projects/${PC_PROJECT_ID}/merge_requests/${mergeReqId}/notes`,
@@ -121,37 +141,42 @@ async function getPreviousIpfsComment(
 }
 
 async function updateGitLabComment(
-    mergeReqId: number,
+    mergeReqId: string,
     commentId: number,
     ipfsCid: string,
+    builds: Build[],
 ): Promise<void> {
     await axios.put(
         `/projects/${PC_PROJECT_ID}/merge_requests/${mergeReqId}/notes/${commentId}`,
         null,
         {
             params: {
-                body: buildCommentBody(ipfsCid),
+                body: makeCommentBody(ipfsCid, builds),
             },
         },
     );
 }
 
-function getEnvVariables(): {
-    gitLabAccessToken: string;
-    projectId: string;
-    projectSecret: string;
-    mergeReqId: number;
-} {
-    const requiredEnvVars: string[] = [
-        'GITLAB_ACCESS_TOKEN',
-        'INFURA_PROJECT_ID',
-        'INFURA_PROJECT_SECRET_ID',
-        'CI_MERGE_REQUEST_IID',
-    ];
+type EnvVars = Record<
+    | 'gitLabAccessToken'
+    | 'projectId'
+    | 'projectSecret'
+    | 'mergeReqId'
+    | 'commitShaShort',
+    string
+>;
+function getEnvVariables(): EnvVars {
+    const envVars: EnvVars = {
+        gitLabAccessToken: 'GITLAB_ACCESS_TOKEN',
+        projectId: 'INFURA_PROJECT_ID',
+        projectSecret: 'INFURA_PROJECT_SECRET_ID',
+        mergeReqId: 'CI_MERGE_REQUEST_IID',
+        commitShaShort: 'CI_COMMIT_SHORT_SHA',
+    };
 
     const missingEnvVars: string[] = [];
 
-    requiredEnvVars.forEach(envVar => {
+    Object.values(envVars).forEach((envVar: string) => {
         if (!process.env[envVar]) {
             missingEnvVars.push(envVar);
         }
@@ -164,31 +189,96 @@ function getEnvVariables(): {
         process.exit(1);
     }
 
-    return {
-        gitLabAccessToken: process.env['GITLAB_ACCESS_TOKEN']!,
-        projectId: process.env['INFURA_PROJECT_ID']!,
-        projectSecret: process.env['INFURA_PROJECT_SECRET_ID']!,
-        mergeReqId: Number(process.env['CI_MERGE_REQUEST_IID']),
-    };
+    for (const [key, value] of Object.entries<string>(envVars)) {
+        envVars[key as keyof EnvVars] = process.env[value]!;
+    }
+    return envVars;
 }
 
+// ============================== serialize/deserialize ==============================
+
+type Build = {
+    commitShaShort: string;
+    ipfsCid: string;
+    createdAt: Date;
+};
+
+/*
+ * RegExp to extract preivous builds from the comment body
+ * View on regex101: https://regex101.com/r/PxdlHd/1
+ * Builds are encoded in JSON string with an empty link (2 spaces)
+ * Example:
+ *  [  ]([[commit_sha_1, url_1], [commit_sha_2, url_2]])
+ */
+const reBuilds = /\[\s\s\]\((.+)\)/;
+function getPreviousBuilds(body: string): Build[] {
+    const buildsStr = body.match(reBuilds);
+    if (!buildsStr || !buildsStr[1]) return [];
+    try {
+        return deserializeBuilds(buildsStr[1]);
+    } catch (err) {
+        console.log(`Invalid JSON:\n${err}\n${buildsStr[1]}`);
+        return [];
+    }
+}
+
+// Convert build objects into a string with a compact format
+function serializeBuilds(builds: Build[]): string {
+    return JSON.stringify(
+        builds.map(build => [
+            build.commitShaShort,
+            build.ipfsCid,
+            build.createdAt.getTime(),
+        ]),
+    );
+}
+
+// Parse builds string into JS objects
+function deserializeBuilds(buildsStr: string): Build[] {
+    const builds = JSON.parse(buildsStr) as Array<
+        [
+            string, // commitShaShort
+            string, // ipfsCid
+            number, // createdAt: timestamp
+        ]
+    >;
+    return builds.map(build => ({
+        commitShaShort: build[0],
+        ipfsCid: build[1],
+        createdAt: new Date(build[2]),
+    }));
+}
+
+// ============================== Utils ==============================
+function makeIpfsUrl(ipfsCid: string): string {
+    return `https://ipfs.io/ipfs/${ipfsCid}/`;
+}
+
+// ============================== Entery Point  ==============================
 async function main() {
     const envVars = getEnvVariables();
-
     setupAxios(envVars.gitLabAccessToken);
 
-    const ipfsCid = await deployToIpfs(
-        envVars.projectId,
-        envVars.projectSecret,
-    );
-
-    const comment = await getPreviousIpfsComment(envVars.mergeReqId);
+    const [ipfsCid, comment] = await Promise.all([
+        deployToIpfs(envVars.projectId, envVars.projectSecret),
+        getPreviousIpfsComment(envVars.mergeReqId),
+    ]);
 
     if (comment === null) {
-        await makeGitLabComment(envVars.mergeReqId, ipfsCid);
-    } else {
-        await updateGitLabComment(envVars.mergeReqId, comment.id, ipfsCid);
+        return await makeGitLabComment(envVars.mergeReqId, ipfsCid, {
+            commitShaShort: envVars.commitShaShort,
+            ipfsCid,
+            createdAt: new Date(),
+        });
     }
+
+    const builds = getPreviousBuilds(comment.body);
+    builds.push({
+        commitShaShort: envVars.commitShaShort,
+        ipfsCid,
+        createdAt: new Date(),
+    });
+    await updateGitLabComment(envVars.mergeReqId, comment.id, ipfsCid, builds);
 }
 
 main()

@@ -162,7 +162,8 @@ type EnvVars = Record<
     | 'projectId'
     | 'projectSecret'
     | 'mergeReqId'
-    | 'commitShaShort',
+    | 'commitShaShort'
+    | 'commitTitle',
     string
 >;
 function getEnvVariables(): EnvVars {
@@ -172,6 +173,7 @@ function getEnvVariables(): EnvVars {
         projectSecret: 'INFURA_PROJECT_SECRET_ID',
         mergeReqId: 'CI_MERGE_REQUEST_IID',
         commitShaShort: 'CI_COMMIT_SHORT_SHA',
+        commitTitle: 'CI_COMMIT_TITLE',
     };
 
     const missingEnvVars: string[] = [];
@@ -233,6 +235,21 @@ function serializeBuilds(builds: Build[]): string {
     );
 }
 
+/*
+ * RegExp to extract current module from the commit title
+ * View on regex101: https://regex101.com/r/rTxEQA/1
+ * Modules: dapp, graph, crypto, contracts
+ * Example:
+ *  - feat(dapp): deploy to IPFS from CI/CD
+ *  - refactor(dapp): use gradient instead of image
+ */
+const reModule = /.+\((.+)\)\s?:\s?/;
+export function getModule(commitTitle: string): string | null {
+    const result = commitTitle.match(reModule);
+    if (!result) return null;
+    return result[1];
+}
+
 // Parse builds string into JS objects
 function deserializeBuilds(buildsStr: string): Build[] {
     const builds = JSON.parse(buildsStr) as Array<
@@ -257,8 +274,16 @@ function makeIpfsUrl(ipfsCid: string): string {
 // ============================== Entery Point  ==============================
 async function main() {
     const envVars = getEnvVariables();
-    setupAxios(envVars.gitLabAccessToken);
+    const modulesToWatch = ['dapp', 'crypto'];
+    const module = getModule(envVars.commitTitle);
 
+    if (!module) throw new Error('Module not found. Invalid commit title');
+    if (!modulesToWatch.includes(module))
+        return console.log(
+            `Info: Script will not run for the '${module}' moudle`,
+        );
+
+    setupAxios(envVars.gitLabAccessToken);
     const [ipfsCid, comment] = await Promise.all([
         deployToIpfs(envVars.projectId, envVars.projectSecret),
         getPreviousIpfsComment(envVars.mergeReqId),

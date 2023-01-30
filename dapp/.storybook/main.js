@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
     reactOptions: {
@@ -14,6 +15,12 @@ module.exports = {
                 Buffer: ['buffer', 'Buffer'],
             }),
         );
+        config.resolve.plugins = [
+            ...(config.resolve.plugins || []),
+            new TsconfigPathsPlugin({
+                extensions: config.resolve.extensions,
+            }),
+        ];
         return {
             ...config,
             resolve: {

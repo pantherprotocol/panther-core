@@ -98,7 +98,12 @@ const config: HardhatUserConfig = {
         mumbai: createNetworkConfig('mumbai'),
     },
     etherscan: {
-        apiKey: process.env.ETHERSCAN_API_KEY || process.env.POLYSCAN_API,
+        apiKey: {
+            mainnet: process.env.ETHERSCAN_API_KEY as string,
+            goerli: process.env.ETHERSCAN_API_KEY as string,
+            polygon: process.env.POLYGONSCAN_API_KEY as string,
+            polygonMumbai: process.env.POLYGONSCAN_API_KEY as string,
+        },
     },
     // @ts-ignore
     gasReporter: {

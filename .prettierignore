@@ -36,6 +36,7 @@ dapp/src/types/circomlibjs/
 dapp/src/types/contracts/
 dapp/src/types/ffjavascript/
 dapp/LICENSE*
+dapp/stats.json
 
 .env
 .env.*

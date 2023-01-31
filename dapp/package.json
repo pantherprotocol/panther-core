@@ -17,6 +17,7 @@
     "stats:prod": "yarn build:prod && webpack-bundle-analyzer stats.json build",
     "check-types": "tsc --project tsconfig.json --noEmit --isolatedModules false",
     "deploy:ipfs": "./scripts/deploy-ipfs.sh | tee -a ipfs-deployment.log",
+    "deploy:ci:ipfs": "yarn ts-node scripts/deploy-ipfs.ts",
     "lint": "yarn lint:ts && yarn run prettier:list-different",
     "lint:eslint": "eslint --max-warnings 0",
     "lint:ts": "yarn lint:eslint .",

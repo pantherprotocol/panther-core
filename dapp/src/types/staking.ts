@@ -21,23 +21,6 @@ export type StakeRewardBN = ClassicStakeRewardBN | AdvancedStakeRewardsBN;
 
 export type ClassicStakeRewardBN = BigNumber;
 
-export type AdvancedStakeRewards = {
-    id: string;
-    creationTime: string;
-    commitments: string[];
-    utxoData: string;
-    zZkpUTXOStatus: UTXOStatus;
-    zZKP: string;
-    PRP: string;
-    exitCommitmentTime?: number;
-};
-
-export enum UTXOStatus {
-    UNDEFINED = 'undefined',
-    UNSPENT = 'unspent',
-    SPENT = 'spent',
-}
-
 export type AdvancedStakeRewardsBN = {
     [key in AdvancedStakeTokenIDs]: BigNumber;
 };

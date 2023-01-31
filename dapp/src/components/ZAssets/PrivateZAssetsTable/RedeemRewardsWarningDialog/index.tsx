@@ -6,7 +6,7 @@ import {useEffect} from 'react';
 
 import {useAppDispatch} from 'redux/hooks';
 import {removeBlur, setBlur} from 'redux/slices/ui/blur';
-import {AdvancedStakeRewards} from 'types/staking';
+import {UTXO} from 'types/utxo';
 
 import FirstStageRedeem from './FirstStageRedeem';
 import SecondStageRedeem from './SecondStageRedeem';
@@ -15,7 +15,7 @@ import './styles.scss';
 
 export default function RedeemRewardsWarningDialog(props: {
     handleClose: () => void;
-    reward: AdvancedStakeRewards;
+    reward: UTXO;
 }) {
     const {handleClose, reward} = props;
     const dispatch = useAppDispatch();

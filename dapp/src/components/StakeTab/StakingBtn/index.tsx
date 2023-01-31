@@ -40,8 +40,8 @@ import {
     walletActionCauseSelector,
     walletActionStatusSelector,
 } from 'redux/slices/ui/web3-wallet-last-action';
-import {getAdvancedStakesRewardsAndUpdateStatus} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {getChainBalance} from 'redux/slices/wallet/chain-balance';
+import {getUTXOsAndUpdateStatus} from 'redux/slices/wallet/utxos';
 import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
 import {chainHasAdvancedStaking} from 'services/contracts';
 import {MultiError} from 'services/errors';
@@ -288,7 +288,7 @@ const StakingBtn = (props: {
                 },
             });
 
-            dispatch(getAdvancedStakesRewardsAndUpdateStatus, {
+            dispatch(getUTXOsAndUpdateStatus, {
                 context,
                 keys,
                 withRetry: true,

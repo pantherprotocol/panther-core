@@ -11,8 +11,8 @@ import PrivateBalance from 'components/ZAssets/PrivateBalance';
 import PrivateZAssetsTable from 'components/ZAssets/PrivateZAssetsTable';
 import WrongZAssetsNetwork from 'components/ZAssets/WrongZassetsNetwork';
 import {useAppDispatch} from 'redux/hooks';
-import {getAdvancedStakesRewards} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {getPoolV0ExitTime} from 'redux/slices/wallet/poolV0';
+import {getUTXOs} from 'redux/slices/wallet/utxos';
 import {chainHasPoolContract} from 'services/contracts';
 
 import './styles.scss';
@@ -24,7 +24,7 @@ export default function ZAssets(): React.ReactElement {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        dispatch(getAdvancedStakesRewards, {context});
+        dispatch(getUTXOs, {context});
         if (!chainId || !chainHasPoolContract(chainId)) return;
         dispatch(getPoolV0ExitTime, context);
     }, [context, dispatch, chainId]);

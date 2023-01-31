@@ -29,12 +29,12 @@ import {
     StartWalletActionPayload,
     WalletSignatureTrigger,
 } from 'redux/slices/ui/web3-wallet-last-action';
-import {
-    getAdvancedStakesRewardsAndUpdateStatus,
-    resetAdvancedStakesRewardsStatus,
-    statusSelector,
-} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {getChainBalance} from 'redux/slices/wallet/chain-balance';
+import {
+    getUTXOsAndUpdateStatus,
+    resetUTXOsStatus,
+    statusSelector,
+} from 'redux/slices/wallet/utxos';
 import {
     getZkpTokenBalance,
     zkpTokenBalanceSelector,
@@ -84,7 +84,7 @@ export default function UnstakedBalance() {
                 },
             });
 
-            await dispatch(getAdvancedStakesRewardsAndUpdateStatus, {
+            await dispatch(getUTXOsAndUpdateStatus, {
                 context,
                 keys,
                 withRetry: false,
@@ -104,7 +104,7 @@ export default function UnstakedBalance() {
         'Failed to refresh wallet balance',
         'Cannot refresh UTXOs',
         statusSelector,
-        resetAdvancedStakesRewardsStatus,
+        resetUTXOsStatus,
     );
     const [wholePart, fractionalPart] = tokenBalance
         ? getFormattedFractions(utils.formatEther(tokenBalance))

@@ -11,14 +11,13 @@ import {fiatPrice} from 'lib/token-price';
 import {useAppSelector} from 'redux/hooks';
 import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
 import {zkpStakedBalanceSelector} from 'redux/slices/staking/zkp-staked-balance';
-import {totalSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
+import {totalPRPSelector, totalSelector} from 'redux/slices/wallet/utxos';
 import {
     isEthereumNetwork,
     Network,
     supportedNetworks,
 } from 'services/connectors';
 import {chainHasPoolContract} from 'services/contracts';
-import {StakingRewardTokenID} from 'types/staking';
 
 import AddressBalances from './AddressBalances';
 import AddressWithSetting from './AddressWithSetting';
@@ -38,15 +37,11 @@ const BalanceCard = () => {
     const zkpStakedBalance = useAppSelector(zkpStakedBalanceSelector);
     const zkpStakedUSDValue = fiatPrice(zkpStakedBalance, zkpPrice);
 
-    const zZkpRewardBalance = useAppSelector(
-        totalSelector(chainId, account, StakingRewardTokenID.zZKP),
-    );
+    const zZkpRewardBalance = useAppSelector(totalSelector(chainId, account));
 
     const zZkpRewardsUSDValue = fiatPrice(zZkpRewardBalance, zkpPrice);
 
-    const prpRewardBalance = useAppSelector(
-        totalSelector(chainId, account, StakingRewardTokenID.PRP, true),
-    );
+    const prpRewardBalance = useAppSelector(totalPRPSelector(chainId, account));
 
     return (
         <Box className="balance-card-holder" data-testid="balance-card_wrapper">

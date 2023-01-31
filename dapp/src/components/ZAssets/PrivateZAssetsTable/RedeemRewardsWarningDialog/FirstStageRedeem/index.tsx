@@ -40,15 +40,15 @@ import {
 import {
     updateExitCommitmentTime,
     updateUTXOStatus,
-} from 'redux/slices/wallet/advanced-stakes-rewards';
+} from 'redux/slices/wallet/utxos';
 import {MultiError, parseTxErrorMessage} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 import {registerCommitToExit} from 'services/pool';
-import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
+import {UTXO, UTXOStatus} from 'types/utxo';
 
 export default function FirstStageRedeem(props: {
     handleClose: () => void;
-    reward: AdvancedStakeRewards;
+    reward: UTXO;
 }) {
     const {handleClose, reward} = props;
     const [redemptionConfirmed, setRedeemConfirmed] = useState(false);
@@ -104,7 +104,7 @@ export default function FirstStageRedeem(props: {
                 library,
                 account as string,
                 chainId as number,
-                reward.utxoData,
+                reward.data,
                 BigInt(reward.id),
                 keys,
             );

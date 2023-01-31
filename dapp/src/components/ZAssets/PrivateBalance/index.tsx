@@ -51,12 +51,11 @@ import {
     totalSelector,
     refreshUTXOsStatuses,
     totalUnrealizedPrpSelector,
-    resetAdvancedStakesRewardsStatus,
-} from 'redux/slices/wallet/advanced-stakes-rewards';
+    resetUTXOsStatus,
+} from 'redux/slices/wallet/utxos';
 import {chainHasPoolContract} from 'services/contracts';
 import {MultiError} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
-import {StakingRewardTokenID} from 'types/staking';
 
 import './styles.scss';
 
@@ -74,9 +73,7 @@ export default function PrivateBalance() {
     >('needed');
 
     const zkpPrice = useAppSelector(zkpMarketPriceSelector);
-    const unclaimedZZKP = useAppSelector(
-        totalSelector(chainId, account, StakingRewardTokenID.zZKP),
-    );
+    const unclaimedZZKP = useAppSelector(totalSelector(chainId, account));
     const totalUnrealizedPrp = useAppSelector(
         totalUnrealizedPrpSelector(chainId, account),
     );
@@ -134,7 +131,7 @@ export default function PrivateBalance() {
         'Failed to refresh UTXOs',
         'Cannot refresh UTXOs',
         statusSelector,
-        resetAdvancedStakesRewardsStatus,
+        resetUTXOsStatus,
     );
 
     const refreshIfUndefinedUTXOs = useCallback(async () => {

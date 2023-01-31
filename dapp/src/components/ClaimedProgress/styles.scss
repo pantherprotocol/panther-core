@@ -1,6 +1,7 @@
 @import '../../variables.scss';
 
 .claimed-progress-container {
+    margin-right: 10px;
     @media (max-width: $medium-screen-size) {
         width: 100%;
     }
@@ -9,7 +10,6 @@
         justify-content: center;
         align-items: start;
         flex-direction: column;
-        max-width: 370px;
 
         .title {
             font-weight: $normal-font-weight;

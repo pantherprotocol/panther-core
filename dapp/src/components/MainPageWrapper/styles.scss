@@ -37,19 +37,24 @@
     }
 
     .header-container {
-        min-height: 10vh;
+        min-height: 5vh;
         @media (max-width: $medium-screen-size) {
             margin-bottom: 20px;
         }
     }
 
     .body-container {
-        min-height: 84vh;
-        padding-top: 100px;
-        padding-bottom: 10px;
+        min-height: 90vh;
+        padding-top: 80px;
+        padding-bottom: 40px;
+
+        @media (max-width: $normal-screen-size) {
+            padding-top: 20px;
+        }
 
         @media (max-width: $medium-screen-size) {
-            padding-top: 0;
+            padding-top: 5px;
+            padding-bottom: 0;
         }
     }
 

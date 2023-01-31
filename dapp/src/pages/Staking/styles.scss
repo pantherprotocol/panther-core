@@ -17,5 +17,9 @@
         @media (max-width: $large-screen-size) {
             margin: 0 16px;
         }
+
+        @media (max-width: $medium-screen-size) {
+            width: 100%;
+        }
     }
 }

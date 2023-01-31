@@ -30,7 +30,7 @@ import {
 } from 'redux/slices/ui/web3-wallet-last-action';
 import {getChainBalance} from 'redux/slices/wallet/chain-balance';
 import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
-import {parseTxErrorMessage} from 'services/errors';
+import {MultiError} from 'services/errors';
 import {StakeRow, unstake} from 'services/staking';
 
 import UnstakeRow from './StakeItem';
@@ -57,7 +57,7 @@ async function unstakeWithNotification(
         openNotification(
             'Transaction error',
             <MessageWithTx
-                message={parseTxErrorMessage(err)}
+                message={err.message}
                 chainId={chainId}
                 txHash={tx?.hash}
             />,
@@ -80,11 +80,11 @@ async function unstakeWithNotification(
     const event = await awaitConfirmationAndRetrieveEvent(tx, 'StakeClaimed');
     removeNotification(inProgress);
 
-    if (event instanceof Error) {
+    if (event instanceof MultiError) {
         openNotification(
             'Transaction error',
             <MessageWithTx
-                message={parseTxErrorMessage(event)}
+                message={event.message}
                 txHash={tx?.hash}
                 chainId={chainId}
             />,

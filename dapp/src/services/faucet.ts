@@ -6,13 +6,13 @@ import {ContractTransaction} from 'ethers/lib/ethers';
 import {DetailedError} from 'types/error';
 
 import {getFaucetContract, getSignableContract} from './contracts';
-import {parseTxErrorMessage} from './errors';
+import {MultiError} from './errors';
 
 export async function craftSendFaucetTransaction(
     library: any,
     chainId: number,
     account: string,
-): Promise<[BigNumber | DetailedError, Contract]> {
+): Promise<[BigNumber | MultiError<DetailedError>, Contract]> {
     const {contract} = getSignableContract(
         library,
         chainId,
@@ -29,11 +29,11 @@ export async function craftSendFaucetTransaction(
         return [maxAmountToPay, contract];
     } catch (err) {
         return [
-            {
-                message: 'Failed to prepare transaction',
-                details: `Couldn't obtain maxAmountToPay from faucet at ${contract.address}`,
+            new MultiError<DetailedError>({
+                errorLabel: 'Failed to prepare transaction',
+                message: `Couldn't obtain maxAmountToPay from faucet at ${contract.address}`,
                 triggerError: err as Error,
-            } as DetailedError,
+            }),
             contract,
         ];
     }
@@ -43,16 +43,16 @@ export async function faucetDrink(
     contract: Contract,
     account: string,
     maxAmountToPay: BigNumber,
-): Promise<ContractTransaction | DetailedError> {
+): Promise<ContractTransaction | MultiError> {
     try {
         return await contract.drink(account, {
             value: maxAmountToPay,
         });
     } catch (err) {
-        return {
-            message: 'Failed to submit transaction',
-            details: parseTxErrorMessage(err),
-            triggerError: err,
-        } as DetailedError;
+        // `err` will be an`RPC` error
+        // Needs to be parsed first with `MultiError` then convert it into `DetailedError`
+        return new MultiError(err).addErrorLabel(
+            'Failed to submit transaction',
+        );
     }
 }

@@ -37,10 +37,9 @@ import {updateUTXOStatus} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {getChainBalance} from 'redux/slices/wallet/chain-balance';
 import {poolV0ExitDelaySelector} from 'redux/slices/wallet/poolV0';
 import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
-import {parseTxErrorMessage} from 'services/errors';
+import {MultiError} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 import {exit} from 'services/pool';
-import {isDetailedError} from 'types/error';
 import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
 
 export default function SecondStageRedeem(props: {
@@ -76,10 +75,10 @@ export default function SecondStageRedeem(props: {
         } as StartWalletActionPayload);
         const signer = library.getSigner(account);
         const keys = await generateRootKeypairs(signer);
-        if (keys instanceof Error) {
+        if (keys instanceof MultiError) {
             notifyError({
-                message: 'Panther wallet error',
-                details: `Failed to generate Panther wallet secrets from signature: ${keys.message}`,
+                errorLabel: 'Panther wallet error',
+                message: `Failed to generate Panther wallet secrets from signature: ${keys.message}`,
                 triggerError: keys,
             });
             dispatch(registerWalletActionFailure, 'signMessage');
@@ -104,7 +103,7 @@ export default function SecondStageRedeem(props: {
             reward.commitments,
             keys,
         );
-        if (isDetailedError(tx)) {
+        if (tx instanceof MultiError) {
             dispatch(
                 utxoStatus == UTXOStatus.UNDEFINED
                     ? registerWalletActionFailure
@@ -135,7 +134,7 @@ export default function SecondStageRedeem(props: {
         const event = await awaitConfirmationAndRetrieveEvent(tx, 'Nullifier');
         removeNotification(inProgress);
 
-        if (event instanceof Error) {
+        if (event instanceof MultiError) {
             dispatch(registerWalletActionSuccess, 'exit');
             dispatch(updateUTXOStatus, [
                 chainId,
@@ -145,10 +144,8 @@ export default function SecondStageRedeem(props: {
             ]);
 
             return notifyError({
-                message: 'Transaction error',
-                details: `Cannot find event in receipt: ${parseTxErrorMessage(
-                    event,
-                )}`,
+                errorLabel: 'Transaction error',
+                message: `Cannot find event in receipt: ${event.message}`,
                 triggerError: event,
             });
         }

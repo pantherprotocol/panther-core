@@ -17,7 +17,6 @@ import {
 import PrimaryActionButton from 'components/common/PrimaryActionButton';
 import ConnectButton from 'components/ConnectButton';
 import SwitchNetworkButton from 'components/SwitchNetworkButton';
-import {ContractTransaction} from 'ethers/lib/ethers';
 import goerliIcon from 'images/goerli-logo.svg';
 import polygonIcon from 'images/polygon-logo.svg';
 import {formatAccountAddress, formatCurrency} from 'lib/format';
@@ -29,10 +28,9 @@ import {
 } from 'redux/slices/wallet/zkp-token-balance';
 import {isWrongNetwork, supportedNetworks} from 'services/connectors';
 import {FAUCET_CHAIN_IDS} from 'services/env';
-import {parseTxErrorMessage} from 'services/errors';
+import {MultiError} from 'services/errors';
 import {craftSendFaucetTransaction, faucetDrink} from 'services/faucet';
 import {switchNetwork} from 'services/wallet';
-import {isDetailedError, DetailedError} from 'types/error';
 
 import './styles.scss';
 
@@ -99,16 +97,13 @@ function ZafariFaucet() {
             account,
         );
 
-        if (isDetailedError(response)) {
+        if (response instanceof MultiError) {
             return notifyError(response);
         }
 
-        const tx: ContractTransaction | DetailedError = await faucetDrink(
-            contract,
-            account,
-            response,
-        );
-        if (isDetailedError(tx)) {
+        const tx = await faucetDrink(contract, account, response);
+
+        if (tx instanceof MultiError) {
             return notifyError(tx);
         }
 
@@ -127,18 +122,16 @@ function ZafariFaucet() {
             const receipt = await tx.wait(CONFIRMATIONS_NUM);
             if (receipt.status === 0) {
                 console.error('receipt: ', receipt);
-                throw new Error(
+                throw new MultiError(
                     'Transaction failed on-chain without giving error details.',
                 );
             }
         } catch (err) {
             removeNotification(inProgress);
             Sentry.captureException(err);
-            return notifyError({
-                message: 'Transaction failed',
-                details: parseTxErrorMessage(err),
-                triggerError: err as Error,
-            });
+            return notifyError(
+                new MultiError(err).addErrorLabel('Transaction failed'),
+            );
         }
 
         removeNotification(inProgress);

@@ -11,6 +11,7 @@ import Header from 'components/Header';
 import {useAppSelector} from 'redux/hooks';
 import {blurSelector} from 'redux/slices/ui/blur';
 import {isStaging} from 'services/env';
+import {MultiError} from 'services/errors';
 import {isBlockedCountry} from 'services/geo-location';
 
 import './styles.scss';
@@ -41,7 +42,7 @@ export const MainPageWrapper = (props: {
     useEffect(() => {
         async function checkIfBlockedUser() {
             const response = await isBlockedCountry();
-            if (response instanceof Error) {
+            if (response instanceof MultiError) {
                 console.error(`Failed to fetch geoLocataion data: ${response}`);
             } else {
                 setBlockedUser(response);

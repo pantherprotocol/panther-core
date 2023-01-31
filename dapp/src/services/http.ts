@@ -3,6 +3,8 @@
 
 import axios, {AxiosError} from 'axios';
 
+import {MultiError} from './errors';
+
 const customAxios = axios.create({
     timeout: 10000,
     headers: {
@@ -25,16 +27,16 @@ const errorHandler = (error: AxiosError) => {
 
 customAxios.interceptors.response.use(undefined, errorHandler);
 
-export async function safeFetch(url: string): Promise<Response | Error> {
+export async function safeFetch(url: string): Promise<Response | MultiError> {
     try {
         const response = await fetch(url);
         if (!response.ok) {
-            return new Error(`Failed to fetch ${url}: ${response.status}`);
+            return new MultiError(`Failed to fetch ${url}: ${response.status}`);
         }
 
         return response;
     } catch (error) {
-        return error as Error;
+        return new MultiError(error);
     }
 }
 

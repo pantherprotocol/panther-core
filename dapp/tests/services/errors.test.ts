@@ -2,7 +2,85 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
 import {describe, expect} from '@jest/globals';
-import {parseTxErrorMessage} from 'services/errors';
+import {DetailedError, RPCError} from 'error';
+import {parseTxErrorMessage, MultiError} from 'services/errors';
+
+describe('MultiError Handler', () => {
+    it('should work as regular `Error`', () => {
+        const msg = 'Something bad happend';
+        const error = new MultiError(msg);
+        expect(error.message).toEqual(msg);
+        expect(error.errorLabel).toBe(undefined);
+        expect(error.code).toBe(undefined);
+        expect(error.isDefaultError).toBe(true);
+    });
+
+    it('should work as `DetailedError`', () => {
+        const detailedError = {
+            errorLabel: 'This is a message',
+            message: 'This is a detailed message',
+        };
+        const error = new MultiError<DetailedError>(detailedError);
+        expect(error.message).toEqual(detailedError.message);
+        expect(error.errorLabel).toBe(detailedError.errorLabel);
+        expect(error.code).toBe(undefined);
+        expect(error.isDetailedError).toBe(true);
+    });
+
+    it('should work as `RPCError`', () => {
+        const rpcError = {
+            code: 4001,
+            message: 'This is a message',
+        };
+        const error = new MultiError<RPCError>(rpcError);
+        expect(error.message).toEqual(rpcError.message);
+        expect(error.errorLabel).toBe(undefined);
+        expect(error.code).toBe(rpcError.code);
+        expect(error.isRPCError).toBe(true);
+    });
+
+    it('should check for RPC errors', () => {
+        const rpcError = {
+            code: 4001,
+            message: 'This is a message',
+        };
+        expect(MultiError.isRPCError(rpcError)).toBe(true);
+        const error = new MultiError(rpcError);
+        expect(MultiError.isRPCError(error)).toBe(true);
+    });
+
+    it('should throw error for unsupported RPC error code', () => {
+        expect(() => {
+            new MultiError({code: 9000, message: 'Error message'});
+        }).toThrow(new Error('Unsupported error type'));
+    });
+
+    it('should throw error for unsupported error type', () => {
+        expect(() => {
+            new MultiError({message: 'This is a message'});
+        }).toThrow(new Error('Unsupported error type'));
+    });
+
+    it('should check for detailed error type', () => {
+        const detailedError = {
+            errorLabel: 'This is an error label',
+            message: 'This is a detailed message',
+        };
+        expect(MultiError.isDetailedError(detailedError)).toBe(true);
+        const error = new MultiError(detailedError);
+        expect(MultiError.isDetailedError(error)).toBe(true);
+    });
+
+    it('should be able to add label to the error', () => {
+        const error = new MultiError('Error message').addErrorLabel(
+            'Error label',
+        );
+
+        expect(error.errorLabel).toBe('Error label');
+        expect(error.message).toBe('Error message');
+        expect(error.isDetailedError).toBe(true);
+    });
+});
 
 describe('Transaction error parsing', () => {
     beforeEach(() => {

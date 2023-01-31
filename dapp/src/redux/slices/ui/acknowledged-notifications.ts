@@ -3,6 +3,7 @@
 
 import {createSlice} from '@reduxjs/toolkit';
 import {RootState} from 'redux/store';
+import {MultiError} from 'services/errors';
 
 export interface acknowledgedNotificationsState {
     [key: string]: boolean;
@@ -24,7 +25,7 @@ export const acknowledgedNotificationsSlice = createSlice({
     reducers: {
         acknowledgeNotification: (state, action) => {
             if (!(action.payload in PageWithNotification)) {
-                throw new Error('The notificationOwner is not valid!');
+                throw new MultiError('The notificationOwner is not valid!');
             }
 
             state[action.payload] = true;

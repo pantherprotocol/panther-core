@@ -13,6 +13,7 @@ import {LoadingStatus} from 'redux/slices/shared';
 import {setWalletUpdating} from 'redux/slices/ui/is-wallet-updating';
 import {RootState} from 'redux/store';
 import {chainHasPoolContract} from 'services/contracts';
+import {MultiError} from 'services/errors';
 import {getChangedUTXOsStatuses, UTXOStatusByID} from 'services/pool';
 import {
     PRP_REWARD_PER_STAKE,
@@ -97,7 +98,7 @@ export const getAdvancedStakesRewards = createAsyncThunk(
             );
         }
 
-        if (rewardsFetchedFromSubgraph instanceof Error) {
+        if (rewardsFetchedFromSubgraph instanceof MultiError) {
             console.error(rewardsFetchedFromSubgraph);
             return;
         }
@@ -156,20 +157,20 @@ export const getAdvancedStakesRewardsAndUpdateStatus = createAsyncThunk(
 async function getRewardsFromGraph(
     chainId: number,
     account: string,
-): Promise<AdvancedStakeRewardsById | Error> {
+): Promise<AdvancedStakeRewardsById | MultiError> {
     const rewards = await getAdvancedStakingReward(chainId, account);
-    if (rewards instanceof Error) {
-        return new Error(
+    if (rewards instanceof MultiError) {
+        return new MultiError(
             `Cannot fetch the rewards from the subgraph. ${rewards}`,
         );
     }
 
     if (!rewards)
-        return new Error(
+        return new MultiError(
             'Cannot fetch the rewards from the subgraph. No rewards found',
         );
     if (!rewards.staker)
-        return new Error(
+        return new MultiError(
             'Cannot fetch the rewards from the subgraph. No staker found',
         );
 
@@ -237,7 +238,7 @@ export const refreshUTXOsStatuses = createAsyncThunk(
                 keys,
             );
         } catch (err) {
-            throw new Error(
+            throw new MultiError(
                 `Failed to get changed UTXOs statuses: ${err} ${
                     err instanceof Error ? err.stack : ''
                 }`,
@@ -260,12 +261,12 @@ async function getRewardsFromGraphWithRetry(
     currentRewardsLength: number,
     retry = 0,
     delay = INITIAL_RETRY_DELAY,
-): Promise<AdvancedStakeRewardsById | Error> {
+): Promise<AdvancedStakeRewardsById | MultiError> {
     if (!chainHasSubgraphAccounts(chainId))
-        return new Error('Subgraph accounts are not yet defined');
+        return new MultiError('Subgraph accounts are not yet defined');
 
     if (retry > MAX_RETRIES) {
-        return new Error(
+        return new MultiError(
             'Cannot fetch the rewards from the subgraph. Max retries reached',
         );
     }
@@ -278,7 +279,7 @@ async function getRewardsFromGraphWithRetry(
     );
 
     if (
-        rewardsFetchedFromSubgraph instanceof Error ||
+        rewardsFetchedFromSubgraph instanceof MultiError ||
         Object.keys(rewardsFetchedFromSubgraph).length === currentRewardsLength
     ) {
         return await getRewardsFromGraphWithRetry(

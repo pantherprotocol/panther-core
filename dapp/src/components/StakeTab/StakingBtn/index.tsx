@@ -44,7 +44,7 @@ import {getAdvancedStakesRewardsAndUpdateStatus} from 'redux/slices/wallet/advan
 import {getChainBalance} from 'redux/slices/wallet/chain-balance';
 import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
 import {chainHasAdvancedStaking} from 'services/contracts';
-import {parseTxErrorMessage} from 'services/errors';
+import {MultiError} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 import {advancedStake} from 'services/staking';
 import {StakingRewardTokenID} from 'types/staking';
@@ -186,11 +186,11 @@ const StakingBtn = (props: {
             const signer = library.getSigner(account);
             const keys = await generateRootKeypairs(signer);
 
-            if (keys instanceof Error) {
+            if (keys instanceof MultiError) {
                 dispatch(registerWalletActionFailure, 'signMessage');
                 notifyError({
-                    message: 'Failed to create stake',
-                    details: keys.message,
+                    errorLabel: 'Failed to create stake',
+                    message: keys.message,
                     triggerError: keys,
                 });
                 return;
@@ -206,8 +206,8 @@ const StakingBtn = (props: {
             });
             if (!chainHasAdvancedStaking(chainId)) {
                 notifyError({
-                    message: 'Error during stake',
-                    details: 'Advanced staking is not supported on this chain',
+                    errorLabel: 'Error during stake',
+                    message: 'Advanced staking is not supported on this chain',
                 });
                 dispatch(registerWalletActionFailure, 'stake');
 
@@ -222,11 +222,11 @@ const StakingBtn = (props: {
                 amount,
             );
 
-            if (response instanceof Error) {
+            if (response instanceof MultiError) {
                 dispatch(registerWalletActionFailure, 'stake');
                 openNotification(
                     'Transaction error',
-                    parseTxErrorMessage(response),
+                    response.message,
                     'danger',
                 );
                 return;
@@ -250,13 +250,13 @@ const StakingBtn = (props: {
 
             removeNotification(inProgress);
 
-            if (event instanceof Error) {
+            if (event instanceof MultiError) {
                 dispatch(registerWalletActionFailure, 'stake');
 
                 openNotification(
                     'Transaction error',
                     <MessageWithTx
-                        message={parseTxErrorMessage(event)}
+                        message={event.message}
                         chainId={chainId}
                         txHash={response?.hash}
                     />,

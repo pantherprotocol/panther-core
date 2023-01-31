@@ -4,6 +4,7 @@
 // eslint-disable-next-line import/named
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from 'redux/store';
+import {MultiError} from 'services/errors';
 
 export type WalletActionStatus =
     | 'in progress'
@@ -81,7 +82,7 @@ export const Web3WalletLastActionSlice = createSlice({
             action: PayloadAction<StartWalletActionPayload>,
         ) => {
             if (state.status === 'in progress')
-                throw new Error(
+                throw new MultiError(
                     `Tried to start the action ${action.payload.name} while the action ${state.action} has state '${state.status}'`,
                 );
             startAction(
@@ -166,7 +167,7 @@ function checkActionInProgress(
     registration: string,
 ): void {
     if (actionInProgress !== action) {
-        throw new Error(
+        throw new MultiError(
             `Tried to register ${registration} for ${action} but the action in progress was ${actionInProgress}`,
         );
     }

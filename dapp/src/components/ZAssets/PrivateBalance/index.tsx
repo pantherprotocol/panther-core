@@ -54,7 +54,7 @@ import {
     resetAdvancedStakesRewardsStatus,
 } from 'redux/slices/wallet/advanced-stakes-rewards';
 import {chainHasPoolContract} from 'services/contracts';
-import {parseTxErrorMessage} from 'services/errors';
+import {MultiError} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 import {StakingRewardTokenID} from 'types/staking';
 
@@ -104,13 +104,11 @@ export default function PrivateBalance() {
             } as StartWalletActionPayload);
             const signer = library.getSigner(account);
             const keys = await generateRootKeypairs(signer);
-            if (keys instanceof Error) {
+            if (keys instanceof MultiError) {
                 dispatch(registerWalletActionFailure, 'signMessage');
                 notifyError({
-                    message: 'Failed to refresh zAssets',
-                    details: `Cannot sign a message: ${parseTxErrorMessage(
-                        keys,
-                    )}`,
+                    errorLabel: 'Failed to refresh zAssets',
+                    message: `Cannot sign a message: ${keys.message}`,
                     triggerError: keys,
                 });
                 setFirstUTXOScan('failed');

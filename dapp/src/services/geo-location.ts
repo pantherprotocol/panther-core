@@ -4,6 +4,8 @@
 import {BLOCKED_COUNTRIES} from 'services/env';
 import {safeFetch} from 'services/http';
 
+import {MultiError} from './errors';
+
 type IIpApi = {
     country: string;
     country_name: string;
@@ -28,18 +30,18 @@ const GEO_LOCATION_APIS = [
     'https://ipapi.co/json',
 ];
 
-export async function fetchLocation(): Promise<Location | Error> {
+export async function fetchLocation(): Promise<Location | MultiError> {
     // this will hold the latest error, and will be returned
     // if no valid response recived.
     // default error message will be returned if all endpoints
     // returned  unvalid response (i.e: not a location)
-    let error: Error = new Error('No endpoint returned a valid response');
+    let error = new MultiError('No endpoint returned a valid response');
 
     const shuffledApis = GEO_LOCATION_APIS.sort(() => 0.5 - Math.random());
 
     for (const url of shuffledApis) {
         const response = await safeFetch(url);
-        if (response instanceof Error) {
+        if (response instanceof MultiError) {
             error = response;
             continue;
         }
@@ -70,12 +72,12 @@ function formatResponse(
         ip: isIGeoLocationDB(response) ? response.IPv4 : response.ip,
     };
 }
-export async function isBlockedCountry(): Promise<boolean | Error> {
+export async function isBlockedCountry(): Promise<boolean | MultiError> {
     // if there are no blocked countries, then there is no need to check
     if (!BLOCKED_COUNTRIES) return false;
 
     const response = await fetchLocation();
-    if (response instanceof Error) {
+    if (response instanceof MultiError) {
         return response;
     }
 

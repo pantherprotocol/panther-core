@@ -41,10 +41,9 @@ import {
     updateExitCommitmentTime,
     updateUTXOStatus,
 } from 'redux/slices/wallet/advanced-stakes-rewards';
-import {parseTxErrorMessage} from 'services/errors';
+import {MultiError, parseTxErrorMessage} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 import {registerCommitToExit} from 'services/pool';
-import {isDetailedError} from 'types/error';
 import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
 
 export default function FirstStageRedeem(props: {
@@ -80,11 +79,11 @@ export default function FirstStageRedeem(props: {
         } as StartWalletActionPayload);
         const signer = library.getSigner(account);
         const keys = await generateRootKeypairs(signer);
-        if (keys instanceof Error) {
+        if (keys instanceof MultiError) {
             dispatch(registerWalletActionFailure, 'signMessage');
             return notifyError({
-                message: 'Panther wallet error',
-                details: `Failed to generate Panther wallet secrets from signature: ${keys.message}`,
+                errorLabel: 'Panther wallet error',
+                message: `Failed to generate Panther wallet secrets from signature: ${keys.message}`,
                 triggerError: keys,
             });
         }
@@ -119,7 +118,7 @@ export default function FirstStageRedeem(props: {
             );
         }
 
-        if (isDetailedError(tx)) {
+        if (tx instanceof MultiError) {
             dispatch(updateUTXOStatus, [chainId, account, reward.id, status]);
             dispatch(registerWalletActionFailure, 'registerCommitToExit');
             return notifyError(tx);

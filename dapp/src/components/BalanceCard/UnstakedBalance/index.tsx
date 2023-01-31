@@ -40,7 +40,7 @@ import {
     zkpTokenBalanceSelector,
     zkpUnstakedUSDMarketPriceSelector,
 } from 'redux/slices/wallet/zkp-token-balance';
-import {parseTxErrorMessage} from 'services/errors';
+import {MultiError} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 
 import './styles.scss';
@@ -64,13 +64,11 @@ export default function UnstakedBalance() {
             } as StartWalletActionPayload);
             const signer = library!.getSigner(account!);
             const keys = await generateRootKeypairs(signer);
-            if (keys instanceof Error) {
+            if (keys instanceof MultiError) {
                 dispatch(registerWalletActionFailure, 'signMessage');
                 notifyError({
-                    message: 'Failed to refresh rewards',
-                    details: `Cannot sign a message: ${parseTxErrorMessage(
-                        keys,
-                    )}`,
+                    errorLabel: 'Failed to refresh rewards',
+                    message: `Cannot sign a message: ${keys.message}`,
                 });
             }
 

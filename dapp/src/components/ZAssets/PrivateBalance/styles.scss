@@ -89,15 +89,17 @@ $refresh-button-background: linear-gradient(
             @media (max-width: $medium-screen-size) {
                 font-size: $normal-font-size;
                 line-height: unset;
-                align-items: baseline;
+                align-items: center;
             }
 
             .info {
                 font-weight: $light-font-weight;
                 margin-left: 5px;
 
-                @media (max-width: $medium-screen-size) {
+                @media (max-width: $normal-screen-size) {
                     margin-left: 4px;
+                    font-size: $normal-font-size;
+                    line-height: normal;
                 }
             }
 

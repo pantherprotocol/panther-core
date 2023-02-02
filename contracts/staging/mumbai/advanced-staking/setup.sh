@@ -7,11 +7,11 @@
 
 ### ===== Deploy and verify contracts: =====
 
-yarn deploy --network mumbai
+yarn deploy:staking:advanced --network mumbai
 yarn verify --network mumbai
 
 # For an unknown reason, the PantherPoolV0_Implementation won't be verified automatically using the above command, so we need to do it manually. First, find the pool implementation address and its args at `deployments/mumbai/PantherPoolV0_Implementation.json` and then use it in the following command:
-yarn hardhat verify <pool_implementation_address> arg_1 arg_2 arg_3 arg_4 --network mumbai
+yarn hardhat verify <pool_implementation_address> arg_1 arg_2 arg_3 --network mumbai
 
 
 ### ===== Add the advancedStakeRewardController contract as advisor to rewardMaster: =====
@@ -23,12 +23,12 @@ yarn hardhat adviser:add --network mumbai
 
 # To add the default terms:
 
-yarn hardhat terms:add --network mumbai
+yarn hardhat terms:add --type advanced --network mumbai
 
 # To add your own terms:
 
-# info: Don't forget to change the `allowedSince`, `allowedTill` and `lockedTill`.
-echo '{"advanced":{"isEnabled":"true","isRewarded":"true","minAmountScaled":"100","maxAmountScaled":"0","allowedSince":"26 Jun 2022 12:00:00 GMT","allowedTill":"28 Jun 2022 12:00:00 GMT","lockedTill":"29 Jun 2022 12:00:00 GMT","exactLockPeriod":"0","minLockPeriod":"0"}}' | yarn hardhat terms:add --json true --network mumbai
+# info: Don't forget to change the `allowedSince`, `allowedTill` and `minLockPeriod`.
+echo '{"isEnabled":"true","isRewarded":"true","minAmountScaled":"0","maxAmountScaled":"0","allowedSince":"30 Jan 2023 12:00:00 GMT","allowedTill":"30 Nov 2023 12:00:00 GMT","exactLockPeriod":"0","minLockPeriod":"1800"}' | yarn hardhat terms:add --json true --type advanced --network mumbai
 
 ### ===== Whitelist ZKP: =====
 
@@ -44,8 +44,8 @@ yarn hardhat zasset:add --token 0x45c7650cbE485d3c85B739799A4D2eEF9FB46d60 --sca
 
 ### ===== Update the pool exit times: =====
 
-# info: Don't forget to add the POOL_EXIT_TIME and POOL_EXIT_DELAY to the .env
-yarn hardhat exittime:update --network mumbai
+# info: Don't forget to change the the exitTime and exitDelay values
+echo '{"exitTime":"30 Jan 2023 12:00:00 GMT","exitDelay":"120"}' | yarn hardhat pool:time:update --json --network mumbai
 
 
 ### ===== Update the reward parameters in the AdvancedStakeRewardController: =====
@@ -54,7 +54,9 @@ yarn hardhat exittime:update --network mumbai
 yarn hardhat rewards:params:update --start-time '1 second' --end-time '1 week' --start-zkp-apy 50 --end-zkp-apy 30 --network mumbai
 
 
-### ===== Go to zkpToken repo and execute the following command to increase the ZKP balance of AdvancedStakeRewardController: =====
+### ===== Increase the ZKP balance of AdvancedStakeRewardController =====
+# You can send ZKP token from your wallet to the AdvancedStakeRewardController contract OR
+# if you have access to zkp owner pricate key, go to zkpToken repo and execute the following command to increase the ZKP balance of AdvancedStakeRewardController:
 
 # info: you can change the --amount, it's the zkp token amount without decimals. i.e: 10000000 = 10000000e18 ZKP
 yarn hardhat pzkp:deposit --receiver <AdvancedStakeRewardController_address> --amount 10000000 --network mumbai

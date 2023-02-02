@@ -21,9 +21,9 @@ import {
 } from '@panther-core/crypto/lib/utils/bigint-conversions';
 import poseidon from 'circomlibjs/src/poseidon';
 import {utils, Contract, BigNumber} from 'ethers';
-import {Provider, Contract as MultiCallContract} from 'ethers-multicall';
 import {ContractTransaction} from 'ethers/lib/ethers';
 import {Result} from 'ethers/lib/utils';
+import {Provider, Contract as MultiCallContract} from 'ethers-multicall';
 import {formatTime} from 'lib/format';
 import {range} from 'lodash';
 import {

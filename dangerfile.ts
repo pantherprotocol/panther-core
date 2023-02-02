@@ -87,11 +87,18 @@ function fileIsTest(fileName: string): boolean {
     );
 }
 
-if (
-    danger.git.created_files.some(fileIsTest) ||
-    danger.git.modified_files.some(fileIsTest)
-) {
+// Check for testable files and skip other files like json, .env, scss,...
+const testableFiles: string[] = ['.ts', '.js', '.jsx', '.tsx', '.sol'];
+function fileIsTestable(fileName: string) {
+    return testableFiles.some((extension: string) =>
+        fileName.includes(extension),
+    );
+}
+
+const allFiles = [...danger.git.created_files, ...danger.git.modified_files];
+
+if (allFiles.some(fileIsTest)) {
     message(`We love tests! Thanks for adding some, ${mr.author.name}!`);
-} else {
+} else if (allFiles.some(fileIsTestable)) {
     warn(`No tests were added. Consider adding some`);
 }

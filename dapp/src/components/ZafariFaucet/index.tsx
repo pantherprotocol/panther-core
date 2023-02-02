@@ -102,8 +102,10 @@ function ZafariFaucet() {
         }
 
         const tx = await faucetDrink(contract, account, response);
+        const isError = tx instanceof MultiError;
 
-        if (tx instanceof MultiError) {
+        if (isError && tx.isUserRejectedError) return;
+        if (isError) {
             return notifyError(tx);
         }
 
@@ -114,7 +116,6 @@ function ZafariFaucet() {
                 chainId={chainId}
                 txHash={tx?.hash}
             />,
-
             'info',
         );
 

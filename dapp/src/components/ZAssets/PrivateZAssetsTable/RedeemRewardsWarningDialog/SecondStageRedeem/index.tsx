@@ -76,12 +76,13 @@ export default function SecondStageRedeem(props: {
         const signer = library.getSigner(account);
         const keys = await generateRootKeypairs(signer);
         if (keys instanceof MultiError) {
+            dispatch(registerWalletActionFailure, 'signMessage');
+            if (keys.isUserRejectedError) return;
             notifyError({
                 errorLabel: 'Panther wallet error',
                 message: `Failed to generate Panther wallet secrets from signature: ${keys.message}`,
                 triggerError: keys,
             });
-            dispatch(registerWalletActionFailure, 'signMessage');
             return;
         }
         dispatch(progressToNewWalletAction, {
@@ -117,6 +118,7 @@ export default function SecondStageRedeem(props: {
                 utxoStatus,
             ]);
 
+            if (tx.isUserRejectedError) return;
             return notifyError(tx);
         }
 

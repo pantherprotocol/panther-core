@@ -66,6 +66,7 @@ export default function UnstakedBalance() {
             const keys = await generateRootKeypairs(signer);
             if (keys instanceof MultiError) {
                 dispatch(registerWalletActionFailure, 'signMessage');
+                if (keys.isUserRejectedError) return;
                 notifyError({
                     errorLabel: 'Failed to refresh rewards',
                     message: `Cannot sign a message: ${keys.message}`,

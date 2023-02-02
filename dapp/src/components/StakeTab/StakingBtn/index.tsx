@@ -188,6 +188,7 @@ const StakingBtn = (props: {
 
             if (keys instanceof MultiError) {
                 dispatch(registerWalletActionFailure, 'signMessage');
+                if (keys.isUserRejectedError) return;
                 notifyError({
                     errorLabel: 'Failed to create stake',
                     message: keys.message,
@@ -210,7 +211,6 @@ const StakingBtn = (props: {
                     message: 'Advanced staking is not supported on this chain',
                 });
                 dispatch(registerWalletActionFailure, 'stake');
-
                 return;
             }
 
@@ -224,6 +224,7 @@ const StakingBtn = (props: {
 
             if (response instanceof MultiError) {
                 dispatch(registerWalletActionFailure, 'stake');
+                if (response.isUserRejectedError) return;
                 openNotification(
                     'Transaction error',
                     response.message,

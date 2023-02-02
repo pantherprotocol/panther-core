@@ -22,6 +22,7 @@ import './tasks/staking/reward-adviser-add';
 import './tasks/staking/reward-params-update';
 import './tasks/staking/reward-pool-init';
 import './tasks/staking/rewards-limit-add';
+import './tasks/staking/staking-add-stake';
 import './tasks/staking/staking-bridge-local';
 import './tasks/staking/staking-list';
 import './tasks/staking/terms-add';

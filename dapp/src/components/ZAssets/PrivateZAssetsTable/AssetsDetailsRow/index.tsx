@@ -16,8 +16,8 @@ import {AssetsDetailsRowProperties} from './AssetsDetailsRow.interface';
 import './styles.scss';
 
 const AssetsDetailsRow = (props: AssetsDetailsRowProperties) => {
-    const {reward, isSelected, onSelectReward} = props;
-    const balance = formatCurrency(BigNumber.from(reward.zZKP));
+    const {asset, isSelected, onSelectReward} = props;
+    const balance = formatCurrency(BigNumber.from(asset.amount));
 
     return (
         <TableRow className="zAsset-staking-holder">
@@ -33,7 +33,7 @@ const AssetsDetailsRow = (props: AssetsDetailsRowProperties) => {
                 <span className="cell-title">Deposit Date:</span>
                 <span className="cell-content">
                     {format(
-                        new Date(Number(reward.creationTime) * 1000),
+                        new Date(Number(asset.creationTime) * 1000),
                         'MMM dd yyyy',
                     )}
                 </span>
@@ -42,16 +42,16 @@ const AssetsDetailsRow = (props: AssetsDetailsRowProperties) => {
                 <span className="cell-title">Rewards Earned:</span>
                 <span className="cell-content prp-content">
                     {unrealizedPrpReward(
-                        BigNumber.from(reward.zZKP),
-                        Number(reward.creationTime) * 1000,
+                        BigNumber.from(asset.amount),
+                        Number(asset.creationTime) * 1000,
                     ).toString()}{' '}
                     PRP
                 </span>
             </TableCell>
             <TableCell className="zassets-staking-redeem-button-holder zAsset-staking-cell">
                 <RedeemRewards
-                    reward={reward}
-                    key={reward.id}
+                    reward={asset}
+                    key={asset.id}
                     isSelected={isSelected}
                     onSelectReward={onSelectReward}
                 />

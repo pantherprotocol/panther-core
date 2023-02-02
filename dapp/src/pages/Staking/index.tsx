@@ -16,7 +16,7 @@ import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/total-unclai
 import {getTotalsOfAdvancedStakes} from 'redux/slices/staking/totals-of-advanced-stakes';
 import {getZkpStakedBalance} from 'redux/slices/staking/zkp-staked-balance';
 import {acknowledgedNotificationSelector} from 'redux/slices/ui/acknowledged-notifications';
-import {getAdvancedStakesRewards} from 'redux/slices/wallet/advanced-stakes-rewards';
+import {getUTXOs} from 'redux/slices/wallet/utxos';
 import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
 
 import './styles.scss';
@@ -30,7 +30,7 @@ const Staking = (): React.ReactElement => {
         dispatch(getZkpTokenBalance, context);
         dispatch(getZkpStakedBalance, context);
         dispatch(getTotalUnclaimedClassicRewards, context);
-        dispatch(getAdvancedStakesRewards, {context});
+        dispatch(getUTXOs, {context});
         dispatch(getStakeTerms, context);
     }, [context, dispatch]);
 

@@ -20,10 +20,10 @@ import AssetsDetailsRow from 'components/ZAssets/PrivateZAssetsTable/AssetsDetai
 import usePagination from 'hooks/pagination';
 import infoIcon from 'images/info-icon.svg';
 import {useAppSelector, useAppDispatch} from 'redux/hooks';
-import {advancedStakesRewardsSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {getPoolV0ExitTime} from 'redux/slices/wallet/poolV0';
+import {utxosSelector} from 'redux/slices/wallet/utxos';
 import {chainHasPoolContract} from 'services/contracts';
-import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
+import {UTXO, UTXOStatus} from 'types/utxo';
 
 import './styles.scss';
 
@@ -32,16 +32,14 @@ const AssetsDetailsTable = () => {
     const {active, account, chainId, library} = context;
 
     const advancedStakesRewards = useAppSelector(
-        advancedStakesRewardsSelector(chainId, account),
+        utxosSelector(chainId, account),
     );
     const rewardsFilteredAndSorted = Object.values(advancedStakesRewards)
-        .filter((rewards: AdvancedStakeRewards) =>
-            [UTXOStatus.UNDEFINED, UTXOStatus.UNSPENT].includes(
-                rewards.zZkpUTXOStatus,
-            ),
+        .filter((rewards: UTXO) =>
+            [UTXOStatus.UNDEFINED, UTXOStatus.UNSPENT].includes(rewards.status),
         )
         .sort(
-            (a: AdvancedStakeRewards, b: AdvancedStakeRewards) =>
+            (a: UTXO, b: UTXO) =>
                 Number(b.creationTime) - Number(a.creationTime),
         );
 
@@ -125,11 +123,11 @@ const AssetsDetailsTable = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody className="assets-details-table_body">
-                    {paginatedData()?.map((reward: AdvancedStakeRewards) => (
+                    {paginatedData()?.map((asset: UTXO) => (
                         <AssetsDetailsRow
-                            reward={reward}
-                            key={reward.id}
-                            isSelected={reward.id === selectedRewardId}
+                            asset={asset}
+                            key={asset.id}
+                            isSelected={asset.id === selectedRewardId}
                             onSelectReward={setSelectedRewardId}
                         />
                     ))}

@@ -5,9 +5,9 @@ import {combineReducers} from '@reduxjs/toolkit';
 import {persistReducer} from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import advancedStakesRewardsReducer from './advanced-stakes-rewards';
 import chainBalanceReducer from './chain-balance';
 import poolV0Reducer from './poolV0';
+import utxosReducer from './utxos';
 import zkpTokenBalanceReducer from './zkp-token-balance';
 
 const walletPersistConfig = {
@@ -17,7 +17,7 @@ const walletPersistConfig = {
 };
 
 const reducer = combineReducers({
-    advancedStakesRewards: advancedStakesRewardsReducer,
+    utxos: utxosReducer,
     chainBalance: chainBalanceReducer,
     poolV0: poolV0Reducer,
     zkpTokenBalance: zkpTokenBalanceReducer,

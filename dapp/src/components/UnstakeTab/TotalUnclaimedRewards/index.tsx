@@ -9,8 +9,7 @@ import {constants} from 'ethers';
 import {formatCurrency} from 'lib/format';
 import {useAppSelector} from 'redux/hooks';
 import {totalUnclaimedClassicRewardsSelector} from 'redux/slices/staking/total-unclaimed-classic-rewards';
-import {totalSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
-import {StakingRewardTokenID} from 'types/staking';
+import {totalSelector} from 'redux/slices/wallet/utxos';
 
 import './styles.scss';
 
@@ -19,9 +18,7 @@ const TotalUnclaimedRewards = () => {
     const zkpRewardsBalance = useAppSelector(
         totalUnclaimedClassicRewardsSelector,
     );
-    const zZkpRewardsBalance = useAppSelector(
-        totalSelector(chainId, account, StakingRewardTokenID.zZKP),
-    );
+    const zZkpRewardsBalance = useAppSelector(totalSelector(chainId, account));
     const zkpGreaterThanZero =
         zkpRewardsBalance && zkpRewardsBalance.gt(constants.Zero);
     const zZkpGreaterThanZero =

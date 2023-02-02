@@ -21,7 +21,7 @@ import {formatCurrency} from 'lib/format';
 import {calcUSDPrice} from 'lib/token-price';
 import {useAppSelector} from 'redux/hooks';
 import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
-import {totalSelector} from 'redux/slices/wallet/advanced-stakes-rewards';
+import {totalSelector} from 'redux/slices/wallet/utxos';
 import {chainHasPoolContract} from 'services/contracts';
 import {getPrpAPY} from 'services/rewards';
 import {StakingRewardTokenID} from 'types/staking';
@@ -31,9 +31,7 @@ import './styles.scss';
 export default function PrivateZAssetRow() {
     const {account, chainId, active} = useWeb3React();
     const zkpPrice = useAppSelector(zkpMarketPriceSelector);
-    const unclaimedZZKP = useAppSelector(
-        totalSelector(chainId, account, StakingRewardTokenID.zZKP),
-    );
+    const unclaimedZZKP = useAppSelector(totalSelector(chainId, account));
     const balanceValue = calcUSDPrice(unclaimedZZKP, zkpPrice);
 
     const [open, setOpen] = useState(true);

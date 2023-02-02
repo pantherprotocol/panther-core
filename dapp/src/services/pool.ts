@@ -35,7 +35,7 @@ import {
 } from 'services/contracts';
 import {MultiError} from 'services/errors';
 import {DetailedError} from 'types/error';
-import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
+import {UTXO, UTXOStatus} from 'types/utxo';
 
 import {getCommitments, getMaxLeafId} from './subgraph';
 
@@ -175,7 +175,7 @@ export async function exit(
     utxoData: string,
     leafId: bigint,
     creationTime: number,
-    commitments: string[],
+    commitment: string,
     keys: IKeypair[],
 ): Promise<[UTXOStatus, MultiError | ContractTransaction]> {
     const {contract} = getSignableContract(
@@ -245,7 +245,7 @@ export async function exit(
         amounts,
         zAssetId,
         creationTime,
-        commitments[0],
+        commitment,
     );
     if (zZkpCommitment instanceof MultiError) {
         return [UTXOStatus.UNSPENT, zZkpCommitment];
@@ -284,20 +284,20 @@ export async function getChangedUTXOsStatuses(
     library: any,
     account: string,
     chainId: number,
-    advancedRewards: AdvancedStakeRewards[],
+    advancedRewards: UTXO[],
     keys: IKeypair[],
 ): Promise<UTXOStatusByID[]> {
     const [rootSpendingKeypair, rootReadingKeypair] = keys;
     const statusesNeedUpdate: UTXOStatusByID[] = [];
     const validUTXOData: Array<ValidUTXOData & {rewardId: string}> = [];
 
-    advancedRewards.forEach((reward: AdvancedStakeRewards) => {
-        if (reward.zZkpUTXOStatus === UTXOStatus.SPENT) return;
+    advancedRewards.forEach((reward: UTXO) => {
+        if (reward.status === UTXOStatus.SPENT) return;
 
         const unpackedUTXOAndKeys = unpackUTXOAndDeriveKeys(
             rootSpendingKeypair,
             rootReadingKeypair.privateKey,
-            reward.utxoData,
+            reward.data,
         );
 
         if (unpackedUTXOAndKeys instanceof UnpackUTXOError)
@@ -317,9 +317,9 @@ export async function getChangedUTXOsStatuses(
         validUTXOData,
     );
 
-    advancedRewards.forEach((reward: AdvancedStakeRewards) => {
+    advancedRewards.forEach((reward: UTXO) => {
         const status = rewardsStatusesMap.get(reward.id);
-        if (status && reward.zZkpUTXOStatus !== status) {
+        if (status && reward.status !== status) {
             statusesNeedUpdate.push([reward.id, status]);
         }
     });

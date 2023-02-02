@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
-import {AdvancedStakeRewards} from 'types/staking';
+import {UTXO} from 'types/utxo';
 
 export type AssetsDetailsRowProperties = {
-    reward: AdvancedStakeRewards;
+    asset: UTXO;
     isSelected: boolean;
     onSelectReward: (rewardId: string | undefined) => void;
 };

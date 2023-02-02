@@ -25,35 +25,31 @@ import {
     chainHasSubgraphAccounts,
     getAdvancedStakingReward,
 } from 'services/subgraph';
-import {
-    AdvancedStakeRewards,
-    AdvancedStakeTokenIDs,
-    UTXOStatus,
-} from 'types/staking';
+import {UTXO, UTXOStatus} from 'types/utxo';
 
 const MAX_RETRIES = 5;
 const INITIAL_RETRY_DELAY = 1000;
 const EXP_BACKOFF_FACTOR = 2;
 
-interface AdvancedStakeRewardsById {
-    [leafId: string]: AdvancedStakeRewards;
+interface utxoById {
+    [leafId: string]: UTXO;
 }
 
 // map of chainId -> addressHash -> leafId -> AdvancedStakeRewards
-interface AdvancedStakeRewardsByChainId {
+interface utxosByChainId {
     [chainId: number]: AdvancedStakeRewardsByShortAddress;
 }
 interface AdvancedStakeRewardsByShortAddress {
-    [addressHex: string]: AdvancedStakeRewardsById;
+    [addressHex: string]: utxoById;
 }
 
-interface AdvancedStakesRewardsState {
-    value: AdvancedStakeRewardsByChainId;
+interface utxosState {
+    value: utxosByChainId;
     lastRefreshTime: number | null;
     status: LoadingStatus;
 }
 
-const initialState: AdvancedStakesRewardsState = {
+const initialState: utxosState = {
     value: {},
     lastRefreshTime: null,
     status: 'idle',
@@ -66,40 +62,37 @@ function shortAddressHash(address: string): string {
     return poseidon([address]).toString(16).slice(-keyWidth);
 }
 
-export const getAdvancedStakesRewards = createAsyncThunk(
-    'wallet/advancedStakesRewards/get',
+export const getUTXOs = createAsyncThunk(
+    'wallet/utxos/get',
     async (
         payload: {
             context: Web3ReactContextInterface<Web3Provider>;
             withRetry: boolean | undefined;
         },
         {getState},
-    ): Promise<[number, string, AdvancedStakeRewardsById] | undefined> => {
+    ): Promise<[number, string, utxoById] | undefined> => {
         const {account, chainId} = payload.context;
         if (!account || !chainId) return;
 
         const state = getState() as RootState;
-        const currentAdvancedRewards = advancedStakesRewardsSelector(
-            chainId,
-            account,
-        )(state);
+        const currentUTXOs = utxosSelector(chainId, account)(state);
 
-        let rewardsFetchedFromSubgraph;
+        let utxosFetchedFromSubgraph;
         if (payload.withRetry) {
-            rewardsFetchedFromSubgraph = await getRewardsFromGraphWithRetry(
+            utxosFetchedFromSubgraph = await getRewardsFromGraphWithRetry(
                 chainId,
                 account,
-                Object.keys(currentAdvancedRewards).length,
+                Object.keys(currentUTXOs).length,
             );
         } else {
-            rewardsFetchedFromSubgraph = await getRewardsFromGraph(
+            utxosFetchedFromSubgraph = await getRewardsFromGraph(
                 chainId,
                 account,
             );
         }
 
-        if (rewardsFetchedFromSubgraph instanceof MultiError) {
-            console.error(rewardsFetchedFromSubgraph);
+        if (utxosFetchedFromSubgraph instanceof MultiError) {
+            console.error(utxosFetchedFromSubgraph);
             return;
         }
 
@@ -112,14 +105,14 @@ export const getAdvancedStakesRewards = createAsyncThunk(
             // they will not be overwritten by the new rewards fetched from the
             // subgraph.
             {
-                ...(rewardsFetchedFromSubgraph as AdvancedStakeRewardsById),
-                ...(currentAdvancedRewards as AdvancedStakeRewardsById),
+                ...(utxosFetchedFromSubgraph as utxoById),
+                ...(currentUTXOs as utxoById),
             },
         ];
     },
 );
 
-export const getAdvancedStakesRewardsAndUpdateStatus = createAsyncThunk(
+export const getUTXOsAndUpdateStatus = createAsyncThunk(
     'wallet/advancedStakesRewards/getAndUpdateStatus',
     async (
         payload: {
@@ -130,7 +123,7 @@ export const getAdvancedStakesRewardsAndUpdateStatus = createAsyncThunk(
         {dispatch},
     ) => {
         dispatch(setWalletUpdating(true));
-        await dispatch(getAdvancedStakesRewards(payload));
+        await dispatch(getUTXOs(payload));
 
         if (!payload.keys) {
             dispatch(setWalletUpdating(false));
@@ -157,7 +150,7 @@ export const getAdvancedStakesRewardsAndUpdateStatus = createAsyncThunk(
 async function getRewardsFromGraph(
     chainId: number,
     account: string,
-): Promise<AdvancedStakeRewardsById | MultiError> {
+): Promise<utxoById | MultiError> {
     const rewards = await getAdvancedStakingReward(chainId, account);
     if (rewards instanceof MultiError) {
         return new MultiError(
@@ -174,33 +167,17 @@ async function getRewardsFromGraph(
             'Cannot fetch the rewards from the subgraph. No staker found',
         );
 
-    const rewardsFetchedFromSubgraph: AdvancedStakeRewardsById = {};
+    const rewardsFetchedFromSubgraph: utxoById = {};
 
     rewards.staker.advancedStakingRewards.forEach(
         (r: AdvancedStakeRewardsResponse) => {
-            // TODO: this hardcoded value should be removed in v 1.0 Due to the
-            // recent changes in the smart contract, the PRP UTXOs are not being
-            // generated upon staking. This is a temporary solution to hardcode
-            // the PRP rewards. Only first 2000 stakes will get 2000 PRP
-            // rewards. The rest will get 0 PRP rewards. This will be removed
-            // once the PRP UTXOs are generated upon deployment of the version
-            // 1.0 of the protocol. Magic number 4 comes from the fact that
-            // commitments generate 4 leaves in the tree. Therefore, to get the
-            // sequential number of the stake, we need to divide the left leafId
-            // by 4.
-            const quadIndex = BigNumber.from(r.id).toNumber() / 4;
-            const prpAmount =
-                quadIndex < NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD
-                    ? PRP_REWARD_PER_STAKE
-                    : '0';
             return (rewardsFetchedFromSubgraph[r.id] = {
                 id: r.id,
-                creationTime: r.creationTime.toString(),
-                commitments: r.commitments,
-                utxoData: r.utxoData,
-                zZkpUTXOStatus: UTXOStatus.UNDEFINED,
-                zZKP: r.zZkpAmount,
-                PRP: prpAmount,
+                creationTime: r.creationTime,
+                commitment: r.commitments[0],
+                data: r.utxoData,
+                status: UTXOStatus.UNDEFINED,
+                amount: r.zZkpAmount,
             });
         },
     );
@@ -223,10 +200,7 @@ export const refreshUTXOsStatuses = createAsyncThunk(
             return;
         }
         const state: RootState = getState() as RootState;
-        const advancedRewards = advancedStakesRewardsSelector(
-            chainId,
-            account,
-        )(state);
+        const utxos = utxosSelector(chainId, account)(state);
 
         let statusesNeedUpdate;
         try {
@@ -234,7 +208,7 @@ export const refreshUTXOsStatuses = createAsyncThunk(
                 library,
                 account,
                 chainId,
-                Object.values(advancedRewards),
+                Object.values(utxos),
                 keys,
             );
         } catch (err) {
@@ -261,7 +235,7 @@ async function getRewardsFromGraphWithRetry(
     currentRewardsLength: number,
     retry = 0,
     delay = INITIAL_RETRY_DELAY,
-): Promise<AdvancedStakeRewardsById | MultiError> {
+): Promise<utxoById | MultiError> {
     if (!chainHasSubgraphAccounts(chainId))
         return new MultiError('Subgraph accounts are not yet defined');
 
@@ -291,11 +265,11 @@ async function getRewardsFromGraphWithRetry(
         );
     }
 
-    return rewardsFetchedFromSubgraph as AdvancedStakeRewardsById;
+    return rewardsFetchedFromSubgraph as utxoById;
 }
 
-export const advancedStakesRewardsSlice = createSlice({
-    name: 'wallet/advancedStakesRewards',
+export const utxosSlice = createSlice({
+    name: 'wallet/utxos',
     initialState,
     reducers: {
         reset: state => {
@@ -310,7 +284,7 @@ export const advancedStakesRewardsSlice = createSlice({
             const addrHash = shortAddressHash(address);
             const reward = state.value?.[chainId]?.[addrHash]?.[id];
             if (reward) {
-                reward.zZkpUTXOStatus = status;
+                reward.status = status;
             }
         },
         updateExitCommitmentTime: (state, action) => {
@@ -334,10 +308,10 @@ export const advancedStakesRewardsSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(getAdvancedStakesRewards.pending, state => {
+            .addCase(getUTXOs.pending, state => {
                 state.status = 'loading';
             })
-            .addCase(getAdvancedStakesRewards.fulfilled, (state, action) => {
+            .addCase(getUTXOs.fulfilled, (state, action) => {
                 state.status = 'idle';
                 if (action.payload) {
                     const [chainId, shortAddressHash, rewards] = action.payload;
@@ -345,7 +319,7 @@ export const advancedStakesRewardsSlice = createSlice({
                     state.value[chainId][shortAddressHash] = rewards;
                 }
             })
-            .addCase(getAdvancedStakesRewards.rejected, state => {
+            .addCase(getUTXOs.rejected, state => {
                 state.status = 'failed';
             })
             .addCase(refreshUTXOsStatuses.pending, state => {
@@ -360,15 +334,13 @@ export const advancedStakesRewardsSlice = createSlice({
                         const reward = state.value?.[chainId]?.[addrHash]?.[id];
                         if (reward) {
                             console.debug(
-                                `Updating UTXO status ID ${id}: ${reward.zZkpUTXOStatus} -> ${status}`,
+                                `Updating UTXO status ID ${id}: ${reward.status} -> ${status}`,
                             );
-                            reward.zZkpUTXOStatus = status;
+                            reward.status = status;
                         }
                     }
                 }
-                advancedStakesRewardsSlice.caseReducers.updateLastRefreshTime(
-                    state,
-                );
+                utxosSlice.caseReducers.updateLastRefreshTime(state);
             })
             .addCase(refreshUTXOsStatuses.rejected, state => {
                 state.status = 'failed';
@@ -376,17 +348,16 @@ export const advancedStakesRewardsSlice = createSlice({
     },
 });
 
-export const advancedStakesRewardsSelector = (
+export const utxosSelector = (
     chainId: number | null | undefined,
     address: string | null | undefined,
-): ((state: RootState) => AdvancedStakeRewardsById) => {
-    return (state: RootState): AdvancedStakeRewardsById => {
+): ((state: RootState) => utxoById) => {
+    return (state: RootState): utxoById => {
         if (!address) return {};
         if (!chainId) return {};
 
-        const rewardsByAddressAndId = (
-            state.wallet.advancedStakesRewards as AdvancedStakesRewardsState
-        ).value as AdvancedStakeRewardsByChainId;
+        const rewardsByAddressAndId = (state.wallet.utxos as utxosState)
+            .value as utxosByChainId;
 
         const addrHash = shortAddressHash(address);
         return rewardsByAddressAndId?.[chainId]?.[addrHash] ?? {};
@@ -396,30 +367,63 @@ export const advancedStakesRewardsSelector = (
 export function totalSelector(
     chainId: number | null | undefined,
     address: string | null | undefined,
-    tid: AdvancedStakeTokenIDs,
-    includeIfZZkpSpent = false,
+): (state: RootState) => BigNumber {
+    // this selector assumes that all UTXOs are of the same asset. In v.1.0, we
+    // wound have to add a parameter to specify the asset
+    return (state: RootState): BigNumber => {
+        if (!address) return constants.Zero;
+
+        const utxos = utxosSelector(chainId, address)(state);
+        if (!utxos) return constants.Zero;
+
+        const rewardItems = Object.values(utxos)
+            // filter of spent statuses always ignores UNDEFINED Status
+            .filter((utxo: UTXO) => {
+                return UTXOStatus.UNSPENT === utxo.status;
+            })
+            .map((utxo: UTXO) => {
+                return utxo.amount;
+            });
+        return sumBigNumbers(rewardItems);
+    };
+}
+
+export function totalPRPSelector(
+    chainId: number | null | undefined,
+    address: string | null | undefined,
 ): (state: RootState) => BigNumber {
     return (state: RootState): BigNumber => {
         if (!address) return constants.Zero;
 
-        const rewards = advancedStakesRewardsSelector(chainId, address)(state);
-        if (!rewards) return constants.Zero;
+        const utxos = utxosSelector(chainId, address)(state);
+        if (!utxos) return constants.Zero;
 
-        const rewardItems = Object.values(rewards)
+        const prpAmounts = Object.values(utxos)
             // filter of spent statuses always ignores UNDEFINED Status
-            .filter((rewards: AdvancedStakeRewards) => {
-                if (includeIfZZkpSpent) {
-                    return [UTXOStatus.SPENT, UTXOStatus.UNSPENT].includes(
-                        rewards.zZkpUTXOStatus,
-                    );
-                } else {
-                    return UTXOStatus.UNSPENT === rewards.zZkpUTXOStatus;
-                }
+            .filter((rewards: UTXO) => {
+                return [UTXOStatus.SPENT, UTXOStatus.UNSPENT].includes(
+                    rewards.status,
+                );
             })
-            .map((reward: AdvancedStakeRewards) => {
-                return reward[tid];
+            .map((reward: UTXO) => {
+                // TODO: this hardcoded value should be removed in v 1.0 Due to the
+                // recent changes in the smart contract, the PRP UTXOs are not being
+                // generated upon staking. This is a temporary solution to hardcode
+                // the PRP rewards. Only first 2000 stakes will get 2000 PRP
+                // rewards. The rest will get 0 PRP rewards. This will be removed
+                // once the PRP UTXOs are generated upon deployment of the version
+                // 1.0 of the protocol. Magic number 4 comes from the fact that
+                // commitments generate 4 leaves in the tree. Therefore, to get the
+                // sequential number of the stake, we need to divide the left leafId
+                // by 4.
+                const quadIndex = BigNumber.from(reward.id).toNumber() / 4;
+                const prpAmount =
+                    quadIndex < NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD
+                        ? PRP_REWARD_PER_STAKE
+                        : '0';
+                return prpAmount;
             });
-        return sumBigNumbers(rewardItems);
+        return sumBigNumbers(prpAmounts);
     };
 }
 
@@ -430,21 +434,21 @@ export function totalUnrealizedPrpSelector(
     return (state: RootState): BigNumber => {
         if (!address) return constants.Zero;
 
-        const rewards = advancedStakesRewardsSelector(chainId, address)(state);
-        if (!rewards) return constants.Zero;
+        const utxos = utxosSelector(chainId, address)(state);
+        if (!utxos) return constants.Zero;
 
-        const rewardItems = Object.values(rewards)
+        const unrealizedPRPs = Object.values(utxos)
             // filter of spent statuses always ignores UNDEFINED Status
-            .filter((rewards: AdvancedStakeRewards) => {
-                return UTXOStatus.UNSPENT === rewards.zZkpUTXOStatus;
+            .filter((rewards: UTXO) => {
+                return UTXOStatus.UNSPENT === rewards.status;
             })
-            .map((reward: AdvancedStakeRewards) => {
+            .map((reward: UTXO) => {
                 return unrealizedPrpReward(
-                    BigNumber.from(reward.zZKP),
+                    BigNumber.from(reward.amount),
                     Number(reward.creationTime) * 1000,
                 );
             });
-        return sumBigNumbers(rewardItems);
+        return sumBigNumbers(unrealizedPRPs);
     };
 }
 
@@ -458,34 +462,34 @@ export function hasUndefinedUTXOsSelector(
         if (!address) return false;
         if (!chainId) return false;
 
-        const rewards = advancedStakesRewardsSelector(chainId, address)(state);
-        // if there are no rewards yet for this address for any reason, then  it
+        const utxos = utxosSelector(chainId, address)(state);
+        // if there are no UTXOs yet for this address for any reason, then  it
         // is up to date too
-        if (Object.keys(rewards).length === 0) return false;
+        if (Object.keys(utxos).length === 0) return false;
 
-        const rewardsWithUndefinedStatus = Object.values(rewards).find(
-            (r: AdvancedStakeRewards) => {
-                return r.zZkpUTXOStatus === UTXOStatus.UNDEFINED;
+        const utxosWithUndefinedStatus = Object.values(utxos).find(
+            (r: UTXO) => {
+                return r.status === UTXOStatus.UNDEFINED;
             },
         );
 
-        return !!rewardsWithUndefinedStatus;
+        return !!utxosWithUndefinedStatus;
     };
 }
 
 export function lastRefreshTime(state: RootState): number | null {
-    return state.wallet.advancedStakesRewards.lastRefreshTime;
+    return state.wallet.utxos.lastRefreshTime;
 }
 
 export function statusSelector(state: RootState): LoadingStatus {
-    return state.wallet.advancedStakesRewards.status;
+    return state.wallet.utxos.status;
 }
 
 export const {
-    reset: resetAdvancedStakesRewards,
-    resetStatus: resetAdvancedStakesRewardsStatus,
+    reset: resetUTXOs,
+    resetStatus: resetUTXOsStatus,
     updateUTXOStatus,
     updateExitCommitmentTime,
-} = advancedStakesRewardsSlice.actions;
+} = utxosSlice.actions;
 
-export default advancedStakesRewardsSlice.reducer;
+export default utxosSlice.reducer;

@@ -33,18 +33,18 @@ import {
     startWalletAction,
     StartWalletActionPayload,
 } from 'redux/slices/ui/web3-wallet-last-action';
-import {updateUTXOStatus} from 'redux/slices/wallet/advanced-stakes-rewards';
 import {getChainBalance} from 'redux/slices/wallet/chain-balance';
 import {poolV0ExitDelaySelector} from 'redux/slices/wallet/poolV0';
+import {updateUTXOStatus} from 'redux/slices/wallet/utxos';
 import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
 import {MultiError} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 import {exit} from 'services/pool';
-import {AdvancedStakeRewards, UTXOStatus} from 'types/staking';
+import {UTXO, UTXOStatus} from 'types/utxo';
 
 export default function SecondStageRedeem(props: {
     handleClose: () => void;
-    reward: AdvancedStakeRewards;
+    reward: UTXO;
 }) {
     const {handleClose, reward} = props;
 
@@ -52,7 +52,7 @@ export default function SecondStageRedeem(props: {
     const context = useWeb3React();
     const {account, chainId, library} = context;
     const exitDelay = useAppSelector(poolV0ExitDelaySelector);
-    const zZKP = formatCurrency(BigNumber.from(reward.zZKP));
+    const zZKP = formatCurrency(BigNumber.from(reward.amount));
 
     const exitCommitmentTime = reward.exitCommitmentTime;
     const now = getUnixTime(new Date());
@@ -98,10 +98,10 @@ export default function SecondStageRedeem(props: {
             library,
             account as string,
             chainId as number,
-            reward.utxoData,
+            reward.data,
             BigInt(reward.id),
-            Number(reward.creationTime),
-            reward.commitments,
+            reward.creationTime,
+            reward.commitment,
             keys,
         );
         if (tx instanceof MultiError) {

@@ -4,11 +4,19 @@ import fs from 'fs';
 import path from 'path';
 
 import axios from 'axios';
+import dotenv from 'dotenv';
 import {create, globSource} from 'ipfs-http-client';
+
+//! Note: this script must be run from the `dapp/` directory directly.
+// Load .env file from dapp/.env
+dotenv.config({});
 
 // ============================== IPFS ==============================
 
-function getAuthHeader(projectId: string, projectSecret: string): string {
+function getInfuraAuthHeader(): string {
+    const projectId = getEnvVarOrFail<string>(EnvVar.ProjectId);
+    const projectSecret = getEnvVarOrFail<string>(EnvVar.ProjectSecret);
+
     const auth = Buffer.from([projectId, projectSecret].join(':')).toString(
         'base64',
     );
@@ -16,9 +24,67 @@ function getAuthHeader(projectId: string, projectSecret: string): string {
     return `Basic ${auth}`;
 }
 
+type HttpProtocol = 'http' | 'https';
+type IpfsNodeInfo = {
+    host: string;
+    protocol: HttpProtocol;
+    port: number;
+    headers: {[key: string]: string};
+};
+
+function makeInfuraNode(): IpfsNodeInfo {
+    return {
+        host: 'ipfs.infura.io',
+        protocol: 'https',
+        port: 5001,
+        headers: {
+            authorization: getInfuraAuthHeader(),
+        },
+    };
+}
+
+function makeDefaultLocalIpfs(): IpfsNodeInfo {
+    return {
+        host: '127.0.0.1',
+        protocol: 'http',
+        port: 5001,
+        headers: {},
+    };
+}
+
+function makeCustomIpfsNode(): IpfsNodeInfo {
+    const host = getEnvVarOrFail<string>(EnvVar.IfpsHost);
+    const protocol = getEnvVarOrFail<HttpProtocol>(EnvVar.IpfsProtocol);
+    const port = Number(getEnvVarOrFail<number>(EnvVar.IpfsPort));
+
+    if (protocol != 'http' && protocol !== 'https')
+        throw new Error(
+            `"${protocol}" is not a valid protocol. Must be http or https`,
+        );
+
+    if (Number.isNaN(port))
+        throw new Error(`"${port}" is not valid port. Must be a number`);
+
+    return {
+        host,
+        protocol,
+        port,
+        headers: {},
+    };
+}
+
+function getIpfsNode(
+    useInfuraNode: boolean,
+    useCustomNode: boolean,
+): IpfsNodeInfo {
+    if (useInfuraNode) return makeInfuraNode();
+    if (useCustomNode) return makeCustomIpfsNode();
+    // Default to local ipfs node if no other option
+    return makeDefaultLocalIpfs();
+}
+
 async function deployToIpfs(
-    projectId: string,
-    projectSecret: string,
+    ipfsNode: IpfsNodeInfo,
 ): Promise<{indexHtmlCid: string; rootDirCid: string}> {
     const buildDir = 'build';
 
@@ -27,14 +93,7 @@ async function deployToIpfs(
             "Build directory doesn't exist. You need to build first!",
         );
 
-    const ipfs = await create({
-        host: 'ipfs.infura.io',
-        port: 5001,
-        protocol: 'https',
-        headers: {
-            authorization: getAuthHeader(projectId, projectSecret),
-        },
-    });
+    const ipfs = await create(ipfsNode);
 
     // Root Directory where all the content of the `build/` dir lives
     let rootDirCid = '';
@@ -49,14 +108,22 @@ async function deployToIpfs(
 
     const indexHtml = getIndexHtml(indexHtmlPath, rootDirCid);
     const result = await ipfs.add(indexHtml);
+    const indexHtmlCid = result.cid.toString();
 
-    return {indexHtmlCid: result.cid.toString(), rootDirCid};
+    console.log(`#>> Your build is deployed to ${makeIpfsUrl(indexHtmlCid)}`);
+    console.log(`#>> Index.html CID: ipfs://${indexHtmlCid}`);
+    console.log(`#>> Build Direcoty: ipfs://${rootDirCid}`);
+
+    return {indexHtmlCid, rootDirCid};
 }
 
 function getIndexHtml(indexHtmlPath: string, baseIpfsCid: string) {
     const html = fs.readFileSync(indexHtmlPath).toString();
-    const fileToUrl = (file: string) =>
-        `"https://ipfs.io/ipfs/${baseIpfsCid}/${file}"`;
+    const fileToUrl = (file: string, withQuotes = true) => {
+        const wrapper = withQuotes ? '"' : '';
+        return `${wrapper}https://ipfs.io/ipfs/${baseIpfsCid}/${file}${wrapper}`;
+    };
+
     const filesToReplace = [
         'circomlib.js',
         'main.js',
@@ -64,26 +131,36 @@ function getIndexHtml(indexHtmlPath: string, baseIpfsCid: string) {
         'logo.png',
     ];
 
-    return filesToReplace.reduce(
+    let updatedHtml = filesToReplace.reduce(
         (acc, curr) => acc.replaceAll(`"${curr}"`, fileToUrl(curr)),
         html,
     );
+
+    // map `%PUBLIC_URL%/logo.png` -> `<IPFS_LINK>/logo.png`
+    updatedHtml = updatedHtml.replace(
+        '"%PUBLIC_URL%/logo.png"',
+        fileToUrl('logo.png'),
+    );
+
+    // map `/manifest.<RANDOM_HASH>` -> `<IPFS_LINK>/manifest.<HASH>`
+    updatedHtml = updatedHtml.replace(
+        '/manifest.',
+        fileToUrl('manifest.', false),
+    );
+
+    return updatedHtml;
 }
 
 // Unpin endpoint from Infura
 // https://docs.infura.io/infura/networks/ipfs/http-api-methods/pin_rm#api-v0-pin-rm
-async function unpinBuild(
-    projectId: string,
-    projectSecret: string,
-    ipfsCid: string,
-): Promise<void> {
+async function unpinBuild(ipfsCid: string): Promise<void> {
     try {
         await axios.post('https://ipfs.infura.io:5001/api/v0/pin/rm', null, {
             params: {
                 arg: ipfsCid,
             },
             headers: {
-                authorization: getAuthHeader(projectId, projectSecret),
+                authorization: getInfuraAuthHeader(),
             },
         });
     } catch (error) {
@@ -100,11 +177,7 @@ async function unpinBuild(
     }
 }
 
-async function unpinAll(
-    projectId: string,
-    projectSecret: string,
-    builds: Build[],
-): Promise<void> {
+async function unpinAll(builds: Build[]): Promise<void> {
     if (builds.length == 0) return;
 
     console.log(
@@ -119,9 +192,7 @@ async function unpinAll(
         )
         .reduce((acc, curr) => acc.concat(curr), []);
 
-    await Promise.all(
-        cids.map((cid: string) => unpinBuild(projectId, projectSecret, cid)),
-    );
+    await Promise.all(cids.map((cid: string) => unpinBuild(cid)));
 }
 
 // ============================== GitLab ==============================
@@ -130,8 +201,10 @@ async function unpinAll(
 const PC_PROJECT_ID = '32154473';
 const ipfsCommentFlag = '____ipfs_deploy_comment';
 
-export function setupAxios(gitLabAccessToken: string) {
-    axios.defaults.headers.common['PRIVATE-TOKEN'] = gitLabAccessToken;
+export function setupAxios() {
+    axios.defaults.headers.common['PRIVATE-TOKEN'] = getEnvVarOrFail(
+        EnvVar.GitLabAccessToken,
+    );
     axios.defaults.baseURL = 'https://gitlab.com/api/v4';
 }
 
@@ -219,51 +292,6 @@ async function updateGitLabComment(
             },
         },
     );
-}
-
-type EnvVars = Record<
-    | 'gitLabAccessToken'
-    | 'projectId'
-    | 'projectSecret'
-    | 'mergeReqId'
-    | 'commitShaShort'
-    | 'fullCommitMessage',
-    string
->;
-function getEnvVariables(): EnvVars {
-    const envVars = {
-        gitLabAccessToken: 'GITLAB_ACCESS_TOKEN',
-        projectId: 'INFURA_PROJECT_ID',
-        projectSecret: 'INFURA_PROJECT_SECRET_ID',
-        commitShaShort: 'CI_COMMIT_SHORT_SHA',
-        fullCommitMessage: 'CI_COMMIT_MESSAGE',
-    };
-
-    const missingEnvVars: string[] = [];
-
-    Object.values(envVars).forEach((envVar: string) => {
-        if (!process.env[envVar]) {
-            missingEnvVars.push(envVar);
-        }
-    });
-
-    if (missingEnvVars.length != 0) {
-        throw new Error(
-            `Missing these environment variable:\n${missingEnvVars.join('\n')}`,
-        );
-    }
-
-    for (const [key, value] of Object.entries<string>(envVars)) {
-        envVars[key as keyof typeof envVars] = process.env[value]!;
-    }
-
-    const mergeReqId = getMergeReqId(envVars.fullCommitMessage);
-    if (mergeReqId == null) throw new Error('Merge request ID is missing');
-
-    return {
-        ...envVars,
-        mergeReqId,
-    };
 }
 
 // ============================== serialize/deserialize ==============================
@@ -355,16 +383,16 @@ function deserializeBuilds(buildsStr: string): Build[] {
 }
 
 /*
- * RegExp to extract current module from the commit title
+ * RegExp to extract current workspace from the commit title
  * View on regex101: https://regex101.com/r/rTxEQA/1
- * Modules: dapp, graph, crypto, contracts
+ * workspaces: dapp, graph, crypto, contracts
  * Example:
  *  - feat(dapp): deploy to IPFS from CI/CD
  *  - refactor(dapp): use gradient instead of image
  */
-const reModule = /.+\((.+)\)\s?:\s?/;
-export function getModule(commitTitle: string): string | null {
-    const result = commitTitle.match(reModule);
+const reWorkspace = /.+\((.+)\)\s?:\s?/;
+export function getWorkspace(commitTitle: string): string | null {
+    const result = commitTitle.match(reWorkspace);
     if (!result) return null;
     return result[1];
 }
@@ -384,71 +412,70 @@ const reMergeId = /See merge request.*!(.*)/;
  * - From the `CI_MERGE_REQUEST_IID` environment variable
  * - From the merge commit message when merging ito `main` (like the one example above)
  */
-function getMergeReqId(fullCommitMsg: string): string | null {
+function getMergeReqIdOrFail(fullCommitMsg: string): string {
     const mergeReqId = process.env['CI_MERGE_REQUEST_IID'];
     if (mergeReqId) return mergeReqId;
 
+    console.warn(
+        `Missing 'CI_MERGE_REQUEST_IID' environment variable. Will try to get it from the commit message!`,
+    );
+
     const reMatch = fullCommitMsg.match(reMergeId);
-    if (!reMatch) return null;
+    if (!reMatch) {
+        throw new Error(
+            `Invlaid Commit Message. Cannot extract merge request ID. Commit Message: ${fullCommitMsg}`,
+        );
+    }
+
     return reMatch[1];
 }
 
-// ============================== Utils ==============================
-function makeIpfsUrl(ipfsCid: string): string {
-    return `https://ipfs.io/ipfs/${ipfsCid}/`;
-}
+// ============================== CI/CD ==============================
 
-// ============================== Entry Point  ==============================
-/**
- *  ### Script entry point (`deploy-ipfs.ts`)
- *  This script can be run in two ways
- *  1. `ts-node scripts/deploy-ipfs.ts`: will deploy the current `build`
- *     directory to ipfs and make a comment with the ipfs link on GitLab
- *  2. `ts-node scripts/deploy-ipfs.ts --unpin` (with the unpin flag) will unpin
- *     all ipfs files that was made for this merge request
- */
-async function main() {
-    const envVars = getEnvVariables();
-    setupAxios(envVars.gitLabAccessToken);
-
-    const prevComment = await getPreviousComment(envVars.mergeReqId);
-    const shouldUnpinBuilds = process.argv.includes('--unpin');
+async function handleCi(
+    shouldUnpinBuilds: boolean,
+    useInfura: boolean,
+    useCustomNode: boolean,
+) {
+    setupAxios();
+    const fullCommitMessage = getEnvVarOrFail(EnvVar.FullCommitMessage);
+    const mergeReqId = getMergeReqIdOrFail(fullCommitMessage);
+    const prevComment = await getPreviousComment(mergeReqId);
 
     if (shouldUnpinBuilds) {
         if (prevComment == null)
             return console.log(
-                `Merge Reqeust (!${envVars.mergeReqId}) has no comments related to ipfs. Nothing to unpin`,
+                `Merge Reqeust (!${mergeReqId}) has no comments related to ipfs. Nothing to unpin`,
             );
 
         const builds = getPreviousBuilds(prevComment.body);
-        await unpinAll(envVars.projectId, envVars.projectSecret, builds);
+        await unpinAll(builds);
+
         const lastBuild = builds[builds.length - 1];
         const body = makeCommentBody(
             lastBuild ? lastBuild.indexHtmlCid : '',
             builds,
             true, // Mark comment as unpinned
         );
-        await updateGitLabComment(envVars.mergeReqId, prevComment.id, body);
-
-        return;
+        return await updateGitLabComment(mergeReqId, prevComment.id, body);
     }
 
-    const modulesToWatch = ['dapp', 'crypto'];
-    const module = getModule(envVars.fullCommitMessage);
+    const allowedWorkspaces = ['dapp', 'crypto'];
+    const workspace = getWorkspace(fullCommitMessage);
 
-    if (!module) throw new Error('Module not found. Invalid commit title');
-    if (!modulesToWatch.includes(module))
+    if (!workspace)
+        throw new Error('Workspace not found. Invalid commit title');
+    if (!allowedWorkspaces.includes(workspace))
         return console.log(
-            `Info: Script will not run for the '${module}' moudle`,
+            `Info: Script will not run for the '${workspace}' workspace`,
         );
 
     const {indexHtmlCid, rootDirCid} = await deployToIpfs(
-        envVars.projectId,
-        envVars.projectSecret,
+        getIpfsNode(useInfura, useCustomNode),
     );
 
     const newBuild = {
-        commitShaShort: envVars.commitShaShort,
+        commitShaShort: getEnvVarOrFail(EnvVar.CommitShaShort),
         indexHtmlCid,
         rootDirCid,
         createdAt: new Date(),
@@ -456,13 +483,62 @@ async function main() {
 
     if (prevComment === null) {
         const body = makeCommentBody(indexHtmlCid, [newBuild]);
-        return await makeGitLabComment(envVars.mergeReqId, body);
+        return await makeGitLabComment(mergeReqId, body);
     }
 
     const builds = getPreviousBuilds(prevComment.body);
     builds.push(newBuild);
     const body = makeCommentBody(indexHtmlCid, builds);
-    await updateGitLabComment(envVars.mergeReqId, prevComment.id, body);
+    await updateGitLabComment(mergeReqId, prevComment.id, body);
+}
+
+// ============================== Utils ==============================
+function makeIpfsUrl(ipfsCid: string): string {
+    return `https://ipfs.io/ipfs/${ipfsCid}/`;
+}
+
+function getFlag(flag: string): boolean {
+    return process.argv.includes(flag);
+}
+
+enum EnvVar {
+    GitLabAccessToken = 'GITLAB_ACCESS_TOKEN',
+    ProjectId = 'INFURA_PROJECT_ID',
+    ProjectSecret = 'INFURA_PROJECT_SECRET_ID',
+    CommitShaShort = 'CI_COMMIT_SHORT_SHA',
+    FullCommitMessage = 'CI_COMMIT_MESSAGE',
+    MergeReqId = 'CI_MERGE_REQUEST_IID',
+    IfpsHost = 'IPFS_HOST',
+    IpfsPort = 'IPFS_PORT',
+    IpfsProtocol = 'IPFS_PROTOCOL',
+}
+
+function getEnvVarOrFail<T = string>(envVar: EnvVar): T {
+    const value = process.env[envVar];
+    if (!value) throw new Error(`Missing '${envVar}' environment variable`);
+    return value as T;
+}
+
+// ============================== Entry Point  ==============================
+async function main() {
+    const fromCi = getFlag('--ci');
+    const withInfuraNode = getFlag('--infura');
+    const withCustomNode = getFlag('--custom');
+    const withDefaultLocalNode = getFlag('--local-default');
+    //! Note: `--unpin` flag can be used only from the CI/CD
+    const shouldUnpinBuilds = getFlag('--unpin');
+    let ipfsNode: IpfsNodeInfo | null = null;
+    if (withDefaultLocalNode) ipfsNode = makeDefaultLocalIpfs();
+    if (withInfuraNode && !fromCi) ipfsNode = makeInfuraNode();
+    if (withCustomNode && !fromCi) ipfsNode = makeCustomIpfsNode();
+    if (ipfsNode !== null) return await deployToIpfs(ipfsNode);
+    if (fromCi)
+        return await handleCi(
+            shouldUnpinBuilds,
+            withInfuraNode,
+            withCustomNode,
+        );
+    throw new Error('No flag provided Or Invalid Flag. Please read the docs');
 }
 
 main()

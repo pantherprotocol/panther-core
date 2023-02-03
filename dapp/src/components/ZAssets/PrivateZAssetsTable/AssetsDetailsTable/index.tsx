@@ -14,6 +14,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import {useWeb3React} from '@web3-react/core';
+import {classnames} from 'components/common/classnames';
 import Pagination from 'components/common/Pagination';
 import {unrealizedRewardAprTooltip} from 'components/common/tooltips';
 import AssetsDetailsRow from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsRow';
@@ -84,12 +85,12 @@ const AssetsDetailsTable = () => {
                 className="assets-details-table_table"
             >
                 <TableHead
-                    className={`assets-details-table_header ${
-                        active &&
-                        chainId &&
-                        !chainHasPoolContract(chainId) &&
-                        'wrong-network'
-                    }`}
+                    className={classnames('assets-details-table_header', {
+                        'wrong-network':
+                            active &&
+                            !!chainId &&
+                            !chainHasPoolContract(chainId),
+                    })}
                 >
                     <TableRow className="assets-details-table_header-row">
                         <TableCell
@@ -99,10 +100,13 @@ const AssetsDetailsTable = () => {
                             Amount:
                         </TableCell>
                         <TableCell
-                            className={`assets-details-table_header-cell ${
-                                !rewardsFilteredAndSorted.length &&
-                                'fixed-deposit-date-padding'
-                            }`}
+                            className={classnames(
+                                'assets-details-table_header-cell',
+                                {
+                                    'fixed-deposit-date-padding':
+                                        !rewardsFilteredAndSorted.length,
+                                },
+                            )}
                         >
                             Deposit Date:
                         </TableCell>

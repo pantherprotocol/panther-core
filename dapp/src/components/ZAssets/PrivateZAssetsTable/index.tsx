@@ -12,6 +12,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useWeb3React} from '@web3-react/core';
+import {classnames} from 'components/common/classnames';
 import {
     unrealizedRewardAprTooltip,
     zAssetTooltip,
@@ -63,12 +64,15 @@ export default function PrivateZAssetsTable() {
                         </TableCell>
                         <TableCell
                             align="left"
-                            className={`private-zAsset-table_header-cell ${
-                                active &&
-                                chainId &&
-                                !chainHasPoolContract(chainId) &&
-                                'wrong-network'
-                            }`}
+                            className={classnames(
+                                'private-zAsset-table_header-cell',
+                                {
+                                    'wrong-network':
+                                        active &&
+                                        !!chainId &&
+                                        !chainHasPoolContract(chainId),
+                                },
+                            )}
                         >
                             <span>Unrealized Reward APR:</span>
                             <Tooltip

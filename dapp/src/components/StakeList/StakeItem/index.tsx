@@ -4,6 +4,7 @@
 import React from 'react';
 
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
+import {classnames} from 'components/common/classnames';
 import ExactValueTooltip from 'components/common/ExactValueTooltip';
 import StyledBalance from 'components/common/StyledBalance';
 import {expectedPrpBalanceTooltip} from 'components/common/tooltips';
@@ -72,9 +73,9 @@ const StakeItem = (props: {
                     </Box>
                     <Box className="info-wrapper">
                         <Box
-                            className={`info ${
-                                row.unstakable ? 'unstakable' : ''
-                            }`}
+                            className={classnames('info', {
+                                unstakable: !!row.unstakable,
+                            })}
                         >
                             <span className="title">Stake Date:</span>
                             <Typography className="value" component={'span'}>
@@ -110,9 +111,9 @@ const StakeItem = (props: {
                             </Box>
                         )}
                         <Box
-                            className={`info ${
-                                row.unstakable ? 'unstakable' : ''
-                            }`}
+                            className={classnames('info', {
+                                unstakable: !!row.unstakable,
+                            })}
                         >
                             <span className="title">Earned:</span>
                             <Typography className="value" component={'span'}>
@@ -142,14 +143,14 @@ const StakeItem = (props: {
                             </Typography>
                         </Box>
                         <Box
-                            className={`info ${
-                                row.unstakable ? 'unstakable' : ''
-                            }`}
+                            className={classnames('info', {
+                                unstakable: !!row.unstakable,
+                            })}
                         >
                             <span
-                                className={`title ${
-                                    row.unstakable ? 'unstakable' : ''
-                                }`}
+                                className={classnames('title', {
+                                    unstakable: !!row.unstakable,
+                                })}
                             >
                                 Expected:
                                 <Tooltip
@@ -163,9 +164,9 @@ const StakeItem = (props: {
                                     }
                                     data-html="true"
                                     placement="top"
-                                    className={`tooltip-icon ${
-                                        row.unstakable ? 'unstakable' : ''
-                                    }`}
+                                    className={classnames('tooltip-icon', {
+                                        unstakable: !!row.unstakable,
+                                    })}
                                 >
                                     <IconButton>
                                         <img src={infoIcon} />
@@ -175,9 +176,9 @@ const StakeItem = (props: {
 
                             <Typography
                                 component={'span'}
-                                className={`value ${
-                                    row.unstakable ? 'unstakable' : ''
-                                }`}
+                                className={classnames('value', {
+                                    unstakable: !!row.unstakable,
+                                })}
                             >
                                 {utils.formatUnits(
                                     row.stakeType === CLASSIC_TYPE_HEX

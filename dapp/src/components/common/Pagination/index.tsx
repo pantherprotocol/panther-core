@@ -1,5 +1,7 @@
 import React from 'react';
 
+import {classnames} from '../classnames';
+
 import {PaginationInterface} from './Pagination.interface';
 
 import './styles.scss';
@@ -30,9 +32,9 @@ const Pagination = (props: PaginationInterface) => {
                     key={page}
                     id={page.toString()}
                     onClick={() => setCurrentPage(Number(page.toString()))}
-                    className={`page-number ${
-                        currentPage === page ? 'active' : ''
-                    }`}
+                    className={classnames('page-number', {
+                        active: currentPage === page,
+                    })}
                 >
                     {page}
                 </li>
@@ -48,16 +50,16 @@ const Pagination = (props: PaginationInterface) => {
     }
 
     return (
-        <div className={`pagination-container ${classes ?? ''}`}>
+        <div className={classnames('pagination-container', classes)}>
             <ul className="page-numbers">
                 <li>
                     <span
                         onClick={() =>
                             currentPage === pages[0] ? null : onPrevClick()
                         }
-                        className={`paginator-button ${
-                            currentPage === pages[0] && 'disabled'
-                        }`}
+                        className={classnames('paginator-button', {
+                            disabled: currentPage === pages[0],
+                        })}
                     >
                         Prev
                     </span>
@@ -66,11 +68,9 @@ const Pagination = (props: PaginationInterface) => {
                 {pageIncrementEllipses}
                 <li
                     onClick={() => onLastClick(total)}
-                    className={`page-number ${
-                        currentPage === total || maxPageLimit >= total
-                            ? 'hidden'
-                            : ''
-                    }`}
+                    className={classnames('page-number', {
+                        hidden: currentPage === total || maxPageLimit >= total,
+                    })}
                 >
                     {total}
                 </li>
@@ -81,10 +81,9 @@ const Pagination = (props: PaginationInterface) => {
                                 ? null
                                 : onNextClick()
                         }
-                        className={`paginator-button ${
-                            currentPage === pages[pages.length - 1] &&
-                            'disabled'
-                        }`}
+                        className={classnames('paginator-button', {
+                            disabled: currentPage === pages[pages.length - 1],
+                        })}
                     >
                         Next
                     </span>

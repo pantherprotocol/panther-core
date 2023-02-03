@@ -229,7 +229,7 @@ export default function PrivateBalance() {
                 <Box className="private-zAssets-refresh">
                     <Button
                         variant="text"
-                        className={`refresh-button`}
+                        className="refresh-button"
                         startIcon={
                             !loading && (
                                 <img

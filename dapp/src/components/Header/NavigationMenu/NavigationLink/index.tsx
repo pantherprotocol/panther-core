@@ -5,6 +5,7 @@ import React from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import {classnames} from 'components/common/classnames';
 import {SafeLink} from 'components/common/links';
 import {Link, useHistory} from 'react-router-dom';
 
@@ -19,7 +20,7 @@ export default function NavigationLink(
     const {pathname} = location;
 
     return (
-        <Box className={`nav-item ${pathname === to ? 'selected' : ''}`}>
+        <Box className={classnames('nav-item', {selected: pathname === to})}>
             {!to.startsWith('/') ? (
                 <Typography>
                     <SafeLink href={to}>{children}</SafeLink>

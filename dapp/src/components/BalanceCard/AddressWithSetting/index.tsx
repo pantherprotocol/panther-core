@@ -6,6 +6,7 @@ import React, {useState} from 'react';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 import {Box, Tooltip} from '@mui/material';
 import Address from 'components/Address';
+import {classnames} from 'components/common/classnames';
 import copyIcon from 'images/copy-icon.svg';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
@@ -30,7 +31,11 @@ export default function AddressWithSetting(props: {account: string}) {
                 title={`${copied ? 'Copied!' : 'Copy Wallet Address'}`}
                 placement="top"
             >
-                <span className={`copy-icon-wrapper ${copied && 'copied'}`}>
+                <span
+                    className={classnames('copy-icon-wrapper', {
+                        copied,
+                    })}
+                >
                     <CopyToClipboard text={props.account} onCopy={handleCopy}>
                         {copied ? (
                             <CheckOutlinedIcon />

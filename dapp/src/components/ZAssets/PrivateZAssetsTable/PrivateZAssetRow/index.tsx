@@ -12,6 +12,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import {useWeb3React} from '@web3-react/core';
+import {classnames} from 'components/common/classnames';
 import {zAssetsPageAprTooltip} from 'components/common/tooltips';
 import Balance from 'components/ZAssets/Balance';
 import AssetsDetails from 'components/ZAssets/PrivateZAssetsTable/AssetsDetailsTable';
@@ -33,8 +34,10 @@ export default function PrivateZAssetRow() {
     const zkpPrice = useAppSelector(zkpMarketPriceSelector);
     const unclaimedZZKP = useAppSelector(totalSelector(chainId, account));
     const balanceValue = calcUSDPrice(unclaimedZZKP, zkpPrice);
-
     const [open, setOpen] = useState(true);
+
+    const chainHasNoPool =
+        active && !!chainId && !chainHasPoolContract(chainId);
     return (
         <React.Fragment>
             <TableRow className="private-zAsset-row">
@@ -42,7 +45,7 @@ export default function PrivateZAssetRow() {
                     align="left"
                     className="logo-cell private-zAsset-row_cell"
                 >
-                    {active && chainId && !chainHasPoolContract(chainId) ? (
+                    {chainHasNoPool ? (
                         <span>No zAssets Found</span>
                     ) : (
                         <>
@@ -75,14 +78,11 @@ export default function PrivateZAssetRow() {
                 </TableCell>
                 <TableCell
                     align="left"
-                    className={`apr private-zAsset-row_cell ${
-                        active &&
-                        chainId &&
-                        !chainHasPoolContract(chainId) &&
-                        'wrong-network'
-                    }`}
+                    className={classnames('apr', 'private-zAsset-row_cell', {
+                        'wrong-network': chainHasNoPool,
+                    })}
                 >
-                    {active && chainId && !chainHasPoolContract(chainId) ? (
+                    {chainHasNoPool ? (
                         '-'
                     ) : (
                         <>

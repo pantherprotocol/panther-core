@@ -220,9 +220,7 @@ export default function SecondStageRedeem(props: {
                 </Typography>
             </DialogTitle>
 
-            <DialogContent
-                className={'modal-dialog-content-holder no-background'}
-            >
+            <DialogContent className="modal-dialog-content-holder no-background">
                 <Box
                     component="div"
                     className="modal-dialog-content"
@@ -266,7 +264,7 @@ export default function SecondStageRedeem(props: {
             </Box>
 
             <DialogActions>
-                <Box className={`redeem-action-holder`}>
+                <Box className="redeem-action-holder">
                     <PrimaryActionButton
                         onClick={closeModalAndRedeem}
                         disabled={!isLockPeriodPassed}

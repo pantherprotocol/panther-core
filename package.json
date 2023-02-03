@@ -24,6 +24,7 @@
     "deploy:chain": "yarn workspace @panther-core/contracts deploy:chain",
     "deploy:graph": "yarn workspace @panther-core/subgraph deploy",
     "deploy:contracts": "yarn workspace @panther-core/contracts deploy",
+    "deploy:dapp:ci:ipfs": "yarn workspace @panther-core/dapp deploy:ci:ipfs",
     "hardhat": "yarn workspace @panther-core/contracts hardhat",
     "lint": "yarn workspace @panther-core/contracts lint && yarn workspace @panther-core/crypto lint:eslint && yarn workspace @panther-core/dapp lint",
     "postinstall": "git config commit.template .gitmessage; husky install",

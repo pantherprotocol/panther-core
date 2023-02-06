@@ -272,10 +272,7 @@ async function getPreviousComment(mergeReqId: string): Promise<Comment | null> {
 
     if (comments.length === 0) return null;
 
-    if (comments.length != 1)
-        throw new Error('Only one comment GitLab is allowed');
-
-    return comments[0];
+    return comments[comments.length - 1];
 }
 
 async function updateGitLabComment(

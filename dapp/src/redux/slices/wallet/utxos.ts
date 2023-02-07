@@ -15,11 +15,7 @@ import {RootState} from 'redux/store';
 import {chainHasPoolContract} from 'services/contracts';
 import {MultiError} from 'services/errors';
 import {getChangedUTXOsStatuses, UTXOStatusByID} from 'services/pool';
-import {
-    PRP_REWARD_PER_STAKE,
-    NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD,
-    unrealizedPrpReward,
-} from 'services/rewards';
+import {unrealizedPrpReward, prpReward} from 'services/rewards';
 import {
     AdvancedStakeRewardsResponse,
     chainHasSubgraphAccounts,
@@ -406,22 +402,7 @@ export function totalPRPSelector(
                 );
             })
             .map((reward: UTXO) => {
-                // TODO: this hardcoded value should be removed in v 1.0 Due to the
-                // recent changes in the smart contract, the PRP UTXOs are not being
-                // generated upon staking. This is a temporary solution to hardcode
-                // the PRP rewards. Only first 2000 stakes will get 2000 PRP
-                // rewards. The rest will get 0 PRP rewards. This will be removed
-                // once the PRP UTXOs are generated upon deployment of the version
-                // 1.0 of the protocol. Magic number 4 comes from the fact that
-                // commitments generate 4 leaves in the tree. Therefore, to get the
-                // sequential number of the stake, we need to divide the left leafId
-                // by 4.
-                const quadIndex = BigNumber.from(reward.id).toNumber() / 4;
-                const prpAmount =
-                    quadIndex < NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD
-                        ? PRP_REWARD_PER_STAKE
-                        : '0';
-                return prpAmount;
+                return prpReward(reward.creationTime * 1000);
             });
         return sumBigNumbers(prpAmounts);
     };

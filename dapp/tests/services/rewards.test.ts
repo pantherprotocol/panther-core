@@ -23,6 +23,7 @@ describe('Advanced stakes', () => {
         prpReward,
         T_START,
         T_END,
+        LAST_OF_2000_REWARDS_GENERATED_AT,
     } = require('../../src/services/rewards'); // eslint-disable-line
 
     const currentTime = new Date('2022-05-17T12:00:00Z'); // 5 days after start
@@ -119,9 +120,18 @@ describe('Advanced stakes', () => {
 
     describe('PRP rewards', () => {
         describe('Upon stake', () => {
-            it('should always be 2,000', () => {
-                const reward = prpReward().toString();
+            it('should be 2,000 if before the last generated rewards', () => {
+                const reward = prpReward(
+                    LAST_OF_2000_REWARDS_GENERATED_AT - 1,
+                ).toString();
                 expect(reward).toBe('2000');
+            });
+
+            it('should be 0 if after the last generated rewards', () => {
+                const reward = prpReward(
+                    LAST_OF_2000_REWARDS_GENERATED_AT + 1,
+                ).toString();
+                expect(reward).toBe('0');
             });
         });
 

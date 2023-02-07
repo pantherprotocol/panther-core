@@ -33,6 +33,7 @@ export const T_END = Number(process.env.ADVANCED_STAKING_T_END) * 1000;
 export const APY_START = Number(process.env.ADVANCED_STAKING_APY_START);
 export const APY_END = Number(process.env.ADVANCED_STAKING_APY_END);
 const DAPY_DT = (APY_END - APY_START) / (T_END - T_START);
+export const UNREALIZED_PRP_REWARD_PER_ZZKP = 10;
 // Due to the recent changes in the smart contract, the PRP UTXOs are not being
 // generated upon staking. This is a temporary solution to hardcode the PRP
 // rewards. Only first 2000 stakes will get 2000 PRP rewards. The rest will get
@@ -40,8 +41,9 @@ const DAPY_DT = (APY_END - APY_START) / (T_END - T_START);
 // deployment of the version 1.0 of the protocol. MASP doc:
 // https://docs.google.com/document/d/1BTWHstTgNKcapOe0PLQR41vbC0aEDYmbBenfzTq8TVs
 export const PRP_REWARD_PER_STAKE = '2000';
-export const UNREALIZED_PRP_REWARD_PER_ZZKP = 10;
-export const NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD = 2000;
+// The timestamp (ms) of the block when the last of 2000 PRP rewards was generated.
+// https://polygonscan.com/tx/0x3314b6a4c89e300c55dcee276699fc92dae64a6882406bc836a138467201c10f
+export const LAST_OF_2000_REWARDS_GENERATED_AT = 1670641065000;
 
 export function calculateRewardBasedOnAPR(
     amount: BigNumber,
@@ -105,8 +107,10 @@ export function zZkpReward(
     return calculateRewardBasedOnAPR(amount, apy, rewardStart, rewardEnd);
 }
 
-export function prpReward(): BigNumber {
-    return BigNumber.from(PRP_REWARD_PER_STAKE);
+export function prpReward(stakedAt: number): BigNumber {
+    return stakedAt <= LAST_OF_2000_REWARDS_GENERATED_AT
+        ? BigNumber.from(PRP_REWARD_PER_STAKE)
+        : constants.Zero;
 }
 
 export function unrealizedPrpReward(
@@ -209,25 +213,11 @@ export function calculateRewardsForAdvancedStake(
         );
 
         if (rewards) {
-            // TODO: this hardcoded value should be removed in v 1.0 Due to the
-            // recent changes in the smart contract, the PRP UTXOs are not being
-            // generated upon staking. This is a temporary solution to hardcode
-            // the PRP rewards. Only first 2000 stakes will get 2000 PRP
-            // rewards. The rest will get 0 PRP rewards. This will be removed
-            // once the PRP UTXOs are generated upon deployment of the version
-            // 1.0 of the protocol. Magic number 4 comes from the fact that
-            // commitments generate 4 leaves in the tree. Therefore, to get the
-            // sequential number of the stake, we need to divide the left leafId
-            // by 4.
-            const quadIndex = BigNumber.from(rewards.id).toNumber() / 4;
-            const prpAmount =
-                quadIndex < NUMBER_OF_FIRST_STAKES_GET_PRP_REWARD
-                    ? PRP_REWARD_PER_STAKE
-                    : '0';
-
             return {
                 [StakingRewardTokenID.zZKP]: BigNumber.from(rewards.zZkpAmount),
-                [StakingRewardTokenID.PRP]: BigNumber.from(prpAmount),
+                [StakingRewardTokenID.PRP]: prpReward(
+                    rewards.creationTime * 1000,
+                ),
             };
         }
     }
@@ -240,7 +230,7 @@ export function calculateRewardsForAdvancedStake(
             stake.stakedAt * 1000,
             stake.lockedTill * 1000,
         ),
-        [StakingRewardTokenID.PRP]: prpReward(),
+        [StakingRewardTokenID.PRP]: prpReward(stake.stakedAt * 1000),
     };
 }
 

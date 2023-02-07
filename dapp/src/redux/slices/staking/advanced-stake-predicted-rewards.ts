@@ -37,7 +37,8 @@ export const calculatedRewardSlice = createSlice({
                         timeStaked,
                         lockedTill,
                     ).toString(),
-                    [StakingRewardTokenID.PRP]: prpReward().toString(),
+                    [StakingRewardTokenID.PRP]:
+                        prpReward(timeStaked).toString(),
                 };
 
                 state.value = rewards;

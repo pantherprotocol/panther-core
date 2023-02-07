@@ -32,9 +32,9 @@ Example:
                    |               |                 |              |
 [1]            0-------1       2-------3        4-------5       6-------7
               /|\     /|\     /|\     /|\      /|\     /|\     /|\     /|\
-[0] index:   0..2    3..5    6..8    9...11  12..14  15..17  18..20  21..24
+[0] index:   0..2    3..5    6..8    9..11   12..14  15..17  18..20  21..23
 
-  leaf ID:   0..2    4..6    8..10   12..14  16..18  20..23  24..27  28..30
+  leaf ID:   0..2    4..6    8..10   12..14  16..18  20..22  24..26  28..30
 
 Arithmetic operations with multiples of 2 (i.e. shifting) is "cheaper" than
 operations with multiples of 3 (both on-chain and in zk-circuits).

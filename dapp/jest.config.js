@@ -1,6 +1,7 @@
+const isNodeEnv = process.env.TEST_ENV === 'node';
+
 module.exports = {
     preset: 'ts-jest',
-    testEnvironment: 'node',
     modulePaths: ['node_modules', '<rootDir>/src'],
     setupFiles: ['dotenv/config'],
     setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
@@ -8,7 +9,9 @@ module.exports = {
         '^.+\\.[t|j]sx?$': 'babel-jest',
     },
     transformIgnorePatterns: ['/node_modules/(?!(serialize-error)/)'],
-    testEnvironment: 'jsdom',
+    testEnvironment: isNodeEnv ? 'node' : 'jsdom',
+    // Tests in `scripts/deploy-ipfs.test.ts` can run only in node env (not a browser code).
+    modulePathIgnorePatterns: isNodeEnv ? [] : ['<rootDir>/tests/scripts/*'],
     moduleNameMapper: {
         '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
             '<rootDir>/__mocks__/fileMock.js',

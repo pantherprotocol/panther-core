@@ -13,7 +13,7 @@ dotenv.config({});
 
 // ============================== IPFS ==============================
 
-function getInfuraAuthHeader(): string {
+export function getInfuraAuthHeader(): string {
     const projectId = getEnvVarOrFail<string>(EnvVar.ProjectId);
     const projectSecret = getEnvVarOrFail<string>(EnvVar.ProjectSecret);
 
@@ -32,7 +32,7 @@ type IpfsNodeInfo = {
     headers: {[key: string]: string};
 };
 
-function makeInfuraNode(): IpfsNodeInfo {
+export function makeInfuraNode(): IpfsNodeInfo {
     return {
         host: 'ipfs.infura.io',
         protocol: 'https',
@@ -43,7 +43,7 @@ function makeInfuraNode(): IpfsNodeInfo {
     };
 }
 
-function makeDefaultLocalIpfs(): IpfsNodeInfo {
+export function makeDefaultLocalIpfs(): IpfsNodeInfo {
     return {
         host: '127.0.0.1',
         protocol: 'http',
@@ -52,28 +52,28 @@ function makeDefaultLocalIpfs(): IpfsNodeInfo {
     };
 }
 
-function makeCustomIpfsNode(): IpfsNodeInfo {
+export function makeCustomIpfsNode(): IpfsNodeInfo {
     const host = getEnvVarOrFail<string>(EnvVar.IfpsHost);
     const protocol = getEnvVarOrFail<HttpProtocol>(EnvVar.IpfsProtocol);
-    const port = Number(getEnvVarOrFail<number>(EnvVar.IpfsPort));
+    const port = getEnvVarOrFail<number>(EnvVar.IpfsPort);
 
     if (protocol != 'http' && protocol !== 'https')
         throw new Error(
             `"${protocol}" is not a valid protocol. Must be http or https`,
         );
 
-    if (Number.isNaN(port))
+    if (Number.isNaN(Number(port)))
         throw new Error(`"${port}" is not valid port. Must be a number`);
 
     return {
         host,
         protocol,
-        port,
+        port: Number(port),
         headers: {},
     };
 }
 
-function getIpfsNode(
+export function getIpfsNode(
     useInfuraNode: boolean,
     useCustomNode: boolean,
 ): IpfsNodeInfo {
@@ -117,7 +117,7 @@ async function deployToIpfs(
     return {indexHtmlCid, rootDirCid};
 }
 
-function getIndexHtml(indexHtmlPath: string, baseIpfsCid: string) {
+export function getIndexHtml(indexHtmlPath: string, baseIpfsCid: string) {
     const html = fs.readFileSync(indexHtmlPath).toString();
     const fileToUrl = (file: string, withQuotes = true) => {
         const wrapper = withQuotes ? '"' : '';
@@ -131,10 +131,9 @@ function getIndexHtml(indexHtmlPath: string, baseIpfsCid: string) {
         'logo.png',
     ];
 
-    let updatedHtml = filesToReplace.reduce(
-        (acc, curr) => acc.replaceAll(`"${curr}"`, fileToUrl(curr)),
-        html,
-    );
+    let updatedHtml = filesToReplace.reduce((acc, curr) => {
+        return acc.replace(`"${curr}"`, fileToUrl(curr));
+    }, html);
 
     // map `%PUBLIC_URL%/logo.png` -> `<IPFS_LINK>/logo.png`
     updatedHtml = updatedHtml.replace(
@@ -208,7 +207,7 @@ export function setupAxios() {
     axios.defaults.baseURL = 'https://gitlab.com/api/v4';
 }
 
-function makeCommentBody(
+export function makeCommentBody(
     ipfsCid: string,
     builds: Build[],
     markCommentAsUnpinned = false,
@@ -308,7 +307,7 @@ type Build = {
  *  [  ]([[commit_sha_1, url_1], [commit_sha_2, url_2]])
  */
 const reBuilds = /\[\s\s\]\((.+)\)/;
-function getPreviousBuilds(body: string): Build[] {
+export function getPreviousBuilds(body: string): Build[] {
     const buildsStr = body.match(reBuilds);
     if (!buildsStr || !buildsStr[1]) return [];
     try {
@@ -320,7 +319,7 @@ function getPreviousBuilds(body: string): Build[] {
 }
 
 // Convert build objects into a string with a compact format
-function serializeBuilds(builds: Build[]): string {
+export function serializeBuilds(builds: Build[]): string {
     return JSON.stringify(
         builds.map(build => {
             //! For backward compatibility old builds have only [commitShaShort, indexHtmlCid, createdAt]
@@ -343,7 +342,7 @@ function serializeBuilds(builds: Build[]): string {
 }
 
 // Parse builds string into JS objects
-function deserializeBuilds(buildsStr: string): Build[] {
+export function deserializeBuilds(buildsStr: string): Build[] {
     const builds = JSON.parse(buildsStr) as Array<
         | [
               string, // commitShaShort
@@ -409,7 +408,7 @@ const reMergeId = /See merge request.*!(.*)/;
  * - From the `CI_MERGE_REQUEST_IID` environment variable
  * - From the merge commit message when merging ito `main` (like the one example above)
  */
-function getMergeReqIdOrFail(fullCommitMsg: string): string {
+export function getMergeReqIdOrFail(fullCommitMsg: string): string {
     const mergeReqId = process.env['CI_MERGE_REQUEST_IID'];
     if (mergeReqId) return mergeReqId;
 
@@ -418,7 +417,7 @@ function getMergeReqIdOrFail(fullCommitMsg: string): string {
     );
 
     const reMatch = fullCommitMsg.match(reMergeId);
-    if (!reMatch) {
+    if (!reMatch || !reMatch[1]) {
         throw new Error(
             `Invlaid Commit Message. Cannot extract merge request ID. Commit Message: ${fullCommitMsg}`,
         );
@@ -490,15 +489,15 @@ async function handleCi(
 }
 
 // ============================== Utils ==============================
-function makeIpfsUrl(ipfsCid: string): string {
+export function makeIpfsUrl(ipfsCid: string): string {
     return `https://ipfs.io/ipfs/${ipfsCid}/`;
 }
 
-function getFlag(flag: string): boolean {
+export function getFlag(flag: string): boolean {
     return process.argv.includes(flag);
 }
 
-enum EnvVar {
+export enum EnvVar {
     GitLabAccessToken = 'GITLAB_ACCESS_TOKEN',
     ProjectId = 'INFURA_PROJECT_ID',
     ProjectSecret = 'INFURA_PROJECT_SECRET_ID',
@@ -510,7 +509,7 @@ enum EnvVar {
     IpfsProtocol = 'IPFS_PROTOCOL',
 }
 
-function getEnvVarOrFail<T = string>(envVar: EnvVar): T {
+export function getEnvVarOrFail<T = string>(envVar: EnvVar): T {
     const value = process.env[envVar];
     if (!value) throw new Error(`Missing '${envVar}' environment variable`);
     return value as T;
@@ -538,9 +537,12 @@ async function main() {
     throw new Error('No flag provided Or Invalid Flag. Please read the docs');
 }
 
-main()
-    .then(() => process.exit(0))
-    .catch(err => {
-        console.log(err);
-        process.exit(1);
-    });
+const isScriptRunDirectly = process.argv.includes(__filename);
+if (isScriptRunDirectly) {
+    main()
+        .then(() => process.exit(0))
+        .catch(err => {
+            console.log(err);
+            process.exit(1);
+        });
+}

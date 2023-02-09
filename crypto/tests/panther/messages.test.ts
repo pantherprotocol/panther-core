@@ -1,10 +1,10 @@
 import {describe, expect} from '@jest/globals';
 
+import {generateRandomInBabyJubSubField} from '../../src/base/field-operations';
 import {
     generateRandomKeypair,
     PACKED_PUB_KEY_SIZE,
 } from '../../src/base/keypairs';
-import {generateRandomInBabyJubSubField} from '../../src/base/field-operations';
 import {
     CIPHERTEXT_MSG_TYPE_V1_SIZE,
     unpackAndDecryptMessageTypeV1,

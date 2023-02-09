@@ -1,4 +1,5 @@
-import {BigNumber, BigNumberish, constants} from 'ethers';
+import {BigNumber, constants} from 'ethers';
+import type {BigNumberish} from 'ethers';
 
 export const sumBigNumbers = (
     arr: BigNumberish[],

@@ -2,11 +2,11 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 import {poseidon} from 'circomlibjs';
 import {Signer} from 'ethers';
+
 import {
     moduloBabyJubSubFieldPrime,
     moduloSnarkFieldPrime,
 } from '../base/field-operations';
-
 import {
     deriveKeypairFromPrivKey,
     deriveChildPrivKeyFromRootPrivKey,
@@ -15,7 +15,6 @@ import {
     isChildPubKeyValid,
 } from '../base/keypairs';
 import {IKeypair, PrivateKey} from '../types/keypair';
-
 import {assertInBabyJubJubSubOrder, assert} from '../utils/assertions';
 
 // generateSpendingChildKeypair generates child spending keypair (s', S')

@@ -9,17 +9,17 @@ https://github.com/appliedzkp/maci/blob/master/crypto/ts/index.ts
 // @ts-ignore
 import {babyjub} from 'circomlibjs';
 
-import {
-    moduloBabyJubSubFieldPrime,
-    generateRandomInBabyJubSubField,
-} from './field-operations';
-
 import {IKeypair, PrivateKey, PublicKey} from '../types/keypair';
 import {
     assertInSnarkField,
     assertInBabyJubJubSubOrder,
     assert,
 } from '../utils/assertions';
+
+import {
+    moduloBabyJubSubFieldPrime,
+    generateRandomInBabyJubSubField,
+} from './field-operations';
 
 export const PACKED_PUB_KEY_SIZE = 32;
 export const PRIV_KEY_SIZE = 32;

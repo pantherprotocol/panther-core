@@ -5,11 +5,11 @@ import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-waffle';
 import '@typechain/hardhat';
 import {config as dotenvConfig} from 'dotenv';
+import {HardhatUserConfig} from 'hardhat/config';
+import {NetworkUserConfig, HttpNetworkAccountsUserConfig} from 'hardhat/types';
 import 'hardhat-contract-sizer';
 import 'hardhat-deploy';
 import 'hardhat-gas-reporter';
-import {HardhatUserConfig} from 'hardhat/config';
-import {NetworkUserConfig, HttpNetworkAccountsUserConfig} from 'hardhat/types';
 import 'solidity-coverage';
 
 import './tasks/protocol/grant-issue';

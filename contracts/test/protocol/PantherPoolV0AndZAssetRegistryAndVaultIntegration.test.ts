@@ -192,7 +192,7 @@ describe('PantherPoolV0 and Vault Integration', () => {
                 // const createdAtBytes32 = toBytes32(createdAtNum.toString());
                 const commitments: BigNumber[] = [];
                 commitments.fill(BigNumber.from(0), UTXOs);
-                const commitmentsForTree: BigInt[] = [];
+                const commitmentsForTree: bigint[] = [];
                 commitmentsForTree.fill(BigInt(0), UTXOs);
                 for (let i = 0; i < UTXOs; ++i) {
                     commitments[i] =

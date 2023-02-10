@@ -37,6 +37,7 @@ dapp/src/types/contracts/
 dapp/src/types/ffjavascript/
 dapp/LICENSE*
 dapp/stats.json
+dapp/tests/data/*.index.html
 
 .env
 .env.*

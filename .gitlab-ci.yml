@@ -34,6 +34,7 @@ stages: # List of stages for jobs, and their order of execution
 
 .base_scripts: &base_scripts
   - yarn danger ci
+  - echo "${CI_COMMIT_MESSAGE}" | yarn commitlint
   - yarn lint
   - yarn build:crypto
   - yarn build:types

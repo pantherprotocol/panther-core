@@ -26,8 +26,6 @@ import {
     registerWalletActionFailure,
     registerWalletActionSuccess,
     startWalletAction,
-    StartWalletActionPayload,
-    WalletSignatureTrigger,
 } from 'redux/slices/ui/web3-wallet-last-action';
 import {getChainBalance} from 'redux/slices/wallet/chain-balance';
 import {
@@ -42,6 +40,7 @@ import {
 } from 'redux/slices/wallet/zkp-token-balance';
 import {MultiError} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
+import {StartWalletActionPayload, WalletSignatureTrigger} from 'wallet';
 
 import './styles.scss';
 

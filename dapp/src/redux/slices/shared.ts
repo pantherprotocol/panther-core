@@ -3,8 +3,7 @@
 
 // eslint-disable-next-line
 import {ActionReducerMapBuilder} from '@reduxjs/toolkit';
-
-export type LoadingStatus = 'idle' | 'loading' | 'failed';
+import {LoadingStatus} from 'loading';
 
 export interface BalanceState {
     value: string | null;

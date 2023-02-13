@@ -4,12 +4,13 @@
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
+import {MaspChainIds} from 'contact';
+import {LoadingStatus} from 'loading';
 
-import {MaspChainIds} from '../../../services/connectors';
 import {MASP_CHAIN_ID} from '../../../services/env';
 import * as pool from '../../../services/pool';
 import {RootState} from '../../store';
-import {createExtraReducers, LoadingStatus} from '../shared';
+import {createExtraReducers} from '../shared';
 
 interface PoolV0ExitTimeState {
     value: PoolV0Parameters;

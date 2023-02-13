@@ -4,7 +4,9 @@
 import {E18} from 'constants/numbers';
 import {oneYearInMs} from 'constants/time';
 
+import {MaspChainIds} from 'contact';
 import {BigNumber, constants, utils} from 'ethers';
+import {AdvancedStakeRewardsResponse} from 'subgraph';
 import {IStakingTypes} from 'types/contracts/Staking';
 import {
     StakeRewardBN,
@@ -13,7 +15,6 @@ import {
     StakingRewardTokenID,
 } from 'types/staking';
 
-import {MaspChainIds} from './connectors';
 import {
     ContractName,
     getAdvancedStakeRewardControllerContract,
@@ -23,7 +24,6 @@ import {
 import {MASP_CHAIN_ID, env} from './env';
 import {MultiError} from './errors';
 import {CLASSIC_TYPE_HEX, ADVANCED_TYPE_HEX} from './staking';
-import {AdvancedStakeRewardsResponse} from './subgraph';
 
 /* Constants are described in Advanced Staking Rewards document:
 https://docs.google.com/document/d/1lsZlE3RsUlk-Dx_dXAqKxXKWZD18ZuuNA-DKoEsArm4/edit

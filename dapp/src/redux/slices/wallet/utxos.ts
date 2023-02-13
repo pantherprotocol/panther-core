@@ -9,19 +9,20 @@ import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
 import {poseidon} from 'circomlibjs';
 import {BigNumber, constants} from 'ethers';
 import {sleep} from 'lib/time';
-import {LoadingStatus} from 'redux/slices/shared';
-import {setWalletUpdating} from 'redux/slices/ui/is-wallet-updating';
+import {LoadingStatus} from 'loading';
 import {RootState} from 'redux/store';
 import {chainHasPoolContract} from 'services/contracts';
 import {MultiError} from 'services/errors';
-import {getChangedUTXOsStatuses, UTXOStatusByID} from 'services/pool';
+import {getChangedUTXOsStatuses} from 'services/pool';
 import {unrealizedPrpReward, prpReward} from 'services/rewards';
 import {
-    AdvancedStakeRewardsResponse,
     chainHasSubgraphAccounts,
     getAdvancedStakingReward,
 } from 'services/subgraph';
-import {UTXO, UTXOStatus} from 'types/utxo';
+import {AdvancedStakeRewardsResponse} from 'subgraph';
+import {UTXO, UTXOStatus, UTXOStatusByID} from 'types/utxo';
+
+import {setWalletUpdating} from '../ui/is-wallet-updating';
 
 const MAX_RETRIES = 5;
 const INITIAL_RETRY_DELAY = 1000;

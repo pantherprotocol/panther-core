@@ -5,13 +5,12 @@ import * as React from 'react';
 
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
+import {AssetsDetailsRowProperties} from 'asset';
 import RedeemRewards from 'components/ZAssets/PrivateZAssetsTable/RedeemReward';
 import dayjs from 'dayjs';
 import {BigNumber} from 'ethers';
 import {formatCurrency} from 'lib/format';
 import {unrealizedPrpReward} from 'services/rewards';
-
-import {AssetsDetailsRowProperties} from './AssetsDetailsRow.interface';
 
 import './styles.scss';
 
@@ -49,7 +48,7 @@ const AssetsDetailsRow = (props: AssetsDetailsRowProperties) => {
             </TableCell>
             <TableCell className="zassets-staking-redeem-button-holder zAsset-staking-cell">
                 <RedeemRewards
-                    reward={asset}
+                    asset={asset}
                     key={asset.id}
                     isSelected={isSelected}
                     onSelectReward={onSelectReward}

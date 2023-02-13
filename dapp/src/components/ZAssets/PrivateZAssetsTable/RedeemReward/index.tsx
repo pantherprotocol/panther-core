@@ -5,6 +5,7 @@ import * as React from 'react';
 import {ReactElement, useState} from 'react';
 
 import {Button, Box} from '@mui/material';
+import {RedeemRewardProperties} from 'asset';
 import {classnames} from 'components/common/classnames';
 import RedeemRewardsWarningDialog from 'components/ZAssets/PrivateZAssetsTable/RedeemRewardsWarningDialog';
 import dayjs from 'dayjs';
@@ -18,8 +19,6 @@ import {
     poolV0ExitTimeSelector,
 } from 'redux/slices/wallet/poolV0';
 
-import {RedeemRewardProperties} from './RedeemReward.interface';
-
 import './styles.scss';
 
 function getButtonContents(inProgress: boolean): string | ReactElement {
@@ -28,7 +27,7 @@ function getButtonContents(inProgress: boolean): string | ReactElement {
 }
 
 const RedeemRewards = (props: RedeemRewardProperties) => {
-    const {reward, isSelected, onSelectReward} = props;
+    const {asset, isSelected, onSelectReward} = props;
 
     const exitTime = useAppSelector(poolV0ExitTimeSelector);
 
@@ -44,7 +43,7 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
     const anotherActionInProgress = walletActionStatus === 'in progress';
 
     const openWarningDialog = () => {
-        onSelectReward(reward.id);
+        onSelectReward(asset.id);
         setWarningDialogShown(true);
     };
 
@@ -55,7 +54,7 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
     const afterExitTime = exitTime ? exitTime * 1000 < Date.now() : false;
 
     const exitDelay = useAppSelector(poolV0ExitDelaySelector);
-    const exitCommitmentTime = reward.exitCommitmentTime;
+    const exitCommitmentTime = asset.exitCommitmentTime;
 
     const isLockPeriodPassed =
         exitCommitmentTime &&
@@ -99,8 +98,8 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
             {warningDialogShown && (
                 <RedeemRewardsWarningDialog
                     handleClose={handleCloseWarningDialog}
-                    key={reward.id}
-                    reward={reward}
+                    key={asset.id}
+                    reward={asset}
                 />
             )}
         </Box>

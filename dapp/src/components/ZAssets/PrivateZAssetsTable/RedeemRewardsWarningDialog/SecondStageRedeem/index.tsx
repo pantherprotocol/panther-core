@@ -31,7 +31,6 @@ import {
     registerWalletActionFailure,
     registerWalletActionSuccess,
     startWalletAction,
-    StartWalletActionPayload,
 } from 'redux/slices/ui/web3-wallet-last-action';
 import {getChainBalance} from 'redux/slices/wallet/chain-balance';
 import {poolV0ExitDelaySelector} from 'redux/slices/wallet/poolV0';
@@ -41,6 +40,7 @@ import {MultiError} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 import {exit} from 'services/pool';
 import {UTXO, UTXOStatus} from 'types/utxo';
+import {StartWalletActionPayload} from 'wallet';
 
 export default function SecondStageRedeem(props: {
     handleClose: () => void;

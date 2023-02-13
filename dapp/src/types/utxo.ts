@@ -19,3 +19,5 @@ export enum UTXOStatus {
     UNSPENT = 'unspent',
     SPENT = 'spent',
 }
+
+export type UTXOStatusByID = [string, UTXOStatus];

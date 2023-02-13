@@ -9,9 +9,9 @@ import {useAppSelector} from 'redux/hooks';
 import {
     walletActionCauseSelector,
     walletActionStatusSelector,
-    WalletActionTrigger,
 } from 'redux/slices/ui/web3-wallet-last-action';
 import {chainHasAdvancedStaking} from 'services/contracts';
+import {WalletActionTrigger} from 'wallet';
 
 import './styles.scss';
 

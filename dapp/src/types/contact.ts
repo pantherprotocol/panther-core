@@ -6,3 +6,6 @@ export interface Contact {
     publicReadingKey: string;
     publicSpendingKey: string;
 }
+
+// MASP chain ID could be only on Polygon or Hardhat networks
+export type MaspChainIds = 137 | 80001 | 31337;

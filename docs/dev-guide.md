@@ -5,12 +5,24 @@ staking and rewards.
 
 ## Prerequisites
 
+- Make sure node and npm installed, use nvm to manage versions
+  node version >= 16
+  npm version >= 8
+
 - Clone `panther-core` from [GitHub](https://github.com/pantherprotocol/panther-core).
 
 - Clone `zkp-token` from [GitHub](https://github.com/pantherprotocol/zkp-token).
   **N.B.** this will be published soon.
 
 - Run `yarn` in both.
+
+- Compile required modules in panther-core with:
+
+```
+yarn install
+yarn build:types
+yarn build:contracts
+```
 
 ## Setting up a local blockchain
 

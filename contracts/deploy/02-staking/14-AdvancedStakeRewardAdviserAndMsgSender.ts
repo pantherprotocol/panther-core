@@ -1,5 +1,5 @@
-import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {DeployFunction} from 'hardhat-deploy/types';
 
 import {isMainnetOrGoerli} from '../../lib/checkNetwork';
 import {

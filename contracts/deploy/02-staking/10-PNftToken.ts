@@ -1,5 +1,5 @@
-import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {DeployFunction} from 'hardhat-deploy/types';
 
 import {isProd} from '../../lib/checkNetwork';
 import {

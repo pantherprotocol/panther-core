@@ -373,7 +373,7 @@ describe('PantherPoolV0', () => {
                 const generateCommitmentNum = (
                     pubKey_X: bigint,
                     pubKey_Y: bigint,
-                    amount: BigInt,
+                    amount: bigint,
                     zAssetIdValue: BigNumber,
                     createTimeValue: bigint,
                 ) => {

@@ -10,17 +10,17 @@ import {StakeRewardController2} from 'types/contracts/StakeRewardController2';
 import {StakesReporter} from 'types/contracts/StakesReporter';
 import {Staking} from 'types/contracts/Staking';
 
-import {abi as ADVANCED_STAKE_REWARD_CONTROLLER_ABI} from '../abi/AdvancedStakeRewardController';
-import {abi as FAUCET_ABI} from '../abi/Faucet';
-import {abi as POOL_V0_ABI} from '../abi/PoolV0';
-import {abi as PRP_GRANTOR_ABI} from '../abi/PrpGrantor';
-import {abi as PZKPTOKEN_ABI} from '../abi/PZkpToken';
-import {abi as REWARD_MASTER_ABI} from '../abi/RewardMaster';
-import {abi as STAKE_REWARD_CONTROLLER_2_ABI} from '../abi/StakeRewardController2';
-import {abi as STAKES_REPORTER_ABI} from '../abi/StakesReporter';
-import {abi as STAKING_ABI} from '../abi/Staking';
-import {abi as Z_ASSETS_REGISTRY_ABI} from '../abi/ZAssetsRegistry';
-import {abi as ZKPTOKEN_ABI} from '../abi/ZKPToken';
+import * as ADVANCED_STAKE_REWARD_CONTROLLER_ABI from '../abi/AdvancedStakeRewardController.json';
+import * as FAUCET_ABI from '../abi/Faucet.json';
+import * as POOL_V0_ABI from '../abi/PoolV0.json';
+import * as PRP_GRANTOR_ABI from '../abi/PrpGrantor.json';
+import * as PZKPTOKEN_ABI from '../abi/PZkpToken.json';
+import * as REWARD_MASTER_ABI from '../abi/RewardMaster.json';
+import * as STAKE_REWARD_CONTROLLER_2_ABI from '../abi/StakeRewardController2.json';
+import * as STAKES_REPORTER_ABI from '../abi/StakesReporter.json';
+import * as STAKING_ABI from '../abi/Staking.json';
+import * as Z_ASSETS_REGISTRY_ABI from '../abi/ZAssetsRegistry.json';
+import * as ZKPTOKEN_ABI from '../abi/ZKPToken.json';
 
 import {MaspChainIds, supportedNetworks} from './connectors';
 import {env} from './env';

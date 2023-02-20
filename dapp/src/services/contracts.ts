@@ -10,17 +10,17 @@ import {StakeRewardController2} from 'types/contracts/StakeRewardController2';
 import {StakesReporter} from 'types/contracts/StakesReporter';
 import {Staking} from 'types/contracts/Staking';
 
-import {abi as ADVANCED_STAKE_REWARD_CONTROLLER_ABI} from '../abi/AdvancedStakeRewardController';
-import {abi as FAUCET_ABI} from '../abi/Faucet';
-import {abi as POOL_V0_ABI} from '../abi/PoolV0';
-import {abi as PRP_GRANTOR_ABI} from '../abi/PrpGrantor';
-import {abi as PZKPTOKEN_ABI} from '../abi/PZkpToken';
-import {abi as REWARD_MASTER_ABI} from '../abi/RewardMaster';
-import {abi as STAKE_REWARD_CONTROLLER_2_ABI} from '../abi/StakeRewardController2';
-import {abi as STAKES_REPORTER_ABI} from '../abi/StakesReporter';
-import {abi as STAKING_ABI} from '../abi/Staking';
-import {abi as Z_ASSETS_REGISTRY_ABI} from '../abi/ZAssetsRegistry';
-import {abi as ZKPTOKEN_ABI} from '../abi/ZKPToken';
+import * as ADVANCED_STAKE_REWARD_CONTROLLER_ABI from '../abi/AdvancedStakeRewardController.json';
+import * as FAUCET_ABI from '../abi/Faucet.json';
+import * as POOL_V0_ABI from '../abi/PoolV0.json';
+import * as PRP_GRANTOR_ABI from '../abi/PrpGrantor.json';
+import * as PZKPTOKEN_ABI from '../abi/PZkpToken.json';
+import * as REWARD_MASTER_ABI from '../abi/RewardMaster.json';
+import * as STAKE_REWARD_CONTROLLER_2_ABI from '../abi/StakeRewardController2.json';
+import * as STAKES_REPORTER_ABI from '../abi/StakesReporter.json';
+import * as STAKING_ABI from '../abi/Staking.json';
+import * as Z_ASSETS_REGISTRY_ABI from '../abi/ZAssetsRegistry.json';
+import * as ZKPTOKEN_ABI from '../abi/ZKPToken.json';
 
 import {MaspChainIds, supportedNetworks} from './connectors';
 import {env} from './env';
@@ -79,34 +79,33 @@ export function chainHasAdvancedStaking(chainId?: number): boolean {
     return env[`HAS_ADVANCED_STAKING_${chainId}`] === 'true';
 }
 
+const CONTRACT_NAME_TO_ABI: {
+    [key in ContractName]?: Array<any>;
+} = {
+    [ContractName.STAKING]: STAKING_ABI,
+    [ContractName.REWARD_MASTER]: REWARD_MASTER_ABI,
+    [ContractName.STAKE_REWARD_CONTROLLER_2]: STAKE_REWARD_CONTROLLER_2_ABI,
+    [ContractName.ADVANCED_STAKE_REWARD_CONTROLLER]:
+        ADVANCED_STAKE_REWARD_CONTROLLER_ABI,
+    [ContractName.STAKES_REPORTER]: STAKES_REPORTER_ABI,
+    [ContractName.FAUCET]: FAUCET_ABI,
+    [ContractName.POOL_V0]: POOL_V0_ABI,
+    [ContractName.PRP_GRANTOR]: PRP_GRANTOR_ABI,
+    [ContractName.Z_ASSETS_REGISTRY]: Z_ASSETS_REGISTRY_ABI,
+};
 export function getContractABI(
     contractName: ContractName,
     chainId: number,
 ): any {
-    switch (contractName) {
-        case ContractName.STAKING:
-            return STAKING_ABI;
-        case ContractName.REWARD_MASTER:
-            return REWARD_MASTER_ABI;
-        case ContractName.STAKE_REWARD_CONTROLLER_2:
-            return STAKE_REWARD_CONTROLLER_2_ABI;
-        case ContractName.ADVANCED_STAKE_REWARD_CONTROLLER:
-            return ADVANCED_STAKE_REWARD_CONTROLLER_ABI;
-        case ContractName.STAKES_REPORTER:
-            return STAKES_REPORTER_ABI;
-        case ContractName.FAUCET:
-            return FAUCET_ABI;
-        case ContractName.POOL_V0:
-            return POOL_V0_ABI;
-        case ContractName.PRP_GRANTOR:
-            return PRP_GRANTOR_ABI;
-        case ContractName.Z_ASSETS_REGISTRY:
-            return Z_ASSETS_REGISTRY_ABI;
-        case ContractName.STAKING_TOKEN:
-            if ([1, 4, 5, 31337].includes(chainId)) return ZKPTOKEN_ABI;
-            if ([137, 80001].includes(chainId)) return PZKPTOKEN_ABI;
+    if (contractName == ContractName.STAKING_TOKEN) {
+        if ([1, 4, 5, 31337].includes(chainId)) return ZKPTOKEN_ABI;
+        if ([137, 80001].includes(chainId)) return PZKPTOKEN_ABI;
     }
-    throw `Unsupported contract ${contractName} on chainId ${chainId}`;
+
+    const contract = CONTRACT_NAME_TO_ABI[contractName];
+    if (!contract)
+        throw `Unsupported contract ${contractName} on chainId ${chainId}`;
+    return contract;
 }
 
 export function getContract(

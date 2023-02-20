@@ -2,6 +2,17 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
 import {JsonRpcSigner} from '@ethersproject/providers';
+import ADVANCED_STAKE_REWARD_CONTROLLER_ABI from 'abi/AdvancedStakeRewardController.json';
+import FAUCET_ABI from 'abi/Faucet.json';
+import POOL_V0_ABI from 'abi/PoolV0.json';
+import PRP_GRANTOR_ABI from 'abi/PrpGrantor.json';
+import PZKPTOKEN_ABI from 'abi/PZkpToken.json';
+import REWARD_MASTER_ABI from 'abi/RewardMaster.json';
+import STAKE_REWARD_CONTROLLER_2_ABI from 'abi/StakeRewardController2.json';
+import STAKES_REPORTER_ABI from 'abi/StakesReporter.json';
+import STAKING_ABI from 'abi/Staking.json';
+import Z_ASSETS_REGISTRY_ABI from 'abi/ZAssetsRegistry.json';
+import ZKPTOKEN_ABI from 'abi/ZKPToken.json';
 import {Contract, ethers} from 'ethers';
 import {Provider, Contract as MultiCallContract} from 'ethers-multicall';
 import {AdvancedStakeRewardController} from 'types/contracts/AdvancedStakeRewardController';
@@ -9,18 +20,6 @@ import {RewardMaster} from 'types/contracts/RewardMaster';
 import {StakeRewardController2} from 'types/contracts/StakeRewardController2';
 import {StakesReporter} from 'types/contracts/StakesReporter';
 import {Staking} from 'types/contracts/Staking';
-
-import * as ADVANCED_STAKE_REWARD_CONTROLLER_ABI from '../abi/AdvancedStakeRewardController.json';
-import * as FAUCET_ABI from '../abi/Faucet.json';
-import * as POOL_V0_ABI from '../abi/PoolV0.json';
-import * as PRP_GRANTOR_ABI from '../abi/PrpGrantor.json';
-import * as PZKPTOKEN_ABI from '../abi/PZkpToken.json';
-import * as REWARD_MASTER_ABI from '../abi/RewardMaster.json';
-import * as STAKE_REWARD_CONTROLLER_2_ABI from '../abi/StakeRewardController2.json';
-import * as STAKES_REPORTER_ABI from '../abi/StakesReporter.json';
-import * as STAKING_ABI from '../abi/Staking.json';
-import * as Z_ASSETS_REGISTRY_ABI from '../abi/ZAssetsRegistry.json';
-import * as ZKPTOKEN_ABI from '../abi/ZKPToken.json';
 
 import {MaspChainIds, supportedNetworks} from './connectors';
 import {env} from './env';

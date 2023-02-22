@@ -35,7 +35,8 @@
     "dotenv:sync": "yarn env:sync --file --write",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "synpress:run": "env-cmd -f .env synpress run --configFile synpress.config.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.6.0",
@@ -116,6 +117,7 @@
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^6.5.12",
     "@storybook/testing-library": "^0.0.13",
+    "@synthetixio/synpress": "https://github.com/Synthetixio/synpress.git#d0bf46ef9",
     "@types/coingecko-api": "^1.0.10",
     "@types/dotenv-webpack": "^7.0.3",
     "@types/jest": "^27.4.0",
@@ -140,11 +142,14 @@
     "chai-as-promised": "^7.1.1",
     "chalk": "^4.0",
     "coingecko-api": "^1.0.10",
+    "colors": "^1.4.0",
     "crypto-browserify": "^3.12.0",
     "css-loader": "^6.2.0",
+    "cypress": "^12.6.0",
     "danger": "^11.2.3",
     "danger-plugin-conventional-commitlint": "^3.0.0",
     "easy-peasy": "^5.0.3",
+    "env-cmd": "^10.1.0",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.27.5",

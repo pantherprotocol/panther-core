@@ -33,11 +33,9 @@ import {
 import {getZkpStakedBalance} from 'redux/slices/staking/zkp-staked-balance';
 import {
     startWalletAction,
-    StartWalletActionPayload,
     registerWalletActionFailure,
     progressToNewWalletAction,
     registerWalletActionSuccess,
-    WalletActionTrigger,
     walletActionCauseSelector,
     walletActionStatusSelector,
 } from 'redux/slices/ui/web3-wallet-last-action';
@@ -49,6 +47,7 @@ import {MultiError} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
 import {advancedStake} from 'services/staking';
 import {StakingRewardTokenID} from 'types/staking';
+import {StartWalletActionPayload, WalletActionTrigger} from 'wallet';
 
 import './styles.scss';
 

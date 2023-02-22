@@ -25,13 +25,12 @@ import {
     registerWalletActionFailure,
     registerWalletActionSuccess,
     startWalletAction,
-    StartWalletActionPayload,
-    WalletActionTrigger,
 } from 'redux/slices/ui/web3-wallet-last-action';
 import {getChainBalance} from 'redux/slices/wallet/chain-balance';
 import {getZkpTokenBalance} from 'redux/slices/wallet/zkp-token-balance';
 import {MultiError} from 'services/errors';
-import {StakeRow, unstake} from 'services/staking';
+import {unstake, StakeRow} from 'services/staking';
+import {StartWalletActionPayload, WalletActionTrigger} from 'wallet';
 
 import UnstakeRow from './StakeItem';
 

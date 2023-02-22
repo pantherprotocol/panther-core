@@ -4,25 +4,16 @@
 import {Web3Provider} from '@ethersproject/providers';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types';
-import {createExtraReducers, LoadingStatus} from 'redux/slices/shared';
+import {IStakingTypes} from 'contracts/Staking';
+import {LoadingStatus} from 'loading';
+import {createExtraReducers} from 'redux/slices/shared';
 import {RootState} from 'redux/store';
 import {getStakingTermsFromContract} from 'services/staking';
-import type {IStakingTypes} from 'types/contracts/Staking';
-import {StakeType, StakeTypes} from 'types/staking';
-
-type StakeTermsByType = {
-    [key in StakeTypes]?: IStakingTypes.TermsStructOutput;
-};
-
-type StakeTermsByChainIdAndType = {
-    [key in number]: StakeTermsByType;
-};
-
-type StakeTypeStatus = LoadingStatus;
+import {StakeTermsByChainIdAndType, StakeType} from 'types/staking';
 
 interface StakeTermsState {
     value: StakeTermsByChainIdAndType | null;
-    status: StakeTypeStatus;
+    status: LoadingStatus;
 }
 
 const initialState: StakeTermsState = {
@@ -142,7 +133,7 @@ export function termsSelector(
     };
 }
 
-export function statusStakeTermsSelector(state: RootState): StakeTypeStatus {
+export function statusStakeTermsSelector(state: RootState): LoadingStatus {
     return state.staking.stakeTerms.status;
 }
 

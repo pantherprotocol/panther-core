@@ -40,8 +40,6 @@ import {
     registerWalletActionSuccess,
     showWalletActionInProgressSelector,
     startWalletAction,
-    StartWalletActionPayload,
-    WalletSignatureTrigger,
     walletActionStatusSelector,
 } from 'redux/slices/ui/web3-wallet-last-action';
 import {
@@ -56,6 +54,7 @@ import {
 import {chainHasPoolContract} from 'services/contracts';
 import {MultiError} from 'services/errors';
 import {generateRootKeypairs} from 'services/keys';
+import {StartWalletActionPayload, WalletSignatureTrigger} from 'wallet';
 
 import './styles.scss';
 

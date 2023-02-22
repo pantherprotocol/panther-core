@@ -3,7 +3,8 @@
 
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {safeParseStringToBN} from 'lib/numbers';
-import {createExtraReducers, LoadingStatus} from 'redux/slices/shared';
+import {LoadingStatus} from 'loading';
+import {createExtraReducers} from 'redux/slices/shared';
 import {RootState} from 'redux/store';
 import {unusedPrpGrantAmount} from 'services/rewards';
 

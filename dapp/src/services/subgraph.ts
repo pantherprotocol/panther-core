@@ -2,39 +2,14 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
 import axios from 'axios';
+import {
+    AdvancedStakesGraphResponse,
+    CommitmentsGraphResponse,
+    GraphResponse,
+} from 'subgraph';
 
 import {env} from './env';
 import {MultiError} from './errors';
-
-type GraphResponse = AdvancedStakesGraphResponse | CommitmentsGraphResponse;
-
-export type AdvancedStakesGraphResponse = {
-    staker: {
-        id: string;
-        advancedStakingRewards: AdvancedStakeRewardsResponse[];
-        lastBlockNumber: number;
-        lastUpdatedTime: number;
-    };
-};
-
-type CommitmentsGraphResponse = {
-    triads: Triad[];
-};
-
-type Triad = {
-    leafId: string;
-    commitments: string[];
-};
-
-export type AdvancedStakeRewardsResponse = {
-    id: string;
-    leftLeafId: string;
-    creationTime: number;
-    commitments: string[];
-    utxoData: string;
-    zZkpAmount: string;
-    prpAmount: string;
-};
 
 function getAdvancedStakingRewardQuery(staker: string, limit = 1000): string {
     return `

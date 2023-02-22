@@ -5,37 +5,12 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from 'redux/store';
 import {MultiError} from 'services/errors';
-
-export type WalletActionStatus =
-    | 'in progress'
-    | 'succeeded'
-    | 'failed'
-    | 'unknown'
-    | 'none';
-
-export type WalletSignatureTrigger =
-    | 'undefined UTXOs'
-    | 'manual refresh'
-    | 'zZKP redemption'
-    | 'register exit commitment'
-    | 'unstake'
-    | 'stake';
-
-export type WalletActionName =
-    | 'refreshUTXOsStatuses'
-    | 'signMessage'
-    | 'getAdvancedStakesRewards'
-    | 'stake'
-    | 'exit'
-    | '';
-
-// In the future, there may be other types of trigger
-export type WalletActionTrigger = WalletSignatureTrigger;
-
-export type Web3WalletActionCause = {
-    caller: string;
-    trigger: WalletActionTrigger;
-};
+import {
+    StartWalletActionPayload,
+    WalletActionName,
+    WalletActionStatus,
+    Web3WalletActionCause,
+} from 'wallet';
 
 export interface Web3WalletLastActionState {
     action: WalletActionName; // e.g. 'signMessage'
@@ -51,12 +26,6 @@ const initialState: Web3WalletLastActionState = {
     acknowledgedByUser: false,
     data: {},
     status: 'none',
-};
-
-export type StartWalletActionPayload = {
-    name: WalletActionName;
-    cause: Web3WalletActionCause;
-    data: any;
 };
 
 function startAction(

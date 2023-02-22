@@ -18,8 +18,8 @@ import {removeBlur, setBlur} from 'redux/slices/ui/blur';
 import {
     acknowledgeByUser,
     walletActionCauseSelector,
-    WalletSignatureTrigger,
 } from 'redux/slices/ui/web3-wallet-last-action';
+import {WalletSignatureTrigger} from 'wallet';
 
 import './styles.scss';
 

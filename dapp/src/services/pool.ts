@@ -36,6 +36,7 @@ import {
 import {MultiError} from 'services/errors';
 import {DetailedError} from 'types/error';
 import {UTXO, UTXOStatus} from 'types/utxo';
+import {UTXOStatusByID} from 'utxo';
 
 import {getCommitments, getMaxLeafId} from './subgraph';
 
@@ -275,8 +276,6 @@ export async function exit(
 
     return [UTXOStatus.SPENT, result as ContractTransaction];
 }
-
-export type UTXOStatusByID = [string, UTXOStatus];
 
 // getChangedUTXOsStatuses returns an array of UTXOStatusByID of the statuses
 // that need updates

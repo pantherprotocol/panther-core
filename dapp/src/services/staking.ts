@@ -30,10 +30,8 @@ import {
 } from 'services/contracts';
 import {env} from 'services/env';
 import {calculateRewardsForStake} from 'services/rewards';
-import {
-    AdvancedStakeRewardsResponse,
-    getAdvancedStakingReward,
-} from 'services/subgraph';
+import {getAdvancedStakingReward} from 'services/subgraph';
+import {AdvancedStakeRewardsResponse} from 'subgraph';
 import type {IStakingTypes, Staking} from 'types/contracts/Staking';
 import {StakeRewardBN, StakeTypes} from 'types/staking';
 

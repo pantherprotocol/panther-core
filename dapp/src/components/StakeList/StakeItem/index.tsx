@@ -14,7 +14,6 @@ import {BigNumber, constants, utils} from 'ethers';
 import useScreenSize from 'hooks/screen';
 import infoIcon from 'images/info-icon.svg';
 import {formatCurrency, getFormattedFractions} from 'lib/format';
-import {WalletActionTrigger} from 'redux/slices/ui/web3-wallet-last-action';
 import {isClassic} from 'services/rewards';
 import {CLASSIC_TYPE_HEX, StakeRow} from 'services/staking';
 import {
@@ -22,6 +21,7 @@ import {
     ClassicStakeRewardBN,
     StakingRewardTokenID,
 } from 'types/staking';
+import {WalletActionTrigger} from 'wallet';
 
 import './styles.scss';
 

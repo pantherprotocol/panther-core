@@ -4,16 +4,12 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {BigNumber} from 'ethers';
 import {safeParseStringToBN} from 'lib/numbers';
-import {createExtraReducers, LoadingStatus} from 'redux/slices/shared';
+import {LoadingStatus} from 'loading';
+import {createExtraReducers} from 'redux/slices/shared';
 import {RootState} from 'redux/store';
 import {rewardsVested, rewardsClaimed} from 'services/rewards';
 import {ZKP_STAKED_SCALING_FACTOR} from 'services/staking';
-
-type AdvancedStakingState = {
-    staked?: string;
-    vestedRewards?: string;
-    claimedRewards?: string;
-};
+import {AdvancedStakingState} from 'staking';
 
 interface totalsOfAdvancedStakesState {
     value: AdvancedStakingState | null;

@@ -13,6 +13,8 @@ import STAKES_REPORTER_ABI from 'abi/StakesReporter.json';
 import STAKING_ABI from 'abi/Staking.json';
 import Z_ASSETS_REGISTRY_ABI from 'abi/ZAssetsRegistry.json';
 import ZKPTOKEN_ABI from 'abi/ZKPToken.json';
+import {MaspChainIds} from 'contact';
+import {PossiblyTypedContract} from 'contracts';
 import {Contract, ethers} from 'ethers';
 import {Provider, Contract as MultiCallContract} from 'ethers-multicall';
 import {AdvancedStakeRewardController} from 'types/contracts/AdvancedStakeRewardController';
@@ -21,7 +23,7 @@ import {StakeRewardController2} from 'types/contracts/StakeRewardController2';
 import {StakesReporter} from 'types/contracts/StakesReporter';
 import {Staking} from 'types/contracts/Staking';
 
-import {MaspChainIds, supportedNetworks} from './connectors';
+import {supportedNetworks} from './connectors';
 import {env} from './env';
 
 export enum ContractName {
@@ -244,8 +246,6 @@ export function getAdvancedStakeRewardControllerContract(
         ethers.getDefaultProvider(supportedNetworks[chainId].rpcURL),
     ) as AdvancedStakeRewardController;
 }
-
-type PossiblyTypedContract = Contract | RewardMaster | Staking;
 
 export function getSignableContract<ContractType extends PossiblyTypedContract>(
     library: any,

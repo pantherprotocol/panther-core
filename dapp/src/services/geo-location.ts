@@ -1,29 +1,11 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
+import {ApiResponse, IGeoLocationDB, Location} from 'geoLocation';
 import {BLOCKED_COUNTRIES} from 'services/env';
 import {safeFetch} from 'services/http';
 
 import {MultiError} from './errors';
-
-type IIpApi = {
-    country: string;
-    country_name: string;
-    ip: string;
-};
-type IGeoLocationDB = {
-    country_code: string;
-    country_name: string;
-    IPv4: string;
-};
-
-type ApiResponse = IIpApi | IGeoLocationDB;
-
-type Location = {
-    country: string;
-    country_name: string;
-    ip: string;
-};
 
 const GEO_LOCATION_APIS = [
     'https://geolocation-db.com/json/',

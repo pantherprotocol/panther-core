@@ -6,7 +6,8 @@ import React from 'react';
 import {Box, Typography} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import StakingAPR from 'components/StakingAPR';
-import {isAfter} from 'date-fns';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
 import {utils} from 'ethers';
 import {
     totalClaimedRewardsSelector,
@@ -21,6 +22,8 @@ import {useAppSelector} from '../../redux/hooks';
 import {termsSelector} from '../../redux/slices/staking/stake-terms';
 
 import './styles.scss';
+
+dayjs.extend(isBetween);
 
 function AdvancedStakingRewards() {
     const claimed = useAppSelector(totalClaimedRewardsSelector);
@@ -48,24 +51,24 @@ function AdvancedStakingRewards() {
 }
 
 function calcRemainingDays(
-    _allowedSince: number,
-    _allowedTill: number,
+    allowedSince: number,
+    allowedTill: number,
 ): [string, string] {
-    const now = new Date();
-    const allowedSince = new Date(_allowedSince * 1000);
-    const allowedTill = new Date(_allowedTill * 1000);
-    const nowIsBetween = now > allowedSince && now < allowedTill;
+    const now = dayjs();
+    const start = dayjs(allowedSince * 1000);
+    const end = dayjs(allowedTill * 1000);
+    const nowIsBetween = now.isBetween(start, end);
 
-    if (isAfter(allowedSince, allowedTill)) {
+    if (start.isAfter(end)) {
         return ['', '?'];
     }
-    if (isAfter(allowedSince, now)) {
-        return ['Remaining', formatRemainingPeriod(allowedSince)];
+    if (start.isAfter(now)) {
+        return ['Remaining', formatRemainingPeriod(start)];
     }
     if (nowIsBetween) {
-        return ['Remaining', formatRemainingPeriod(allowedTill)];
+        return ['Remaining', formatRemainingPeriod(end)];
     }
-    if (isAfter(now, allowedTill)) {
+    if (now.isAfter(end)) {
         return ['Staking is closed', ''];
     }
     return ['', '0 days'];

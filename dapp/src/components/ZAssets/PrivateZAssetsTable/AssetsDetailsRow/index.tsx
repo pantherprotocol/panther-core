@@ -6,7 +6,7 @@ import * as React from 'react';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import RedeemRewards from 'components/ZAssets/PrivateZAssetsTable/RedeemReward';
-import {format} from 'date-fns';
+import dayjs from 'dayjs';
 import {BigNumber} from 'ethers';
 import {formatCurrency} from 'lib/format';
 import {unrealizedPrpReward} from 'services/rewards';
@@ -32,9 +32,8 @@ const AssetsDetailsRow = (props: AssetsDetailsRowProperties) => {
             <TableCell className="staking-date zAsset-staking-cell">
                 <span className="cell-title">Deposit Date:</span>
                 <span className="cell-content">
-                    {format(
-                        new Date(Number(asset.creationTime) * 1000),
-                        'MMM dd yyyy',
+                    {dayjs(Number(asset.creationTime) * 1000).format(
+                        'MMM DD YYYY',
                     )}
                 </span>
             </TableCell>

@@ -9,11 +9,11 @@ import ExactValueTooltip from 'components/common/ExactValueTooltip';
 import StyledBalance from 'components/common/StyledBalance';
 import {expectedPrpBalanceTooltip} from 'components/common/tooltips';
 import UnstakeButton from 'components/StakeList/UnstakeButton';
-import {format} from 'date-fns';
+import dayjs from 'dayjs';
 import {BigNumber, constants, utils} from 'ethers';
 import useScreenSize from 'hooks/screen';
 import infoIcon from 'images/info-icon.svg';
-import {formatCurrency, formatTime, getFormattedFractions} from 'lib/format';
+import {formatCurrency, getFormattedFractions} from 'lib/format';
 import {WalletActionTrigger} from 'redux/slices/ui/web3-wallet-last-action';
 import {isClassic} from 'services/rewards';
 import {CLASSIC_TYPE_HEX, StakeRow} from 'services/staking';
@@ -80,13 +80,11 @@ const StakeItem = (props: {
                             <span className="title">Stake Date:</span>
                             <Typography className="value" component={'span'}>
                                 {isMedium && !isMobile
-                                    ? format(
-                                          new Date(row.stakedAt * 1000),
-                                          'M/d/yyyy',
+                                    ? dayjs(row.stakedAt * 1000).format(
+                                          'M/D/YYYY',
                                       )
-                                    : format(
-                                          new Date(row.stakedAt * 1000),
-                                          'MMM dd, yyyy',
+                                    : dayjs(row.stakedAt * 1000).format(
+                                          'MMM D, YYYY',
                                       )}
                             </Typography>
                         </Box>
@@ -100,13 +98,12 @@ const StakeItem = (props: {
                                     component={'span'}
                                 >
                                     {isMedium && !isMobile
-                                        ? format(
-                                              new Date(row.lockedTill * 1000),
-                                              'M/d/yyyy',
+                                        ? dayjs(row.lockedTill * 1000).format(
+                                              'M/d/YYYY',
                                           )
-                                        : formatTime(row.lockedTill * 1000, {
-                                              style: 'short',
-                                          })}
+                                        : dayjs(row.lockedTill * 1000).format(
+                                              'MM/DD/YYYY h:mm A',
+                                          )}
                                 </Typography>
                             </Box>
                         )}

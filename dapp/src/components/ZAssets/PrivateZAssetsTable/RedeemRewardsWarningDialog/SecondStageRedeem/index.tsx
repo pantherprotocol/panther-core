@@ -21,7 +21,7 @@ import {
     removeNotification,
 } from 'components/common/notification';
 import PrimaryActionButton from 'components/common/PrimaryActionButton';
-import {getUnixTime, formatDistance} from 'date-fns';
+import dayjs from 'dayjs';
 import {BigNumber} from 'ethers';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {formatCurrency} from 'lib/format';
@@ -55,7 +55,7 @@ export default function SecondStageRedeem(props: {
     const zZKP = formatCurrency(BigNumber.from(reward.amount));
 
     const exitCommitmentTime = reward.exitCommitmentTime;
-    const now = getUnixTime(new Date());
+    const now = dayjs();
     const [timeToWait, setTimeToWait] = useState<string>('');
     const [progress, setProgress] = useState(0);
     const [isLockPeriodPassed, setIsLockPeriodPassed] =
@@ -181,22 +181,17 @@ export default function SecondStageRedeem(props: {
             }
 
             setTimeToWait(
-                formatDistance(
-                    now * 1000,
-                    (exitCommitmentTime + exitDelay) * 1000,
-                ),
+                now.to(dayjs.unix(exitCommitmentTime + exitDelay), true),
             );
 
             setProgress(
-                Math.min(
-                    (getUnixTime(new Date()) - exitCommitmentTime) / exitDelay,
-                    1,
-                ) * 100,
+                Math.min((dayjs().unix() - exitCommitmentTime) / exitDelay, 1) *
+                    100,
             );
             const isLockPeriodPassed = !!(
                 exitCommitmentTime &&
                 exitDelay &&
-                exitCommitmentTime + exitDelay < getUnixTime(new Date())
+                exitCommitmentTime + exitDelay < dayjs().unix()
             );
 
             setIsLockPeriodPassed(isLockPeriodPassed);

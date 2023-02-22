@@ -1,15 +1,18 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
-import {oneDayInMs} from 'constants/time';
-
-import {formatDistance, formatDistanceToNowStrict} from 'date-fns';
+import dayjs, {Dayjs} from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import {BigNumber, utils} from 'ethers';
 
 import {getLocale} from './i18n';
 import {roundDown} from './numbers';
 
 const ADDRESS_SUBSTRING_LENGTH = 4;
+
+dayjs.extend(relativeTime);
+dayjs.extend(duration);
 
 export function formatTime(
     date: number | null,
@@ -34,7 +37,7 @@ export function formatLongTime(date: number | null): string | null {
 }
 
 export function formatTimeSince(date: number): string {
-    return formatDistance(date, new Date(), {addSuffix: true});
+    return dayjs(date).toNow(true);
 }
 
 export function secondsToFullDays(sec: number): number {
@@ -125,13 +128,13 @@ export function formatAccountAddress(
     return `0x${start}...${end}`;
 }
 
-export function formatRemainingPeriod(end: Date): string {
-    const now = new Date();
-    const periodInMs = end.getTime() - now.getTime();
-    if (periodInMs < 0) return '-';
+export function formatRemainingPeriod(endTime: Dayjs): string {
+    const now = dayjs();
+    if (endTime.isBefore(now)) return '-';
 
-    return formatDistanceToNowStrict(end, {
-        unit: periodInMs > oneDayInMs ? 'day' : 'hour',
-        roundingMethod: 'ceil',
-    });
+    const remainingPeriodInHours = Math.ceil(endTime.diff(now, 'hours', true));
+
+    return remainingPeriodInHours > 24
+        ? `${endTime.diff(now, 'days') + 1} days`
+        : `${remainingPeriodInHours} hours`;
 }

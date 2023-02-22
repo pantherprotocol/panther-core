@@ -26,7 +26,7 @@ import {
     removeNotification,
 } from 'components/common/notification';
 import PrimaryActionButton from 'components/common/PrimaryActionButton';
-import {getUnixTime} from 'date-fns';
+import dayjs from 'dayjs';
 import {ContractTransaction} from 'ethers/lib/ethers';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
 import {
@@ -149,7 +149,7 @@ export default function FirstStageRedeem(props: {
             chainId,
             account,
             reward.id,
-            getUnixTime(new Date()),
+            dayjs().unix(),
         ]);
 
         removeNotification(inProgress);

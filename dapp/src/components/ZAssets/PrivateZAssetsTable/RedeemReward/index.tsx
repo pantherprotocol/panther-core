@@ -7,7 +7,7 @@ import {ReactElement, useState} from 'react';
 import {Button, Box} from '@mui/material';
 import {classnames} from 'components/common/classnames';
 import RedeemRewardsWarningDialog from 'components/ZAssets/PrivateZAssetsTable/RedeemRewardsWarningDialog';
-import {getUnixTime} from 'date-fns';
+import dayjs from 'dayjs';
 import {useAppSelector} from 'redux/hooks';
 import {
     showWalletActionInProgressSelector,
@@ -60,7 +60,7 @@ const RedeemRewards = (props: RedeemRewardProperties) => {
     const isLockPeriodPassed =
         exitCommitmentTime &&
         exitDelay &&
-        exitCommitmentTime + exitDelay < getUnixTime(new Date());
+        exitCommitmentTime + exitDelay < dayjs().unix();
 
     const inExitCommitmentPeriod = exitCommitmentTime && !isLockPeriodPassed;
     const selectedInProgress = showExitInProgress && isSelected;

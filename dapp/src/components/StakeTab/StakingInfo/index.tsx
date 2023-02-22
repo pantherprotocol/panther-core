@@ -6,7 +6,7 @@ import React, {ReactElement, useCallback} from 'react';
 import {Typography, Card, CardContent} from '@mui/material';
 import {useWeb3React} from '@web3-react/core';
 import {SafeMuiLink} from 'components/common/links';
-import {add, format} from 'date-fns';
+import dayjs from 'dayjs';
 import warningIcon from 'images/warning-icon-triangle.svg';
 import {formatTime, secondsToFullDays} from 'lib/format';
 import {useAppSelector} from 'redux/hooks';
@@ -56,12 +56,9 @@ export default function StakingInfo() {
 
         if (isAdvancedStakingOpen) {
             if (minLockPeriod) {
-                const unlockDate = add(new Date(), {
-                    seconds: Number(minLockPeriod),
-                });
-                subtitle += `will lock your tokens until ${format(
-                    unlockDate,
-                    'dd MMM yyyy',
+                const unlockDate = dayjs().add(Number(minLockPeriod), 'second');
+                subtitle += `will lock your tokens until ${unlockDate.format(
+                    'D MMM YYYY',
                 )}`;
             } else {
                 subtitle += 'is now open';
@@ -69,8 +66,8 @@ export default function StakingInfo() {
         } else {
             subtitle += 'will open';
             if (allowedSince) {
-                const allowedSinceDate = new Date(Number(allowedSince) * 1000);
-                subtitle += ' on ' + format(allowedSinceDate, 'dd MMM yyyy');
+                const allowedSinceDate = dayjs(Number(allowedSince) * 1000);
+                subtitle += ' on ' + allowedSinceDate.format('dd MMM yyyy');
             } else {
                 subtitle += ' soon!';
             }

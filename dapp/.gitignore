@@ -28,4 +28,9 @@ public/new-commitments-tree-0.json
 /src/types/contracts
 /src/types/ffjavascript
 
+# Webpack
 stats.json
+
+# Cypress generated assets
+cypress/screenshots/
+cypress/videos/

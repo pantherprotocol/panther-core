@@ -37,8 +37,10 @@
     "src",
     "scripts",
     "tests",
+    "cypress",
     "__mocks__",
     "webpack.config.js",
-    "jest.config.js"
+    "jest.config.js",
+    "synpress.config.ts"
   ]
 }

@@ -29,21 +29,25 @@ stages: # List of stages for jobs, and their order of execution
     - .cache_exists
     - .yarn-cache/
     - node_modules/
-    - '**/node_modules/'
+    - circuits/node_modules/
+    - contracts/node_modules/
+    - crypto/node_modules/
+    - dapp/node_modules/
+    - subgraph/node_modules/
   policy: pull
 
 .base_scripts: &base_scripts
-  - yarn danger ci
+  - time yarn danger ci
   - echo "${CI_COMMIT_MESSAGE}" | yarn commitlint
-  - yarn lint
-  - yarn build:crypto
-  - yarn build:types
-  - yarn graph:setup mumbai staging
-  - yarn build:graph
-  - HARDHAT_NO_MNEMONIC=yes yarn run build:contracts
-  - yarn test
+  - time yarn lint
+  - time yarn build:crypto
+  - time yarn build:types
+  - time yarn graph:setup mumbai staging
+  - time yarn build:graph
+  - time HARDHAT_NO_MNEMONIC=yes yarn run build:contracts
+  - time yarn test
   - cp dapp/.env.staging dapp/.env
-  - yarn run build:dapp:staging
+  - time yarn run build:dapp:staging
 
 .ipfs_deploy_script: &ipfs_deploy_script
   - yarn deploy:dapp:ci:ipfs
@@ -89,8 +93,9 @@ stages: # List of stages for jobs, and their order of execution
   stage: test
   cache:
     <<: *yarn_cache_template
+    policy: pull
   before_script:
-    - yarn install --cache-folder .yarn-cache
+    - time yarn install --frozen-lockfile --check-files --cache-folder .yarn-cache
 
 # This job is executed on merge requests and any `push`` where commit title does not start with `Merge`
 combined-job-MRs:
@@ -120,7 +125,7 @@ unpin-ipfs-job:
     - if: $CI_COMMIT_MESSAGE =~ /See merge request/
       when: always
   script:
-    - yarn deploy:dapp:ci:ipfs --unpin
+    - time yarn deploy:dapp:ci:ipfs --unpin
 
 build-cache:
   stage: cache
@@ -128,6 +133,7 @@ build-cache:
     <<: *yarn_cache_template
     policy: pull-push
   script:
+    - time yarn install --frozen-lockfile --check-files --cache-folder .yarn-cache
     - |
       [[ -f .cache_exists ]] && echo "cache already exists" && exit 111
     - echo > .cache_exists

@@ -2,23 +2,19 @@ import {describe, expect} from '@jest/globals';
 import {babyjub} from 'circomlibjs';
 import {Wallet} from 'ethers';
 
+import {generateRandomInBabyJubSubField} from '../../src/base/field-operations';
 import {
     generateRandomKeypair,
     derivePubKeyFromPrivKey,
     isChildPubKeyValid,
     deriveChildPrivKeyFromRootPrivKey,
 } from '../../src/base/keypairs';
-
-import {
-    SNARK_FIELD_SIZE,
-    generateRandomInBabyJubSubField,
-} from '../../src/base/field-operations';
-
 import {
     deriveKeypairFromSignature,
     derivePrivKeyFromSignature,
     extractSecretsPair,
 } from '../../src/panther/keys';
+import {SNARK_FIELD_SIZE} from '../../src/utils/constants';
 
 describe('Keychain', () => {
     const bigOne = BigInt(1);

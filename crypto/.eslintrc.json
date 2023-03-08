@@ -11,7 +11,7 @@
     "plugin:import/typescript"
   ],
   "parserOptions": {
-    "project": ["tsconfig.json"],
+    "project": ["eslint-tsconfig.jsonc"],
     "tsconfigRootDir": "./",
     "ecmaVersion": 2020,
     "sourceType": "module",

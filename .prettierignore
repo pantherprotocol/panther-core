@@ -28,6 +28,7 @@ contracts/LICENSE*
 
 crypto/coverage/
 crypto/lib/
+crypto/types/
 crypto/LICENSE*
 
 dapp/public/preparation/
@@ -59,3 +60,5 @@ tmp/
 yarn.lock
 .nvmrc
 LICENSE
+.vscode/*
+*/.vscode/*

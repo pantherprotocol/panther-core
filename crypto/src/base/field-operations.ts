@@ -7,11 +7,8 @@ import crypto from 'crypto';
 import {babyjub} from 'circomlibjs';
 
 import {assert, assertInBabyJubJubSubOrder} from '../utils/assertions';
+import {SNARK_FIELD_SIZE} from '../utils/constants';
 
-// ALT_BN128 (also known as BN254) order and BabyJubJub field prime
-export const SNARK_FIELD_SIZE = BigInt(
-    '21888242871839275222246405745257275088548364400416034343698204186575808495617',
-);
 assert(babyjub.p === SNARK_FIELD_SIZE, 'SNARK field size mismatch');
 
 export const generateRandom256Bits = (): bigint => {

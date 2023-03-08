@@ -5,6 +5,7 @@ import {
     encryptPlainText,
     generateEcdhSharedKey,
 } from '../base/encryption';
+import {generateRandomInBabyJubSubField} from '../base/field-operations';
 import {
     packPublicKey,
     derivePubKeyFromPrivKey,
@@ -12,7 +13,6 @@ import {
     PACKED_PUB_KEY_SIZE,
     PRIV_KEY_SIZE,
 } from '../base/keypairs';
-import {generateRandomInBabyJubSubField} from '../base/field-operations';
 import {PublicKey, PrivateKey, ephemeralKeyPacked} from '../types/keypair';
 import {ICiphertext} from '../types/message';
 import {

@@ -1,6 +1,6 @@
 import {babyjub} from 'circomlibjs';
 
-import {SNARK_FIELD_SIZE} from '../base/field-operations';
+import {SNARK_FIELD_SIZE} from './constants';
 
 export function assert(condition: boolean, message: string) {
     if (!condition) {

@@ -1,4 +1,5 @@
-import {Contract, EventFilter, Event} from 'ethers';
+import {Contract} from 'ethers';
+import type {EventFilter, Event} from 'ethers';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
 export async function filterPaginator(

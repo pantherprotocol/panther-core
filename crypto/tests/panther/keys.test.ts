@@ -1,17 +1,14 @@
 import {describe, expect} from '@jest/globals';
-
 import {Wallet} from 'ethers';
 
 import {IKeypair} from '../../lib/types/keypair';
-import {
-    SNARK_FIELD_SIZE,
-    generateRandomInBabyJubSubField,
-} from '../../src/base/field-operations';
+import {generateRandomInBabyJubSubField} from '../../src/base/field-operations';
 import {
     deriveRootKeypairs,
     generateSpendingChildKeypair,
     deriveKeypairFromSignature,
 } from '../../src/panther/keys';
+import {SNARK_FIELD_SIZE} from '../../src/utils/constants';
 
 describe('Spending child keypair', () => {
     let spendingChildKeypair: IKeypair;

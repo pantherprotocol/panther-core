@@ -6,12 +6,12 @@ import {
     decryptCipherText,
 } from '../../src/base/encryption';
 import {generateRandomKeypair, packPublicKey} from '../../src/base/keypairs';
-import {SNARK_FIELD_SIZE} from '../../src/base/field-operations';
 import {extractCipherKeyAndIvFromPackedPoint} from '../../src/panther/messages';
 import {
     bigIntToUint8Array,
     uint8ArrayToBigInt,
 } from '../../src/utils/bigint-conversions';
+import {SNARK_FIELD_SIZE} from '../../src/utils/constants';
 
 describe('Cryptographic operations', () => {
     const keypair1 = generateRandomKeypair();

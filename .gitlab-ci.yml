@@ -1,24 +1,7 @@
-# This file is a template, and might need editing before it works on your project.
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
-
-# This is a sample GitLab CI/CD configuration file that should run without any modifications.
-# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
-# it uses echo commands to simulate the pipeline execution.
-#
-# A pipeline is composed of independent jobs that run scripts, grouped into stages.
-# Stages run in sequential order, but jobs within stages run in parallel.
-#
-# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
+# Description: Gitlab CI/CD configuration file
 
 default:
   image: node:16
-
-stages: # List of stages for jobs, and their order of execution
-  - test
-  - cache
 
 .yarn_cache_template: &yarn_cache_template
   key:
@@ -36,107 +19,115 @@ stages: # List of stages for jobs, and their order of execution
     - subgraph/node_modules/
   policy: pull
 
-.base_scripts: &base_scripts
-  - time yarn danger ci
-  - echo "${CI_COMMIT_MESSAGE}" | yarn commitlint
-  - time yarn lint
-  - time yarn build:crypto
-  - time yarn build:types
-  - time yarn graph:setup mumbai staging
-  - time yarn build:graph
-  - time HARDHAT_NO_MNEMONIC=yes yarn run build:contracts
-  - time yarn test
-  - cp dapp/.env.staging dapp/.env
-  - time yarn run build:dapp:staging
+build-cache:
+  interruptible: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_TITLE =~ /^Merge branch/
+      when: always
+  script:
+    - time yarn install --frozen-lockfile --check-files --cache-folder .yarn-cache
+  cache:
+    <<: *yarn_cache_template
+    policy: pull-push
 
-.ipfs_deploy_script: &ipfs_deploy_script
-  - yarn deploy:dapp:ci:ipfs
-
-.preview_script: &preview_script
-  - |
-    apt-get update
-    apt-get -y install jq
-    if [ -n "$CI_MERGE_REQUEST_IID" ]; then
-      threadsBodies=$(
-          curl \
-              --request GET \
-              --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-              "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions" \
-              | jq -r '.[].notes[].body' )
-
-      if [[ "$threadsBodies" != *"${AMPLIFY_APP_ID}"* ]]; then
-        echo "Didn't find existing comment in MR about Amplify preview"
-
-        thread_id=$(
-          curl \
-              --data-urlencode "body=## After build, preview will 🚀[be here!](https://pr-${CI_MERGE_REQUEST_IID}.${AMPLIFY_APP_ID}.amplifyapp.com/)" \
-              --request POST \
-              --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-              "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions" \
-          | jq -r .id
-        )
-
-        echo "Posted Amplify preview link comment with thread id $thread_id"
-
-        curl -v -X PUT \
-          --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
-          "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions/$thread_id?resolved=true" \
-        | jq .
-
-        echo "Marked Amplify preview link comment as resolved"
-      else
-        echo "Amplify preview comment already exists in this MR"
-      fi
-    fi
-
-.combined_job_template:
-  stage: test
+.install-dependencies:
+  interruptible: true
+  before_script:
+    - time yarn install --frozen-lockfile --check-files --cache-folder .yarn-cache
   cache:
     <<: *yarn_cache_template
     policy: pull
-  before_script:
-    - time yarn install --frozen-lockfile --check-files --cache-folder .yarn-cache
 
-# This job is executed on merge requests and any `push`` where commit title does not start with `Merge`
-combined-job-MRs:
-  extends: .combined_job_template
+deploy-ipfs:
+  extends: .install-dependencies
   rules:
     - if: $CI_COMMIT_TITLE !~ /^Merge branch/ && $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
   script:
-    - *base_scripts
-    - *preview_script
-    - *ipfs_deploy_script
-
-# This job is executed on a `push` where commit title starts with `Merge branch`
-combined-job-integration:
-  stage: test
-  extends: .combined_job_template
-  rules:
-    - if: $CI_COMMIT_TITLE =~ /^Merge branch/
-      when: always
-  script:
-    - *base_scripts
+    - time yarn build:types
+    - cp dapp/.env.staging dapp/.env
+    - time yarn run build:dapp:staging
+    - time yarn deploy:dapp:ci:ipfs
 
 unpin-ipfs-job:
-  stage: test
-  extends: .combined_job_template
+  extends: .install-dependencies
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /See merge request/
       when: always
   script:
     - time yarn deploy:dapp:ci:ipfs --unpin
 
-build-cache:
-  stage: cache
-  cache:
-    <<: *yarn_cache_template
-    policy: pull-push
-  script:
-    - time yarn install --frozen-lockfile --check-files --cache-folder .yarn-cache
-    - |
-      [[ -f .cache_exists ]] && echo "cache already exists" && exit 111
-    - echo > .cache_exists
-  allow_failure:
-    exit_codes: 111 # disable push cache
+.job-template-mr-or-merge:
+  extends: .install-dependencies
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_TITLE =~ /^Merge branch/
+      when: always
 
+lint:
+  extends: .job-template-mr-or-merge
+  script:
+    - time yarn danger ci
+    - echo "${CI_COMMIT_MESSAGE}" | yarn commitlint
+    - time yarn lint
+
+test-dapp:
+  extends: .job-template-mr-or-merge
+  script:
+    - time yarn build:crypto
+    - time yarn workspace @panther-core/dapp build:types
+    - time yarn test:dapp
+
+test-contracts:
+  extends: .job-template-mr-or-merge
+  script:
+    - time yarn build:crypto
+    - time HARDHAT_NO_MNEMONIC=yes yarn build:contracts
+    - time yarn workspace @panther-core/contracts build:types
+    - time yarn test:contracts
+
+test-crypto:
+  extends: .job-template-mr-or-merge
+  script:
+    - time yarn build:crypto
+    - time yarn test:crypto
+
+amplify-preview:
+  rules:
+    - if: $CI_COMMIT_TITLE !~ /^Merge branch/ && $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+  script:
+    - |
+      apt-get update
+      apt-get -y install jq
+      if [ -n "$CI_MERGE_REQUEST_IID" ]; then
+        threadsBodies=$(
+            curl \
+                --request GET \
+                --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+                "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions" \
+                | jq -r '.[].notes[].body' )
+
+        if [[ "$threadsBodies" != *"${AMPLIFY_APP_ID}"* ]]; then
+          echo "Didn't find existing comment in MR about Amplify preview"
+
+          thread_id=$(
+            curl \
+                --data-urlencode "body=## After build, preview will 🚀[be here!](https://pr-${CI_MERGE_REQUEST_IID}.${AMPLIFY_APP_ID}.amplifyapp.com/)" \
+                --request POST \
+                --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+                "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions" \
+            | jq -r .id
+          )
+
+          echo "Posted Amplify preview link comment with thread id $thread_id"
+
+          curl -v -X PUT \
+            --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+            "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/discussions/$thread_id?resolved=true" \
+          | jq .
+
+          echo "Marked Amplify preview link comment as resolved"
+        else
+          echo "Amplify preview comment already exists in this MR"
+        fi
+      fi

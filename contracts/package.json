@@ -8,7 +8,7 @@
     "build:types": "cp -a types ../dapp/src",
     "build:contracts:triad-tree": "./scripts/generateTriadMerkleZeroesContracts.sh",
     "chain": "HARDHAT_NO_MNEMONIC=yes hardhat node",
-    "clean": "rm artifacts/ -rf && rm cache/solidity-files-cache.json -f && rm types/contracts/ -rf",
+    "clean": "rm -rf artifacts/ cache/solidity-files-cache.json types/contracts/",
     "compile": "TS_NODE_TRANSPILE_ONLY=1 HARDHAT_NO_MNEMONIC=yes hardhat compile",
     "console": "HARDHAT_NO_MNEMONIC=yes hardhat console",
     "export-jq": "bash -c 'hardhat export --export >(cat) --network ${HH_NETWORK:-localhost}' | jq",
@@ -44,7 +44,7 @@
     "slither:check": "./scripts/slither_check.sh",
     "slither": "yarn slither:install && yarn slither:check",
     "super-safe-check-before-commit": "rm -rf build artifacts cache types && yarn install && yarn compile && yarn prettier:fix && yarn lint && yarn test && yarn slither",
-    "test": "HARDHAT_NO_MNEMONIC=yes hardhat test",
+    "test": "yarn clean && HARDHAT_NO_MNEMONIC=yes hardhat test",
     "test:gas": "REPORT_GAS=yes yarn test",
     "test:ts": "echo '[i] not implemented: yarn pchain:load-snapshot --eval-and-exit \"jest --runInBand --detectOpenHandles --forceExit --verbose --colors\"'",
     "typechain": "HARDHAT_NO_MNEMONIC=yes hardhat typechain",
@@ -65,7 +65,7 @@
     "circomlibjs": "^0.0.8"
   },
   "devDependencies": {
-    "@defi-wonderland/smock": "^2.0.7",
+    "@defi-wonderland/smock": "^2.3.4",
     "@ethersproject/abi": "^5",
     "@ethersproject/abstract-provider": "^5",
     "@ethersproject/abstract-signer": "^5",
@@ -103,7 +103,7 @@
     "ethereumjs-util": "^7.1.3",
     "ethers": "^5.5.2",
     "fs-extra": "^10.0.0",
-    "hardhat": "^2.9.1",
+    "hardhat": "^2.12.7",
     "hardhat-contract-sizer": "^2.1.0",
     "hardhat-deploy": "^0.11.0",
     "hardhat-deploy-ethers": "^0.3.0-beta.13",
@@ -118,8 +118,8 @@
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.7.16",
     "ts-generator": "^0.1.1",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.1.0",
     "typechain": "^7.0.0",
-    "typescript": "~4.6.4"
+    "typescript": "^4.9.4"
   }
 }

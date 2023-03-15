@@ -4,6 +4,7 @@
 import {formatEther} from '@ethersproject/units';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {safeParseStringToBN} from 'lib/numbers';
+import {LoadingStatus} from 'loading';
 import {BalanceState, createExtraReducers} from 'redux/slices/shared';
 import {RootState} from 'redux/store';
 import * as stakingService from 'services/staking';
@@ -39,5 +40,9 @@ export const zkpMarketPriceSlice = createSlice({
 export const zkpMarketPriceSelector = (state: RootState) => {
     return safeParseStringToBN(state.marketPrice.zkpMarketPrice.value);
 };
+
+export function zkpMarketPriceStatusSelector(state: RootState): LoadingStatus {
+    return state.marketPrice.zkpMarketPrice.status;
+}
 
 export default zkpMarketPriceSlice.reducer;

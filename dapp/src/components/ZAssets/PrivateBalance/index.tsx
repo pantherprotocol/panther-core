@@ -16,6 +16,7 @@ import {useWeb3React} from '@web3-react/core';
 import {notifyError} from 'components/common/errors';
 import StyledBalance from 'components/common/StyledBalance';
 import {
+    failedFetchPriceTooltip,
     privateBalanceLastSync,
     totalUnrealizedPrivacyRewardsTooltip,
 } from 'components/common/tooltips';
@@ -25,6 +26,7 @@ import {useStatusError} from 'hooks/status-error';
 import attentionIcon from 'images/attention-triangle-icon.svg';
 import infoIcon from 'images/info-icon.svg';
 import refreshIcon from 'images/refresh-icon.svg';
+import warningIcon from 'images/warning-icon-triangle.svg';
 import {
     formatCurrency,
     formatTimeSince,
@@ -32,7 +34,10 @@ import {
 } from 'lib/format';
 import {fiatPrice} from 'lib/token-price';
 import {useAppDispatch, useAppSelector} from 'redux/hooks';
-import {zkpMarketPriceSelector} from 'redux/slices/marketPrices/zkp-market-price';
+import {
+    zkpMarketPriceSelector,
+    zkpMarketPriceStatusSelector,
+} from 'redux/slices/marketPrices/zkp-market-price';
 import {isWalletConnectedSelector} from 'redux/slices/ui/is-wallet-connected';
 import {
     progressToNewWalletAction,
@@ -88,6 +93,7 @@ export default function PrivateBalance() {
         hasUndefinedUTXOsSelector(chainId, account),
     );
     const walletActionStatus = useAppSelector(walletActionStatusSelector);
+    const zkpMarketPriceStatus = useAppSelector(zkpMarketPriceStatusSelector);
     const isWalletConnected = useAppSelector(isWalletConnectedSelector);
 
     const refreshUTXOs = useCallback(
@@ -192,11 +198,29 @@ export default function PrivateBalance() {
                     <Typography className="title">
                         Total Private zAsset Balance
                     </Typography>
-                    <StyledBalance
-                        wholePart={`$${wholePart}`}
-                        fractionalPart={`${fractionalPart} USD`}
-                        styles="amount"
-                    />
+                    {zkpMarketPriceStatus === 'failed' ? (
+                        <span className="warning-icon-wrapper">
+                            <span className="symbol">$ -</span>
+                            <Tooltip
+                                title={failedFetchPriceTooltip}
+                                placement="top"
+                            >
+                                <IconButton>
+                                    <img
+                                        src={warningIcon}
+                                        alt="warning-icon"
+                                        className="warning-icon"
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                        </span>
+                    ) : (
+                        <StyledBalance
+                            wholePart={`$${wholePart}`}
+                            fractionalPart={`${fractionalPart} USD`}
+                            styles="amount"
+                        />
+                    )}
                     <Typography className="zkp-rewards">
                         {formatCurrency(totalUnrealizedPrp, {
                             scale: 0,

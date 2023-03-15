@@ -599,7 +599,7 @@ export async function getZKPMarketPrice(): Promise<BigNumber | null> {
         });
     } catch (err: any) {
         console.warn(`Failed to fetch ${symbol} from coingecko`, err);
-        return null;
+        throw new Error();
     }
 
     if (!priceData.data) {

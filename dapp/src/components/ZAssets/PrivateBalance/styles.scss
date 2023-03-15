@@ -58,6 +58,21 @@ $refresh-button-background: linear-gradient(
             }
         }
 
+        .warning-icon-wrapper {
+            .symbol {
+                font-weight: $bold-font-weight;
+                font-size: $larger-font-size + 1;
+                color: $white;
+                opacity: 0.5;
+            }
+
+            .warning-icon {
+                width: 21px;
+                height: 18px;
+                margin-bottom: 9px;
+            }
+        }
+
         .amount {
             display: flex;
             align-items: center;

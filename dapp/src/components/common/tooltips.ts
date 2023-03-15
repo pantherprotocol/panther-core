@@ -34,3 +34,5 @@ export const balanceUpdatingTooltip =
     'Balance update pending. Balances may take a few minutes to update.';
 
 export const privateBalanceLastSync = `Some of your assets may not be shown if you haven’t updated the page recently. A signature request will be required each time you refresh. This will not incur transaction fees and will not trigger the storage of any confidential wallet data.`;
+
+export const failedFetchPriceTooltip = 'Error fetching price: please refresh.';

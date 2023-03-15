@@ -13,7 +13,7 @@ import zkpTokenBalanceReducer from './zkp-token-balance';
 const walletPersistConfig = {
     key: 'wallet',
     storage: storage,
-    whitelist: ['advancedStakesRewards'],
+    whitelist: ['utxos'],
 };
 
 const reducer = combineReducers({

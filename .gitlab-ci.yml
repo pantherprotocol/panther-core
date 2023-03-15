@@ -25,7 +25,14 @@ build-cache:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_TITLE =~ /^Merge branch/
       when: always
   script:
+    - |
+      if [[ -d node_modules ]]; then
+        echo "Cache already exists"
+        exit 10
+      fi
     - time yarn install --frozen-lockfile --check-files --cache-folder .yarn-cache
+  allow_failure:
+    exit_codes: 10
   cache:
     <<: *yarn_cache_template
     policy: pull-push

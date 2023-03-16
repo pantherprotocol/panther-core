@@ -77,6 +77,8 @@ const AssetsDetailsTable = () => {
         itemsPerPage: ZASSETS_ROWS_PER_PAGE,
     });
 
+    if (rewardsFilteredAndSorted.length === 0) return null;
+
     return (
         <Box className="assets-details-table_container">
             <Table

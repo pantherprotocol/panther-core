@@ -38,6 +38,7 @@ export default function PrivateZAssetRow() {
 
     const chainHasNoPool =
         active && !!chainId && !chainHasPoolContract(chainId);
+
     return (
         <React.Fragment>
             <TableRow className="private-zAsset-row">
@@ -49,7 +50,7 @@ export default function PrivateZAssetRow() {
                         <span>No zAssets Found</span>
                     ) : (
                         <>
-                            {active && (
+                            {active && !unclaimedZZKP.isZero() && (
                                 <IconButton
                                     className="expand-icon"
                                     aria-label="expand row"

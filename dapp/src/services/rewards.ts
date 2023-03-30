@@ -4,9 +4,9 @@
 import {E18} from 'constants/numbers';
 import {oneYearInMs} from 'constants/time';
 
-import {MaspChainIds} from 'contact';
 import {BigNumber, constants, utils} from 'ethers';
 import {AdvancedStakeRewardsResponse} from 'subgraph';
+import {MaspChainIds} from 'types/contracts';
 import {IStakingTypes} from 'types/contracts/Staking';
 import {
     StakeRewardBN,

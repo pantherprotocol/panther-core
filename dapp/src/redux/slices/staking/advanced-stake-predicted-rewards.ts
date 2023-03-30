@@ -23,26 +23,37 @@ export const calculatedRewardSlice = createSlice({
         reset: (state): void => {
             state.value = {};
         },
-        calculate: (state, action: PayloadAction<[string, string]>) => {
-            const [amountToStake, minLockPeriod] = action.payload;
-            if (!amountToStake || !minLockPeriod) {
+        calculate: (
+            state,
+            action: PayloadAction<[string, number, number, number]>,
+        ) => {
+            const [amountToStake, minLockPeriod, allowedSince, allowedTill] =
+                action.payload;
+            if (
+                !amountToStake ||
+                !minLockPeriod ||
+                !allowedSince ||
+                !allowedTill
+            ) {
                 state.value = {} as StakeReward;
-            } else {
-                const timeStaked = Math.floor(new Date().getTime());
-                const lockedTill = timeStaked + 1000 * Number(minLockPeriod);
-
-                const rewards = {
-                    [StakingRewardTokenID.zZKP]: zZkpReward(
-                        BigNumber.from(amountToStake),
-                        timeStaked,
-                        lockedTill,
-                    ).toString(),
-                    [StakingRewardTokenID.PRP]:
-                        prpReward(timeStaked).toString(),
-                };
-
-                state.value = rewards;
+                return;
             }
+
+            const timeStaked = Math.floor(new Date().getTime());
+            const zZkpRewards = zZkpReward(
+                BigNumber.from(amountToStake),
+                timeStaked,
+                timeStaked + 1000 * Number(minLockPeriod),
+                1000 * Number(allowedSince),
+                1000 * Number(allowedTill),
+            ).toString();
+
+            const rewards = {
+                [StakingRewardTokenID.zZKP]: zZkpRewards,
+                [StakingRewardTokenID.PRP]: prpReward(timeStaked).toString(),
+            };
+
+            state.value = rewards;
         },
     },
 });

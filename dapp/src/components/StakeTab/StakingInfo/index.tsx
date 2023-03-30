@@ -13,7 +13,7 @@ import {useAppSelector} from 'redux/hooks';
 import {
     isStakingOpenSelector,
     isStakingPostCloseSelector,
-    termsSelector,
+    termsPropertySelector,
 } from 'redux/slices/staking/stake-terms';
 import {chainHasAdvancedStaking} from 'services/contracts';
 import {StakeType} from 'types/staking';
@@ -37,15 +37,15 @@ export default function StakingInfo() {
         : StakeType.Classic;
 
     const allowedSince = useAppSelector(
-        termsSelector(chainId!, stakeType, 'allowedSince'),
+        termsPropertySelector(chainId!, stakeType, 'allowedSince'),
     );
 
     const allowedTill = useAppSelector(
-        termsSelector(chainId!, stakeType, 'allowedTill'),
+        termsPropertySelector(chainId!, stakeType, 'allowedTill'),
     );
 
     const minLockPeriod = useAppSelector(
-        termsSelector(chainId!, stakeType, 'minLockPeriod'),
+        termsPropertySelector(chainId!, stakeType, 'minLockPeriod'),
     );
 
     const getAdvancedStakingPreCloseText = useCallback((): {

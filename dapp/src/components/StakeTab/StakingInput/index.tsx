@@ -21,7 +21,7 @@ import {
     setStakeAmount,
 } from 'redux/slices/staking/stake-amount';
 import {
-    termsSelector,
+    termsPropertySelector,
     isStakingOpenSelector,
 } from 'redux/slices/staking/stake-terms';
 import {zkpTokenBalanceSelector} from 'redux/slices/wallet/zkp-token-balance';
@@ -41,7 +41,13 @@ export default function StakingInput(props: StakingInputProps) {
         isStakingOpenSelector(chainId, StakeType.Advanced),
     );
     const minLockPeriod = useAppSelector(
-        termsSelector(chainId!, StakeType.Advanced, 'minLockPeriod'),
+        termsPropertySelector(chainId!, StakeType.Advanced, 'minLockPeriod'),
+    );
+    const allowedSince = useAppSelector(
+        termsPropertySelector(chainId!, StakeType.Advanced, 'allowedSince'),
+    );
+    const allowedTill = useAppSelector(
+        termsPropertySelector(chainId!, StakeType.Advanced, 'allowedTill'),
     );
     const disabled = !account || !isStakingOpen;
 
@@ -56,13 +62,25 @@ export default function StakingInput(props: StakingInputProps) {
                 const bn = safeParseUnits(amount);
                 if (bn) {
                     dispatch(setStakeAmount, amount as string);
-                    dispatch(calculateRewards, [bn.toString(), minLockPeriod]);
+                    dispatch(calculateRewards, [
+                        bn.toString(),
+                        minLockPeriod,
+                        allowedSince,
+                        allowedTill,
+                    ]);
                     return;
                 }
             }
             clearStakedValue();
         },
-        [tokenBalance, dispatch, minLockPeriod, clearStakedValue],
+        [
+            tokenBalance,
+            clearStakedValue,
+            dispatch,
+            minLockPeriod,
+            allowedSince,
+            allowedTill,
+        ],
     );
 
     useEffect(() => {

@@ -19,7 +19,7 @@ import {StakeType} from 'types/staking';
 import ClaimedProgress from '../../components/ClaimedProgress';
 import {formatRemainingPeriod} from '../../lib/format';
 import {useAppSelector} from '../../redux/hooks';
-import {termsSelector} from '../../redux/slices/staking/stake-terms';
+import {termsPropertySelector} from '../../redux/slices/staking/stake-terms';
 
 import './styles.scss';
 
@@ -28,7 +28,7 @@ dayjs.extend(isBetween);
 function AdvancedStakingRewards() {
     const claimed = useAppSelector(totalClaimedRewardsSelector);
     const total = useAppSelector(totalVestedRewardsSelector);
-    const advancedStakingAPY = getAdvStakingAPY(new Date().getTime());
+    const advancedStakingAPY = getAdvStakingAPY();
 
     return (
         <Box
@@ -79,11 +79,11 @@ function RemainingDays() {
     const {chainId} = context;
 
     let allowedSince = useAppSelector(
-        termsSelector(chainId!, StakeType.Advanced, 'allowedSince'),
+        termsPropertySelector(chainId!, StakeType.Advanced, 'allowedSince'),
     );
 
     let allowedTill = useAppSelector(
-        termsSelector(chainId!, StakeType.Advanced, 'allowedTill'),
+        termsPropertySelector(chainId!, StakeType.Advanced, 'allowedTill'),
     );
 
     // Falling back to env variables if terms are not loaded

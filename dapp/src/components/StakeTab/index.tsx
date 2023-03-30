@@ -15,7 +15,7 @@ import {useAppSelector} from 'redux/hooks';
 import {stakeAmountSelector} from 'redux/slices/staking/stake-amount';
 import {
     isStakingOpenSelector,
-    termsSelector,
+    termsPropertySelector,
 } from 'redux/slices/staking/stake-terms';
 import {zkpTokenBalanceSelector} from 'redux/slices/wallet/zkp-token-balance';
 import {isWrongNetwork} from 'services/connectors';
@@ -34,7 +34,7 @@ export default function StakeTab() {
     const {account, library, chainId, active, error} = context;
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const minStake = useAppSelector(
-        termsSelector(chainId, StakeType.Advanced, 'minAmountScaled'),
+        termsPropertySelector(chainId, StakeType.Advanced, 'minAmountScaled'),
     );
 
     const isAdvancedStakingOpen = useAppSelector(

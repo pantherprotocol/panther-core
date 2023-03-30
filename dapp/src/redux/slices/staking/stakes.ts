@@ -12,7 +12,9 @@ import {useAppSelector} from 'redux/hooks';
 import {createExtraReducers} from 'redux/slices/shared';
 import {RootState} from 'redux/store';
 import {getStakesAndRewards, StakeRow} from 'services/staking';
-import {AdvancedStakeTokenIDs} from 'staking';
+import {AdvancedStakeTokenIDs, StakeType} from 'types/staking';
+
+import {termsSelector} from './stake-terms';
 
 interface StakeRowSerialized extends Omit<StakeRow, 'amount' | 'reward'> {
     amount: string;
@@ -61,9 +63,19 @@ export const getStakes = createAsyncThunk(
     'staking/stakes',
     async (
         context: Web3ReactContextInterface<any>,
+        {getState},
     ): Promise<StakeRowSerialized[]> => {
         const {library, account, chainId} = context;
         if (!library || !chainId || !account) {
+            return [];
+        }
+        const rootState = getState() as RootState;
+        const advancedStakeTerms = termsSelector(
+            rootState,
+            chainId,
+            StakeType.Advanced,
+        );
+        if (!advancedStakeTerms) {
             return [];
         }
 
@@ -71,6 +83,7 @@ export const getStakes = createAsyncThunk(
             library,
             chainId,
             account,
+            advancedStakeTerms,
         ).catch(err => {
             console.error(err);
             return [BigNumber.from(0), []] as [BigNumber, StakeRow[]];

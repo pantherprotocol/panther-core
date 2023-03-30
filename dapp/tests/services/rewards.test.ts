@@ -6,67 +6,18 @@ import {oneDayInMs} from 'constants/time';
 import {describe, expect} from '@jest/globals';
 import {constants, utils} from 'ethers';
 import mockConsole from 'jest-mock-console';
+import {unrealizedPrpReward, zZkpReward} from 'services/rewards';
 
 describe('Advanced stakes', () => {
-    process.env.ADVANCED_STAKING_T_START = '1652356800'; // 2022/05/12 12:00 UTC
-    process.env.ADVANCED_STAKING_T_END = '1656590400'; // 2022/06/30 12:00 UTC
-    process.env.ADVANCED_STAKING_APY_START = '70';
-    process.env.ADVANCED_STAKING_APY_END = '40';
+    // stabbing the env variables in env.ts
+    const {env} = require('../../src/services/env'); // eslint-disable-line
+    env.ADVANCED_STAKING_APY = '15';
 
-    // Next line produces the following lint error, therefore disabled:
-    // "Require statement not part of import statement
-    // @typescript-eslint/no-var-requires"
-    const {
-        unrealizedPrpReward,
-        getAdvStakingAPY,
-        zZkpReward,
-        prpReward,
-        T_START,
-        T_END,
-        LAST_OF_2000_REWARDS_GENERATED_AT,
-    } = require('../../src/services/rewards'); // eslint-disable-line
-
-    const currentTime = new Date('2022-05-17T12:00:00Z'); // 5 days after start
+    const termsAllowedSince = 1652356800 * 1000;
+    const termsAllowedTill = 1656590400 * 1000;
     const tenDays = oneDayInMs * 10;
-    const beforeStart = T_START - tenDays;
-    const start = T_START;
-    const afterStart = T_START + tenDays;
-    const beforeEnd = T_END - tenDays;
-    const end = T_END;
-    const afterEnd = T_END + tenDays;
-
-    describe('Linear APY', () => {
-        const currentApy = getAdvStakingAPY(Math.floor(currentTime.getTime()));
-
-        it('should be a number', () => {
-            expect(typeof currentApy).toEqual('number');
-        });
-
-        it(`should be between 40 and 70`, () => {
-            const dates = [
-                T_START - tenDays,
-                T_START,
-                T_START + tenDays,
-                T_END - tenDays,
-                T_END,
-                T_END + tenDays,
-            ];
-            dates.forEach((date: number) => {
-                const apy = getAdvStakingAPY(date);
-                expect(apy).toBeGreaterThanOrEqual(40);
-                expect(apy).toBeLessThanOrEqual(70);
-            });
-        });
-
-        it(`should be exact APY values for specified moments in time`, () => {
-            expect(getAdvStakingAPY(beforeStart)).toEqual(70);
-            expect(getAdvStakingAPY(start)).toEqual(70);
-            expect(getAdvStakingAPY(afterStart)).toEqual(63.87755102040816);
-            expect(getAdvStakingAPY(beforeEnd)).toEqual(46.12244897959184);
-            expect(getAdvStakingAPY(end)).toEqual(40);
-            expect(getAdvStakingAPY(afterEnd)).toEqual(40);
-        });
-    });
+    const beforeEnd = termsAllowedTill - tenDays;
+    const afterEnd = termsAllowedTill + tenDays;
 
     describe('zZKP rewards', () => {
         let restoreConsole: any;
@@ -80,33 +31,62 @@ describe('Advanced stakes', () => {
         });
 
         it('should always be less than staked amount', () => {
-            const dates = [T_START, T_START + tenDays, T_END - tenDays, T_END];
+            const dates = [
+                termsAllowedSince,
+                termsAllowedSince + tenDays,
+                termsAllowedTill - tenDays,
+                termsAllowedTill,
+            ];
             dates.forEach((date: number) => {
                 const stake = utils.parseEther('1000');
-                const reward = zZkpReward(stake, date, T_END);
+                const reward = zZkpReward(
+                    stake,
+                    date,
+                    termsAllowedTill,
+                    termsAllowedSince,
+                    termsAllowedTill,
+                );
                 expect(stake.gte(reward)).toBe(true);
             });
         });
 
         it('should have exact value at beginning of staking', () => {
             const stake = utils.parseEther('1000');
-            const reward = zZkpReward(stake, start, T_END);
+            const reward = zZkpReward(
+                stake,
+                termsAllowedSince,
+                termsAllowedTill,
+                termsAllowedSince,
+                termsAllowedTill,
+            );
             expect(utils.formatEther(reward).toString()).toEqual(
-                '93.97260273972602',
+                '20.136986301369864',
             );
         });
 
         it('should have exact value 10 days before end of staking', () => {
             const stake = utils.parseEther('1000');
-            const reward = zZkpReward(stake, beforeEnd, T_END);
+            const reward = zZkpReward(
+                stake,
+                beforeEnd,
+                termsAllowedTill,
+                termsAllowedSince,
+                termsAllowedTill,
+            );
             expect(utils.formatEther(reward).toString()).toEqual(
-                '12.636287391668996',
+                '4.10958904109589',
             );
         });
 
         it('should return 0 if time is after end', () => {
             const stake = utils.parseEther('1000');
-            const reward = zZkpReward(stake, afterEnd, T_END);
+            const reward = zZkpReward(
+                stake,
+                afterEnd,
+                termsAllowedTill,
+                termsAllowedSince,
+                termsAllowedTill,
+            );
             expect(reward).toEqual(constants.Zero);
             expect(console.warn).toHaveBeenCalledWith(
                 '1000.0 ZKP was staked at 1657454400000 ' +
@@ -119,29 +99,13 @@ describe('Advanced stakes', () => {
     });
 
     describe('PRP rewards', () => {
-        describe('Upon stake', () => {
-            it('should be 2,000 if before the last generated rewards', () => {
-                const reward = prpReward(
-                    LAST_OF_2000_REWARDS_GENERATED_AT - 1,
-                ).toString();
-                expect(reward).toBe('2000');
-            });
-
-            it('should be 0 if after the last generated rewards', () => {
-                const reward = prpReward(
-                    LAST_OF_2000_REWARDS_GENERATED_AT + 1,
-                ).toString();
-                expect(reward).toBe('0');
-            });
-        });
-
         describe('Unrealized rewards exact values', () => {
             it('should be 1000 PRP for 1000 zZKP and 365 days', () => {
                 const zZkp = utils.parseEther('1000');
                 const unrealizedReward = unrealizedPrpReward(
                     zZkp,
-                    start,
-                    start + 365 * oneDayInMs,
+                    termsAllowedSince,
+                    termsAllowedSince + 365 * oneDayInMs,
                 );
 
                 expect(unrealizedReward.toString()).toEqual('1000');
@@ -151,8 +115,8 @@ describe('Advanced stakes', () => {
                 const zZkp = utils.parseEther('100');
                 const unrealizedReward = unrealizedPrpReward(
                     zZkp,
-                    start,
-                    start + 185 * oneDayInMs,
+                    termsAllowedSince,
+                    termsAllowedSince + 185 * oneDayInMs,
                 );
 
                 expect(unrealizedReward.toString()).toEqual('50');
@@ -162,8 +126,8 @@ describe('Advanced stakes', () => {
                 const zZkp = utils.parseEther('1000');
                 const unrealizedReward = unrealizedPrpReward(
                     zZkp,
-                    start,
-                    start + oneDayInMs,
+                    termsAllowedSince,
+                    termsAllowedSince + oneDayInMs,
                 );
 
                 expect(unrealizedReward.toString()).toEqual('2');
@@ -173,8 +137,8 @@ describe('Advanced stakes', () => {
                 const zZkp = utils.parseEther('10');
                 const unrealizedReward = unrealizedPrpReward(
                     zZkp,
-                    start,
-                    start + oneDayInMs,
+                    termsAllowedSince,
+                    termsAllowedSince + oneDayInMs,
                 );
 
                 expect(unrealizedReward.toString()).toEqual('0');

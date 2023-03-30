@@ -41,6 +41,7 @@ const CoinGeckoClient = new CoinGecko();
 
 export const CLASSIC_TYPE_HEX = utils.id('classic').slice(0, 10);
 export const ADVANCED_TYPE_HEX = utils.id('advanced').slice(0, 10);
+export const ADVANCED_2_TYPE_HEX = utils.id('advanced-2').slice(0, 10);
 
 // scaling factor of staked total. See struct Totals in
 // AdvancedStakeRewardController.sol
@@ -454,6 +455,7 @@ export async function getStakesAndRewards(
     library: any,
     chainId: number,
     account: string,
+    advancedStakeTerms: IStakingTypes.TermsStructOutput,
 ): Promise<[totalStaked: BigNumber, rows: StakeRow[]]> {
     const rewardsBalance = await getRewardsBalance(library, chainId, account);
 
@@ -469,6 +471,7 @@ export async function getStakesAndRewards(
             chainId,
             account,
             rewardsBalance,
+            advancedStakeTerms,
         );
     }
 
@@ -479,6 +482,7 @@ export async function getStakesAndRewards(
         chainId,
         account,
         rewardsBalance,
+        advancedStakeTerms,
     );
 }
 
@@ -487,6 +491,7 @@ async function calculateRewardsWithReporter(
     chainId: number,
     account: string,
     rewardsBalance: BigNumber | null,
+    advancedStakeTerms: IStakingTypes.TermsStructOutput,
 ): Promise<[totalStaked: BigNumber, rows: StakeRow[]]> {
     const stakes = await getStakesInfoFromReporter(library, chainId, account);
     const totalStaked = sumActiveAccountStakes(stakes[0]);
@@ -501,6 +506,7 @@ async function calculateRewardsWithReporter(
                     rewardsBalance,
                     totalStaked,
                     rewards[i],
+                    advancedStakeTerms,
                 ),
             };
         }),
@@ -512,6 +518,7 @@ async function calculateRewardsWithoutReporter(
     chainId: number,
     account: string,
     rewardsBalance: BigNumber | null,
+    advancedStakeTerms: IStakingTypes.TermsStructOutput,
 ): Promise<[totalStaked: BigNumber, rows: StakeRow[]]> {
     const stakes = await getAccountStakes(library, chainId, account);
     const totalStaked = sumActiveAccountStakes(stakes);
@@ -539,6 +546,7 @@ async function calculateRewardsWithoutReporter(
                     rewardsBalance,
                     totalStaked,
                     null,
+                    advancedStakeTerms,
                     rewardsFromSubgraph,
                 ),
             };

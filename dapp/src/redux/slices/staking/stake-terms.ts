@@ -31,7 +31,11 @@ export const getStakeTerms = createAsyncThunk(
 
         const stakeTermsByChainIdAndType: StakeTermsByChainIdAndType = {};
         stakeTermsByChainIdAndType[chainId] = {};
-        for await (const stakeType of [StakeType.Advanced, StakeType.Classic]) {
+        for await (const stakeType of [
+            StakeType.Advanced,
+            StakeType.Classic,
+            StakeType.AdvancedTwo,
+        ]) {
             const terms = await getStakingTermsFromContract(
                 library,
                 chainId,
@@ -54,7 +58,7 @@ export const stakeTermsSlice = createSlice({
     },
 });
 
-function terms(
+export function termsSelector(
     state: RootState,
     chainId: number,
     stakeType: StakeType,
@@ -94,7 +98,7 @@ export function isStakingOpenSelector(
 ): (state: RootState) => boolean {
     return (state: RootState): boolean => {
         if (!chainId) return false;
-        const t = terms(state, chainId, stakeType);
+        const t = termsSelector(state, chainId, stakeType);
         if (!t) return false;
 
         return isStakingOpen(t);
@@ -107,14 +111,14 @@ export function isStakingPostCloseSelector(
 ): (state: RootState) => boolean {
     return (state: RootState): boolean => {
         if (!chainId) return false;
-        const t = terms(state, chainId, stakeType);
+        const t = termsSelector(state, chainId, stakeType);
         if (!t) return false;
 
         return isStakingPostClose(t);
     };
 }
 
-export function termsSelector(
+export function termsPropertySelector(
     chainId: number | undefined,
     stakeType: StakeType,
     property: keyof IStakingTypes.TermsStruct,
@@ -123,7 +127,7 @@ export function termsSelector(
         state: RootState,
     ): IStakingTypes.TermsStruct[typeof property] | null => {
         if (!chainId) return null;
-        const t: IStakingTypes.TermsStructOutput | null = terms(
+        const t: IStakingTypes.TermsStructOutput | null = termsSelector(
             state,
             chainId,
             stakeType,

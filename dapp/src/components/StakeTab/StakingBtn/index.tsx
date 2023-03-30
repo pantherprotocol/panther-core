@@ -25,7 +25,6 @@ import {
 } from 'redux/slices/staking/advanced-stake-predicted-rewards';
 import {resetStakeAmount} from 'redux/slices/staking/stake-amount';
 import {getStakes} from 'redux/slices/staking/stakes';
-import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/total-unclaimed-classic-rewards';
 import {
     getTotalsOfAdvancedStakes,
     totalLeftRewardsSelector,
@@ -303,7 +302,6 @@ const StakingBtn = (props: {
             dispatch(getTotalsOfAdvancedStakes, context);
             dispatch(getZkpStakedBalance, context);
             dispatch(getZkpTokenBalance, context);
-            dispatch(getTotalUnclaimedClassicRewards, context);
             dispatch(getChainBalance, context);
             dispatch(resetStakeAmount);
             dispatch(resetRewards);

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
+import {STAKE_TYPE_TO_HEX_STAKE_TYPE} from 'constants/stake-terms';
+
 import type {TypedDataDomain} from '@ethersproject/abstract-signer';
 import type {TransactionResponse} from '@ethersproject/providers';
 import {JsonRpcSigner} from '@ethersproject/providers';
@@ -33,15 +35,16 @@ import {calculateRewardsForStake} from 'services/rewards';
 import {getAdvancedStakingReward} from 'services/subgraph';
 import {AdvancedStakeRewardsResponse} from 'subgraph';
 import type {IStakingTypes, Staking} from 'types/contracts/Staking';
-import {StakeRewardBN, StakeTypes} from 'types/staking';
+import {
+    StakeRewardBN,
+    StakeTermsByType,
+    StakeType,
+    StakeTypes,
+} from 'types/staking';
 
 import {MultiError} from './errors';
 
 const CoinGeckoClient = new CoinGecko();
-
-export const CLASSIC_TYPE_HEX = utils.id('classic').slice(0, 10);
-export const ADVANCED_TYPE_HEX = utils.id('advanced').slice(0, 10);
-export const ADVANCED_2_TYPE_HEX = utils.id('advanced-2').slice(0, 10);
 
 // scaling factor of staked total. See struct Totals in
 // AdvancedStakeRewardController.sol
@@ -200,7 +203,7 @@ export async function advancedStake(
         chainId,
         account,
         amount,
-        'advanced',
+        currentStakeTerm(),
         data,
     );
 }
@@ -210,7 +213,7 @@ export async function craftStakingTransaction(
     chainId: number,
     account: string,
     amount: BigNumber, // assumes already validated as <= tokenBalance
-    stakeType: string,
+    stakeType: StakeType,
     data: string,
 ): Promise<ContractTransaction | MultiError> {
     const {signer, contract} = getSignableContract(
@@ -220,9 +223,10 @@ export async function craftStakingTransaction(
         getStakingContract,
     );
 
-    const stakingTypeHex = utils
-        .keccak256(utils.toUtf8Bytes(stakeType))
-        .slice(0, 10);
+    const stakingTypeHex = STAKE_TYPE_TO_HEX_STAKE_TYPE.get(stakeType);
+    if (!stakingTypeHex) {
+        return new MultiError(`Invalid stake type ${stakeType}`);
+    }
 
     try {
         return await initiateStakingTransaction(
@@ -455,7 +459,7 @@ export async function getStakesAndRewards(
     library: any,
     chainId: number,
     account: string,
-    advancedStakeTerms: IStakingTypes.TermsStructOutput,
+    advancedStakeTerms: StakeTermsByType,
 ): Promise<[totalStaked: BigNumber, rows: StakeRow[]]> {
     const rewardsBalance = await getRewardsBalance(library, chainId, account);
 
@@ -491,7 +495,7 @@ async function calculateRewardsWithReporter(
     chainId: number,
     account: string,
     rewardsBalance: BigNumber | null,
-    advancedStakeTerms: IStakingTypes.TermsStructOutput,
+    stakeTermsByType: StakeTermsByType,
 ): Promise<[totalStaked: BigNumber, rows: StakeRow[]]> {
     const stakes = await getStakesInfoFromReporter(library, chainId, account);
     const totalStaked = sumActiveAccountStakes(stakes[0]);
@@ -506,7 +510,7 @@ async function calculateRewardsWithReporter(
                     rewardsBalance,
                     totalStaked,
                     rewards[i],
-                    advancedStakeTerms,
+                    stakeTermsByType,
                 ),
             };
         }),
@@ -518,7 +522,7 @@ async function calculateRewardsWithoutReporter(
     chainId: number,
     account: string,
     rewardsBalance: BigNumber | null,
-    advancedStakeTerms: IStakingTypes.TermsStructOutput,
+    stakeTermsByType: StakeTermsByType,
 ): Promise<[totalStaked: BigNumber, rows: StakeRow[]]> {
     const stakes = await getAccountStakes(library, chainId, account);
     const totalStaked = sumActiveAccountStakes(stakes);
@@ -546,7 +550,7 @@ async function calculateRewardsWithoutReporter(
                     rewardsBalance,
                     totalStaked,
                     null,
-                    advancedStakeTerms,
+                    stakeTermsByType,
                     rewardsFromSubgraph,
                 ),
             };
@@ -644,4 +648,8 @@ function formatStakeWithoutReward(
         lockedTill: stake.lockedTill,
         claimedAt: stake.claimedAt,
     };
+}
+
+export function currentStakeTerm(): StakeType {
+    return env.CURRENT_STAKING_TERM as StakeType;
 }

@@ -16,6 +16,7 @@ import {
     termsPropertySelector,
 } from 'redux/slices/staking/stake-terms';
 import {chainHasAdvancedStaking} from 'services/contracts';
+import {currentStakeTerm} from 'services/staking';
 import {StakeType} from 'types/staking';
 
 import './styles.scss';
@@ -25,15 +26,15 @@ export default function StakingInfo() {
     const {chainId} = context;
 
     const isAdvancedStakingOpen = useAppSelector(
-        isStakingOpenSelector(chainId!, StakeType.Advanced),
+        isStakingOpenSelector(chainId!, currentStakeTerm()),
     );
 
     const isAdvancedStakingPostClose = useAppSelector(
-        isStakingPostCloseSelector(chainId!, StakeType.Advanced),
+        isStakingPostCloseSelector(chainId!, currentStakeTerm()),
     );
 
     const stakeType = chainHasAdvancedStaking(chainId)
-        ? StakeType.Advanced
+        ? currentStakeTerm()
         : StakeType.Classic;
 
     const allowedSince = useAppSelector(

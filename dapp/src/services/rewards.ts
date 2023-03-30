@@ -2,6 +2,12 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
 import {E18} from 'constants/numbers';
+import {
+    CLASSIC_TYPE_HEX,
+    ADVANCED_TYPE_HEX,
+    ADVANCED_2_TYPE_HEX,
+    HEX_STAKE_TYPE_TO_STAKE_TYPE,
+} from 'constants/stake-terms';
 import {oneYearInMs} from 'constants/time';
 
 import {BigNumber, constants, utils} from 'ethers';
@@ -13,6 +19,7 @@ import {
     ClassicStakeRewardBN,
     AdvancedStakeRewardsBN,
     StakingRewardTokenID,
+    StakeTermsByType,
 } from 'types/staking';
 
 import {
@@ -23,11 +30,6 @@ import {
 } from './contracts';
 import {MASP_CHAIN_ID, env} from './env';
 import {MultiError} from './errors';
-import {
-    CLASSIC_TYPE_HEX,
-    ADVANCED_TYPE_HEX,
-    ADVANCED_2_TYPE_HEX,
-} from './staking';
 
 /* Constants are described in Advanced Staking Rewards document:
 https://docs.google.com/document/d/1lsZlE3RsUlk-Dx_dXAqKxXKWZD18ZuuNA-DKoEsArm4/edit
@@ -137,33 +139,46 @@ export function calculateRewardsForStake(
     rewardsBalance: BigNumber | null,
     totalStaked: BigNumber | null,
     classicReward: BigNumber | null,
-    advancedStakeTerms: IStakingTypes.TermsStructOutput | null,
+    stakeTermsByType: StakeTermsByType,
     rewardsFromSubgraph?: AdvancedStakeRewardsResponse[],
 ): StakeRewardBN {
-    switch (stake.stakeType) {
-        case CLASSIC_TYPE_HEX:
-            return calculateRewardsForClassicStake(
-                stake,
-                rewardsBalance,
-                totalStaked,
-                classicReward,
-            );
-        case ADVANCED_TYPE_HEX:
-        case ADVANCED_2_TYPE_HEX:
-            if (!advancedStakeTerms) {
-                throw new MultiError(
-                    'Cannot estimate rewards: advancedStakeTerms should be defined',
-                );
-            }
-            return calculateRewardsForAdvancedStake(
-                stake,
-                advancedStakeTerms.allowedSince,
-                advancedStakeTerms.allowedTill,
-                rewardsFromSubgraph,
-            );
-        default:
-            throw new MultiError('Cannot estimate rewards: unknown stake type');
+    if (stake.stakeType === CLASSIC_TYPE_HEX) {
+        return calculateRewardsForClassicStake(
+            stake,
+            rewardsBalance,
+            totalStaked,
+            classicReward,
+        );
     }
+
+    if (!stakeTermsByType) {
+        throw new MultiError(
+            'Cannot estimate rewards: stake terms are not defined',
+        );
+    }
+
+    const stakeType = HEX_STAKE_TYPE_TO_STAKE_TYPE.get(stake.stakeType);
+    if (!stakeType || !stakeTermsByType[stakeType]) {
+        throw new MultiError(
+            `Cannot estimate rewards: stake terms for stake type ${stake.stakeType} should be defined`,
+        );
+    }
+
+    if (
+        stake.stakeType === ADVANCED_TYPE_HEX ||
+        stake.stakeType === ADVANCED_2_TYPE_HEX
+    ) {
+        return calculateRewardsForAdvancedStake(
+            stake,
+            stakeTermsByType[stakeType]!.allowedSince,
+            stakeTermsByType[stakeType]!.allowedTill,
+            rewardsFromSubgraph,
+        );
+    }
+
+    throw new MultiError(
+        `Cannot estimate rewards: Unknown stake type ${stake.stakeType}`,
+    );
 }
 
 export function calculateRewardsForClassicStake(

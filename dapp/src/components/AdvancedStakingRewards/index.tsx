@@ -14,7 +14,7 @@ import {
     totalVestedRewardsSelector,
 } from 'redux/slices/staking/totals-of-advanced-stakes';
 import {getAdvStakingAPY} from 'services/rewards';
-import {StakeType} from 'types/staking';
+import {currentStakeTerm} from 'services/staking';
 
 import ClaimedProgress from '../../components/ClaimedProgress';
 import {formatRemainingPeriod} from '../../lib/format';
@@ -79,11 +79,11 @@ function RemainingDays() {
     const {chainId} = context;
 
     let allowedSince = useAppSelector(
-        termsPropertySelector(chainId!, StakeType.Advanced, 'allowedSince'),
+        termsPropertySelector(chainId!, currentStakeTerm(), 'allowedSince'),
     );
 
     let allowedTill = useAppSelector(
-        termsPropertySelector(chainId!, StakeType.Advanced, 'allowedTill'),
+        termsPropertySelector(chainId!, currentStakeTerm(), 'allowedTill'),
     );
 
     // Falling back to env variables if terms are not loaded

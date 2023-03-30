@@ -20,8 +20,8 @@ import {
 import {zkpTokenBalanceSelector} from 'redux/slices/wallet/zkp-token-balance';
 import {isWrongNetwork} from 'services/connectors';
 import {CHAIN_IDS} from 'services/env';
+import {currentStakeTerm} from 'services/staking';
 import {switchNetwork} from 'services/wallet';
-import {StakeType} from 'types/staking';
 
 import {ExpectedRewardsCard} from './ExpectedRewardsCard';
 import StakingBtn from './StakingBtn';
@@ -34,11 +34,11 @@ export default function StakeTab() {
     const {account, library, chainId, active, error} = context;
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const minStake = useAppSelector(
-        termsPropertySelector(chainId, StakeType.Advanced, 'minAmountScaled'),
+        termsPropertySelector(chainId, currentStakeTerm(), 'minAmountScaled'),
     );
 
     const isAdvancedStakingOpen = useAppSelector(
-        isStakingOpenSelector(chainId, StakeType.Advanced),
+        isStakingOpenSelector(chainId, currentStakeTerm()),
     );
     const amountToStake = useAppSelector(stakeAmountSelector);
     const [wrongNetwork, setWrongNetwork] = useState(false);

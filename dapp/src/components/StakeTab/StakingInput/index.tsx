@@ -25,7 +25,7 @@ import {
     isStakingOpenSelector,
 } from 'redux/slices/staking/stake-terms';
 import {zkpTokenBalanceSelector} from 'redux/slices/wallet/zkp-token-balance';
-import {StakeType} from 'types/staking';
+import {currentStakeTerm} from 'services/staking';
 
 import {StakingInputProps} from './StakingInput.interface';
 
@@ -38,16 +38,16 @@ export default function StakingInput(props: StakingInputProps) {
 
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const isStakingOpen = useAppSelector(
-        isStakingOpenSelector(chainId, StakeType.Advanced),
+        isStakingOpenSelector(chainId, currentStakeTerm()),
     );
     const minLockPeriod = useAppSelector(
-        termsPropertySelector(chainId!, StakeType.Advanced, 'minLockPeriod'),
+        termsPropertySelector(chainId!, currentStakeTerm(), 'minLockPeriod'),
     );
     const allowedSince = useAppSelector(
-        termsPropertySelector(chainId!, StakeType.Advanced, 'allowedSince'),
+        termsPropertySelector(chainId!, currentStakeTerm(), 'allowedSince'),
     );
     const allowedTill = useAppSelector(
-        termsPropertySelector(chainId!, StakeType.Advanced, 'allowedTill'),
+        termsPropertySelector(chainId!, currentStakeTerm(), 'allowedTill'),
     );
     const disabled = !account || !isStakingOpen;
 

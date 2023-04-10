@@ -3,15 +3,15 @@
 
 import React, {useState} from 'react';
 
-import {getHeaderLinks, MenuLink} from 'constants/routes';
+import {getHeaderLinks, MenuLink, Routes} from 'constants/routes';
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import MenuIcon from '@mui/icons-material/Menu';
 import Box from '@mui/material/Box';
 import {useWeb3React} from '@web3-react/core';
 import {classnames} from 'components/common/classnames';
-import {SafeLink} from 'components/common/links';
 import logo from 'images/panther-logo.svg';
+import {Link} from 'react-router-dom';
 import {isTestNetwork} from 'services/connectors';
 
 import NavigationLink from './NavigationLink';
@@ -28,9 +28,9 @@ export default function NavigationMenu() {
     return (
         <Box className="nav-bar">
             <Box className="logo">
-                <SafeLink href="https://pantherprotocol.io/">
+                <Link to={Routes.Staking}>
                     <img src={logo} alt="Logo" />
-                </SafeLink>
+                </Link>
             </Box>
             <Box
                 className={classnames({

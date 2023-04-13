@@ -9,7 +9,11 @@ import {LoadingStatus} from 'loading';
 import {createExtraReducers} from 'redux/slices/shared';
 import {RootState} from 'redux/store';
 import {getStakingTermsFromContract} from 'services/staking';
-import {StakeTermsByChainIdAndType, StakeType} from 'types/staking';
+import {
+    StakeTermsByChainIdAndType,
+    StakeTermsByType,
+    StakeType,
+} from 'types/staking';
 
 interface StakeTermsState {
     value: StakeTermsByChainIdAndType | null;
@@ -31,7 +35,11 @@ export const getStakeTerms = createAsyncThunk(
 
         const stakeTermsByChainIdAndType: StakeTermsByChainIdAndType = {};
         stakeTermsByChainIdAndType[chainId] = {};
-        for await (const stakeType of [StakeType.Advanced, StakeType.Classic]) {
+        for await (const stakeType of [
+            StakeType.Advanced,
+            StakeType.Classic,
+            StakeType.AdvancedTwo,
+        ]) {
             const terms = await getStakingTermsFromContract(
                 library,
                 chainId,
@@ -54,12 +62,12 @@ export const stakeTermsSlice = createSlice({
     },
 });
 
-function terms(
+function termsSelector(
     state: RootState,
     chainId: number,
     stakeType: StakeType,
 ): IStakingTypes.TermsStructOutput | null {
-    return state.staking.stakeTerms.value?.[chainId]?.[stakeType] ?? null;
+    return allTermsSelector(state, chainId)?.[stakeType] ?? null;
 }
 
 function isStakingPostClose(terms: IStakingTypes.TermsStructOutput): boolean {
@@ -94,7 +102,7 @@ export function isStakingOpenSelector(
 ): (state: RootState) => boolean {
     return (state: RootState): boolean => {
         if (!chainId) return false;
-        const t = terms(state, chainId, stakeType);
+        const t = termsSelector(state, chainId, stakeType);
         if (!t) return false;
 
         return isStakingOpen(t);
@@ -107,14 +115,21 @@ export function isStakingPostCloseSelector(
 ): (state: RootState) => boolean {
     return (state: RootState): boolean => {
         if (!chainId) return false;
-        const t = terms(state, chainId, stakeType);
+        const t = termsSelector(state, chainId, stakeType);
         if (!t) return false;
 
         return isStakingPostClose(t);
     };
 }
 
-export function termsSelector(
+export function allTermsSelector(
+    state: RootState,
+    chainId: number,
+): StakeTermsByType | null {
+    return state.staking.stakeTerms.value?.[chainId] ?? null;
+}
+
+export function termsPropertySelector(
     chainId: number | undefined,
     stakeType: StakeType,
     property: keyof IStakingTypes.TermsStruct,
@@ -123,7 +138,7 @@ export function termsSelector(
         state: RootState,
     ): IStakingTypes.TermsStruct[typeof property] | null => {
         if (!chainId) return null;
-        const t: IStakingTypes.TermsStructOutput | null = terms(
+        const t: IStakingTypes.TermsStructOutput | null = termsSelector(
             state,
             chainId,
             stakeType,

@@ -3,6 +3,8 @@
 
 import React from 'react';
 
+import {CLASSIC_TYPE_HEX} from 'constants/stake-terms';
+
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import {classnames} from 'components/common/classnames';
 import ExactValueTooltip from 'components/common/ExactValueTooltip';
@@ -15,7 +17,7 @@ import useScreenSize from 'hooks/screen';
 import infoIcon from 'images/info-icon.svg';
 import {formatCurrency, getFormattedFractions} from 'lib/format';
 import {isClassic} from 'services/rewards';
-import {CLASSIC_TYPE_HEX, StakeRow} from 'services/staking';
+import {StakeRow} from 'services/staking';
 import {
     AdvancedStakeRewardsBN,
     ClassicStakeRewardBN,

@@ -5,11 +5,12 @@ import {IStakingTypes} from 'contracts/Staking';
 import {BigNumber} from 'ethers';
 import {LoadingStatus} from 'loading';
 
-export type StakeTypes = 'classic' | 'advanced';
+export type StakeTypes = 'classic' | 'advanced' | 'advanced-v2';
 
 export enum StakeType {
     Classic = 'classic',
     Advanced = 'advanced',
+    AdvancedTwo = 'advanced-v2',
 }
 
 export type StakeReward = {

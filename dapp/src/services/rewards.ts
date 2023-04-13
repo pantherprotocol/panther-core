@@ -2,17 +2,24 @@
 // SPDX-FileCopyrightText: Copyright 2021-22 Panther Ventures Limited Gibraltar
 
 import {E18} from 'constants/numbers';
+import {
+    CLASSIC_TYPE_HEX,
+    ADVANCED_TYPE_HEX,
+    ADVANCED_2_TYPE_HEX,
+    HEX_STAKE_TYPE_TO_STAKE_TYPE,
+} from 'constants/stake-terms';
 import {oneYearInMs} from 'constants/time';
 
-import {MaspChainIds} from 'contact';
 import {BigNumber, constants, utils} from 'ethers';
 import {AdvancedStakeRewardsResponse} from 'subgraph';
+import {MaspChainIds} from 'types/contracts';
 import {IStakingTypes} from 'types/contracts/Staking';
 import {
     StakeRewardBN,
     ClassicStakeRewardBN,
     AdvancedStakeRewardsBN,
     StakingRewardTokenID,
+    StakeTermsByType,
 } from 'types/staking';
 
 import {
@@ -23,16 +30,10 @@ import {
 } from './contracts';
 import {MASP_CHAIN_ID, env} from './env';
 import {MultiError} from './errors';
-import {CLASSIC_TYPE_HEX, ADVANCED_TYPE_HEX} from './staking';
 
 /* Constants are described in Advanced Staking Rewards document:
 https://docs.google.com/document/d/1lsZlE3RsUlk-Dx_dXAqKxXKWZD18ZuuNA-DKoEsArm4/edit
 */
-export const T_START = Number(process.env.ADVANCED_STAKING_T_START) * 1000;
-export const T_END = Number(process.env.ADVANCED_STAKING_T_END) * 1000;
-export const APY_START = Number(process.env.ADVANCED_STAKING_APY_START);
-export const APY_END = Number(process.env.ADVANCED_STAKING_APY_END);
-const DAPY_DT = (APY_END - APY_START) / (T_END - T_START);
 export const UNREALIZED_PRP_REWARD_PER_ZZKP = 10;
 // Due to the recent changes in the smart contract, the PRP UTXOs are not being
 // generated upon staking. This is a temporary solution to hardcode the PRP
@@ -58,12 +59,11 @@ export function calculateRewardBasedOnAPR(
     // scaled to time staked).
     const rewardCoef = (apy / 100) * timeFracStaked;
 
-    // Calculate reward, truncating reward fraction to 6 decimals of precision.
+    // Calculate reward, truncating reward fraction to 18 decimals of precision.
     const rewardCoefE18 = Math.floor(rewardCoef * 1e18);
     if (rewardCoefE18 < 1) {
         return constants.Zero;
     }
-
     return amount.mul(rewardCoefE18.toString()).div(E18);
 }
 
@@ -71,39 +71,42 @@ export function zZkpReward(
     amount: BigNumber,
     timeStaked: number,
     lockedTill: number,
+    termsAllowedSince: number,
+    termsAllowedTill: number,
 ): BigNumber {
-    if (timeStaked < T_START) {
+    if (timeStaked < termsAllowedSince) {
         console.warn(
             `${utils.formatEther(
                 amount,
             )} ZKP was staked at ${timeStaked} (${new Date(
                 timeStaked,
-            )}), before the start of the rewards ${T_START} (${new Date(
-                T_START,
+            )}), before the start of the rewards ${termsAllowedSince} (${new Date(
+                termsAllowedSince,
             )}); treating as if staked at the starting time.`,
         );
     }
 
-    if (timeStaked > T_END) {
+    if (timeStaked > termsAllowedTill) {
         console.warn(
             `${utils.formatEther(
                 amount,
             )} ZKP was staked at ${timeStaked} (${new Date(
                 timeStaked,
-            )}), after the end of the rewards ${T_END} (${new Date(
-                T_END,
+            )}), after the end of the rewards ${termsAllowedTill} (${new Date(
+                termsAllowedTill,
             )}); treating as zero reward.`,
         );
         return constants.Zero;
     }
 
-    const rewardStart = T_START < timeStaked ? timeStaked : T_START;
+    const rewardStart =
+        termsAllowedSince < timeStaked ? timeStaked : termsAllowedSince;
     // calculateRewardBasedOnAPR calculation assumes that lockedTill is less
     // than rewardEnd parameter specified in AdvancedStakeRewardController. For
     // details, see comparisons of lockedTill and _rewardParams.endTime in
     // _computeZkpReward() of AdvancedStakeRewardController.
     const rewardEnd = lockedTill;
-    const apy = getAdvStakingAPY(rewardStart);
+    const apy = getAdvStakingAPY();
     return calculateRewardBasedOnAPR(amount, apy, rewardStart, rewardEnd);
 }
 
@@ -127,28 +130,8 @@ export function getPrpAPY(): number {
     return Number(env.APY_PRP);
 }
 
-export function getAdvStakingAPY(currentTime: number): number {
-    if (currentTime < T_START) {
-        return APY_START;
-    }
-    if (currentTime > T_END) {
-        return APY_END;
-    }
-
-    const currentAPY = APY_END + (currentTime - T_END) * DAPY_DT;
-
-    if (
-        currentAPY < Math.min(APY_START, APY_END) ||
-        currentAPY > Math.max(APY_START, APY_END)
-    ) {
-        throw new MultiError(
-            `Calculated APY ${currentAPY} is not in the range of [${Math.min(
-                APY_START,
-                APY_END,
-            )}, ${Math.max(APY_START, APY_END)}].`,
-        );
-    }
-    return currentAPY;
+export function getAdvStakingAPY(): number {
+    return Number(env.ADVANCED_STAKING_APY);
 }
 
 export function calculateRewardsForStake(
@@ -156,21 +139,46 @@ export function calculateRewardsForStake(
     rewardsBalance: BigNumber | null,
     totalStaked: BigNumber | null,
     classicReward: BigNumber | null,
+    stakeTermsByType: StakeTermsByType,
     rewardsFromSubgraph?: AdvancedStakeRewardsResponse[],
 ): StakeRewardBN {
-    switch (stake.stakeType) {
-        case CLASSIC_TYPE_HEX:
-            return calculateRewardsForClassicStake(
-                stake,
-                rewardsBalance,
-                totalStaked,
-                classicReward,
-            );
-        case ADVANCED_TYPE_HEX:
-            return calculateRewardsForAdvancedStake(stake, rewardsFromSubgraph);
-        default:
-            throw new MultiError('Cannot estimate rewards: unknown stake type');
+    if (stake.stakeType === CLASSIC_TYPE_HEX) {
+        return calculateRewardsForClassicStake(
+            stake,
+            rewardsBalance,
+            totalStaked,
+            classicReward,
+        );
     }
+
+    if (!stakeTermsByType) {
+        throw new MultiError(
+            'Cannot estimate rewards: stake terms are not defined',
+        );
+    }
+
+    const stakeType = HEX_STAKE_TYPE_TO_STAKE_TYPE.get(stake.stakeType);
+    if (!stakeType || !stakeTermsByType[stakeType]) {
+        throw new MultiError(
+            `Cannot estimate rewards: stake terms for stake type ${stake.stakeType} should be defined`,
+        );
+    }
+
+    if (
+        stake.stakeType === ADVANCED_TYPE_HEX ||
+        stake.stakeType === ADVANCED_2_TYPE_HEX
+    ) {
+        return calculateRewardsForAdvancedStake(
+            stake,
+            stakeTermsByType[stakeType]!.allowedSince,
+            stakeTermsByType[stakeType]!.allowedTill,
+            rewardsFromSubgraph,
+        );
+    }
+
+    throw new MultiError(
+        `Cannot estimate rewards: Unknown stake type ${stake.stakeType}`,
+    );
 }
 
 export function calculateRewardsForClassicStake(
@@ -204,6 +212,8 @@ export function calculateRewardsForClassicStake(
 
 export function calculateRewardsForAdvancedStake(
     stake: IStakingTypes.StakeStructOutput,
+    termsAllowedSince: number,
+    termsAllowedTill: number,
     rewardsFromSubgraph?: AdvancedStakeRewardsResponse[],
 ): AdvancedStakeRewardsBN {
     if (rewardsFromSubgraph) {
@@ -229,6 +239,8 @@ export function calculateRewardsForAdvancedStake(
             stake.amount,
             stake.stakedAt * 1000,
             stake.lockedTill * 1000,
+            termsAllowedSince * 1000,
+            termsAllowedTill * 1000,
         ),
         [StakingRewardTokenID.PRP]: prpReward(stake.stakedAt * 1000),
     };

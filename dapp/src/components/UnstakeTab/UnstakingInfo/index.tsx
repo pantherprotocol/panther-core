@@ -8,9 +8,9 @@ import {useWeb3React} from '@web3-react/core';
 import {secondsToFullDays} from 'lib/format';
 import {Link} from 'react-router-dom';
 import {useAppSelector} from 'redux/hooks';
-import {termsSelector} from 'redux/slices/staking/stake-terms';
+import {termsPropertySelector} from 'redux/slices/staking/stake-terms';
 import {chainHasAdvancedStaking} from 'services/contracts';
-import {StakeType} from 'types/staking';
+import {currentStakeTerm} from 'services/staking';
 
 import './styles.scss';
 
@@ -18,7 +18,7 @@ export default function UnstakingInfo() {
     const {chainId} = useWeb3React();
 
     const minLockPeriod = useAppSelector(
-        termsSelector(chainId!, StakeType.Advanced, 'minLockPeriod'),
+        termsPropertySelector(chainId!, currentStakeTerm(), 'minLockPeriod'),
     );
 
     if (chainId === 1 && !chainHasAdvancedStaking(chainId)) {

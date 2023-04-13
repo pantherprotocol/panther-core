@@ -18,7 +18,6 @@ import usePagination from 'hooks/pagination';
 import {awaitConfirmationAndRetrieveEvent} from 'lib/events';
 import {useAppDispatch} from 'redux/hooks';
 import {getStakes, useStakes} from 'redux/slices/staking/stakes';
-import {getTotalUnclaimedClassicRewards} from 'redux/slices/staking/total-unclaimed-classic-rewards';
 import {getTotalsOfAdvancedStakes} from 'redux/slices/staking/totals-of-advanced-stakes';
 import {getZkpStakedBalance} from 'redux/slices/staking/zkp-staked-balance';
 import {
@@ -157,7 +156,6 @@ export default function StakeList() {
             dispatch(registerWalletActionSuccess, 'signMessage');
             dispatch(getTotalsOfAdvancedStakes, context);
             dispatch(getZkpStakedBalance, context);
-            dispatch(getTotalUnclaimedClassicRewards, context);
             dispatch(getZkpTokenBalance, context);
             dispatch(getChainBalance, context);
             dispatch(getStakes, context);

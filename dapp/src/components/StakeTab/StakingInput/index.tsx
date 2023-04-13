@@ -21,11 +21,11 @@ import {
     setStakeAmount,
 } from 'redux/slices/staking/stake-amount';
 import {
-    termsSelector,
+    termsPropertySelector,
     isStakingOpenSelector,
 } from 'redux/slices/staking/stake-terms';
 import {zkpTokenBalanceSelector} from 'redux/slices/wallet/zkp-token-balance';
-import {StakeType} from 'types/staking';
+import {currentStakeTerm} from 'services/staking';
 
 import {StakingInputProps} from './StakingInput.interface';
 
@@ -38,10 +38,16 @@ export default function StakingInput(props: StakingInputProps) {
 
     const tokenBalance = useAppSelector(zkpTokenBalanceSelector);
     const isStakingOpen = useAppSelector(
-        isStakingOpenSelector(chainId, StakeType.Advanced),
+        isStakingOpenSelector(chainId, currentStakeTerm()),
     );
     const minLockPeriod = useAppSelector(
-        termsSelector(chainId!, StakeType.Advanced, 'minLockPeriod'),
+        termsPropertySelector(chainId!, currentStakeTerm(), 'minLockPeriod'),
+    );
+    const allowedSince = useAppSelector(
+        termsPropertySelector(chainId!, currentStakeTerm(), 'allowedSince'),
+    );
+    const allowedTill = useAppSelector(
+        termsPropertySelector(chainId!, currentStakeTerm(), 'allowedTill'),
     );
     const disabled = !account || !isStakingOpen;
 
@@ -56,13 +62,25 @@ export default function StakingInput(props: StakingInputProps) {
                 const bn = safeParseUnits(amount);
                 if (bn) {
                     dispatch(setStakeAmount, amount as string);
-                    dispatch(calculateRewards, [bn.toString(), minLockPeriod]);
+                    dispatch(calculateRewards, [
+                        bn.toString(),
+                        minLockPeriod,
+                        allowedSince,
+                        allowedTill,
+                    ]);
                     return;
                 }
             }
             clearStakedValue();
         },
-        [tokenBalance, dispatch, minLockPeriod, clearStakedValue],
+        [
+            tokenBalance,
+            clearStakedValue,
+            dispatch,
+            minLockPeriod,
+            allowedSince,
+            allowedTill,
+        ],
     );
 
     useEffect(() => {

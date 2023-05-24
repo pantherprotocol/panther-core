@@ -38,8 +38,8 @@ yarn hardhat zasset:add --token 0x3F73371cFA58F338C479928AC7B4327478Cb859f --sca
 
 ### ===== Whitelist PNFT: =====
 
-# info: --token is the address of PNFT token. you can change it to any token you want. --scale and --token-type should not be changed.
-yarn hardhat zasset:add --token 0x45c7650cbE485d3c85B739799A4D2eEF9FB46d60 --scale 0 --token-type 0x10 --network mumbai
+# info: --token is the address of PNFT token. Find the PNftToken address  at deployments/mumbai/PNftToken.json. --scale and --token-type should not be changed.
+yarn hardhat zasset:add --token <PNftToken_address> --scale 0 --token-type 0x10 --network mumbai
 
 
 ### ===== Update the pool exit times: =====

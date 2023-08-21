@@ -39,6 +39,7 @@ export const getStakeTerms = createAsyncThunk(
             StakeType.Advanced,
             StakeType.Classic,
             StakeType.AdvancedTwo,
+            StakeType.AdvancedThree,
         ]) {
             const terms = await getStakingTermsFromContract(
                 library,

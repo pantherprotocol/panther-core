@@ -6,6 +6,7 @@ import {
     CLASSIC_TYPE_HEX,
     ADVANCED_TYPE_HEX,
     ADVANCED_2_TYPE_HEX,
+    ADVANCED_3_TYPE_HEX,
     HEX_STAKE_TYPE_TO_STAKE_TYPE,
 } from 'constants/stake-terms';
 import {oneYearInMs} from 'constants/time';
@@ -166,7 +167,8 @@ export function calculateRewardsForStake(
 
     if (
         stake.stakeType === ADVANCED_TYPE_HEX ||
-        stake.stakeType === ADVANCED_2_TYPE_HEX
+        stake.stakeType === ADVANCED_2_TYPE_HEX ||
+        stake.stakeType === ADVANCED_3_TYPE_HEX
     ) {
         return calculateRewardsForAdvancedStake(
             stake,

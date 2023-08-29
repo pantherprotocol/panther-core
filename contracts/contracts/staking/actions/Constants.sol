@@ -41,6 +41,18 @@ bytes4 constant ADVANCED_STAKE_V2 = 0x1954e321;
 // bytes4(keccak256(abi.encodePacked(bytes4(keccak256("unstake"), ADVANCED_STAKE_V2_TYPE)))
 bytes4 constant ADVANCED_UNSTAKE_V2 = 0x6a8ecb81;
 
+// The "stake type" for the "advance staking"
+// bytes4(keccak256("advanced-v3"))
+bytes4 constant ADVANCED_STAKE_V3_TYPE = 0x466b3169;
+
+// STAKE "action type" for the "advanced staking V3"
+// bytes4(keccak256(abi.encodePacked(bytes4(keccak256("stake"), ADVANCED_STAKE_V3_TYPE)))
+bytes4 constant ADVANCED_STAKE_V3 = 0x2991610f;
+
+// UNSTAKE "action type" for the "advanced staking v2"
+// bytes4(keccak256(abi.encodePacked(bytes4(keccak256("unstake"), ADVANCED_STAKE_V3_TYPE)))
+bytes4 constant ADVANCED_UNSTAKE_V3 = 0xc0873111;
+
 // PRP grant type for the "advanced" stake
 // bytes4(keccak256("forAdvancedStakeGrant"))
 bytes4 constant FOR_ADVANCED_STAKE_GRANT = 0x31a180d4;

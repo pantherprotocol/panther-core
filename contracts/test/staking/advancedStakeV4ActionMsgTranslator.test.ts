@@ -4,32 +4,32 @@ import hardhat from 'hardhat';
 
 const {ethers} = hardhat;
 
-import {AdvancedStakeV3ActionMsgTranslator} from '../../types/contracts';
+import {AdvancedStakeV4ActionMsgTranslator} from '../../types/contracts';
 
-describe('AdvancedStakeV3ActionMsgTranslator', () => {
-    const advStakeV3 = '0x2991610f';
+describe.only('AdvancedStakeV4ActionMsgTranslator', () => {
+    const advStakeV4 = '0x02024d66';
     const invalidAction = '0x12345678';
     const message = '0x00';
 
-    let translator: AdvancedStakeV3ActionMsgTranslator;
+    let translator: AdvancedStakeV4ActionMsgTranslator;
     let user: SignerWithAddress;
     let rewardMaster: SignerWithAddress;
 
     before(async () => {
         [user, rewardMaster] = await ethers.getSigners();
 
-        const AdvancedStakeV3ActionMsgTranslator =
+        const AdvancedStakeV4ActionMsgTranslator =
             await ethers.getContractFactory(
-                'AdvancedStakeV3ActionMsgTranslator',
+                'AdvancedStakeV4ActionMsgTranslator',
             );
-        translator = (await AdvancedStakeV3ActionMsgTranslator.deploy(
+        translator = (await AdvancedStakeV4ActionMsgTranslator.deploy(
             rewardMaster.address,
-        )) as AdvancedStakeV3ActionMsgTranslator;
+        )) as AdvancedStakeV4ActionMsgTranslator;
     });
 
     it('should throw when executed by unauthorized account', async () => {
         await expect(
-            translator.connect(user).getRewardAdvice(advStakeV3, message),
+            translator.connect(user).getRewardAdvice(advStakeV4, message),
         ).to.be.revertedWith('AMT: unauthorized');
     });
 

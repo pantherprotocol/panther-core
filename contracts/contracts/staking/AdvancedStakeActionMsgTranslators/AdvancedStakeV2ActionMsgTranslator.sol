@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: Copyright 2023 Panther Ventures Limited Gibraltar
 pragma solidity 0.8.16;
 
-import "./interfaces/IRewardAdviser.sol";
-import "./interfaces/IActionMsgReceiver.sol";
-import { ADVANCED_STAKE, ADVANCED_STAKE_V2, ADVANCED_UNSTAKE_V2 } from "./actions/Constants.sol";
+import "../interfaces/IRewardAdviser.sol";
+import "../interfaces/IActionMsgReceiver.sol";
+import { ADVANCED_STAKE, ADVANCED_STAKE_V2, ADVANCED_UNSTAKE_V2 } from "../actions/Constants.sol";
 
 /**
  * @title AdvancedStakeV2ActionMsgTranslator

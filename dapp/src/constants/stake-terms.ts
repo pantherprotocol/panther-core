@@ -9,12 +9,14 @@ export const CLASSIC_TYPE_HEX = utils.id('classic').slice(0, 10);
 export const ADVANCED_TYPE_HEX = utils.id('advanced').slice(0, 10);
 export const ADVANCED_2_TYPE_HEX = utils.id('advanced-v2').slice(0, 10);
 export const ADVANCED_3_TYPE_HEX = utils.id('advanced-v3').slice(0, 10);
+export const ADVANCED_4_TYPE_HEX = utils.id('advanced-v4').slice(0, 10);
 
 export const HEX_STAKE_TYPE_TO_STAKE_TYPE = new Map<string, StakeTypes>([
     [CLASSIC_TYPE_HEX, 'classic'],
     [ADVANCED_TYPE_HEX, 'advanced'],
     [ADVANCED_2_TYPE_HEX, 'advanced-v2'],
     [ADVANCED_3_TYPE_HEX, 'advanced-v3'],
+    [ADVANCED_4_TYPE_HEX, 'advanced-v4'],
 ]);
 
 export const STAKE_TYPE_TO_HEX_STAKE_TYPE = invertMap(
